@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ELUNA — матрас, который раскрывается слой за слоем</title>
+  <meta name="description" content="ELUNA. Семь слоёв, собранных вокруг одного ощущения — тишины. Премиальный матрас ручной сборки.">
+  <meta name="theme-color" content="#050506">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="is-intro">
+
+  <!-- Плёночное зерно поверх всего -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Навигация -->
+  <header class="nav" id="nav">
+    <a class="nav__brand" href="#top" aria-label="ELUNA — на главную">ELUNA</a>
+    <nav class="nav__links" aria-label="Разделы">
+      <a href="#layers">Семь слоёв</a>
+      <a href="#materials">Материалы</a>
+      <a href="#construction">Конструкция</a>
+      <a href="#sizes">Размеры</a>
+    </nav>
+    <a class="nav__cta" href="#sizes">Выбрать размер</a>
+  </header>
+
+  <main id="top">
+
+    <!-- ================================================================
+         СЦЕНА: кинематографическое раскрытие продукта (pinned)
+         ================================================================ -->
+    <section class="stage" id="stage" aria-label="ELUNA — вступление">
+      <div class="stage__inner">
+
+        <!-- атмосфера -->
+        <div class="beam" aria-hidden="true"></div>
+        <canvas class="dust" id="dust" aria-hidden="true"></canvas>
+
+        <!-- гигантское слово за продуктом -->
+        <div class="wordmark" id="wordmark" aria-hidden="true">
+          <span>E</span><span>L</span><span>U</span><span>N</span><span>A</span>
+        </div>
+
+        <!-- 3D-объект -->
+        <div class="scene" id="scene">
+          <div class="world" id="world">
+            <div class="floor" aria-hidden="true">
+              <div class="floor__pool"></div>
+              <div class="floor__contact"></div>
+            </div>
+            <div class="mattress" id="mattress" role="img" aria-label="Матрас ELUNA, семь слоёв"></div>
+          </div>
+        </div>
+
+        <!-- типографика: фаза 1 — hero -->
+        <div class="copy copy--hero" id="copyHero">
+          <p class="eyebrow"><span>Коллекция Noir</span><span class="dot"></span><span>2026</span></p>
+          <h1 class="hero-title">
+            <span class="line"><span>Сначала — тишина.</span></span>
+            <span class="line"><span>Потом — матрас.</span></span>
+          </h1>
+          <p class="hero-sub">Семь слоёв, собранных вокруг одного ощущения невесомости. Раскрывается постепенно — как и всё настоящее.</p>
+        </div>
+
+        <div class="cue" id="cue" aria-hidden="true">
+          <span class="cue__label">Листайте, чтобы раскрыть</span>
+          <span class="cue__line"></span>
+        </div>
+
+        <!-- типографика: фаза 2 — семь слоёв -->
+        <div class="copy copy--layers" id="copyLayers">
+          <p class="eyebrow"><span>Анатомия</span><span class="dot"></span><span>30 см</span></p>
+          <h2 class="section-title">Семь слоёв.<br><em>Одно ощущение.</em></h2>
+          <ol class="layer-list" id="layerList">
+            <li data-i="0"><span class="num">01</span><span class="name">Стёганый чехол из органического хлопка</span><span class="spec">1,5 см</span></li>
+            <li data-i="1"><span class="num">02</span><span class="name">Натуральный латекс</span><span class="spec">3 см</span></li>
+            <li data-i="2"><span class="num">03</span><span class="name">Memory-пена с гелевым охлаждением</span><span class="spec">4 см</span></li>
+            <li data-i="3"><span class="num">04</span><span class="name">Кокосовая койра</span><span class="spec">3 см</span></li>
+            <li data-i="4"><span class="num">05</span><span class="name">Высокоэластичная пена HR</span><span class="spec">4 см</span></li>
+            <li data-i="5"><span class="num">06</span><span class="name">Независимые пружины · 7 зон</span><span class="spec">12 см</span></li>
+            <li data-i="6"><span class="num">07</span><span class="name">Армированное основание</span><span class="spec">2,5 см</span></li>
+          </ol>
+          <p class="layer-active" id="layerActive"><span class="num">01</span><span class="name">Стёганый чехол из органического хлопка</span></p>
+        </div>
+
+        <!-- типографика: фаза 3 — финал сцены -->
+        <div class="copy copy--outro" id="copyOutro">
+          <p class="statement">Каждый слой — отдельное решение.<br>Вместе — <em>тишина</em>, в которую хочется вернуться.</p>
+        </div>
+
+        <!-- общая экспозиция сцены -->
+        <div class="exposure" id="exposure" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         МАНИФЕСТ
+         ================================================================ -->
+    <section class="manifesto" id="manifesto">
+      <div class="container">
+        <p class="eyebrow reveal"><span>Манифест</span></p>
+        <h2 class="manifesto__text">
+          <span class="reveal-line"><span>Мы не делали матрас мягче или жёстче.</span></span>
+          <span class="reveal-line"><span>Мы убирали из него всё, что мешает</span></span>
+          <span class="reveal-line"><span>телу забыть о своём весе —</span></span>
+          <span class="reveal-line"><span>пока не осталась <em>тишина</em>.</span></span>
+        </h2>
+        <div class="manifesto__facts">
+          <div class="fact reveal"><span class="fact__value">7</span><span class="fact__label">слоёв, собранных вручную</span></div>
+          <div class="fact reveal"><span class="fact__value">30<small> см</small></span><span class="fact__label">высота, которая чувствуется</span></div>
+          <div class="fact reveal"><span class="fact__value">1 200</span><span class="fact__label">независимых пружин на 160×200</span></div>
+          <div class="fact reveal"><span class="fact__value">100</span><span class="fact__label">ночей, чтобы решить</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         МАТЕРИАЛЫ
+         ================================================================ -->
+    <section class="materials" id="materials">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow"><span>Материалы</span><span class="dot"></span><span>04</span></p>
+          <h2 class="section-title">Природа — там,<br>где касается кожи.<br><em>Инженерия — глубже.</em></h2>
+        </div>
+        <div class="material-grid">
+          <article class="material reveal">
+            <div class="material__swatch swatch--cotton"></div>
+            <div class="material__body">
+              <span class="material__index">01</span>
+              <h3>Органический хлопок</h3>
+              <p>Стёганый чехол из сертифицированного хлопка GOTS. Дышит, впитывает и отдаёт влагу, не электризуется. Снимается и стирается.</p>
+            </div>
+          </article>
+          <article class="material reveal">
+            <div class="material__swatch swatch--latex"></div>
+            <div class="material__body">
+              <span class="material__index">02</span>
+              <h3>Натуральный латекс</h3>
+              <p>Сок гевеи, вспененный по технологии Dunlop. Перфорация в семи зонах — воздух движется, когда движетесь вы.</p>
+            </div>
+          </article>
+          <article class="material reveal">
+            <div class="material__swatch swatch--gel"></div>
+            <div class="material__body">
+              <span class="material__index">03</span>
+              <h3>Memory-пена с гелем</h3>
+              <p>Повторяет контур тела за 4–6 секунд и не копит тепло: микрокапсулы геля отводят его к перфорированному латексу выше.</p>
+            </div>
+          </article>
+          <article class="material reveal">
+            <div class="material__swatch swatch--coir"></div>
+            <div class="material__body">
+              <span class="material__index">04</span>
+              <h3>Кокосовая койра</h3>
+              <p>Волокно, пропитанное латексом. Ортопедическая опора без ощущения доски — слой, который держит спину, пока латекс держит плечи.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         КОНСТРУКЦИЯ — интерактивный разрез
+         ================================================================ -->
+    <section class="construction" id="construction">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow"><span>Конструкция</span><span class="dot"></span><span>В разрезе</span></p>
+          <h2 class="section-title">Нажмите на слой —<br><em>он расскажет о себе.</em></h2>
+        </div>
+
+        <div class="construction__grid">
+          <div class="cutaway reveal" id="cutaway" role="tablist" aria-label="Слои матраса">
+            <!-- слои заполняются скриптом -->
+          </div>
+
+          <div class="construction__panel reveal">
+            <div class="firmness" role="radiogroup" aria-label="Жёсткость">
+              <span class="firmness__label">Жёсткость</span>
+              <div class="firmness__options">
+                <button type="button" role="radio" aria-checked="false" data-firmness="soft">Мягче</button>
+                <button type="button" role="radio" aria-checked="true" data-firmness="medium">Сбалансированная</button>
+                <button type="button" role="radio" aria-checked="false" data-firmness="firm">Жёстче</button>
+              </div>
+            </div>
+
+            <div class="layer-detail" id="layerDetail" aria-live="polite">
+              <span class="layer-detail__num">01</span>
+              <h3 class="layer-detail__name">Стёганый чехол</h3>
+              <p class="layer-detail__text">Органический хлопок с терморегулирующей нитью. Первый слой, который вы чувствуете — и единственный, который видите.</p>
+              <dl class="layer-detail__specs">
+                <div><dt>Толщина</dt><dd data-k="thickness">1,5 см</dd></div>
+                <div><dt>Плотность</dt><dd data-k="density">320 г/м²</dd></div>
+                <div><dt>Задача</dt><dd data-k="role">Микроклимат</dd></div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         РАЗМЕРЫ
+         ================================================================ -->
+    <section class="sizes" id="sizes">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow"><span>Размеры</span><span class="dot"></span><span>Высота 30 см</span></p>
+          <h2 class="section-title">Один матрас.<br><em>Шесть пропорций.</em></h2>
+        </div>
+
+        <div class="sizes__grid">
+          <div class="size-preview reveal" aria-hidden="true">
+            <div class="size-preview__room">
+              <div class="size-preview__mat" id="sizePreviewMat">
+                <span class="size-preview__w" id="sizePreviewW">160</span>
+                <span class="size-preview__h" id="sizePreviewH">200</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="size-panel reveal">
+            <div class="size-options" id="sizeOptions" role="radiogroup" aria-label="Размер матраса">
+              <button type="button" role="radio" aria-checked="false" data-w="80"  data-h="200" data-price="389000">80 × 200</button>
+              <button type="button" role="radio" aria-checked="false" data-w="90"  data-h="200" data-price="419000">90 × 200</button>
+              <button type="button" role="radio" aria-checked="false" data-w="140" data-h="200" data-price="589000">140 × 200</button>
+              <button type="button" role="radio" aria-checked="true"  data-w="160" data-h="200" data-price="649000">160 × 200</button>
+              <button type="button" role="radio" aria-checked="false" data-w="180" data-h="200" data-price="719000">180 × 200</button>
+              <button type="button" role="radio" aria-checked="false" data-w="200" data-h="200" data-price="789000">200 × 200</button>
+            </div>
+
+            <div class="size-summary">
+              <div class="size-summary__row">
+                <span class="size-summary__label">ELUNA Noir · <span id="sizeLabel">160 × 200</span> см</span>
+                <span class="size-summary__price"><span id="sizePrice">649 000</span> ₸</span>
+              </div>
+              <p class="size-summary__note">Включая доставку, подъём и вынос старого матраса. Рассрочка 0 % на 12 месяцев — <span id="sizeMonthly">54 084</span> ₸ в месяц.</p>
+              <a class="button button--primary" href="#order">Заказать <span id="sizeCtaLabel">160 × 200</span></a>
+              <p class="size-summary__hint">Нестандартный размер? Сделаем под ваш проект — срок 21 день.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         ДОВЕРИЕ + CTA
+         ================================================================ -->
+    <section class="trust" id="order">
+      <div class="container">
+        <div class="trust__grid">
+          <div class="trust__item reveal">
+            <span class="trust__value">100 ночей</span>
+            <span class="trust__label">пробного сна. Не подошёл — заберём и вернём деньги, без вопросов.</span>
+          </div>
+          <div class="trust__item reveal">
+            <span class="trust__value">15 лет</span>
+            <span class="trust__label">гарантии на пружинный блок и пены. Чехол — отдельная, 3 года.</span>
+          </div>
+          <div class="trust__item reveal">
+            <span class="trust__value">Ручная сборка</span>
+            <span class="trust__label">Каждый матрас собирает один мастер — его подпись на этикетке.</span>
+          </div>
+          <div class="trust__item reveal">
+            <span class="trust__value">7 дней</span>
+            <span class="trust__label">до двери в любом городе Казахстана. Доставка до спальни включена.</span>
+          </div>
+        </div>
+
+        <div class="cta reveal">
+          <h2 class="cta__title">Начните с <em>тишины</em>.</h2>
+          <p class="cta__text">Оставьте номер — мастер-консультант поможет подобрать жёсткость и размер. Без скриптов и давления.</p>
+          <form class="cta__form" onsubmit="return false">
+            <label class="sr-only" for="phone">Телефон</label>
+            <input id="phone" type="tel" inputmode="tel" placeholder="+7 ___ ___ __ __" autocomplete="tel">
+            <button type="submit" class="button button--primary">Связаться</button>
+          </form>
+          <p class="cta__legal">Нажимая «Связаться», вы соглашаетесь с политикой обработки персональных данных.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="footer__brand">ELUNA</span>
+      <span class="footer__copy">© 2026 ELUNA. Матрасы ручной сборки.</span>
+      <nav class="footer__links" aria-label="Служебные ссылки">
+        <a href="#">Доставка</a>
+        <a href="#">Гарантия</a>
+        <a href="#">Контакты</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="vendor/gsap.min.js"></script>
+  <script src="vendor/ScrollTrigger.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
