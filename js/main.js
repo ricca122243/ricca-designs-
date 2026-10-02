@@ -482,183 +482,150 @@
     stageEl.addEventListener('pointerleave', () => { toX(0); toY(0); });
   }
 
-  // над светлой главой навигация становится тёмной
-  (function navTheme() {
-    const light = document.querySelectorAll('.motion');
-    if (!('IntersectionObserver' in window) || !light.length) return;
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((en) => body.classList.toggle('on-light', en.isIntersecting));
-    }, { rootMargin: '-40px 0px -92% 0px' });
-    light.forEach((el) => io.observe(el));
-  })();
-
   /* ------------------------------------------------------------------------
-     Технология: изоляция движения. Разрез пружинного блока на canvas —
-     груз опускается слева, пружины гасят нагрузку локально, правая половина
-     остаётся неподвижной. Отпускание — упругое, с затухающим перелётом.
+     Сон вдвоём: поверхность матраса как цепочка масс и пружин на canvas.
+     Сторона А свободно колеблется; у центрального шва связь ослаблена,
+     а затухание выше — волна гаснет, сторона Б почти не двигается.
+     Фиксированный шаг физики, рисование только пока есть энергия.
      ------------------------------------------------------------------------ */
   (function motion() {
-    const canvas = document.getElementById('motionCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const leftEl = document.getElementById('motionLeft');
-    const rightEl = document.getElementById('motionRight');
-    const state = { drop: 0, xw: 0.27 };
-    let w = 0, h = 0, dpr = 1, playing = false;
+    const cv = document.getElementById('motionCanvas');
+    if (!cv) return;
+    const ctx = cv.getContext('2d');
+    const tag = document.getElementById('motionTag');
+    const btn = document.getElementById('motionBtn');
 
-    function resize() {
-      dpr = Math.min(2, window.devicePixelRatio || 1);
-      const r = canvas.getBoundingClientRect();
-      w = r.width; h = r.height;
-      canvas.width = w * dpr; canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      draw();
+    const N = 120, SEAM = 60, SRC = 27, PARTNER = 92;
+    const y = new Float32Array(N), v = new Float32Array(N), a = new Float32Array(N);
+    const K = 0.035, C = new Float32Array(N), D = new Float32Array(N);
+    for (let i = 0; i < N; i++) {
+      const gap = i >= SEAM - 5 && i <= SEAM + 9;              // зона изоляции у шва
+      C[i] = gap ? 0.2 : 0.26;
+      D[i] = gap ? 0.05 : (i > SEAM ? 0.03 : 0.0075);
     }
+    const STEP = 1 / 100;
+    let acc = 0, last = 0, running = false, visible = false, roll = 0, rollV = 0, pulses = [];
+    let W = 0, H = 0, dpr = 1, bodyGrad = null, gradH = 0;
 
-    const fmt = (mm) => (mm === 0 ? '0,0' : mm.toFixed(1).replace('.', ',').replace('-0,0', '0,0')) + ' мм';
-
-    function draw() {
-      ctx.clearRect(0, 0, w, h);
-      const N = w < 600 ? 22 : 36;
-      const pad = w * 0.04;
-      const cell = (w - pad * 2) / N;
-      const springW = cell * 0.62;
-      const baseY = h * 0.86;
-      const springH = h * 0.42;
-      const topY = baseY - springH;          // верх пружин в покое
-      const comfortH = h * 0.075;            // слои комфорта над пружинами
-      const sigma = w * 0.085;
-      const xw = pad + state.xw * (w - pad * 2);
-      const maxDip = springH * 0.34;
-
-      const dipAt = (x) => maxDip * state.drop * Math.exp(-((x - xw) ** 2) / (2 * sigma * sigma));
-
-      // основание
-      ctx.fillStyle = '#d9d2c6';
-      ctx.fillRect(pad, baseY, w - pad * 2, h * 0.035);
-
-      // пружины в карманах
+    function step() {
       for (let i = 0; i < N; i++) {
-        const x = pad + cell * i + (cell - springW) / 2;
-        const cx = x + springW / 2;
-        const dip = dipAt(cx);
-        const y = topY + dip;
-        const hh = springH - dip;
-        const k = dip / maxDip;
-        ctx.fillStyle = `rgb(${255 - 20 * k}, ${255 - 24 * k}, ${255 - 30 * k})`;
-        ctx.strokeStyle = 'rgba(21,22,27,0.14)';
-        ctx.lineWidth = 1;
-        roundRect(x, y, springW, hh, springW * 0.3);
-        ctx.fill(); ctx.stroke();
-        // витки
-        ctx.strokeStyle = 'rgba(21,22,27,0.10)';
-        const coils = 5;
-        for (let c = 1; c < coils; c++) {
-          const yy = y + (hh / coils) * c;
-          ctx.beginPath(); ctx.moveTo(x + 3, yy); ctx.lineTo(x + springW - 3, yy); ctx.stroke();
+        const l = i > 0 ? y[i - 1] : 0, r = i < N - 1 ? y[i + 1] : 0;
+        a[i] = -K * y[i] + C[i] * (l + r - 2 * y[i]) - D[i] * v[i];
+      }
+      for (let i = 0; i < N; i++) { v[i] += a[i]; y[i] += v[i]; }
+      rollV += -0.03 * roll - 0.05 * rollV; roll += rollV * 0.9;
+      for (let p = pulses.length - 1; p >= 0; p--) {
+        const q = pulses[p]; q.t--;
+        if (q.t <= 0) {
+          for (let i = 0; i < N; i++) { const x = (i - SRC) / 7; v[i] += q.a * Math.exp(-x * x); }
+          rollV += q.a * 0.11; pulses.splice(p, 1);
         }
       }
+    }
+    const energy = () => { let e = 0; for (let i = 0; i < N; i++) e += v[i] * v[i] + y[i] * y[i]; return e / N; };
 
-      // слои комфорта — плавная поверхность по вершинам пружин
-      ctx.beginPath();
-      ctx.moveTo(pad, baseY);
-      ctx.lineTo(pad, topY - comfortH + dipAt(pad));
-      const steps = 80;
-      for (let s = 0; s <= steps; s++) {
-        const x = pad + ((w - pad * 2) * s) / steps;
-        ctx.lineTo(x, topY - comfortH + dipAt(x));
+    function px(i) { return 6 + (W - 12) * i / (N - 1); }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const baseY = H * 0.86, top = H * 0.56, amp = H * 0.24;
+      const surf = (j) => top + y[j] * amp * 0.5;
+
+      if (!bodyGrad || gradH !== H) {
+        gradH = H; bodyGrad = ctx.createLinearGradient(0, top - 10, 0, baseY);
+        bodyGrad.addColorStop(0, 'rgba(241,237,230,0.20)'); bodyGrad.addColorStop(1, 'rgba(241,237,230,0.025)');
       }
-      ctx.lineTo(w - pad, baseY);
-      ctx.closePath();
-      ctx.save();
-      ctx.clip();
-      ctx.fillStyle = '#f7f3ec';
-      ctx.fillRect(pad, topY - comfortH - 2, w - pad * 2, comfortH + 4);
-      ctx.restore();
-      // контур поверхности
-      ctx.beginPath();
-      for (let s = 0; s <= steps; s++) {
-        const x = pad + ((w - pad * 2) * s) / steps;
-        const y = topY - comfortH + dipAt(x);
-        s ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      ctx.beginPath(); ctx.moveTo(px(0), baseY); ctx.lineTo(px(0), surf(0));
+      for (let i = 1; i < N; i++) ctx.lineTo(px(i), surf(i));
+      ctx.lineTo(px(N - 1), baseY); ctx.closePath(); ctx.fillStyle = bodyGrad; ctx.fill();
+
+      // пружины: тихие и движущиеся — два пути
+      ctx.lineWidth = 1;
+      const calm = new Path2D(), mv = new Path2D();
+      for (let i = 2; i < N - 1; i += 4) {
+        const t = Math.abs(y[i]) > 0.06 ? mv : calm;
+        t.moveTo(px(i), surf(i) + 4); t.lineTo(px(i), baseY - 4);
       }
-      ctx.strokeStyle = 'rgba(21,22,27,0.35)';
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
+      ctx.strokeStyle = 'rgba(241,237,230,0.08)'; ctx.stroke(calm);
+      ctx.strokeStyle = 'rgba(241,237,230,0.3)'; ctx.stroke(mv);
+      ctx.strokeStyle = 'rgba(241,237,230,0.16)'; ctx.beginPath(); ctx.moveTo(px(0), baseY + 0.5); ctx.lineTo(px(N - 1), baseY + 0.5); ctx.stroke();
 
-      // груз слева
-      const r = Math.max(22, h * 0.085);
-      const gy = topY - comfortH + dipAt(xw) - r + 2;
-      const grad = ctx.createRadialGradient(xw - r * 0.35, gy - r * 0.4, r * 0.1, xw, gy, r);
-      grad.addColorStop(0, '#4a4b52'); grad.addColorStop(1, '#15161b');
-      ctx.fillStyle = grad;
-      ctx.beginPath(); ctx.arc(xw, gy, r, 0, Math.PI * 2); ctx.fill();
-      // мягкая тень под грузом
-      ctx.fillStyle = `rgba(21,22,27,${0.08 + 0.1 * state.drop})`;
-      ctx.beginPath(); ctx.ellipse(xw, gy + r + 6, r * 1.15, r * 0.18, 0, 0, Math.PI * 2); ctx.fill();
+      // шов
+      ctx.setLineDash([3, 6]); ctx.strokeStyle = 'rgba(200,168,107,0.55)';
+      ctx.beginPath(); ctx.moveTo(px(SEAM), H * 0.12); ctx.lineTo(px(SEAM), baseY + 22); ctx.stroke(); ctx.setLineDash([]);
 
-      // уровень справа: стакан воды, который не шелохнулся
-      const xr = pad + 0.78 * (w - pad * 2);
-      const ys = topY - comfortH + dipAt(xr);
-      const gw = Math.max(26, h * 0.085), gh = gw * 1.35;
-      ctx.strokeStyle = 'rgba(21,22,27,0.55)'; ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.moveTo(xr - gw / 2, ys - gh); ctx.lineTo(xr - gw / 2 + gw * 0.08, ys); ctx.lineTo(xr + gw / 2 - gw * 0.08, ys); ctx.lineTo(xr + gw / 2, ys - gh);
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(120, 150, 200, 0.22)';
-      ctx.beginPath();
-      ctx.moveTo(xr - gw / 2 + gw * 0.03, ys - gh * 0.62); ctx.lineTo(xr - gw / 2 + gw * 0.08, ys); ctx.lineTo(xr + gw / 2 - gw * 0.08, ys); ctx.lineTo(xr + gw / 2 - gw * 0.03, ys - gh * 0.62);
-      ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = 'rgba(80, 110, 170, 0.6)';
-      ctx.beginPath(); ctx.moveTo(xr - gw / 2 + gw * 0.03, ys - gh * 0.62); ctx.lineTo(xr + gw / 2 - gw * 0.03, ys - gh * 0.62); ctx.stroke();
+      // спящие
+      const sleeper = (c, filled, ang) => {
+        const cx = px(c), cy = surf(c) - H * 0.072, w = Math.min(W * 0.2, 230), h = H * 0.13, r = h / 2;
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang);
+        ctx.beginPath();
+        ctx.moveTo(-w / 2 + r, -h / 2); ctx.lineTo(w / 2 - r, -h / 2); ctx.arc(w / 2 - r, 0, r, -Math.PI / 2, Math.PI / 2);
+        ctx.lineTo(-w / 2 + r, h / 2); ctx.arc(-w / 2 + r, 0, r, Math.PI / 2, Math.PI * 1.5); ctx.closePath();
+        if (filled) { ctx.fillStyle = 'rgba(241,237,230,0.94)'; ctx.fill(); }
+        else { ctx.fillStyle = 'rgba(241,237,230,0.14)'; ctx.fill(); ctx.strokeStyle = 'rgba(241,237,230,0.5)'; ctx.stroke(); }
+        ctx.restore();
+      };
+      const slope = (c) => Math.atan((surf(Math.min(N - 1, c + 6)) - surf(c - 6)) / (px(c + 6) - px(c - 6)));
+      sleeper(SRC, true, slope(SRC) + roll * 0.9);
+      sleeper(PARTNER, false, slope(PARTNER));
 
-      // линия-уровень от стакана к правому краю
-      ctx.setLineDash([2, 6]);
-      ctx.strokeStyle = 'rgba(21,22,27,0.3)';
-      ctx.beginPath(); ctx.moveTo(xr + gw / 2 + 12, ys - gh * 0.62); ctx.lineTo(w - pad, ys - gh * 0.62); ctx.stroke();
-      ctx.setLineDash([]);
-
-      const mmScale = 60 / maxDip;           // 60 мм при полном прогибе
-      leftEl.textContent = (state.drop > 0.005 ? '−' : '') + fmt(dipAt(xw) * mmScale);
-      rightEl.textContent = fmt(dipAt(xr) * mmScale);
+      // линия поверхности: ярче там, где движется (5 корзин прозрачности)
+      ctx.lineWidth = 1.6; ctx.lineJoin = 'round';
+      const paths = [new Path2D(), new Path2D(), new Path2D(), new Path2D(), new Path2D()];
+      for (let i = 0; i < N - 1; i++) {
+        const bk = Math.min(4, (Math.min(1, Math.abs(y[i]) * 0.9) * 5) | 0);
+        paths[bk].moveTo(px(i), surf(i)); paths[bk].lineTo(px(i + 1), surf(i + 1));
+      }
+      for (let i = 0; i < 5; i++) { ctx.strokeStyle = `rgba(241,237,230,${(0.5 + (i / 4) * 0.5).toFixed(2)})`; ctx.stroke(paths[i]); }
     }
 
-    function roundRect(x, y, ww, hh, rr) {
-      rr = Math.min(rr, ww / 2, hh / 2);
-      ctx.beginPath();
-      ctx.moveTo(x + rr, y);
-      ctx.arcTo(x + ww, y, x + ww, y + hh, rr);
-      ctx.arcTo(x + ww, y + hh, x, y + hh, rr);
-      ctx.arcTo(x, y + hh, x, y, rr);
-      ctx.arcTo(x, y, x + ww, y, rr);
-      ctx.closePath();
+    function frame(now) {
+      if (!last) last = now;
+      acc += Math.min(0.035, (now - last) / 1000); last = now;
+      let n = 0;
+      while (acc >= STEP && n < 3) { step(); acc -= STEP; n++; }
+      if (n === 3) acc = 0;
+      draw();
+      if (!pulses.length && energy() < 0.00008) { running = false; last = 0; return; }
+      requestAnimationFrame(frame);
+    }
+    function start() { if (reduceMotion) { settleStatic(); return; } if (!running) { running = true; last = 0; requestAnimationFrame(frame); } }
+    function turn(s = 1) {
+      pulses.push({ t: 0, a: 0.27 * s }, { t: 26, a: -0.18 * s }, { t: 58, a: 0.1 * s });
+      if (tag) { tag.classList.remove('is-on'); clearTimeout(turn.to); turn.to = setTimeout(() => tag.classList.add('is-on'), 2600); }
+      start();
+    }
+    function settleStatic() {
+      for (let i = 0; i < N; i++) { const x = (i - SRC) / 9; y[i] = -0.8 * Math.exp(-x * x) * (i > SEAM ? 0.03 : 1); v[i] = 0; }
+      draw(); if (tag) tag.classList.add('is-on');
+    }
+    function resize() {
+      const r = cv.getBoundingClientRect();
+      dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+      cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      bodyGrad = null; draw();
     }
 
-    const loop = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 0.6, onUpdate: draw });
-    loop
-      .to(state, { drop: 1, duration: 1.1, ease: 'power2.in' })
-      .to(state, { drop: 0.86, duration: 0.5, ease: 'sine.inOut' })
-      .to(state, { drop: 1, duration: 0.5, ease: 'sine.inOut' })
-      .to(state, { drop: 0, duration: 1.5, ease: 'elastic.out(1, 0.42)' }, '+=0.5')
-      .to(state, { xw: 0.33, duration: 2.4, ease: 'power2.inOut' }, 0.2)
-      .to(state, { xw: 0.27, duration: 1.2, ease: 'power2.inOut' }, 3.2);
+    let lastUser = 0;
+    const user = () => { lastUser = Date.now(); turn(1); };
+    btn.addEventListener('click', user);
+    cv.addEventListener('pointerdown', user);
+    btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); user(); } });
 
-    ScrollTrigger.create({
-      trigger: canvas, start: 'top 85%', end: 'bottom 15%',
-      onEnter: () => { if (!reduceMotion) loop.play(); },
-      onEnterBack: () => { if (!reduceMotion) loop.play(); },
-      onLeave: () => loop.pause(),
-      onLeaveBack: () => loop.pause(),
-    });
+    // пока блок на экране и зритель не трогал его — поворот раз в несколько секунд
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((es) => {
+        const was = visible; visible = es[0].isIntersecting;
+        if (visible && !was && !running && !reduceMotion) setTimeout(() => { if (visible && !running) turn(1); }, 500);
+      }, { threshold: 0.35 }).observe(cv);
+    }
+    if (!reduceMotion) setInterval(() => { if (visible && Date.now() - lastUser > 7000 && !running && !document.hidden) turn(1); }, 1000);
 
-    if (reduceMotion) { state.drop = 1; }
-    resize();
     window.addEventListener('resize', resize);
+    resize();
+    if (reduceMotion) settleStatic();
   })();
 
-  /* ------------------------------------------------------------------------
-     Появление по скроллу для остальных секций
-     ------------------------------------------------------------------------ */
   /* появление через IntersectionObserver: не зависит от расчёта позиций
      ScrollTrigger и не оставляет блоки невидимыми при резком переходе */
   (function reveals() {
@@ -764,7 +731,8 @@
      Линейка: цены, модели, разрезы, WhatsApp, липкая плашка
      Цены меняются только здесь. null → «— ₸».
      ------------------------------------------------------------------------ */
-  const PRICES = { air: null, balance: null, prime: null };   // ₸ за базовый размер 160 × 200
+  // ₸. Air / Balance / Prime — за базовый размер 160 × 200; Custom — диапазон для 1800 × 2000. null → «— ₸».
+  const PRICES = { air: 120000, balance: 220000, prime: 280000, custom: { from: 350000, to: 480000 } };
   const WHATSAPP = '77079550808';
   const MODELS = {
     air: {
@@ -815,13 +783,69 @@
   const waLink = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
 
   (function lineup() {
+    const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
     // цены и ссылки
     document.querySelectorAll('[data-price]').forEach((el) => { el.textContent = priceText(PRICES[el.dataset.price]); });
     document.querySelectorAll('[data-night]').forEach((el) => { el.textContent = perNight(PRICES[el.dataset.night]); });
     document.querySelectorAll('[data-wa]').forEach((a) => { a.href = waLink(`Здравствуйте, интересует ${MODELS[a.dataset.wa].name}`); });
 
+    // выбор модели: строки → свет на сцене
+    (function picker() {
+      const list = document.getElementById('prList');
+      const stage = document.getElementById('pxStage');
+      const caps = document.getElementById('pxCaps');
+      const beam = document.getElementById('pxBeam');
+      if (!list || !stage) return;
+      const TIERS = [
+        { key: 'air',     series: 'Air',     lvl: 1, tier: 'Выгодно',        pitch: 'Самая выгодная цена в коллекции.',   desc: 'Лёгкая модель на каждый день: пружины, кокос, ортопена.' },
+        { key: 'balance', series: 'Balance', lvl: 2, tier: 'Pro',            pitch: 'Поддержка на каждый день.',          desc: 'Усиленный каркас и два слоя кокоса — для тех, кто спит на матрасе каждый день.' },
+        { key: 'prime',   series: 'Prime',   lvl: 3, tier: 'Ultra',          pitch: 'Высший уровень готовой коллекции.',   desc: 'Хлопок ручной работы, натуральный латекс и кокос. Выбор Eluna.' },
+        { key: 'custom',  series: 'Custom',  lvl: 4, tier: 'Индивидуально',  pitch: 'Размер и конфигурация под вас.',     desc: 'Нестандартный размер и начинка под ваш проект.', dims: '1800 × 2000 мм' },
+      ];
+      const rangeText = (p) => (p == null ? '— ₸' : typeof p === 'object' ? `${fmtMoney(p.from)}–${fmtMoney(p.to)} ₸` : `${fmtMoney(p)} ₸`);
+      const meter = (lvl) => `<span class="lm" aria-hidden="true">${[1, 2, 3, 4].map((k) => `<i${k <= lvl ? ' class="on"' : ''}></i>`).join('')}</span>`;
+      const tier = (t) => `<span class="tier" data-lvl="${t.lvl}"><span>${esc(t.tier)}</span>${meter(t.lvl)}</span>`;
+      const rows = [], cards = [];
+      let cur = -1;
+
+      TIERS.forEach((t, i) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<button class="pr__row" type="button" data-lvl="${t.lvl}" aria-pressed="false" aria-label="Показать модель Eluna ${t.series}">
+          <span class="pr__n">0${i + 1}</span>
+          <span class="pr__name">Eluna ${t.series}${tier(t)}</span>
+          <span class="pr__price"><span class="pr__sum">${rangeText(PRICES[t.key])}</span>${t.dims ? `<span class="pr__sub">для размера ${t.dims}</span>` : ''}</span>
+        </button>`;
+        const b = li.firstElementChild;
+        b.addEventListener('mouseenter', () => select(i));
+        b.addEventListener('focus', () => select(i));
+        b.addEventListener('click', () => select(i));
+        list.appendChild(li); rows.push(b);
+
+        const c = document.createElement('div');
+        c.className = 'px__cap';
+        const more = t.key === 'custom'
+          ? `<a class="button button--ghost" href="#sizes" tabindex="-1">Собрать свой размер</a>`
+          : `<a class="button ${t.key === 'prime' ? 'button--primary' : 'button--ghost'}" href="${t.key === 'prime' ? '#primeBlock' : '#model-' + t.key}" tabindex="-1">Подробнее о ${esc(t.series)}</a>`;
+        c.innerHTML = `${tier(t)}<h3 class="px__pitch">${esc(t.pitch)}</h3><p>${esc(t.desc)}</p>${more}`;
+        caps.appendChild(c); cards.push(c);
+      });
+
+      function select(i) {
+        if (i === cur) return;
+        const first = cur < 0; cur = i;
+        stage.setAttribute('data-lvl', TIERS[i].lvl);
+        rows.forEach((r, k) => { r.classList.toggle('is-on', k === i); r.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+        cards.forEach((c, k) => {
+          c.classList.toggle('is-on', k === i); c.setAttribute('aria-hidden', k === i ? 'false' : 'true');
+          c.querySelectorAll('a').forEach((a) => { a.tabIndex = k === i ? 0 : -1; });
+        });
+        if (!first && beam && !reduceMotion) { beam.classList.remove('is-flare'); void beam.offsetWidth; beam.classList.add('is-flare'); }
+      }
+      select(2);
+    })();
+
+
     // разрезы
-    const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
     document.querySelectorAll('.xs[data-xs]').forEach((box) => {
       const m = MODELS[box.dataset.xs];
       if (!m) return;
