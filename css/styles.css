@@ -867,7 +867,7 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 
 /* ---------- Доверие + CTA ----------------------------------------------- */
 
-.trust { padding: 0 0 clamp(100px, 14vh, 180px); background: rgba(6,7,12,0.6); }
+.trust { padding: 0 0 clamp(100px, 14vh, 180px); background: rgba(6,7,12,0.6); overflow-x: clip; }
 /* ---------- Доставка: карта Казахстана ----------------------------------- */
 
 .delivery { padding: clamp(80px, 12vh, 150px) 0 clamp(60px, 8vh, 100px); display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(32px, 5vw, 80px); align-items: center; }

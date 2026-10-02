@@ -688,8 +688,11 @@
         new IntersectionObserver((es, io) => {
           if (!es[0].isIntersecting) return;
           io.disconnect();
+          video.autoplay = true;
           video.src = video.dataset.src;
-          video.addEventListener('canplay', () => { video.play().catch(() => {}); }, { once: true });
+          const tryPlay = () => { video.play().catch(() => {}); };
+          video.addEventListener('loadeddata', tryPlay, { once: true });
+          video.addEventListener('canplay', tryPlay, { once: true });
         }, { rootMargin: '600px 0px' }).observe(map);
       }
     }
