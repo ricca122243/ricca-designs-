@@ -25,7 +25,6 @@
       <a href="#motion">Сон вдвоём</a>
       <a href="#lineup">Линейка</a>
       <a href="#materials">Материалы</a>
-      <a href="#construction">Конструкция</a>
       <a href="#sizes">Размеры</a>
     </nav>
     <a class="nav__cta" href="#lineup">Выбрать модель</a>
@@ -114,9 +113,9 @@
         </h2>
         <div class="manifesto__facts">
           <div class="fact reveal"><span class="fact__value">7</span><span class="fact__label">слоёв, собранных вручную</span></div>
-          <div class="fact reveal"><span class="fact__value">30<small> см</small></span><span class="fact__label">высота, которая чувствуется</span></div>
-          <div class="fact reveal"><span class="fact__value">1 200</span><span class="fact__label">независимых пружин на 160×200</span></div>
-          <div class="fact reveal"><span class="fact__value">100</span><span class="fact__label">ночей, чтобы решить</span></div>
+          <div class="fact reveal"><span class="fact__value"><span data-count="30">30</span><small> см</small></span><span class="fact__label">высота, которая чувствуется</span></div>
+          <div class="fact reveal"><span class="fact__value" data-count="1200">1 200</span><span class="fact__label">независимых пружин на 160×200</span></div>
+          <div class="fact reveal"><span class="fact__value" data-count="100">100</span><span class="fact__label">ночей, чтобы решить</span></div>
         </div>
       </div>
     </section>
@@ -168,44 +167,6 @@
     </section>
 
     <!-- ================================================================
-         КОНСТРУКЦИЯ — интерактивный разрез
-         ================================================================ -->
-    <section class="construction" id="construction">
-      <div class="container">
-        <div class="section-head reveal">
-          <p class="eyebrow"><span>Конструкция</span><span class="dot"></span><span>В разрезе</span></p>
-          <h2 class="section-title">Нажмите на слой —<br><em>он расскажет о себе.</em></h2>
-        </div>
-
-        <div class="construction__grid">
-          <div class="cutaway reveal" id="cutaway" role="tablist" aria-label="Слои матраса"></div>
-
-          <div class="construction__panel reveal">
-            <div class="firmness" role="radiogroup" aria-label="Жёсткость">
-              <span class="firmness__label">Жёсткость</span>
-              <div class="firmness__options">
-                <button type="button" role="radio" aria-checked="false" data-firmness="soft">Мягче</button>
-                <button type="button" role="radio" aria-checked="true" data-firmness="medium">Сбалансированная</button>
-                <button type="button" role="radio" aria-checked="false" data-firmness="firm">Жёстче</button>
-              </div>
-            </div>
-
-            <div class="layer-detail" id="layerDetail" aria-live="polite">
-              <span class="layer-detail__num">01</span>
-              <h3 class="layer-detail__name">Стёганый чехол</h3>
-              <p class="layer-detail__text">Органический хлопок с терморегулирующей нитью. Первый слой, который вы чувствуете — и единственный, который видите.</p>
-              <dl class="layer-detail__specs">
-                <div><dt>Толщина</dt><dd data-k="thickness">1,5 см</dd></div>
-                <div><dt>Плотность</dt><dd data-k="density">320 г/м²</dd></div>
-                <div><dt>Задача</dt><dd data-k="role">Микроклимат</dd></div>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================================================================
          СОН ВДВОЁМ — изоляция движения
          ================================================================ -->
     <section class="motion" id="motion" aria-labelledby="motionTitle">
@@ -235,7 +196,7 @@
         </div>
 
         <div class="motion__facts">
-          <div class="motion__fact reveal"><span class="motion__fact-value">1 200</span><span class="motion__fact-label">независимых карманов на 160 × 200</span></div>
+          <div class="motion__fact reveal"><span class="motion__fact-value" data-count="1200">1 200</span><span class="motion__fact-label">независимых карманов на 160 × 200</span></div>
           <div class="motion__fact reveal"><span class="motion__fact-value">7</span><span class="motion__fact-label">зон жёсткости по длине тела</span></div>
           <div class="motion__fact reveal"><span class="motion__fact-value">Silent<small> Motion</small></span><span class="motion__fact-label">партнёр не чувствует, когда вы ворочаетесь</span></div>
         </div>
@@ -358,35 +319,53 @@
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18"/><path d="M8 6h8M8 10h8M8 14h8M8 18h8"/></svg><span><b>Ортопедическая поддержка</b>Позвоночник остаётся в своём естественном положении</span></li>
         </ul>
 
-        <!-- Сравнение -->
-        <div class="compare reveal">
-          <div class="compare__scroll">
-            <table class="compare__table">
-              <caption class="sr-only">Сравнение моделей Eluna Air, Balance и Prime</caption>
-              <thead>
-                <tr>
-                  <th scope="col"><span class="sr-only">Характеристика</span></th>
-                  <th scope="col">Air</th>
-                  <th scope="col">Balance</th>
-                  <th scope="col" class="is-prime"><span class="badge badge--small">Выбор Eluna</span>Prime</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row">Армированные пружины</th><td data-v="yes"></td><td data-v="yes"></td><td class="is-prime" data-v="yes"></td></tr>
-                <tr><th scope="row">Натуральный латекс</th><td data-v="no"></td><td data-v="no"></td><td class="is-prime" data-v="yes">2 см</td></tr>
-                <tr><th scope="row">Хлопок ручной работы</th><td data-v="no"></td><td data-v="no"></td><td class="is-prime" data-v="yes"></td></tr>
-                <tr><th scope="row">Микромассажный эффект</th><td data-v="no"></td><td data-v="no"></td><td class="is-prime" data-v="yes"></td></tr>
-                <tr><th scope="row">Натуральный кокос</th><td data-v="yes">1 см</td><td data-v="yes">1 + 2 см</td><td class="is-prime" data-v="yes">2 + 2 см</td></tr>
-                <tr><th scope="row">Еврокаркас, плотность 22</th><td data-v="yes"></td><td data-v="yes"></td><td class="is-prime" data-v="yes"></td></tr>
-                <tr><th scope="row">Двусторонний: зима / лето</th><td data-v="yes"></td><td data-v="yes"></td><td class="is-prime" data-v="yes"></td></tr>
-                <tr><th scope="row">Высота</th><td>22 см</td><td>23–25 см</td><td class="is-prime">28–30 см</td></tr>
-                <tr><th scope="row">Гарантия</th><td>5 лет</td><td>5 лет</td><td class="is-prime">5 лет</td></tr>
-                <tr class="compare__price"><th scope="row">Цена</th><td data-price="air">— ₸</td><td data-price="balance">— ₸</td><td class="is-prime" data-price="prime">— ₸</td></tr>
-              </tbody>
-            </table>
-          </div>
+        <!-- Чем отличаются: три карточки, Prime светится -->
+        <div class="diff" aria-label="Чем отличаются модели">
+          <article class="diff__card reveal" data-model="air">
+            <p class="diff__name">Air</p>
+            <p class="diff__height">22 см · гарантия 5 лет</p>
+            <ul class="diff__list">
+              <li data-v="yes">Армированные пружины</li>
+              <li data-v="yes">Натуральный кокос <span>1 см</span></li>
+              <li data-v="yes">Еврокаркас, плотность 22</li>
+              <li data-v="yes">Двусторонний: зима / лето</li>
+              <li data-v="no">Натуральный латекс</li>
+              <li data-v="no">Хлопок ручной работы</li>
+              <li data-v="no">Микромассажный эффект</li>
+            </ul>
+            <p class="diff__price" data-price="air">— ₸</p>
+          </article>
+          <article class="diff__card reveal" data-model="balance">
+            <p class="diff__name">Balance</p>
+            <p class="diff__height">23–25 см · гарантия 5 лет</p>
+            <ul class="diff__list">
+              <li data-v="yes">Армированные пружины</li>
+              <li data-v="yes">Натуральный кокос <span>1 + 2 см</span></li>
+              <li data-v="yes">Еврокаркас, плотность 22</li>
+              <li data-v="yes">Двусторонний: зима / лето</li>
+              <li data-v="no">Натуральный латекс</li>
+              <li data-v="no">Хлопок ручной работы</li>
+              <li data-v="no">Микромассажный эффект</li>
+            </ul>
+            <p class="diff__price" data-price="balance">— ₸</p>
+          </article>
+          <article class="diff__card diff__card--prime reveal reveal--soft" data-model="prime">
+            <span class="badge">Выбор Eluna</span>
+            <p class="diff__name">Prime</p>
+            <p class="diff__height">28–30 см · гарантия 5 лет</p>
+            <ul class="diff__list">
+              <li data-v="yes">Армированные пружины</li>
+              <li data-v="yes">Натуральный кокос <span>2 + 2 см</span></li>
+              <li data-v="yes">Еврокаркас, плотность 22</li>
+              <li data-v="yes">Двусторонний: зима / лето</li>
+              <li data-v="yes">Натуральный латекс <span>2 см</span></li>
+              <li data-v="yes">Хлопок ручной работы</li>
+              <li data-v="yes">Микромассажный эффект</li>
+            </ul>
+            <p class="diff__price" data-price="prime">— ₸</p>
+          </article>
         </div>
-      </div>
+            </div>
     </section>
 
     <!-- ================================================================
@@ -400,12 +379,11 @@
         </div>
 
         <div class="sizes__grid">
-          <div class="size-preview reveal" aria-hidden="true">
-            <div class="size-preview__room">
-              <div class="size-preview__mat" id="sizePreviewMat">
-                <span class="size-preview__w" id="sizePreviewW">160</span>
-                <span class="size-preview__h" id="sizePreviewH">200</span>
-              </div>
+          <div class="size-vis reveal" aria-hidden="true">
+            <div class="size-vis__glow"></div>
+            <div class="size-vis__mat" id="sizePreviewMat">
+              <span class="size-vis__w"><span id="sizePreviewW">160</span> см</span>
+              <span class="size-vis__h"><span id="sizePreviewH">200</span> см</span>
             </div>
           </div>
 

@@ -626,6 +626,23 @@
     if (reduceMotion) settleStatic();
   })();
 
+  /* числа считают вверх при появлении */
+  (function countUp() {
+    const els = document.querySelectorAll('[data-count]');
+    if (!els.length) return;
+    const fmt = (n) => Math.round(n).toLocaleString('ru-RU').replace(/\u00a0/g, ' ');
+    if (reduceMotion || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        const el = en.target, to = +el.dataset.count, o = { v: 0 };
+        gsap.to(o, { v: to, duration: 1.8, ease: 'power3.out', onUpdate: () => { el.textContent = fmt(o.v); }, onComplete: () => { el.textContent = fmt(to); } });
+      });
+    }, { threshold: 0.6 });
+    els.forEach((el) => io.observe(el));
+  })();
+
   /* появление через IntersectionObserver: не зависит от расчёта позиций
      ScrollTrigger и не оставляет блоки невидимыми при резком переходе */
   (function reveals() {
@@ -660,72 +677,6 @@
       window.scrollTo({ top: y, behavior: reduceMotion ? 'auto' : 'smooth' });
     });
   });
-
-  /* ------------------------------------------------------------------------
-     Конструкция: интерактивный разрез
-     ------------------------------------------------------------------------ */
-  (function construction() {
-    const cutaway = document.getElementById('cutaway');
-    const detail = document.getElementById('layerDetail');
-    if (!cutaway || !detail) return;
-
-    const FIRMNESS = {
-      soft:   { cm: { latex: 4, coir: 1.5, gel: 5 }, springs: '1 200 шт · 7 зон, мягкая проволока 1,8 мм' },
-      medium: { cm: { latex: 3, coir: 3,   gel: 4 }, springs: '1 200 шт · 7 зон, проволока 2,0 мм' },
-      firm:   { cm: { latex: 2, coir: 5,   gel: 3 }, springs: '1 200 шт · 7 зон, усиленная проволока 2,2 мм' },
-    };
-    let firmness = 'medium';
-    let active = 0;
-
-    const buttons = LAYERS.map((l, i) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = `cut-layer cut-layer--${l.key}`;
-      b.setAttribute('role', 'tab');
-      b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
-      b.style.setProperty('--cm', l.cm);
-      b.innerHTML = `<span class="cut-layer__fill"></span><span class="cut-layer__label"><span class="num">${l.num}</span><span class="name">${l.name}</span></span>`;
-      b.addEventListener('click', () => select(i));
-      b.addEventListener('mouseenter', () => select(i, true));
-      cutaway.appendChild(b);
-      return b;
-    });
-    buttons[0].classList.add('is-active');
-
-    const fmtCm = (v) => String(v).replace('.', ',') + ' см';
-    const currentCm = (i) => {
-      const o = FIRMNESS[firmness].cm[LAYERS[i].key];
-      return o != null ? o : LAYERS[i].cm;
-    };
-
-    function select(i, hover) {
-      active = i;
-      buttons.forEach((b, k) => {
-        b.classList.toggle('is-active', k === i);
-        b.setAttribute('aria-selected', k === i ? 'true' : 'false');
-      });
-      const l = LAYERS[i];
-      gsap.killTweensOf(detail);
-      gsap.fromTo(detail, { opacity: 0.35, x: 10 }, { opacity: 1, x: 0, duration: hover ? 0.5 : 0.7, ease: 'power3.out' });
-      detail.querySelector('.layer-detail__num').textContent = l.num;
-      detail.querySelector('.layer-detail__name').textContent = l.name;
-      detail.querySelector('.layer-detail__text').textContent = l.key === 'springs' ? `${l.text} ${FIRMNESS[firmness].springs}.` : l.text;
-      detail.querySelector('[data-k="thickness"]').textContent = fmtCm(currentCm(i));
-      detail.querySelector('[data-k="density"]').textContent = l.density;
-      detail.querySelector('[data-k="role"]').textContent = l.role;
-    }
-
-    document.querySelectorAll('[data-firmness]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        firmness = btn.dataset.firmness;
-        document.querySelectorAll('[data-firmness]').forEach((b) => b.setAttribute('aria-checked', b === btn ? 'true' : 'false'));
-        buttons.forEach((b, i) => gsap.to(b, { '--cm': currentCm(i), duration: 0.9, ease: 'power3.inOut' }));
-        select(active);
-      });
-    });
-
-    select(0);
-  })();
 
   /* ------------------------------------------------------------------------
      Линейка: цены, модели, разрезы, WhatsApp, липкая плашка
