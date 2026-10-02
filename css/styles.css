@@ -208,7 +208,7 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 
 /* wordmark */
 .wordmark {
-  position: absolute; z-index: 4; left: 50%; top: 27%;
+  position: absolute; z-index: 4; left: 50%; top: 25%;
   transform: translate(-50%, -50%);
   display: flex; align-items: center; gap: 0.34em;
   font-family: var(--logo); font-weight: 400;
@@ -876,7 +876,7 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 
   .grain { display: none; }
   .stage { touch-action: pan-y; }
-  .wordmark { top: 22%; font-size: clamp(40px, 13.5vw, 64px); }
+  .wordmark { top: 22%; font-size: clamp(30px, 10.2vw, 52px); letter-spacing: 0.12em; gap: 0.3em; }
   .seq { -webkit-mask-image: radial-gradient(ellipse 70% 52% at 50% 56%, #000 40%, rgba(0,0,0,.6) 66%, transparent 100%); mask-image: radial-gradient(ellipse 70% 52% at 50% 56%, #000 40%, rgba(0,0,0,.6) 66%, transparent 100%); }
   .reveal { transform: translateY(20px); transition-duration: 1.1s; }
   .section-title { font-size: clamp(30px, 8.4vw, 44px); text-wrap: balance; }
