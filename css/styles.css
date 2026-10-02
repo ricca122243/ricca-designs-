@@ -226,18 +226,35 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
     linear-gradient(to right, rgba(6,7,12,0.55), transparent 30%, transparent 72%, rgba(6,7,12,0.55));
 }
 
+/* hero — «камера»: лёгкий наклон в перспективе по скроллу и указателю */
+.product--hero { transform-origin: 50% 60%; }
+
 .product--cut { opacity: 0; }
-.product--cut img {
-  object-position: 62% 55%;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 var(--scan), rgba(0,0,0,0.12) calc(var(--scan) + 6%), rgba(0,0,0,0.12) 100%);
-          mask-image: linear-gradient(to bottom, #000 0%, #000 var(--scan), rgba(0,0,0,0.12) calc(var(--scan) + 6%), rgba(0,0,0,0.12) 100%);
+.product--cut::after { display: none; }
+
+/* разрез, распиленный на семь слоёв: каждый слой — тот же кадр, вырезанный clip-path */
+.explode {
+  position: absolute; left: 50%; top: 50%;
+  aspect-ratio: 1440 / 804;
+  transform: translate(-50%, -50%);
+  will-change: transform;
 }
-/* тонкая линия света в месте сканирования */
-.scan {
-  position: absolute; left: 0; right: 0; top: var(--scan); height: 1px;
-  background: linear-gradient(90deg, transparent 10%, rgba(var(--warm), 0.45) 45%, rgba(var(--warm), 0.45) 75%, transparent 95%);
-  box-shadow: 0 0 24px 2px rgba(var(--warm), 0.18);
-  opacity: 0.9;
+.slab {
+  position: absolute; inset: 0;
+  background: url("../img/cut.webp") center / 100% 100% no-repeat;
+  filter: brightness(var(--exp, 1)) contrast(1.04) saturate(0.96);
+  will-change: transform, filter, opacity;
+  backface-visibility: hidden;
+}
+.slab::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to right, rgba(6,7,12,0.5), transparent 22%, transparent 80%, rgba(6,7,12,0.5));
+}
+
+/* тень под финальный текст: продукт уходит вправо, слева — глубина */
+.shade {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0;
+  background: linear-gradient(to right, rgba(6,7,12,0.96) 0%, rgba(6,7,12,0.82) 38%, rgba(6,7,12,0.0) 68%);
 }
 
 /* экспозиция сцены */
@@ -328,9 +345,62 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
    СЕКЦИИ
    ========================================================================== */
 
-.manifesto, .materials, .construction, .sizes, .trust, .footer {
+.manifesto, .materials, .construction, .motion, .sizes, .trust, .footer {
   position: relative; z-index: 2;
 }
+
+/* ---------- Технология: изоляция движения (светлая глава) --------------- */
+
+.motion {
+  --paper: #efeae1;
+  --paper-2: #e6e0d5;
+  --ink-dark: #15161b;
+  --ink-dark-2: rgba(21, 22, 27, 0.62);
+  --ink-dark-3: rgba(21, 22, 27, 0.40);
+  --line-dark: rgba(21, 22, 27, 0.12);
+  background: var(--paper);
+  color: var(--ink-dark);
+  padding: clamp(120px, 18vh, 220px) 0 clamp(100px, 14vh, 180px);
+}
+.motion .eyebrow { color: var(--ink-dark-3); }
+.motion__title {
+  margin-top: 30px; max-width: 14ch;
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(44px, 7vw, 112px); line-height: 1.0; letter-spacing: -0.01em;
+}
+.motion__lead { margin-top: 36px; max-width: 520px; font-size: 16px; line-height: 1.7; color: var(--ink-dark-2); }
+
+.motion__scene {
+  position: relative; margin: clamp(60px, 9vh, 120px) auto 0;
+  width: min(100% - 2 * var(--gutter), var(--container));
+  height: clamp(300px, 46vw, 560px);
+}
+.motion__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.motion__readout {
+  position: absolute; top: 0; display: flex; flex-direction: column; gap: 8px;
+}
+.motion__readout--left { left: 0; }
+.motion__readout--right { right: 0; align-items: flex-end; text-align: right; }
+.motion__value { font-family: var(--serif); font-size: clamp(26px, 2.6vw, 40px); line-height: 1; font-variant-numeric: tabular-nums; }
+.motion__label { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-dark-3); font-weight: 500; }
+
+.motion__facts {
+  margin-top: clamp(60px, 8vw, 110px);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  border-top: 1px solid var(--line-dark); padding-top: 34px;
+}
+.motion__fact { display: flex; flex-direction: column; gap: 10px; }
+.motion__fact-value { font-family: var(--serif); font-size: clamp(36px, 3.4vw, 54px); line-height: 1; }
+.motion__fact-value small { font-size: .42em; color: var(--ink-dark-2); }
+.motion__fact-label { font-size: 13px; color: var(--ink-dark-3); max-width: 240px; }
+
+/* навигация над светлой главой */
+body.on-light .nav { color: #15161b; }
+body.on-light .nav__links { color: rgba(21,22,27,.62); }
+body.on-light .nav__links a:hover { color: #15161b; }
+body.on-light .nav__cta { border-color: rgba(21,22,27,.18); }
+body.on-light .nav__cta:hover { background: rgba(21,22,27,.05); border-color: rgba(21,22,27,.4); }
+.nav, .nav__links, .nav__cta { transition-property: opacity, transform, color, border-color, background-color; transition-duration: 1.2s, 1.2s, .5s, .5s, .5s; }
 
 /* ---------- Манифест ---------------------------------------------------- */
 
@@ -570,7 +640,13 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
   .wordmark { top: 24%; font-size: clamp(72px, 17vw, 140px); }
   .eclipse { top: 48%; width: min(120vw, 70vh); }
   .product--hero img { object-position: 52% 60%; }
-  .product--cut img { object-position: 60% 50%; }
+
+  .motion__title { max-width: none; }
+  .motion__scene { height: clamp(260px, 70vw, 420px); }
+  .motion__readout { top: auto; bottom: 0; width: 46%; }
+  .motion__value { font-size: 24px; }
+  .motion__label { font-size: 10px; letter-spacing: .1em; }
+  .motion__facts { grid-template-columns: 1fr; gap: 24px; }
 
   .copy--hero { right: var(--gutter); bottom: clamp(44px, 8vh, 90px); max-width: none; }
   .hero-title { font-size: clamp(28px, 7.4vw, 40px); }

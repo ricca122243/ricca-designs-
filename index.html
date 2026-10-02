@@ -19,7 +19,8 @@
   <header class="nav" id="nav">
     <a class="nav__brand" href="#top" aria-label="ELUNA — на главную">ELUNA</a>
     <nav class="nav__links" aria-label="Разделы">
-      <a href="#layers">Семь слоёв</a>
+      <a href="#manifesto">Семь слоёв</a>
+      <a href="#motion">Технология</a>
       <a href="#materials">Материалы</a>
       <a href="#construction">Конструкция</a>
       <a href="#sizes">Размеры</a>
@@ -48,9 +49,8 @@
         </figure>
 
         <!-- продукт в разрезе: семь слоёв -->
-        <figure class="product product--cut" id="productCut">
-          <img src="img/cut.webp" alt="Матрас ELUNA в разрезе: семь слоёв" decoding="async" loading="lazy">
-          <span class="scan" id="scan" aria-hidden="true"></span>
+        <figure class="product product--cut" id="productCut" aria-label="Матрас ELUNA в разрезе: семь слоёв расходятся по скроллу">
+          <div class="explode" id="explode"></div>
         </figure>
 
         <!-- фаза 1 — hero -->
@@ -83,6 +83,9 @@
           </ol>
           <p class="layer-active" id="layerActive"><span class="num">01</span><span class="name">Стёганый чехол из органического хлопка</span></p>
         </div>
+
+        <!-- тень слева под финальный текст -->
+        <div class="shade" id="shade" aria-hidden="true"></div>
 
         <!-- фаза 3 — финал сцены -->
         <div class="copy copy--outro" id="copyOutro">
@@ -194,6 +197,37 @@
               </dl>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         ТЕХНОЛОГИЯ — изоляция движения (светлая глава)
+         ================================================================ -->
+    <section class="motion" id="motion" aria-labelledby="motionTitle">
+      <div class="container">
+        <p class="eyebrow reveal"><span>Технология</span><span class="dot"></span><span>Изоляция движения</span></p>
+        <h2 class="motion__title reveal" id="motionTitle">Движение остаётся<br>на своей половине.</h2>
+        <p class="motion__lead reveal">1 200 пружин в отдельных карманах не связаны между собой. Нагрузка гаснет там, где возникла, — вторая половина матраса не узнаёт о ней.</p>
+      </div>
+
+      <div class="motion__scene reveal" aria-hidden="true">
+        <canvas class="motion__canvas" id="motionCanvas"></canvas>
+        <div class="motion__readout motion__readout--left">
+          <span class="motion__value" id="motionLeft">0,0 мм</span>
+          <span class="motion__label">Прогиб под нагрузкой</span>
+        </div>
+        <div class="motion__readout motion__readout--right">
+          <span class="motion__value" id="motionRight">0,0 мм</span>
+          <span class="motion__label">Смещение на второй половине</span>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="motion__facts">
+          <div class="motion__fact reveal"><span class="motion__fact-value">1 200</span><span class="motion__fact-label">независимых карманов на 160 × 200</span></div>
+          <div class="motion__fact reveal"><span class="motion__fact-value">7</span><span class="motion__fact-label">зон жёсткости по длине тела</span></div>
+          <div class="motion__fact reveal"><span class="motion__fact-value">4–6 <small>с</small></span><span class="motion__fact-label">memory-пена принимает контур</span></div>
         </div>
       </div>
     </section>

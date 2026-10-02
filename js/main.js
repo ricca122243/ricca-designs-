@@ -73,14 +73,17 @@
      ------------------------------------------------------------------------ */
   const S = {              // скролл
     lx: 66, ly: 44, lr: 1, soft: 60,
-    heroS: 1, heroY: 0, heroExp: 1,
-    cutO: 0, cutExp: 1, cutS: 1.04, cutX: 0, cutY: 0, scan: 0,
-    dark: 0, brand: 0, eclipse: 1,
+    heroS: 1, heroY: 0, heroExp: 1, rx: 0, ry: 0,
+    cutO: 0, cutExp: 1, cutS: 1.04, cutX: 0, cutY: 0,
+    spread: 0,             // 0..1 — насколько разошлись слои
+    focus: -1,             // индекс слоя в фокусе, -1 — все
+    dark: 0, brand: 0, eclipse: 1, cueO: 1,
     wmS: 1, wmY: 0, wmO: 1,
   };
   const I = {              // интро
-    dark: 1, lr: 0, exp: 0, soft: 85, eclipse: 0, wmO: 1,
+    dark: 1, lr: 0, exp: 0, soft: 85, eclipse: 0, wmO: 1, cueO: 0,
   };
+  const P = { x: 0, y: 0 }; // указатель: параллакс камеры, градусы
 
   const stageEl = document.getElementById('stage');
   const wordmark = document.getElementById('wordmark');
@@ -88,8 +91,53 @@
   const eclipse = document.getElementById('eclipse');
   const productHero = document.getElementById('productHero');
   const productCut = document.getElementById('productCut');
+  const explode = document.getElementById('explode');
+  const cue = document.getElementById('cue');
 
   const smooth = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
+
+  /* ------------------------------------------------------------------------
+     Разрез, распиленный на семь слоёв.
+     Границы слоёв заданы в пикселях исходного кадра 1440×804: y в переднем
+     углу (x = 735) и наклон рёбер к левому и правому краям. Из них строятся
+     clip-path многоугольники; каждый слой — копия кадра со своим вырезом.
+     ------------------------------------------------------------------------ */
+  const CUT = { w: 1440, h: 804, cx: 735, top: 238, bottom: 700 };
+  const BOUNDS = [238, 322, 355, 405, 470, 625];          // стыки слоёв в углу
+  const OFFSETS = [-3, -2, -1, 0, 1, 2, 3];               // направление разлёта
+  function boundaryY(yc, x) {
+    const f = (yc - CUT.top) / (CUT.bottom - CUT.top);
+    const sL = 0.14 + f * 0.08, sR = 0.125 + f * 0.065;
+    return x < CUT.cx ? yc - (CUT.cx - x) * sL : yc - (x - CUT.cx) * sR;
+  }
+  function boundary(yc) {
+    return [0, CUT.cx, CUT.w].map((x) => [x, boundaryY(yc, x)]);
+  }
+  const pct = (x, y) => `${(x / CUT.w * 100).toFixed(2)}% ${(y / CUT.h * 100).toFixed(2)}%`;
+  const slabs = LAYERS.map((l, i) => {
+    // верхняя граница поднята на 3 px: в собранном виде слои чуть перекрываются и швов не видно
+    const top = i === 0 ? [[0, -400], [CUT.cx, -400], [CUT.w, -400]] : boundary(BOUNDS[i - 1]).map(([x, y]) => [x, y - 3]);
+    const bot = i === LAYERS.length - 1 ? [[0, CUT.h + 400], [CUT.cx, CUT.h + 400], [CUT.w, CUT.h + 400]] : boundary(BOUNDS[i]);
+    const el = document.createElement('div');
+    el.className = `slab slab--${l.key}`;
+    const poly = [...top, ...bot.slice().reverse()].map(([x, y]) => pct(x, y)).join(', ');
+    el.style.clipPath = `polygon(${poly})`;
+    el.style.webkitClipPath = el.style.clipPath;
+    explode.appendChild(el);
+    return el;
+  });
+  // контейнер покрывает сцену целиком, как object-fit: cover с точкой 62% 55%
+  function sizeExplode() {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const k = Math.max(vw / CUT.w, vh / CUT.h) * (vw < 900 ? 1.25 : 1.0);
+    const w = CUT.w * k, h = CUT.h * k;
+    explode.style.width = `${w}px`;
+    explode.style.height = `${h}px`;
+    explode.style.left = `${vw / 2 - (w - vw) * 0.12}px`;
+    explode.style.top = `${vh / 2 - (h - vh) * 0.05}px`;
+  }
+  sizeExplode();
+  window.addEventListener('resize', sizeExplode);
 
   let activeLayer = -1;
   const layerItems = Array.from(document.querySelectorAll('#layerList li'));
@@ -118,27 +166,33 @@
     root.style.setProperty('--lr', `${Math.max(0, I.lr * S.lr) * diag}px`);
     root.style.setProperty('--soft', `${Math.min(I.soft, S.soft)}%`);
     root.style.setProperty('--brand-o', `${S.brand}`);
-    root.style.setProperty('--scan', `${S.scan}%`);
     exposure.style.opacity = Math.max(I.dark, S.dark);
     eclipse.style.opacity = I.eclipse * S.eclipse;
 
+    // hero: «камера» — перспектива, наклон по скроллу и указателю, наезд
     productHero.style.setProperty('--exp', `${I.exp * S.heroExp}`);
-    productHero.style.transform = `translate3d(0, ${S.heroY * vh / 100}px, 0) scale(${S.heroS})`;
+    productHero.style.transform =
+      `perspective(1600px) rotateX(${(S.rx + P.y).toFixed(3)}deg) rotateY(${(S.ry + P.x).toFixed(3)}deg) ` +
+      `translate3d(0, ${S.heroY * vh / 100}px, 0) scale(${S.heroS})`;
     productHero.style.opacity = S.heroExp > 0.01 ? 1 : 0;
 
+    // разрез: семь слоёв разлетаются по вертикали, слой в фокусе выходит вперёд
     productCut.style.opacity = S.cutO;
-    productCut.style.setProperty('--exp', `${S.cutExp}`);
     productCut.style.transform = `translate3d(${S.cutX * window.innerWidth / 100}px, ${S.cutY * vh / 100}px, 0) scale(${S.cutS})`;
-
-    // активный слой — по положению сканирующего луча
-    if (S.cutO > 0.5 && S.scan > 2) {
-      setActiveLayer(Math.min(LAYERS.length - 1, Math.floor((S.scan / 100) * 1.04 * LAYERS.length)));
-    } else {
-      setActiveLayer(-1);
+    const gap = explode.offsetHeight * (window.innerWidth < 900 ? 0.042 : 0.054);
+    for (let i = 0; i < slabs.length; i++) {
+      const focused = S.focus === i;
+      const dim = S.focus >= 0 && !focused;
+      const dy = OFFSETS[i] * S.spread * gap;
+      const dx = focused ? S.spread * explode.offsetWidth * 0.018 : 0;
+      slabs[i].style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+      slabs[i].style.setProperty('--exp', `${S.cutExp * (dim ? 0.42 : 1)}`);
     }
+    setActiveLayer(S.cutO > 0.5 ? S.focus : -1);
 
     wordmark.style.transform = `translate(-50%, calc(-50% + ${S.wmY}vh)) scale(${S.wmS})`;
     wordmark.style.opacity = S.wmO * I.wmO;
+    cue.style.opacity = S.cueO * I.cueO;   // подсказка «листайте»: интро показывает, скролл прячет
   }
   window.addEventListener('resize', render);
 
@@ -149,7 +203,6 @@
   const heroLines = document.querySelectorAll('#copyHero .line > span');
   const heroEyebrow = document.querySelector('#copyHero .eyebrow');
   const heroSub = document.querySelector('#copyHero .hero-sub');
-  const cue = document.getElementById('cue');
 
   const intro = gsap.timeline({
     paused: true,
@@ -174,7 +227,7 @@
     .to(heroEyebrow, { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, 6.1)
     .to(heroLines, { y: 0, duration: 1.3, stagger: 0.12, ease: 'power3.out' }, 6.2)
     .to(heroSub, { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out' }, 6.7)
-    .to(cue, { opacity: 1, duration: 1.2 }, 7.1);
+    .to(I, { cueO: 1, duration: 1.2 }, 7.1);
 
   if (reduceMotion) {
     intro.progress(1);
@@ -206,6 +259,7 @@
   const copyHero = document.getElementById('copyHero');
   const copyLayers = document.getElementById('copyLayers');
   const copyOutro = document.getElementById('copyOutro');
+  const shade = document.getElementById('shade');
 
   const mm = gsap.matchMedia();
 
@@ -226,38 +280,240 @@
     });
 
     tl
-      /* 0–18: hero → свет смещается к центру, камера медленно наезжает, имя растворяется в nav */
-      .to(S, { lx: 50, ly: 50, heroS: 1.06, heroY: -3, duration: 18 }, 0)
+      /* 0–18: hero → камера облетает продукт: наклон, наезд; свет к центру; имя уходит в nav */
+      .to(S, { lx: 50, ly: 50, heroS: 1.1, heroY: -4, rx: 7, ry: -5, duration: 18, ease: 'power1.inOut' }, 0)
       .to(S, { wmS: 0.7, wmY: -18, wmO: 0, duration: 15, ease: 'power1.in' }, 0)
       .to(S, { brand: 1, duration: 8 }, 9)
       .to(S, { eclipse: 0.35, duration: 18 }, 0)
       .to(copyHero, { opacity: 0, y: -40, duration: 9 }, 2)
-      .to(cue, { opacity: 0, duration: 5 }, 0)
+      .to(S, { cueO: 0, duration: 5 }, 0)
 
-      /* 18–30: фото уходит в темноту, вместо него проявляется разрез */
-      .to(S, { heroExp: 0, heroS: 1.12, heroY: -8, duration: 11, ease: 'power1.in' }, 18)
+      /* 18–30: фото уходит в темноту, разрез собранным проявляется на его месте */
+      .to(S, { heroExp: 0, heroS: 1.18, heroY: -9, rx: 10, duration: 11, ease: 'power1.in' }, 18)
       .to(S, { cutO: 1, cutS: 1.0, cutX: D ? 9 : 0, duration: 10 }, 22)
       .to(S, { eclipse: 0, duration: 8 }, 20)
-      .to(copyLayers, { opacity: 1, duration: 8 }, 24)
+      .to(copyLayers, { opacity: 1, duration: 8 }, 26)
 
-      /* 30–78: луч сканирует разрез сверху вниз — слой за слоем */
-      .to(S, { scan: 100, duration: 48 }, 30)
-      .to(S, { cutY: D ? 2 : 0, duration: 48 }, 30)
+      /* 30–44: слои упруго расходятся — лёгкий перелёт и возврат, как у пружины */
+      .to(S, { spread: 1, duration: 14, ease: 'back.out(1.7)' }, 30)
+      .to(S, { cutS: 0.9, cutY: D ? 1 : 0, duration: 14, ease: 'power1.inOut' }, 30)
 
-      /* 78–90: финальное утверждение */
-      .to(copyLayers, { opacity: 0, duration: 6 }, 78)
-      .to(S, { cutExp: 0.45, cutS: 0.9, cutX: D ? 22 : 0, cutY: D ? 12 : -14, duration: 12 }, 78)
-      .to(copyOutro, { opacity: 1, duration: 8 }, 83)
+      /* 44–72: фокус идёт по слоям сверху вниз, остальные уходят в тень */
+      .to(S, { focus: 0, duration: 0.01 }, 44)
+      .to(S, { focus: 1, duration: 0.01 }, 48)
+      .to(S, { focus: 2, duration: 0.01 }, 52)
+      .to(S, { focus: 3, duration: 0.01 }, 56)
+      .to(S, { focus: 4, duration: 0.01 }, 60)
+      .to(S, { focus: 5, duration: 0.01 }, 64)
+      .to(S, { focus: 6, duration: 0.01 }, 68)
+      .to(S, { focus: -1, duration: 0.01 }, 72)
 
-      /* 90–100: сцена гаснет — переход в манифест на том же тёмном */
-      .to(S, { dark: 0.94, cutY: D ? 6 : -20, duration: 10, ease: 'power1.in' }, 90)
-      .to(copyOutro, { opacity: 0, y: -30, duration: 8, ease: 'power1.in' }, 92);
+      /* 72–82: слои собираются обратно в целый матрас */
+      .to(S, { spread: 0, duration: 10, ease: 'back.inOut(1.2)' }, 72)
+      .to(S, { cutS: 1.0, duration: 10, ease: 'power2.inOut' }, 72)
+      .to(copyLayers, { opacity: 0, duration: 6 }, 72)
+
+      /* 82–92: финальное утверждение над целым продуктом */
+      .to(S, { cutExp: 0.55, cutS: 0.9, cutX: D ? 28 : 0, cutY: D ? 12 : -14, duration: 10 }, 80)
+      .to(shade, { opacity: D ? 1 : 0.6, duration: 8 }, 80)
+      .to(copyOutro, { opacity: 1, duration: 8 }, 84)
+
+      /* 92–100: сцена гаснет — переход в манифест на том же тёмном */
+      .to(S, { dark: 0.94, cutY: D ? 6 : -20, duration: 8, ease: 'power1.in' }, 92)
+      .to(copyOutro, { opacity: 0, y: -30, duration: 8, ease: 'power1.in' }, 93);
 
     return tl;
   }
 
   mm.add('(min-width: 900px)', () => { buildStage(true); return () => {}; });
   mm.add('(max-width: 899px)', () => { buildStage(false); return () => {}; });
+
+  // параллакс камеры от указателя: инерционный, с длинным выбегом
+  if (!reduceMotion && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const toX = gsap.quickTo(P, 'x', { duration: 1.6, ease: 'power3.out', onUpdate: render });
+    const toY = gsap.quickTo(P, 'y', { duration: 1.6, ease: 'power3.out', onUpdate: render });
+    stageEl.addEventListener('pointermove', (e) => {
+      const nx = e.clientX / window.innerWidth - 0.5;
+      const ny = e.clientY / window.innerHeight - 0.5;
+      toX(nx * 3.2);
+      toY(-ny * 2.2);
+    });
+    stageEl.addEventListener('pointerleave', () => { toX(0); toY(0); });
+  }
+
+  // над светлой главой навигация становится тёмной
+  (function navTheme() {
+    const light = document.querySelectorAll('.motion');
+    if (!('IntersectionObserver' in window) || !light.length) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => body.classList.toggle('on-light', en.isIntersecting));
+    }, { rootMargin: '-40px 0px -92% 0px' });
+    light.forEach((el) => io.observe(el));
+  })();
+
+  /* ------------------------------------------------------------------------
+     Технология: изоляция движения. Разрез пружинного блока на canvas —
+     груз опускается слева, пружины гасят нагрузку локально, правая половина
+     остаётся неподвижной. Отпускание — упругое, с затухающим перелётом.
+     ------------------------------------------------------------------------ */
+  (function motion() {
+    const canvas = document.getElementById('motionCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const leftEl = document.getElementById('motionLeft');
+    const rightEl = document.getElementById('motionRight');
+    const state = { drop: 0, xw: 0.27 };
+    let w = 0, h = 0, dpr = 1, playing = false;
+
+    function resize() {
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      const r = canvas.getBoundingClientRect();
+      w = r.width; h = r.height;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw();
+    }
+
+    const fmt = (mm) => (mm === 0 ? '0,0' : mm.toFixed(1).replace('.', ',').replace('-0,0', '0,0')) + ' мм';
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      const N = w < 600 ? 22 : 36;
+      const pad = w * 0.04;
+      const cell = (w - pad * 2) / N;
+      const springW = cell * 0.62;
+      const baseY = h * 0.86;
+      const springH = h * 0.42;
+      const topY = baseY - springH;          // верх пружин в покое
+      const comfortH = h * 0.075;            // слои комфорта над пружинами
+      const sigma = w * 0.085;
+      const xw = pad + state.xw * (w - pad * 2);
+      const maxDip = springH * 0.34;
+
+      const dipAt = (x) => maxDip * state.drop * Math.exp(-((x - xw) ** 2) / (2 * sigma * sigma));
+
+      // основание
+      ctx.fillStyle = '#d9d2c6';
+      ctx.fillRect(pad, baseY, w - pad * 2, h * 0.035);
+
+      // пружины в карманах
+      for (let i = 0; i < N; i++) {
+        const x = pad + cell * i + (cell - springW) / 2;
+        const cx = x + springW / 2;
+        const dip = dipAt(cx);
+        const y = topY + dip;
+        const hh = springH - dip;
+        const k = dip / maxDip;
+        ctx.fillStyle = `rgb(${255 - 20 * k}, ${255 - 24 * k}, ${255 - 30 * k})`;
+        ctx.strokeStyle = 'rgba(21,22,27,0.14)';
+        ctx.lineWidth = 1;
+        roundRect(x, y, springW, hh, springW * 0.3);
+        ctx.fill(); ctx.stroke();
+        // витки
+        ctx.strokeStyle = 'rgba(21,22,27,0.10)';
+        const coils = 5;
+        for (let c = 1; c < coils; c++) {
+          const yy = y + (hh / coils) * c;
+          ctx.beginPath(); ctx.moveTo(x + 3, yy); ctx.lineTo(x + springW - 3, yy); ctx.stroke();
+        }
+      }
+
+      // слои комфорта — плавная поверхность по вершинам пружин
+      ctx.beginPath();
+      ctx.moveTo(pad, baseY);
+      ctx.lineTo(pad, topY - comfortH + dipAt(pad));
+      const steps = 80;
+      for (let s = 0; s <= steps; s++) {
+        const x = pad + ((w - pad * 2) * s) / steps;
+        ctx.lineTo(x, topY - comfortH + dipAt(x));
+      }
+      ctx.lineTo(w - pad, baseY);
+      ctx.closePath();
+      ctx.save();
+      ctx.clip();
+      ctx.fillStyle = '#f7f3ec';
+      ctx.fillRect(pad, topY - comfortH - 2, w - pad * 2, comfortH + 4);
+      ctx.restore();
+      // контур поверхности
+      ctx.beginPath();
+      for (let s = 0; s <= steps; s++) {
+        const x = pad + ((w - pad * 2) * s) / steps;
+        const y = topY - comfortH + dipAt(x);
+        s ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.strokeStyle = 'rgba(21,22,27,0.35)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // груз слева
+      const r = Math.max(22, h * 0.085);
+      const gy = topY - comfortH + dipAt(xw) - r + 2;
+      const grad = ctx.createRadialGradient(xw - r * 0.35, gy - r * 0.4, r * 0.1, xw, gy, r);
+      grad.addColorStop(0, '#4a4b52'); grad.addColorStop(1, '#15161b');
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(xw, gy, r, 0, Math.PI * 2); ctx.fill();
+      // мягкая тень под грузом
+      ctx.fillStyle = `rgba(21,22,27,${0.08 + 0.1 * state.drop})`;
+      ctx.beginPath(); ctx.ellipse(xw, gy + r + 6, r * 1.15, r * 0.18, 0, 0, Math.PI * 2); ctx.fill();
+
+      // уровень справа: стакан воды, который не шелохнулся
+      const xr = pad + 0.78 * (w - pad * 2);
+      const ys = topY - comfortH + dipAt(xr);
+      const gw = Math.max(26, h * 0.085), gh = gw * 1.35;
+      ctx.strokeStyle = 'rgba(21,22,27,0.55)'; ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(xr - gw / 2, ys - gh); ctx.lineTo(xr - gw / 2 + gw * 0.08, ys); ctx.lineTo(xr + gw / 2 - gw * 0.08, ys); ctx.lineTo(xr + gw / 2, ys - gh);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(120, 150, 200, 0.22)';
+      ctx.beginPath();
+      ctx.moveTo(xr - gw / 2 + gw * 0.03, ys - gh * 0.62); ctx.lineTo(xr - gw / 2 + gw * 0.08, ys); ctx.lineTo(xr + gw / 2 - gw * 0.08, ys); ctx.lineTo(xr + gw / 2 - gw * 0.03, ys - gh * 0.62);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(80, 110, 170, 0.6)';
+      ctx.beginPath(); ctx.moveTo(xr - gw / 2 + gw * 0.03, ys - gh * 0.62); ctx.lineTo(xr + gw / 2 - gw * 0.03, ys - gh * 0.62); ctx.stroke();
+
+      // линия-уровень от стакана к правому краю
+      ctx.setLineDash([2, 6]);
+      ctx.strokeStyle = 'rgba(21,22,27,0.3)';
+      ctx.beginPath(); ctx.moveTo(xr + gw / 2 + 12, ys - gh * 0.62); ctx.lineTo(w - pad, ys - gh * 0.62); ctx.stroke();
+      ctx.setLineDash([]);
+
+      const mmScale = 60 / maxDip;           // 60 мм при полном прогибе
+      leftEl.textContent = (state.drop > 0.005 ? '−' : '') + fmt(dipAt(xw) * mmScale);
+      rightEl.textContent = fmt(dipAt(xr) * mmScale);
+    }
+
+    function roundRect(x, y, ww, hh, rr) {
+      rr = Math.min(rr, ww / 2, hh / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.arcTo(x + ww, y, x + ww, y + hh, rr);
+      ctx.arcTo(x + ww, y + hh, x, y + hh, rr);
+      ctx.arcTo(x, y + hh, x, y, rr);
+      ctx.arcTo(x, y, x + ww, y, rr);
+      ctx.closePath();
+    }
+
+    const loop = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 0.6, onUpdate: draw });
+    loop
+      .to(state, { drop: 1, duration: 1.1, ease: 'power2.in' })
+      .to(state, { drop: 0.86, duration: 0.5, ease: 'sine.inOut' })
+      .to(state, { drop: 1, duration: 0.5, ease: 'sine.inOut' })
+      .to(state, { drop: 0, duration: 1.5, ease: 'elastic.out(1, 0.42)' }, '+=0.5')
+      .to(state, { xw: 0.33, duration: 2.4, ease: 'power2.inOut' }, 0.2)
+      .to(state, { xw: 0.27, duration: 1.2, ease: 'power2.inOut' }, 3.2);
+
+    ScrollTrigger.create({
+      trigger: canvas, start: 'top 85%', end: 'bottom 15%',
+      onEnter: () => { if (!reduceMotion) loop.play(); },
+      onEnterBack: () => { if (!reduceMotion) loop.play(); },
+      onLeave: () => loop.pause(),
+      onLeaveBack: () => loop.pause(),
+    });
+
+    if (reduceMotion) { state.drop = 1; }
+    resize();
+    window.addEventListener('resize', resize);
+  })();
 
   /* ------------------------------------------------------------------------
      Появление по скроллу для остальных секций
