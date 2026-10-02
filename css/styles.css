@@ -141,6 +141,7 @@ em { font-style: normal; }
 .button { transition: background-color .5s var(--ease-out), color .5s var(--ease-out), transform .5s var(--ease-out), box-shadow .5s var(--ease-out), border-color .5s var(--ease-out); }
 
 /* буквы отвечают на курсор лёгким лунным светом */
+.word { display: inline-block; white-space: nowrap; }
 .char { display: inline-block; transition: text-shadow .9s var(--ease-out), color .9s var(--ease-out); }
 @media (hover: hover) {
   .char:hover { color: #fff; text-shadow: 0 0 14px rgba(var(--cool), .9), 0 0 36px rgba(var(--cool), .45); transition-duration: .15s; }
@@ -267,12 +268,12 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
   background: #000; opacity: var(--dim, 0); pointer-events: none;
 }
 .product::after { z-index: 2; }
-.product--hero img { object-position: 50% 62%; }
+.product--hero img { object-position: 50% 56%; }
 /* световое пятно: тёмный слой с «дырой», двигается и масштабируется — только transform */
 .light {
   position: absolute; z-index: 1; left: var(--lx); top: var(--ly);
-  width: 300vmax; height: 300vmax; margin: -150vmax 0 0 -150vmax;
-  background: radial-gradient(circle, transparent 0 44%, rgba(6,7,12,0.55) 52%, rgba(6,7,12,0.92) 60%, #06070c 66%);
+  width: 800vmax; height: 800vmax; margin: -400vmax 0 0 -400vmax;
+  background: radial-gradient(circle, transparent 0 15%, rgba(6,7,12,0.55) 18.5%, rgba(6,7,12,0.92) 21.5%, #06070c 23.5%);
   transform: scale(var(--ls, 0.02));
   will-change: transform; pointer-events: none;
 }
@@ -286,13 +287,14 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 }
 /* луна в hero: появляется первой, её свет падает на матрас */
 .moon-hero {
-  position: absolute; z-index: 2; left: 72%; top: 14%; width: min(22vw, 22vh); height: auto;
+  position: absolute; z-index: 5; left: 8%; top: 20%; width: min(12vw, 15vh); height: auto;
   transform: translate(-50%, -50%) scale(0.92); opacity: 0;
   pointer-events: none; will-change: transform, opacity;
 }
 .moonbeam {
-  position: absolute; z-index: 2; left: 72%; top: 14%; width: 180vmax; height: 180vmax; margin: -90vmax 0 0 -90vmax;
-  background: conic-gradient(from 212deg at 50% 50%, transparent 0deg, rgba(var(--warm), .10) 8deg, rgba(var(--warm), .16) 14deg, rgba(var(--warm), .10) 20deg, transparent 30deg);
+  position: absolute; z-index: 4; left: 8%; top: 20%; width: 180vmax; height: 180vmax; margin: -90vmax 0 0 -90vmax;
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 0, rgba(0,0,0,.6) 45%, transparent 85%); mask-image: radial-gradient(circle closest-side, #000 0, rgba(0,0,0,.6) 45%, transparent 85%);
+  background: conic-gradient(from 128deg at 50% 50%, transparent 0deg, rgba(var(--cool), .07) 8deg, rgba(var(--warm), .13) 15deg, rgba(var(--cool), .07) 22deg, transparent 32deg);
   opacity: 0; pointer-events: none; will-change: opacity;
 }
 /* фото — чистый чёрный фон; мягко сводим его с космосом по краям */
@@ -473,12 +475,13 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 .px[data-lvl="1"] { --lvl: 1; } .px[data-lvl="2"] { --lvl: 2; } .px[data-lvl="3"] { --lvl: 3; } .px[data-lvl="4"] { --lvl: 4; }
 /* луч сверху: конус света; сила — от уровня. Без blur: мягкость уже в градиенте */
 .px__moon {
-  position: absolute; left: 78%; top: 8%; width: 16%; height: auto; transform: translate(-50%, -50%);
+  position: absolute; left: 16%; top: 10%; width: 15%; height: auto; transform: translate(-50%, -50%);
   opacity: calc(.45 + var(--lvl) * .14); transition: opacity 1.2s var(--ease-out); pointer-events: none;
 }
 .px__beam {
-  position: absolute; left: 78%; top: 8%; width: 220%; height: 220%; margin: -110% 0 0 -110%;
-  background: conic-gradient(from 206deg at 50% 50%, transparent 0deg, rgba(var(--warm), .08) 10deg, rgba(var(--warm), .14) 16deg, rgba(var(--warm), .08) 22deg, transparent 32deg);
+  position: absolute; left: 16%; top: 10%; width: 220%; height: 220%; margin: -110% 0 0 -110%;
+  background: conic-gradient(from 122deg at 50% 50%, transparent 0deg, rgba(var(--warm), .08) 10deg, rgba(var(--warm), .14) 16deg, rgba(var(--warm), .08) 22deg, transparent 34deg);
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 0, rgba(0,0,0,.6) 40%, transparent 78%); mask-image: radial-gradient(circle closest-side, #000 0, rgba(0,0,0,.6) 40%, transparent 78%);
   opacity: calc(.3 + var(--lvl) * .18);
   transition: opacity 1.4s var(--ease-out);
   pointer-events: none;
@@ -939,7 +942,8 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
   .reveal { transform: none; transition-duration: 1s; }
   .px__shine { animation: none; background-position: 30% 0; }
   .px__beam.is-flare { animation: none; }
-  .moon-hero { left: 76%; top: 12%; width: 26vw; }
+  .moon-hero { left: 82%; top: 9%; width: 18vw; }
+  .moonbeam { left: 82%; top: 9%; background: conic-gradient(from 196deg at 50% 50%, transparent 0deg, rgba(var(--cool), .07) 8deg, rgba(var(--warm), .13) 15deg, rgba(var(--cool), .07) 22deg, transparent 32deg); }
   .px__moon { width: 20%; }
   .delivery { grid-template-columns: 1fr; gap: 28px; }
   .city span { display: none; }
@@ -996,8 +1000,9 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
   .diff { grid-template-columns: 1fr; }
   .diff__card--prime { order: -1; }
   .size-vis { width: min(100%, 340px); height: min(calc(100vw - 2 * var(--gutter)), 340px); aspect-ratio: auto; margin: 0 auto 24px; }
-  .seq-label { font-size: 10px; gap: 8px; }
-  .seq-label::before { width: 18px; }
+  .seq-label { font-size: 9.5px; gap: 6px; left: 66%; max-width: 32vw; white-space: nowrap; }
+  .seq-label::before { width: 12px; flex: none; }
+  .seq-label .name { overflow: hidden; text-overflow: ellipsis; }
   .seq-label .spec { display: none; }
   .model, .model--prime { grid-template-columns: 1fr; gap: 32px; }
   .model--flip .model__visual { order: 1; }

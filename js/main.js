@@ -170,7 +170,7 @@
      render() их сводит — так они никогда не спорят между собой.
      ------------------------------------------------------------------------ */
   const S = {              // скролл
-    lx: 70, ly: 20, lr: 1, soft: 60,
+    lx: 30, ly: 22, lr: 1, soft: 60,
     heroS: 1, heroY: 0, heroExp: 1, rx: 0, ry: 0,
     cutO: 0, cutExp: 1, cutS: 1.04, cutX: 0, cutY: 0,
     spread: 0,             // 0..1 — насколько разошлись слои
@@ -309,8 +309,9 @@
     const diag = Math.hypot(window.innerWidth, vh);
 
     // свет на фото: радиус в px от диагонали, экспозиция — произведение интро и скролла
-    root.style.setProperty('--lx', `${S.lx}%`);
-    root.style.setProperty('--ly', `${S.ly}%`);
+    const mob = window.innerWidth < 900;   // на телефоне луна справа сверху
+    root.style.setProperty('--lx', `${mob ? 82 : S.lx}%`);
+    root.style.setProperty('--ly', `${mob ? 9 : S.ly}%`);
     root.style.setProperty('--ls', `${Math.max(0.02, I.lr * S.lr * 2.1).toFixed(4)}`);   // масштаб «дыры» света
     moonbeam.style.opacity = (I.beam * S.eclipse).toFixed(3);
     moonHero.style.opacity = (I.moon * S.eclipse).toFixed(3);
@@ -673,13 +674,16 @@
   /* буквы заголовков — отдельные span, чтобы отвечать на курсор лунным светом */
   (function glowLetters() {
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    const targets = document.querySelectorAll('.section-title, .motion__title, .delivery__title, .cta__title, .model__title, .diff__name, .px__pitch');
+    const targets = document.querySelectorAll('.hero-title, .manifesto__text, .section-title, .motion__title, .delivery__title, .cta__title, .model__title, .diff__name, .px__pitch, .statement');
     const wrap = (node) => {
       const frag = document.createDocumentFragment();
-      for (const ch of node.textContent) {
-        if (ch === ' ' || ch === '\u00a0') { frag.appendChild(document.createTextNode(ch)); continue; }
-        const sp = document.createElement('span'); sp.className = 'char'; sp.textContent = ch; frag.appendChild(sp);
-      }
+      node.textContent.split(/(\s+)/).forEach((part) => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+        const w = document.createElement('span'); w.className = 'word';
+        for (const ch of part) { const sp = document.createElement('span'); sp.className = 'char'; sp.textContent = ch; w.appendChild(sp); }
+        frag.appendChild(w);
+      });
       node.replaceWith(frag);
     };
     targets.forEach((el) => {
