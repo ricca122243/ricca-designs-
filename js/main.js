@@ -91,53 +91,79 @@
   const eclipse = document.getElementById('eclipse');
   const productHero = document.getElementById('productHero');
   const productCut = document.getElementById('productCut');
-  const explode = document.getElementById('explode');
   const cue = document.getElementById('cue');
 
   const smooth = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
 
   /* ------------------------------------------------------------------------
-     Разрез, распиленный на семь слоёв.
-     Границы слоёв заданы в пикселях исходного кадра 1440×804: y в переднем
-     углу (x = 735) и наклон рёбер к левому и правому краям. Из них строятся
-     clip-path многоугольники; каждый слой — копия кадра со своим вырезом.
+     Разрез как последовательность кадров (видео, нарезанное на webp).
+     Кадр 0 — собранный матрас, последний — слои разошлись. Прогресс S.spread
+     выбирает кадр; соседние кадры смешиваются, поэтому движение гладкое даже
+     при небольшом числе кадров. Кадры грузятся после старта интро.
      ------------------------------------------------------------------------ */
-  const CUT = { w: 1440, h: 804, cx: 735, top: 238, bottom: 700 };
-  const BOUNDS = [238, 322, 355, 405, 470, 625];          // стыки слоёв в углу
-  const OFFSETS = [-3, -2, -1, 0, 1, 2, 3];               // направление разлёта
-  function boundaryY(yc, x) {
-    const f = (yc - CUT.top) / (CUT.bottom - CUT.top);
-    const sL = 0.14 + f * 0.08, sR = 0.125 + f * 0.065;
-    return x < CUT.cx ? yc - (CUT.cx - x) * sL : yc - (x - CUT.cx) * sR;
+  // 24 кадров 1024×576 из сгенерированного видео разлёта: f01 — собранный разрез, f24 — слои разошлись
+  const SEQ = { count: 24, w: 1024, h: 576, base: 'img/seq/', pad: 2 };
+  const seqCanvas = document.getElementById('seq');
+  const seqCtx = seqCanvas.getContext('2d', { alpha: false });
+  const frames = new Array(SEQ.count).fill(null);
+  let seqLoaded = 0, seqStarted = false, seqDirty = true;
+
+  function frameSrc(i) { return `${SEQ.base}f${String(i + 1).padStart(SEQ.pad, '0')}.webp`; }
+  function loadSeq() {
+    if (seqStarted) return;
+    seqStarted = true;
+    // порядок: первый, последний, середина, затем остальные — чтобы разлёт был виден как можно раньше
+    const order = [0, SEQ.count - 1, Math.floor(SEQ.count / 2)];
+    for (let i = 0; i < SEQ.count; i++) if (!order.includes(i)) order.push(i);
+    let k = 0;
+    const next = () => {
+      if (k >= order.length) return;
+      const i = order[k++];
+      const im = new Image();
+      im.decoding = 'async';
+      im.onload = () => { frames[i] = im; seqLoaded++; seqDirty = true; drawSeq(); next(); };
+      im.onerror = next;
+      im.src = frameSrc(i);
+      if (k < 4) next();   // первые кадры — параллельно
+    };
+    next();
   }
-  function boundary(yc) {
-    return [0, CUT.cx, CUT.w].map((x) => [x, boundaryY(yc, x)]);
+  function nearestFrame(i) {
+    // ближайший загруженный кадр, если нужный ещё не пришёл
+    for (let d = 0; d < SEQ.count; d++) {
+      if (frames[i - d]) return frames[i - d];
+      if (frames[i + d]) return frames[i + d];
+    }
+    return null;
   }
-  const pct = (x, y) => `${(x / CUT.w * 100).toFixed(2)}% ${(y / CUT.h * 100).toFixed(2)}%`;
-  const slabs = LAYERS.map((l, i) => {
-    // верхняя граница поднята на 3 px: в собранном виде слои чуть перекрываются и швов не видно
-    const top = i === 0 ? [[0, -400], [CUT.cx, -400], [CUT.w, -400]] : boundary(BOUNDS[i - 1]).map(([x, y]) => [x, y - 3]);
-    const bot = i === LAYERS.length - 1 ? [[0, CUT.h + 400], [CUT.cx, CUT.h + 400], [CUT.w, CUT.h + 400]] : boundary(BOUNDS[i]);
-    const el = document.createElement('div');
-    el.className = `slab slab--${l.key}`;
-    const poly = [...top, ...bot.slice().reverse()].map(([x, y]) => pct(x, y)).join(', ');
-    el.style.clipPath = `polygon(${poly})`;
-    el.style.webkitClipPath = el.style.clipPath;
-    explode.appendChild(el);
-    return el;
-  });
-  // контейнер покрывает сцену целиком, как object-fit: cover с точкой 62% 55%
-  function sizeExplode() {
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const k = Math.max(vw / CUT.w, vh / CUT.h) * (vw < 900 ? 1.25 : 1.0);
-    const w = CUT.w * k, h = CUT.h * k;
-    explode.style.width = `${w}px`;
-    explode.style.height = `${h}px`;
-    explode.style.left = `${vw / 2 - (w - vw) * 0.12}px`;
-    explode.style.top = `${vh / 2 - (h - vh) * 0.05}px`;
+  function sizeSeq() {
+    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+    seqCanvas.width = Math.round(window.innerWidth * dpr);
+    seqCanvas.height = Math.round(window.innerHeight * dpr);
+    seqDirty = true;
+    drawSeq();
   }
-  sizeExplode();
-  window.addEventListener('resize', sizeExplode);
+  function drawSeq() {
+    if (!seqDirty || seqLoaded === 0) return;
+    const cw = seqCanvas.width, ch = seqCanvas.height;
+    // десктоп: кадр вписан целиком (фон кадра чёрный, швов не видно), чтобы разлетевшиеся
+    // слои не уходили под навигацию; мобильный: кадр покрывает экран, фокус правее центра
+    const mobile = window.innerWidth < 900;
+    const k = mobile ? (cw / SEQ.w) * 1.7 : Math.min(cw / SEQ.w, ch / SEQ.h);
+    const dw = SEQ.w * k, dh = SEQ.h * k;
+    const dx = (cw - dw) * (mobile ? 0.45 : 0.56), dy = (ch - dh) * (mobile ? 0.62 : 0.5);
+    const f = Math.min(1, Math.max(0, S.spread)) * (SEQ.count - 1);
+    const i0 = Math.floor(f), t = f - i0;
+    const a = nearestFrame(i0), b = frames[Math.min(SEQ.count - 1, i0 + 1)];
+    seqCtx.fillStyle = '#000';
+    seqCtx.fillRect(0, 0, cw, ch);
+    seqCtx.globalAlpha = 1;
+    if (a) seqCtx.drawImage(a, dx, dy, dw, dh);
+    if (b && b !== a && t > 0.02) { seqCtx.globalAlpha = t; seqCtx.drawImage(b, dx, dy, dw, dh); seqCtx.globalAlpha = 1; }
+    seqDirty = false;
+  }
+  sizeSeq();
+  window.addEventListener('resize', sizeSeq);
 
   let activeLayer = -1;
   const layerItems = Array.from(document.querySelectorAll('#layerList li'));
@@ -176,18 +202,11 @@
       `translate3d(0, ${S.heroY * vh / 100}px, 0) scale(${S.heroS})`;
     productHero.style.opacity = S.heroExp > 0.01 ? 1 : 0;
 
-    // разрез: семь слоёв разлетаются по вертикали, слой в фокусе выходит вперёд
+    // разрез: кадр последовательности по прогрессу разлёта
     productCut.style.opacity = S.cutO;
+    productCut.style.setProperty('--exp', `${S.cutExp}`);
     productCut.style.transform = `translate3d(${S.cutX * window.innerWidth / 100}px, ${S.cutY * vh / 100}px, 0) scale(${S.cutS})`;
-    const gap = explode.offsetHeight * (window.innerWidth < 900 ? 0.042 : 0.054);
-    for (let i = 0; i < slabs.length; i++) {
-      const focused = S.focus === i;
-      const dim = S.focus >= 0 && !focused;
-      const dy = OFFSETS[i] * S.spread * gap;
-      const dx = focused ? S.spread * explode.offsetWidth * 0.018 : 0;
-      slabs[i].style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
-      slabs[i].style.setProperty('--exp', `${S.cutExp * (dim ? 0.42 : 1)}`);
-    }
+    if (S.cutO > 0.001) { seqDirty = true; drawSeq(); }
     setActiveLayer(S.cutO > 0.5 ? S.focus : -1);
 
     wordmark.style.transform = `translate(-50%, calc(-50% + ${S.wmY}vh)) scale(${S.wmS})`;
@@ -232,11 +251,12 @@
   if (reduceMotion) {
     intro.progress(1);
     body.classList.remove('is-intro');
+    loadSeq();
     render();
   } else {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
-    const start = () => intro.play();
+    const start = () => { intro.play(); loadSeq(); };
     const heroImg = productHero.querySelector('img');
     // не начинаем раскрытие, пока фото не загрузилось — иначе свет осветит пустоту
     if (heroImg.complete) start(); else { heroImg.addEventListener('load', start, { once: true }); heroImg.addEventListener('error', start, { once: true }); }

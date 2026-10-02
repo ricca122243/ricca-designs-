@@ -232,23 +232,16 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 .product--cut { opacity: 0; }
 .product--cut::after { display: none; }
 
-/* разрез, распиленный на семь слоёв: каждый слой — тот же кадр, вырезанный clip-path */
-.explode {
-  position: absolute; left: 50%; top: 50%;
-  aspect-ratio: 1440 / 804;
-  transform: translate(-50%, -50%);
-  will-change: transform;
-}
-.slab {
-  position: absolute; inset: 0;
-  background: url("../img/cut.webp") center / 100% 100% no-repeat;
+/* разрез — последовательность кадров на canvas (видео разлёта слоёв, нарезанное на webp) */
+.seq {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block;
   filter: brightness(var(--exp, 1)) contrast(1.04) saturate(0.96);
-  will-change: transform, filter, opacity;
-  backface-visibility: hidden;
 }
-.slab::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(to right, rgba(6,7,12,0.5), transparent 22%, transparent 80%, rgba(6,7,12,0.5));
+.product--cut::after {
+  display: block;
+  background:
+    linear-gradient(to bottom, rgba(6,7,12,0.6), transparent 22%, transparent 78%, rgba(6,7,12,0.85)),
+    linear-gradient(to right, rgba(6,7,12,0.55), transparent 24%, transparent 78%, rgba(6,7,12,0.55));
 }
 
 /* тень под финальный текст: продукт уходит вправо, слева — глубина */
