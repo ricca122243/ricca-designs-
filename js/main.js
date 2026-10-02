@@ -684,6 +684,8 @@
      ------------------------------------------------------------------------ */
   // ₸. Air / Balance / Prime — за базовый размер 160 × 200; Custom — диапазон для 1800 × 2000. null → «— ₸».
   const PRICES = { air: 120000, balance: 220000, prime: 280000, custom: { from: 350000, to: 480000 } };
+  const OLD_PRICES = { prime: 350000 };   // полная цена до скидки; нет ключа → скидки нет
+  const discountPct = (k) => (OLD_PRICES[k] ? Math.round((1 - PRICES[k] / OLD_PRICES[k]) * 100) : 0);
   const WHATSAPP = '77079550808';
   const MODELS = {
     air: {
@@ -730,13 +732,20 @@
 
   const fmtMoney = (n) => Math.round(n).toLocaleString('ru-RU').replace(/ /g, ' ');
   const priceText = (p) => (p == null ? '— ₸' : `${fmtMoney(p)} ₸`);
+  // цена с учётом скидки: старая зачёркнута, новая крупно, бейдж выгоды
+  const priceHTML = (k, compact) => {
+    const p = PRICES[k], old = OLD_PRICES[k];
+    if (p == null || !old) return priceText(p);
+    if (compact) return `<s class="price-old">${fmtMoney(old)}</s> → ${fmtMoney(p)} ₸`;
+    return `<s class="price-old">${fmtMoney(old)} ₸</s><span class="price-new">${fmtMoney(p)} ₸</span><span class="save">−${discountPct(k)} %</span>`;
+  };
   const perNight = (p) => (p == null ? '≈ — ₸ за ночь' : `≈ ${fmtMoney(p / (15 * 365))} ₸ за ночь`);
   const waLink = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
 
   (function lineup() {
     const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
     // цены и ссылки
-    document.querySelectorAll('[data-price]').forEach((el) => { el.textContent = priceText(PRICES[el.dataset.price]); });
+    document.querySelectorAll('[data-price]').forEach((el) => { el.innerHTML = priceHTML(el.dataset.price, el.hasAttribute('data-compact')); });
     document.querySelectorAll('[data-night]').forEach((el) => { el.textContent = perNight(PRICES[el.dataset.night]); });
     document.querySelectorAll('[data-wa]').forEach((a) => { a.href = waLink(`Здравствуйте, интересует ${MODELS[a.dataset.wa].name}`); });
 
@@ -748,9 +757,9 @@
       const beam = document.getElementById('pxBeam');
       if (!list || !stage) return;
       const TIERS = [
-        { key: 'air',     series: 'Air',     lvl: 1, tier: 'Выгодно',        pitch: 'Самая выгодная цена в коллекции.',   desc: 'Лёгкая модель на каждый день: пружины, кокос, ортопена.' },
+        { key: 'air',     series: 'Air',     lvl: 1, tier: 'Базовая',        pitch: 'Лёгкий старт.',                      desc: 'Лёгкая модель на каждый день: пружины, кокос, ортопена.' },
         { key: 'balance', series: 'Balance', lvl: 2, tier: 'Pro',            pitch: 'Поддержка на каждый день.',          desc: 'Усиленный каркас и два слоя кокоса — для тех, кто спит на матрасе каждый день.' },
-        { key: 'prime',   series: 'Prime',   lvl: 3, tier: 'Ultra',          pitch: 'Высший уровень готовой коллекции.',   desc: 'Хлопок ручной работы, натуральный латекс и кокос. Выбор Eluna.' },
+        { key: 'prime',   series: 'Prime',   lvl: 3, tier: `Выгода −${discountPct('prime')} %`, pitch: 'Самая выгодная покупка линейки.', desc: `Полная цена ${fmtMoney(OLD_PRICES.prime)} ₸, сейчас ${fmtMoney(PRICES.prime)} ₸ — хлопок ручной работы, латекс и кокос.` },
         { key: 'custom',  series: 'Custom',  lvl: 4, tier: 'Индивидуально',  pitch: 'Размер и конфигурация под вас.',     desc: 'Нестандартный размер и начинка под ваш проект.', dims: '1800 × 2000 мм' },
       ];
       const rangeText = (p) => (p == null ? '— ₸' : typeof p === 'object' ? `${fmtMoney(p.from)}–${fmtMoney(p.to)} ₸` : `${fmtMoney(p)} ₸`);
@@ -764,7 +773,7 @@
         li.innerHTML = `<button class="pr__row" type="button" data-lvl="${t.lvl}" aria-pressed="false" aria-label="Показать модель Eluna ${t.series}">
           <span class="pr__n">0${i + 1}</span>
           <span class="pr__name">Eluna ${t.series}${tier(t)}</span>
-          <span class="pr__price"><span class="pr__sum">${rangeText(PRICES[t.key])}</span>${t.dims ? `<span class="pr__sub">для размера ${t.dims}</span>` : ''}</span>
+          <span class="pr__price">${OLD_PRICES[t.key] ? `<s class="pr__old">${fmtMoney(OLD_PRICES[t.key])} ₸</s>` : ''}<span class="pr__sum">${rangeText(PRICES[t.key])}</span>${t.dims ? `<span class="pr__sub">для размера ${t.dims}</span>` : ''}${OLD_PRICES[t.key] ? `<span class="pr__sub pr__sub--gold">выгода ${fmtMoney(OLD_PRICES[t.key] - PRICES[t.key])} ₸</span>` : ''}</span>
         </button>`;
         const b = li.firstElementChild;
         b.addEventListener('mouseenter', () => select(i));
@@ -849,22 +858,22 @@
     if (!options.length) return;
 
     const SIZE_K = { 80: 0.6, 90: 0.65, 140: 0.9, 160: 1, 180: 1.1, 200: 1.2 };   // относительно 160 × 200
-    const price = { v: 0 };
+    const price = { v: 0, o: 0 };
+    const oldEl = document.getElementById('sizeOld');
 
     function apply(btn, animate) {
       const w = +btn.dataset.w, h = +btn.dataset.h;
       const base = PRICES.prime;
       const p = base == null ? null : Math.round(base * (SIZE_K[w] || 1) / 1000) * 1000;
+      const o = OLD_PRICES.prime ? Math.round(OLD_PRICES.prime * (SIZE_K[w] || 1) / 1000) * 1000 : null;
+      const paint = () => { priceEl.textContent = fmtMoney(price.v); monthlyEl.textContent = fmtMoney(price.v / 12); if (oldEl) oldEl.textContent = o == null ? '' : `${fmtMoney(price.o)} ₸`; };
       labelEl.textContent = `${w} × ${h}`;
       ctaLabel.textContent = `${w} × ${h}`;
       cta.href = waLink(`Здравствуйте, интересует Eluna Prime, размер ${w} × ${h}`);
       installment.hidden = p == null;
       if (p == null) { priceEl.textContent = '—'; return; }
-      if (!animate) { price.v = p; priceEl.textContent = fmtMoney(p); monthlyEl.textContent = fmtMoney(p / 12); return; }
-      gsap.to(price, {
-        v: p, duration: 0.9, ease: 'power2.out',
-        onUpdate: () => { priceEl.textContent = fmtMoney(price.v); monthlyEl.textContent = fmtMoney(price.v / 12); },
-      });
+      if (!animate) { price.v = p; price.o = o || 0; paint(); return; }
+      gsap.to(price, { v: p, o: o || 0, duration: 0.9, ease: 'power2.out', onUpdate: paint });
     }
 
     options.forEach((btn) => {

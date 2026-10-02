@@ -8,9 +8,17 @@
   <meta name="theme-color" content="#06070c">
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%2306070c'/%3E%3Cg fill='%23f1ede6'%3E%3Cpath d='M62 12a40 40 0 1 0 0 76 33 33 0 0 1 0-76z'/%3E%3Cpath d='M48 28h34a8 8 0 0 1-8 8H48zM48 46h28a8 8 0 0 1-8 8H48zM48 64h34a8 8 0 0 1-8 8H48z'/%3E%3C/g%3E%3C/svg%3E">
 </head>
 <body class="is-intro">
 
+  <!-- знак бренда: полумесяц + три полосы «E» -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="eluna-mark" viewBox="0 0 100 100">
+      <path d="M62 8a46 46 0 1 0 0 84 38 38 0 0 1 0-84z"/>
+      <path d="M46 26h40a9 9 0 0 1-9 9H46zM46 45h34a9 9 0 0 1-9 9H46zM46 64h40a9 9 0 0 1-9 9H46z"/>
+    </symbol>
+  </svg>
   <a class="skip-link" href="#manifesto">К содержанию</a>
 
   <!-- Космос: звёздное поле на всю страницу -->
@@ -19,7 +27,7 @@
 
   <!-- Навигация -->
   <header class="nav" id="nav">
-    <a class="nav__brand" href="#top" aria-label="ELUNA — на главную">ELUNA</a>
+    <a class="nav__brand" href="#top" aria-label="ELUNA — на главную"><svg class="mark" aria-hidden="true"><use href="#eluna-mark"/></svg>ELUNA</a>
     <nav class="nav__links" aria-label="Разделы">
       <a href="#manifesto">Семь слоёв</a>
       <a href="#motion">Сон вдвоём</a>
@@ -400,7 +408,7 @@
             <div class="size-summary">
               <div class="size-summary__row">
                 <span class="size-summary__label">Eluna Prime · <span id="sizeLabel">160 × 200</span> см</span>
-                <span class="size-summary__price"><span id="sizePrice">—</span> ₸</span>
+                <span class="size-summary__price"><s class="price-old" id="sizeOld"></s><span id="sizePrice">—</span> ₸</span>
               </div>
               <p class="size-summary__note">Включая доставку, подъём и вынос старого матраса.<span id="sizeInstallment" hidden> Рассрочка 0 % на 12 месяцев — <span id="sizeMonthly">—</span> ₸ в месяц.</span></p>
               <a class="button button--primary" id="sizeCta" href="#" target="_blank" rel="noopener">Заказать <span id="sizeCtaLabel">160 × 200</span></a>
@@ -455,13 +463,13 @@
 
   <!-- липкая плашка Prime (мобильный) -->
   <div class="sticky-cta" id="stickyCta" aria-hidden="true">
-    <span class="sticky-cta__text">Eluna Prime — <span data-price="prime">— ₸</span></span>
+    <span class="sticky-cta__text">Eluna Prime — <span data-price="prime" data-compact>— ₸</span></span>
     <a class="sticky-cta__btn" data-wa="prime" href="#" target="_blank" rel="noopener" tabindex="-1">Заказать</a>
   </div>
 
   <footer class="footer">
     <div class="container footer__inner">
-      <span class="footer__brand">ELUNA</span>
+      <span class="footer__brand"><svg class="mark" aria-hidden="true"><use href="#eluna-mark"/></svg>ELUNA<small>Sleep Tech</small></span>
       <span class="footer__copy">© 2026 ELUNA. Матрасы ручной сборки.</span>
       <nav class="footer__links" aria-label="Служебные ссылки">
         <a href="#">Доставка</a>
