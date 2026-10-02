@@ -94,7 +94,7 @@
       }
 
       // мерцающие — отдельный небольшой набор
-      flick = Array.from({ length: Math.round(w / (mob ? 56 : 28)) }, () => ({
+      flick = Array.from({ length: Math.round(w / (mob ? 64 : 36)) }, () => ({
         x: Math.random() * w, y: Math.random() * h,
         r: rnd(0.6, 1.4), c: tint(Math.random()),
         ph: Math.random() * Math.PI * 2, sp: rnd(0.4, 1.3), a: rnd(0.35, 0.8),
@@ -141,7 +141,7 @@
           nextMeteor = now + rnd(9000, 22000);
         }
         const busy = meteors.length > 0;
-        if (busy || now - last > 70) { drawTwinkle(now); last = now; }
+        if (busy || now - last > 110) { drawTwinkle(now); last = now; }
       }
       requestAnimationFrame(frame);
     }
@@ -276,7 +276,7 @@
     const el = document.createElement('span');
     el.className = 'seq-label';
     el.style.setProperty('--y', `${SEQ_LABEL_Y[i]}%`);
-    el.innerHTML = `<span class="num">${l.num}</span><span class="name">${l.name}</span><span class="spec">${String(l.cm).replace('.', ',')} см</span>`;
+    el.innerHTML = `<span class="num">${l.num}</span><span class="name">${l.name}</span><span class="spec">${Math.round(l.cm * 10)} мм</span>`;
     seqLabels.appendChild(el);
     return el;
   });
@@ -786,11 +786,11 @@
       name: 'Eluna Air',
       layers: [
         { kind: 'knit',    cm: 0.6, name: 'Вискозный трикотаж' },
-        { kind: 'foam',    cm: 2,   name: 'Ортопена', spec: '2 см' },
+        { kind: 'foam',    cm: 2,   name: 'Ортопена', spec: '20 мм' },
         { kind: 'felt',    cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
         { kind: 'springs', cm: 14,  name: 'Армированные пружины', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
         { kind: 'felt',    cm: 0.6, name: 'Термовойлок' },
-        { kind: 'coir',    cm: 1,   name: 'Натуральный кокос', spec: '1 см' },
+        { kind: 'coir',    cm: 1,   name: 'Натуральный кокос', spec: '10 мм' },
         { kind: 'knit',    cm: 0.6, name: 'Вискозный трикотаж' },
       ],
     },
@@ -800,10 +800,10 @@
         { kind: 'knit',    cm: 0.6, name: 'Плотный вискозный трикотаж' },
         { kind: 'foam',    cm: 2,   name: 'Ортопена' },
         { kind: 'felt',    cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
-        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '2 см' },
+        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '20 мм' },
         { kind: 'springs', cm: 14,  name: 'Армированные пружины', spec: 'усиленный боковой каркас', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
         { kind: 'felt',    cm: 0.6, name: 'Термовойлок' },
-        { kind: 'coir',    cm: 1,   name: 'Натуральный кокос', spec: '1 см' },
+        { kind: 'coir',    cm: 1,   name: 'Натуральный кокос', spec: '10 мм' },
         { kind: 'foam',    cm: 1.5, name: 'Ортопена' },
         { kind: 'knit',    cm: 0.6, name: 'Плотный вискозный трикотаж' },
       ],
@@ -812,13 +812,13 @@
       name: 'Eluna Prime',
       layers: [
         { kind: 'cotton',  cm: 1,   name: 'Чехол из 100 % хлопка', spec: 'ручная работа' },
-        { kind: 'latex',   cm: 2,   name: 'Натуральный латекс', spec: '2 см', note: 'Микромассажный эффект — тело расслабляется' },
+        { kind: 'latex',   cm: 2,   name: 'Натуральный латекс', spec: '20 мм', note: 'Микромассажный эффект — тело расслабляется' },
         { kind: 'felt',    cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
-        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '2 см — отвечает за жёсткость' },
+        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '20 мм — отвечает за жёсткость' },
         { kind: 'springs', cm: 16,  name: 'Армированные пружины', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
-        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '2 см' },
+        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '20 мм' },
         { kind: 'felt',    cm: 0.6, name: 'Термовойлок' },
-        { kind: 'latex',   cm: 2,   name: 'Натуральный латекс', spec: '2 см' },
+        { kind: 'latex',   cm: 2,   name: 'Натуральный латекс', spec: '20 мм' },
         { kind: 'cotton',  cm: 1,   name: 'Чехол из 100 % хлопка' },
       ],
     },
@@ -910,6 +910,24 @@
         </div>`).join('');
     });
 
+    // вид линейки: шахматка / в ряд (Prime всегда в середине)
+    const modelsEl = document.getElementById('models');
+    document.querySelectorAll('.view__btn').forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll('.view__btn').forEach((x) => x.setAttribute('aria-checked', x === b ? 'true' : 'false'));
+      modelsEl.classList.toggle('models--row', b.dataset.view === 'row');
+      modelsEl.classList.toggle('models--zigzag', b.dataset.view !== 'row');
+      ScrollTrigger.refresh();
+    }));
+    // «Подробнее» — раскрывает доп. информацию карточки
+    document.querySelectorAll('.more').forEach((b) => b.addEventListener('click', () => {
+      const box = document.getElementById(b.getAttribute('aria-controls'));
+      const open = b.getAttribute('aria-expanded') === 'true';
+      b.setAttribute('aria-expanded', open ? 'false' : 'true');
+      b.textContent = open ? 'Подробнее' : 'Свернуть';
+      if (open) { box.classList.remove('is-open'); setTimeout(() => { box.hidden = true; ScrollTrigger.refresh(); }, 450); }
+      else { box.hidden = false; requestAnimationFrame(() => box.classList.add('is-open')); setTimeout(() => ScrollTrigger.refresh(), 500); }
+    }));
+
     // Prime: разлёт слоёв при появлении + липкая плашка на мобильном
     const prime = document.getElementById('primeBlock');
     const primeXs = prime && prime.querySelector('.xs--prime');
@@ -961,9 +979,9 @@
       const p = base == null ? null : Math.round(base * (SIZE_K[w] || 1) / 1000) * 1000;
       const o = OLD_PRICES.prime ? Math.round(OLD_PRICES.prime * (SIZE_K[w] || 1) / 1000) * 1000 : null;
       const paint = () => { priceEl.textContent = fmtMoney(price.v); monthlyEl.textContent = fmtMoney(price.v / 12); if (oldEl) oldEl.textContent = o == null ? '' : `${fmtMoney(price.o)} ₸`; };
-      labelEl.textContent = `${w} × ${h}`;
-      ctaLabel.textContent = `${w} × ${h}`;
-      cta.href = waLink(`Здравствуйте, интересует Eluna Prime, размер ${w} × ${h}`);
+      labelEl.textContent = `${w * 10} × ${h * 10}`;
+      ctaLabel.textContent = `${w * 10} × ${h * 10}`;
+      cta.href = waLink(`Здравствуйте, интересует Eluna Prime, размер ${w * 10} × ${h * 10} мм`);
       installment.hidden = p == null;
       if (p == null) { priceEl.textContent = '—'; return; }
       if (!animate) { price.v = p; price.o = o || 0; paint(); return; }
@@ -976,7 +994,7 @@
         const w = +btn.dataset.w, h = +btn.dataset.h;
         const pct = (cm) => (cm / 200) * 70;   // 200 см = 70 % комнаты
         gsap.to(mat, { width: `${pct(w)}%`, height: `${pct(h)}%`, duration: 1.1, ease: 'power3.inOut' });
-        wEl.textContent = w; hEl.textContent = h;
+        wEl.textContent = w * 10; hEl.textContent = h * 10;
         apply(btn, true);
       });
     });

@@ -142,7 +142,7 @@ em { font-style: normal; }
 
 /* буквы отвечают на курсор лёгким лунным светом */
 .word { display: inline-block; white-space: nowrap; }
-.char { display: inline-block; transition: text-shadow .9s var(--ease-out), color .9s var(--ease-out); }
+.char { display: inline-block; transition: color .9s var(--ease-out); }
 @media (hover: hover) {
   .char:hover { color: #fff; text-shadow: 0 0 14px rgba(var(--cool), .9), 0 0 36px rgba(var(--cool), .45); transition-duration: .15s; }
   .wordmark__word span:hover { color: #fff; text-shadow: 0 0 16px rgba(var(--cool), .9), 0 0 40px rgba(var(--cool), .5); }
@@ -315,7 +315,7 @@ body:not(.is-intro) .product__float { animation: heroFloat 11s ease-in-out infin
 .sheen {
   position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0;
   background: linear-gradient(118deg, transparent 30%, rgba(var(--warm), .55) 46%, rgba(var(--cool), .35) 52%, transparent 66%);
-  mix-blend-mode: soft-light; will-change: opacity, transform;
+  will-change: opacity, transform;
   -webkit-mask-image: radial-gradient(ellipse 48% 42% at 50% 54%, #000 40%, transparent 100%); mask-image: radial-gradient(ellipse 48% 42% at 50% 54%, #000 40%, transparent 100%);
 }
 body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
@@ -449,6 +449,7 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
    СЕКЦИИ
    ========================================================================== */
 
+.materials, .motion, .lineup, .sizes, .trust { content-visibility: auto; contain-intrinsic-size: auto 900px; }
 .manifesto, .materials, .motion, .sizes, .trust, .footer {
   position: relative; z-index: 2;
 }
@@ -536,8 +537,8 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 }
 /* блик: полоса тёплого света идёт по матрасу; с 3-го уровня */
 .px__shine {
-  position: absolute; inset: 0; mix-blend-mode: screen; pointer-events: none;
-  opacity: clamp(0, calc(var(--lvl) - 2), 1);
+  position: absolute; inset: 0; pointer-events: none;
+  opacity: calc(clamp(0, calc(var(--lvl) - 2), 1) * .5);
   background: linear-gradient(105deg, transparent 38%, rgba(var(--warm), .55) 50%, transparent 62%) no-repeat;
   background-size: 260% 100%; background-position: 150% 0;
   animation: pxShine 5.8s var(--ease-out) infinite;
@@ -698,9 +699,8 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 .price-new { color: var(--gold); text-shadow: 0 0 24px rgba(200,168,107,.55); }
 /* старая цена и выгода — везде одинаково */
 .price-old { font-family: var(--display); font-weight: 300; font-size: .55em; color: var(--ink-2); text-shadow: none; text-decoration: line-through; text-decoration-color: rgba(200,168,107,.8); text-decoration-thickness: 1px; }
-.model__sum .price-old, .diff__price .price-old { flex-basis: 100%; }
+.model__sum .price-old { flex-basis: 100%; }
 .save { display: inline-block; padding: 4px 8px; border-radius: 2px; border: 1px solid rgba(200,168,107,.5); background: rgba(200,168,107,.08); font-family: var(--sans); font-size: 11px; letter-spacing: .14em; color: var(--gold); font-weight: 500; vertical-align: middle; }
-.diff__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
 .sticky-cta__text { white-space: nowrap; font-size: 12px; }
 .sticky-cta__text .price-old { font-size: .9em; }
 .size-summary__price .price-old { display: block; font-size: .42em; margin-bottom: 8px; }
@@ -709,9 +709,42 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 .model__price--prime .model__night { font-size: 14px; color: var(--ink-2); }
 .model .button { margin-top: 28px; }
 
+/* переключатель вида */
+.view { display: flex; align-items: center; gap: 8px; margin: clamp(32px, 4vw, 56px) 0 8px; }
+.view__label { margin-right: 10px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
+.view__btn { padding: 10px 16px; border: 1px solid var(--line); border-radius: 2px; font-size: 12px; letter-spacing: .06em; color: var(--ink-2); transition: border-color .4s, color .4s, background-color .4s; }
+.view__btn:hover { border-color: var(--ink-3); color: var(--ink); }
+.view__btn[aria-checked="true"] { border-color: var(--gold); color: var(--ink); background: rgba(200,168,107,.08); }
+
+.models { display: grid; }
+.model__actions { margin-top: 28px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.model .button { margin-top: 0; }
+.more { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); padding: 10px 0; border-bottom: 1px solid transparent; transition: color .4s, border-color .4s; }
+.more:hover { color: var(--ink); border-color: var(--gold); }
+.more::after { content: ""; display: inline-block; width: 6px; height: 6px; margin-left: 10px; border: solid currentColor; border-width: 0 1px 1px 0; transform: translateY(-3px) rotate(45deg); transition: transform .4s; }
+.more[aria-expanded="true"]::after { transform: translateY(0) rotate(-135deg); }
+.model__more { margin-top: 18px; overflow: hidden; max-height: 0; opacity: 0; transition: max-height .5s var(--ease-out), opacity .5s var(--ease-out); }
+.model__more.is-open { max-height: 900px; opacity: 1; }
+.model__list--more { margin-top: 8px; font-size: 14px; color: var(--ink-2); }
+.model__more .reviews { margin-top: 24px; }
+
+/* «в ряд»: три карточки, Prime в середине и выше */
+.models--row { grid-template-columns: 1fr 1.18fr 1fr; gap: 20px; align-items: end; margin-top: 24px; }
+.models--row .model { display: block; padding: clamp(24px, 2.6vw, 40px); border: 1px solid var(--line); border-radius: 3px; background: rgba(16,18,26,.55); transition: transform .8s var(--ease-out), border-color .8s var(--ease-out); }
+.models--row .model:hover { transform: translateY(-6px); border-color: rgba(241,237,230,.22); }
+.models--row .model--balance { order: 3; }
+.models--row .model--prime { order: 2; margin-top: 0; padding: clamp(40px, 4vw, 64px) clamp(28px, 3vw, 44px) clamp(32px, 3vw, 48px); transform: translateY(-16px); box-shadow: inset 0 1px 0 var(--gold), 0 60px 120px -60px rgba(200,168,107,.35); }
+.models--row .model--prime:hover { transform: translateY(-24px); }
+.models--row .model--prime > .badge { top: -13px; left: clamp(28px, 3vw, 44px); background: #12141c; }
+.models--row .model__visual { display: none; }
+.models--row .model__title { font-size: clamp(22px, 1.9vw, 28px); }
+.models--row .model--prime .model__title { font-size: clamp(26px, 2.3vw, 34px); }
+.models--row .model__body { max-width: none; }
+.models--row .model__more .reviews { display: none; }
+
 /* Prime — акцентный блок */
 .model--prime {
-  position: relative; grid-template-columns: 1.1fr 0.9fr 260px; align-items: start;
+  position: relative; grid-template-columns: 1.1fr 0.9fr; align-items: start;
   margin-top: clamp(40px, 5vw, 72px);
   padding: clamp(64px, 8vw, 120px) clamp(28px, 4vw, 72px);
   border-top: 0; border-radius: 3px;
@@ -790,36 +823,6 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 .sticky-cta.is-on { transform: none; }
 .sticky-cta__btn { padding: 10px 16px; border-radius: 2px; background: var(--ink); color: var(--bg); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500; white-space: nowrap; }
 
-/* ---------- Чем отличаются: три карточки ---------------------------------- */
-
-.diff { margin-top: clamp(64px, 8vw, 120px); display: grid; grid-template-columns: 1fr 1fr 1.15fr; gap: 20px; align-items: stretch; }
-.diff__card {
-  position: relative; padding: clamp(28px, 3vw, 44px); border: 1px solid var(--line); border-radius: 3px;
-  background: rgba(16,18,26,0.55); color: var(--ink-2);
-  transition: border-color .8s var(--ease-out), background .8s var(--ease-out), transform .8s var(--ease-out);
-}
-.diff__card:hover { border-color: rgba(241,237,230,0.22); transform: translateY(-4px); }
-.diff__card--prime {
-  border-color: rgba(200,168,107,0.4); color: var(--ink);
-  background: radial-gradient(ellipse at 30% 0%, rgba(var(--warm), 0.09), transparent 60%), #12141c;
-  box-shadow: 0 40px 80px -40px rgba(200,168,107,0.25), inset 0 1px 0 var(--gold);
-}
-.diff__card--prime:hover { border-color: rgba(200,168,107,0.7); }
-.diff__card > .badge { position: absolute; top: -13px; left: clamp(28px, 3vw, 44px); background: #12141c; }
-.diff__name { font-family: var(--display); font-weight: 300; font-size: clamp(28px, 2.6vw, 40px); line-height: 1; color: var(--ink); }
-.diff__height { margin-top: 12px; font-size: 12px; letter-spacing: .06em; color: var(--ink-3); }
-.diff__list { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); display: grid; gap: 12px; font-size: 14px; line-height: 1.5; }
-.diff__list li { display: flex; align-items: baseline; gap: 12px; opacity: 0; transform: translateX(-8px); transition: opacity .9s var(--ease-out), transform .9s var(--ease-out); }
-.is-in .diff__list li { opacity: 1; transform: none; }
-.diff__list li:nth-child(2) { transition-delay: .08s; } .diff__list li:nth-child(3) { transition-delay: .16s; } .diff__list li:nth-child(4) { transition-delay: .24s; }
-.diff__list li:nth-child(5) { transition-delay: .32s; } .diff__list li:nth-child(6) { transition-delay: .4s; } .diff__list li:nth-child(7) { transition-delay: .48s; }
-.diff__list li::before { content: ""; flex: none; width: 6px; height: 11px; border: solid var(--gold); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg) translateY(-2px); }
-.diff__list li[data-v="no"] { color: var(--ink-4); }
-.diff__list li[data-v="no"]::before { width: 10px; height: 0; border-width: 0 0 1px 0; border-color: var(--ink-4); transform: none; align-self: center; }
-.diff__list li span { color: var(--ink-3); }
-.diff__card--prime .diff__list li span { color: var(--ink-2); }
-.diff__price { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); font-family: var(--display); font-weight: 300; font-size: clamp(22px, 2vw, 30px); color: #fff; text-shadow: 0 0 20px rgba(var(--warm), .3); }
-
 /* ---------- Размеры: контур, который дышит -------------------------------- */
 
 .size-vis { position: relative; aspect-ratio: 1; display: grid; place-items: center; }
@@ -883,7 +886,7 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
   -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 40%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 40%, transparent 100%); }
 .map__video { z-index: 0; aspect-ratio: 16 / 9; object-fit: cover; }
 .map__video + .map__bg { display: none; }
-.map__line { filter: drop-shadow(0 0 6px rgba(var(--warm), .25)); }
+.map__line { }
 .map__line { fill: none; stroke: rgba(241,237,230,0.28); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
 .map__fill { stroke: none; }
 /* подсветка контура вокруг выбранного города — лунный свет */
@@ -956,9 +959,8 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 
 @media (max-width: 1100px) {
   .perks { grid-template-columns: repeat(2, 1fr); }
-  .model--prime { grid-template-columns: 1fr 1fr; }
-  .model--prime .reviews { grid-column: 1 / -1; flex-direction: row; }
-  .model--prime .review { flex: 1; }
+  .models--row { grid-template-columns: 1fr; }
+  .models--row .model--prime { order: -1; transform: none; }
   .material-grid { grid-template-columns: repeat(2, 1fr); gap: 40px 28px; }
   .manifesto__facts, .trust__grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -986,6 +988,8 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
   .manifesto, .materials, .motion, .sizes, .lineup { padding-top: clamp(72px, 16vw, 110px); padding-bottom: clamp(72px, 16vw, 110px); }
   .section-head { margin-bottom: clamp(40px, 10vw, 64px); }
   .model--prime { margin-top: 48px; }
+  .view { flex-wrap: wrap; }
+  .model__actions { gap: 12px; }
   .model--prime > .badge { top: -13px; background: #12141c; }
   .xs__text { font-size: 12px; }
   .xs__text b { hyphens: manual; }
@@ -1030,8 +1034,6 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
   .statement { font-size: clamp(26px, 7vw, 40px); }
 
   .sizes__grid { grid-template-columns: 1fr; }
-  .diff { grid-template-columns: 1fr; }
-  .diff__card--prime { order: -1; }
   .size-vis { width: min(100%, 340px); height: min(calc(100vw - 2 * var(--gutter)), 340px); aspect-ratio: auto; margin: 0 auto 24px; }
   .seq-label { font-size: 9.5px; gap: 6px; left: 66%; max-width: 32vw; white-space: nowrap; }
   .seq-label::before { width: 12px; flex: none; }
