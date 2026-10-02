@@ -8,17 +8,10 @@
   <meta name="theme-color" content="#06070c">
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%2306070c'/%3E%3Cg fill='%23f1ede6'%3E%3Cpath d='M62 12a40 40 0 1 0 0 76 33 33 0 0 1 0-76z'/%3E%3Cpath d='M48 28h34a8 8 0 0 1-8 8H48zM48 46h28a8 8 0 0 1-8 8H48zM48 64h34a8 8 0 0 1-8 8H48z'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="icon" type="image/png" href="img/mark.png">
 </head>
 <body class="is-intro">
 
-  <!-- знак бренда: полумесяц + три полосы «E» -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-    <symbol id="eluna-mark" viewBox="0 0 100 100">
-      <path d="M62 8a46 46 0 1 0 0 84 38 38 0 0 1 0-84z"/>
-      <path d="M46 26h40a9 9 0 0 1-9 9H46zM46 45h34a9 9 0 0 1-9 9H46zM46 64h40a9 9 0 0 1-9 9H46z"/>
-    </symbol>
-  </svg>
   <a class="skip-link" href="#manifesto">К содержанию</a>
 
   <!-- Космос: звёздное поле на всю страницу -->
@@ -27,7 +20,7 @@
 
   <!-- Навигация -->
   <header class="nav" id="nav">
-    <a class="nav__brand" href="#top" aria-label="ELUNA — на главную"><svg class="mark" aria-hidden="true"><use href="#eluna-mark"/></svg>ELUNA</a>
+    <a class="nav__brand" href="#top" aria-label="ELUNA — на главную"><img class="mark" src="img/mark.png" alt="" width="351" height="345">ELUNA</a>
     <nav class="nav__links" aria-label="Разделы">
       <a href="#manifesto">Семь слоёв</a>
       <a href="#motion">Сон вдвоём</a>
@@ -51,7 +44,7 @@
 
         <div class="wordmark" id="wordmark" aria-hidden="true">
           <span class="wordmark__glow" id="wordmarkGlow"></span>
-          <svg class="wordmark__mark" id="wordmarkMark"><use href="#eluna-mark"/></svg>
+          <img class="wordmark__mark" id="wordmarkMark" src="img/mark.png" alt="" width="351" height="345" decoding="async">
           <div class="wordmark__text">
             <div class="wordmark__word"><span>E</span><span>L</span><span>U</span><span>N</span><span>A</span></div>
             <div class="wordmark__sub" id="wordmarkSub">Sleep Tech</div>
@@ -59,7 +52,9 @@
         </div>
 
         <!-- продукт: фото проявляется из темноты -->
-        <div class="orbits" id="orbits" aria-hidden="true"><i class="orbit orbit--a"></i><i class="orbit orbit--b"></i></div>
+        <!-- луна и её свет: единственный источник света на входе -->
+        <img class="moon-hero" id="moonHero" src="img/moon.webp" alt="" width="1024" height="1024" decoding="async" fetchpriority="high">
+        <div class="moonbeam" id="moonbeam" aria-hidden="true"></div>
         <figure class="product product--hero" id="productHero">
           <img src="img/hero.webp" alt="Матрас ELUNA в луче света" decoding="async" fetchpriority="high">
           <div class="light" aria-hidden="true"></div>
@@ -231,10 +226,9 @@
         <!-- выбор модели: свет движется к выбранной строке, уровень задаёт силу света -->
         <div class="picker reveal" id="picker">
           <div class="px" id="pxStage" data-lvl="3">
+            <img class="px__moon" src="img/moon.webp" alt="" width="1024" height="1024" loading="lazy" decoding="async">
             <div class="px__beam" id="pxBeam" aria-hidden="true"></div>
             <div class="px__floor" aria-hidden="true"></div>
-            <div class="px__ring" aria-hidden="true"></div>
-            <i class="px__orbit px__orbit--a" aria-hidden="true"></i><i class="px__orbit px__orbit--b" aria-hidden="true"></i>
             <figure class="px__item" aria-hidden="true">
               <img class="px__img" src="img/hero.webp" alt="" loading="lazy" decoding="async" draggable="false">
               <span class="px__shine"></span>
@@ -437,10 +431,11 @@
           <div class="delivery__head">
             <p class="eyebrow"><span>Доставка</span><span class="dot"></span><span>Весь Казахстан</span></p>
             <h2 class="delivery__title">Доставка по всему Казахстану.<br><em>От 7 дней до двери.</em></h2>
-            <p class="delivery__lead">Подъём на этаж и установка включены. Нажмите на город — покажем срок.</p>
-            <p class="delivery__pick" aria-live="polite"><span class="delivery__city" id="deliveryCity">Алматы</span><span class="delivery__days" id="deliveryDays">от 7 дней</span></p>
+            <p class="delivery__lead">Мы в Алматы: по городу привезём и установим сами. В остальные города — от 7 дней до двери, подъём включён. Нажмите на город.</p>
+            <p class="delivery__pick" aria-live="polite"><span class="delivery__city" id="deliveryCity">Алматы</span><span class="delivery__days" id="deliveryDays">мы здесь · доставка по городу</span></p>
           </div>
-          <div class="map" id="map" style="--mx:73.60%;--my:80.29%">
+          <div class="map" id="map" data-bg style="--mx:73.60%;--my:80.29%">
+            <img class="map__bg" src="img/space.webp" alt="" loading="lazy" decoding="async">
             <svg class="map__base" viewBox="0 0 1040 578" aria-hidden="true" focusable="false">
               <defs><pattern id="mapGrid" width="52" height="52" patternUnits="userSpaceOnUse"><path d="M52 0H0V52" fill="none" stroke="rgba(241,237,230,0.05)" stroke-width="1"/></pattern></defs>
               <path class="map__fill" d="M619.0 499.7L605.0 506.4L572.7 531.9L562.0 558.1L552.9 558.3L546.2 541.0L515.1 539.8L510.2 509.8L498.2 509.6L500.1 472.9L470.8 446.2L428.9 449.1L400.2 454.4L376.8 421.4L356.8 407.6L318.9 381.4L314.3 378.3L251.4 399.9L252.4 534.7L239.8 536.5L222.7 507.8L206.2 497.5L178.4 505.2L167.6 517.3L166.2 508.4L172.2 493.2L167.6 480.4L139.2 468.0L128.2 435.1L114.7 425.9L113.9 414.0L137.7 417.4L138.6 390.7L159.4 384.8L180.8 390.2L185.2 354.6L180.8 332.0L156.3 333.7L135.6 324.8L107.2 340.9L84.4 348.5L72.0 342.6L74.5 323.8L58.9 299.4L40.8 300.4L20.0 275.6L34.1 247.9L27.0 240.4L46.5 200.3L71.6 221.5L74.7 194.8L125.2 155.0L163.4 154.1L217.3 179.4L246.2 194.2L272.2 178.7L310.9 178.0L342.2 197.0L349.3 186.1L383.7 187.7L389.8 170.4L350.2 145.2L373.6 127.4L369.0 117.4L392.5 107.9L374.9 82.9L386.1 70.4L477.6 57.7L489.5 48.7L550.7 35.2L572.7 20.0L616.6 27.9L624.3 65.8L649.9 56.9L681.3 69.3L679.3 89.3L702.7 87.2L764.0 52.7L755.0 64.2L786.2 92.4L840.9 185.3L853.9 166.1L887.6 187.2L922.7 177.8L936.2 184.4L948.0 205.5L965.1 212.6L975.5 228.1L1007.0 223.2L1020.0 245.6L1001.4 269.9L981.1 273.4L979.9 310.0L966.3 326.6L917.8 314.5L900.2 380.0L887.6 388.1L839.2 402.7L861.2 466.2L844.4 475.8L846.4 496.6L831.3 491.2L819.0 478.1L782.8 474.3L742.2 473.3L733.3 477.3L698.5 461.9L684.6 469.5L680.8 491.1L640.6 478.5L624.5 483.6L619.0 499.7Z" fill="url(#mapGrid)"/>
@@ -449,7 +444,7 @@
             <svg class="map__lit" viewBox="0 0 1040 578" aria-hidden="true" focusable="false">
               <path d="M619.0 499.7L605.0 506.4L572.7 531.9L562.0 558.1L552.9 558.3L546.2 541.0L515.1 539.8L510.2 509.8L498.2 509.6L500.1 472.9L470.8 446.2L428.9 449.1L400.2 454.4L376.8 421.4L356.8 407.6L318.9 381.4L314.3 378.3L251.4 399.9L252.4 534.7L239.8 536.5L222.7 507.8L206.2 497.5L178.4 505.2L167.6 517.3L166.2 508.4L172.2 493.2L167.6 480.4L139.2 468.0L128.2 435.1L114.7 425.9L113.9 414.0L137.7 417.4L138.6 390.7L159.4 384.8L180.8 390.2L185.2 354.6L180.8 332.0L156.3 333.7L135.6 324.8L107.2 340.9L84.4 348.5L72.0 342.6L74.5 323.8L58.9 299.4L40.8 300.4L20.0 275.6L34.1 247.9L27.0 240.4L46.5 200.3L71.6 221.5L74.7 194.8L125.2 155.0L163.4 154.1L217.3 179.4L246.2 194.2L272.2 178.7L310.9 178.0L342.2 197.0L349.3 186.1L383.7 187.7L389.8 170.4L350.2 145.2L373.6 127.4L369.0 117.4L392.5 107.9L374.9 82.9L386.1 70.4L477.6 57.7L489.5 48.7L550.7 35.2L572.7 20.0L616.6 27.9L624.3 65.8L649.9 56.9L681.3 69.3L679.3 89.3L702.7 87.2L764.0 52.7L755.0 64.2L786.2 92.4L840.9 185.3L853.9 166.1L887.6 187.2L922.7 177.8L936.2 184.4L948.0 205.5L965.1 212.6L975.5 228.1L1007.0 223.2L1020.0 245.6L1001.4 269.9L981.1 273.4L979.9 310.0L966.3 326.6L917.8 314.5L900.2 380.0L887.6 388.1L839.2 402.7L861.2 466.2L844.4 475.8L846.4 496.6L831.3 491.2L819.0 478.1L782.8 474.3L742.2 473.3L733.3 477.3L698.5 461.9L684.6 469.5L680.8 491.1L640.6 478.5L624.5 483.6L619.0 499.7Z"/>
             </svg>
-            <div class="moon" aria-hidden="true"></div>
+            <div class="moon" aria-hidden="true"><img src="img/moon.webp" alt="" width="1024" height="1024" loading="lazy" decoding="async"></div>
             <button type="button" class="city" data-city="Астана" style="--x:60.62%;--y:30.12%" aria-pressed="false" aria-label="Астана: доставка от 7 дней"><i></i><span>Астана</span></button>
             <button type="button" class="city is-on" data-city="Алматы" style="--x:73.60%;--y:80.29%" aria-pressed="true" aria-label="Алматы: доставка от 7 дней"><i></i><span>Алматы</span></button>
             <button type="button" class="city" data-city="Шымкент" style="--x:56.32%;--y:86.23%" aria-pressed="false" aria-label="Шымкент: доставка от 7 дней"><i></i><span>Шымкент</span></button>
@@ -514,7 +509,7 @@
 
   <footer class="footer">
     <div class="container footer__inner">
-      <span class="footer__brand"><svg class="mark" aria-hidden="true"><use href="#eluna-mark"/></svg>ELUNA<small>Sleep Tech</small></span>
+      <span class="footer__brand"><img class="mark" src="img/mark.png" alt="" width="351" height="345">ELUNA<small>Sleep Tech</small></span>
       <span class="footer__copy">© 2026 ELUNA. Матрасы ручной сборки.</span>
       <nav class="footer__links" aria-label="Служебные ссылки">
         <a href="#">Доставка</a>

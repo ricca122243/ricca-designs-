@@ -170,7 +170,7 @@
      render() их сводит — так они никогда не спорят между собой.
      ------------------------------------------------------------------------ */
   const S = {              // скролл
-    lx: 66, ly: 44, lr: 1, soft: 60,
+    lx: 70, ly: 20, lr: 1, soft: 60,
     heroS: 1, heroY: 0, heroExp: 1, rx: 0, ry: 0,
     cutO: 0, cutExp: 1, cutS: 1.04, cutX: 0, cutY: 0,
     spread: 0,             // 0..1 — насколько разошлись слои
@@ -179,7 +179,7 @@
     wmS: 1, wmY: 0, wmO: 1,
   };
   const I = {              // интро
-    dark: 1, lr: 0, exp: 0, soft: 85, eclipse: 0, wmO: 1, cueO: 0,
+    dark: 1, lr: 0, exp: 0, soft: 85, eclipse: 0, wmO: 1, cueO: 0, moon: 0, beam: 0,
   };
   const P = { x: 0, y: 0 }; // указатель: параллакс камеры, градусы
 
@@ -190,6 +190,8 @@
   const productHero = document.getElementById('productHero');
   const productCut = document.getElementById('productCut');
   const cue = document.getElementById('cue');
+  const moonHero = document.getElementById('moonHero');
+  const moonbeam = document.getElementById('moonbeam');
 
   const smooth = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
 
@@ -248,7 +250,7 @@
     // слои не уходили под навигацию; мобильный: кадр покрывает экран, фокус правее центра
     const mobile = window.innerWidth < 900;
     // десктоп: 78 % от «вписанного» размера — кадр не растягивается и остаётся резким
-    const k = mobile ? (cw / SEQ.w) * 1.35 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.78;
+    const k = mobile ? (cw / SEQ.w) * 1.12 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.7;
     const dw = SEQ.w * k, dh = SEQ.h * k;
     const dx = (cw - dw) * (mobile ? 0.5 : 0.5), dy = (ch - dh) * (mobile ? 0.56 : 0.56);
     placeSeqLabels(dx / dpr(), dy / dpr(), dw / dpr(), dh / dpr());
@@ -310,7 +312,8 @@
     root.style.setProperty('--lx', `${S.lx}%`);
     root.style.setProperty('--ly', `${S.ly}%`);
     root.style.setProperty('--ls', `${Math.max(0.02, I.lr * S.lr * 2.1).toFixed(4)}`);   // масштаб «дыры» света
-    stageEl.style.setProperty('--orb', `${(I.eclipse * S.eclipse).toFixed(3)}`);
+    moonbeam.style.opacity = (I.beam * S.eclipse).toFixed(3);
+    moonHero.style.opacity = (I.moon * S.eclipse).toFixed(3);
     root.style.setProperty('--brand-o', `${S.brand}`);
     exposure.style.opacity = Math.max(I.dark, S.dark);
     eclipse.style.opacity = I.eclipse * S.eclipse;
@@ -358,26 +361,28 @@
   });
 
   intro
-    // 0–1.4 с: из темноты проступает знак — полумесяц с «E», с тёплым свечением
-    .to(wmMark, { opacity: 1, scale: 1, duration: 1.4, ease: 'power3.out' }, 0.1)
-    .to(wmGlow, { opacity: 1, duration: 1.2, ease: 'power2.inOut' }, 0.4)
-    .to(wmGlow, { opacity: 0, duration: 1.8, ease: 'power2.inOut' }, 2.4)
-    // 0.9–2.6 с: буквы ELUNA по одной, затем Sleep Tech
-    .to(letters, { opacity: 1, y: 0, duration: 1.3, stagger: 0.07, ease: 'power3.out' }, 0.9)
-    .to(wmSub, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' }, 1.9)
-    // 1.6–4.4 с: свет — кольцо затмения, пятно растёт, экспозиция поднимается
-    .to(I, { dark: 0.6, duration: 1.2 }, 1.6)
-    .to(I, { eclipse: 0.7, duration: 1.8 }, 1.7)
-    .to(I, { lr: 0.16, exp: 0.38, duration: 1.3, ease: 'power1.inOut' }, 1.8)
-    .to(I, { dark: 0.2, duration: 1.2 }, 2.6)
-    .to(I, { lr: 0.42, exp: 0.72, soft: 70, duration: 1.4, ease: 'power1.inOut' }, 2.7)
-    .to(I, { dark: 0, lr: 1.0, exp: 1, soft: 60, duration: 1.6, ease: 'power2.out' }, 3.3)
+    // 0–1.6 с: из темноты всходит луна — единственный источник света
+    .to(I, { moon: 1, duration: 1.8, ease: 'power2.out' }, 0.2)
+    .to(moonHero, { scale: 1, duration: 2.2, ease: 'power2.out' }, 0.2)
+    // 1.0–2.8 с: логотип — знак, буквы, Sleep Tech
+    .to(wmMark, { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }, 1.0)
+    .to(wmGlow, { opacity: 1, duration: 1.0, ease: 'power2.inOut' }, 1.1)
+    .to(wmGlow, { opacity: 0, duration: 1.6, ease: 'power2.inOut' }, 2.6)
+    .to(letters, { opacity: 1, y: 0, duration: 1.2, stagger: 0.07, ease: 'power3.out' }, 1.4)
+    .to(wmSub, { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' }, 2.3)
+    // 1.8–4.6 с: лунный свет ложится на матрас — луч, пятно растёт, экспозиция поднимается
+    .to(I, { beam: 1, duration: 1.8, ease: 'power1.inOut' }, 1.8)
+    .to(I, { dark: 0.6, duration: 1.2 }, 1.9)
+    .to(I, { lr: 0.18, exp: 0.4, duration: 1.3, ease: 'power1.inOut' }, 2.0)
+    .to(I, { dark: 0.2, duration: 1.2 }, 2.8)
+    .to(I, { lr: 0.45, exp: 0.74, duration: 1.4, ease: 'power1.inOut' }, 2.9)
+    .to(I, { dark: 0, lr: 1.0, exp: 1, duration: 1.6, ease: 'power2.out' }, 3.5)
     .to(I, { eclipse: 1, duration: 1.3 }, 3.6)
-    // 3.6–5.0 с: текст hero
-    .to(heroEyebrow, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 3.7)
-    .to(heroLines, { y: 0, duration: 1.2, stagger: 0.12, ease: 'power3.out' }, 3.8)
-    .to(heroSub, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' }, 4.3)
-    .to(I, { cueO: 1, duration: 1.0 }, 5.0);
+    // 3.8–5.2 с: текст hero
+    .to(heroEyebrow, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 3.9)
+    .to(heroLines, { y: 0, duration: 1.2, stagger: 0.12, ease: 'power3.out' }, 4.0)
+    .to(heroSub, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' }, 4.5)
+    .to(I, { cueO: 1, duration: 1.0 }, 5.2);
 
   if (reduceMotion) {
     intro.progress(1);
@@ -644,7 +649,7 @@
   (function delivery() {
     const map = document.getElementById('map');
     if (!map) return;
-    const DELIVERY = { default: 'от 7 дней' };
+    const DELIVERY = { default: 'от 7 дней', 'Алматы': 'мы здесь · доставка по городу' };
     const cityEl = document.getElementById('deliveryCity');
     const daysEl = document.getElementById('deliveryDays');
     const cities = Array.from(map.querySelectorAll('.city'));
@@ -663,6 +668,25 @@
     });
     const first = map.querySelector('.city.is-on');
     if (first) pick(first);
+  })();
+
+  /* буквы заголовков — отдельные span, чтобы отвечать на курсор лунным светом */
+  (function glowLetters() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    const targets = document.querySelectorAll('.section-title, .motion__title, .delivery__title, .cta__title, .model__title, .diff__name, .px__pitch');
+    const wrap = (node) => {
+      const frag = document.createDocumentFragment();
+      for (const ch of node.textContent) {
+        if (ch === ' ' || ch === '\u00a0') { frag.appendChild(document.createTextNode(ch)); continue; }
+        const sp = document.createElement('span'); sp.className = 'char'; sp.textContent = ch; frag.appendChild(sp);
+      }
+      node.replaceWith(frag);
+    };
+    targets.forEach((el) => {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      const texts = []; while (walker.nextNode()) if (walker.currentNode.textContent.trim()) texts.push(walker.currentNode);
+      texts.forEach(wrap);
+    });
   })();
 
   /* числа считают вверх при появлении */
