@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>ELUNA — матрас, который раскрывается слой за слоем</title>
   <meta name="description" content="ELUNA. Семь слоёв, собранных вокруг одного ощущения — тишины. Премиальный матрас ручной сборки.">
-  <meta name="theme-color" content="#050506">
+  <meta name="theme-color" content="#06070c">
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="is-intro">
 
-  <!-- Плёночное зерно поверх всего -->
+  <!-- Космос: звёздное поле на всю страницу -->
+  <canvas class="stars" id="stars" aria-hidden="true"></canvas>
   <div class="grain" aria-hidden="true"></div>
 
   <!-- Навигация -->
@@ -29,32 +30,30 @@
   <main id="top">
 
     <!-- ================================================================
-         СЦЕНА: кинематографическое раскрытие продукта (pinned)
+         СЦЕНА: раскрытие продукта (pinned)
          ================================================================ -->
     <section class="stage" id="stage" aria-label="ELUNA — вступление">
       <div class="stage__inner">
 
-        <!-- атмосфера -->
-        <div class="beam" aria-hidden="true"></div>
-        <canvas class="dust" id="dust" aria-hidden="true"></canvas>
+        <div class="nebula" aria-hidden="true"></div>
+        <div class="eclipse" id="eclipse" aria-hidden="true"></div>
 
-        <!-- гигантское слово за продуктом -->
         <div class="wordmark" id="wordmark" aria-hidden="true">
           <span>E</span><span>L</span><span>U</span><span>N</span><span>A</span>
         </div>
 
-        <!-- 3D-объект -->
-        <div class="scene" id="scene">
-          <div class="world" id="world">
-            <div class="floor" aria-hidden="true">
-              <div class="floor__pool"></div>
-              <div class="floor__contact"></div>
-            </div>
-            <div class="mattress" id="mattress" role="img" aria-label="Матрас ELUNA, семь слоёв"></div>
-          </div>
-        </div>
+        <!-- продукт: фото проявляется из темноты -->
+        <figure class="product product--hero" id="productHero">
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_093000_77c175c6-b45c-4c6e-bace-9eb2bb5e8895.png" alt="Матрас ELUNA в луче света" decoding="async" fetchpriority="high">
+        </figure>
 
-        <!-- типографика: фаза 1 — hero -->
+        <!-- продукт в разрезе: семь слоёв -->
+        <figure class="product product--cut" id="productCut">
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_094759_3d9a25b1-2c48-49dc-b097-dc0f72c57321.png" alt="Матрас ELUNA в разрезе: семь слоёв" decoding="async" loading="lazy">
+          <span class="scan" id="scan" aria-hidden="true"></span>
+        </figure>
+
+        <!-- фаза 1 — hero -->
         <div class="copy copy--hero" id="copyHero">
           <p class="eyebrow"><span>Коллекция Noir</span><span class="dot"></span><span>2026</span></p>
           <h1 class="hero-title">
@@ -65,11 +64,11 @@
         </div>
 
         <div class="cue" id="cue" aria-hidden="true">
-          <span class="cue__label">Листайте, чтобы раскрыть</span>
+          <span class="cue__label">Листайте</span>
           <span class="cue__line"></span>
         </div>
 
-        <!-- типографика: фаза 2 — семь слоёв -->
+        <!-- фаза 2 — семь слоёв -->
         <div class="copy copy--layers" id="copyLayers">
           <p class="eyebrow"><span>Анатомия</span><span class="dot"></span><span>30 см</span></p>
           <h2 class="section-title">Семь слоёв.<br><em>Одно ощущение.</em></h2>
@@ -85,12 +84,11 @@
           <p class="layer-active" id="layerActive"><span class="num">01</span><span class="name">Стёганый чехол из органического хлопка</span></p>
         </div>
 
-        <!-- типографика: фаза 3 — финал сцены -->
+        <!-- фаза 3 — финал сцены -->
         <div class="copy copy--outro" id="copyOutro">
           <p class="statement">Каждый слой — отдельное решение.<br>Вместе — <em>тишина</em>, в которую хочется вернуться.</p>
         </div>
 
-        <!-- общая экспозиция сцены -->
         <div class="exposure" id="exposure" aria-hidden="true"></div>
       </div>
     </section>
@@ -127,7 +125,7 @@
         </div>
         <div class="material-grid">
           <article class="material reveal">
-            <div class="material__swatch swatch--cotton"></div>
+            <div class="material__photo"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_093000_ba99b665-ff27-45f0-9362-0489807eabe4.png" alt="Стёганый органический хлопок, макро" loading="lazy" decoding="async"></div>
             <div class="material__body">
               <span class="material__index">01</span>
               <h3>Органический хлопок</h3>
@@ -135,7 +133,7 @@
             </div>
           </article>
           <article class="material reveal">
-            <div class="material__swatch swatch--latex"></div>
+            <div class="material__photo"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_093000_f1a5cfa3-9e1b-4d1e-8886-6ba406a20114.png" alt="Перфорированный натуральный латекс, макро" loading="lazy" decoding="async"></div>
             <div class="material__body">
               <span class="material__index">02</span>
               <h3>Натуральный латекс</h3>
@@ -143,7 +141,7 @@
             </div>
           </article>
           <article class="material reveal">
-            <div class="material__swatch swatch--gel"></div>
+            <div class="material__photo"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_093000_e1993c72-6bd4-40ce-9d08-4f55d86e17b0.png" alt="Memory-пена с гелем, макро" loading="lazy" decoding="async"></div>
             <div class="material__body">
               <span class="material__index">03</span>
               <h3>Memory-пена с гелем</h3>
@@ -151,7 +149,7 @@
             </div>
           </article>
           <article class="material reveal">
-            <div class="material__swatch swatch--coir"></div>
+            <div class="material__photo"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_093000_c008b823-f112-46c1-97e7-9d2b04307097.png" alt="Кокосовая койра, макро" loading="lazy" decoding="async"></div>
             <div class="material__body">
               <span class="material__index">04</span>
               <h3>Кокосовая койра</h3>
@@ -173,9 +171,7 @@
         </div>
 
         <div class="construction__grid">
-          <div class="cutaway reveal" id="cutaway" role="tablist" aria-label="Слои матраса">
-            <!-- слои заполняются скриптом -->
-          </div>
+          <div class="cutaway reveal" id="cutaway" role="tablist" aria-label="Слои матраса"></div>
 
           <div class="construction__panel reveal">
             <div class="firmness" role="radiogroup" aria-label="Жёсткость">
@@ -250,6 +246,9 @@
          ДОВЕРИЕ + CTA
          ================================================================ -->
     <section class="trust" id="order">
+      <figure class="trust__banner reveal" aria-hidden="true">
+        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_094759_0c15a2d1-5e4a-4542-89ca-d67346891973.png" alt="" loading="lazy" decoding="async">
+      </figure>
       <div class="container">
         <div class="trust__grid">
           <div class="trust__item reveal">
