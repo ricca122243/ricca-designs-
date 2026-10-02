@@ -27,6 +27,9 @@
   /* сцена — выставляется скриптом */
   --lx: 68%;
   --ly: 42%;
+  --moon-x: 8%;      /* где луна = откуда свет */
+  --moon-y: 20%;
+  --beam-angle: 128deg;
   --lr: 0px;          /* радиус светового пятна на фото */
   --soft: 60%;        /* мягкость края пятна */
   --exp: 0;           /* экспозиция фото 0..1 */
@@ -287,7 +290,7 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 }
 /* луна в hero: появляется первой, её свет падает на матрас */
 .moon-wrap {
-  position: absolute; z-index: 5; left: 8%; top: 20%; width: min(12vw, 15vh); aspect-ratio: 1;
+  position: absolute; z-index: 5; left: var(--moon-x); top: var(--moon-y); width: min(8vw, 11vh); aspect-ratio: 1;
   transform: translate(-50%, -50%) translate3d(var(--mpx, 0px), var(--mpy, 0px), 0);
   pointer-events: none; will-change: transform;
 }
@@ -298,7 +301,8 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 }
 .moon-glow {
   position: absolute; left: 50%; top: 50%; width: 260%; aspect-ratio: 1; transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(var(--warm), .28), rgba(var(--cool), .08) 38%, transparent 68%);
+  background: radial-gradient(circle, rgba(var(--cool), .22), rgba(var(--cool), .07) 40%, rgba(var(--warm), .02) 60%, transparent 72%);
+  width: 340%;
   opacity: 0; will-change: opacity;
 }
 /* после интро: луна дышит — медленный дрейф, ореол пульсирует */
@@ -314,17 +318,28 @@ body:not(.is-intro) .product__float { animation: heroFloat 11s ease-in-out infin
 /* блик лунного света, проходит по стёжке */
 .sheen {
   position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0;
-  background: linear-gradient(118deg, transparent 30%, rgba(var(--warm), .55) 46%, rgba(var(--cool), .35) 52%, transparent 66%);
+  background: linear-gradient(calc(var(--beam-angle) - 10deg), transparent 30%, rgba(var(--cool), .45) 46%, rgba(var(--warm), .18) 52%, transparent 66%);
   will-change: opacity, transform;
   -webkit-mask-image: radial-gradient(ellipse 48% 42% at 50% 54%, #000 40%, transparent 100%); mask-image: radial-gradient(ellipse 48% 42% at 50% 54%, #000 40%, transparent 100%);
 }
 body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
+/* вмятина от нажатия: тёмный центр, светлый ободок со стороны луны */
+.dent {
+  position: absolute; z-index: 2; left: var(--dx, 50%); top: var(--dy, 50%); width: 26vmin; aspect-ratio: 1.6;
+  transform: translate(-50%, -50%) rotate(-12deg) scale(.6); opacity: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(0,0,0,.42) 0, rgba(0,0,0,.22) 38%, transparent 62%),
+    radial-gradient(ellipse at 38% 30%, rgba(var(--cool), .35) 0, transparent 34%);
+  will-change: transform, opacity;
+}
+.product--hero { pointer-events: auto; cursor: pointer; }
+.product--hero .light, .product--hero::before, .product--hero::after { pointer-events: none; }
 @keyframes sheenPass { 0%, 70%, 100% { opacity: 0; transform: translateX(-12%); } 82% { opacity: .18; } 94% { opacity: 0; transform: translateX(12%); } }
 .moonbeam {
-  position: absolute; z-index: 4; left: 8%; top: 20%; width: 180vmax; height: 180vmax; margin: -90vmax 0 0 -90vmax;
+  position: absolute; z-index: 4; left: var(--moon-x); top: var(--moon-y); width: 180vmax; height: 180vmax; margin: -90vmax 0 0 -90vmax;
   translate: var(--mpx, 0px) var(--mpy, 0px);
   -webkit-mask-image: radial-gradient(circle closest-side, #000 0, rgba(0,0,0,.6) 45%, transparent 85%); mask-image: radial-gradient(circle closest-side, #000 0, rgba(0,0,0,.6) 45%, transparent 85%);
-  background: conic-gradient(from 128deg at 50% 50%, transparent 0deg, rgba(var(--cool), .07) 8deg, rgba(var(--warm), .13) 15deg, rgba(var(--cool), .07) 22deg, transparent 32deg);
+  background: conic-gradient(from var(--beam-angle) at 50% 50%, transparent 0deg, rgba(var(--cool), .06) 7deg, rgba(var(--cool), .13) 13deg, rgba(var(--warm), .05) 18deg, rgba(var(--cool), .06) 23deg, transparent 32deg);
   opacity: 0; pointer-events: none; will-change: opacity;
 }
 /* фото — чистый чёрный фон; мягко сводим его с космосом по краям */
@@ -976,9 +991,9 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
   .reveal { transform: none; transition-duration: 1s; }
   .px__shine { animation: none; background-position: 30% 0; }
   .px__beam.is-flare { animation: none; }
-  .moon-wrap { left: 82%; top: 9%; width: 18vw; }
+  :root { --moon-x: 82%; --moon-y: 9%; }
+  .moon-wrap { width: 13vw; }
   .sheen { display: none; }
-  .moonbeam { left: 82%; top: 9%; background: conic-gradient(from 196deg at 50% 50%, transparent 0deg, rgba(var(--cool), .07) 8deg, rgba(var(--warm), .13) 15deg, rgba(var(--cool), .07) 22deg, transparent 32deg); }
   .px__moon { width: 20%; }
   .delivery { grid-template-columns: 1fr; gap: 28px; }
   .city span { display: none; }

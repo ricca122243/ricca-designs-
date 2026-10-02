@@ -1,0 +1,37 @@
+name: Import assets
+
+on:
+  push:
+    branches:
+      - claude/compassionate-johnson-sn250b
+    paths:
+      - .github/import-assets.env
+      - .github/workflows/import-assets.yml
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and unpack
+        run: |
+          set -euo pipefail
+          [ -f .github/import-assets.env ] || { echo "no import spec"; exit 0; }
+          set -a; . .github/import-assets.env; set +a
+          curl -fsSL -o /tmp/assets.zip "$URL"
+          if [ -n "${MD5:-}" ]; then echo "$MD5  /tmp/assets.zip" | md5sum -c -; fi
+          mkdir -p "$DEST"
+          unzip -o -j /tmp/assets.zip -d "$DEST"
+          ls -la "$DEST"
+          echo "DEST=$DEST" >> "$GITHUB_ENV"
+      - name: Commit
+        if: env.DEST != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A "$DEST"
+          git commit -m "Import frame sequence into $DEST" || { echo "nothing to commit"; exit 0; }
+          git push

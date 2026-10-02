@@ -269,6 +269,17 @@
   sizeSeq();
   window.addEventListener('resize', sizeSeq);
 
+  // угол луча: от луны к центру матраса, в системе conic-gradient (0° = вверх, по часовой)
+  function aimBeam() {
+    const mob = window.innerWidth < 900;
+    const mx = (mob ? 0.82 : 0.08) * window.innerWidth, my = (mob ? 0.09 : 0.20) * window.innerHeight;
+    const tx = 0.5 * window.innerWidth, ty = 0.58 * window.innerHeight;
+    const deg = (Math.atan2(tx - mx, -(ty - my)) * 180 / Math.PI + 360) % 360;
+    root.style.setProperty('--beam-angle', `${(deg - 16).toFixed(1)}deg`);   // конус шириной 32°, центр на цели
+  }
+  aimBeam();
+  window.addEventListener('resize', aimBeam);
+
   /* подписи к слоям на последнем кадре разлёта: позиции заданы под f24 */
   const seqLabels = document.getElementById('seqLabels');
   const SEQ_LABEL_Y = [9, 21, 30, 39, 49, 67, 87];   // % высоты кадра, слои сверху вниз
@@ -312,8 +323,10 @@
 
     // свет на фото: радиус в px от диагонали, экспозиция — произведение интро и скролла
     const mob = window.innerWidth < 900;   // на телефоне луна справа сверху
-    root.style.setProperty('--lx', `${(mob ? 82 : S.lx) + P.x * 0.6}%`);
-    root.style.setProperty('--ly', `${(mob ? 9 : S.ly) - P.y * 0.5}%`);
+    // свет идёт из точки луны: та же ось для пятна, луча и блика
+    const mx = mob ? 82 : 8, my = mob ? 9 : 20;
+    root.style.setProperty('--lx', `${mx + P.x * 0.6}%`);
+    root.style.setProperty('--ly', `${my - P.y * 0.5}%`);
     root.style.setProperty('--ls', `${Math.max(0.02, I.lr * S.lr * 2.1).toFixed(4)}`);   // масштаб «дыры» света
     moonbeam.style.opacity = (I.beam * S.eclipse).toFixed(3);
     moonHero.style.opacity = (I.moon * S.eclipse).toFixed(3);
@@ -507,6 +520,35 @@
     });
     stageEl.addEventListener('pointerleave', () => { toX(0); toY(0); });
   }
+
+  // нажатие на матрас: вмятина в точке касания и упругий возврат
+  (function press() {
+    const dent = document.getElementById('dent');
+    // просадка — на картинке: у обёртки .product__float своя CSS-анимация дыхания
+    const float = productHero.querySelector('.product__float img');
+    if (!dent || !float) return;
+    let last = 0;
+    const down = (e) => {
+      const now = performance.now(); if (now - last < 150) return; last = now;
+      const r = productHero.getBoundingClientRect();
+      dent.style.setProperty('--dx', `${((e.clientX - r.left) / r.width * 100).toFixed(1)}%`);
+      dent.style.setProperty('--dy', `${((e.clientY - r.top) / r.height * 100).toFixed(1)}%`);
+      if (navigator.vibrate) navigator.vibrate(8);
+      if (reduceMotion) { gsap.set(dent, { opacity: .5, scale: 1 }); return; }
+      gsap.killTweensOf([dent, float]);
+      gsap.to(dent, { opacity: .55, scale: 1, duration: .12, ease: 'power2.out' });
+      gsap.to(float, { scale: .992, y: 3, transformOrigin: '50% 60%', duration: .14, ease: 'power2.out' });
+    };
+    const up = () => {
+      gsap.killTweensOf([dent, float]);
+      gsap.to(dent, { opacity: 0, scale: .6, duration: .5, ease: 'power2.out' });
+      gsap.to(float, { scale: 1, y: 0, duration: .9, ease: 'elastic.out(1, 0.45)' });
+    };
+    productHero.addEventListener('pointerdown', down);
+    productHero.addEventListener('pointerup', up);
+    productHero.addEventListener('pointercancel', up);
+    productHero.addEventListener('pointerleave', up);
+  })();
 
   /* ------------------------------------------------------------------------
      Сон вдвоём: поверхность матраса как цепочка масс и пружин на canvas.
