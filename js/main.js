@@ -252,7 +252,7 @@
     // слои не уходили под навигацию; мобильный: кадр покрывает экран, фокус правее центра
     const mobile = window.innerWidth < 900;
     // десктоп: 78 % от «вписанного» размера — кадр не растягивается и остаётся резким
-    const k = mobile ? (cw / SEQ.w) * 1.12 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.7;
+    const k = mobile ? (cw / SEQ.w) * 1.22 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.7;
     const dw = SEQ.w * k, dh = SEQ.h * k;
     const dx = (cw - dw) * (mobile ? 0.5 : 0.5), dy = (ch - dh) * (mobile ? 0.56 : 0.56);
     placeSeqLabels(dx / dpr(), dy / dpr(), dw / dpr(), dh / dpr());
@@ -318,7 +318,7 @@
       li.classList.toggle('is-active', k === i);
       li.classList.toggle('is-done', k < i);
     });
-    if (i >= 0) {
+    if (i >= 0 && LAYERS[i]) {
       layerActiveEl.querySelector('.num').textContent = LAYERS[i].num;
       layerActiveEl.querySelector('.name').textContent = layerItems[i].querySelector('.name').textContent;
     }
@@ -357,9 +357,10 @@
     productCut.style.setProperty('--dim', `${(1 - S.cutExp).toFixed(3)}`);
     productCut.style.transform = `translate3d(${S.cutX * window.innerWidth / 100}px, ${S.cutY * vh / 100}px, 0) scale(${S.cutS})`;
     if (S.cutO > 0.001) { seqDirty = true; drawSeq(); }
-    setActiveLayer(S.cutO > 0.5 ? S.focus : -1);
+    const focusI = Math.round(S.focus);   // S.focus скрабится и бывает дробным между шагами
+    setActiveLayer(S.cutO > 0.5 ? focusI : -1);
     seqLabels.style.opacity = (S.cutO * smoothstep(S.spread, 0.8, 1)).toFixed(3);
-    seqLabelEls.forEach((el, i) => el.classList.toggle('is-active', i === S.focus && S.cutO > 0.5));
+    seqLabelEls.forEach((el, i) => el.classList.toggle('is-active', i === focusI && S.cutO > 0.5));
 
     wordmark.style.transform = `translate(-50%, calc(-50% + ${S.wmY}vh)) scale(${S.wmS})`;
     wordmark.style.opacity = S.wmO * I.wmO;
@@ -456,13 +457,37 @@
       scrollTrigger: {
         trigger: stageEl,
         start: 'top top',
-        end: D ? '+=560%' : '+=480%',
+        end: D ? '+=560%' : '+=340%',
         pin: true,
         scrub: D ? 1.1 : 0.8,
         anticipatePin: 1,
         invalidateOnRefresh: true,
+        onUpdate: D ? undefined : autoPlayLayers,
       },
     });
+
+    /* телефон: как только пользователь довёл сцену до разлёта слоёв, дальше она
+       едет сама — ровная автопрокрутка через фокус по слоям до сборки, чтобы не
+       листать 24 кадра пальцем. Любое касание или свайп возвращают управление. */
+    let autoTween = null, autoArmed = true;
+    function stopAuto() { if (autoTween) { autoTween.kill(); autoTween = null; } }
+    function autoPlayLayers(self) {
+      if (reduceMotion) return;
+      if (self.progress < 0.08) autoArmed = true;              // вернулись наверх — можно снова
+      if (!autoArmed || autoTween || self.direction < 0) return;
+      if (self.progress < 0.24 || self.progress > 0.4) return;
+      autoArmed = false;
+      const from = self.progress, to = 0.84, dist = self.end - self.start;
+      const o = { p: from };
+      autoTween = gsap.to(o, {
+        p: to, duration: 11 * (to - from) / 0.6, ease: 'none',
+        onUpdate: () => window.scrollTo(0, self.start + dist * o.p),
+        onComplete: () => { autoTween = null; },
+      });
+    }
+    if (!D) {
+      ['touchstart', 'wheel', 'keydown', 'pointerdown'].forEach((ev) => window.addEventListener(ev, stopAuto, { passive: true }));
+    }
 
     tl
       /* 0–18: hero → камера облетает продукт: наклон, наезд; свет к центру; имя уходит в nav */
@@ -753,7 +778,23 @@
 
   /* буквы заголовков — отдельные span, чтобы отвечать на курсор лунным светом */
   (function glowLetters() {
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!fine && !reduceMotion) {
+      // телефон: буквы под пальцем загораются лунным светом и гаснут за секунду
+      let lit = [];
+      const touchGlow = (e) => {
+        const t = e.touches[0]; if (!t) return;
+        const el = document.elementFromPoint(t.clientX, t.clientY);
+        if (!el || !el.classList.contains('char')) return;
+        const w = el.parentElement;
+        Array.from(w.children).forEach((c) => { if (Math.abs(c.getBoundingClientRect().x - t.clientX) < 28) { c.classList.add('is-lit'); lit.push(c); } });
+        if (lit.length > 24) lit.splice(0, lit.length - 24).forEach((c) => c.classList.remove('is-lit'));
+      };
+      const fade = () => { lit.forEach((c) => c.classList.remove('is-lit')); lit = []; };
+      document.addEventListener('touchmove', touchGlow, { passive: true });
+      document.addEventListener('touchstart', touchGlow, { passive: true });
+      document.addEventListener('touchend', () => setTimeout(fade, 500), { passive: true });
+    }
     const targets = document.querySelectorAll('.hero-title, .manifesto__text, .section-title, .motion__title, .delivery__title, .cta__title, .model__title, .diff__name, .px__pitch, .statement');
     const wrap = (node) => {
       const frag = document.createDocumentFragment();
@@ -969,8 +1010,34 @@
       document.querySelectorAll('.view__btn').forEach((x) => x.setAttribute('aria-checked', x === b ? 'true' : 'false'));
       modelsEl.classList.toggle('models--row', b.dataset.view === 'row');
       modelsEl.classList.toggle('models--zigzag', b.dataset.view !== 'row');
+      if (b.dataset.view === 'row') centerPrime();
       ScrollTrigger.refresh();
     }));
+    // на телефоне «в ряд» — горизонтальная лента со снапом: Prime встаёт в центр,
+    // центральная карточка крупнее и ярче, остальные чуть в тени
+    function centerPrime() {
+      if (window.innerWidth >= 900) return;
+      const prime = modelsEl.querySelector('.model--prime');
+      if (!prime) return;
+      requestAnimationFrame(() => {
+        modelsEl.scrollTo({ left: prime.offsetLeft - (modelsEl.clientWidth - prime.offsetWidth) / 2, behavior: 'instant' in window ? 'instant' : 'auto' });
+        markCenter();
+      });
+    }
+    function markCenter() {
+      if (!modelsEl.classList.contains('models--row') || window.innerWidth >= 900) return;
+      const mid = modelsEl.scrollLeft + modelsEl.clientWidth / 2;
+      let best = null, bd = 1e9;
+      modelsEl.querySelectorAll('.model').forEach((m) => {
+        const d = Math.abs(m.offsetLeft + m.offsetWidth / 2 - mid);
+        if (d < bd) { bd = d; best = m; }
+        m.classList.remove('is-center');
+      });
+      if (best) best.classList.add('is-center');
+    }
+    let mcRaf = 0;
+    modelsEl.addEventListener('scroll', () => { if (!mcRaf) mcRaf = requestAnimationFrame(() => { mcRaf = 0; markCenter(); }); }, { passive: true });
+    window.addEventListener('resize', () => { if (modelsEl.classList.contains('models--row')) centerPrime(); });
     // «Подробнее» — раскрывает доп. информацию карточки
     document.querySelectorAll('.more').forEach((b) => b.addEventListener('click', () => {
       const box = document.getElementById(b.getAttribute('aria-controls'));

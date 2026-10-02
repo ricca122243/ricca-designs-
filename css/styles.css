@@ -148,6 +148,9 @@ em { font-style: normal; }
 .char { display: inline-block; transition: color .9s var(--ease-out); }
 @media (hover: hover) {
   .char:hover { color: #fff; text-shadow: 0 0 14px rgba(var(--cool), .9), 0 0 36px rgba(var(--cool), .45); transition-duration: .15s; }
+}
+.char.is-lit { color: #fff; text-shadow: 0 0 14px rgba(var(--cool), .9), 0 0 36px rgba(var(--cool), .45); transition-duration: .15s; }
+@media (hover: none) {
   .wordmark__word span:hover { color: #fff; text-shadow: 0 0 16px rgba(var(--cool), .9), 0 0 40px rgba(var(--cool), .5); }
 }
 .wordmark__word span { transition: text-shadow .9s var(--ease-out), color .9s var(--ease-out); }
@@ -976,8 +979,23 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 
 @media (max-width: 1100px) {
   .perks { grid-template-columns: repeat(2, 1fr); }
-  .models--row { grid-template-columns: 1fr; }
-  .models--row .model--prime { order: -1; transform: none; }
+  /* телефон/планшет: «в ряд» — горизонтальная лента со снапом, Prime в центре */
+  .models--row {
+    display: flex; gap: 12px; align-items: stretch; margin: 24px calc(-1 * var(--gutter)) 0; padding: 20px var(--gutter) 28px;
+    overflow-x: auto; overflow-y: visible; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; overscroll-behavior-x: contain;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+  }
+  .models--row::-webkit-scrollbar { display: none; }
+  .models--row .model { flex: 0 0 min(72vw, 340px); scroll-snap-align: center; transform: scale(.94); opacity: .55; transition: transform .6s var(--ease-out), opacity .6s var(--ease-out), border-color .6s; }
+  .models--row .model.is-center { transform: scale(1); opacity: 1; border-color: rgba(241,237,230,.22); }
+  .models--row .model--prime { order: 2; transform: scale(.94); }
+  .models--row .model--prime.is-center { transform: scale(1.02); border-color: rgba(200,168,107,.6); box-shadow: inset 0 1px 0 var(--gold), 0 40px 90px -40px rgba(200,168,107,.45); }
+  .models--row .model--prime > .badge { left: 24px; }
+  .models--row .model:hover, .models--row .model--prime:hover { transform: none; }
+  .models--row .model.is-center:hover { transform: scale(1); }
+  .models--row .model--prime.is-center:hover { transform: scale(1.02); }
   .material-grid { grid-template-columns: repeat(2, 1fr); gap: 40px 28px; }
   .manifesto__facts, .trust__grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -993,8 +1011,8 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
   .reveal { transform: none; transition-duration: 1s; }
   .px__shine { animation: none; background-position: 30% 0; }
   .px__beam.is-flare { animation: none; }
-  :root { --moon-x: 14%; --moon-y: 8%; }   /* свет на фото идёт сверху слева — луна там же */
-  .moon-wrap { width: 15vw; }
+  :root { --moon-x: 22%; --moon-y: 10%; }   /* свет на фото идёт сверху слева — луна там же, над матрасом */
+  .moon-wrap { width: 20vw; }
   .sheen { display: none; }
   .px__moon { width: 20%; }
   .delivery { grid-template-columns: 1fr; gap: 28px; }
@@ -1052,9 +1070,11 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 
   .sizes__grid { grid-template-columns: 1fr; }
   .size-vis { width: min(100%, 340px); height: min(calc(100vw - 2 * var(--gutter)), 340px); aspect-ratio: auto; margin: 0 auto 24px; }
-  .seq-label { font-size: 9.5px; gap: 6px; left: 66%; max-width: 32vw; white-space: nowrap; }
-  .seq-label::before { width: 12px; flex: none; }
-  .seq-label .name { overflow: hidden; text-overflow: ellipsis; }
+  /* телефон: у слоёв — номер и короткая риска; имя показывает только активный слой
+     (и дублируется в плашке внизу), чтобы подписи не ложились на стопку */
+  .seq-label { font-size: 10px; gap: 8px; left: 64%; white-space: nowrap; }
+  .seq-label::before { width: 14px; flex: none; }
+  .seq-label .name { display: none; }
   .seq-label .spec { display: none; }
   .model, .model--prime { grid-template-columns: 1fr; gap: 32px; }
   .model--flip .model__visual { order: 1; }
