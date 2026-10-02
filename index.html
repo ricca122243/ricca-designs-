@@ -23,11 +23,12 @@
     <nav class="nav__links" aria-label="Разделы">
       <a href="#manifesto">Семь слоёв</a>
       <a href="#motion">Технология</a>
+      <a href="#lineup">Линейка</a>
       <a href="#materials">Материалы</a>
       <a href="#construction">Конструкция</a>
       <a href="#sizes">Размеры</a>
     </nav>
-    <a class="nav__cta" href="#sizes">Выбрать размер</a>
+    <a class="nav__cta" href="#lineup">Выбрать модель</a>
   </header>
 
   <main id="top">
@@ -53,6 +54,7 @@
         <!-- продукт в разрезе: семь слоёв -->
         <figure class="product product--cut" id="productCut" aria-label="Матрас ELUNA в разрезе: семь слоёв расходятся по скроллу">
           <canvas class="seq" id="seq"></canvas>
+          <div class="seq-labels" id="seqLabels" aria-hidden="true"></div>
         </figure>
 
         <!-- фаза 1 — hero -->
@@ -235,13 +237,143 @@
     </section>
 
     <!-- ================================================================
+         ЛИНЕЙКА — Air / Balance / Prime
+         ================================================================ -->
+    <section class="lineup" id="lineup" aria-labelledby="lineupTitle">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow"><span>Линейка</span><span class="dot"></span><span>Три модели</span></p>
+          <h2 class="section-title" id="lineupTitle">Три матраса.<br><em>Один выбор, который не захочется менять.</em></h2>
+        </div>
+
+        <!-- Air -->
+        <article class="model model--air reveal" data-model="air">
+          <div class="model__visual">
+            <div class="xs" data-xs="air" aria-label="Разрез Eluna Air: слои сверху вниз"></div>
+          </div>
+          <div class="model__body">
+            <p class="model__kicker"><span class="model__name">Eluna Air</span><span class="dot"></span><span class="model__height">22 см</span></p>
+            <h3 class="model__title">Лёгкий старт.<br><em>Для гостевой, детской или съёмной квартиры.</em></h3>
+            <p class="model__meta">Жёсткость: мягкая / средняя</p>
+            <ul class="model__list">
+              <li>Армированные пружины — без эффекта гамака</li>
+              <li>Натуральный кокос, 1 см</li>
+              <li>Ортопена и термовойлок с двух сторон</li>
+              <li>Вискозный трикотаж сверху и снизу</li>
+            </ul>
+            <div class="model__price">
+              <span class="model__sum" data-price="air">— ₸</span>
+              <span class="model__night" data-night="air">≈ — ₸ за ночь</span>
+            </div>
+            <a class="button button--ghost" data-wa="air" href="#" target="_blank" rel="noopener">Заказать</a>
+          </div>
+        </article>
+
+        <!-- Balance -->
+        <article class="model model--balance model--flip reveal" data-model="balance">
+          <div class="model__visual">
+            <div class="xs" data-xs="balance" aria-label="Разрез Eluna Balance: слои сверху вниз"></div>
+          </div>
+          <div class="model__body">
+            <p class="model__kicker"><span class="model__name">Eluna Balance</span><span class="dot"></span><span class="model__height">23–25 см</span></p>
+            <h3 class="model__title">Для тех, кто спит на матрасе каждый день<br><em>и хочет поддержку.</em></h3>
+            <p class="model__meta">Жёсткость: средняя</p>
+            <ul class="model__list">
+              <li>Усиленный боковой каркас</li>
+              <li>Армированные пружины</li>
+              <li>Два слоя натурального кокоса: 1 см и 2 см</li>
+              <li>Прослойка из термовойлока, ортопена</li>
+              <li>Плотный вискозный трикотаж · материалы из РФ</li>
+            </ul>
+            <div class="model__price">
+              <span class="model__sum" data-price="balance">— ₸</span>
+              <span class="model__night" data-night="balance">≈ — ₸ за ночь</span>
+            </div>
+            <a class="button button--ghost" data-wa="balance" href="#" target="_blank" rel="noopener">Заказать</a>
+          </div>
+        </article>
+
+        <!-- Prime -->
+        <article class="model model--prime reveal reveal--soft" id="primeBlock" data-model="prime">
+          <span class="badge">Выбор Eluna</span>
+          <div class="model__visual">
+            <div class="xs xs--prime" data-xs="prime" aria-label="Разрез Eluna Prime: слои раздвигаются, чтобы показать начинку"></div>
+          </div>
+          <div class="model__body">
+            <p class="model__kicker"><span class="model__name">Eluna Prime</span><span class="dot"></span><span class="model__height">28–30 см</span></p>
+            <h3 class="model__title">Для тех, кто выбирает<br><em>раз и надолго.</em></h3>
+            <p class="model__meta">Самый натуральный матрас линейки</p>
+            <ul class="model__list">
+              <li>Чехол из 100 % хлопка ручной работы</li>
+              <li>2 см натурального латекса — микромассажный эффект, тело расслабляется</li>
+              <li>Армированные пружины</li>
+              <li>2 см натурального кокоса — отвечает за жёсткость</li>
+            </ul>
+            <div class="model__price model__price--prime">
+              <span class="model__sum" data-price="prime">— ₸</span>
+              <span class="model__night" data-night="prime">≈ — ₸ за ночь</span>
+            </div>
+            <a class="button button--primary" data-wa="prime" href="#" target="_blank" rel="noopener">Заказать Prime</a>
+          </div>
+          <aside class="reviews" aria-label="Отзывы о Eluna Prime">
+            <p class="reviews__label">Отзывы</p>
+            <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
+            <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
+            <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
+          </aside>
+        </article>
+
+        <!-- Общие преимущества -->
+        <ul class="perks reveal" aria-label="Общее для всех моделей">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4c0 2 12 2 12 4s-12 2-12 4 12 2 12 4-12 2-12 4M6 4h12M6 20h12"/></svg><span><b>Армированные пружины</b>Без эффекта гамака — тело в балансе</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21c-5 0-8-3.5-8-8 0-5 4-9 8-10 4 1 8 5 8 10 0 4.5-3 8-8 8ZM12 21V9M8 13c2 0 3-1 4-3 1 2 2 3 4 3"/></svg><span><b>Натуральный кокос</b>Во всех моделях линейки</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M3 10h18M3 14h18"/></svg><span><b>Еврокаркас по периметру</b>Плотность 22 — края не проседают, на матрасе удобно сидеть</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="1.2"/><circle cx="14" cy="7" r="1.2"/><circle cx="16" cy="14" r="1.2"/><circle cx="9" cy="15" r="1.2"/><path d="M4 20 20 4"/></svg><span><b>Внутри не копится пыль</b>Термовойлок не сбивается и служит долго</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M12 3l-2 2M12 3l2 2M12 21l-2-2M12 21l2-2M5 12h14"/><circle cx="12" cy="12" r="3.5"/></svg><span><b>Двусторонний</b>Сторона «зима» и сторона «лето»</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg><span><b>Гарантия 5 лет</b>Срок службы 15+ лет</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg><span><b>Silent Motion</b>Партнёр не чувствует, когда ты ворочаешься</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18"/><path d="M8 6h8M8 10h8M8 14h8M8 18h8"/></svg><span><b>Ортопедическая поддержка</b>Позвоночник остаётся в своём естественном положении</span></li>
+        </ul>
+
+        <!-- Сравнение -->
+        <div class="compare reveal">
+          <div class="compare__scroll">
+            <table class="compare__table">
+              <caption class="sr-only">Сравнение моделей Eluna Air, Balance и Prime</caption>
+              <thead>
+                <tr>
+                  <th scope="col"><span class="sr-only">Характеристика</span></th>
+                  <th scope="col">Air</th>
+                  <th scope="col">Balance</th>
+                  <th scope="col" class="is-prime"><span class="badge badge--small">Выбор Eluna</span>Prime</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Армированные пружины</th><td data-v="yes"></td><td data-v="yes"></td><td class="is-prime" data-v="yes"></td></tr>
+                <tr><th scope="row">Натуральный латекс</th><td data-v="no"></td><td data-v="no"></td><td class="is-prime" data-v="yes">2 см</td></tr>
+                <tr><th scope="row">Хлопок ручной работы</th><td data-v="no"></td><td data-v="no"></td><td class="is-prime" data-v="yes"></td></tr>
+                <tr><th scope="row">Микромассажный эффект</th><td data-v="no"></td><td data-v="no"></td><td class="is-prime" data-v="yes"></td></tr>
+                <tr><th scope="row">Натуральный кокос</th><td data-v="yes">1 см</td><td data-v="yes">1 + 2 см</td><td class="is-prime" data-v="yes">2 + 2 см</td></tr>
+                <tr><th scope="row">Еврокаркас, плотность 22</th><td data-v="yes"></td><td data-v="yes"></td><td class="is-prime" data-v="yes"></td></tr>
+                <tr><th scope="row">Двусторонний: зима / лето</th><td data-v="yes"></td><td data-v="yes"></td><td class="is-prime" data-v="yes"></td></tr>
+                <tr><th scope="row">Высота</th><td>22 см</td><td>23–25 см</td><td class="is-prime">28–30 см</td></tr>
+                <tr><th scope="row">Гарантия</th><td>5 лет</td><td>5 лет</td><td class="is-prime">5 лет</td></tr>
+                <tr class="compare__price"><th scope="row">Цена</th><td data-price="air">— ₸</td><td data-price="balance">— ₸</td><td class="is-prime" data-price="prime">— ₸</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
          РАЗМЕРЫ
          ================================================================ -->
     <section class="sizes" id="sizes">
       <div class="container">
         <div class="section-head reveal">
-          <p class="eyebrow"><span>Размеры</span><span class="dot"></span><span>Высота 30 см</span></p>
-          <h2 class="section-title">Один матрас.<br><em>Шесть пропорций.</em></h2>
+          <p class="eyebrow"><span>Размеры</span><span class="dot"></span><span>Eluna Prime · 28–30 см</span></p>
+          <h2 class="section-title">Eluna Prime.<br><em>Шесть пропорций.</em></h2>
         </div>
 
         <div class="sizes__grid">
@@ -256,21 +388,21 @@
 
           <div class="size-panel reveal">
             <div class="size-options" id="sizeOptions" role="radiogroup" aria-label="Размер матраса">
-              <button type="button" role="radio" aria-checked="false" data-w="80"  data-h="200" data-price="389000">80 × 200</button>
-              <button type="button" role="radio" aria-checked="false" data-w="90"  data-h="200" data-price="419000">90 × 200</button>
-              <button type="button" role="radio" aria-checked="false" data-w="140" data-h="200" data-price="589000">140 × 200</button>
-              <button type="button" role="radio" aria-checked="true"  data-w="160" data-h="200" data-price="649000">160 × 200</button>
-              <button type="button" role="radio" aria-checked="false" data-w="180" data-h="200" data-price="719000">180 × 200</button>
-              <button type="button" role="radio" aria-checked="false" data-w="200" data-h="200" data-price="789000">200 × 200</button>
+              <button type="button" role="radio" aria-checked="false" data-w="80"  data-h="200">80 × 200</button>
+              <button type="button" role="radio" aria-checked="false" data-w="90"  data-h="200">90 × 200</button>
+              <button type="button" role="radio" aria-checked="false" data-w="140" data-h="200">140 × 200</button>
+              <button type="button" role="radio" aria-checked="true"  data-w="160" data-h="200">160 × 200</button>
+              <button type="button" role="radio" aria-checked="false" data-w="180" data-h="200">180 × 200</button>
+              <button type="button" role="radio" aria-checked="false" data-w="200" data-h="200">200 × 200</button>
             </div>
 
             <div class="size-summary">
               <div class="size-summary__row">
-                <span class="size-summary__label">ELUNA Noir · <span id="sizeLabel">160 × 200</span> см</span>
-                <span class="size-summary__price"><span id="sizePrice">649 000</span> ₸</span>
+                <span class="size-summary__label">Eluna Prime · <span id="sizeLabel">160 × 200</span> см</span>
+                <span class="size-summary__price"><span id="sizePrice">—</span> ₸</span>
               </div>
-              <p class="size-summary__note">Включая доставку, подъём и вынос старого матраса. Рассрочка 0 % на 12 месяцев — <span id="sizeMonthly">54 084</span> ₸ в месяц.</p>
-              <a class="button button--primary" href="#order">Заказать <span id="sizeCtaLabel">160 × 200</span></a>
+              <p class="size-summary__note">Включая доставку, подъём и вынос старого матраса.<span id="sizeInstallment" hidden> Рассрочка 0 % на 12 месяцев — <span id="sizeMonthly">—</span> ₸ в месяц.</span></p>
+              <a class="button button--primary" id="sizeCta" href="#" target="_blank" rel="noopener">Заказать <span id="sizeCtaLabel">160 × 200</span></a>
               <p class="size-summary__hint">Нестандартный размер? Сделаем под ваш проект — срок 21 день.</p>
             </div>
           </div>
@@ -292,8 +424,8 @@
             <span class="trust__label">пробного сна. Не подошёл — заберём и вернём деньги, без вопросов.</span>
           </div>
           <div class="trust__item reveal">
-            <span class="trust__value">15 лет</span>
-            <span class="trust__label">гарантии на пружинный блок и пены. Чехол — отдельная, 3 года.</span>
+            <span class="trust__value">5 лет</span>
+            <span class="trust__label">гарантии на каждый матрас. Срок службы — 15 лет и больше.</span>
           </div>
           <div class="trust__item reveal">
             <span class="trust__value">Ручная сборка</span>
@@ -319,6 +451,12 @@
     </section>
 
   </main>
+
+  <!-- липкая плашка Prime (мобильный) -->
+  <div class="sticky-cta" id="stickyCta" aria-hidden="true">
+    <span class="sticky-cta__text">Eluna Prime — <span data-price="prime">— ₸</span></span>
+    <a class="sticky-cta__btn" data-wa="prime" href="#" target="_blank" rel="noopener" tabindex="-1">Заказать</a>
+  </div>
 
   <footer class="footer">
     <div class="container footer__inner">

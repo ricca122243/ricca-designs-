@@ -149,9 +149,11 @@
     // десктоп: кадр вписан целиком (фон кадра чёрный, швов не видно), чтобы разлетевшиеся
     // слои не уходили под навигацию; мобильный: кадр покрывает экран, фокус правее центра
     const mobile = window.innerWidth < 900;
-    const k = mobile ? (cw / SEQ.w) * 1.7 : Math.min(cw / SEQ.w, ch / SEQ.h);
+    // десктоп: 78 % от «вписанного» размера — кадр не растягивается и остаётся резким
+    const k = mobile ? (cw / SEQ.w) * 1.7 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.78;
     const dw = SEQ.w * k, dh = SEQ.h * k;
-    const dx = (cw - dw) * (mobile ? 0.45 : 0.56), dy = (ch - dh) * (mobile ? 0.62 : 0.5);
+    const dx = (cw - dw) * (mobile ? 0.45 : 0.5), dy = (ch - dh) * (mobile ? 0.62 : 0.56);
+    placeSeqLabels(dx / dpr(), dy / dpr(), dw / dpr(), dh / dpr());
     const f = Math.min(1, Math.max(0, S.spread)) * (SEQ.count - 1);
     const i0 = Math.floor(f), t = f - i0;
     const a = nearestFrame(i0), b = frames[Math.min(SEQ.count - 1, i0 + 1)];
@@ -164,6 +166,24 @@
   }
   sizeSeq();
   window.addEventListener('resize', sizeSeq);
+
+  /* подписи к слоям на последнем кадре разлёта: позиции заданы под f24 */
+  const seqLabels = document.getElementById('seqLabels');
+  const SEQ_LABEL_Y = [9, 21, 30, 39, 49, 67, 87];   // % высоты кадра, слои сверху вниз
+  const seqLabelEls = LAYERS.map((l, i) => {
+    const el = document.createElement('span');
+    el.className = 'seq-label';
+    el.style.setProperty('--y', `${SEQ_LABEL_Y[i]}%`);
+    el.innerHTML = `<span class="num">${l.num}</span><span class="name">${l.name}</span><span class="spec">${String(l.cm).replace('.', ',')} см</span>`;
+    seqLabels.appendChild(el);
+    return el;
+  });
+  function dpr() { return Math.min(1.5, window.devicePixelRatio || 1); }
+  function placeSeqLabels(x, y, w, h) {
+    seqLabels.style.left = `${x}px`; seqLabels.style.top = `${y}px`;
+    seqLabels.style.width = `${w}px`; seqLabels.style.height = `${h}px`;
+  }
+  const smoothstep = (v, a, b) => { const t = Math.min(1, Math.max(0, (v - a) / (b - a))); return t * t * (3 - 2 * t); };
 
   let activeLayer = -1;
   const layerItems = Array.from(document.querySelectorAll('#layerList li'));
@@ -208,6 +228,8 @@
     productCut.style.transform = `translate3d(${S.cutX * window.innerWidth / 100}px, ${S.cutY * vh / 100}px, 0) scale(${S.cutS})`;
     if (S.cutO > 0.001) { seqDirty = true; drawSeq(); }
     setActiveLayer(S.cutO > 0.5 ? S.focus : -1);
+    seqLabels.style.opacity = (S.cutO * smoothstep(S.spread, 0.8, 1)).toFixed(3);
+    seqLabelEls.forEach((el, i) => el.classList.toggle('is-active', i === S.focus && S.cutO > 0.5));
 
     wordmark.style.transform = `translate(-50%, calc(-50% + ${S.wmY}vh)) scale(${S.wmS})`;
     wordmark.style.opacity = S.wmO * I.wmO;
@@ -630,7 +652,104 @@
   })();
 
   /* ------------------------------------------------------------------------
-     Размеры
+     Линейка: цены, модели, разрезы, WhatsApp, липкая плашка
+     Цены меняются только здесь. null → «— ₸».
+     ------------------------------------------------------------------------ */
+  const PRICES = { air: null, balance: null, prime: null };   // ₸ за базовый размер 160 × 200
+  const WHATSAPP = '77079550808';
+  const MODELS = {
+    air: {
+      name: 'Eluna Air',
+      layers: [
+        { kind: 'knit',    cm: 0.6, name: 'Вискозный трикотаж' },
+        { kind: 'foam',    cm: 2,   name: 'Ортопена', spec: '2 см' },
+        { kind: 'felt',    cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
+        { kind: 'springs', cm: 14,  name: 'Армированные пружины', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
+        { kind: 'felt',    cm: 0.6, name: 'Термовойлок' },
+        { kind: 'coir',    cm: 1,   name: 'Натуральный кокос', spec: '1 см' },
+        { kind: 'knit',    cm: 0.6, name: 'Вискозный трикотаж' },
+      ],
+    },
+    balance: {
+      name: 'Eluna Balance',
+      layers: [
+        { kind: 'knit',    cm: 0.6, name: 'Плотный вискозный трикотаж' },
+        { kind: 'foam',    cm: 2,   name: 'Ортопена' },
+        { kind: 'felt',    cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
+        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '2 см' },
+        { kind: 'springs', cm: 14,  name: 'Армированные пружины', spec: 'усиленный боковой каркас', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
+        { kind: 'felt',    cm: 0.6, name: 'Термовойлок' },
+        { kind: 'coir',    cm: 1,   name: 'Натуральный кокос', spec: '1 см' },
+        { kind: 'foam',    cm: 1.5, name: 'Ортопена' },
+        { kind: 'knit',    cm: 0.6, name: 'Плотный вискозный трикотаж' },
+      ],
+    },
+    prime: {
+      name: 'Eluna Prime',
+      layers: [
+        { kind: 'cotton',  cm: 1,   name: 'Чехол из 100 % хлопка', spec: 'ручная работа' },
+        { kind: 'latex',   cm: 2,   name: 'Натуральный латекс', spec: '2 см', note: 'Микромассажный эффект — тело расслабляется' },
+        { kind: 'felt',    cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
+        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '2 см — отвечает за жёсткость' },
+        { kind: 'springs', cm: 16,  name: 'Армированные пружины', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
+        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '2 см' },
+        { kind: 'felt',    cm: 0.6, name: 'Термовойлок' },
+        { kind: 'latex',   cm: 2,   name: 'Натуральный латекс', spec: '2 см' },
+        { kind: 'cotton',  cm: 1,   name: 'Чехол из 100 % хлопка' },
+      ],
+    },
+  };
+
+  const fmtMoney = (n) => Math.round(n).toLocaleString('ru-RU').replace(/ /g, ' ');
+  const priceText = (p) => (p == null ? '— ₸' : `${fmtMoney(p)} ₸`);
+  const perNight = (p) => (p == null ? '≈ — ₸ за ночь' : `≈ ${fmtMoney(p / (15 * 365))} ₸ за ночь`);
+  const waLink = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
+
+  (function lineup() {
+    // цены и ссылки
+    document.querySelectorAll('[data-price]').forEach((el) => { el.textContent = priceText(PRICES[el.dataset.price]); });
+    document.querySelectorAll('[data-night]').forEach((el) => { el.textContent = perNight(PRICES[el.dataset.night]); });
+    document.querySelectorAll('[data-wa]').forEach((a) => { a.href = waLink(`Здравствуйте, интересует ${MODELS[a.dataset.wa].name}`); });
+
+    // разрезы
+    const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    document.querySelectorAll('.xs[data-xs]').forEach((box) => {
+      const m = MODELS[box.dataset.xs];
+      if (!m) return;
+      box.innerHTML = m.layers.map((l) => `
+        <div class="xs__layer xs--${l.kind}">
+          <div class="xs__fill" style="--cm:${l.cm}"></div>
+          <div class="xs__text"><b>${esc(l.name)}</b>${l.spec ? `<span class="cm">${esc(l.spec)}</span>` : ''}${l.note ? `<span class="note">${esc(l.note)}</span>` : ''}</div>
+        </div>`).join('');
+    });
+
+    // Prime: разлёт слоёв при появлении + липкая плашка на мобильном
+    const prime = document.getElementById('primeBlock');
+    const primeXs = prime && prime.querySelector('.xs--prime');
+    const sticky = document.getElementById('stickyCta');
+    if (!prime || !('IntersectionObserver' in window)) return;
+    if (reduceMotion && primeXs) primeXs.classList.add('is-open');
+
+    new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting && primeXs) primeXs.classList.add('is-open');
+      });
+    }, { threshold: 0.35 }).observe(prime);
+
+    if (sticky) {
+      new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          const on = en.isIntersecting;
+          sticky.classList.toggle('is-on', on);
+          sticky.setAttribute('aria-hidden', on ? 'false' : 'true');
+          sticky.querySelector('a').tabIndex = on ? 0 : -1;
+        });
+      }, { threshold: 0.05 }).observe(prime);
+    }
+  })();
+
+  /* ------------------------------------------------------------------------
+     Размеры Eluna Prime: цена = PRICES.prime × коэффициент размера
      ------------------------------------------------------------------------ */
   (function sizes() {
     const options = document.querySelectorAll('#sizeOptions button');
@@ -639,31 +758,42 @@
     const hEl = document.getElementById('sizePreviewH');
     const priceEl = document.getElementById('sizePrice');
     const monthlyEl = document.getElementById('sizeMonthly');
+    const installment = document.getElementById('sizeInstallment');
     const labelEl = document.getElementById('sizeLabel');
     const ctaLabel = document.getElementById('sizeCtaLabel');
+    const cta = document.getElementById('sizeCta');
     if (!options.length) return;
 
-    const fmt = (n) => Math.round(n).toLocaleString('ru-RU').replace(/ /g, ' ');
-    const price = { v: 649000 };
+    const SIZE_K = { 80: 0.6, 90: 0.65, 140: 0.9, 160: 1, 180: 1.1, 200: 1.2 };   // относительно 160 × 200
+    const price = { v: 0 };
+
+    function apply(btn, animate) {
+      const w = +btn.dataset.w, h = +btn.dataset.h;
+      const base = PRICES.prime;
+      const p = base == null ? null : Math.round(base * (SIZE_K[w] || 1) / 1000) * 1000;
+      labelEl.textContent = `${w} × ${h}`;
+      ctaLabel.textContent = `${w} × ${h}`;
+      cta.href = waLink(`Здравствуйте, интересует Eluna Prime, размер ${w} × ${h}`);
+      installment.hidden = p == null;
+      if (p == null) { priceEl.textContent = '—'; return; }
+      if (!animate) { price.v = p; priceEl.textContent = fmtMoney(p); monthlyEl.textContent = fmtMoney(p / 12); return; }
+      gsap.to(price, {
+        v: p, duration: 0.9, ease: 'power2.out',
+        onUpdate: () => { priceEl.textContent = fmtMoney(price.v); monthlyEl.textContent = fmtMoney(price.v / 12); },
+      });
+    }
 
     options.forEach((btn) => {
       btn.addEventListener('click', () => {
         options.forEach((b) => b.setAttribute('aria-checked', b === btn ? 'true' : 'false'));
-        const w = +btn.dataset.w, h = +btn.dataset.h, p = +btn.dataset.price;
+        const w = +btn.dataset.w, h = +btn.dataset.h;
         const pct = (cm) => (cm / 200) * 70;   // 200 см = 70 % комнаты
         gsap.to(mat, { width: `${pct(w)}%`, height: `${pct(h)}%`, duration: 1.1, ease: 'power3.inOut' });
         wEl.textContent = w; hEl.textContent = h;
-        labelEl.textContent = `${w} × ${h}`;
-        ctaLabel.textContent = `${w} × ${h}`;
-        gsap.to(price, {
-          v: p, duration: 0.9, ease: 'power2.out',
-          onUpdate: () => {
-            priceEl.textContent = fmt(price.v);
-            monthlyEl.textContent = fmt(price.v / 12);
-          },
-        });
+        apply(btn, true);
       });
     });
+    apply(document.querySelector('#sizeOptions button[aria-checked="true"]') || options[0], false);
   })();
 
   // пересчёт ScrollTrigger после загрузки шрифтов и картинок
