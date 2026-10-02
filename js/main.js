@@ -55,7 +55,8 @@
       bctx.clearRect(0, 0, w, H);
 
       // Млечный Путь — диагональная полоса из очень мелких тусклых точек
-      const band = Math.round((w * H) / 1400);
+      const mob = w < 900;
+      const band = Math.round((w * H) / (mob ? 2400 : 1400));
       for (let i = 0; i < band; i++) {
         const u = Math.random();
         const g = (Math.random() + Math.random() + Math.random()) / 3 - 0.5;   // сгущение к оси
@@ -66,7 +67,7 @@
       }
 
       // звёзды: степенное распределение — много мелких, единицы крупных
-      const n = Math.round((w * H) / 3200);
+      const n = Math.round((w * H) / (mob ? 5000 : 3200));
       for (let i = 0; i < n; i++) {
         const x = Math.random() * w, y = Math.random() * H;
         const m = Math.pow(Math.random(), 3.2);           // 0..1, редко близко к 1
@@ -93,7 +94,7 @@
       }
 
       // мерцающие — отдельный небольшой набор
-      flick = Array.from({ length: Math.round(w / 28) }, () => ({
+      flick = Array.from({ length: Math.round(w / (mob ? 56 : 28)) }, () => ({
         x: Math.random() * w, y: Math.random() * h,
         r: rnd(0.6, 1.4), c: tint(Math.random()),
         ph: Math.random() * Math.PI * 2, sp: rnd(0.4, 1.3), a: rnd(0.35, 0.8),
@@ -199,7 +200,7 @@
      при небольшом числе кадров. Кадры грузятся после старта интро.
      ------------------------------------------------------------------------ */
   // 24 кадров 1024×576 из сгенерированного видео разлёта: f01 — собранный разрез, f24 — слои разошлись
-  const SEQ = { count: 24, w: 1024, h: 576, base: 'img/seq/', pad: 2 };
+  const SEQ = { count: 24, w: 1920, h: 1080, base: 'img/seq/', pad: 2 };
   const seqCanvas = document.getElementById('seq');
   const seqCtx = seqCanvas.getContext('2d', { alpha: false });
   const frames = new Array(SEQ.count).fill(null);
@@ -234,7 +235,7 @@
     return null;
   }
   function sizeSeq() {
-    const dpr = Math.min(1.25, window.devicePixelRatio || 1);
+    const dpr = dprSeq();
     seqCanvas.width = Math.round(window.innerWidth * dpr);
     seqCanvas.height = Math.round(window.innerHeight * dpr);
     seqDirty = true;
@@ -247,9 +248,9 @@
     // слои не уходили под навигацию; мобильный: кадр покрывает экран, фокус правее центра
     const mobile = window.innerWidth < 900;
     // десктоп: 78 % от «вписанного» размера — кадр не растягивается и остаётся резким
-    const k = mobile ? (cw / SEQ.w) * 1.7 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.78;
+    const k = mobile ? (cw / SEQ.w) * 1.35 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.78;
     const dw = SEQ.w * k, dh = SEQ.h * k;
-    const dx = (cw - dw) * (mobile ? 0.45 : 0.5), dy = (ch - dh) * (mobile ? 0.62 : 0.56);
+    const dx = (cw - dw) * (mobile ? 0.5 : 0.5), dy = (ch - dh) * (mobile ? 0.56 : 0.56);
     placeSeqLabels(dx / dpr(), dy / dpr(), dw / dpr(), dh / dpr());
     const f = Math.min(1, Math.max(0, S.spread)) * (SEQ.count - 1);
     const i0 = Math.floor(f), t = f - i0;
@@ -275,7 +276,9 @@
     seqLabels.appendChild(el);
     return el;
   });
-  function dpr() { return Math.min(1.25, window.devicePixelRatio || 1); }
+  // телефон: до 2× (иначе кадр мылит на retina), десктоп: 1.5×
+  function dprSeq() { return Math.min(window.innerWidth < 900 ? 2 : 1.5, window.devicePixelRatio || 1); }
+  function dpr() { return dprSeq(); }
   function placeSeqLabels(x, y, w, h) {
     seqLabels.style.left = `${x}px`; seqLabels.style.top = `${y}px`;
     seqLabels.style.width = `${w}px`; seqLabels.style.height = `${h}px`;
@@ -339,7 +342,9 @@
   /* ------------------------------------------------------------------------
      Интро: темнота → пятно света → силуэт → фактура → имя
      ------------------------------------------------------------------------ */
-  const letters = wordmark.querySelectorAll('span');
+  const letters = wordmark.querySelectorAll('.wordmark__word span');
+  const wmMark = document.getElementById('wordmarkMark');
+  const wmSub = document.getElementById('wordmarkSub');
   const heroLines = document.querySelectorAll('#copyHero .line > span');
   const heroEyebrow = document.querySelector('#copyHero .eyebrow');
   const heroSub = document.querySelector('#copyHero .hero-sub');
@@ -352,22 +357,26 @@
   });
 
   intro
-    // 0–1 с: темнота; затем проступает кольцо затмения и первое пятно света
-    .to(I, { dark: 0.6, duration: 1.4 }, 0.8)
-    .to(I, { eclipse: 0.7, duration: 2.2 }, 1.0)
-    .to(I, { lr: 0.16, exp: 0.38, duration: 1.8, ease: 'power1.inOut' }, 1.2)
-    // 2.6–4.6 с: силуэт — пятно растёт, экспозиция поднимается
-    .to(I, { dark: 0.2, duration: 1.6 }, 2.4)
-    .to(I, { lr: 0.42, exp: 0.72, soft: 70, duration: 2.0, ease: 'power1.inOut' }, 2.6)
-    // 4.4–6.4 с: свет заливает весь продукт
-    .to(I, { dark: 0, lr: 1.0, exp: 1, soft: 60, duration: 2.2, ease: 'power2.out' }, 4.4)
-    .to(I, { eclipse: 1, duration: 1.6 }, 4.8)
-    // 5.4 с+: имя и текст
-    .to(letters, { opacity: 1, filter: 'blur(0px)', y: 0, duration: 1.6, stagger: 0.09, ease: 'power3.out' }, 5.4)
-    .to(heroEyebrow, { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, 6.1)
-    .to(heroLines, { y: 0, duration: 1.3, stagger: 0.12, ease: 'power3.out' }, 6.2)
-    .to(heroSub, { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out' }, 6.7)
-    .to(I, { cueO: 1, duration: 1.2 }, 7.1);
+    // 0–1.4 с: из темноты проступает знак — полумесяц с «E», с тёплым свечением
+    .to(wmMark, { opacity: 1, scale: 1, duration: 1.4, ease: 'power3.out' }, 0.1)
+    .to(wmMark, { filter: 'drop-shadow(0 0 0.25em rgba(255,243,226,0.55))', duration: 1.2, ease: 'power2.inOut' }, 0.4)
+    .to(wmMark, { filter: 'drop-shadow(0 0 0.25em rgba(255,243,226,0))', duration: 1.6, ease: 'power2.inOut' }, 2.2)
+    // 0.9–2.6 с: буквы ELUNA по одной, затем Sleep Tech
+    .to(letters, { opacity: 1, filter: 'blur(0px)', y: 0, duration: 1.3, stagger: 0.07, ease: 'power3.out' }, 0.9)
+    .to(wmSub, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' }, 1.9)
+    // 1.6–4.4 с: свет — кольцо затмения, пятно растёт, экспозиция поднимается
+    .to(I, { dark: 0.6, duration: 1.2 }, 1.6)
+    .to(I, { eclipse: 0.7, duration: 1.8 }, 1.7)
+    .to(I, { lr: 0.16, exp: 0.38, duration: 1.3, ease: 'power1.inOut' }, 1.8)
+    .to(I, { dark: 0.2, duration: 1.2 }, 2.6)
+    .to(I, { lr: 0.42, exp: 0.72, soft: 70, duration: 1.4, ease: 'power1.inOut' }, 2.7)
+    .to(I, { dark: 0, lr: 1.0, exp: 1, soft: 60, duration: 1.6, ease: 'power2.out' }, 3.3)
+    .to(I, { eclipse: 1, duration: 1.3 }, 3.6)
+    // 3.6–5.0 с: текст hero
+    .to(heroEyebrow, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 3.7)
+    .to(heroLines, { y: 0, duration: 1.2, stagger: 0.12, ease: 'power3.out' }, 3.8)
+    .to(heroSub, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' }, 4.3)
+    .to(I, { cueO: 1, duration: 1.0 }, 5.0);
 
   if (reduceMotion) {
     intro.progress(1);
@@ -412,9 +421,9 @@
       scrollTrigger: {
         trigger: stageEl,
         start: 'top top',
-        end: '+=560%',
+        end: D ? '+=560%' : '+=480%',
         pin: true,
-        scrub: 1.1,
+        scrub: D ? 1.1 : 0.8,
         anticipatePin: 1,
         invalidateOnRefresh: true,
       },
@@ -455,12 +464,12 @@
       .to(copyLayers, { opacity: 0, duration: 6 }, 72)
 
       /* 82–92: финальное утверждение над целым продуктом */
-      .to(S, { cutExp: 0.55, cutS: 0.9, cutX: D ? 28 : 0, cutY: D ? 12 : -14, duration: 10 }, 80)
+      .to(S, { cutExp: 0.55, cutS: 0.9, cutX: D ? 28 : 0, cutY: D ? 12 : -6, duration: 10 }, 80)
       .to(shade, { opacity: D ? 1 : 0.6, duration: 8 }, 80)
       .to(copyOutro, { opacity: 1, duration: 8 }, 84)
 
       /* 92–100: сцена гаснет — переход в манифест на том же тёмном */
-      .to(S, { dark: 0.94, cutY: D ? 6 : -20, duration: 8, ease: 'power1.in' }, 92)
+      .to(S, { dark: 0.94, cutY: D ? 6 : -12, duration: 8, ease: 'power1.in' }, 92)
       .to(copyOutro, { opacity: 0, y: -30, duration: 8, ease: 'power1.in' }, 93);
 
     return tl;
