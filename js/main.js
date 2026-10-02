@@ -24,46 +24,143 @@
   ];
 
   /* ------------------------------------------------------------------------
-     Звёздное поле — одно на всю страницу, редкое и тихое
+     Звёздное небо. Статичный слой рисуется один раз (глубина, цвет звёзд,
+     ореолы ярких, лёгкая полоса Млечного Пути), сверху — маленький слой
+     мерцания и редкие метеоры. Параллакс по скроллу — одним transform.
      ------------------------------------------------------------------------ */
   (function stars() {
-    const canvas = document.getElementById('stars');
-    const ctx = canvas.getContext('2d');
-    let w = 0, h = 0, dpr = 1, pts = [];
+    const base = document.getElementById('stars');
+    if (!base) return;
+    const twinkle = document.createElement('canvas');
+    twinkle.className = 'stars stars--twinkle';
+    twinkle.setAttribute('aria-hidden', 'true');
+    base.after(twinkle);
+    const bctx = base.getContext('2d');
+    const tctx = twinkle.getContext('2d');
+
+    let w = 0, h = 0, H = 0, dpr = 1, flick = [], meteors = [];
+    const OVER = 1.18;   // запас по высоте под параллакс
+
+    // цвет по «температуре»: от голубого через белый к тёплому
+    const tint = (t) => {
+      if (t < 0.25) return [196, 208, 255];
+      if (t < 0.7) return [245, 243, 238];
+      if (t < 0.92) return [255, 236, 205];
+      return [255, 208, 160];
+    };
+    const rnd = (a, b) => a + Math.random() * (b - a);
+
+    function paintBase() {
+      bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      bctx.clearRect(0, 0, w, H);
+
+      // Млечный Путь — диагональная полоса из очень мелких тусклых точек
+      const band = Math.round((w * H) / 1400);
+      for (let i = 0; i < band; i++) {
+        const u = Math.random();
+        const g = (Math.random() + Math.random() + Math.random()) / 3 - 0.5;   // сгущение к оси
+        const x = u * w, y = H * (0.85 - u * 0.55) + g * H * 0.42;
+        const c = tint(Math.random());
+        bctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${rnd(0.04, 0.16)})`;
+        bctx.fillRect(x, y, 1, 1);
+      }
+
+      // звёзды: степенное распределение — много мелких, единицы крупных
+      const n = Math.round((w * H) / 3200);
+      for (let i = 0; i < n; i++) {
+        const x = Math.random() * w, y = Math.random() * H;
+        const m = Math.pow(Math.random(), 3.2);           // 0..1, редко близко к 1
+        const r = 0.3 + m * 1.6;
+        const a = 0.25 + m * 0.7;
+        const c = tint(Math.random());
+        if (m > 0.72) {                                     // ореол у ярких
+          const g = bctx.createRadialGradient(x, y, 0, x, y, r * 9);
+          g.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},${0.2 * m})`);
+          g.addColorStop(1, 'rgba(0,0,0,0)');
+          bctx.fillStyle = g;
+          bctx.beginPath(); bctx.arc(x, y, r * 9, 0, Math.PI * 2); bctx.fill();
+          if (m > 0.9) {                                    // крест дифракции у самых ярких
+            bctx.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},${0.18 * m})`;
+            bctx.lineWidth = 0.6;
+            bctx.beginPath();
+            bctx.moveTo(x - r * 7, y); bctx.lineTo(x + r * 7, y);
+            bctx.moveTo(x, y - r * 7); bctx.lineTo(x, y + r * 7);
+            bctx.stroke();
+          }
+        }
+        bctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+        bctx.beginPath(); bctx.arc(x, y, r, 0, Math.PI * 2); bctx.fill();
+      }
+
+      // мерцающие — отдельный небольшой набор
+      flick = Array.from({ length: Math.round(w / 28) }, () => ({
+        x: Math.random() * w, y: Math.random() * h,
+        r: rnd(0.6, 1.4), c: tint(Math.random()),
+        ph: Math.random() * Math.PI * 2, sp: rnd(0.4, 1.3), a: rnd(0.35, 0.8),
+      }));
+    }
 
     function resize() {
-      dpr = Math.min(2, window.devicePixelRatio || 1);
-      w = window.innerWidth; h = window.innerHeight;
-      canvas.width = w * dpr; canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const n = Math.round((w * h) / 9000);
-      pts = Array.from({ length: n }, () => ({
-        x: Math.random() * w, y: Math.random() * h,
-        r: Math.random() < 0.08 ? 1.1 + Math.random() * 0.7 : 0.35 + Math.random() * 0.6,
-        a: 0.25 + Math.random() * 0.55,
-        ph: Math.random() * Math.PI * 2,
-        tw: 0.3 + Math.random() * 0.9,
-        cool: Math.random() < 0.35,
-      }));
-      draw(performance.now());
+      dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      w = window.innerWidth; h = window.innerHeight; H = Math.round(h * OVER);
+      base.width = w * dpr; base.height = H * dpr;
+      base.style.height = `${H}px`;
+      twinkle.width = w * dpr; twinkle.height = h * dpr;
+      paintBase();
+      drawTwinkle(performance.now());
     }
-    function draw(now) {
-      ctx.clearRect(0, 0, w, h);
-      for (const p of pts) {
-        const k = 0.6 + 0.4 * Math.sin(now * 0.0006 * p.tw + p.ph);
-        ctx.beginPath();
-        ctx.fillStyle = p.cool ? `rgba(196,208,255,${p.a * k})` : `rgba(255,243,226,${p.a * k})`;
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
+
+    function drawTwinkle(now) {
+      tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      tctx.clearRect(0, 0, w, h);
+      for (const p of flick) {
+        const k = 0.45 + 0.55 * Math.sin(now * 0.0011 * p.sp + p.ph);
+        tctx.fillStyle = `rgba(${p.c[0]},${p.c[1]},${p.c[2]},${p.a * k})`;
+        tctx.beginPath(); tctx.arc(p.x, p.y, p.r * (0.8 + 0.4 * k), 0, Math.PI * 2); tctx.fill();
+      }
+      // метеоры: короткий штрих, живёт ~0.9 с
+      for (let i = meteors.length - 1; i >= 0; i--) {
+        const m = meteors[i];
+        const t = (now - m.t0) / 900;
+        if (t >= 1) { meteors.splice(i, 1); continue; }
+        const x = m.x + m.vx * t, y = m.y + m.vy * t;
+        const g = tctx.createLinearGradient(x - m.vx * 0.12, y - m.vy * 0.12, x, y);
+        g.addColorStop(0, 'rgba(255,255,255,0)');
+        g.addColorStop(1, `rgba(255,250,240,${0.9 * Math.sin(Math.PI * t)})`);
+        tctx.strokeStyle = g; tctx.lineWidth = 1.2;
+        tctx.beginPath(); tctx.moveTo(x - m.vx * 0.12, y - m.vy * 0.12); tctx.lineTo(x, y); tctx.stroke();
       }
     }
-    let last = 0;
+
+    let last = 0, nextMeteor = performance.now() + rnd(6000, 14000);
     function frame(now) {
-      if (!document.hidden && now - last > 80) { draw(now); last = now; }
+      if (!document.hidden) {
+        if (now > nextMeteor) {
+          meteors.push({ x: rnd(0.1, 0.9) * w, y: rnd(0.05, 0.5) * h, vx: rnd(120, 220) * (Math.random() < 0.5 ? -1 : 1), vy: rnd(60, 120), t0: now });
+          nextMeteor = now + rnd(9000, 22000);
+        }
+        const busy = meteors.length > 0;
+        if (busy || now - last > 70) { drawTwinkle(now); last = now; }
+      }
       requestAnimationFrame(frame);
     }
+
+    // параллакс: статичный слой чуть отстаёт от скролла
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const max = H - h;
+        const y = Math.min(max, window.scrollY * 0.035);
+        base.style.transform = `translate3d(0, ${-y}px, 0)`;
+        ticking = false;
+      });
+    }
+
     resize();
     window.addEventListener('resize', resize);
+    window.addEventListener('scroll', onScroll, { passive: true });
     if (!reduceMotion) requestAnimationFrame(frame);
   })();
 
@@ -137,7 +234,7 @@
     return null;
   }
   function sizeSeq() {
-    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+    const dpr = Math.min(1.25, window.devicePixelRatio || 1);
     seqCanvas.width = Math.round(window.innerWidth * dpr);
     seqCanvas.height = Math.round(window.innerHeight * dpr);
     seqDirty = true;
@@ -178,7 +275,7 @@
     seqLabels.appendChild(el);
     return el;
   });
-  function dpr() { return Math.min(1.5, window.devicePixelRatio || 1); }
+  function dpr() { return Math.min(1.25, window.devicePixelRatio || 1); }
   function placeSeqLabels(x, y, w, h) {
     seqLabels.style.left = `${x}px`; seqLabels.style.top = `${y}px`;
     seqLabels.style.width = `${w}px`; seqLabels.style.height = `${h}px`;
@@ -216,7 +313,9 @@
     eclipse.style.opacity = I.eclipse * S.eclipse;
 
     // hero: «камера» — перспектива, наклон по скроллу и указателю, наезд
-    productHero.style.setProperty('--exp', `${I.exp * S.heroExp}`);
+    const heroExp = I.exp * S.heroExp;
+    productHero.style.setProperty('--dim', `${(1 - heroExp).toFixed(3)}`);
+    productHero.classList.toggle('is-lit', I.lr * S.lr >= 0.999);   // маска больше не нужна — свет открыт полностью
     productHero.style.transform =
       `perspective(1600px) rotateX(${(S.rx + P.y).toFixed(3)}deg) rotateY(${(S.ry + P.x).toFixed(3)}deg) ` +
       `translate3d(0, ${S.heroY * vh / 100}px, 0) scale(${S.heroS})`;
@@ -224,7 +323,7 @@
 
     // разрез: кадр последовательности по прогрессу разлёта
     productCut.style.opacity = S.cutO;
-    productCut.style.setProperty('--exp', `${S.cutExp}`);
+    productCut.style.setProperty('--dim', `${(1 - S.cutExp).toFixed(3)}`);
     productCut.style.transform = `translate3d(${S.cutX * window.innerWidth / 100}px, ${S.cutY * vh / 100}px, 0) scale(${S.cutS})`;
     if (S.cutO > 0.001) { seqDirty = true; drawSeq(); }
     setActiveLayer(S.cutO > 0.5 ? S.focus : -1);
@@ -560,16 +659,26 @@
   /* ------------------------------------------------------------------------
      Появление по скроллу для остальных секций
      ------------------------------------------------------------------------ */
-  ScrollTrigger.batch('.reveal', {
-    start: 'top 88%',
-    onEnter: (els) => gsap.to(els, { opacity: 1, y: 0, duration: 1.4, stagger: 0.1, ease: 'power3.out', overwrite: true }),
-  });
-  document.querySelectorAll('.manifesto__text').forEach((block) => {
-    gsap.to(block.querySelectorAll('.reveal-line > span'), {
-      y: 0, duration: 1.6, stagger: 0.14, ease: 'power3.out',
-      scrollTrigger: { trigger: block, start: 'top 80%' },
-    });
-  });
+  /* появление через IntersectionObserver: не зависит от расчёта позиций
+     ScrollTrigger и не оставляет блоки невидимыми при резком переходе */
+  (function reveals() {
+    const els = Array.from(document.querySelectorAll('.reveal, .manifesto__text'));
+    const show = (el) => el.classList.add('is-in');
+    if (reduceMotion || !('IntersectionObserver' in window)) { els.forEach(show); return; }
+    let queue = [], flushing = false;
+    const flush = () => {
+      queue.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)
+        .forEach((el, i) => { el.style.transitionDelay = `${Math.min(i, 5) * 0.09}s`; show(el); });
+      queue = []; flushing = false;
+    };
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => { if (en.isIntersecting) { queue.push(en.target); io.unobserve(en.target); } });
+      if (queue.length && !flushing) { flushing = true; requestAnimationFrame(flush); }
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.01 });
+    els.forEach((el) => io.observe(el));
+    // страховка: всё, что уже в кадре через секунду после загрузки, показываем
+    setTimeout(() => els.forEach((el) => { const r = el.getBoundingClientRect(); if (r.top < window.innerHeight && r.bottom > 0) show(el); }), 1200);
+  })();
 
   // плавный скролл по якорям (учитывает pin)
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
