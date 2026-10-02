@@ -179,7 +179,7 @@
     wmS: 1, wmY: 0, wmO: 1,
   };
   const I = {              // интро
-    dark: 1, lr: 0, exp: 0, soft: 85, eclipse: 0, wmO: 1, cueO: 0, moon: 0, beam: 0,
+    dark: 1, lr: 0, exp: 0, soft: 85, eclipse: 0, wmO: 1, cueO: 0, moon: 0, beam: 0, glow: 0, lift: 6, heroS: 0.96,
   };
   const P = { x: 0, y: 0 }; // указатель: параллакс камеры, градусы
 
@@ -191,6 +191,8 @@
   const productCut = document.getElementById('productCut');
   const cue = document.getElementById('cue');
   const moonHero = document.getElementById('moonHero');
+  const moonGlow = document.getElementById('moonGlow');
+  const moonWrap = document.getElementById('moonWrap');
   const moonbeam = document.getElementById('moonbeam');
 
   const smooth = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
@@ -310,11 +312,15 @@
 
     // свет на фото: радиус в px от диагонали, экспозиция — произведение интро и скролла
     const mob = window.innerWidth < 900;   // на телефоне луна справа сверху
-    root.style.setProperty('--lx', `${mob ? 82 : S.lx}%`);
-    root.style.setProperty('--ly', `${mob ? 9 : S.ly}%`);
+    root.style.setProperty('--lx', `${(mob ? 82 : S.lx) + P.x * 0.6}%`);
+    root.style.setProperty('--ly', `${(mob ? 9 : S.ly) - P.y * 0.5}%`);
     root.style.setProperty('--ls', `${Math.max(0.02, I.lr * S.lr * 2.1).toFixed(4)}`);   // масштаб «дыры» света
     moonbeam.style.opacity = (I.beam * S.eclipse).toFixed(3);
     moonHero.style.opacity = (I.moon * S.eclipse).toFixed(3);
+    moonGlow.style.opacity = (I.glow * S.eclipse).toFixed(3);
+    // луна отстаёт от указателя в обратную сторону — глубина
+    moonWrap.style.setProperty('--mpx', `${(-P.x * 2.2).toFixed(2)}px`); moonWrap.style.setProperty('--mpy', `${(-P.y * 2).toFixed(2)}px`);
+    moonbeam.style.setProperty('--mpx', `${(-P.x * 2.2).toFixed(2)}px`); moonbeam.style.setProperty('--mpy', `${(-P.y * 2).toFixed(2)}px`);
     root.style.setProperty('--brand-o', `${S.brand}`);
     exposure.style.opacity = Math.max(I.dark, S.dark);
     eclipse.style.opacity = I.eclipse * S.eclipse;
@@ -325,7 +331,7 @@
     productHero.classList.toggle('is-lit', I.lr * S.lr >= 0.999);   // маска больше не нужна — свет открыт полностью
     productHero.style.transform =
       `perspective(1600px) rotateX(${(S.rx + P.y).toFixed(3)}deg) rotateY(${(S.ry + P.x).toFixed(3)}deg) ` +
-      `translate3d(0, ${S.heroY * vh / 100}px, 0) scale(${S.heroS})`;
+      `translate3d(${(P.x * 3.4).toFixed(2)}px, ${S.heroY * vh / 100 + I.lift * vh / 100 - P.y * 2.6}px, 0) scale(${S.heroS * I.heroS})`;
     productHero.style.opacity = S.heroExp > 0.01 ? 1 : 0;
 
     // разрез: кадр последовательности по прогрессу разлёта
@@ -364,7 +370,10 @@
   intro
     // 0–1.6 с: из темноты всходит луна — единственный источник света
     .to(I, { moon: 1, duration: 1.8, ease: 'power2.out' }, 0.2)
-    .to(moonHero, { scale: 1, duration: 2.2, ease: 'power2.out' }, 0.2)
+    .to(moonHero, { scale: 1, y: 0, duration: 2.4, ease: 'power2.out' }, 0.2)
+    .to(I, { glow: 1, duration: 1.8, ease: 'power2.out' }, 0.6)
+    // матрас подплывает к свету
+    .to(I, { lift: 0, heroS: 1, duration: 2.6, ease: 'power3.out' }, 1.8)
     // 1.0–2.8 с: логотип — знак, буквы, Sleep Tech
     .to(wmMark, { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }, 1.0)
     .to(wmGlow, { opacity: 1, duration: 1.0, ease: 'power2.inOut' }, 1.1)
@@ -493,8 +502,8 @@
     stageEl.addEventListener('pointermove', (e) => {
       const nx = e.clientX / window.innerWidth - 0.5;
       const ny = e.clientY / window.innerHeight - 0.5;
-      toX(nx * 3.2);
-      toY(-ny * 2.2);
+      toX(nx * 3.5);
+      toY(-ny * 2.6);
     });
     stageEl.addEventListener('pointerleave', () => { toX(0); toY(0); });
   }
@@ -669,6 +678,21 @@
     });
     const first = map.querySelector('.city.is-on');
     if (first) pick(first);
+
+    // видео облёта Земли под картой: только десктоп, без reduced-motion и Save-Data; грузится при приближении
+    const video = document.getElementById('mapVideo');
+    const saveData = navigator.connection && navigator.connection.saveData;
+    if (video) {
+      if (reduceMotion || saveData || window.innerWidth < 900 || !('IntersectionObserver' in window)) { video.remove(); }
+      else {
+        new IntersectionObserver((es, io) => {
+          if (!es[0].isIntersecting) return;
+          io.disconnect();
+          video.src = video.dataset.src;
+          video.addEventListener('canplay', () => { video.play().catch(() => {}); }, { once: true });
+        }, { rootMargin: '600px 0px' }).observe(map);
+      }
+    }
   })();
 
   /* буквы заголовков — отдельные span, чтобы отвечать на курсор лунным светом */

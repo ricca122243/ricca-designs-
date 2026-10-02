@@ -53,10 +53,13 @@
 
         <!-- продукт: фото проявляется из темноты -->
         <!-- луна и её свет: единственный источник света на входе -->
-        <img class="moon-hero" id="moonHero" src="img/moon.webp" alt="" width="1024" height="1024" decoding="async" fetchpriority="high">
+        <div class="moon-wrap" id="moonWrap"><span class="moon-glow" id="moonGlow"></span><img class="moon-hero" id="moonHero" src="img/moon.webp" alt="" width="1024" height="1024" decoding="async" fetchpriority="high"></div>
         <div class="moonbeam" id="moonbeam" aria-hidden="true"></div>
         <figure class="product product--hero" id="productHero">
-          <img src="img/hero-moon.webp" alt="Матрас ELUNA в лунном свете" width="1920" height="1080" decoding="async" fetchpriority="high">
+          <div class="product__float">
+            <img src="img/hero-moon.webp" alt="Матрас ELUNA в лунном свете" width="1920" height="1080" decoding="async" fetchpriority="high">
+            <div class="sheen" id="sheen" aria-hidden="true"></div>
+          </div>
           <div class="light" aria-hidden="true"></div>
         </figure>
 
@@ -435,6 +438,7 @@
             <p class="delivery__pick" aria-live="polite"><span class="delivery__city" id="deliveryCity">Алматы</span><span class="delivery__days" id="deliveryDays">мы здесь · доставка по городу</span></p>
           </div>
           <div class="map" id="map" data-bg style="--mx:73.60%;--my:80.29%">
+            <video class="map__video" id="mapVideo" muted loop playsinline preload="none" poster="img/orbit.webp" data-src="img/orbit.mp4" aria-hidden="true"></video>
             <img class="map__bg" src="img/space.webp" alt="" loading="lazy" decoding="async">
             <svg class="map__base" viewBox="0 0 1040 578" aria-hidden="true" focusable="false">
               <defs><pattern id="mapGrid" width="52" height="52" patternUnits="userSpaceOnUse"><path d="M52 0H0V52" fill="none" stroke="rgba(241,237,230,0.05)" stroke-width="1"/></pattern></defs>
