@@ -74,7 +74,7 @@
   const S = {              // скролл
     lx: 66, ly: 44, lr: 1, soft: 60,
     heroS: 1, heroY: 0, heroExp: 1,
-    cutO: 0, cutExp: 1, cutS: 1.04, cutY: 0, scan: 0,
+    cutO: 0, cutExp: 1, cutS: 1.04, cutX: 0, cutY: 0, scan: 0,
     dark: 0, brand: 0, eclipse: 1,
     wmS: 1, wmY: 0, wmO: 1,
   };
@@ -128,7 +128,7 @@
 
     productCut.style.opacity = S.cutO;
     productCut.style.setProperty('--exp', `${S.cutExp}`);
-    productCut.style.transform = `translate3d(0, ${S.cutY * vh / 100}px, 0) scale(${S.cutS})`;
+    productCut.style.transform = `translate3d(${S.cutX * window.innerWidth / 100}px, ${S.cutY * vh / 100}px, 0) scale(${S.cutS})`;
 
     // активный слой — по положению сканирующего луча
     if (S.cutO > 0.5 && S.scan > 2) {
@@ -236,7 +236,7 @@
 
       /* 18–30: фото уходит в темноту, вместо него проявляется разрез */
       .to(S, { heroExp: 0, heroS: 1.12, heroY: -8, duration: 11, ease: 'power1.in' }, 18)
-      .to(S, { cutO: 1, cutS: 1.0, duration: 10 }, 22)
+      .to(S, { cutO: 1, cutS: 1.0, cutX: D ? 9 : 0, duration: 10 }, 22)
       .to(S, { eclipse: 0, duration: 8 }, 20)
       .to(copyLayers, { opacity: 1, duration: 8 }, 24)
 
@@ -246,11 +246,11 @@
 
       /* 78–90: финальное утверждение */
       .to(copyLayers, { opacity: 0, duration: 6 }, 78)
-      .to(S, { cutExp: 0.5, cutS: 1.06, duration: 12 }, 78)
+      .to(S, { cutExp: 0.45, cutS: 0.9, cutX: D ? 22 : 0, cutY: D ? 12 : -14, duration: 12 }, 78)
       .to(copyOutro, { opacity: 1, duration: 8 }, 83)
 
       /* 90–100: сцена гаснет — переход в манифест на том же тёмном */
-      .to(S, { dark: 0.94, cutY: D ? -4 : -6, duration: 10, ease: 'power1.in' }, 90)
+      .to(S, { dark: 0.94, cutY: D ? 6 : -20, duration: 10, ease: 'power1.in' }, 90)
       .to(copyOutro, { opacity: 0, y: -30, duration: 8, ease: 'power1.in' }, 92);
 
     return tl;

@@ -184,7 +184,7 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 
 /* wordmark */
 .wordmark {
-  position: absolute; z-index: 2; left: 50%; top: 30%;
+  position: absolute; z-index: 4; left: 50%; top: 27%;
   transform: translate(-50%, -50%);
   display: flex;
   font-family: var(--serif); font-weight: 400;
@@ -567,7 +567,7 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
   .nav { padding: 20px var(--gutter); }
   .nav__links { display: none; }
 
-  .wordmark { top: 26%; font-size: clamp(72px, 17vw, 140px); }
+  .wordmark { top: 24%; font-size: clamp(72px, 17vw, 140px); }
   .eclipse { top: 48%; width: min(120vw, 70vh); }
   .product--hero img { object-position: 52% 60%; }
   .product--cut img { object-position: 60% 50%; }
