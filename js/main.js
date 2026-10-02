@@ -309,8 +309,8 @@
     // свет на фото: радиус в px от диагонали, экспозиция — произведение интро и скролла
     root.style.setProperty('--lx', `${S.lx}%`);
     root.style.setProperty('--ly', `${S.ly}%`);
-    root.style.setProperty('--lr', `${Math.max(0, I.lr * S.lr) * diag}px`);
-    root.style.setProperty('--soft', `${Math.min(I.soft, S.soft)}%`);
+    root.style.setProperty('--ls', `${Math.max(0.02, I.lr * S.lr * 2.1).toFixed(4)}`);   // масштаб «дыры» света
+    stageEl.style.setProperty('--orb', `${(I.eclipse * S.eclipse).toFixed(3)}`);
     root.style.setProperty('--brand-o', `${S.brand}`);
     exposure.style.opacity = Math.max(I.dark, S.dark);
     eclipse.style.opacity = I.eclipse * S.eclipse;
@@ -344,6 +344,7 @@
      ------------------------------------------------------------------------ */
   const letters = wordmark.querySelectorAll('.wordmark__word span');
   const wmMark = document.getElementById('wordmarkMark');
+  const wmGlow = document.getElementById('wordmarkGlow');
   const wmSub = document.getElementById('wordmarkSub');
   const heroLines = document.querySelectorAll('#copyHero .line > span');
   const heroEyebrow = document.querySelector('#copyHero .eyebrow');
@@ -353,16 +354,16 @@
     paused: true,
     defaults: { ease: 'power2.inOut' },
     onUpdate: render,
-    onComplete: () => body.classList.remove('is-intro'),
+    onComplete: () => { body.classList.remove('is-intro'); loadSeq(); },
   });
 
   intro
     // 0–1.4 с: из темноты проступает знак — полумесяц с «E», с тёплым свечением
     .to(wmMark, { opacity: 1, scale: 1, duration: 1.4, ease: 'power3.out' }, 0.1)
-    .to(wmMark, { filter: 'drop-shadow(0 0 0.25em rgba(255,243,226,0.55))', duration: 1.2, ease: 'power2.inOut' }, 0.4)
-    .to(wmMark, { filter: 'drop-shadow(0 0 0.25em rgba(255,243,226,0))', duration: 1.6, ease: 'power2.inOut' }, 2.2)
+    .to(wmGlow, { opacity: 1, duration: 1.2, ease: 'power2.inOut' }, 0.4)
+    .to(wmGlow, { opacity: 0, duration: 1.8, ease: 'power2.inOut' }, 2.4)
     // 0.9–2.6 с: буквы ELUNA по одной, затем Sleep Tech
-    .to(letters, { opacity: 1, filter: 'blur(0px)', y: 0, duration: 1.3, stagger: 0.07, ease: 'power3.out' }, 0.9)
+    .to(letters, { opacity: 1, y: 0, duration: 1.3, stagger: 0.07, ease: 'power3.out' }, 0.9)
     .to(wmSub, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' }, 1.9)
     // 1.6–4.4 с: свет — кольцо затмения, пятно растёт, экспозиция поднимается
     .to(I, { dark: 0.6, duration: 1.2 }, 1.6)
@@ -386,13 +387,14 @@
   } else {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
-    const start = () => { intro.play(); loadSeq(); };
+    const start = () => { intro.play(); };
     const heroImg = productHero.querySelector('img');
     // не начинаем раскрытие, пока фото не загрузилось — иначе свет осветит пустоту
     if (heroImg.complete) start(); else { heroImg.addEventListener('load', start, { once: true }); heroImg.addEventListener('error', start, { once: true }); }
     // первый жест пользователя — ускоряем интро, не ломая его
     const hurry = () => {
       if (intro.progress() < 1) intro.timeScale(3.2);
+      loadSeq();
       body.classList.add('is-scrolling');
       window.removeEventListener('wheel', hurry);
       window.removeEventListener('touchstart', hurry);
@@ -633,6 +635,34 @@
     window.addEventListener('resize', resize);
     resize();
     if (reduceMotion) settleStatic();
+  })();
+
+  /* ------------------------------------------------------------------------
+     Доставка: клик по городу — луна и подсветка контура вокруг него
+     Сроки — один объект; пока везде «от 7 дней».
+     ------------------------------------------------------------------------ */
+  (function delivery() {
+    const map = document.getElementById('map');
+    if (!map) return;
+    const DELIVERY = { default: 'от 7 дней' };
+    const cityEl = document.getElementById('deliveryCity');
+    const daysEl = document.getElementById('deliveryDays');
+    const cities = Array.from(map.querySelectorAll('.city'));
+    function pick(btn) {
+      cities.forEach((c) => { const on = c === btn; c.classList.toggle('is-on', on); c.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+      map.classList.add('has-pick');
+      map.style.setProperty('--mx', btn.style.getPropertyValue('--x'));
+      map.style.setProperty('--my', btn.style.getPropertyValue('--y'));
+      const name = btn.dataset.city;
+      cityEl.textContent = name;
+      daysEl.textContent = DELIVERY[name] || DELIVERY.default;
+    }
+    cities.forEach((c) => {
+      c.addEventListener('click', () => pick(c));
+      c.addEventListener('mouseenter', () => { if (window.matchMedia('(hover: hover)').matches) pick(c); });
+    });
+    const first = map.querySelector('.city.is-on');
+    if (first) pick(first);
   })();
 
   /* числа считают вверх при появлении */
