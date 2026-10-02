@@ -427,10 +427,10 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 .cutaway:hover .cut-layer:not(:hover):not(.is-active) { opacity: 0.35; }
 
 /* фото-текстуры там, где они есть; остальное — процедурно */
-.cut-layer--cover .cut-layer__fill   { background-image: url("https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_093000_ba99b665-ff27-45f0-9362-0489807eabe4.png"); }
-.cut-layer--latex .cut-layer__fill   { background-image: url("https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_093000_f1a5cfa3-9e1b-4d1e-8886-6ba406a20114.png"); }
-.cut-layer--gel .cut-layer__fill     { background-image: url("https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_093000_e1993c72-6bd4-40ce-9d08-4f55d86e17b0.png"); }
-.cut-layer--coir .cut-layer__fill    { background-image: url("https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_093000_c008b823-f112-46c1-97e7-9d2b04307097.png"); }
+.cut-layer--cover .cut-layer__fill   { background-image: url("../img/cotton.webp"); }
+.cut-layer--latex .cut-layer__fill   { background-image: url("../img/latex.webp"); }
+.cut-layer--gel .cut-layer__fill     { background-image: url("../img/gel.webp"); }
+.cut-layer--coir .cut-layer__fill    { background-image: url("../img/coir.webp"); }
 .cut-layer--hr .cut-layer__fill      { background: radial-gradient(circle, rgba(0,0,0,0.12) 0 1px, transparent 1.7px) 0 0 / 7px 7px, linear-gradient(#dcdbd6, #c9c8c2); }
 .cut-layer--springs .cut-layer__fill { background: linear-gradient(rgba(0,0,0,0.22), transparent 28%, transparent 72%, rgba(0,0,0,0.28)), repeating-linear-gradient(90deg, #202024 0 3px, #c4c4c0 3px 8px, #ebebe7 8px 19px, #c4c4c0 19px 27px, #202024 27px 30px); }
 .cut-layer--base .cut-layer__fill    { background: linear-gradient(#4e4e54, #3e3e44); }
@@ -478,7 +478,7 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
   border-radius: 6px;
   background:
     linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.25)),
-    url("https://d8j0ntlcm91z4.cloudfront.net/user_3K6n1e36UfV8fkZHYJPXuOv8aFS/hf_20261002_093000_ba99b665-ff27-45f0-9362-0489807eabe4.png") center / cover;
+    url("../img/cotton.webp") center / cover;
   box-shadow: inset 0 0 0 2px #26262a, inset 0 0 0 3px rgba(200,168,107,0.5), 0 40px 80px -20px rgba(0,0,0,0.8);
 }
 .size-preview__w, .size-preview__h {
