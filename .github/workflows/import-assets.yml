@@ -1,0 +1,46 @@
+name: Import assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: URL of a zip archive with webp frames
+        required: true
+      dest:
+        description: Target directory inside the repo
+        required: true
+        default: img/seq
+      md5:
+        description: Expected md5 of the archive
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and unpack
+        env:
+          URL: ${{ inputs.url }}
+          DEST: ${{ inputs.dest }}
+          MD5: ${{ inputs.md5 }}
+        run: |
+          set -euo pipefail
+          curl -fsSL -o /tmp/assets.zip "$URL"
+          if [ -n "$MD5" ]; then echo "$MD5  /tmp/assets.zip" | md5sum -c -; fi
+          mkdir -p "$DEST"
+          unzip -o -j /tmp/assets.zip -d "$DEST"
+          ls -la "$DEST"
+      - name: Commit
+        env:
+          DEST: ${{ inputs.dest }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A "$DEST"
+          git commit -m "Import frame sequence into $DEST" || echo "nothing to commit"
+          git push
