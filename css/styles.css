@@ -27,8 +27,8 @@
   /* сцена — выставляется скриптом */
   --lx: 68%;
   --ly: 42%;
-  --moon-x: 8%;      /* где луна = откуда свет */
-  --moon-y: 20%;
+  --moon-x: 12%;     /* где луна = откуда свет: совпадает с источником света на фото */
+  --moon-y: 18%;
   --beam-angle: 128deg;
   --lr: 0px;          /* радиус светового пятна на фото */
   --soft: 60%;        /* мягкость края пятна */
@@ -290,7 +290,7 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 }
 /* луна в hero: появляется первой, её свет падает на матрас */
 .moon-wrap {
-  position: absolute; z-index: 5; left: var(--moon-x); top: var(--moon-y); width: min(8vw, 11vh); aspect-ratio: 1;
+  position: absolute; z-index: 5; left: var(--moon-x); top: var(--moon-y); width: min(10vw, 14vh); aspect-ratio: 1;
   transform: translate(-50%, -50%) translate3d(var(--mpx, 0px), var(--mpy, 0px), 0);
   pointer-events: none; will-change: transform;
 }
@@ -325,11 +325,13 @@ body:not(.is-intro) .product__float { animation: heroFloat 11s ease-in-out infin
 body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 /* вмятина от нажатия: тёмный центр, светлый ободок со стороны луны */
 .dent {
-  position: absolute; z-index: 2; left: var(--dx, 50%); top: var(--dy, 50%); width: 26vmin; aspect-ratio: 1.6;
+  position: absolute; z-index: 2; left: var(--dx, 50%); top: var(--dy, 50%); width: 30vmin; aspect-ratio: 1.7;
   transform: translate(-50%, -50%) rotate(-12deg) scale(.6); opacity: 0; pointer-events: none;
+  /* вмятина: тень в центре, мягкий ободок света со стороны луны (сверху слева), тень на противоположном крае */
   background:
-    radial-gradient(ellipse at 50% 50%, rgba(0,0,0,.42) 0, rgba(0,0,0,.22) 38%, transparent 62%),
-    radial-gradient(ellipse at 38% 30%, rgba(var(--cool), .35) 0, transparent 34%);
+    radial-gradient(ellipse at 50% 52%, rgba(0,0,0,.6) 0, rgba(0,0,0,.3) 34%, transparent 58%),
+    radial-gradient(ellipse 40% 26% at 36% 26%, rgba(var(--cool), .42) 0, transparent 70%),
+    radial-gradient(ellipse 42% 24% at 66% 78%, rgba(0,0,0,.35) 0, transparent 70%);
   will-change: transform, opacity;
 }
 .product--hero { pointer-events: auto; cursor: pointer; }
@@ -991,8 +993,8 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
   .reveal { transform: none; transition-duration: 1s; }
   .px__shine { animation: none; background-position: 30% 0; }
   .px__beam.is-flare { animation: none; }
-  :root { --moon-x: 82%; --moon-y: 9%; }
-  .moon-wrap { width: 13vw; }
+  :root { --moon-x: 14%; --moon-y: 8%; }   /* свет на фото идёт сверху слева — луна там же */
+  .moon-wrap { width: 15vw; }
   .sheen { display: none; }
   .px__moon { width: 20%; }
   .delivery { grid-template-columns: 1fr; gap: 28px; }
