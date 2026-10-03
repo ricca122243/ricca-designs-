@@ -146,7 +146,29 @@
       tctx0.setTransform(dpr, 0, 0, dpr, 0, 0); tctx0.clearRect(0, 0, w, H);
       const mob = isMobile();
       if (kind === 'far') {
-        const band = Math.round((w * H) / (mob ? 2400 : 1400) / (TIER === 'low' ? 2 : 1));
+        // Млечный Путь: мягкие облака света вдоль диагонали (холодный край, тёплое ядро), рисуются один раз
+        const clouds = mob ? 9 : 16;
+        for (let i = 0; i < clouds; i++) {
+          const u = (i + Math.random() * 0.8) / clouds;
+          const x = u * w, y = H * (0.85 - u * 0.55) + (Math.random() - 0.5) * H * 0.16;
+          const r = w * rnd(0.08, 0.2) * (mob ? 1.6 : 1);
+          const core = Math.abs(u - 0.55) < 0.18;
+          const c = core ? [255, 226, 196] : Math.random() < 0.5 ? [124, 146, 230] : [168, 150, 214];
+          const g = tctx0.createRadialGradient(x, y, 0, x, y, r);
+          g.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},${core ? 0.05 : 0.045})`);
+          g.addColorStop(0.5, `rgba(${c[0]},${c[1]},${c[2]},${core ? 0.022 : 0.018})`);
+          g.addColorStop(1, 'rgba(0,0,0,0)');
+          tctx0.fillStyle = g; tctx0.fillRect(x - r, y - r, r * 2, r * 2);
+        }
+        // пыль: очень мелкие слабые звёзды по всему небу — та же «зернистость», что на фото матраса
+        const dust = Math.round((w * H) / (mob ? 1100 : 700) / (TIER === 'low' ? 2 : 1));
+        for (let i = 0; i < dust; i++) {
+          const c = tint(Math.random() * 0.8);
+          tctx0.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${rnd(0.06, 0.3)})`;
+          const s = Math.random() < 0.85 ? 0.7 : 1.1;
+          tctx0.fillRect(Math.random() * w, Math.random() * H, s, s);
+        }
+        const band =Math.round((w * H) / (mob ? 2400 : 1400) / (TIER === 'low' ? 2 : 1));
         for (let i = 0; i < band; i++) {
           const u = Math.random();
           const g = (Math.random() + Math.random() + Math.random()) / 3 - 0.5;
@@ -352,12 +374,13 @@
      Разрез как последовательность кадров. Перерисовка только когда кадр,
      размер или число загруженных кадров изменились.
      ------------------------------------------------------------------------ */
-  // кадры разлёта по уровню качества: HIGH — 2560×1440 (апскейл Higgsfield), MEDIUM — 1920, LOW — 1280
+  // кадры раскрытия (фото матраса → семь слоёв; видео Higgsfield по двум ключевым кадрам), 3:4:
+  // HIGH — 1440×1920, MEDIUM — 1080×1440, LOW — 720×960. Кадр 1 — закрытый матрас
   const SEQ = TIER === 'high'
-    ? { count: 24, w: 2560, h: 1440, base: 'img/seq2560/', pad: 2, fallback: 'img/seq/' }
+    ? { count: 36, w: 1440, h: 1920, base: 'img/layers/1440/', pad: 2, fallback: 'img/layers/1080/' }
     : TIER === 'medium'
-      ? { count: 24, w: 1920, h: 1080, base: 'img/seq/', pad: 2 }
-      : { count: 24, w: 1280, h: 720, base: 'img/seq720/', pad: 2 };
+      ? { count: 36, w: 1080, h: 1440, base: 'img/layers/1080/', pad: 2 }
+      : { count: 36, w: 720, h: 960, base: 'img/layers/720/', pad: 2 };
   const seqCanvas = document.getElementById('seq');
   const seqCtx = seqCanvas.getContext('2d', { alpha: true });
   const frames = new Array(SEQ.count).fill(null);
@@ -393,15 +416,22 @@
     return null;
   }
   function dprSeq() { return Math.min(1.5, window.devicePixelRatio || 1); }
-  // геометрия кадра в device px относительно сцены; canvas имеет размер самого кадра (dw × dh), а не экрана
+  // геометрия кадра в device px относительно сцены; canvas имеет размер самого кадра (dw × dh), а не экрана.
+  // Матрас на фото обрезан справа — кадр прижат к правому краю экрана, слева остаётся место под список слоёв (как на макете)
   function seqGeometry() {
     const d = dprSeq();
     const cw = Math.round(window.innerWidth * d), ch = Math.round(window.innerHeight * d);
     const mob = isMobile();
-    // телефон: кадр шириной 0.92 экрана, сдвинут влево — справа остаётся место под выноски
-    const k = mob ? (cw / SEQ.w) * 0.82 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.7;
-    const dw = SEQ.w * k, dh = SEQ.h * k;
-    return { cw, ch, dw, dh, dx: mob ? -dw * 0.12 : (cw - dw) * 0.5, dy: (ch - dh) * (mob ? 0.5 : 0.56) };
+    let dw, dh;
+    if (mob) {
+      // телефон: кадр под заголовком, над кнопкой и списком
+      dh = ch * 0.47; dw = dh * SEQ.w / SEQ.h;
+      if (dw > cw * 0.9) { dw = cw * 0.9; dh = dw * SEQ.h / SEQ.w; }
+      return { cw, ch, dw, dh, dx: cw - dw, dy: ch * 0.215 };
+    }
+    dh = ch; dw = dh * SEQ.w / SEQ.h;
+    if (dw > cw * 0.58) { dw = cw * 0.58; dh = dw * SEQ.h / SEQ.w; }
+    return { cw, ch, dw, dh, dx: cw - dw, dy: (ch - dh) * 0.5 };
   }
   function sizeSeq() {
     const d = dprSeq();
@@ -423,15 +453,16 @@
   let vigCache = { w: 0, h: 0, g: null };
   function seqVignette(w, h) {
     if (vigCache.w === w && vigCache.h === h && vigCache.g) return vigCache.g;
-    const mob = isMobile();
-    // эллипс через масштаб: единичный радиальный градиент в центре, растянутый transform'ом
-    const rx = w * (mob ? 0.56 : 0.62), ry = h * (mob ? 0.56 : 0.64);
+    // край кадра растворяется в небе страницы: слева широко (там текст), сверху и снизу мягко, справа — узкая кромка у края экрана
     const c = document.createElement('canvas'); c.width = w; c.height = h;
     const x = c.getContext('2d');
-    x.translate(w / 2, h / 2); x.scale(rx, ry);
-    const g = x.createRadialGradient(0, 0, 0, 0, 0, 1);
-    x.fillStyle = g; g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.3 : 0.40, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.64 : 0.70, 'rgba(0,0,0,.5)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-    x.fillRect(-w / rx, -h / ry, 2 * w / rx, 2 * h / ry);
+    const gx = x.createLinearGradient(0, 0, w, 0);
+    gx.addColorStop(0, 'rgba(0,0,0,0)'); gx.addColorStop(0.2, 'rgba(0,0,0,.55)'); gx.addColorStop(0.36, 'rgba(0,0,0,1)'); gx.addColorStop(0.97, 'rgba(0,0,0,1)'); gx.addColorStop(1, 'rgba(0,0,0,.6)');
+    x.fillStyle = gx; x.fillRect(0, 0, w, h);
+    x.globalCompositeOperation = 'destination-in';
+    const gy = x.createLinearGradient(0, 0, 0, h);
+    gy.addColorStop(0, 'rgba(0,0,0,0)'); gy.addColorStop(0.14, 'rgba(0,0,0,1)'); gy.addColorStop(0.84, 'rgba(0,0,0,1)'); gy.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = gy; x.fillRect(0, 0, w, h);
     vigCache = { w, h, g: seqCtx.createPattern(c, 'no-repeat') };
     return vigCache.g;
   }
@@ -447,10 +478,6 @@
     if (a) seqCtx.drawImage(a, 0, 0, cw, ch);
     if (b && b !== a && t > 0.02) { seqCtx.globalAlpha = t; seqCtx.drawImage(b, 0, 0, cw, ch); seqCtx.globalAlpha = 1; }
     // виньетка по краям — в сам кадр, вместо CSS-маски
-    // чёрный фон кадра → цвет страницы (#06070c), чтобы не было видно «коробки»
-    seqCtx.globalCompositeOperation = 'lighten';
-    seqCtx.fillStyle = '#06070c';
-    seqCtx.fillRect(0, 0, cw, ch);
     seqCtx.globalCompositeOperation = 'destination-in';
     seqCtx.fillStyle = seqVignette(cw, ch);
     seqCtx.fillRect(0, 0, cw, ch);
@@ -458,74 +485,37 @@
     seqDirty = false;
   }
 
-  /* подписи-выноски: от правого края слоя линия идёт вниз-вправо, затем вниз — к тексту (как на эскизе).
-     Контейнер не трансформируется вместе с разрезом: якоря пересчитываются из его transform в render(),
-     поэтому при наезде камеры линии следуют за слоями, а текст остаётся на экране */
-  const seqLabels = document.getElementById('seqLabels');
-  // точки на правой боковой грани каждого слоя — сняты по пикселям финального кадра (f24): % ширины/высоты кадра
-  const SEQ_LABEL_Y = [6.5, 17.6, 24.6, 30.8, 40.6, 55.5, 71.0];
-  const SEQ_LABEL_X = [84.0, 84.0, 84.0, 84.0, 84.0, 81.3, 78.1];
-  const SHORT = ['Чехол', 'Латекс', 'Гель', 'Койра', 'Пена HR', 'Пружины', 'Основание'];
-  const seqLabelEls = LAYERS.map((l, i) => {
-    const el = document.createElement('span');
-    el.className = 'seq-label';
-    el.style.setProperty('--i', i);
-    el.innerHTML = `<i class="seq-label__dot seq-label__dot--a"></i><i class="seq-label__dot seq-label__dot--b"></i><span class="seq-label__text"><span class="num">${l.num}</span><span class="name" data-short="${SHORT[i]}">${l.name}</span><span class="spec">${Math.round(l.cm * 10)} мм</span></span>`;
-    seqLabels.appendChild(el);
-    return el;
-  });
+  /* Слои в кадре: центр каждого слоя по вертикали, % высоты кадра (сняты по пикселям последнего кадра) —
+     туда встаёт прожектор, когда выбран пункт списка */
+  const SEQ_LAYER_Y = [29.2, 38.2, 45.0, 51.7, 58.5, 69.0, 78.7];
   let seqGeo = { dx: 0, dy: 0, dw: 1, dh: 1 };
-  function placeSeqLabels(x, y, w, h) { seqGeo = { dx: x, dy: y, dw: w, dh: h }; measureLabels(); }
-  // якорь слоя i на экране с учётом transform разреза (масштаб вокруг центра экрана + сдвиг)
-  function labelAnchor(i, vw, vh) {
-    const ax = seqGeo.dx + SEQ_LABEL_X[i] / 100 * seqGeo.dw, ay = seqGeo.dy + SEQ_LABEL_Y[i] / 100 * seqGeo.dh;
-    const cx = vw / 2, cy = vh / 2;
-    const sc = S.cutS * S.outS;
-    return { x: cx + (ax - cx) * sc + S.cutX * vw / 100, y: cy + (ay - cy) * sc + (S.cutY + S.outY) * vh / 100 };
+  function placeSeqLabels(x, y, w, h) {
+    seqGeo = { dx: x, dy: y, dw: w, dh: h };
+    // прожектор — по центру кадра по горизонтали
+    svar(seqSpot, '--sx', `${((x + w * 0.62) / window.innerWidth * 100).toFixed(2)}%`);
   }
-  const labelLast = []; let labelTick = 0;
-  const labelW = [];
-  function measureLabels() { seqLabelEls.forEach((el, i) => { labelW[i] = el.querySelector('.seq-label__text').offsetWidth || 160; }); labelLast.length = 0; }
-  function placeLabels(vw, vh) {
-    const mob = isMobile();
-    const run = mob ? 14 : 32; // наклонный отрезок; ступенька — за счёт вертикали
-    for (let i = 0; i < seqLabelEls.length; i++) {
-      const a = labelAnchor(i, vw, vh);
-      const el = seqLabelEls[i];
-      const key = `${a.x.toFixed(1)}|${a.y.toFixed(1)}`;
-      if (labelLast[i] === key) continue;
-      labelLast[i] = key;
-      svar(el, '--ax', `${a.x.toFixed(1)}px`);
-      svar(el, '--ay', `${a.y.toFixed(1)}px`);
-      // текст справа от линии; если не помещается — сдвигается влево ровно настолько, чтобы остаться на экране.
-      // Ширина текста из кэша (измеряется один раз, не в кадре)
-      const w = labelW[i] || 160;
-      const over = a.x + run + 9 + w - (vw - 12);
-      svar(el, '--shift', `${over > 0 ? (-over).toFixed(1) : 0}px`);
-      // слой далеко за экраном (при наезде камеры) — выноска гаснет
-      svar(el, '--vis', a.y < 48 || a.y > vh - 24 ? '0' : '1');
-    }
-  }
-  // где слой i лежит на экране (CSS px от верха сцены) на последнем кадре разлёта
-  function layerScreenY(i) { const g = seqGeometry(); const d = dprSeq(); return (g.dy + SEQ_LABEL_Y[i] / 100 * g.dh) / d; }
-  // сдвиг разреза (vh), чтобы слой i оказался в центре экрана при масштабе s (transform-origin — центр)
-  function focusY(i, s) { const vh = window.innerHeight; return (-(layerScreenY(i) - vh / 2) * s) / vh * 100; }
+  // где слой i лежит на экране (CSS px от верха сцены) на последнем кадре раскрытия
+  function layerScreenY(i) { return seqGeo.dy + SEQ_LAYER_Y[i] / 100 * seqGeo.dh; }
   // центр прожектора (% высоты разреза)
   function spotY(i) { return layerScreenY(i) / window.innerHeight * 100; }
   const smoothstep = (v, a, b) => { const t = Math.min(1, Math.max(0, (v - a) / (b - a))); return t * t * (3 - 2 * t); };
 
+  /* Список слоёв слева (как на макете): номер, название, толщина. Строится из LAYERS */
+  const lysEl = document.getElementById('lys');
+  const SHORT = ['Чехол', 'Латекс', 'Гель', 'Койра', 'Пена HR', 'Пружины', 'Основание'];
+  const lysItems = LAYERS.map((l, i) => {
+    const li = document.createElement('li');
+    li.style.setProperty('--i', i);
+    li.innerHTML = `<button type="button" class="lys__item" data-i="${i}"><span class="lys__num">${l.num}</span><span class="lys__name" data-short="${SHORT[i]}">${l.name}</span><span class="lys__spec">${Math.round(l.cm * 10)} мм</span></button>`;
+    lysEl.appendChild(li);
+    return li.firstChild;
+  });
   let activeLayer = -2;
-  const layerActiveEl = document.getElementById('layerActive');
   function setActiveLayer(i) {
     if (i === activeLayer) return;
     activeLayer = i;
-    const l = LAYERS[i];
-    layerActiveEl.classList.toggle('is-on', !!l);
-    if (l) {
-      layerActiveEl.querySelector('.num').textContent = l.num;
-      layerActiveEl.querySelector('.name').textContent = l.name;
-      layerActiveEl.querySelector('.spec').textContent = `${Math.round(l.cm * 10)} мм`;
-    }
+    lysItems.forEach((el, k) => el.classList.toggle('is-active', k === i));
+    lysEl.classList.toggle('is-focus', i >= 0);
   }
 
   /* ------------------------------------------------------------------------
@@ -555,16 +545,9 @@
     svo(seqDim, (1 - S.cutExp * S.outExp).toFixed(3));
     sv(productCut, 'transform', `translate3d(${(S.cutX * vw / 100).toFixed(2)}px, ${((S.cutY + S.outY) * vh / 100).toFixed(2)}px, 0) scale(${(S.cutS * S.outS).toFixed(4)})`);
     if (S.cutO > 0.001) { markSeq(); drawSeq(); }
-    const focusI = Math.round(S.focus);
-    setActiveLayer(S.cutO > 0.5 ? focusI : -1);
-    svo(seqLabels, (S.cutO * smoothstep(S.spread, 0.8, 1) * smoothstep(S.outExp, 0.3, 1)).toFixed(3));
-    const inFocus = S.spot > 0.5;
-    if (seqLabels.__focus !== inFocus) { seqLabels.__focus = inFocus; seqLabels.classList.toggle('is-focus', inFocus); }
-    if (S.cutO > 0.001 && (!isMobile() || (labelTick++ & 1) === 0)) placeLabels(vw, vh);
+    setActiveLayer(S.cutO > 0.5 && S.spread > 0.9 ? Math.round(S.focus) : -1);
     svo(seqSpot, S.spot.toFixed(3));
     svar(seqSpot, '--sy', `${S.spotY.toFixed(2)}%`);
-    const act = S.cutO > 0.5 ? focusI : -1;
-    if (seqLabels.__act !== act) { seqLabels.__act = act; seqLabelEls.forEach((el, i) => el.classList.toggle('is-active', i === act)); }
 
     sv(wordmark, 'transform', `translate(0, calc(-50% + ${S.wmY.toFixed(3)}vh)) scale(${S.wmS.toFixed(4)})`);
     svo(wordmark, (S.wmO * I.wmO * I.hero).toFixed(3));
@@ -582,7 +565,6 @@
       stageEl.classList.toggle('is-off', !on);
       stars.setVisible(on);
       if (moonGL && !on) moonGL.sleep();
-      if (tourTl) { if (on) tourTl.resume(); else tourTl.pause(); }
       if (on) { Light.claim('hero'); render(); }
     }, { threshold: 0 }).observe(stageEl);
   }
@@ -685,134 +667,53 @@
     if (conceptShown) return; conceptShown = true;
     document.querySelectorAll('#concept .reveal, #concept .manifesto__text').forEach((el) => el.classList.add('is-in'));
   }
-  /* Расслойка открывается сама: дошёл до сцены — слои разлетаются, выноски прорастают,
-     камера проходит по семи слоям и отходит. Скролл только вводит и выводит из сцены. */
-  // прожектор: в туре — лёгкий (на телефоне выключен, матрас мелкий — темнел весь кадр); сильнее — только когда слой выбрали нажатием
-  const SPOT_TOUR = () => (isMobile() ? 0 : 0.45);
-  const SPOT_PICK = () => (isMobile() ? 0.55 : 0.85);
-  let layersTl = null, layersState = 'idle';   // idle | playing | done
-  function playLayers() {
-    if (layersState !== 'idle') return;
-    layersState = 'playing';
-    const D = !isMobile(), ZS = D ? 1.32 : 1.3;
-    seqLabelEls.forEach((el) => el.classList.remove('is-in'));
-    if (reduceMotion) {
-      S.spread = 1; S.cutS = 0.92; seqLabelEls.forEach((el) => el.classList.add('is-in'));
-      layersState = 'done'; render(); return;
-    }
-    layersTl = gsap.timeline({ onUpdate: render, onComplete: () => { layersState = 'done'; layersTl = null; if (!tourPaused) startTour(0, 1.2); else syncPlay(); } });
-    layersTl
-      .to(S, { spread: 1, duration: 1.6, ease: 'power3.out' }, 0)
-      .to(S, { cutS: 0.92, duration: 1.6, ease: 'power2.out' }, 0);
-    seqLabelEls.forEach((el, i) => layersTl.call(() => el.classList.add('is-in'), null, 0.9 + i * 0.16));
-    const t0 = 2.8;
-    layersTl
-      .to(S, { cutS: ZS, cutY: () => focusY(0, ZS), spot: SPOT_TOUR(), spotY: () => spotY(0), duration: 0.9, ease: 'power2.inOut' }, t0)
-      .to(S, { focus: 0, duration: 0.01 }, t0 + 0.45);
-    for (let i = 1; i < 7; i++) {
-      const t = t0 + 0.9 + (i - 1) * 0.85;   // 0.6 с движения + 0.25 с паузы на слое
-      layersTl
-        .to(S, { cutY: () => focusY(i, ZS), spotY: () => spotY(i), duration: 0.6, ease: 'power2.inOut' }, t)
-        .to(S, { focus: i, duration: 0.01 }, t + 0.3);
-    }
-    const tEnd = t0 + 0.9 + 6 * 0.85 + 0.45;
-    layersTl
-      .to(S, { cutS: 0.92, cutY: D ? 1 : 0, spot: 0, duration: 0.9, ease: 'power2.inOut' }, tEnd)
-      .to(S, { focus: -1, duration: 0.01 }, tEnd + 0.3);
-  }
-  function resetLayers() {
-    if (layersState === 'idle') return;
-    if (layersTl) { layersTl.kill(); layersTl = null; }
-    stopTour();
-    layersState = 'idle';
-    seqLabelEls.forEach((el) => el.classList.remove('is-in'));
-    gsap.to(S, { spread: 0, cutS: 1, cutY: 0, spot: 0, focus: -1, duration: 0.6, ease: 'power2.out', onUpdate: render, overwrite: 'auto' });
-  }
-
-  /* Свободный просмотр после сценария: камера по кругу ходит по слоям «как видео».
-     Нажатие на подпись или на слой — камера едет к нему и стоит; через 8 с тур продолжается.
-     Кнопка ❚❚/▶ — ручная пауза. Скролл к финалу сцены — тур останавливается, камера отходит. */
-  const seqPlay = document.getElementById('seqPlay');
-  let tourTl = null, tourPaused = false, tourAuto = 0, tourOut = false;
-  const ZSc = () => (isMobile() ? 1.3 : 1.32);
-  function camTo(i, dur) {
-    const ZS = ZSc(), D = !isMobile();
-    if (i < 0) return gsap.to(S, { cutS: 0.92, cutY: D ? 1 : 0, spot: 0, duration: dur, ease: 'power2.inOut', onUpdate: render, overwrite: 'auto', onStart: () => { gsap.delayedCall(dur / 2, () => { S.focus = -1; render(); }); } });
-    return gsap.to(S, { cutS: ZS, cutY: focusY(i, ZS), spot: SPOT_PICK(), spotY: spotY(i), duration: dur, ease: 'power2.inOut', onUpdate: render, overwrite: 'auto', onStart: () => { gsap.delayedCall(dur / 2, () => { S.focus = i; render(); }); } });
-  }
-  // порядок: слои 0..6, общий вид, снова слои; start — с какого шага, wait — пауза перед первым шагом
-  function startTour(start, wait) {
-    stopTour();
-    if (reduceMotion || layersState !== 'done' || tourOut || stageOff) { syncPlay(); return; }
-    const steps = [0, 1, 2, 3, 4, 5, 6, -1];
-    const order = steps.slice(start).concat(steps.slice(0, start));
-    const ZS = ZSc(), D = !isMobile();
-    tourTl = gsap.timeline({ repeat: -1, repeatRefresh: true, delay: wait || 0, onUpdate: render });
-    let t = 0;
-    order.forEach((i) => {
-      if (i < 0) {
-        tourTl.to(S, { cutS: 0.92, cutY: D ? 1 : 0, spot: 0, duration: 1.1, ease: 'power2.inOut' }, t).set(S, { focus: -1 }, t + 0.55);
-        t += 1.1 + 2.4;
-      } else {
-        tourTl.to(S, { cutS: ZS, cutY: () => focusY(i, ZS), spot: SPOT_TOUR(), spotY: () => spotY(i), duration: 0.9, ease: 'power2.inOut' }, t).set(S, { focus: i }, t + 0.45);
-        t += 0.9 + 1.9;
-      }
+  /* Расслойка — по желанию клиента: на сцене стоит закрытый матрас (фото), кнопка «Открыть» раскрывает
+     его на семь слоёв, «Закрыть» — собирает обратно. Сама расслойка не запускается.
+     Пункт списка (наведение, фокус, нажатие) — прожектор на этот слой; нажатие при закрытом матрасе сначала открывает его. */
+  const lysToggle = document.getElementById('lysToggle');
+  const lysLabel = lysToggle.querySelector('.lys-toggle__label');
+  const SPOT_PICK = () => (isMobile() ? 0.5 : 0.8);
+  let layersOpen = false, openTw = null, pinned = -1, tourOut = false;
+  function setOpen(on) {
+    if (on === layersOpen) return;
+    layersOpen = on;
+    lysToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+    lysLabel.textContent = on ? 'Закрыть' : 'Открыть';
+    copyLayers.classList.toggle('is-open', on);
+    stageEl.classList.toggle('is-open', on);
+    if (!on) { pinned = -1; focusLayer(-1); }
+    if (openTw) openTw.kill();
+    openTw = gsap.to(S, {
+      spread: on ? 1 : 0, cutS: on ? 1 : 1.04,
+      duration: reduceMotion ? 0.01 : on ? 3.2 : 2.2, ease: 'sine.inOut',
+      onUpdate: render, onComplete: () => { openTw = null; if (on && pinned >= 0) focusLayer(pinned); },
     });
-    tourTl.set({}, {}, t);
-    syncPlay();
   }
-  function stopTour() { if (tourTl) { tourTl.kill(); tourTl = null; } clearTimeout(tourAuto); syncPlay(); }
-  function syncPlay() {
-    if (!seqPlay) return;
-    const on = layersState === 'done' && !reduceMotion;
-    seqPlay.hidden = !on;
-    const playing = !!tourTl;
-    seqPlay.setAttribute('aria-pressed', playing ? 'false' : 'true');
-    seqPlay.classList.toggle('is-paused', !playing);
-    seqPlay.querySelector('.seq-play__label').textContent = playing ? 'Пауза' : 'Смотреть дальше';
+  // прожектор на слой i (−1 — общий вид); работает только у раскрытого матраса
+  function focusLayer(i) {
+    if (i >= 0 && (!layersOpen || S.spread < 0.98 || tourOut)) return;
+    gsap.to(S, { spot: i >= 0 ? SPOT_PICK() : 0, spotY: i >= 0 ? spotY(i) : S.spotY, duration: reduceMotion ? 0.01 : 0.5, ease: 'power2.out', onUpdate: render, overwrite: 'auto' });
+    S.focus = i; render();
   }
-  const nextAfter = (f) => (f < 0 ? 0 : f >= 6 ? 7 : f + 1);
-  function goLayer(i) {
-    if (layersState === 'idle' || tourOut) return;
-    if (layersTl) {                                      // сценарий ещё идёт — завершаем его мгновенно
-      layersTl.kill(); layersTl = null; layersState = 'done';
-      seqLabelEls.forEach((el) => el.classList.add('is-in'));
-      S.spread = 1;
-    }
-    stopTour();
-    camTo(i, reduceMotion ? 0.01 : 0.9);
-    syncPlay();
-    if (!tourPaused && !reduceMotion) tourAuto = setTimeout(() => { if (!tourPaused && !tourTl) startTour(nextAfter(i), 0); }, 8000);
-  }
-  if (seqPlay) seqPlay.addEventListener('click', () => {
-    if (tourTl) { tourPaused = true; stopTour(); }
-    else { tourPaused = false; startTour(nextAfter(S.focus), 0); }
-  });
-  // нажатие на подпись слоя
-  seqLabelEls.forEach((el, i) => {
-    const t = el.querySelector('.seq-label__text');
-    t.setAttribute('role', 'button'); t.tabIndex = -1;
-    t.addEventListener('click', (e) => { e.stopPropagation(); goLayer(i); });
-  });
-  // нажатие на сам слой в кадре — ближайший якорь по вертикали
-  stageEl.addEventListener('click', (e) => {
-    if (layersState === 'idle' || S.spread < 0.8 || tourOut || e.target.closest('a, button')) return;
-    const vw = window.innerWidth, vh = window.innerHeight;
-    let best = -1, bd = 1e9;
-    for (let i = 0; i < seqLabelEls.length; i++) { const a = labelAnchor(i, vw, vh); const d = Math.abs(a.y - e.clientY); if (d < bd) { bd = d; best = i; } }
-    if (best >= 0 && bd < vh * 0.12) goLayer(best);
+  lysToggle.addEventListener('click', () => setOpen(!layersOpen));
+  lysItems.forEach((el, i) => {
+    el.addEventListener('pointerenter', () => { if (pinned < 0) focusLayer(i); });
+    el.addEventListener('pointerleave', () => { if (pinned < 0) focusLayer(-1); });
+    el.addEventListener('focus', () => focusLayer(i));
+    el.addEventListener('blur', () => { if (pinned < 0) focusLayer(-1); });
+    el.addEventListener('click', () => {
+      if (!layersOpen) { pinned = i; setOpen(true); return; }
+      pinned = pinned === i ? -1 : i;
+      focusLayer(pinned);
+    });
   });
   function layersCtl(p) {
-    if (p >= 0.10 && layersState === 'idle') playLayers();
-    else if (p < 0.04) resetLayers();
-    // долистал до финала раньше конца сценария — он ускоряется и доигрывает
-    if (p > 0.68 && layersTl && layersTl.timeScale() === 1) layersTl.timeScale(3);
-    // финал сцены: тур стоп, камера на общий вид; вернулся назад — тур снова
+    // финал сцены: прожектор гаснет; вернулся назад — выбранный слой снова в свете
     const out = p > 0.7;
     if (out !== tourOut) {
       tourOut = out;
-      if (out) { stopTour(); if (layersState === 'done') camTo(-1, 0.6); }
-      else if (layersState === 'done' && !tourPaused) startTour(0, 0.6);
+      if (out) { S.focus = -1; gsap.to(S, { spot: 0, duration: 0.4, onUpdate: render, overwrite: 'auto' }); }
+      else if (pinned >= 0) focusLayer(pinned);
     }
   }
 
@@ -834,7 +735,7 @@
 
   function buildStage(isDesktop) {
     const D = isDesktop;
-    const END = D ? '+=120%' : '+=100%';
+    const END = D ? '+=170%' : '+=150%';   // дольше «припаркована»: клиенту нужно время нажать «Открыть» и рассмотреть слои
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       onUpdate: render,
@@ -857,10 +758,10 @@
       .to(S, { moonX: 16, moonY: -12, moonO: 0, duration: 9, ease: 'power1.in' }, 0)
       .to(S, { brand: 1, duration: 5 }, 4)
       .to(S, { cueO: 0, duration: 4 }, 0)
-      /* 4–12: собранный матрас проявляется в центре; дальше сцена «припаркована» — расслойка идёт по времени (playLayers) */
-      .to(S, { cutO: 1, cutX: D ? 4 : 0, duration: 8 }, 4)
+      /* 4–12: закрытый матрас (фото) проявляется справа; дальше сцена «припаркована» — раскрывает его клиент кнопкой «Открыть» */
+      .to(S, { cutO: 1, duration: 8 }, 4)
       /* 66–84: выход из расслойки — стопка мягко отходит вглубь и тает, подписи гаснут, появляется утверждение */
-      .to(S, { outExp: 0.35, outS: 0.82, outY: -6, duration: 18, ease: 'power1.inOut' }, 66)
+      .to(S, { outExp: 0.35, outS: 0.94, outY: -6, duration: 18, ease: 'power1.inOut' }, 66)
       .to(shade, { autoAlpha: D ? 0.9 : 0.7, duration: 10, ease: 'power1.inOut' }, 68)
       .to(copyOutro, { autoAlpha: 1, duration: 8, ease: 'power1.out' }, 72)
       /* 84–100: сцена темнеет до 55 %, стопка растворяется, утверждение уходит вверх — концепция подхватывает без разрыва */
@@ -1740,7 +1641,7 @@
     });
   });
 
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measureLabels(); ScrollTrigger.refresh(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { ScrollTrigger.refresh(); });
   window.addEventListener('load', () => ScrollTrigger.refresh());
   // эмуляция телефона / поздний viewport meta: если ширина успела измениться — пересчитать всё
   requestAnimationFrame(() => { if (window.innerWidth !== lastW || window.innerHeight !== lastH) onResize(true); });

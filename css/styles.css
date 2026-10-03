@@ -7,15 +7,16 @@
    ========================================================================== */
 
 :root {
-  --bg: #06070c;
-  --bg-2: #090a10;
-  --bg-3: #10121a;
+  --bg: #060914;
+  --bg-2: #080c1a;
+  --bg-3: #0e1426;
   --ink: #f1ede6;
   --ink-2: rgba(241, 237, 230, 0.66);
   --ink-3: rgba(241, 237, 230, 0.54);   /* приглушённый текст: ≥4.5:1 на --bg */
   --ink-4: rgba(241, 237, 230, 0.16);
   --line: rgba(241, 237, 230, 0.10);
   --gold: #c8a86b;
+  --silver: #aab4cc;   /* холодное серебро чехла на фото */
   --warm: 255, 243, 226;
   --cool: 196, 208, 255;
 
@@ -173,9 +174,10 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 .nebula {
   position: absolute; inset: -20%; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse 38% 30% at 72% 18%, rgba(var(--cool), 0.09), transparent 70%),
-    radial-gradient(ellipse 50% 40% at 20% 85%, rgba(120, 100, 160, 0.07), transparent 70%),
-    radial-gradient(ellipse 60% 50% at 55% 55%, rgba(var(--warm), 0.03), transparent 70%);
+    radial-gradient(ellipse 38% 30% at 72% 18%, rgba(var(--cool), 0.08), transparent 70%),
+    radial-gradient(ellipse 44% 46% at 74% 56%, rgba(36, 58, 120, 0.22), transparent 72%),
+    radial-gradient(ellipse 50% 40% at 18% 86%, rgba(104, 92, 168, 0.08), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 55% 55%, rgba(var(--warm), 0.025), transparent 70%);
   will-change: transform;
 }
 body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite alternate; }
@@ -236,25 +238,25 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .product::after {
   content: ""; position: absolute; inset: 0;
   background:
-    linear-gradient(to bottom, rgba(6,7,12,0.5), transparent 25%, transparent 70%, rgba(6,7,12,0.9)),
-    linear-gradient(to right, rgba(6,7,12,0.55), transparent 30%, transparent 72%, rgba(6,7,12,0.55));
+    linear-gradient(to bottom, rgba(6,9,20,0.5), transparent 25%, transparent 70%, rgba(6,9,20,0.9)),
+    linear-gradient(to right, rgba(6,9,20,0.55), transparent 30%, transparent 72%, rgba(6,9,20,0.55));
 }
 
-.product--cut { opacity: 0; }
+.product--cut { opacity: 0; transform-origin: 100% 50%; }
 /* canvas размером с кадр (left/top/width/height ставит JS), не с экран — в 2–3 раза меньше пикселей на кадр */
 /* виньетка по краям кадра печётся в сам canvas при перерисовке (CSS-маска на масштабируемом слое заставляла телефон перерисовывать каждый кадр) */
 .seq { position: absolute; display: block; }
 /* прожектор по слою в фокусе: остальные уходят в тень */
 /* прожектор по слою в фокусе: элемент втрое выше разреза, градиент статичен, двигается только transform (compositor-only) */
-.seq-spot { position: absolute; left: 0; width: 100%; top: -50%; height: 200%; z-index: 3; pointer-events: none; opacity: 0; --sy: 50%; will-change: transform, opacity; transform: translate3d(0, calc((var(--sy) - 50%) / 2), 0); background: radial-gradient(ellipse 80% 11% at 50% 50%, transparent 0 48%, rgba(6,7,12,.66) 78%, rgba(6,7,12,.9) 100%); }
+.seq-spot { position: absolute; left: 0; width: 100%; top: -50%; height: 200%; z-index: 3; pointer-events: none; opacity: 0; --sy: 50%; will-change: transform, opacity; transform: translate3d(0, calc((var(--sy) - 50%) / 2), 0); background: radial-gradient(ellipse 46% 7% at var(--sx, 50%) 50%, transparent 0 46%, rgba(6,9,20,.66) 78%, rgba(6,9,20,.9) 100%); }
 .product--cut::after {
   display: block;
   background:
-    linear-gradient(to bottom, rgba(6,7,12,0.6), transparent 22%, transparent 78%, rgba(6,7,12,0.85)),
-    linear-gradient(to right, rgba(6,7,12,0.55), transparent 24%, transparent 78%, rgba(6,7,12,0.55));
+    linear-gradient(to bottom, rgba(6,9,20,0.6), transparent 22%, transparent 78%, rgba(6,9,20,0.85)),
+    linear-gradient(to right, rgba(6,9,20,0.55), transparent 24%, transparent 78%, rgba(6,9,20,0.55));
 }
 
-.shade { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0; visibility: hidden; will-change: opacity; background: linear-gradient(to right, rgba(6,7,12,0.96) 0%, rgba(6,7,12,0.82) 38%, rgba(6,7,12,0.0) 68%); }
+.shade { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0; visibility: hidden; will-change: opacity; background: linear-gradient(to right, rgba(6,9,20,0.96) 0%, rgba(6,9,20,0.82) 38%, rgba(6,9,20,0.0) 68%); }
 .exposure { position: absolute; inset: 0; z-index: 6; pointer-events: none; background: var(--bg); opacity: 1; will-change: opacity; }
 
 /* ---------- Текст сцены -------------------------------------------------- */
@@ -279,62 +281,51 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 
 .copy--layers { left: var(--gutter); top: 50%; transform: translateY(-50%); width: min(440px, 38vw); opacity: 0; visibility: hidden; }
 .copy--layers .section-title { font-size: clamp(32px, 3.2vw, 52px); margin-top: 22px; }
-/* активный слой — единственная подпись на всех экранах (на кадре — номера с рисками) */
-.layer-active {
-  display: flex; gap: 14px; align-items: baseline;
-  margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
-  font-size: 15px; color: var(--ink);
-  transition: opacity .4s;
+/* список слоёв (как на макете): номер · название · толщина, тонкие разделители */
+.copy--layers { pointer-events: auto; }
+.lys { margin-top: clamp(22px, 3.6vh, 40px); counter-reset: none; }
+.lys li { border-top: 1px solid var(--line); }
+.lys li:last-child { border-bottom: 1px solid var(--line); }
+.lys__item {
+  display: grid; grid-template-columns: 3.1em 1fr auto; align-items: baseline; gap: 0 12px;
+  width: 100%; padding: clamp(8px, 1.35vh, 13px) 0; text-align: left; color: var(--ink-2);
+  transition: color .35s, opacity .5s var(--ease-out), transform .5s var(--ease-out);
 }
-.layer-active .num { font-size: 11px; letter-spacing: .12em; color: var(--gold); }
-.layer-active .spec { margin-left: auto; font-size: 11px; letter-spacing: .08em; color: var(--ink-3); }
-.layer-active:not(.is-on) { opacity: 0; }
-/* свободный просмотр: кнопка паузы тура и подсказка */
-.seq-play { margin-top: 18px; display: inline-flex; align-items: center; gap: 10px; padding: 9px 16px 9px 12px; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; background: rgba(6,7,12,.45); color: var(--ink); font: inherit; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; pointer-events: auto; transition: border-color .3s, background-color .3s; }
-.seq-play:hover, .seq-play:focus-visible { border-color: var(--gold); background: rgba(200,168,107,.12); }
-.seq-play[hidden] { display: none; }
-.seq-play__icon { position: relative; width: 10px; height: 12px; }
-.seq-play__icon::before, .seq-play__icon::after { content: ""; position: absolute; top: 0; width: 3px; height: 12px; background: currentColor; border-radius: 1px; }
-.seq-play__icon::before { left: 0; } .seq-play__icon::after { right: 0; }
-.seq-play.is-paused .seq-play__icon::before { width: 0; height: 0; background: none; border-left: 10px solid currentColor; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-radius: 0; }
-.seq-play.is-paused .seq-play__icon::after { display: none; }
-.seq-hint { margin-top: 12px; font-size: 12px; color: var(--ink-3); letter-spacing: .04em; }
-.seq-play[hidden] + .seq-hint { display: none; }
-.seq-label.is-in .seq-label__text { pointer-events: auto; cursor: pointer; }
-.seq-label__text:hover { text-shadow: 0 0 12px rgba(255,255,255,.35); }
+.lys__num { font-family: var(--display); font-weight: 500; font-size: 13px; letter-spacing: .06em; color: var(--silver); transition: color .35s; }
+.lys__name { font-size: clamp(14px, 1.05vw, 16px); color: var(--ink); }
+.lys__spec { font-size: 12px; letter-spacing: .06em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+/* закрыт — список приглушён; раскрылся — пункты загораются по очереди, в такт слоям */
+.copy--layers:not(.is-open) .lys__item { opacity: .5; }
+.copy--layers.is-open .lys__item { transition-delay: 0s, calc(.4s + var(--i) * .24s), 0s; }
+.lys.is-focus .lys__item:not(.is-active) { opacity: .42; }
+.lys__item:hover .lys__name, .lys__item.is-active .lys__name { color: #fff; }
+.lys__item.is-active .lys__num { color: var(--gold); }
+.lys__item.is-active { transform: translateX(6px); }
+
+/* кнопка «Открыть / Закрыть» */
+.lys-toggle {
+  margin-top: clamp(20px, 3.4vh, 34px); display: inline-flex; align-items: center; gap: 14px;
+  padding: 14px 26px 14px 18px; border-radius: 999px; pointer-events: auto;
+  border: 1px solid rgba(214, 222, 240, .34); background: linear-gradient(180deg, rgba(214,222,240,.10), rgba(214,222,240,.03));
+  color: var(--ink); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase;
+  box-shadow: 0 0 0 0 rgba(214,222,240,.0), inset 0 1px 0 rgba(255,255,255,.12);
+  transition: border-color .4s, background-color .4s, box-shadow .6s;
+}
+.lys-toggle:hover, .lys-toggle:focus-visible { border-color: rgba(214,222,240,.7); box-shadow: 0 0 34px -6px rgba(170,190,255,.45), inset 0 1px 0 rgba(255,255,255,.18); }
+.stage:not(.is-open) .lys-toggle { animation: lysPulse 2.8s ease-in-out infinite; }
+@keyframes lysPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(170,190,255,0), inset 0 1px 0 rgba(255,255,255,.12); } 50% { box-shadow: 0 0 0 7px rgba(170,190,255,.08), inset 0 1px 0 rgba(255,255,255,.12); } }
+/* иконка: три полоски — сложены, при открытии расходятся */
+.lys-toggle__icon { position: relative; width: 16px; height: 14px; }
+.lys-toggle__icon i { position: absolute; left: 0; right: 0; height: 2px; border-radius: 1px; background: currentColor; top: 6px; transition: transform .6s var(--ease-out); }
+.lys-toggle__icon i:nth-child(1) { transform: translateY(-3px); }
+.lys-toggle__icon i:nth-child(3) { transform: translateY(3px); }
+.lys-toggle[aria-pressed="true"] .lys-toggle__icon i:nth-child(1) { transform: translateY(-6px); }
+.lys-toggle[aria-pressed="true"] .lys-toggle__icon i:nth-child(3) { transform: translateY(6px); }
 
 .copy--outro { left: var(--gutter); right: var(--gutter); top: 50%; transform: translateY(-50%); max-width: 820px; opacity: 0; visibility: hidden; }
 .statement { font-family: var(--display); font-weight: 300; font-size: clamp(28px, 3.6vw, 56px); line-height: 1.16; }
 .statement em { color: var(--gold); }
 
-/* ---------- Подписи к разрезу в hero ------------------------------------ */
-
-/* выноски: якорь (--ax/--ay) ставит JS; от него наклонный отрезок вниз-вправо, затем вертикальный, у его конца — текст */
-/* выноски: белые, тонкие; якорь (--ax/--ay) ставит JS; наклонный отрезок → вертикальный → текст; появляются по очереди (is-in) */
-.seq-labels { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0; --run: 32px; --drop: 14px; --step: 6px; will-change: opacity; }
-.seq-label { position: absolute; left: 0; top: 0; width: 50vw; height: 0; transform: translate3d(var(--ax, 0px), var(--ay, 0px), 0); opacity: calc(var(--vis, 1) * var(--dimf, 1)); transition: opacity .4s; will-change: transform, opacity; }
-.seq-labels.is-focus .seq-label:not(.is-active) { --dimf: .45; }
-.seq-label::before, .seq-label::after { content: ""; position: absolute; background: rgba(255,255,255,.85); transition: transform .35s cubic-bezier(.2,.7,.2,1), background-color .4s; }
-.seq-label::before { left: 0; top: 0; width: calc(var(--run) * 1.3); height: 1px; transform-origin: 0 50%; transform: rotate(40deg) scaleX(0); }
-.seq-label::after { left: var(--run); top: calc(var(--run) * 0.84); width: 1px; height: calc(var(--drop) + var(--i) * var(--step)); transform-origin: 50% 0; transform: scaleY(0); transition-delay: .28s; }
-.seq-label.is-in::before { transform: rotate(40deg) scaleX(1); }
-.seq-label.is-in::after { transform: scaleY(1); }
-.seq-label__dot { position: absolute; width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%; background: #fff; opacity: 0; transform: scale(.4); transition: opacity .3s, transform .3s; }
-.seq-label__dot--a { left: 0; top: 0; }
-.seq-label__dot--b { left: var(--run); top: calc(var(--run) * 0.84); transition-delay: .28s; }
-.seq-label.is-in .seq-label__dot { opacity: 1; transform: scale(1); }
-.seq-label__text {
-  position: absolute; left: calc(var(--run) + 10px + var(--shift, 0px)); top: calc(var(--run) * 0.84 + var(--drop) + var(--i) * var(--step));
-  transform: translate(-8px, -100%); opacity: 0; display: flex; align-items: baseline; gap: 10px; white-space: nowrap;
-  font-size: 15px; letter-spacing: .02em; color: #fff; text-shadow: 0 1px 8px rgba(6,7,12,.9), 0 0 2px rgba(6,7,12,1);
-  transition: opacity .45s .5s, transform .45s .5s, text-shadow .4s;
-}
-.seq-label.is-in .seq-label__text { opacity: 1; transform: translate(0, -100%); }
-.seq-label__text .num { font-size: 11px; letter-spacing: .14em; color: rgba(255,255,255,.6); }
-.seq-label__text .spec { font-size: 12px; color: rgba(255,255,255,.6); }
-.seq-label.is-active .seq-label__text { text-shadow: 0 0 12px rgba(255,255,255,.35), 0 1px 8px rgba(6,7,12,.9); }
-.seq-label.is-active .seq-label__text .num, .seq-label.is-active .seq-label__text .spec { color: rgba(255,255,255,.85); }
-.seq-label.is-active::before, .seq-label.is-active::after { background: #fff; }
 
 /* ==========================================================================
    СЕКЦИИ
@@ -348,7 +339,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .concept {
   margin-top: -34vh;   /* заходит на хвост сцены: без чёрной паузы между разрезом и манифестом */
   padding: clamp(40px, 6vh, 64px) 0 clamp(56px, 8vh, 96px);
-  background: linear-gradient(rgba(6,7,12,0) 0%, rgba(9,10,16,0.85) 22%, rgba(9,10,16,0.9) 100%);
+  background: linear-gradient(rgba(6,9,20,0) 0%, rgba(8,12,26,0.85) 22%, rgba(8,12,26,0.9) 100%);
 }
 .concept__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(32px, 5vw, 80px); align-items: end; }
 .concept__text { margin-top: 26px; font-family: var(--display); font-weight: 300; font-size: clamp(22px, 2.3vw, 36px); line-height: 1.2; }
@@ -363,7 +354,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 
 /* ---------- 3. Технология: вкладки --------------------------------------- */
 
-.tech { padding: clamp(72px, 10vh, 120px) 0; background: rgba(9,10,16,0.9); overflow-x: clip; }
+.tech { padding: clamp(72px, 10vh, 120px) 0; background: rgba(8,12,26,0.9); overflow-x: clip; }
 .tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); margin-bottom: clamp(28px, 4vw, 48px); overflow-x: auto; scrollbar-width: none; }
 .tabs::-webkit-scrollbar { display: none; }
 .tab {
@@ -446,7 +437,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 
 /* ---------- 4. Модели: рельс света и четыре карточки ---------------------- */
 
-.models { padding: clamp(72px, 10vh, 120px) 0; background: rgba(9,10,16,0.9); overflow-x: clip; }
+.models { padding: clamp(72px, 10vh, 120px) 0; background: rgba(8,12,26,0.9); overflow-x: clip; }
 
 .mrail { position: relative; isolation: isolate; }
 /* общий прожектор: позиция и сила приходят из контроллера света (--lx / --li) */
@@ -460,7 +451,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .mcard {
   position: relative; display: flex; flex-direction: column;
   padding: clamp(22px, 2.2vw, 32px);
-  border: 1px solid var(--line); border-radius: 3px; background: rgba(16,18,26,.55);
+  border: 1px solid var(--line); border-radius: 3px; background: rgba(14,20,38,.55);
   color: var(--ink-2); cursor: default;
   transition: transform .7s var(--ease-out), opacity .7s var(--ease-out), border-color .7s var(--ease-out), box-shadow .7s var(--ease-out);
 }
@@ -468,7 +459,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .mcard.is-dim { opacity: .62; }
 /* ---- иерархия света: Air — база, Balance — серебро, Prime — золото/элита, Royal — ультра ---- */
 /* Balance: холодный серебристый свет */
-.mcard--balance { background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(var(--cool), .08), transparent 60%), rgba(16,18,26,.6); box-shadow: inset 0 1px 0 rgba(214,222,240,.5); }
+.mcard--balance { background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(var(--cool), .08), transparent 60%), rgba(14,20,38,.6); box-shadow: inset 0 1px 0 rgba(214,222,240,.5); }
 .mcard--balance.is-on, .mcard--balance.is-center { border-color: rgba(214,222,240,.4); box-shadow: inset 0 1px 0 rgba(214,222,240,.8), 0 40px 90px -60px rgba(var(--cool), .7); }
 .mcard__price--balance { position: relative; }
 .mcard__price--balance::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 1px; background: linear-gradient(90deg, transparent, rgba(226,232,246,.9) 40%, rgba(var(--cool), .7) 60%, transparent); }
@@ -597,7 +588,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   background: #0e1017; color: var(--ink); overflow: auto;
   box-shadow: 0 60px 120px -40px rgba(0,0,0,.8);
 }
-.mdl::backdrop { background: rgba(6,7,12,.82); }
+.mdl::backdrop { background: rgba(6,9,20,.82); }
 .mdl__close { position: sticky; top: 0; z-index: 2; display: flex; justify-content: flex-end; height: 0; }
 .mdl__close button { width: 44px; height: 44px; margin: 10px 10px 0 0; border-radius: 50%; background: rgba(18,20,28,.9); border: 1px solid var(--line); font-size: 22px; line-height: 1; color: var(--ink-2); transition: color .3s, border-color .3s; }
 .mdl__close button:hover { color: var(--ink); border-color: var(--ink-3); }
@@ -657,7 +648,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   position: relative; width: 56%; height: 70%; border-radius: 6px;
   border: 1px solid rgba(200,168,107,0.75);
   background: linear-gradient(160deg, rgba(241,237,230,0.08), rgba(241,237,230,0.02) 60%);
-  box-shadow: 0 0 0 1px rgba(6,7,12,0.9), 0 0 60px -10px rgba(200,168,107,0.35), inset 0 0 40px -20px rgba(var(--warm), 0.3);
+  box-shadow: 0 0 0 1px rgba(6,9,20,0.9), 0 0 60px -10px rgba(200,168,107,0.35), inset 0 0 40px -20px rgba(var(--warm), 0.3);
 }
 .size-vis__mat::before { content: ""; position: absolute; inset: 10px; border-radius: 3px; border: 1px dashed rgba(241,237,230,0.14); }
 .size-vis__w, .size-vis__h { position: absolute; font-size: 11px; letter-spacing: .14em; color: var(--ink-3); white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -679,7 +670,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 
 /* ---------- 4b. Размер: модель → размер (шаг 2) ---------------------------- */
 
-.configure { padding: clamp(72px, 10vh, 120px) 0; background: rgba(9,10,16,0.9); border-top: 1px solid var(--line); overflow-x: clip; }
+.configure { padding: clamp(72px, 10vh, 120px) 0; background: rgba(8,12,26,0.9); border-top: 1px solid var(--line); overflow-x: clip; }
 .cfg__models { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: clamp(28px, 4vw, 44px); max-width: 640px; }
 .cfg__models button { padding: 14px 8px; border: 1px solid var(--line); border-radius: 999px; font-family: var(--display); font-size: 15px; color: var(--ink-2); transition: border-color .4s, color .4s, background-color .4s; }
 .cfg__models button:hover { border-color: var(--ink-3); color: var(--ink); }
@@ -701,7 +692,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 
 /* ---------- 5. Доставка · доверие · CTA ----------------------------------- */
 
-.order { padding: clamp(72px, 10vh, 120px) 0 clamp(56px, 8vh, 80px); background: rgba(6,7,12,0.6); overflow-x: clip; }
+.order { padding: clamp(72px, 10vh, 120px) 0 clamp(56px, 8vh, 80px); background: rgba(6,9,20,0.6); overflow-x: clip; }
 .order__grid { display: grid; grid-template-columns: minmax(0, .6fr) minmax(0, 1.4fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
 .delivery__title { margin-top: 24px; font-family: var(--display); font-weight: 300; font-size: clamp(26px, 2.6vw, 40px); line-height: 1.15; letter-spacing: -0.015em; }
 .delivery__title em { color: var(--ink-3); }
@@ -795,7 +786,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 
 /* ---------- Футер ------------------------------------------------------- */
 
-.footer { padding: 24px 0 28px; border-top: 1px solid var(--line); background: rgba(6,7,12,0.8); }
+.footer { padding: 24px 0 28px; border-top: 1px solid var(--line); background: rgba(6,9,20,0.8); }
 .footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 12px; color: var(--ink-3); letter-spacing: .04em; }
 .footer__brand { display: inline-flex; align-items: center; font-family: var(--logo); font-size: 14px; letter-spacing: .2em; color: var(--ink); }
 .footer__brand small { margin-left: 14px; font-family: var(--sans); font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: var(--ink-3); }
@@ -848,10 +839,19 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .hero-sub { font-size: 14px; line-height: 1.6; margin-top: 16px; }
   .cue { display: none; }
 
-  .seq-spot { background: radial-gradient(ellipse 95% 18% at 50% 50%, transparent 0 50%, rgba(6,7,12,.45) 80%, rgba(6,7,12,.65) 100%); }
-  .copy--layers { top: 13vh; bottom: clamp(44px, 8vh, 90px); transform: none; width: auto; right: var(--gutter); }
+  .seq-spot { background: radial-gradient(ellipse 70% 8% at var(--sx, 50%) 50%, transparent 0 50%, rgba(6,9,20,.45) 80%, rgba(6,9,20,.65) 100%); }
+  .copy--layers { top: 12vh; bottom: clamp(28px, 4.5vh, 48px); transform: none; width: auto; right: var(--gutter); display: flex; flex-direction: column; align-items: flex-start; }
+  /* телефон: кадр между заголовком и списком; список — две колонки с короткими названиями */
+  .lys { margin-top: auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: 18px; }
+  .lys li:nth-child(4), .lys li:last-child { border-bottom: 1px solid var(--line); }
+  .lys__item { grid-template-columns: 2.2em 1fr auto; gap: 0 6px; padding: 7px 0; }
+  .lys__num { font-size: 11px; }
+  .lys__name { font-size: 0; }
+  .lys__name::before { content: attr(data-short); font-size: 13px; }
+  .lys__spec { font-size: 10px; }
+  .lys__item.is-active { transform: none; }
+  .lys-toggle { margin-top: 16px; padding: 12px 22px 12px 16px; }
   .copy--layers .section-title { font-size: clamp(28px, 7.6vw, 40px); }
-  .layer-active { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; font-size: 14px; }
   .copy--outro { top: auto; bottom: clamp(44px, 8vh, 90px); transform: none; }
   .statement { font-size: clamp(26px, 7vw, 40px); }
   body:not(.is-intro) .nebula { animation: none; }
@@ -859,13 +859,6 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .mcard--royal::before, .mcard--prime::before, .mcard__price--royal .mcard__sum { animation: none !important; }
   .mcard__price--royal .mcard__sum { filter: none; }
   .mcard--royal::before { opacity: .8; }
-  /* телефон: концы выносок лесенкой (--step 7px), чтобы подписи 12px не наезжали друг на друга */
-  .seq-labels { --run: 14px; --drop: 8px; --step: 7px; }
-  .seq-label__text { left: calc(var(--run) + 7px + var(--shift, 0px)); gap: 6px; font-size: 12px; }
-  .seq-label__text .name { font-size: 0; }
-  .seq-label__text .name::before { content: attr(data-short); font-size: 12px; }
-  .seq-label__text .num { font-size: 10px; }
-  .seq-label__text .spec { font-size: 10px; }
   .nebula { will-change: auto; }
 
   .tlayers li { grid-template-columns: 30px minmax(0, 1fr) auto; gap: 8px 14px; padding: 14px 0; }
@@ -942,7 +935,6 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
   .cue__line::after { animation: none; }
-  .seq-label::before, .seq-label::after, .seq-label__text, .seq-label__dot { transition: none !important; }
   .nebula, .seq, .mcard--prime::before, .mcard--royal::before, .royal-dust i, .mcard__price--royal .mcard__sum { animation: none !important; }
   .reveal, .reveal-line > span { opacity: 1; transform: none; }
   .xs--prime { gap: 10px; }

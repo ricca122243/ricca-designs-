@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>ELUNA — матрас, который раскрывается слой за слоем</title>
   <meta name="description" content="ELUNA. Семь слоёв, собранных вокруг одного ощущения — тишины. Премиальный матрас ручной сборки.">
-  <meta name="theme-color" content="#06070c">
+  <meta name="theme-color" content="#060914">
   <meta name="author" content="RICCA DESIGNS">
   <meta name="copyright" content="© 2026 ELUNA · RICCA DESIGNS. Все права защищены.">
   <!-- порядок загрузки: фон → луна → свет → текст → остальное -->
@@ -66,12 +66,11 @@
         <!-- луна и её свет: единственный источник света на входе -->
 
         <!-- продукт в разрезе: семь слоёв -->
-        <figure class="product product--cut" id="productCut" aria-label="Матрас ELUNA в разрезе: семь слоёв расходятся по скроллу">
+        <figure class="product product--cut" id="productCut" aria-label="Матрас ELUNA: по кнопке «Открыть» раскрывается на семь слоёв">
           <canvas class="seq" id="seq"></canvas>
           <div class="seq-spot" id="seqSpot" aria-hidden="true"></div>
           <div class="seq-dim" id="seqDim" aria-hidden="true"></div>
         </figure>
-        <div class="seq-labels" id="seqLabels" aria-hidden="true"></div>
 
         <!-- фаза 1 — hero -->
         <div class="copy copy--hero" id="copyHero">
@@ -92,9 +91,8 @@
         <div class="copy copy--layers" id="copyLayers">
           <p class="eyebrow"><span>Анатомия</span><span class="dot"></span><span>300 мм</span></p>
           <h2 class="section-title">Семь слоёв.<br><em>Одно ощущение.</em></h2>
-          <p class="layer-active" id="layerActive"><span class="num">01</span><span class="name">Стёганый чехол</span><span class="spec">15 мм</span></p>
-          <button type="button" class="seq-play" id="seqPlay" hidden aria-pressed="false"><span class="seq-play__icon" aria-hidden="true"></span><span class="seq-play__label">Пауза</span></button>
-          <p class="seq-hint">Нажмите на слой, чтобы рассмотреть</p>
+          <ol class="lys" id="lys" aria-label="Слои матраса"><!-- строится из LAYERS в js/main.js --></ol>
+          <button type="button" class="lys-toggle" id="lysToggle" aria-pressed="false" aria-controls="productCut"><span class="lys-toggle__icon" aria-hidden="true"><i></i><i></i><i></i></span><span class="lys-toggle__label">Открыть</span></button>
         </div>
 
         <!-- тень слева под финальный текст -->

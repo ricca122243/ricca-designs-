@@ -13,7 +13,7 @@ cp img/mark.png img/coir.webp img/cotton.webp img/gel.webp img/latex.webp \
    img/moon-hd.webp img/moon-hd-1280.webp \
    img/moon-map-1024.webp img/moon-map-2048.webp img/moon-map-4096.webp "$OUT/img/"
 cp img/kz/kz-map-2080.webp img/kz/kz-map-1280.webp "$OUT/img/kz/"
-cp -r img/seq img/seq2560 img/seq720 "$OUT/img/"
+cp -r img/layers "$OUT/img/"
 # служебные файлы хостинга и инструкция
 cp tools/dist-extra/robots.txt tools/dist-extra/.htaccess tools/dist-extra/_headers tools/dist-extra/404.html "tools/dist-extra/ЗАПУСК.html" "$OUT/"
 
@@ -22,7 +22,7 @@ missing=0
 for ref in $(grep -ohE '(img|css|js|fonts|vendor)/[A-Za-z0-9_./-]+\.(webp|png|css|js|woff2|ttf)' "$OUT"/*.html "$OUT"/css/*.css | sort -u); do
   [ -f "$OUT/$ref" ] || { echo "нет файла: $ref"; missing=1; }
 done
-for d in seq seq2560 seq720; do [ "$(ls "$OUT/img/$d" | wc -l)" -eq 24 ] || { echo "в img/$d не 24 кадра"; missing=1; }; done
+for d in 1440 1080 720; do [ "$(ls "$OUT/img/layers/$d" | wc -l)" -eq 36 ] || { echo "в img/layers/$d не 36 кадров"; missing=1; }; done
 [ "$missing" -eq 0 ] || exit 1
 
 (cd dist && zip -qr -X ELUNA-site.zip ELUNA-site)
