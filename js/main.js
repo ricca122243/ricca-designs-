@@ -238,6 +238,9 @@
       off.far += DRIFT.far * dt; off.near += DRIFT.near * dt;
       off.farY = Math.sin(now * 0.00004) * h * 0.004;
       off.nearY = Math.sin(now * 0.00007 + 1) * h * 0.014;
+      // луна плывёт вместе с небом: медленное покачивание в такт дальнему слою
+      root.style.setProperty('--skyx', `${(Math.sin(now * 0.00003) * w * 0.012).toFixed(2)}px`);
+      root.style.setProperty('--skyy', `${(off.farY * 1.6).toFixed(2)}px`);
       place();
       driftRaf = requestAnimationFrame(driftLoop);
     }
@@ -1017,6 +1020,8 @@
       const r = rail.getBoundingClientRect(), cr = cards[i].getBoundingClientRect();
       const t = TIERS.find((x) => x.key === keys[i]) || { lvl: 2 };
       Light.aim('rail', Math.min(1, Math.max(0, (cr.left + cr.width / 2 - r.left) / Math.max(1, r.width))), 0.5, 0.5 + t.lvl * 0.12);
+      // цвет прожектора по уровню: Balance — холодное серебро, Prime — тёплое золото, Royal — смесь
+      rail.style.setProperty('--lc', keys[i] === 'prime' ? 'var(--warm)' : keys[i] === 'royal' ? '190, 170, 230' : 'var(--cool)');
     }
     Light.on((L) => {
       rail.style.setProperty('--lx', `${(L.x * 100).toFixed(2)}%`);
