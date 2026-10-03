@@ -190,10 +190,12 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   opacity: 0; pointer-events: none; will-change: transform, opacity;
 }
 .moon-big img { display: block; width: 100%; height: 100%; filter: saturate(.35) brightness(.78) contrast(1.04); }
-/* после входа луна медленно вращается — космос движется */
-body:not(.is-intro) .moon-big img { animation: moonTurn 240s linear infinite; }
-@keyframes moonTurn { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-.stage.is-off .moon-big img { animation-play-state: paused; }
+/* WebGL-шар: карта поверхности NASA, освещение и вращение в шейдере; картинка остаётся постером и fallback */
+.moon-big__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+.moon-big.is-gl .moon-big__gl { display: block; }
+.moon-big img { transition: opacity .6s; }
+.moon-big.is-gl img { opacity: 0; }
+.moon-big.is-gl::after { display: none; }
 .moon-big::after {
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(94deg, transparent calc(var(--term, -18%) - 14%), rgba(5,6,10,.82) calc(var(--term, -18%) - 2%), rgba(5,6,10,.985) calc(var(--term, -18%) + 6%));
@@ -832,7 +834,7 @@ body:not(.is-intro) .moon-big img { animation: moonTurn 240s linear infinite; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
   .cue__line::after { animation: none; }
-  .nebula, .seq, .moon-big img, .mcard--prime::before, .mcard--royal::before, .royal-dust i, .mcard__price--royal .mcard__sum { animation: none !important; }
+  .nebula, .seq, .mcard--prime::before, .mcard--royal::before, .royal-dust i, .mcard__price--royal .mcard__sum { animation: none !important; }
   .reveal, .reveal-line > span { opacity: 1; transform: none; }
   .xs--prime { gap: 10px; }
   .material__photo img { transition: none; }

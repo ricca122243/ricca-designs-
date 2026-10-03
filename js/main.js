@@ -308,6 +308,33 @@
   const seqSpot = document.getElementById('seqSpot');
   const cue = document.getElementById('cue');
   const moonBig = document.getElementById('moonBig');
+  const moonGlCanvas = document.getElementById('moonGl');
+  // шар луны: WebGL, если устройство тянет; иначе остаётся картинка с CSS-терминатором
+  let moonGL = null;
+  function initMoonGL() {
+    if (moonGL || TIER === 'low' || reduceMotion || !window.MoonGL || !moonGlCanvas) return;
+    const inst = window.MoonGL.create({
+      canvas: moonGlCanvas, tier: TIER, force: params.get('gl') === 'force',
+      src: TIER === 'high' && !isMobile() ? 'img/moon-map-2048.webp' : 'img/moon-map-1024.webp',
+      onReady: () => { moonBig.classList.add('is-gl'); sizeMoonGL(); render(); },
+      onFallback: () => { if (moonGL) { moonGL.destroy(); moonGL = null; } moonBig.classList.remove('is-gl'); },
+    });
+    if (!inst) return;
+    moonGL = inst;
+    sizeMoonGL();
+  }
+  function sizeMoonGL() {
+    if (!moonGL) return;
+    const r = moonBig.getBoundingClientRect();
+    const d = Math.min(1.5, window.devicePixelRatio || 1);
+    moonGL.resize(r.width * d, r.height * d);
+  }
+  // направление света из «процента терминатора» интро: −18 % — источник за шаром, 112 % — спереди-слева
+  function lightFromTerm(t) {
+    const k = Math.min(1, Math.max(0, (t + 18) / 130));
+    const a = Math.PI * (1.0 - 0.72 * k);          // от 180° (сзади) к ≈50° (спереди-слева)
+    return [-Math.sin(a) * 0.95, 0.3, Math.cos(a)];
+  }
 
   /* ------------------------------------------------------------------------
      Разрез как последовательность кадров. Перерисовка только когда кадр,
@@ -472,6 +499,7 @@
     // луна: проявляется терминатором в интро, по скроллу уходит вправо-вверх и гаснет; лёгкий параллакс от указателя
     moonBig.style.opacity = (I.moon * S.moonO).toFixed(3);
     moonBig.style.setProperty('--term', `${I.term.toFixed(2)}%`);
+    if (moonGL) moonGL.set({ light: lightFromTerm(I.term), tiltY: -0.08 + P.x * 0.012, tiltX: 0.12 - P.y * 0.012 });
     moonBig.style.setProperty('--mpx', `${(S.moonX * vw / 100 - P.x * 3).toFixed(2)}px`);
     moonBig.style.setProperty('--mpy', `${(S.moonY * vh / 100 - P.y * 2.6).toFixed(2)}px`);
     navEl.style.setProperty('--brand-o', `${S.brand}`);
@@ -495,7 +523,7 @@
   }
 
   sizeSeq();
-  resizeHooks.push(() => { sizeSeq(); render(); });
+  resizeHooks.push(() => { sizeSeq(); sizeMoonGL(); render(); });
 
   // сцена вне экрана: анимации стоят, звёзды не мерцают, render не нужен; свет принадлежит сцене, пока она видна
   if ('IntersectionObserver' in window) {
@@ -504,10 +532,11 @@
       stageOff = !on;
       stageEl.classList.toggle('is-off', !on);
       stars.setVisible(on);
+      if (moonGL) { if (on) moonGL.wake(); else moonGL.sleep(); }
       if (on) { Light.claim('hero'); render(); }
     }, { threshold: 0 }).observe(stageEl);
   }
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && !stageOff) render(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && !stageOff) { render(); if (moonGL) moonGL.wake(); } });
 
   /* ------------------------------------------------------------------------
      Интро (≈6.3 с, только при входе): по луне идёт терминатор → логотип → заголовок
@@ -524,7 +553,7 @@
     paused: true,
     defaults: { ease: 'power2.inOut' },
     onUpdate: render,
-    onComplete: () => { body.classList.remove('is-intro'); loadSeq(); },
+    onComplete: () => { body.classList.remove('is-intro'); loadSeq(); if (moonGL) moonGL.setSpin(2 * Math.PI / 180); },
   });
 
   intro
@@ -553,12 +582,13 @@
       if (deltas.length < 6) return;
       const d = deltas.slice(2).sort((a, b) => a - b);
       const p90 = d[Math.floor(d.length * 0.9)];
-      if (p90 > 34) { TIER = TIER === 'high' ? 'medium' : 'low'; root.dataset.tier = TIER; }
+      if (p90 > 34) { TIER = TIER === 'high' ? 'medium' : 'low'; root.dataset.tier = TIER; if (moonGL) moonGL.setTier(TIER); }
     };
     requestAnimationFrame(step);
   }
 
   function startIntro() {
+    initMoonGL();
     if (reduceMotion) {
       intro.progress(1);
       body.classList.remove('is-intro');
@@ -1239,6 +1269,6 @@
   render();
 
   if (DEBUG) {
-    window.ELUNA = { intro, Light, get tier() { return TIER; }, S, I, render };
+    window.ELUNA = { intro, Light, get tier() { return TIER; }, get moon() { return moonGL; }, S, I, render };
   }
 })();

@@ -17,6 +17,7 @@
   <link rel="icon" type="image/png" href="img/mark.png">
   <script defer src="vendor/gsap.min.js"></script>
   <script defer src="vendor/ScrollTrigger.min.js"></script>
+  <script defer src="js/moon.js"></script>
   <script defer src="js/main.js"></script>
 </head>
 <body class="is-intro">
@@ -49,7 +50,7 @@
 
         <div class="nebula" aria-hidden="true"></div>
         <!-- луна: большая, справа, проявляется терминатором при входе -->
-        <div class="moon-big" id="moonBig" aria-hidden="true"><img src="img/moon-hd.webp" srcset="img/moon-hd-1280.webp 1280w, img/moon-hd.webp 2048w" sizes="(max-width: 899px) 120vw, 70vw" alt="" width="2048" height="2048" decoding="async" fetchpriority="high"></div>
+        <div class="moon-big" id="moonBig" aria-hidden="true"><canvas class="moon-big__gl" id="moonGl"></canvas><img src="img/moon-hd.webp" srcset="img/moon-hd-1280.webp 1280w, img/moon-hd.webp 2048w" sizes="(max-width: 899px) 120vw, 70vw" alt="" width="2048" height="2048" decoding="async" fetchpriority="high"></div>
 
         <div class="wordmark" id="wordmark" aria-hidden="true">
           <span class="wordmark__glow" id="wordmarkGlow"></span>
