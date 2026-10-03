@@ -69,6 +69,15 @@
   let TIER = detectTier();
   root.dataset.tier = TIER;
 
+  // вариант анимации слоёв: 1 «Кино», 2 «Живой скраб», 3 «Крупный план» — ?v=N, выбор запоминается
+  const VARIANT = (() => {
+    const q = params.get('v');
+    let v = ['1', '2', '3'].includes(q) ? q : null;
+    try { if (v) localStorage.setItem('eluna-v', v); else v = localStorage.getItem('eluna-v'); } catch (e) { /* приватный режим */ }
+    return ['1', '2', '3'].includes(v) ? v : '2';
+  })();
+  root.dataset.variant = VARIANT;
+
   /* ------------------------------------------------------------------------
      Слои матраса (сверху вниз) — для сцены и вкладки «Слои»
      ------------------------------------------------------------------------ */
@@ -119,9 +128,16 @@
     base.after(twinkle);
     const bctx = base.getContext('2d');
     const tctx = twinkle.getContext('2d');
+    // две плитки неба: дальний слой (пыль, слабые звёзды) и ближний (яркие звёзды с ореолом)
+    const far = document.createElement('canvas'), near = document.createElement('canvas');
+    const fctx = far.getContext('2d'), nctx = near.getContext('2d');
 
-    let w = 0, h = 0, H = 0, dpr = 1, flick = [], meteors = [], visible = true, meteorRaf = 0;
+    let w = 0, h = 0, H = 0, dpr = 1, flick = [], meteors = [], visible = true, meteorRaf = 0, driftRaf = 0, lastT = 0, lastDraw = 0, lastTw = 0;
     const OVER = 1.18;
+    // дрейф неба, px/с: ближний слой заметно быстрее дальнего — появляется глубина
+    const DRIFT = { far: { x: -3.4, y: 1.0 }, near: { x: -10, y: 3.4 } };
+    const off = { far: { x: 0, y: 0 }, near: { x: 0, y: 0 } };
+    const wrap = (v, m) => ((v % m) + m) % m;
     const tint = (t) => {
       if (t < 0.25) return [196, 208, 255];
       if (t < 0.7) return [245, 243, 238];
@@ -131,9 +147,10 @@
     const rnd = (a, b) => a + Math.random() * (b - a);
     const density = () => (TIER === 'high' ? 3200 : TIER === 'medium' ? 5000 : 8000) * (isMobile() ? 1.56 : 1);
 
-    function paintBase() {
-      bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      bctx.clearRect(0, 0, w, H);
+    function paintTiles() {
+      far.width = near.width = Math.round(w * dpr); far.height = near.height = Math.round(H * dpr);
+      fctx.setTransform(dpr, 0, 0, dpr, 0, 0); nctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      fctx.clearRect(0, 0, w, H); nctx.clearRect(0, 0, w, H);
       const mob = isMobile();
       const band = Math.round((w * H) / (mob ? 2400 : 1400) / (TIER === 'low' ? 2 : 1));
       for (let i = 0; i < band; i++) {
@@ -141,8 +158,8 @@
         const g = (Math.random() + Math.random() + Math.random()) / 3 - 0.5;
         const x = u * w, y = H * (0.85 - u * 0.55) + g * H * 0.42;
         const c = tint(Math.random());
-        bctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${rnd(0.04, 0.16)})`;
-        bctx.fillRect(x, y, 1, 1);
+        fctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${rnd(0.04, 0.16)})`;
+        fctx.fillRect(x, y, 1, 1);
       }
       const n = Math.round((w * H) / density());
       for (let i = 0; i < n; i++) {
@@ -150,36 +167,51 @@
         const m = Math.pow(Math.random(), 3.2);
         const r = 0.3 + m * 1.6, a = 0.25 + m * 0.7;
         const c = tint(Math.random());
+        const ctx = m > 0.5 ? nctx : fctx;
         if (m > 0.72) {
-          const g = bctx.createRadialGradient(x, y, 0, x, y, r * 9);
+          const g = ctx.createRadialGradient(x, y, 0, x, y, r * 9);
           g.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},${0.2 * m})`);
           g.addColorStop(1, 'rgba(0,0,0,0)');
-          bctx.fillStyle = g;
-          bctx.beginPath(); bctx.arc(x, y, r * 9, 0, Math.PI * 2); bctx.fill();
+          ctx.fillStyle = g;
+          ctx.beginPath(); ctx.arc(x, y, r * 9, 0, Math.PI * 2); ctx.fill();
           if (m > 0.9) {
-            bctx.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},${0.18 * m})`;
-            bctx.lineWidth = 0.6;
-            bctx.beginPath();
-            bctx.moveTo(x - r * 7, y); bctx.lineTo(x + r * 7, y);
-            bctx.moveTo(x, y - r * 7); bctx.lineTo(x, y + r * 7);
-            bctx.stroke();
+            ctx.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},${0.18 * m})`;
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(x - r * 7, y); ctx.lineTo(x + r * 7, y);
+            ctx.moveTo(x, y - r * 7); ctx.lineTo(x, y + r * 7);
+            ctx.stroke();
           }
         }
-        bctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${a})`;
-        bctx.beginPath(); bctx.arc(x, y, r, 0, Math.PI * 2); bctx.fill();
+        ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
       }
-      flick = Array.from({ length: Math.round(w / (mob ? 64 : 36)) }, () => ({
+      flick = Array.from({ length: Math.round(w / (mob ? 56 : 32)) }, () => ({
         x: Math.random() * w, y: Math.random() * h,
         r: rnd(0.6, 1.4), c: tint(Math.random()),
         ph: Math.random() * Math.PI * 2, sp: rnd(0.4, 1.3), a: rnd(0.35, 0.8),
       }));
     }
 
+    // плитка повторяется по горизонтали (две отрисовки), по вертикали только качается — без шва
+    function drawTile(tile, o) {
+      const x = wrap(o.x, w) - w;
+      bctx.drawImage(tile, 0, 0, tile.width, tile.height, x, o.y, w, H);
+      bctx.drawImage(tile, 0, 0, tile.width, tile.height, x + w, o.y, w, H);
+    }
+    function compose() {
+      bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      bctx.clearRect(0, 0, w, H);
+      drawTile(far, off.far);
+      drawTile(near, off.near);
+    }
+
     function size(full) {
       dpr = Math.min(1.5, window.devicePixelRatio || 1);
       w = window.innerWidth; h = window.innerHeight; H = Math.round(h * OVER);
       twinkle.width = w * dpr; twinkle.height = h * dpr;
-      if (full) { base.width = w * dpr; base.height = H * dpr; base.style.height = `${H}px`; paintBase(); }
+      if (full) { base.width = w * dpr; base.height = H * dpr; base.style.height = `${H}px`; paintTiles(); }
+      compose();
       drawTwinkle(performance.now());
     }
 
@@ -188,8 +220,9 @@
       tctx.clearRect(0, 0, w, h);
       for (const p of flick) {
         const k = 0.45 + 0.55 * Math.sin(now * 0.0011 * p.sp + p.ph);
+        const x = wrap(p.x + off.near.x, w), y = p.y + off.near.y;
         tctx.fillStyle = `rgba(${p.c[0]},${p.c[1]},${p.c[2]},${p.a * k})`;
-        tctx.beginPath(); tctx.arc(p.x, p.y, p.r * (0.8 + 0.4 * k), 0, Math.PI * 2); tctx.fill();
+        tctx.beginPath(); tctx.arc(x, y, p.r * (0.8 + 0.4 * k), 0, Math.PI * 2); tctx.fill();
       }
       for (let i = meteors.length - 1; i >= 0; i--) {
         const m = meteors[i];
@@ -204,23 +237,44 @@
       }
     }
 
-    // метеор: короткий цикл, заканчивается вместе со штрихом
+    // дрейф: пока сцена на экране и вкладка активна. Только compositor-дешёвые drawImage;
+    // на средних и слабых устройствах — 30 кадров/с
+    function driftLoop(now) {
+      driftRaf = 0;
+      if (!visible || document.hidden || reduceMotion) { lastT = 0; return; }
+      const dt = lastT ? Math.min(0.1, (now - lastT) / 1000) : 0; lastT = now;
+      off.far.x += DRIFT.far.x * dt; off.near.x += DRIFT.near.x * dt;
+      off.far.y = Math.sin(now * 0.00004) * h * 0.004 + DRIFT.far.y * 0;
+      off.near.y = Math.sin(now * 0.00007 + 1) * h * 0.014;
+      const step = TIER === 'high' ? 0 : 42;
+      if (now - lastDraw >= step) { compose(); lastDraw = now; }
+      const tw = meteors.length ? 0 : (TIER === 'high' ? 40 : 90);
+      if (now - lastTw >= tw) { drawTwinkle(now); lastTw = now; }
+      driftRaf = requestAnimationFrame(driftLoop);
+    }
+    function startDrift() {
+      if (driftRaf || !visible || document.hidden || reduceMotion) return;
+      lastT = 0;
+      driftRaf = requestAnimationFrame(driftLoop);
+    }
+
+    // метеор без дрейфа (reduced-motion): короткий цикл, заканчивается вместе со штрихом
     function meteorLoop(now) {
       meteorRaf = 0;
       if (!meteors.length) return;
       drawTwinkle(now);
       meteorRaf = requestAnimationFrame(meteorLoop);
     }
-    let nextMeteor = performance.now() + rnd(6000, 14000);
+    let nextMeteor = performance.now() + rnd(3000, 8000);
     function tick() {
-      if (document.hidden || !visible || TIER === 'low') return;
+      if (document.hidden || !visible) return;
       const now = performance.now();
       if (now > nextMeteor) {
-        meteors.push({ x: rnd(0.1, 0.9) * w, y: rnd(0.05, 0.5) * h, vx: rnd(120, 220) * (Math.random() < 0.5 ? -1 : 1), vy: rnd(60, 120), t0: now });
-        nextMeteor = now + rnd(9000, 22000);
-        if (!meteorRaf) meteorRaf = requestAnimationFrame(meteorLoop);
+        meteors.push({ x: rnd(0.1, 0.9) * w, y: rnd(0.05, 0.5) * h, vx: rnd(120, 240) * (Math.random() < 0.5 ? -1 : 1), vy: rnd(60, 130), t0: now });
+        nextMeteor = now + rnd(5000, 12000);
+        if (!driftRaf && !meteorRaf) meteorRaf = requestAnimationFrame(meteorLoop);
       }
-      if (!meteorRaf) drawTwinkle(now);
+      if (!driftRaf && !meteorRaf) drawTwinkle(now);
     }
 
     // параллакс: статичный слой чуть отстаёт от скролла
@@ -236,11 +290,12 @@
     }
 
     // фон рисуем в первом кадре — после разметки, до старта интро
-    requestAnimationFrame(() => size(true));
+    requestAnimationFrame(() => { size(true); startDrift(); });
     resizeHooks.push((w2, h2, wChanged) => size(wChanged));
     window.addEventListener('scroll', onScroll, { passive: true });
-    if (!reduceMotion) setInterval(tick, TIER === 'medium' ? 160 : 110);
-    return { setVisible(v) { visible = v; } };
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) startDrift(); });
+    if (!reduceMotion) setInterval(tick, TIER === 'high' ? 110 : 160);
+    return { setVisible(v) { visible = v; if (v) startDrift(); } };
   })();
 
   /* ------------------------------------------------------------------------
@@ -250,6 +305,7 @@
   const S = {
     cutO: 0, cutExp: 1, cutS: 1.04, cutX: 0, cutY: 0,
     spread: 0, focus: -1,
+    spot: 0, spotY: 50,
     dark: 0, brand: 0, eclipse: 1, cueO: 1,
     wmS: 1, wmY: 0, wmO: 1,
     lightDrift: 0,
@@ -263,6 +319,7 @@
   const exposure = document.getElementById('exposure');
   const eclipse = document.getElementById('eclipse');
   const productCut = document.getElementById('productCut');
+  const seqSpot = document.getElementById('seqSpot');
   const cue = document.getElementById('cue');
   const moonHero = document.getElementById('moonHero');
   const moonGlow = document.getElementById('moonGlow');
@@ -381,6 +438,12 @@
     seqLabels.style.left = `${x}px`; seqLabels.style.top = `${y}px`;
     seqLabels.style.width = `${w}px`; seqLabels.style.height = `${h}px`;
   }
+  // где слой i лежит на экране (CSS px от верха сцены) на последнем кадре разлёта
+  function layerScreenY(i) { const g = seqGeometry(); const d = dprSeq(); return (g.dy + SEQ_LABEL_Y[i] / 100 * g.dh) / d; }
+  // сдвиг разреза (vh), чтобы слой i оказался в центре экрана при масштабе s (transform-origin — центр)
+  function focusY(i, s) { const vh = window.innerHeight; return (-(layerScreenY(i) - vh / 2) * s) / vh * 100; }
+  // центр прожектора (% высоты разреза)
+  function spotY(i) { return layerScreenY(i) / window.innerHeight * 100; }
   const smoothstep = (v, a, b) => { const t = Math.min(1, Math.max(0, (v - a) / (b - a))); return t * t * (3 - 2 * t); };
 
   let activeLayer = -2;
@@ -428,7 +491,9 @@
     if (S.cutO > 0.001) { markSeq(); drawSeq(); }
     const focusI = Math.round(S.focus);
     setActiveLayer(S.cutO > 0.5 ? focusI : -1);
-    seqLabels.style.opacity = (S.cutO * smoothstep(S.spread, 0.8, 1)).toFixed(3);
+    seqLabels.style.opacity = (S.cutO * smoothstep(S.spread, 0.8, 1) * (1 - S.spot)).toFixed(3);
+    seqSpot.style.opacity = S.spot.toFixed(3);
+    seqSpot.style.setProperty('--sy', `${S.spotY.toFixed(2)}%`);
     seqLabelEls.forEach((el, i) => el.classList.toggle('is-active', i === focusI && S.cutO > 0.5));
 
     wordmark.style.transform = `translate(-50%, calc(-50% + ${S.wmY}vh)) scale(${S.wmS})`;
@@ -552,16 +617,51 @@
   function stopAuto() { if (autoTween) { autoTween.kill(); autoTween = null; } }
   ['touchstart', 'wheel', 'keydown', 'pointerdown'].forEach((ev) => window.addEventListener(ev, stopAuto, { passive: true }));
 
+  /* вариант 1 «Кино»: разлёт и обход слоёв идут по времени, а не по скроллу; скролл только собирает */
+  let cine = null, cineOn = false, cinePending = false;
+  const CINE_WALK = 1.2 + 7 * 0.85 + 0.6;
+  function cineStart() {
+    if (cineOn) return; cineOn = true; cinePending = false;
+    if (cine) cine.kill();
+    cine = gsap.timeline({ onUpdate: render, defaults: { ease: 'power2.inOut' } });
+    cine.to(S, { spread: 1, duration: 1.6, ease: 'power3.out' }, 0)
+      .to(S, { cutS: 0.9, duration: 1.6, ease: 'power2.out' }, 0)
+      .to(S, { spot: 0.85, spotY: spotY(0), duration: 0.6 }, 1.0);
+    for (let i = 0; i < 7; i++) cine.to(S, { focus: i, duration: 0.01 }, 1.2 + i * 0.85).to(S, { spotY: spotY(i), duration: 0.6 }, 1.0 + i * 0.85);
+    cine.to(S, { spot: 0, duration: 0.6 }, CINE_WALK - 0.6)
+      .to(S, { focus: -1, duration: 0.01 }, CINE_WALK - 0.6)
+      .call(() => { if (cinePending) cineStop(); }, null, CINE_WALK)
+      // дыхание: слои чуть сходятся и расходятся, пока гость смотрит
+      .to(S, { spread: 0.93, duration: 2.4, ease: 'sine.inOut', yoyo: true, repeat: -1 }, CINE_WALK);
+  }
+  function cineStop() {
+    if (!cineOn) return;
+    // гость долистал раньше, чем обход закончился — обход ускоряется, сборка после него
+    if (cine && cine.time() < CINE_WALK - 0.6) { cinePending = true; cine.timeScale(3.5); return; }
+    cineOn = false; cinePending = false;
+    if (cine) { cine.kill(); cine = null; }
+    gsap.to(S, { spread: 0, focus: -1, spot: 0, cutS: 1, duration: 1.0, ease: 'power3.inOut', onUpdate: render, overwrite: 'auto' });
+  }
+
   function buildStage(isDesktop) {
-    const D = isDesktop;
+    const D = isDesktop, V = VARIANT;
+    const END = V === '1' ? (D ? '+=150%' : '+=120%') : (D ? '+=170%' : '+=130%');
+    // телефон: окно запуска автопрокрутки, куда и за сколько секунд она довозит
+    const AUTO = V === '1' ? { dest: 0.58, dur: 9.5, ease: 'none' }
+      : V === '3' ? { dest: 0.62, dur: 11, ease: 'power1.inOut' }
+        : { dest: 0.62, dur: 6.5, ease: 'none' };
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       onUpdate: render,
       scrollTrigger: {
         trigger: stageEl, start: 'top top',
-        end: D ? '+=170%' : '+=130%',
+        end: END,
         pin: true, scrub: D ? 0.5 : 0.4, anticipatePin: 1, invalidateOnRefresh: true,
-        onUpdate: (self) => { if (!D) autoPlayLayers(self); if (self.progress > 0.80) revealConcept(); },
+        onUpdate: (self) => {
+          if (!D) autoPlayLayers(self);
+          if (V === '1') { if (self.progress >= 0.10 && self.progress < 0.52) cineStart(); else cineStop(); }
+          if (self.progress > 0.80) revealConcept();
+        },
       },
     });
 
@@ -572,19 +672,19 @@
       if (!autoArmed || autoTween || self.direction < 0) return;
       if (self.progress < 0.10 || self.progress > 0.20) return;
       autoArmed = false;
-      const from = self.progress, to = 0.62, dist = self.end - self.start;
+      const from = self.progress, to = AUTO.dest, dist = self.end - self.start;
       const o = { p: from };
       autoTween = gsap.to(o, {
-        p: to, duration: 6 * (to - from) / 0.5, ease: 'none',
+        p: to, duration: AUTO.dur * (to - from) / (to - 0.10), ease: AUTO.ease,
         onUpdate: () => window.scrollTo(0, self.start + dist * o.p),
         onComplete: () => { autoTween = null; },
       });
     }
 
     tl
-      /* 0–8: имя уходит в nav, hero-текст уходит, свет чуть дрейфует */
+      /* 0–8: имя из центра уходит в nav, hero-текст уходит, свет чуть дрейфует */
       .to(S, { lightDrift: 0.05, duration: 12, ease: 'power1.inOut' }, 0)
-      .to(S, { wmS: 0.7, wmY: -18, wmO: 0, duration: 8, ease: 'power1.in' }, 0)
+      .to(S, { wmS: 0.5, wmY: -40, wmO: 0, duration: 8, ease: 'power1.in' }, 0)
       .to(S, { brand: 1, duration: 5 }, 4)
       .to(copyHero, { opacity: 0, y: -40, duration: 6 }, 1)
       .to(S, { cueO: 0, duration: 4 }, 0)
@@ -592,27 +692,53 @@
       .to(S, { cutO: 1, cutS: 1.0, cutX: D ? 9 : 0, duration: 8 }, 4)
       .to(S, { eclipse: 0.35, duration: 8 }, 4)
       .to(S, { eclipse: 0, duration: 6 }, 12)
-      .to(copyLayers, { opacity: 1, duration: 5 }, 8)
-      /* 12–20: слои расходятся — быстро и ровно, без перелёта */
-      .to(S, { spread: 1, duration: 8, ease: 'power3.out' }, 12)
-      .to(S, { cutS: 0.9, cutY: D ? 1 : 0, duration: 8, ease: 'power2.out' }, 12)
+      .to(copyLayers, { opacity: 1, duration: 5 }, 8);
+
+    if (V === '1') {
+      /* 12–52: сцена «припаркована» — разлёт и обход слоёв живут по времени (cineStart) */
+      tl.to(copyLayers, { opacity: 0, duration: 4 }, 52);
+    } else if (V === '3') {
+      /* 12–18: разлёт; 18–46: камера по очереди подходит к каждому слою, остальные уходят в тень */
+      const ZS = D ? 1.32 : 1.55;
+      tl.to(S, { spread: 1, duration: 6, ease: 'power3.out' }, 12)
+        .to(S, { cutS: 0.9, cutY: D ? 1 : 0, duration: 6, ease: 'power2.out' }, 12)
+        .to(S, { cutS: ZS, cutY: () => focusY(0, ZS), spot: 1, spotY: () => spotY(0), duration: 4, ease: 'power2.inOut' }, 18)
+        .to(S, { focus: 0, duration: 0.01 }, 19.5);
+      for (let i = 1; i < 7; i++) {
+        const t = 18 + i * 4;
+        tl.to(S, { cutY: () => focusY(i, ZS), spotY: () => spotY(i), duration: 3, ease: 'power2.inOut' }, t)
+          .to(S, { focus: i, duration: 0.01 }, t + 1.5);
+      }
+      tl.to(S, { cutS: 0.9, cutY: D ? 1 : 0, spot: 0, duration: 4, ease: 'power2.inOut' }, 46)
+        .to(S, { focus: -1, duration: 0.01 }, 47)
+        /* 50–56: слои собираются */
+        .to(S, { spread: 0, duration: 6, ease: 'power3.inOut' }, 50)
+        .to(S, { cutS: 1.0, duration: 6, ease: 'power2.inOut' }, 50)
+        .to(copyLayers, { opacity: 0, duration: 4 }, 50);
+    } else {
+      /* 12–20: слои расходятся — быстро и ровно, без перелёта; световая полоса идёт по слоям */
+      tl.to(S, { spread: 1, duration: 8, ease: 'power3.out' }, 12)
+        .to(S, { cutS: 0.9, cutY: D ? 1 : 0, duration: 8, ease: 'power2.out' }, 12)
+        .to(S, { spot: 0.6, spotY: () => spotY(0), duration: 3 }, 18.5);
       /* 20–48: фокус по слоям сверху вниз */
-      .to(S, { focus: 0, duration: 0.01 }, 20)
-      .to(S, { focus: 1, duration: 0.01 }, 24)
-      .to(S, { focus: 2, duration: 0.01 }, 28)
-      .to(S, { focus: 3, duration: 0.01 }, 32)
-      .to(S, { focus: 4, duration: 0.01 }, 36)
-      .to(S, { focus: 5, duration: 0.01 }, 40)
-      .to(S, { focus: 6, duration: 0.01 }, 44)
-      .to(S, { focus: -1, duration: 0.01 }, 48)
-      /* 48–56: слои собираются */
-      .to(S, { spread: 0, duration: 8, ease: 'power3.inOut' }, 48)
-      .to(S, { cutS: 1.0, duration: 8, ease: 'power2.inOut' }, 48)
-      .to(copyLayers, { opacity: 0, duration: 5 }, 48)
-      /* 54–76: финальное утверждение, матрас уходит вправо и вверх */
-      .to(S, { cutExp: 0.45, cutS: 0.88, cutX: D ? 28 : 0, cutY: D ? 10 : -8, duration: 10 }, 54)
-      .to(shade, { opacity: D ? 1 : 0.6, duration: 8 }, 54)
-      .to(copyOutro, { opacity: 1, duration: 7 }, 57)
+      for (let i = 0; i < 7; i++) {
+        tl.to(S, { focus: i, duration: 0.01 }, 20 + i * 4);
+        if (i) tl.to(S, { spotY: () => spotY(i), duration: 3, ease: 'power2.inOut' }, 18.5 + i * 4);
+      }
+      tl.to(S, { focus: -1, duration: 0.01 }, 48)
+        .to(S, { spot: 0, duration: 3 }, 46.5)
+        /* 48–56: слои собираются */
+        .to(S, { spread: 0, duration: 8, ease: 'power3.inOut' }, 48)
+        .to(S, { cutS: 1.0, duration: 8, ease: 'power2.inOut' }, 48)
+        .to(copyLayers, { opacity: 0, duration: 5 }, 48);
+    }
+
+    const T = V === '1' ? 54 : V === '3' ? 56 : 54;
+    tl
+      /* финальное утверждение, матрас уходит вправо и вверх */
+      .to(S, { cutExp: 0.45, cutS: 0.88, cutX: D ? 28 : 0, cutY: D ? 10 : -8, duration: 10 }, T)
+      .to(shade, { opacity: D ? 1 : 0.6, duration: 8 }, T)
+      .to(copyOutro, { opacity: 1, duration: 7 }, T + 3)
       /* 76–100: сцена темнеет не до чёрного и уезжает вверх — следующая секция подхватывает сразу */
       .to(S, { dark: 0.55, cutY: D ? -16 : -12, cutExp: 0.2, duration: 24, ease: 'power1.in' }, 76)
       .to(copyOutro, { opacity: 0, y: -30, duration: 9, ease: 'power1.in' }, 80)
@@ -1172,6 +1298,6 @@
   render();
 
   if (DEBUG) {
-    window.ELUNA = { intro, Light, get tier() { return TIER; }, S, I, render };
+    window.ELUNA = { intro, Light, get tier() { return TIER; }, get variant() { return VARIANT; }, S, I, render };
   }
 })();

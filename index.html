@@ -67,6 +67,7 @@
         <figure class="product product--cut" id="productCut" aria-label="Матрас ELUNA в разрезе: семь слоёв расходятся по скроллу">
           <canvas class="seq" id="seq"></canvas>
           <div class="seq-labels" id="seqLabels" aria-hidden="true"></div>
+          <div class="seq-spot" id="seqSpot" aria-hidden="true"></div>
         </figure>
 
         <!-- фаза 1 — hero -->
@@ -386,6 +387,14 @@
     </section>
 
   </main>
+
+  <!-- выбор варианта анимации слоёв (на время согласования) -->
+  <nav class="vpick" aria-label="Вариант анимации слоёв">
+    <span class="vpick__label">Слои</span>
+    <a href="?v=1" data-v="1"><b>1</b><span>Кино</span></a>
+    <a href="?v=2" data-v="2"><b>2</b><span>Скраб</span></a>
+    <a href="?v=3" data-v="3"><b>3</b><span>Крупный план</span></a>
+  </nav>
 
   <!-- ================================================================
        «Подробнее» — модальные окна моделей

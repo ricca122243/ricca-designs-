@@ -173,7 +173,11 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
     radial-gradient(ellipse 38% 30% at 72% 18%, rgba(var(--cool), 0.09), transparent 70%),
     radial-gradient(ellipse 50% 40% at 20% 85%, rgba(120, 100, 160, 0.07), transparent 70%),
     radial-gradient(ellipse 60% 50% at 55% 55%, rgba(var(--warm), 0.03), transparent 70%);
+  will-change: transform;
 }
+body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite alternate; }
+@keyframes nebulaDrift { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(-3%, 2%, 0) scale(1.06); } }
+.stage.is-off .nebula { animation-play-state: paused; }
 
 .eclipse {
   position: absolute; z-index: 1; pointer-events: none;
@@ -184,7 +188,7 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 }
 
 .wordmark {
-  position: absolute; z-index: 4; left: 50%; top: 25%;
+  position: absolute; z-index: 4; left: 50%; top: 50%;
   transform: translate(-50%, -50%);
   display: flex; align-items: center; gap: 0.34em;
   font-family: var(--logo); font-weight: 400;
@@ -246,6 +250,19 @@ body:not(.is-intro) .moon-glow { animation: moonPulse 9s ease-in-out infinite; }
   -webkit-mask-image: radial-gradient(ellipse 54% 52% at 50% 54%, #000 34%, rgba(0,0,0,.55) 62%, transparent 92%);
           mask-image: radial-gradient(ellipse 54% 52% at 50% 54%, #000 34%, rgba(0,0,0,.55) 62%, transparent 92%);
 }
+/* прожектор по слою: вариант 2 — световая полоса, варианты 1 и 3 — тень вокруг слоя */
+.seq-spot { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; --sy: 50%; will-change: opacity; }
+:root[data-variant="2"] .seq-spot {
+  mix-blend-mode: screen;
+  background: linear-gradient(to bottom, transparent calc(var(--sy) - 15%), rgba(var(--cool), .26) var(--sy), transparent calc(var(--sy) + 15%));
+}
+:root:not([data-variant="2"]) .seq-spot {
+  background: radial-gradient(ellipse 80% 22% at 50% var(--sy), transparent 0 48%, rgba(6,7,12,.66) 78%, rgba(6,7,12,.9) 100%);
+}
+/* варианты 1 и 2: разрез едва заметно «дышит», пока гость смотрит */
+:root:not([data-variant="3"]) body:not(.is-intro) .seq { animation: seqFloat 7s ease-in-out infinite; }
+@keyframes seqFloat { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -0.6vh, 0); } }
+.stage.is-off .seq { animation-play-state: paused; }
 .product--cut::after {
   display: block;
   background:
@@ -668,7 +685,7 @@ body:not(.is-intro) .moon-glow { animation: moonPulse 9s ease-in-out infinite; }
 
   .grain { display: none; }
   .stage { touch-action: pan-y; }
-  .wordmark { top: 22%; font-size: clamp(30px, 10.2vw, 52px); letter-spacing: 0.12em; gap: 0.3em; }
+  .wordmark { top: 46%; font-size: clamp(30px, 10.2vw, 52px); letter-spacing: 0.12em; gap: 0.3em; }
   .seq { -webkit-mask-image: radial-gradient(ellipse 58% 44% at 50% 56%, #000 28%, rgba(0,0,0,.5) 60%, transparent 90%); mask-image: radial-gradient(ellipse 58% 44% at 50% 56%, #000 28%, rgba(0,0,0,.5) 60%, transparent 90%); }
   .reveal { transform: none; transition-duration: 1s; }
   :root { --moon-x: 22%; --moon-y: 10%; --lx: 22%; --ly: 10%; }   /* свет на фото идёт сверху слева — луна там же */
@@ -749,10 +766,29 @@ body:not(.is-intro) .moon-glow { animation: moonPulse 9s ease-in-out infinite; }
   .trust { grid-template-columns: 1fr 1fr; }
 }
 
+/* переключатель вариантов (на время согласования) */
+.vpick {
+  position: fixed; z-index: 60; left: 50%; bottom: 14px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 4px; padding: 4px 6px 4px 12px;
+  border: 1px solid var(--line); border-radius: 999px; background: rgba(6,7,12,.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap;
+}
+.vpick__label { margin-right: 6px; }
+.vpick a { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; color: var(--ink-2); transition: background-color .3s, color .3s; }
+.vpick a b { font-weight: 500; color: var(--gold); }
+.vpick a:hover { color: var(--ink); background: rgba(255,255,255,.05); }
+:root[data-variant="1"] .vpick a[data-v="1"], :root[data-variant="2"] .vpick a[data-v="2"], :root[data-variant="3"] .vpick a[data-v="3"] { color: var(--ink); background: rgba(255,255,255,.1); }
+@media (max-width: 899px) {
+  .vpick { bottom: 10px; font-size: 10px; padding-left: 10px; transition: bottom .5s var(--ease-out); }
+  body:has(.sticky-cta.is-on) .vpick { bottom: calc(66px + env(safe-area-inset-bottom)); }
+  .vpick a { padding: 7px 9px; }
+  .vpick a span { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
   .cue__line::after { animation: none; }
-  .moon-hero, .moon-glow { animation: none !important; }
+  .moon-hero, .moon-glow, .nebula, .seq { animation: none !important; }
   .moon-glow { opacity: .6; }
   .reveal, .reveal-line > span { opacity: 1; transform: none; }
   .xs--prime { gap: 10px; }
