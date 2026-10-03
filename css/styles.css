@@ -225,7 +225,8 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .product { position: absolute; z-index: 3; inset: 0; pointer-events: none; will-change: transform, opacity; }
 .product img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 /* экспозиция (CSS-путь) — чёрная плашка, не filter */
-.product::before { content: ""; position: absolute; inset: 0; z-index: 1; background: #000; opacity: var(--dim, 0); pointer-events: none; }
+/* затемнение разреза — отдельный слой (псевдоэлемент перерисовывал весь экран на каждом кадре выхода) */
+.seq-dim { position: absolute; inset: 0; z-index: 1; background: #000; opacity: 0; pointer-events: none; will-change: opacity; }
 .product::after { z-index: 2; }
 .stage.is-off .cue__line::after { animation-play-state: paused; }
 .stage.is-off .seq { visibility: hidden; }
@@ -242,7 +243,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .seq { position: absolute; display: block; }
 /* прожектор по слою в фокусе: остальные уходят в тень */
 /* прожектор по слою в фокусе: элемент втрое выше разреза, градиент статичен, двигается только transform (compositor-only) */
-.seq-spot { position: absolute; left: 0; width: 100%; top: -100%; height: 300%; z-index: 3; pointer-events: none; opacity: 0; --sy: 50%; will-change: transform, opacity; transform: translate3d(0, calc((var(--sy) - 50%) / 3), 0); background: radial-gradient(ellipse 80% 7.34% at 50% 50%, transparent 0 48%, rgba(6,7,12,.66) 78%, rgba(6,7,12,.9) 100%); }
+.seq-spot { position: absolute; left: 0; width: 100%; top: -50%; height: 200%; z-index: 3; pointer-events: none; opacity: 0; --sy: 50%; will-change: transform, opacity; transform: translate3d(0, calc((var(--sy) - 50%) / 2), 0); background: radial-gradient(ellipse 80% 11% at 50% 50%, transparent 0 48%, rgba(6,7,12,.66) 78%, rgba(6,7,12,.9) 100%); }
 .product--cut::after {
   display: block;
   background:
@@ -250,12 +251,12 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
     linear-gradient(to right, rgba(6,7,12,0.55), transparent 24%, transparent 78%, rgba(6,7,12,0.55));
 }
 
-.shade { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0; background: linear-gradient(to right, rgba(6,7,12,0.96) 0%, rgba(6,7,12,0.82) 38%, rgba(6,7,12,0.0) 68%); }
-.exposure { position: absolute; inset: 0; z-index: 6; pointer-events: none; background: var(--bg); opacity: 1; }
+.shade { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0; visibility: hidden; will-change: opacity; background: linear-gradient(to right, rgba(6,7,12,0.96) 0%, rgba(6,7,12,0.82) 38%, rgba(6,7,12,0.0) 68%); }
+.exposure { position: absolute; inset: 0; z-index: 6; pointer-events: none; background: var(--bg); opacity: 1; will-change: opacity; }
 
 /* ---------- Текст сцены -------------------------------------------------- */
 
-.copy { position: absolute; z-index: 5; pointer-events: none; }
+.copy { position: absolute; z-index: 5; pointer-events: none; will-change: opacity, transform; }
 .copy--hero { left: var(--gutter); bottom: clamp(48px, 8vh, 96px); max-width: 620px; }
 .hero-title { margin-top: 22px; font-family: var(--display); font-weight: 300; font-size: clamp(26px, 2.4vw, 38px); line-height: 1.14; }
 .hero-title .line { display: block; overflow: hidden; }
@@ -273,7 +274,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 }
 @keyframes cue { to { transform: translateY(100%); } }
 
-.copy--layers { left: var(--gutter); top: 50%; transform: translateY(-50%); width: min(440px, 38vw); opacity: 0; }
+.copy--layers { left: var(--gutter); top: 50%; transform: translateY(-50%); width: min(440px, 38vw); opacity: 0; visibility: hidden; }
 .copy--layers .section-title { font-size: clamp(32px, 3.2vw, 52px); margin-top: 22px; }
 /* активный слой — единственная подпись на всех экранах (на кадре — номера с рисками) */
 .layer-active {
@@ -286,7 +287,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .layer-active .spec { margin-left: auto; font-size: 11px; letter-spacing: .08em; color: var(--ink-3); }
 .layer-active:not(.is-on) { opacity: 0; }
 
-.copy--outro { left: var(--gutter); right: var(--gutter); top: 50%; transform: translateY(-50%); max-width: 820px; opacity: 0; }
+.copy--outro { left: var(--gutter); right: var(--gutter); top: 50%; transform: translateY(-50%); max-width: 820px; opacity: 0; visibility: hidden; }
 .statement { font-family: var(--display); font-weight: 300; font-size: clamp(28px, 3.6vw, 56px); line-height: 1.16; }
 .statement em { color: var(--gold); }
 
@@ -294,8 +295,8 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 
 /* выноски: якорь (--ax/--ay) ставит JS; от него наклонный отрезок вниз-вправо, затем вертикальный, у его конца — текст */
 /* выноски: белые, тонкие; якорь (--ax/--ay) ставит JS; наклонный отрезок → вертикальный → текст; появляются по очереди (is-in) */
-.seq-labels { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0; --run: 32px; --drop: 14px; --step: 6px; }
-.seq-label { position: absolute; left: var(--ax); top: var(--ay); width: 50vw; height: 0; opacity: calc(var(--vis, 1) * var(--dimf, 1)); transition: opacity .4s; }
+.seq-labels { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0; --run: 32px; --drop: 14px; --step: 6px; will-change: opacity; }
+.seq-label { position: absolute; left: 0; top: 0; width: 50vw; height: 0; transform: translate3d(var(--ax, 0px), var(--ay, 0px), 0); opacity: calc(var(--vis, 1) * var(--dimf, 1)); transition: opacity .4s; will-change: transform, opacity; }
 .seq-labels.is-focus .seq-label:not(.is-active) { --dimf: .45; }
 .seq-label::before, .seq-label::after { content: ""; position: absolute; background: rgba(255,255,255,.85); transition: transform .35s cubic-bezier(.2,.7,.2,1), background-color .4s; }
 .seq-label::before { left: 0; top: 0; width: calc(var(--run) * 1.3); height: 1px; transform-origin: 0 50%; transform: rotate(40deg) scaleX(0); }

@@ -8,6 +8,8 @@
   'use strict';
 
   gsap.registerPlugin(ScrollTrigger);
+  // адресная строка телефона меняет высоту окна — это не повод пересчитывать пины посреди скролла
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const root = document.documentElement;
@@ -307,6 +309,12 @@
   const exposure = document.getElementById('exposure');
   const productCut = document.getElementById('productCut');
   const seqSpot = document.getElementById('seqSpot');
+  const seqDim = document.getElementById('seqDim');
+  // запись стиля только при изменении значения — без лишнего пересчёта стилей на каждом кадре
+  const sv = (el, p, v) => { const c = el.__sv || (el.__sv = {}); if (c[p] !== v) { c[p] = v; el.style[p] = v; } };
+  const svar = (el, n, v) => { const c = el.__sv || (el.__sv = {}); if (c[n] !== v) { c[n] = v; el.style.setProperty(n, v); } };
+  // прозрачность полноэкранных слоёв: при нуле слой прячется целиком — компоновщик его не считает (меньше слоёв на кадр)
+  const svo = (el, v) => { sv(el, 'opacity', v); sv(el, 'visibility', +v > 0.004 ? 'visible' : 'hidden'); };
   const cue = document.getElementById('cue');
   const moonBig = document.getElementById('moonBig');
   const moonGlCanvas = document.getElementById('moonGl');
@@ -459,7 +467,7 @@
     return el;
   });
   let seqGeo = { dx: 0, dy: 0, dw: 1, dh: 1 };
-  function placeSeqLabels(x, y, w, h) { seqGeo = { dx: x, dy: y, dw: w, dh: h }; }
+  function placeSeqLabels(x, y, w, h) { seqGeo = { dx: x, dy: y, dw: w, dh: h }; measureLabels(); }
   // якорь слоя i на экране с учётом transform разреза (масштаб вокруг центра экрана + сдвиг)
   function labelAnchor(i, vw, vh) {
     const ax = seqGeo.dx + SEQ_LABEL_X[i] / 100 * seqGeo.dw, ay = seqGeo.dy + SEQ_LABEL_Y[i] / 100 * seqGeo.dh;
@@ -468,6 +476,8 @@
     return { x: cx + (ax - cx) * sc + S.cutX * vw / 100, y: cy + (ay - cy) * sc + (S.cutY + S.outY) * vh / 100 };
   }
   const labelLast = []; let labelTick = 0;
+  const labelW = [];
+  function measureLabels() { seqLabelEls.forEach((el, i) => { labelW[i] = el.querySelector('.seq-label__text').offsetWidth || 160; }); labelLast.length = 0; }
   function placeLabels(vw, vh) {
     const mob = isMobile();
     const run = mob ? 14 : 32; // наклонный отрезок; ступенька — за счёт вертикали
@@ -477,14 +487,15 @@
       const key = `${a.x.toFixed(1)}|${a.y.toFixed(1)}`;
       if (labelLast[i] === key) continue;
       labelLast[i] = key;
-      el.style.setProperty('--ax', `${a.x.toFixed(1)}px`);
-      el.style.setProperty('--ay', `${a.y.toFixed(1)}px`);
-      // текст справа от линии; если не помещается — сдвигается влево ровно настолько, чтобы остаться на экране
-      const w = el.querySelector('.seq-label__text').offsetWidth || 160;
+      svar(el, '--ax', `${a.x.toFixed(1)}px`);
+      svar(el, '--ay', `${a.y.toFixed(1)}px`);
+      // текст справа от линии; если не помещается — сдвигается влево ровно настолько, чтобы остаться на экране.
+      // Ширина текста из кэша (измеряется один раз, не в кадре)
+      const w = labelW[i] || 160;
       const over = a.x + run + 9 + w - (vw - 12);
-      el.style.setProperty('--shift', `${over > 0 ? (-over).toFixed(1) : 0}px`);
+      svar(el, '--shift', `${over > 0 ? (-over).toFixed(1) : 0}px`);
       // слой далеко за экраном (при наезде камеры) — выноска гаснет
-      el.style.setProperty('--vis', a.y < 48 || a.y > vh - 24 ? '0' : '1');
+      svar(el, '--vis', a.y < 48 || a.y > vh - 24 ? '0' : '1');
     }
   }
   // где слой i лежит на экране (CSS px от верха сцены) на последнем кадре разлёта
@@ -519,34 +530,36 @@
     const vw = window.innerWidth, vh = window.innerHeight;
 
     // луна: проявляется терминатором в интро, по скроллу уходит вправо-вверх и гаснет; лёгкий параллакс от указателя
-    moonBig.style.opacity = (I.moon * S.moonO).toFixed(3);
-    moonBig.style.setProperty('--term', `${I.term.toFixed(2)}%`);
+    svo(moonBig, (I.moon * S.moonO).toFixed(3));
+    svar(moonBig, '--term', `${I.term.toFixed(2)}%`);
     if (moonGL) {
       // луна ушла со сцены — шар спит и не тратит кадры на расслойку
       const vis = I.moon * S.moonO > 0.02;
       if (vis) { moonGL.wake(); moonGL.set({ light: lightFromTerm(I.term), tiltY: -0.08 + P.x * 0.012, tiltX: 0.12 - P.y * 0.012 }); } else moonGL.sleep();
     }
-    moonBig.style.setProperty('--mpx', `${(S.moonX * vw / 100 - P.x * 3).toFixed(2)}px`);
-    moonBig.style.setProperty('--mpy', `${(S.moonY * vh / 100 - P.y * 2.6).toFixed(2)}px`);
-    navEl.style.setProperty('--brand-o', `${S.brand}`);
-    exposure.style.opacity = Math.max(I.dark, S.dark);
+    svar(moonBig, '--mpx', `${(S.moonX * vw / 100 - P.x * 3).toFixed(2)}px`);
+    svar(moonBig, '--mpy', `${(S.moonY * vh / 100 - P.y * 2.6).toFixed(2)}px`);
+    svar(navEl, '--brand-o', S.brand.toFixed(3));
+    svo(exposure, Math.max(I.dark, S.dark).toFixed(3));
 
-    productCut.style.opacity = S.cutO;
-    productCut.style.setProperty('--dim', `${(1 - S.cutExp * S.outExp).toFixed(3)}`);
-    productCut.style.transform = `translate3d(${S.cutX * vw / 100}px, ${(S.cutY + S.outY) * vh / 100}px, 0) scale(${S.cutS * S.outS})`;
+    svo(productCut, S.cutO.toFixed(3));
+    svo(seqDim, (1 - S.cutExp * S.outExp).toFixed(3));
+    sv(productCut, 'transform', `translate3d(${(S.cutX * vw / 100).toFixed(2)}px, ${((S.cutY + S.outY) * vh / 100).toFixed(2)}px, 0) scale(${(S.cutS * S.outS).toFixed(4)})`);
     if (S.cutO > 0.001) { markSeq(); drawSeq(); }
     const focusI = Math.round(S.focus);
     setActiveLayer(S.cutO > 0.5 ? focusI : -1);
-    seqLabels.style.opacity = (S.cutO * smoothstep(S.spread, 0.8, 1) * smoothstep(S.outExp, 0.3, 1)).toFixed(3);
-    seqLabels.classList.toggle('is-focus', S.spot > 0.5);
+    svo(seqLabels, (S.cutO * smoothstep(S.spread, 0.8, 1) * smoothstep(S.outExp, 0.3, 1)).toFixed(3));
+    const inFocus = S.spot > 0.5;
+    if (seqLabels.__focus !== inFocus) { seqLabels.__focus = inFocus; seqLabels.classList.toggle('is-focus', inFocus); }
     if (S.cutO > 0.001 && (!isMobile() || (labelTick++ & 1) === 0)) placeLabels(vw, vh);
-    seqSpot.style.opacity = S.spot.toFixed(3);
-    seqSpot.style.setProperty('--sy', `${S.spotY.toFixed(2)}%`);
-    seqLabelEls.forEach((el, i) => el.classList.toggle('is-active', i === focusI && S.cutO > 0.5));
+    svo(seqSpot, S.spot.toFixed(3));
+    svar(seqSpot, '--sy', `${S.spotY.toFixed(2)}%`);
+    const act = S.cutO > 0.5 ? focusI : -1;
+    if (seqLabels.__act !== act) { seqLabels.__act = act; seqLabelEls.forEach((el, i) => el.classList.toggle('is-active', i === act)); }
 
-    wordmark.style.transform = `translate(0, calc(-50% + ${S.wmY}vh)) scale(${S.wmS})`;
-    wordmark.style.opacity = S.wmO * I.wmO;
-    cue.style.opacity = S.cueO * I.cueO;
+    sv(wordmark, 'transform', `translate(0, calc(-50% + ${S.wmY.toFixed(3)}vh)) scale(${S.wmS.toFixed(4)})`);
+    svo(wordmark, (S.wmO * I.wmO).toFixed(3));
+    svo(cue, (S.cueO * I.cueO).toFixed(3));
   }
 
   sizeSeq();
@@ -716,7 +729,7 @@
       scrollTrigger: {
         trigger: stageEl, start: 'top top',
         end: END,
-        pin: true, scrub: D ? 0.5 : 0.25, anticipatePin: 1, invalidateOnRefresh: true,
+        pin: true, scrub: D ? 0.5 : 0.35, anticipatePin: 1, invalidateOnRefresh: true,
         onUpdate: (self) => {
           layersCtl(self.progress);
           if (self.progress > 0.78) revealConcept();
@@ -730,20 +743,20 @@
       .to(S, { wmS: 0.5, wmY: -40, wmO: 0, duration: 8, ease: 'power1.in' }, 0)
       .to(S, { moonX: 16, moonY: -12, moonO: 0, duration: 9, ease: 'power1.in' }, 0)
       .to(S, { brand: 1, duration: 5 }, 4)
-      .to(copyHero, { opacity: 0, y: -40, duration: 6 }, 1)
+      .to(copyHero, { autoAlpha: 0, y: -40, duration: 6 }, 1)
       .to(S, { cueO: 0, duration: 4 }, 0)
       /* 4–12: собранный матрас проявляется в центре; дальше сцена «припаркована» — расслойка идёт по времени (playLayers) */
       .to(S, { cutO: 1, cutX: D ? 4 : 0, duration: 8 }, 4)
-      .to(copyLayers, { opacity: 1, duration: 5 }, 8)
+      .to(copyLayers, { autoAlpha: 1, duration: 5 }, 8)
       /* 66–84: выход из расслойки — стопка мягко отходит вглубь и тает, подписи гаснут, появляется утверждение */
-      .to(copyLayers, { opacity: 0, duration: 5 }, 66)
+      .to(copyLayers, { autoAlpha: 0, duration: 5 }, 66)
       .to(S, { outExp: 0.35, outS: 0.82, outY: -6, duration: 18, ease: 'power1.inOut' }, 66)
-      .to(shade, { opacity: D ? 0.9 : 0.7, duration: 10, ease: 'power1.inOut' }, 68)
-      .to(copyOutro, { opacity: 1, duration: 8, ease: 'power1.out' }, 72)
+      .to(shade, { autoAlpha: D ? 0.9 : 0.7, duration: 10, ease: 'power1.inOut' }, 68)
+      .to(copyOutro, { autoAlpha: 1, duration: 8, ease: 'power1.out' }, 72)
       /* 84–100: сцена темнеет до 55 %, стопка растворяется, утверждение уходит вверх — концепция подхватывает без разрыва */
       .to(S, { dark: 0.55, outY: -14, outExp: 0, duration: 16, ease: 'power1.in' }, 84)
-      .to(copyOutro, { opacity: 0, y: -24, duration: 8, ease: 'power1.in' }, 82)
-      .to(shade, { opacity: 0, duration: 12 }, 88);
+      .to(copyOutro, { autoAlpha: 0, y: -24, duration: 8, ease: 'power1.in' }, 82)
+      .to(shade, { autoAlpha: 0, duration: 12 }, 88);
     return tl;
   }
   mm.add('(min-width: 900px)', () => { buildStage(true); return () => {}; });
@@ -1295,7 +1308,7 @@
     });
   });
 
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measureLabels(); ScrollTrigger.refresh(); });
   window.addEventListener('load', () => ScrollTrigger.refresh());
   // эмуляция телефона / поздний viewport meta: если ширина успела измениться — пересчитать всё
   requestAnimationFrame(() => { if (window.innerWidth !== lastW || window.innerHeight !== lastH) onResize(true); });
