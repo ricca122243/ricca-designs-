@@ -281,7 +281,7 @@
     resizeHooks.push((w2, h2, wChanged) => size(wChanged));
     window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('visibilitychange', () => { if (!document.hidden) startDrift(); });
-    if (!reduceMotion) setInterval(tick, TIER === 'high' ? 110 : 160);
+    if (!reduceMotion) setInterval(tick, isMobile() ? 240 : TIER === 'high' ? 110 : 160);
     return { setVisible(v) { visible = v; if (v) startDrift(); } };
   })();
 
@@ -327,7 +327,7 @@
   function sizeMoonGL() {
     if (!moonGL) return;
     const r = moonBig.getBoundingClientRect();
-    const d = Math.min(isMobile() ? 2 : 1.5, window.devicePixelRatio || 1);   // телефон: луна меньше, но на плотном экране — плотность 2
+    const d = Math.min(1.5, window.devicePixelRatio || 1);   // плотность 1.5 везде: резко и дёшево
     moonGL.resize(r.width * d, r.height * d);
   }
   // направление света из «процента терминатора» интро: −18 % — источник за шаром, 112 % — спереди-слева
@@ -449,7 +449,7 @@
   const seqLabels = document.getElementById('seqLabels');
   const SEQ_LABEL_Y = [9, 21, 30, 39, 49, 67, 87];
   const SEQ_LABEL_X = [86, 86, 85, 85, 85, 83, 83];
-  const SHORT = ['Чехол', 'Латекс', 'Memory-гель', 'Койра', 'Пена HR', 'Пружины', 'Основание'];
+  const SHORT = ['Чехол', 'Латекс', 'Гель', 'Койра', 'Пена HR', 'Пружины', 'Основание'];
   const seqLabelEls = LAYERS.map((l, i) => {
     const el = document.createElement('span');
     el.className = 'seq-label';
@@ -467,7 +467,7 @@
     const sc = S.cutS * S.outS;
     return { x: cx + (ax - cx) * sc + S.cutX * vw / 100, y: cy + (ay - cy) * sc + (S.cutY + S.outY) * vh / 100 };
   }
-  const labelLast = [];
+  const labelLast = []; let labelTick = 0;
   function placeLabels(vw, vh) {
     const mob = isMobile();
     const run = mob ? 14 : 32; // наклонный отрезок; ступенька — за счёт вертикали
@@ -521,7 +521,11 @@
     // луна: проявляется терминатором в интро, по скроллу уходит вправо-вверх и гаснет; лёгкий параллакс от указателя
     moonBig.style.opacity = (I.moon * S.moonO).toFixed(3);
     moonBig.style.setProperty('--term', `${I.term.toFixed(2)}%`);
-    if (moonGL) moonGL.set({ light: lightFromTerm(I.term), tiltY: -0.08 + P.x * 0.012, tiltX: 0.12 - P.y * 0.012 });
+    if (moonGL) {
+      // луна ушла со сцены — шар спит и не тратит кадры на расслойку
+      const vis = I.moon * S.moonO > 0.02;
+      if (vis) { moonGL.wake(); moonGL.set({ light: lightFromTerm(I.term), tiltY: -0.08 + P.x * 0.012, tiltX: 0.12 - P.y * 0.012 }); } else moonGL.sleep();
+    }
     moonBig.style.setProperty('--mpx', `${(S.moonX * vw / 100 - P.x * 3).toFixed(2)}px`);
     moonBig.style.setProperty('--mpy', `${(S.moonY * vh / 100 - P.y * 2.6).toFixed(2)}px`);
     navEl.style.setProperty('--brand-o', `${S.brand}`);
@@ -535,7 +539,7 @@
     setActiveLayer(S.cutO > 0.5 ? focusI : -1);
     seqLabels.style.opacity = (S.cutO * smoothstep(S.spread, 0.8, 1) * smoothstep(S.outExp, 0.3, 1)).toFixed(3);
     seqLabels.classList.toggle('is-focus', S.spot > 0.5);
-    if (S.cutO > 0.001) placeLabels(vw, vh);
+    if (S.cutO > 0.001 && (!isMobile() || (labelTick++ & 1) === 0)) placeLabels(vw, vh);
     seqSpot.style.opacity = S.spot.toFixed(3);
     seqSpot.style.setProperty('--sy', `${S.spotY.toFixed(2)}%`);
     seqLabelEls.forEach((el, i) => el.classList.toggle('is-active', i === focusI && S.cutO > 0.5));
@@ -555,11 +559,11 @@
       stageOff = !on;
       stageEl.classList.toggle('is-off', !on);
       stars.setVisible(on);
-      if (moonGL) { if (on) moonGL.wake(); else moonGL.sleep(); }
+      if (moonGL && !on) moonGL.sleep();
       if (on) { Light.claim('hero'); render(); }
     }, { threshold: 0 }).observe(stageEl);
   }
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && !stageOff) { render(); if (moonGL) moonGL.wake(); } });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && !stageOff) render(); });
 
   /* ------------------------------------------------------------------------
      Интро (≈6.3 с, только при входе): по луне идёт терминатор → логотип → заголовок
@@ -731,14 +735,14 @@
       /* 4–12: собранный матрас проявляется в центре; дальше сцена «припаркована» — расслойка идёт по времени (playLayers) */
       .to(S, { cutO: 1, cutX: D ? 4 : 0, duration: 8 }, 4)
       .to(copyLayers, { opacity: 1, duration: 5 }, 8)
-      /* 70–82: финальное утверждение, разложенный матрас уходит вправо и вверх */
-      .to(copyLayers, { opacity: 0, duration: 5 }, 68)
-      .to(S, { outExp: 0.45, outS: 0.94, cutX: D ? 28 : 0, outY: D ? 10 : -8, duration: 12 }, 70)
-      .to(shade, { opacity: D ? 1 : 0.6, duration: 8 }, 70)
-      .to(copyOutro, { opacity: 1, duration: 7 }, 73)
-      /* 84–100: сцена темнеет не до чёрного и уезжает вверх — следующая секция подхватывает сразу */
-      .to(S, { dark: 0.55, outY: D ? -16 : -12, outExp: 0.2, duration: 16, ease: 'power1.in' }, 84)
-      .to(copyOutro, { opacity: 0, y: -30, duration: 9, ease: 'power1.in' }, 86)
+      /* 66–84: выход из расслойки — стопка мягко отходит вглубь и тает, подписи гаснут, появляется утверждение */
+      .to(copyLayers, { opacity: 0, duration: 5 }, 66)
+      .to(S, { outExp: 0.35, outS: 0.82, outY: -6, duration: 18, ease: 'power1.inOut' }, 66)
+      .to(shade, { opacity: D ? 0.9 : 0.7, duration: 10, ease: 'power1.inOut' }, 68)
+      .to(copyOutro, { opacity: 1, duration: 8, ease: 'power1.out' }, 72)
+      /* 84–100: сцена темнеет до 55 %, стопка растворяется, утверждение уходит вверх — концепция подхватывает без разрыва */
+      .to(S, { dark: 0.55, outY: -14, outExp: 0, duration: 16, ease: 'power1.in' }, 84)
+      .to(copyOutro, { opacity: 0, y: -24, duration: 8, ease: 'power1.in' }, 82)
       .to(shade, { opacity: 0, duration: 12 }, 88);
     return tl;
   }

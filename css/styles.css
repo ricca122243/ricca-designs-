@@ -294,7 +294,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 
 /* выноски: якорь (--ax/--ay) ставит JS; от него наклонный отрезок вниз-вправо, затем вертикальный, у его конца — текст */
 /* выноски: белые, тонкие; якорь (--ax/--ay) ставит JS; наклонный отрезок → вертикальный → текст; появляются по очереди (is-in) */
-.seq-labels { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0; --run: 32px; --drop: 14px; --step: 5px; }
+.seq-labels { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0; --run: 32px; --drop: 14px; --step: 6px; }
 .seq-label { position: absolute; left: var(--ax); top: var(--ay); width: 50vw; height: 0; opacity: calc(var(--vis, 1) * var(--dimf, 1)); transition: opacity .4s; }
 .seq-labels.is-focus .seq-label:not(.is-active) { --dimf: .45; }
 .seq-label::before, .seq-label::after { content: ""; position: absolute; background: rgba(255,255,255,.85); transition: transform .35s cubic-bezier(.2,.7,.2,1), background-color .4s; }
@@ -309,12 +309,12 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .seq-label__text {
   position: absolute; left: calc(var(--run) + 10px + var(--shift, 0px)); top: calc(var(--run) * 0.84 + var(--drop) + var(--i) * var(--step));
   transform: translate(-8px, -100%); opacity: 0; display: flex; align-items: baseline; gap: 10px; white-space: nowrap;
-  font-size: 13px; letter-spacing: .03em; color: #fff; text-shadow: 0 1px 8px rgba(6,7,12,.9), 0 0 2px rgba(6,7,12,1);
+  font-size: 15px; letter-spacing: .02em; color: #fff; text-shadow: 0 1px 8px rgba(6,7,12,.9), 0 0 2px rgba(6,7,12,1);
   transition: opacity .45s .5s, transform .45s .5s, text-shadow .4s;
 }
 .seq-label.is-in .seq-label__text { opacity: 1; transform: translate(0, -100%); }
-.seq-label__text .num { font-size: 10px; letter-spacing: .14em; color: rgba(255,255,255,.55); }
-.seq-label__text .spec { font-size: 11px; color: rgba(255,255,255,.55); }
+.seq-label__text .num { font-size: 11px; letter-spacing: .14em; color: rgba(255,255,255,.6); }
+.seq-label__text .spec { font-size: 12px; color: rgba(255,255,255,.6); }
 .seq-label.is-active .seq-label__text { text-shadow: 0 0 12px rgba(255,255,255,.35), 0 1px 8px rgba(6,7,12,.9); }
 .seq-label.is-active .seq-label__text .num, .seq-label.is-active .seq-label__text .spec { color: rgba(255,255,255,.85); }
 .seq-label.is-active::before, .seq-label.is-active::after { background: #fff; }
@@ -758,7 +758,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 
   .section-title { font-size: clamp(28px, 8vw, 40px); text-wrap: balance; }
   .tech, .models, .order { padding-top: clamp(56px, 12vw, 80px); padding-bottom: clamp(56px, 12vw, 80px); }
-  .concept { margin-top: -28vh; padding-top: 24px; padding-bottom: clamp(48px, 10vw, 64px); }
+  .concept { margin-top: -14vh; padding-top: 24px; padding-bottom: clamp(48px, 10vw, 64px); }
   .concept__grid { grid-template-columns: 1fr; gap: 32px; }
   .concept__text { font-size: clamp(22px, 6.4vw, 30px); }
   .section-head--tight { margin-bottom: 28px; }
@@ -778,11 +778,14 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .mcard--royal::before, .mcard--prime::before, .mcard__price--royal .mcard__sum { animation: none !important; }
   .mcard__price--royal .mcard__sum { filter: none; }
   .mcard--royal::before { opacity: .8; }
-  .seq-labels { --run: 14px; --drop: 10px; --step: 3px; }
-  .seq-label__text { left: calc(var(--run) + 7px + var(--shift, 0px)); gap: 5px; font-size: 10px; }
+  /* телефон: концы выносок лесенкой (--step 7px), чтобы подписи 12px не наезжали друг на друга */
+  .seq-labels { --run: 14px; --drop: 8px; --step: 7px; }
+  .seq-label__text { left: calc(var(--run) + 7px + var(--shift, 0px)); gap: 6px; font-size: 12px; }
   .seq-label__text .name { font-size: 0; }
-  .seq-label__text .name::before { content: attr(data-short); font-size: 10px; }
-  .seq-label__text .spec { font-size: 9px; }
+  .seq-label__text .name::before { content: attr(data-short); font-size: 12px; }
+  .seq-label__text .num { font-size: 10px; }
+  .seq-label__text .spec { font-size: 10px; }
+  .nebula { will-change: auto; }
 
   .tlayers li { grid-template-columns: 30px minmax(0, 1fr) auto; gap: 8px 14px; padding: 14px 0; }
   .tlayers .text { display: none; }
