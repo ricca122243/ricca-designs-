@@ -91,6 +91,8 @@
           <p class="eyebrow"><span>Анатомия</span><span class="dot"></span><span>300 мм</span></p>
           <h2 class="section-title">Семь слоёв.<br><em>Одно ощущение.</em></h2>
           <p class="layer-active" id="layerActive"><span class="num">01</span><span class="name">Стёганый чехол</span><span class="spec">15 мм</span></p>
+          <button type="button" class="seq-play" id="seqPlay" hidden aria-pressed="false"><span class="seq-play__icon" aria-hidden="true"></span><span class="seq-play__label">Пауза</span></button>
+          <p class="seq-hint">Нажмите на слой, чтобы рассмотреть</p>
         </div>
 
         <!-- тень слева под финальный текст -->
@@ -279,7 +281,7 @@
               </ul>
               <div class="mcard__price mcard__price--air"><span class="mcard__sum" data-price="air">— ₸</span></div>
               <div class="mcard__actions">
-                <a class="button button--ghost" data-wa="air" href="#" target="_blank" rel="noopener">Заказать</a>
+                <button type="button" class="button button--ghost" data-pick="air">Выбрать</button>
                 <button type="button" class="more" data-open="mdl-air">Подробнее</button>
               </div>
             </article>
@@ -297,7 +299,7 @@
               </ul>
               <div class="mcard__price mcard__price--balance"><span class="mcard__sum" data-price="balance">— ₸</span></div>
               <div class="mcard__actions">
-                <a class="button button--ghost" data-wa="balance" href="#" target="_blank" rel="noopener">Заказать</a>
+                <button type="button" class="button button--ghost" data-pick="balance">Выбрать</button>
                 <button type="button" class="more" data-open="mdl-balance">Подробнее</button>
               </div>
             </article>
@@ -316,7 +318,7 @@
               </ul>
               <div class="mcard__price mcard__price--prime"><span class="mcard__sum" data-price="prime">— ₸</span></div>
               <div class="mcard__actions">
-                <a class="button button--primary" data-wa="prime" href="#" target="_blank" rel="noopener">Заказать Prime</a>
+                <button type="button" class="button button--primary" data-pick="prime">Выбрать Prime</button>
                 <button type="button" class="more" data-open="mdl-prime">Подробнее</button>
               </div>
             </article>
@@ -335,7 +337,7 @@
               </ul>
               <div class="mcard__price mcard__price--royal"><span class="mcard__sum" data-price="royal">— ₸</span></div>
               <div class="mcard__actions">
-                <a class="button button--ghost" data-wa="royal" href="#" target="_blank" rel="noopener">Обсудить</a>
+                <button type="button" class="button button--ghost" data-pick="royal">Выбрать Royal</button>
                 <button type="button" class="more" data-open="mdl-royal">Подробнее</button>
               </div>
             </article>
@@ -359,6 +361,55 @@
     </section>
 
     <!-- ================================================================
+         4b. РАЗМЕР — шаг 2: модель → размер → (карта) → WhatsApp
+         ================================================================ -->
+    <section class="configure" id="sizes" aria-labelledby="cfgTitle">
+      <div class="container">
+        <div class="section-head section-head--tight reveal">
+          <p class="eyebrow"><span>Шаг 2</span><span class="dot"></span><span>Размер</span></p>
+          <h2 class="section-title" id="cfgTitle">Подберите размер.<br><em>Стандарт или точно под вашу кровать.</em></h2>
+        </div>
+        <div class="cfg reveal">
+          <div class="cfg__models" id="cfgModels" role="radiogroup" aria-label="Модель">
+            <button type="button" role="radio" aria-checked="false" data-m="air">Air</button>
+            <button type="button" role="radio" aria-checked="false" data-m="balance">Balance</button>
+            <button type="button" role="radio" aria-checked="true" data-m="prime">Prime</button>
+            <button type="button" role="radio" aria-checked="false" data-m="royal">Royal</button>
+          </div>
+          <div class="sizes__grid">
+            <div class="size-vis" aria-hidden="true">
+              <div class="size-vis__glow"></div>
+              <div class="size-vis__mat" id="sizePreviewMat">
+                <span class="size-vis__w"><span id="sizePreviewW">1600</span> мм</span>
+                <span class="size-vis__h"><span id="sizePreviewH">2000</span> мм</span>
+              </div>
+            </div>
+            <div class="size-panel">
+              <div class="size-options" id="sizeOptions" role="radiogroup" aria-label="Размер матраса">
+                <button type="button" role="radio" aria-checked="true" data-w="1600" data-h="2000">1600 × 2000</button>
+                <button type="button" role="radio" aria-checked="false" data-w="1800" data-h="2000">1800 × 2000</button>
+                <button type="button" role="radio" aria-checked="false" data-custom>Свой размер</button>
+              </div>
+              <div class="cfg-custom" id="cfgCustom" hidden>
+                <div class="cfg-range"><label for="cfgW">Ширина</label><input type="range" id="cfgW" min="1400" max="2200" step="10" value="1600"><span class="cfg-num"><input type="number" id="cfgWn" min="1400" max="2200" step="10" value="1600" inputmode="numeric" aria-label="Ширина, мм"> мм</span></div>
+                <div class="cfg-range"><label for="cfgH">Длина</label><input type="range" id="cfgH" min="1900" max="2200" step="10" value="2000"><span class="cfg-num"><input type="number" id="cfgHn" min="1900" max="2200" step="10" value="2000" inputmode="numeric" aria-label="Длина, мм"> мм</span></div>
+                <p class="size-summary__hint">Свой размер собираем вручную под вашу кровать — 21 день. Цена — по площади.</p>
+              </div>
+              <div class="size-summary">
+                <div class="size-summary__row">
+                  <span class="size-summary__label"><span id="sizeModel">Eluna Prime</span> · <span id="sizeLabel">1600 × 2000</span> мм</span>
+                  <span class="size-summary__price"><s class="price-old" id="sizeOld"></s><span id="sizePrice">—</span> ₸</span>
+                </div>
+                <p class="size-summary__note">Включая доставку, подъём и вынос старого матраса. Рассрочка 0 % на 12 месяцев — <span id="sizeMonthly">—</span> ₸ в месяц.</p>
+                <a class="button button--primary" id="sizeCta" href="#order">Дальше — город доставки</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
          5. ДОСТАВКА · ДОВЕРИЕ · CTA
          ================================================================ -->
     <section class="order" id="order">
@@ -366,7 +417,8 @@
         <div class="order__text">
           <p class="eyebrow"><span>Доставка</span><span class="dot"></span><span>Весь Казахстан</span></p>
           <h2 class="delivery__title">Доставка по всему Казахстану.<br><em>От 7 дней до двери.</em></h2>
-          <p class="delivery__lead">Мы в Алматы: по городу привезём и установим сами. В остальные города — от 7 дней до двери, подъём включён. Нажмите на город.</p>
+          <p class="delivery__lead">Шаг 3 — выберите город на карте. Мы в Алматы: по городу привезём и установим сами. В остальные города — от 7 дней до двери, подъём включён.</p>
+          <div class="order-pick" id="orderPick"><span class="order-pick__label">Ваш выбор</span><span class="order-pick__text" id="orderPickText">Eluna Prime · 1600 × 2000 мм</span><a href="#sizes" class="order-pick__edit">изменить</a></div>
           <p class="delivery__pick" aria-live="polite"><span class="delivery__city" id="deliveryCity">Алматы</span><span class="delivery__days" id="deliveryDays">мы здесь · доставка по городу</span></p>
           <ul class="trust" aria-label="Гарантии">
             <li class="trust__item"><span class="trust__value">100 ночей</span><span class="trust__label">пробного сна. Не подошёл — заберём и вернём деньги.</span></li>
@@ -404,19 +456,26 @@
       </div>
 
       <div class="container">
-        <div class="cta reveal">
+        <div class="cta checkout reveal" id="checkout">
           <div>
-            <h2 class="cta__title">Начните с <em>тишины</em>.</h2>
-            <p class="cta__text">Оставьте номер — мастер-консультант поможет подобрать жёсткость и размер. Без скриптов и давления.</p>
+            <p class="eyebrow"><span>Шаг 4</span><span class="dot"></span><span>WhatsApp</span></p>
+            <h2 class="cta__title">Оформить <em>в WhatsApp</em>.</h2>
+            <p class="cta__text">Всё, что вы выбрали, уйдёт мастеру одним сообщением — он подтвердит наличие, сроки и время доставки.</p>
+            <dl class="checkout__sum" id="checkoutSum">
+              <div><dt>Модель</dt><dd data-o="model">Eluna Prime</dd></div>
+              <div><dt>Размер</dt><dd data-o="size">1600 × 2000 мм</dd></div>
+              <div><dt>Цена</dt><dd data-o="price">—</dd></div>
+              <div><dt>Доставка</dt><dd data-o="city">Алматы</dd></div>
+            </dl>
           </div>
-          <div>
-            <form class="cta__form" onsubmit="return false">
-              <label class="sr-only" for="phone">Телефон</label>
-              <input id="phone" type="tel" inputmode="tel" placeholder="+7 ___ ___ __ __" autocomplete="tel">
-              <button type="submit" class="button button--primary">Связаться</button>
-            </form>
-            <p class="cta__legal">Нажимая «Связаться», вы соглашаетесь с политикой обработки персональных данных.</p>
-          </div>
+          <form class="checkout__form" id="checkoutForm" novalidate>
+            <label class="field"><span>Имя</span><input id="coName" type="text" autocomplete="name" placeholder="Как к вам обращаться"></label>
+            <label class="field"><span>Телефон</span><input id="phone" type="tel" inputmode="tel" placeholder="+7 ___ ___ __ __" autocomplete="tel"></label>
+            <label class="field"><span>Комментарий</span><input id="coNote" type="text" placeholder="Этаж, удобное время, жёсткость…"></label>
+            <label class="consent"><input type="checkbox" id="coConsent"><span>Согласен с <a href="privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a> и обработкой персональных данных</span></label>
+            <p class="consent__err" id="coErr" hidden>Отметьте согласие, чтобы отправить заявку.</p>
+            <button type="submit" class="button button--primary button--wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3Z"/><path d="M8.8 8.2c.2-.4.4-.4.7-.4h.5c.2 0 .4 0 .6.5l.7 1.7c.1.2 0 .4-.1.6l-.5.6c-.1.1-.2.3 0 .5.6 1 1.4 1.8 2.5 2.4.2.1.4.1.5 0l.7-.8c.2-.2.4-.2.6-.1l1.6.8c.2.1.4.2.4.4 0 .5-.2 1.2-.7 1.5-.5.4-1.3.6-2.3.3-1.9-.6-4.2-2.6-5-4.4-.6-1.3-.4-2.4.4-3.2Z"/></svg>Отправить в WhatsApp</button>
+          </form>
         </div>
       </div>
     </section>
@@ -452,7 +511,7 @@
       <div class="acc__body"><p>Мягкая / средняя. Ортопена 20 мм с обеих сторон и натуральный кокос 10 мм — для гостевой, детской или съёмной квартиры.</p></div>
     </details>
     <details class="acc"><summary>Размеры и цена</summary>
-      <div class="acc__body"><div class="size-table" data-sizes="air"></div><p class="size-summary__hint">Нестандартный размер? Сделаем под ваш проект — срок 21 день.</p></div>
+      <div class="acc__body"><div class="size-table" data-sizes="air"></div></div>
     </details>
     <footer class="mdl__actions"><a class="button button--ghost" data-wa="air" href="#" target="_blank" rel="noopener">Заказать Air</a></footer>
   </dialog>
@@ -483,7 +542,7 @@
       <div class="acc__body"><p>Средняя. Два слоя натурального кокоса (10 и 20 мм) и усиленный боковой каркас — для тех, кто спит на матрасе каждую ночь.</p></div>
     </details>
     <details class="acc"><summary>Размеры и цена</summary>
-      <div class="acc__body"><div class="size-table" data-sizes="balance"></div><p class="size-summary__hint">Нестандартный размер? Сделаем под ваш проект — срок 21 день.</p></div>
+      <div class="acc__body"><div class="size-table" data-sizes="balance"></div></div>
     </details>
     <footer class="mdl__actions"><a class="button button--ghost" data-wa="balance" href="#" target="_blank" rel="noopener">Заказать Balance</a></footer>
   </dialog>
@@ -515,37 +574,7 @@
     </details>
     <details class="acc"><summary>Размеры и цена</summary>
       <div class="acc__body">
-        <!-- размеры Eluna Prime: цена = PRICES.prime × коэффициент -->
-        <div class="sizes" id="sizes">
-          <div class="sizes__grid">
-            <div class="size-vis" aria-hidden="true">
-              <div class="size-vis__glow"></div>
-              <div class="size-vis__mat" id="sizePreviewMat">
-                <span class="size-vis__w"><span id="sizePreviewW">1600</span> мм</span>
-                <span class="size-vis__h"><span id="sizePreviewH">2000</span> мм</span>
-              </div>
-            </div>
-            <div class="size-panel">
-              <div class="size-options" id="sizeOptions" role="radiogroup" aria-label="Размер матраса">
-                <button type="button" role="radio" aria-checked="false" data-w="80"  data-h="200">800 × 2000</button>
-                <button type="button" role="radio" aria-checked="false" data-w="90"  data-h="200">900 × 2000</button>
-                <button type="button" role="radio" aria-checked="false" data-w="140" data-h="200">1400 × 2000</button>
-                <button type="button" role="radio" aria-checked="true"  data-w="160" data-h="200">1600 × 2000</button>
-                <button type="button" role="radio" aria-checked="false" data-w="180" data-h="200">1800 × 2000</button>
-                <button type="button" role="radio" aria-checked="false" data-w="200" data-h="200">2000 × 2000</button>
-              </div>
-              <div class="size-summary">
-                <div class="size-summary__row">
-                  <span class="size-summary__label">Eluna Prime · <span id="sizeLabel">1600 × 2000</span> мм</span>
-                  <span class="size-summary__price"><s class="price-old" id="sizeOld"></s><span id="sizePrice">—</span> ₸</span>
-                </div>
-                <p class="size-summary__note">Включая доставку, подъём и вынос старого матраса.<span id="sizeInstallment" hidden> Рассрочка 0 % на 12 месяцев — <span id="sizeMonthly">—</span> ₸ в месяц.</span></p>
-                <a class="button button--primary" id="sizeCta" href="#" target="_blank" rel="noopener">Заказать <span id="sizeCtaLabel">1600 × 2000</span></a>
-                <p class="size-summary__hint">Нестандартный размер? Сделаем под ваш проект — срок 21 день.</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="size-table" data-sizes="prime"></div>
       </div>
     </details>
     <details class="acc"><summary>Отзывы</summary>
@@ -585,25 +614,25 @@
       <div class="acc__body"><p>Подбирается индивидуально: мягче, жёстче или разная на двух половинах матраса.</p></div>
     </details>
     <details class="acc"><summary>Размеры и цена</summary>
-      <div class="acc__body"><p><span data-price="royal">— ₸</span> для размера 1600 × 2000 мм. Другие размеры и конфигурации — по запросу.</p></div>
+      <div class="acc__body"><div class="size-table" data-sizes="royal"></div></div>
     </details>
     <footer class="mdl__actions"><a class="button button--ghost" data-wa="royal" href="#" target="_blank" rel="noopener">Обсудить Royal</a></footer>
   </dialog>
 
   <!-- липкая плашка Prime (мобильный) -->
   <div class="sticky-cta" id="stickyCta" aria-hidden="true">
-    <span class="sticky-cta__text">Eluna Prime — <span data-price="prime" data-compact>— ₸</span></span>
-    <a class="sticky-cta__btn" data-wa="prime" href="#" target="_blank" rel="noopener" tabindex="-1">Заказать</a>
+    <span class="sticky-cta__text" id="stickyText">Eluna Prime — <span data-price="prime" data-compact>— ₸</span></span>
+    <a class="sticky-cta__btn" href="#checkout" tabindex="-1">Оформить</a>
   </div>
 
   <footer class="footer">
     <div class="container footer__inner">
-      <span class="footer__brand"><img class="mark" src="img/mark.png" alt="" width="351" height="345">ELUNA<small>Sleep Tech</small></span>
-      <span class="footer__copy">© 2026 ELUNA. Матрасы ручной сборки.</span>
+      <span class="footer__brand"><img class="mark" src="img/mark.png" alt="" width="351" height="345">RICCA <span class="amp">&amp;</span> ELUNA<small>Sleep Tech</small></span>
+      <span class="footer__copy">© 2026 RICCA DESIGNS × ELUNA. Матрасы ручной сборки, Алматы.</span>
       <nav class="footer__links" aria-label="Служебные ссылки">
         <a href="#order">Доставка</a>
-        <a href="#models">Гарантия</a>
-        <a href="#order">Контакты</a>
+        <a href="https://wa.me/77079550808" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="privacy.html">Политика конфиденциальности</a>
       </nav>
     </div>
   </footer>

@@ -457,8 +457,9 @@
      Контейнер не трансформируется вместе с разрезом: якоря пересчитываются из его transform в render(),
      поэтому при наезде камеры линии следуют за слоями, а текст остаётся на экране */
   const seqLabels = document.getElementById('seqLabels');
-  const SEQ_LABEL_Y = [9, 21, 30, 39, 49, 67, 87];
-  const SEQ_LABEL_X = [86, 86, 85, 85, 85, 83, 83];
+  // точки на правой боковой грани каждого слоя — сняты по пикселям финального кадра (f24): % ширины/высоты кадра
+  const SEQ_LABEL_Y = [6.5, 17.6, 24.6, 30.8, 40.6, 55.5, 71.0];
+  const SEQ_LABEL_X = [84.0, 84.0, 84.0, 84.0, 84.0, 81.3, 78.1];
   const SHORT = ['Чехол', 'Латекс', 'Гель', 'Койра', 'Пена HR', 'Пружины', 'Основание'];
   const seqLabelEls = LAYERS.map((l, i) => {
     const el = document.createElement('span');
@@ -576,6 +577,7 @@
       stageEl.classList.toggle('is-off', !on);
       stars.setVisible(on);
       if (moonGL && !on) moonGL.sleep();
+      if (tourTl) { if (on) tourTl.resume(); else tourTl.pause(); }
       if (on) { Light.claim('hero'); render(); }
     }, { threshold: 0 }).observe(stageEl);
   }
@@ -690,7 +692,7 @@
       S.spread = 1; S.cutS = 0.92; seqLabelEls.forEach((el) => el.classList.add('is-in'));
       layersState = 'done'; render(); return;
     }
-    layersTl = gsap.timeline({ onUpdate: render, onComplete: () => { layersState = 'done'; layersTl = null; } });
+    layersTl = gsap.timeline({ onUpdate: render, onComplete: () => { layersState = 'done'; layersTl = null; if (!tourPaused) startTour(0, 1.2); else syncPlay(); } });
     layersTl
       .to(S, { spread: 1, duration: 1.6, ease: 'power3.out' }, 0)
       .to(S, { cutS: 0.92, duration: 1.6, ease: 'power2.out' }, 0);
@@ -713,16 +715,99 @@
   function resetLayers() {
     if (layersState === 'idle') return;
     if (layersTl) { layersTl.kill(); layersTl = null; }
+    stopTour();
     layersState = 'idle';
     seqLabelEls.forEach((el) => el.classList.remove('is-in'));
     gsap.to(S, { spread: 0, cutS: 1, cutY: 0, spot: 0, focus: -1, duration: 0.6, ease: 'power2.out', onUpdate: render, overwrite: 'auto' });
   }
+
+  /* Свободный просмотр после сценария: камера по кругу ходит по слоям «как видео».
+     Нажатие на подпись или на слой — камера едет к нему и стоит; через 8 с тур продолжается.
+     Кнопка ❚❚/▶ — ручная пауза. Скролл к финалу сцены — тур останавливается, камера отходит. */
+  const seqPlay = document.getElementById('seqPlay');
+  let tourTl = null, tourPaused = false, tourAuto = 0, tourOut = false;
+  const ZSc = () => (isMobile() ? 1.3 : 1.32);
+  function camTo(i, dur) {
+    const ZS = ZSc(), D = !isMobile();
+    if (i < 0) return gsap.to(S, { cutS: 0.92, cutY: D ? 1 : 0, spot: 0, duration: dur, ease: 'power2.inOut', onUpdate: render, overwrite: 'auto', onStart: () => { gsap.delayedCall(dur / 2, () => { S.focus = -1; render(); }); } });
+    return gsap.to(S, { cutS: ZS, cutY: focusY(i, ZS), spot: 1, spotY: spotY(i), duration: dur, ease: 'power2.inOut', onUpdate: render, overwrite: 'auto', onStart: () => { gsap.delayedCall(dur / 2, () => { S.focus = i; render(); }); } });
+  }
+  // порядок: слои 0..6, общий вид, снова слои; start — с какого шага, wait — пауза перед первым шагом
+  function startTour(start, wait) {
+    stopTour();
+    if (reduceMotion || layersState !== 'done' || tourOut || stageOff) { syncPlay(); return; }
+    const steps = [0, 1, 2, 3, 4, 5, 6, -1];
+    const order = steps.slice(start).concat(steps.slice(0, start));
+    const ZS = ZSc(), D = !isMobile();
+    tourTl = gsap.timeline({ repeat: -1, repeatRefresh: true, delay: wait || 0, onUpdate: render });
+    let t = 0;
+    order.forEach((i) => {
+      if (i < 0) {
+        tourTl.to(S, { cutS: 0.92, cutY: D ? 1 : 0, spot: 0, duration: 1.1, ease: 'power2.inOut' }, t).set(S, { focus: -1 }, t + 0.55);
+        t += 1.1 + 2.4;
+      } else {
+        tourTl.to(S, { cutS: ZS, cutY: () => focusY(i, ZS), spot: 1, spotY: () => spotY(i), duration: 0.9, ease: 'power2.inOut' }, t).set(S, { focus: i }, t + 0.45);
+        t += 0.9 + 1.9;
+      }
+    });
+    tourTl.set({}, {}, t);
+    syncPlay();
+  }
+  function stopTour() { if (tourTl) { tourTl.kill(); tourTl = null; } clearTimeout(tourAuto); syncPlay(); }
+  function syncPlay() {
+    if (!seqPlay) return;
+    const on = layersState === 'done' && !reduceMotion;
+    seqPlay.hidden = !on;
+    const playing = !!tourTl;
+    seqPlay.setAttribute('aria-pressed', playing ? 'false' : 'true');
+    seqPlay.classList.toggle('is-paused', !playing);
+    seqPlay.querySelector('.seq-play__label').textContent = playing ? 'Пауза' : 'Смотреть дальше';
+  }
+  const nextAfter = (f) => (f < 0 ? 0 : f >= 6 ? 7 : f + 1);
+  function goLayer(i) {
+    if (layersState === 'idle' || tourOut) return;
+    if (layersTl) {                                      // сценарий ещё идёт — завершаем его мгновенно
+      layersTl.kill(); layersTl = null; layersState = 'done';
+      seqLabelEls.forEach((el) => el.classList.add('is-in'));
+      S.spread = 1;
+    }
+    stopTour();
+    camTo(i, reduceMotion ? 0.01 : 0.9);
+    syncPlay();
+    if (!tourPaused && !reduceMotion) tourAuto = setTimeout(() => { if (!tourPaused && !tourTl) startTour(nextAfter(i), 0); }, 8000);
+  }
+  if (seqPlay) seqPlay.addEventListener('click', () => {
+    if (tourTl) { tourPaused = true; stopTour(); }
+    else { tourPaused = false; startTour(nextAfter(S.focus), 0); }
+  });
+  // нажатие на подпись слоя
+  seqLabelEls.forEach((el, i) => {
+    const t = el.querySelector('.seq-label__text');
+    t.setAttribute('role', 'button'); t.tabIndex = -1;
+    t.addEventListener('click', (e) => { e.stopPropagation(); goLayer(i); });
+  });
+  // нажатие на сам слой в кадре — ближайший якорь по вертикали
+  stageEl.addEventListener('click', (e) => {
+    if (layersState === 'idle' || S.spread < 0.8 || tourOut || e.target.closest('a, button')) return;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    let best = -1, bd = 1e9;
+    for (let i = 0; i < seqLabelEls.length; i++) { const a = labelAnchor(i, vw, vh); const d = Math.abs(a.y - e.clientY); if (d < bd) { bd = d; best = i; } }
+    if (best >= 0 && bd < vh * 0.12) goLayer(best);
+  });
   function layersCtl(p) {
     if (p >= 0.10 && layersState === 'idle') playLayers();
     else if (p < 0.04) resetLayers();
     // долистал до финала раньше конца сценария — он ускоряется и доигрывает
     if (p > 0.68 && layersTl && layersTl.timeScale() === 1) layersTl.timeScale(3);
+    // финал сцены: тур стоп, камера на общий вид; вернулся назад — тур снова
+    const out = p > 0.7;
+    if (out !== tourOut) {
+      tourOut = out;
+      if (out) { stopTour(); if (layersState === 'done') camTo(-1, 0.6); }
+      else if (layersState === 'done' && !tourPaused) startTour(0, 0.6);
+    }
   }
+
 
   function buildStage(isDesktop) {
     const D = isDesktop;
@@ -989,14 +1074,17 @@
       if (r !== pickR) { pickR = r; pickT = animate ? performance.now() / 1000 : -1e9; paint(); }
     }
     const hoverable = window.matchMedia('(hover: hover)').matches;
-    let hoverTo = 0;
+    let hoverTo = 0, chosen = null;   // chosen — город, выбранный нажатием (идёт в заказ); наведение — только просмотр
+    map.addEventListener('mouseleave', () => { clearTimeout(hoverTo); if (chosen && !chosen.classList.contains('is-on')) pick(chosen); });
     cities.forEach((c) => {
-      c.addEventListener('click', () => pick(c));
+      c.addEventListener('click', () => { clearTimeout(hoverTo); chosen = c; pick(c); document.dispatchEvent(new CustomEvent('eluna:city', { detail: c.dataset.city })); });
       // наведение — с короткой задержкой, чтобы дуга не дёргалась, пока курсор пролетает над точками
       c.addEventListener('mouseenter', () => { if (!hoverable) return; clearTimeout(hoverTo); hoverTo = setTimeout(() => pick(c), 90); });
       c.addEventListener('mouseleave', () => clearTimeout(hoverTo));
     });
-    pick(map.querySelector('.city.is-on') || home);
+    chosen = map.querySelector('.city.is-on') || home;
+    pick(chosen);
+    document.addEventListener('eluna:setcity', (e) => { const c = cities.find((x) => x.dataset.city === e.detail); if (c) { chosen = c; if (!c.classList.contains('is-on')) pick(c); } });
 
     // ---- холст эффектов ----
     const lineEl = map.querySelector('.map__line');
@@ -1233,7 +1321,7 @@
   const OLD_PRICES = { prime: 350000 };   // полная цена до скидки; нет ключа → скидки нет
   const discountPct = (k) => (OLD_PRICES[k] ? Math.round((1 - PRICES[k] / OLD_PRICES[k]) * 100) : 0);
   const WHATSAPP = '77079550808';
-  const SIZE_K = { 80: 0.6, 90: 0.65, 140: 0.9, 160: 1, 180: 1.1, 200: 1.2 };   // относительно 1600 × 2000
+  const SIZE_K = { 1600: 1, 1800: 1.1 };   // стандартные размеры относительно 1600 × 2000; свой размер — по площади
   const MODELS = {
     air: {
       name: 'Eluna Air',
@@ -1298,7 +1386,6 @@
 
   (function lineup() {
     document.querySelectorAll('[data-price]').forEach((el) => { el.innerHTML = priceHTML(el.dataset.price, el.hasAttribute('data-compact')); });
-    document.querySelectorAll('[data-wa]').forEach((a) => { const m = MODELS[a.dataset.wa]; if (m) a.href = waLink(`Здравствуйте, интересует ${m.name}`); });
 
     // метки уровня
     const meter = (lvl) => `<span class="lm" aria-hidden="true">${[1, 2, 3, 4].map((k) => `<i${k <= lvl ? ' class="on"' : ''}></i>`).join('')}</span>`;
@@ -1316,13 +1403,6 @@
           <div class="xs__fill" style="--cm:${l.cm}"></div>
           <div class="xs__text"><b>${esc(l.name)}</b>${l.spec ? `<span class="cm">${esc(l.spec)}</span>` : ''}${l.note ? `<span class="note">${esc(l.note)}</span>` : ''}</div>
         </div>`).join('');
-    });
-
-    // таблицы размеров (Air / Balance): цена = базовая × коэффициент, округление до 1 000
-    document.querySelectorAll('.size-table[data-sizes]').forEach((box) => {
-      const base = PRICES[box.dataset.sizes];
-      if (base == null || typeof base === 'object') return;
-      box.innerHTML = Object.keys(SIZE_K).map((w) => `<div><span>${w * 10} × 2000 мм</span><b>${fmtMoney(Math.round(base * SIZE_K[w] / 1000) * 1000)} ₸</b></div>`).join('');
     });
 
     /* рельс: выбранная карточка получает свет; остальные чуть в тени */
@@ -1394,7 +1474,6 @@
       if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
       dlg.scrollTop = 0;
       if (!reduceMotion) gsap.fromTo(dlg, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .4, ease: 'power3.out', clearProps: 'transform' });
-      if (dlg.id === 'mdl-prime') requestAnimationFrame(() => sizesApi.refresh());
     }
     document.querySelectorAll('dialog.mdl').forEach((dlg) => {
       dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
@@ -1418,51 +1497,148 @@
   })();
 
   /* ------------------------------------------------------------------------
-     Размеры Eluna Prime: цена = PRICES.prime × коэффициент размера
+     Заказ: модель → размер → город → WhatsApp. Одно состояние order, хранится
+     в localStorage (если доступен) и рисуется во всех местах сразу:
+     секция «Размер», «Ваш выбор» у карты, итог внизу, липкая кнопка, ссылки WhatsApp.
+     Цена: 1600 × 2000 — базовая, 1800 × 2000 — × SIZE_K, свой размер — по площади;
+     округление до 1 000 ₸.
      ------------------------------------------------------------------------ */
-  const sizesApi = (function sizes() {
-    const options = document.querySelectorAll('#sizeOptions button');
-    const mat = document.getElementById('sizePreviewMat');
-    const wEl = document.getElementById('sizePreviewW');
-    const hEl = document.getElementById('sizePreviewH');
-    const priceEl = document.getElementById('sizePrice');
-    const monthlyEl = document.getElementById('sizeMonthly');
-    const installment = document.getElementById('sizeInstallment');
-    const labelEl = document.getElementById('sizeLabel');
-    const ctaLabel = document.getElementById('sizeCtaLabel');
-    const cta = document.getElementById('sizeCta');
-    const oldEl = document.getElementById('sizeOld');
-    if (!options.length) return { refresh() {} };
-    const price = { v: 0, o: 0 };
-    let current = null;
+  (function orderFlow() {
+    const KEY = 'eluna-order-v1';
+    const W = { min: 1400, max: 2200 }, H = { min: 1900, max: 2200 };
+    const clampN = (v, a, b) => Math.min(b, Math.max(a, Math.round(v / 10) * 10 || a));
+    let order = { model: 'prime', w: 1600, h: 2000, custom: false, city: '' };
+    try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved && MODELS[saved.model]) order = Object.assign(order, saved); } catch (e) { /* без хранилища — по умолчанию */ }
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(order)); } catch (e) { /* приватный режим */ } };
 
-    function apply(btn, animate) {
-      current = btn;
-      const w = +btn.dataset.w, h = +btn.dataset.h;
-      const base = PRICES.prime;
-      const p = base == null ? null : Math.round(base * (SIZE_K[w] || 1) / 1000) * 1000;
-      const o = OLD_PRICES.prime ? Math.round(OLD_PRICES.prime * (SIZE_K[w] || 1) / 1000) * 1000 : null;
-      const paint = () => { priceEl.textContent = fmtMoney(price.v); monthlyEl.textContent = fmtMoney(price.v / 12); if (oldEl) oldEl.textContent = o == null ? '' : `${fmtMoney(price.o)} ₸`; };
-      labelEl.textContent = `${w * 10} × ${h * 10}`;
-      ctaLabel.textContent = `${w * 10} × ${h * 10}`;
-      cta.href = waLink(`Здравствуйте, интересует Eluna Prime, размер ${w * 10} × ${h * 10} мм`);
-      installment.hidden = p == null;
-      if (p == null) { priceEl.textContent = '—'; return; }
-      if (!animate) { price.v = p; price.o = o || 0; paint(); return; }
-      gsap.to(price, { v: p, o: o || 0, duration: 0.9, ease: 'power2.out', onUpdate: paint });
+    const kOf = (o) => (o.custom ? (o.w * o.h) / (1600 * 2000) : SIZE_K[o.w] || 1);
+    function priceOf(o) {
+      const base = PRICES[o.model], old = OLD_PRICES[o.model], k = kOf(o);
+      if (base == null || typeof base === 'object') return { v: null, o: null };
+      return { v: Math.round(base * k / 1000) * 1000, o: old ? Math.round(old * k / 1000) * 1000 : null };
     }
-    const pct = (cm) => (cm / 200) * 70;
-    options.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        options.forEach((b) => b.setAttribute('aria-checked', b === btn ? 'true' : 'false'));
-        const w = +btn.dataset.w, h = +btn.dataset.h;
-        gsap.to(mat, { width: `${pct(w)}%`, height: `${pct(h)}%`, duration: 1.1, ease: 'power3.inOut' });
-        wEl.textContent = w * 10; hEl.textContent = h * 10;
-        apply(btn, true);
+    const sizeText = (o) => `${o.w} × ${o.h} мм`;
+    const cityText = (c) => (!c ? 'город не выбран' : c === 'Алматы' ? 'Алматы — привезём и установим сами' : `${c} — от 7 дней до двери`);
+
+    function message(o, extra) {
+      const p = priceOf(o);
+      const lines = [
+        'Здравствуйте! Хочу заказать матрас ELUNA.',
+        `Модель: ${MODELS[o.model].name}`,
+        `Размер: ${sizeText(o)}${o.custom ? ' (свой размер, изготовление 21 день)' : ''}`,
+        `Цена: ${p.v == null ? 'уточнить' : `${fmtMoney(p.v)} ₸`}${p.o ? ` (без скидки ${fmtMoney(p.o)} ₸, −${discountPct(o.model)} %)` : ''}`,
+        `Доставка: ${cityText(o.city)}`,
+      ];
+      if (extra) {
+        if (extra.name) lines.push(`Имя: ${extra.name}`);
+        if (extra.phone) lines.push(`Телефон: ${extra.phone}`);
+        if (extra.note) lines.push(`Комментарий: ${extra.note}`);
+      }
+      return lines.join('\n');
+    }
+
+    // ---- секция «Размер» ----
+    const models = Array.from(document.querySelectorAll('#cfgModels [data-m]'));
+    const opts = Array.from(document.querySelectorAll('#sizeOptions button'));
+    const custom = document.getElementById('cfgCustom');
+    const rW = document.getElementById('cfgW'), rH = document.getElementById('cfgH');
+    const nW = document.getElementById('cfgWn'), nH = document.getElementById('cfgHn');
+    const mat = document.getElementById('sizePreviewMat');
+    const pvW = document.getElementById('sizePreviewW'), pvH = document.getElementById('sizePreviewH');
+    const priceEl = document.getElementById('sizePrice'), oldEl = document.getElementById('sizeOld');
+    const monthlyEl = document.getElementById('sizeMonthly');
+    const shown = { v: 0, o: 0 };
+
+    function render(animate) {
+      const o = order, p = priceOf(o), name = MODELS[o.model].name;
+      models.forEach((b) => b.setAttribute('aria-checked', b.dataset.m === o.model ? 'true' : 'false'));
+      opts.forEach((b) => b.setAttribute('aria-checked', (b.hasAttribute('data-custom') ? o.custom : !o.custom && +b.dataset.w === o.w && +b.dataset.h === o.h) ? 'true' : 'false'));
+      if (custom) custom.hidden = !o.custom;
+      [[rW, nW, o.w], [rH, nH, o.h]].forEach(([r, n, v]) => { if (r && +r.value !== v) r.value = v; if (n && document.activeElement !== n && +n.value !== v) n.value = v; });
+      const set = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+      set('sizeModel', name); set('sizeLabel', `${o.w} × ${o.h}`);
+      if (pvW) pvW.textContent = o.w; if (pvH) pvH.textContent = o.h;
+      // превью: 2200 мм по большей стороне = 76 % поля
+      if (mat) gsap.to(mat, { width: `${(o.w / 2200) * 76}%`, height: `${(o.h / 2200) * 76}%`, duration: animate ? 0.8 : 0, ease: 'power3.inOut', overwrite: 'auto' });
+      const paint = () => {
+        if (priceEl) priceEl.textContent = p.v == null ? '—' : fmtMoney(shown.v);
+        if (oldEl) oldEl.textContent = p.o ? `${fmtMoney(shown.o)} ₸` : '';
+        if (monthlyEl) monthlyEl.textContent = p.v == null ? '—' : fmtMoney(shown.v / 12);
+      };
+      if (p.v != null && animate && !reduceMotion) gsap.to(shown, { v: p.v, o: p.o || 0, duration: 0.7, ease: 'power2.out', onUpdate: paint, overwrite: 'auto' });
+      else { shown.v = p.v || 0; shown.o = p.o || 0; paint(); }
+
+      // «Ваш выбор» у карты, итог внизу, липкая кнопка
+      const priceStr = p.v == null ? '' : ` · ${fmtMoney(p.v)} ₸`;
+      set('orderPickText', `${name} · ${sizeText(o)}${priceStr}`);
+      const sum = document.getElementById('checkoutSum');
+      if (sum) {
+        sum.querySelector('[data-o="model"]').textContent = name;
+        sum.querySelector('[data-o="size"]').textContent = sizeText(o) + (o.custom ? ' · свой' : '');
+        sum.querySelector('[data-o="price"]').innerHTML = p.v == null ? 'уточнит мастер' : `${p.o ? `<s class="price-old">${fmtMoney(p.o)}</s> ` : ''}${fmtMoney(p.v)} ₸`;
+        sum.querySelector('[data-o="city"]').textContent = cityText(o.city);
+      }
+      const sticky = document.getElementById('stickyText');
+      if (sticky) sticky.textContent = `${name} · ${o.w}×${o.h}${p.v == null ? '' : ` — ${fmtMoney(p.v)} ₸`}`;
+      // все ссылки WhatsApp несут текущий выбор (модель — своя у кнопки)
+      document.querySelectorAll('[data-wa]').forEach((a) => { a.href = waLink(message(Object.assign({}, o, { model: a.dataset.wa }))); });
+      // таблицы размеров в окнах «Подробнее»
+      document.querySelectorAll('.size-table[data-sizes]').forEach((box) => {
+        const m = box.dataset.sizes;
+        const row = (w, h, cust, label) => {
+          const pr = priceOf({ model: m, w, h, custom: cust });
+          const on = o.model === m && (cust ? o.custom : !o.custom && o.w === w && o.h === h);
+          return `<button type="button" class="size-row${on ? ' is-on' : ''}" data-pick="${m}" data-w="${w}" data-h="${h}"${cust ? ' data-custom' : ''}><span>${label}</span><b>${cust ? 'по площади' : pr.v == null ? '—' : `${fmtMoney(pr.v)} ₸`}</b></button>`;
+        };
+        box.innerHTML = row(1600, 2000, false, '1600 × 2000 мм') + row(1800, 2000, false, '1800 × 2000 мм') + row(o.custom && o.model === m ? o.w : 1700, o.custom && o.model === m ? o.h : 2000, true, 'Свой размер →');
       });
+    }
+    function update(patch, animate) { Object.assign(order, patch); save(); render(animate !== false); }
+    const goSizes = () => { const el = document.getElementById('sizes'); if (el) el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' }); };
+
+    models.forEach((b) => b.addEventListener('click', () => update({ model: b.dataset.m })));
+    opts.forEach((b) => b.addEventListener('click', () => {
+      if (b.hasAttribute('data-custom')) update({ custom: true });
+      else update({ custom: false, w: +b.dataset.w, h: +b.dataset.h });
+    }));
+    [[rW, 'w', W], [rH, 'h', H]].forEach(([r, k, lim]) => { if (r) r.addEventListener('input', () => update({ custom: true, [k]: clampN(+r.value, lim.min, lim.max) })); });
+    [[nW, 'w', W], [nH, 'h', H]].forEach(([n, k, lim]) => {
+      if (!n) return;
+      n.addEventListener('change', () => { n.value = clampN(+n.value, lim.min, lim.max); update({ custom: true, [k]: +n.value }); });
     });
-    apply(document.querySelector('#sizeOptions button[aria-checked="true"]') || options[0], false);
-    return { refresh() { if (current) { const w = +current.dataset.w, h = +current.dataset.h; gsap.set(mat, { width: `${pct(w)}%`, height: `${pct(h)}%` }); } } };
+    // «Выбрать» на карточках и строки размеров в окнах: выбор → к секции «Размер»
+    document.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-pick]');
+      if (!b) return;
+      const patch = { model: b.dataset.pick };
+      if (b.dataset.w) Object.assign(patch, { w: +b.dataset.w, h: +b.dataset.h, custom: b.hasAttribute('data-custom') });
+      update(patch);
+      const dlg = b.closest('dialog');
+      if (dlg && dlg.open) dlg.close();
+      requestAnimationFrame(goSizes);
+    });
+    // город с карты
+    document.addEventListener('eluna:city', (e) => { if (order.city !== e.detail) update({ city: e.detail }, false); });
+    const cur = document.querySelector('#map .city.is-on');
+    if (order.city) document.dispatchEvent(new CustomEvent('eluna:setcity', { detail: order.city }));
+    else if (cur) order.city = cur.dataset.city;
+    render(false);
+
+    // ---- оформление в WhatsApp ----
+    const form = document.getElementById('checkoutForm');
+    if (form) {
+      const consent = document.getElementById('coConsent'), err = document.getElementById('coErr');
+      consent.addEventListener('change', () => { if (consent.checked) err.hidden = true; });
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!consent.checked) { err.hidden = false; consent.focus(); return; }
+        const val = (id) => (document.getElementById(id).value || '').trim();
+        const url = waLink(message(order, { name: val('coName'), phone: val('phone'), note: val('coNote') }));
+        const w = window.open(url, '_blank');
+        if (w) w.opener = null; else window.location.href = url;
+      });
+    }
+    window.ELUNA_ORDER = { get: () => Object.assign({}, order), message: () => message(order) };
   })();
 
   /* буквы заголовков — отдельные span, чтобы отвечать на курсор / палец лунным светом */
