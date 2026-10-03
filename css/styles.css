@@ -26,9 +26,9 @@
   --container: 1360px;
 
   /* сцена: луна = источник света. Переменные кадра пишутся скриптом на владельцев, не на :root */
-  --moon-d: min(112vh, 72vw);
-  --moon-x: 78%;
-  --moon-y: 50%;
+  --moon-d: min(96vh, 58vw);
+  --moon-x: 84%;
+  --moon-y: 48%;
   --lx: 12%;
   --ly: 18%;
 
@@ -207,7 +207,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   transform: translateY(-50%);
   display: flex; align-items: center; gap: 0.34em;
   font-family: var(--logo); font-weight: 400;
-  font-size: clamp(44px, 8.6vw, 128px); line-height: 1; letter-spacing: 0.16em;
+  font-size: clamp(44px, 6.4vw, 96px); line-height: 1; letter-spacing: 0.16em;
   color: var(--ink); white-space: nowrap; will-change: transform, opacity;
 }
 .wordmark__mark { position: relative; width: 1.3em; height: auto; flex: none; opacity: 0; transform: scale(0.9); will-change: transform, opacity; }
@@ -752,9 +752,9 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 
   .grain { display: none; }
   .stage { touch-action: pan-y; }
-  .wordmark { top: 44%; font-size: clamp(30px, 10.2vw, 52px); letter-spacing: 0.12em; gap: 0.3em; }
+  .wordmark { top: 50%; font-size: clamp(30px, 10.2vw, 52px); letter-spacing: 0.12em; gap: 0.3em; }
   .reveal { transform: none; transition-duration: 1s; }
-  :root { --moon-d: 78vw; --moon-x: 76%; --moon-y: 34%; }
+  :root { --moon-d: 62vw; --moon-x: 80%; --moon-y: 24%; }
 
   .section-title { font-size: clamp(28px, 8vw, 40px); text-wrap: balance; }
   .tech, .models, .order { padding-top: clamp(56px, 12vw, 80px); padding-bottom: clamp(56px, 12vw, 80px); }
@@ -824,7 +824,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .sticky-cta { display: flex; }
 }
 
-@media (min-width: 600px) and (max-width: 899px) { :root { --moon-d: 64vw; } }
+@media (min-width: 600px) and (max-width: 899px) { :root { --moon-d: 50vw; } }
 
 @media (max-width: 599px) {
   .concept__facts { gap: 24px 16px; }
