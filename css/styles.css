@@ -1,3 +1,4 @@
+/*! © 2026 ELUNA · RICCA DESIGNS, Алматы. Все права защищены. Копирование без письменного разрешения запрещено. */
 /* ==========================================================================
    ELUNA — стили
    Космическая темнота, один источник света (луна), фотореалистичный продукт.
@@ -798,7 +799,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 12px; color: var(--ink-3); letter-spacing: .04em; }
 .footer__brand { display: inline-flex; align-items: center; font-family: var(--logo); font-size: 14px; letter-spacing: .2em; color: var(--ink); }
 .footer__brand small { margin-left: 14px; font-family: var(--sans); font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: var(--ink-3); }
-.footer__links { display: flex; gap: 28px; }
+.footer__links { display: flex; flex-wrap: wrap; gap: 12px 28px; }
 .footer__links a:hover { color: var(--ink); }
 
 /* ---------- Появление по скроллу ---------------------------------------- */
