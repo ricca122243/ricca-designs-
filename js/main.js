@@ -316,7 +316,7 @@
     if (moonGL || TIER === 'low' || reduceMotion || !window.MoonGL || !moonGlCanvas) return;
     const inst = window.MoonGL.create({
       canvas: moonGlCanvas, tier: isMobile() ? 'medium' : TIER, force: params.get('gl') === 'force',
-      src: TIER === 'high' && !isMobile() ? 'img/moon-map-2048.webp' : 'img/moon-map-1024.webp',
+      src: TIER === 'high' || !isMobile() ? 'img/moon-map-2048.webp' : 'img/moon-map-1024.webp',
       onReady: () => { moonBig.classList.add('is-gl'); sizeMoonGL(); render(); },
       onFallback: () => { if (moonGL) { moonGL.destroy(); moonGL = null; } moonBig.classList.remove('is-gl'); },
     });
@@ -327,7 +327,7 @@
   function sizeMoonGL() {
     if (!moonGL) return;
     const r = moonBig.getBoundingClientRect();
-    const d = isMobile() ? 1 : Math.min(1.5, window.devicePixelRatio || 1);
+    const d = Math.min(isMobile() ? 2 : 1.5, window.devicePixelRatio || 1);   // телефон: луна меньше, но на плотном экране — плотность 2
     moonGL.resize(r.width * d, r.height * d);
   }
   // направление света из «процента терминатора» интро: −18 % — источник за шаром, 112 % — спереди-слева

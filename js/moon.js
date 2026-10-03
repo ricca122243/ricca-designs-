@@ -47,14 +47,15 @@ void main() {
 
   // чуть холоднее и спокойнее: десатурация и мягкая кривая
   float lum = dot(albedo, vec3(0.2126, 0.7152, 0.0722));
-  albedo = mix(vec3(lum), albedo, 0.45) * vec3(0.96, 0.98, 1.04);
-  albedo = pow(albedo, vec3(0.92));
+  albedo = mix(vec3(lum), albedo, 0.25) * vec3(0.96, 0.98, 1.04);
+  albedo = pow(albedo, vec3(0.88));
+  albedo = (albedo - 0.5) * 1.08 + 0.5;
 
   // освещение: мягкий терминатор, пепельный свет, лимб
   float ndl = dot(n, normalize(uLight));
   float day = smoothstep(-0.06, 0.16, ndl);
   float limb = 0.82 + 0.18 * n.z;
-  vec3 col = albedo * (day * 0.98 * limb + 0.035 * (1.0 - day));
+  vec3 col = albedo * (day * 1.0 * limb + 0.035 * (1.0 - day));
   col *= uExp;
   gl_FragColor = vec4(col * edge, edge);   // premultiplied alpha
 }`;
@@ -106,8 +107,8 @@ void main() {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);         // долгота замыкается (ширина — степень двойки)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.generateMipmap(gl.TEXTURE_2D);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      // без мип-карт: при диаметре 300–1000 px карта сэмплируется ≈ 1:1, а на шве долготы мипы давали тёмный пунктир
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       ready = true; dirty = true;
       if (opts.onReady) opts.onReady();
       loop();

@@ -754,7 +754,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .stage { touch-action: pan-y; }
   .wordmark { top: 44%; font-size: clamp(30px, 10.2vw, 52px); letter-spacing: 0.12em; gap: 0.3em; }
   .reveal { transform: none; transition-duration: 1s; }
-  :root { --moon-d: 124vw; --moon-x: 70%; --moon-y: 42%; }
+  :root { --moon-d: 78vw; --moon-x: 76%; --moon-y: 34%; }
 
   .section-title { font-size: clamp(28px, 8vw, 40px); text-wrap: balance; }
   .tech, .models, .order { padding-top: clamp(56px, 12vw, 80px); padding-bottom: clamp(56px, 12vw, 80px); }
@@ -823,6 +823,8 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .trust { grid-template-columns: 1fr 1fr; gap: 16px; }
   .sticky-cta { display: flex; }
 }
+
+@media (min-width: 600px) and (max-width: 899px) { :root { --moon-d: 64vw; } }
 
 @media (max-width: 599px) {
   .concept__facts { gap: 24px 16px; }
