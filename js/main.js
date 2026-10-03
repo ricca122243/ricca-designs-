@@ -964,22 +964,6 @@
     const first = map.querySelector('.city.is-on');
     if (first) pick(first);
 
-    const video = document.getElementById('mapVideo');
-    const saveData = navigator.connection && navigator.connection.saveData;
-    if (video) {
-      if (reduceMotion || saveData || isMobile() || TIER === 'low' || !('IntersectionObserver' in window)) { video.remove(); }
-      else {
-        new IntersectionObserver((es, io) => {
-          if (!es[0].isIntersecting) return;
-          io.disconnect();
-          video.autoplay = true;
-          video.src = video.dataset.src;
-          const tryPlay = () => { video.play().catch(() => {}); };
-          video.addEventListener('loadeddata', tryPlay, { once: true });
-          video.addEventListener('canplay', tryPlay, { once: true });
-        }, { rootMargin: '600px 0px' }).observe(map);
-      }
-    }
   })();
 
   /* ------------------------------------------------------------------------

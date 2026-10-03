@@ -682,10 +682,12 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 40%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 40%, transparent 100%); }
 .map__video { z-index: 0; aspect-ratio: 16 / 9; object-fit: cover; }
 .map__video + .map__bg { display: none; }
-.map__line { fill: none; stroke: rgba(241,237,230,0.28); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+/* снимок NASA (Blue Marble, июль + Black Marble — огни городов), страна выделена, края растворяются в фоне */
+.map__img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+.map__line { fill: none; stroke: rgba(200,215,255,0.38); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .map__fill { stroke: none; }
 .map__lit { opacity: .9; transition: -webkit-mask-position .9s var(--ease-out), mask-position .9s var(--ease-out); }
-.map__lit path { fill: rgba(var(--warm), 0.10); stroke: rgba(var(--warm), 0.75); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+.map__lit path { fill: rgba(var(--warm), 0.08); stroke: rgba(var(--warm), 0.85); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
 .map__lit { -webkit-mask-image: radial-gradient(circle at var(--mx) var(--my), #000 0, rgba(0,0,0,.6) 10%, transparent 24%); mask-image: radial-gradient(circle at var(--mx) var(--my), #000 0, rgba(0,0,0,.6) 10%, transparent 24%); }
 .moon {
   position: absolute; left: var(--mx); top: var(--my); width: 18%; aspect-ratio: 1; transform: translate(-50%, -50%);
@@ -822,6 +824,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .mdl { width: 100vw; max-width: 100vw; max-height: 100vh; max-height: 100dvh; border: 0; border-radius: 0; }
 
   .delivery__pick { order: 3; }
+  .city { width: 20px; height: 20px; margin: -10px 0 0 -10px; }
   .city span { display: none; }
   .city.is-on span { display: block; opacity: 1; }
   .trust { grid-template-columns: 1fr 1fr; gap: 16px; }
