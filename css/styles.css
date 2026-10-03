@@ -238,13 +238,11 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 
 .product--cut { opacity: 0; }
 /* canvas размером с кадр (left/top/width/height ставит JS), не с экран — в 2–3 раза меньше пикселей на кадр */
-.seq {
-  position: absolute; display: block;
-  -webkit-mask-image: radial-gradient(ellipse 62% 64% at 50% 50%, #000 40%, rgba(0,0,0,.55) 70%, transparent 100%);
-          mask-image: radial-gradient(ellipse 62% 64% at 50% 50%, #000 40%, rgba(0,0,0,.55) 70%, transparent 100%);
-}
+/* виньетка по краям кадра печётся в сам canvas при перерисовке (CSS-маска на масштабируемом слое заставляла телефон перерисовывать каждый кадр) */
+.seq { position: absolute; display: block; }
 /* прожектор по слою в фокусе: остальные уходят в тень */
-.seq-spot { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; --sy: 50%; will-change: opacity; background: radial-gradient(ellipse 80% 22% at 50% var(--sy), transparent 0 48%, rgba(6,7,12,.66) 78%, rgba(6,7,12,.9) 100%); }
+/* прожектор по слою в фокусе: элемент втрое выше разреза, градиент статичен, двигается только transform (compositor-only) */
+.seq-spot { position: absolute; left: 0; width: 100%; top: -100%; height: 300%; z-index: 3; pointer-events: none; opacity: 0; --sy: 50%; will-change: transform, opacity; transform: translate3d(0, calc((var(--sy) - 50%) / 3), 0); background: radial-gradient(ellipse 80% 7.34% at 50% 50%, transparent 0 48%, rgba(6,7,12,.66) 78%, rgba(6,7,12,.9) 100%); }
 .product--cut::after {
   display: block;
   background:
@@ -745,7 +743,6 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .grain { display: none; }
   .stage { touch-action: pan-y; }
   .wordmark { top: 44%; font-size: clamp(30px, 10.2vw, 52px); letter-spacing: 0.12em; gap: 0.3em; }
-  .seq { -webkit-mask-image: radial-gradient(ellipse 56% 62% at 50% 50%, #000 34%, rgba(0,0,0,.5) 68%, transparent 100%); mask-image: radial-gradient(ellipse 56% 62% at 50% 50%, #000 34%, rgba(0,0,0,.5) 68%, transparent 100%); }
   .reveal { transform: none; transition-duration: 1s; }
   :root { --moon-d: 124vw; --moon-x: 70%; --moon-y: 42%; }
 
@@ -766,7 +763,11 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .layer-active { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; font-size: 14px; }
   .copy--outro { top: auto; bottom: clamp(44px, 8vh, 90px); transform: none; }
   .statement { font-size: clamp(26px, 7vw, 40px); }
-  body:not(.is-intro) .nebula { animation-name: nebulaDriftM; }
+  body:not(.is-intro) .nebula { animation: none; }
+  /* на телефоне — только compositor-дешёвые эффекты: аврора, блик цены и проход света перерисовывают карточку каждый кадр */
+  .mcard--royal::before, .mcard--prime::before, .mcard__price--royal .mcard__sum { animation: none !important; }
+  .mcard__price--royal .mcard__sum { filter: none; }
+  .mcard--royal::before { opacity: .8; }
   .seq-labels { --run: 12px; --drop: 10px; }
   .seq-label::after { height: calc(var(--drop) + var(--i) * 3px); }
   .seq-label__text { top: calc(var(--run) * 0.84 + var(--drop) + var(--i) * 3px); left: calc(var(--run) + 6px + var(--shift, 0px)); gap: 5px; font-size: 10px; }

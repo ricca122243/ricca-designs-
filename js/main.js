@@ -314,7 +314,7 @@
   function initMoonGL() {
     if (moonGL || TIER === 'low' || reduceMotion || !window.MoonGL || !moonGlCanvas) return;
     const inst = window.MoonGL.create({
-      canvas: moonGlCanvas, tier: TIER, force: params.get('gl') === 'force',
+      canvas: moonGlCanvas, tier: isMobile() ? 'medium' : TIER, force: params.get('gl') === 'force',
       src: TIER === 'high' && !isMobile() ? 'img/moon-map-2048.webp' : 'img/moon-map-1024.webp',
       onReady: () => { moonBig.classList.add('is-gl'); sizeMoonGL(); render(); },
       onFallback: () => { if (moonGL) { moonGL.destroy(); moonGL = null; } moonBig.classList.remove('is-gl'); },
@@ -326,7 +326,7 @@
   function sizeMoonGL() {
     if (!moonGL) return;
     const r = moonBig.getBoundingClientRect();
-    const d = Math.min(1.5, window.devicePixelRatio || 1);
+    const d = isMobile() ? 1 : Math.min(1.5, window.devicePixelRatio || 1);
     moonGL.resize(r.width * d, r.height * d);
   }
   // направление света из «процента терминатора» интро: −18 % — источник за шаром, 112 % — спереди-слева
@@ -347,7 +347,7 @@
       ? { count: 24, w: 1920, h: 1080, base: 'img/seq/', pad: 2 }
       : { count: 24, w: 1280, h: 720, base: 'img/seq720/', pad: 2 };
   const seqCanvas = document.getElementById('seq');
-  const seqCtx = seqCanvas.getContext('2d', { alpha: false });
+  const seqCtx = seqCanvas.getContext('2d', { alpha: true });
   const frames = new Array(SEQ.count).fill(null);
   let seqLoaded = 0, seqStarted = false, seqDirty = true;
   const seqLast = { f: -1, w: 0, h: 0, loaded: 0 };
@@ -408,17 +408,37 @@
       seqDirty = true;
     }
   }
+  let vigCache = { w: 0, h: 0, g: null };
+  function seqVignette(w, h) {
+    if (vigCache.w === w && vigCache.h === h && vigCache.g) return vigCache.g;
+    const mob = isMobile();
+    // эллипс через масштаб: единичный радиальный градиент в центре, растянутый transform'ом
+    const rx = w * (mob ? 0.56 : 0.62), ry = h * (mob ? 0.62 : 0.64);
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.translate(w / 2, h / 2); x.scale(rx, ry);
+    const g = x.createRadialGradient(0, 0, 0, 0, 0, 1);
+    x.fillStyle = g; g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.34 : 0.40, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.68 : 0.70, 'rgba(0,0,0,.55)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillRect(-w / rx, -h / ry, 2 * w / rx, 2 * h / ry);
+    vigCache = { w, h, g: seqCtx.createPattern(c, 'no-repeat') };
+    return vigCache.g;
+  }
   function drawSeq() {
     if (!seqDirty || seqLoaded === 0) return;
     const cw = seqCanvas.width, ch = seqCanvas.height;
     const f = Math.min(1, Math.max(0, S.spread)) * (SEQ.count - 1);
     const i0 = Math.floor(f), t = f - i0;
     const a = nearestFrame(i0), b = frames[Math.min(SEQ.count - 1, i0 + 1)];
-    seqCtx.fillStyle = '#000';
-    seqCtx.fillRect(0, 0, cw, ch);
+    seqCtx.globalCompositeOperation = 'source-over';
     seqCtx.globalAlpha = 1;
+    seqCtx.clearRect(0, 0, cw, ch);
     if (a) seqCtx.drawImage(a, 0, 0, cw, ch);
     if (b && b !== a && t > 0.02) { seqCtx.globalAlpha = t; seqCtx.drawImage(b, 0, 0, cw, ch); seqCtx.globalAlpha = 1; }
+    // виньетка по краям — в сам кадр, вместо CSS-маски
+    seqCtx.globalCompositeOperation = 'destination-in';
+    seqCtx.fillStyle = seqVignette(cw, ch);
+    seqCtx.fillRect(0, 0, cw, ch);
+    seqCtx.globalCompositeOperation = 'source-over';
     seqDirty = false;
   }
 
@@ -1054,6 +1074,7 @@
       rail.style.setProperty('--lc', keys[i] === 'prime' ? 'var(--warm)' : keys[i] === 'royal' ? '190, 170, 230' : 'var(--cool)');
     }
     Light.on((L) => {
+      if (isMobile()) return;   // большой градиент перерисовывается при каждом изменении — на телефоне он статичен
       rail.style.setProperty('--lx', `${(L.x * 100).toFixed(2)}%`);
       rail.style.setProperty('--li', L.i.toFixed(3));
     });
