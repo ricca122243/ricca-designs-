@@ -49,6 +49,8 @@
 
         <div class="nebula" aria-hidden="true"></div>
         <div class="eclipse" id="eclipse" aria-hidden="true"></div>
+        <!-- большая луна за кольцом логотипа -->
+        <div class="moon-big" id="moonBig" aria-hidden="true"><img src="img/moon.webp" alt="" width="260" height="260" decoding="async" fetchpriority="high"></div>
 
         <div class="wordmark" id="wordmark" aria-hidden="true">
           <span class="wordmark__glow" id="wordmarkGlow"></span>
@@ -60,8 +62,6 @@
         </div>
 
         <!-- луна и её свет: единственный источник света на входе -->
-        <div class="moon-wrap" id="moonWrap"><span class="moon-glow" id="moonGlow"></span><img class="moon-hero" id="moonHero" src="img/moon.webp" alt="" width="260" height="260" decoding="async" fetchpriority="high"></div>
-        <div class="moonbeam" id="moonbeam" aria-hidden="true"></div>
 
         <!-- продукт в разрезе: семь слоёв -->
         <figure class="product product--cut" id="productCut" aria-label="Матрас ELUNA в разрезе: семь слоёв расходятся по скроллу">
@@ -141,6 +141,7 @@
           <button class="tab" role="tab" id="tab-layers" type="button" aria-controls="panel-layers" aria-selected="true">Слои</button>
           <button class="tab" role="tab" id="tab-materials" type="button" aria-controls="panel-materials" aria-selected="false" tabindex="-1">Материалы</button>
           <button class="tab" role="tab" id="tab-motion" type="button" aria-controls="panel-motion" aria-selected="false" tabindex="-1">Сон вдвоём</button>
+          <button class="tab" role="tab" id="tab-silence" type="button" aria-controls="panel-silence" aria-selected="false" tabindex="-1">Тишина</button>
         </div>
 
         <div class="panel" id="panel-layers" role="tabpanel" aria-labelledby="tab-layers">
@@ -209,6 +210,43 @@
             </div>
           </div>
         </div>
+
+        <div class="panel" id="panel-silence" role="tabpanel" aria-labelledby="tab-silence" hidden>
+          <div class="silence">
+            <div class="motion__head">
+              <div>
+                <p class="eyebrow"><span>Тишина</span><span class="dot"></span><span>Технология Silent Core</span></p>
+                <h3 class="motion__title">Ни одного звука.<br><em>Даже когда вы поворачиваетесь.</em></h3>
+              </div>
+              <div class="motion__copy">
+                <p class="motion__lead">Каждая пружина упакована в собственный карман из нетканого полотна — металл нигде не касается металла. Пенный периметр и прослойки HR гасят вибрацию, а чехол сшит без скрипящих швов. Матрас молчит все пятнадцать лет.</p>
+              </div>
+            </div>
+            <div class="waves" aria-hidden="true">
+              <figure class="wave">
+                <svg viewBox="0 0 640 120" preserveAspectRatio="none">
+                  <path class="wave__line wave__line--noisy" d="M0 50.5 L13 69.6 L27 67.8 L40 52.4 L53 59.9 L67 58.3 L80 65.4 L93 70.8 L107 44.2 L120 40.9 L133 74.0 L147 57.1 L160 71.6 L173 37.3 L187 57.5 L200 70.5 L213 46.8 L227 82.0 L240 80.1 L253 36.2 L267 35.7 L280 62.1 L293 82.7 L307 53.8 L320 45.3 L333 56.0 L347 35.6 L360 45.7 L373 56.8 L387 59.8 L400 46.6 L413 46.7 L427 46.4 L440 58.1 L453 50.2 L467 38.2 L480 75.0 L493 62.4 L507 66.0 L520 47.3 L533 79.2 L547 73.5 L560 46.4 L573 54.3 L587 67.2 L600 66.6 L613 72.8 L627 57.8 L640 68.6" fill="none">
+                    <animate attributeName="d" dur="1.1s" repeatCount="indefinite" values="M0 50.5 L13 69.6 L27 67.8 L40 52.4 L53 59.9 L67 58.3 L80 65.4 L93 70.8 L107 44.2 L120 40.9 L133 74.0 L147 57.1 L160 71.6 L173 37.3 L187 57.5 L200 70.5 L213 46.8 L227 82.0 L240 80.1 L253 36.2 L267 35.7 L280 62.1 L293 82.7 L307 53.8 L320 45.3 L333 56.0 L347 35.6 L360 45.7 L373 56.8 L387 59.8 L400 46.6 L413 46.7 L427 46.4 L440 58.1 L453 50.2 L467 38.2 L480 75.0 L493 62.4 L507 66.0 L520 47.3 L533 79.2 L547 73.5 L560 46.4 L573 54.3 L587 67.2 L600 66.6 L613 72.8 L627 57.8 L640 68.6;M0 71.9 L13 72.4 L27 47.0 L40 47.1 L53 71.0 L67 68.1 L80 66.1 L93 52.8 L107 64.1 L120 64.3 L133 63.4 L147 45.3 L160 56.9 L173 55.2 L187 70.4 L200 83.6 L213 81.8 L227 62.2 L240 57.2 L253 48.3 L267 36.3 L280 35.7 L293 58.2 L307 50.6 L320 53.8 L333 80.4 L347 61.3 L360 63.1 L373 46.5 L387 35.9 L400 51.3 L413 42.1 L427 60.5 L440 83.7 L453 68.1 L467 45.5 L480 77.5 L493 72.8 L507 69.8 L520 76.4 L533 70.3 L547 70.9 L560 54.7 L573 76.5 L587 75.1 L600 49.5 L613 67.5 L627 66.0 L640 59.0;M0 53.2 L13 61.2 L27 56.2 L40 63.2 L53 64.1 L67 45.1 L80 42.5 L93 72.7 L107 50.6 L120 49.3 L133 80.7 L147 58.7 L160 74.9 L173 58.9 L187 66.5 L200 43.4 L213 66.5 L227 78.2 L240 61.2 L253 72.2 L267 68.8 L280 37.5 L293 73.4 L307 64.7 L320 49.7 L333 35.6 L347 78.9 L360 58.6 L373 71.2 L387 79.2 L400 70.7 L413 80.8 L427 54.9 L440 74.3 L453 57.4 L467 79.8 L480 76.8 L493 42.6 L507 44.8 L520 48.6 L533 78.2 L547 57.6 L560 64.6 L573 53.2 L587 60.2 L600 56.5 L613 55.6 L627 62.4 L640 62.2;M0 50.5 L13 69.6 L27 67.8 L40 52.4 L53 59.9 L67 58.3 L80 65.4 L93 70.8 L107 44.2 L120 40.9 L133 74.0 L147 57.1 L160 71.6 L173 37.3 L187 57.5 L200 70.5 L213 46.8 L227 82.0 L240 80.1 L253 36.2 L267 35.7 L280 62.1 L293 82.7 L307 53.8 L320 45.3 L333 56.0 L347 35.6 L360 45.7 L373 56.8 L387 59.8 L400 46.6 L413 46.7 L427 46.4 L440 58.1 L453 50.2 L467 38.2 L480 75.0 L493 62.4 L507 66.0 L520 47.3 L533 79.2 L547 73.5 L560 46.4 L573 54.3 L587 67.2 L600 66.6 L613 72.8 L627 57.8 L640 68.6" />
+                  </path>
+                </svg>
+                <figcaption><span class="num">01</span>Обычный пружинный блок<span class="spec">скрип, вибрация</span></figcaption>
+              </figure>
+              <figure class="wave wave--eluna">
+                <svg viewBox="0 0 640 120" preserveAspectRatio="none">
+                  <path class="wave__line wave__line--calm" d="M0 59.8 L13 59.6 L27 60.2 L40 59.4 L53 60.1 L67 59.8 L80 59.3 L93 60.0 L107 59.2 L120 59.9 L133 59.2 L147 59.2 L160 59.8 L173 60.7 L187 59.2 L200 59.4 L213 60.3 L227 61.0 L240 60.2 L253 59.8 L267 61.1 L280 58.9 L293 60.9 L307 59.5 L320 59.1 L333 59.1 L347 59.5 L360 60.8 L373 59.2 L387 60.2 L400 60.3 L413 59.7 L427 60.1 L440 59.0 L453 59.1 L467 59.4 L480 60.4 L493 59.9 L507 59.6 L520 60.2 L533 59.9 L547 59.7 L560 60.5 L573 60.3 L587 59.6 L600 60.1 L613 60.0 L627 60.5 L640 60.3" fill="none">
+                    <animate attributeName="d" dur="3.2s" repeatCount="indefinite" values="M0 59.8 L13 59.6 L27 60.2 L40 59.4 L53 60.1 L67 59.8 L80 59.3 L93 60.0 L107 59.2 L120 59.9 L133 59.2 L147 59.2 L160 59.8 L173 60.7 L187 59.2 L200 59.4 L213 60.3 L227 61.0 L240 60.2 L253 59.8 L267 61.1 L280 58.9 L293 60.9 L307 59.5 L320 59.1 L333 59.1 L347 59.5 L360 60.8 L373 59.2 L387 60.2 L400 60.3 L413 59.7 L427 60.1 L440 59.0 L453 59.1 L467 59.4 L480 60.4 L493 59.9 L507 59.6 L520 60.2 L533 59.9 L547 59.7 L560 60.5 L573 60.3 L587 59.6 L600 60.1 L613 60.0 L627 60.5 L640 60.3;M0 59.7 L13 60.6 L27 59.5 L40 60.3 L53 59.4 L67 59.6 L80 60.8 L93 59.5 L107 60.3 L120 59.9 L133 59.9 L147 60.0 L160 59.4 L173 60.7 L187 59.1 L200 59.4 L213 58.9 L227 59.5 L240 59.8 L253 60.9 L267 59.7 L280 59.1 L293 59.4 L307 61.2 L320 59.0 L333 60.3 L347 59.7 L360 60.4 L373 59.6 L387 60.4 L400 60.0 L413 60.3 L427 60.9 L440 60.2 L453 59.2 L467 59.1 L480 60.9 L493 60.0 L507 59.4 L520 60.8 L533 60.1 L547 60.4 L560 60.6 L573 59.7 L587 59.8 L600 60.5 L613 59.5 L627 60.3 L640 59.5;M0 60.0 L13 59.8 L27 59.5 L40 60.5 L53 59.3 L67 60.0 L80 60.7 L93 59.3 L107 60.1 L120 60.2 L133 59.1 L147 59.8 L160 60.4 L173 59.9 L187 60.5 L200 59.2 L213 59.4 L227 59.1 L240 60.0 L253 61.0 L267 60.2 L280 60.7 L293 59.7 L307 60.6 L320 59.0 L333 59.5 L347 60.4 L360 60.5 L373 59.8 L387 59.0 L400 59.5 L413 59.3 L427 59.5 L440 60.7 L453 59.4 L467 60.8 L480 60.8 L493 59.1 L507 59.8 L520 60.0 L533 59.1 L547 59.9 L560 60.7 L573 59.4 L587 60.1 L600 59.5 L613 60.1 L627 60.5 L640 59.6;M0 59.8 L13 59.6 L27 60.2 L40 59.4 L53 60.1 L67 59.8 L80 59.3 L93 60.0 L107 59.2 L120 59.9 L133 59.2 L147 59.2 L160 59.8 L173 60.7 L187 59.2 L200 59.4 L213 60.3 L227 61.0 L240 60.2 L253 59.8 L267 61.1 L280 58.9 L293 60.9 L307 59.5 L320 59.1 L333 59.1 L347 59.5 L360 60.8 L373 59.2 L387 60.2 L400 60.3 L413 59.7 L427 60.1 L440 59.0 L453 59.1 L467 59.4 L480 60.4 L493 59.9 L507 59.6 L520 60.2 L533 59.9 L547 59.7 L560 60.5 L573 60.3 L587 59.6 L600 60.1 L613 60.0 L627 60.5 L640 60.3" />
+                  </path>
+                </svg>
+                <figcaption><span class="num">02</span>ELUNA Silent Core<span class="spec">0 дБ</span></figcaption>
+              </figure>
+            </div>
+            <ul class="silence__points">
+              <li><b>Карман вместо каркаса</b><span>1 200 пружин, каждая в своём чехле из нетканого полотна. Нет общей рамы — нечему скрипеть.</span></li>
+              <li><b>Пена гасит вибрацию</b><span>Слои HR и армированный периметр работают как демпфер: движение не превращается в звук.</span></li>
+              <li><b>Тише дыхания</b><span>Пружинный блок ELUNA не издаёт звука. Для сравнения, спокойное дыхание — около 10 дБ.</span></li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -220,6 +258,7 @@
         <div class="section-head section-head--tight reveal">
           <p class="eyebrow"><span>Линейка</span><span class="dot"></span><span>Четыре модели</span></p>
           <h2 class="section-title" id="modelsTitle">Выберите свою модель.<br><em>Три матраса и один — под вас.</em></h2>
+          <p class="section-note">Все цены — за размер 1600 × 2000 мм.</p>
         </div>
 
         <div class="mrail reveal" id="mrail" style="--lx: 62%; --li: .9">
@@ -237,7 +276,7 @@
                 <li>Натуральный кокос 10 мм</li>
                 <li>Двусторонний: зима / лето</li>
               </ul>
-              <div class="mcard__price"><span class="mcard__sum" data-price="air">— ₸</span><span class="mcard__night" data-night="air">≈ — ₸ за ночь</span></div>
+              <div class="mcard__price"><span class="mcard__sum" data-price="air">— ₸</span></div>
               <div class="mcard__actions">
                 <a class="button button--ghost" data-wa="air" href="#" target="_blank" rel="noopener">Заказать</a>
                 <button type="button" class="more" data-open="mdl-air">Подробнее</button>
@@ -255,7 +294,7 @@
                 <li>Два слоя натурального кокоса: 10 и 20 мм</li>
                 <li>Армированные пружины</li>
               </ul>
-              <div class="mcard__price"><span class="mcard__sum" data-price="balance">— ₸</span><span class="mcard__night" data-night="balance">≈ — ₸ за ночь</span></div>
+              <div class="mcard__price"><span class="mcard__sum" data-price="balance">— ₸</span></div>
               <div class="mcard__actions">
                 <a class="button button--ghost" data-wa="balance" href="#" target="_blank" rel="noopener">Заказать</a>
                 <button type="button" class="more" data-open="mdl-balance">Подробнее</button>
@@ -274,7 +313,7 @@
                 <li>Натуральный латекс 20 мм — микромассажный эффект</li>
                 <li>Натуральный кокос 20 мм — отвечает за жёсткость</li>
               </ul>
-              <div class="mcard__price mcard__price--prime"><span class="mcard__sum" data-price="prime">— ₸</span><span class="mcard__night" data-night="prime">≈ — ₸ за ночь</span></div>
+              <div class="mcard__price mcard__price--prime"><span class="mcard__sum" data-price="prime">— ₸</span></div>
               <div class="mcard__actions">
                 <a class="button button--primary" data-wa="prime" href="#" target="_blank" rel="noopener">Заказать Prime</a>
                 <button type="button" class="more" data-open="mdl-prime">Подробнее</button>
@@ -292,7 +331,7 @@
                 <li>Срок изготовления — 21 день</li>
                 <li>Гарантия 5 лет · срок службы 15+ лет</li>
               </ul>
-              <div class="mcard__price"><span class="mcard__sum" data-price="royal">— ₸</span><span class="mcard__night mcard__note">для размера 1800 × 2000 мм</span></div>
+              <div class="mcard__price"><span class="mcard__sum" data-price="royal">— ₸</span></div>
               <div class="mcard__actions">
                 <a class="button button--ghost" data-wa="royal" href="#" target="_blank" rel="noopener">Обсудить</a>
                 <button type="button" class="more" data-open="mdl-royal">Подробнее</button>
@@ -311,6 +350,7 @@
           <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M12 3l-2 2M12 3l2 2M12 21l-2-2M12 21l2-2M5 12h14"/><circle cx="12" cy="12" r="3.5"/></svg><b>Двусторонний</b><small>Сторона «зима» и сторона «лето»</small></li>
           <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg><b>Гарантия 5 лет</b><small>Срок службы 15+ лет</small></li>
           <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg><b>Silent Motion</b><small>Партнёр не чувствует, когда вы ворочаетесь</small></li>
+          <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4Z"/><path d="M17 9l4 6M21 9l-4 6"/></svg><b>Ни звука</b><small>Пружины в карманах не касаются друг друга — матрас не скрипит</small></li>
           <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18"/><path d="M8 6h8M8 10h8M8 14h8M8 18h8"/></svg><b>Ортопедическая поддержка</b><small>Позвоночник остаётся в своём естественном положении</small></li>
         </ul>
       </div>
@@ -538,7 +578,7 @@
       <p class="eyebrow"><span>Eluna Royal</span><span class="dot"></span><span>Флагман · индивидуально</span></p>
       <h2 class="mdl__title" id="mdl-royal-title">Размер и конфигурация под вас.</h2>
       <p class="mdl__price" data-price="royal">— ₸</p>
-      <p class="mdl__note">Стоимость указана для размера 1800 × 2000 мм. Для других размеров цена может отличаться.</p>
+      <p class="mdl__note">Стоимость указана для размера 1600 × 2000 мм. Для других размеров цена может отличаться.</p>
     </header>
     <details class="acc" open><summary>Характеристики</summary>
       <div class="acc__body">
@@ -558,7 +598,7 @@
       <div class="acc__body"><p>Подбирается индивидуально: мягче, жёстче или разная на двух половинах матраса.</p></div>
     </details>
     <details class="acc"><summary>Размеры и цена</summary>
-      <div class="acc__body"><p><span data-price="royal">— ₸</span> для размера 1800 × 2000 мм. Другие размеры и конфигурации — по запросу.</p></div>
+      <div class="acc__body"><p><span data-price="royal">— ₸</span> для размера 1600 × 2000 мм. Другие размеры и конфигурации — по запросу.</p></div>
     </details>
     <footer class="mdl__actions"><a class="button button--ghost" data-wa="royal" href="#" target="_blank" rel="noopener">Обсудить Royal</a></footer>
   </dialog>

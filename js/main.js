@@ -87,7 +87,7 @@
     { key: 'gel',     cm: 4,   num: '03', name: 'Memory-пена с гелем',    text: 'Запоминает контур тела за 4–6 секунд. Гелевые микрокапсулы отводят тепло к перфорированному латексу выше.', density: '50 кг/м³', role: 'Контур тела' },
     { key: 'coir',    cm: 3,   num: '04', name: 'Кокосовая койра',        text: 'Волокно, пропитанное латексом. Ортопедическая опора без ощущения доски — держит спину ровно, пока латекс держит плечи.', density: '110 кг/м³', role: 'Опора' },
     { key: 'hr',      cm: 4,   num: '05', name: 'Пена HR',                text: 'Высокоэластичная пена распределяет нагрузку между койрой и пружинами, чтобы ни одна точка не продавливалась первой.', density: '40 кг/м³', role: 'Распределение' },
-    { key: 'springs', cm: 12,  num: '06', name: 'Независимые пружины',    text: '1 200 пружин в индивидуальных карманах, семь зон жёсткости. Каждая работает сама по себе — партнёр не почувствует, как вы повернулись.', density: '500 шт/м²', role: 'Независимость' },
+    { key: 'springs', cm: 12,  num: '06', name: 'Независимые пружины',    text: '1 200 пружин в индивидуальных карманах, семь зон жёсткости. Каждая работает сама по себе — партнёр не почувствует, как вы повернулись. Карманы из нетканого полотна: металл не касается металла, матрас не скрипит.', density: '500 шт/м²', role: 'Независимость' },
     { key: 'base',    cm: 2.5, num: '07', name: 'Армированное основание', text: 'Плотная пена с усиленным периметром. Матрас не «сползает» к краям и держит форму все пятнадцать лет гарантии.', density: '35 кг/м³', role: 'Геометрия' },
   ];
 
@@ -120,23 +120,23 @@
      метеор — короткий rAF, пока летит. Нет вечного цикла.
      ------------------------------------------------------------------------ */
   const stars = (function stars() {
-    const base = document.getElementById('stars');
-    if (!base) return { setVisible() {} };
+    const far = document.getElementById('stars');
+    if (!far) return { setVisible() {} };
+    // ближний слой (яркие звёзды с ореолом) и мерцание — отдельные canvas
+    const near = document.createElement('canvas');
+    near.className = 'stars stars--near'; near.setAttribute('aria-hidden', 'true');
     const twinkle = document.createElement('canvas');
-    twinkle.className = 'stars stars--twinkle';
-    twinkle.setAttribute('aria-hidden', 'true');
-    base.after(twinkle);
-    const bctx = base.getContext('2d');
-    const tctx = twinkle.getContext('2d');
-    // две плитки неба: дальний слой (пыль, слабые звёзды) и ближний (яркие звёзды с ореолом)
-    const far = document.createElement('canvas'), near = document.createElement('canvas');
-    const fctx = far.getContext('2d'), nctx = near.getContext('2d');
+    twinkle.className = 'stars stars--twinkle'; twinkle.setAttribute('aria-hidden', 'true');
+    far.after(near); near.after(twinkle);
+    const fctx = far.getContext('2d'), nctx = near.getContext('2d'), tctx = twinkle.getContext('2d');
+    // узор рисуется один раз во временный canvas и кладётся дважды подряд — слой шириной 2 экрана
+    const tile = document.createElement('canvas'); const tctx0 = tile.getContext('2d');
 
-    let w = 0, h = 0, H = 0, dpr = 1, flick = [], meteors = [], visible = true, meteorRaf = 0, driftRaf = 0, lastT = 0, lastDraw = 0, lastTw = 0;
+    let w = 0, h = 0, H = 0, dpr = 1, flick = [], meteors = [], visible = true, meteorRaf = 0, driftRaf = 0, lastT = 0, scrollY0 = 0;
     const OVER = 1.18;
-    // дрейф неба, px/с: ближний слой заметно быстрее дальнего — появляется глубина
-    const DRIFT = { far: { x: -3.4, y: 1.0 }, near: { x: -10, y: 3.4 } };
-    const off = { far: { x: 0, y: 0 }, near: { x: 0, y: 0 } };
+    // дрейф неба, px/с: ближний слой заметно быстрее дальнего — появляется глубина. Только transform: ни одной перерисовки.
+    const DRIFT = { far: -3.4, near: -10 };
+    const off = { far: 0, near: 0, farY: 0, nearY: 0 };
     const wrap = (v, m) => ((v % m) + m) % m;
     const tint = (t) => {
       if (t < 0.25) return [196, 208, 255];
@@ -147,72 +147,74 @@
     const rnd = (a, b) => a + Math.random() * (b - a);
     const density = () => (TIER === 'high' ? 3200 : TIER === 'medium' ? 5000 : 8000) * (isMobile() ? 1.56 : 1);
 
-    function paintTiles() {
-      far.width = near.width = Math.round(w * dpr); far.height = near.height = Math.round(H * dpr);
-      fctx.setTransform(dpr, 0, 0, dpr, 0, 0); nctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      fctx.clearRect(0, 0, w, H); nctx.clearRect(0, 0, w, H);
+    function paintLayer(ctx, kind) {
+      tile.width = Math.round(w * dpr); tile.height = Math.round(H * dpr);
+      tctx0.setTransform(dpr, 0, 0, dpr, 0, 0); tctx0.clearRect(0, 0, w, H);
       const mob = isMobile();
-      const band = Math.round((w * H) / (mob ? 2400 : 1400) / (TIER === 'low' ? 2 : 1));
-      for (let i = 0; i < band; i++) {
-        const u = Math.random();
-        const g = (Math.random() + Math.random() + Math.random()) / 3 - 0.5;
-        const x = u * w, y = H * (0.85 - u * 0.55) + g * H * 0.42;
-        const c = tint(Math.random());
-        fctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${rnd(0.04, 0.16)})`;
-        fctx.fillRect(x, y, 1, 1);
+      if (kind === 'far') {
+        const band = Math.round((w * H) / (mob ? 2400 : 1400) / (TIER === 'low' ? 2 : 1));
+        for (let i = 0; i < band; i++) {
+          const u = Math.random();
+          const g = (Math.random() + Math.random() + Math.random()) / 3 - 0.5;
+          const x = u * w, y = H * (0.85 - u * 0.55) + g * H * 0.42;
+          const c = tint(Math.random());
+          tctx0.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${rnd(0.04, 0.16)})`;
+          tctx0.fillRect(x, y, 1, 1);
+        }
       }
       const n = Math.round((w * H) / density());
       for (let i = 0; i < n; i++) {
-        const x = Math.random() * w, y = Math.random() * H;
         const m = Math.pow(Math.random(), 3.2);
+        if ((m > 0.5) !== (kind === 'near')) continue;
+        const x = Math.random() * w, y = Math.random() * H;
         const r = 0.3 + m * 1.6, a = 0.25 + m * 0.7;
         const c = tint(Math.random());
-        const ctx = m > 0.5 ? nctx : fctx;
         if (m > 0.72) {
-          const g = ctx.createRadialGradient(x, y, 0, x, y, r * 9);
+          const g = tctx0.createRadialGradient(x, y, 0, x, y, r * 9);
           g.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},${0.2 * m})`);
           g.addColorStop(1, 'rgba(0,0,0,0)');
-          ctx.fillStyle = g;
-          ctx.beginPath(); ctx.arc(x, y, r * 9, 0, Math.PI * 2); ctx.fill();
+          tctx0.fillStyle = g;
+          tctx0.beginPath(); tctx0.arc(x, y, r * 9, 0, Math.PI * 2); tctx0.fill();
           if (m > 0.9) {
-            ctx.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},${0.18 * m})`;
-            ctx.lineWidth = 0.6;
-            ctx.beginPath();
-            ctx.moveTo(x - r * 7, y); ctx.lineTo(x + r * 7, y);
-            ctx.moveTo(x, y - r * 7); ctx.lineTo(x, y + r * 7);
-            ctx.stroke();
+            tctx0.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},${0.18 * m})`;
+            tctx0.lineWidth = 0.6;
+            tctx0.beginPath();
+            tctx0.moveTo(x - r * 7, y); tctx0.lineTo(x + r * 7, y);
+            tctx0.moveTo(x, y - r * 7); tctx0.lineTo(x, y + r * 7);
+            tctx0.stroke();
           }
         }
-        ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${a})`;
-        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+        tctx0.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+        tctx0.beginPath(); tctx0.arc(x, y, r, 0, Math.PI * 2); tctx0.fill();
       }
-      flick = Array.from({ length: Math.round(w / (mob ? 56 : 32)) }, () => ({
-        x: Math.random() * w, y: Math.random() * h,
-        r: rnd(0.6, 1.4), c: tint(Math.random()),
-        ph: Math.random() * Math.PI * 2, sp: rnd(0.4, 1.3), a: rnd(0.35, 0.8),
-      }));
-    }
-
-    // плитка повторяется по горизонтали (две отрисовки), по вертикали только качается — без шва
-    function drawTile(tile, o) {
-      const x = wrap(o.x, w) - w;
-      bctx.drawImage(tile, 0, 0, tile.width, tile.height, x, o.y, w, H);
-      bctx.drawImage(tile, 0, 0, tile.width, tile.height, x + w, o.y, w, H);
-    }
-    function compose() {
-      bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      bctx.clearRect(0, 0, w, H);
-      drawTile(far, off.far);
-      drawTile(near, off.near);
+      const el = ctx.canvas;
+      el.width = tile.width * 2; el.height = tile.height;
+      el.style.width = `${w * 2}px`; el.style.height = `${H}px`;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(tile, 0, 0); ctx.drawImage(tile, tile.width, 0);
     }
 
     function size(full) {
       dpr = Math.min(1.5, window.devicePixelRatio || 1);
       w = window.innerWidth; h = window.innerHeight; H = Math.round(h * OVER);
       twinkle.width = w * dpr; twinkle.height = h * dpr;
-      if (full) { base.width = w * dpr; base.height = H * dpr; base.style.height = `${H}px`; paintTiles(); }
-      compose();
+      if (full) {
+        paintLayer(fctx, 'far'); paintLayer(nctx, 'near');
+        flick = Array.from({ length: Math.round(w / (isMobile() ? 56 : 32)) }, () => ({
+          x: Math.random() * w, y: Math.random() * h,
+          r: rnd(0.6, 1.4), c: tint(Math.random()),
+          ph: Math.random() * Math.PI * 2, sp: rnd(0.4, 1.3), a: rnd(0.35, 0.8),
+        }));
+      }
+      place();
       drawTwinkle(performance.now());
+    }
+
+    // положение слоёв: дрейф по x (с переносом в пределах ширины экрана), качание по y, параллакс скролла
+    function place() {
+      const sy = Math.min(H - h, scrollY0 * 0.035);
+      far.style.transform = `translate3d(${(wrap(off.far, w) - w).toFixed(2)}px, ${(off.farY - sy).toFixed(2)}px, 0)`;
+      near.style.transform = `translate3d(${(wrap(off.near, w) - w).toFixed(2)}px, ${(off.nearY - sy * 1.3).toFixed(2)}px, 0)`;
     }
 
     function drawTwinkle(now) {
@@ -220,7 +222,7 @@
       tctx.clearRect(0, 0, w, h);
       for (const p of flick) {
         const k = 0.45 + 0.55 * Math.sin(now * 0.0011 * p.sp + p.ph);
-        const x = wrap(p.x + off.near.x, w), y = p.y + off.near.y;
+        const x = wrap(p.x + off.near, w), y = p.y + off.nearY;
         tctx.fillStyle = `rgba(${p.c[0]},${p.c[1]},${p.c[2]},${p.a * k})`;
         tctx.beginPath(); tctx.arc(x, y, p.r * (0.8 + 0.4 * k), 0, Math.PI * 2); tctx.fill();
       }
@@ -237,19 +239,15 @@
       }
     }
 
-    // дрейф: пока сцена на экране и вкладка активна. Только compositor-дешёвые drawImage;
-    // на средних и слабых устройствах — 30 кадров/с
+    // дрейф: пока сцена на экране и вкладка активна; на каждом кадре — только два transform
     function driftLoop(now) {
       driftRaf = 0;
       if (!visible || document.hidden || reduceMotion) { lastT = 0; return; }
       const dt = lastT ? Math.min(0.1, (now - lastT) / 1000) : 0; lastT = now;
-      off.far.x += DRIFT.far.x * dt; off.near.x += DRIFT.near.x * dt;
-      off.far.y = Math.sin(now * 0.00004) * h * 0.004 + DRIFT.far.y * 0;
-      off.near.y = Math.sin(now * 0.00007 + 1) * h * 0.014;
-      const step = TIER === 'high' ? 0 : 42;
-      if (now - lastDraw >= step) { compose(); lastDraw = now; }
-      const tw = meteors.length ? 0 : (TIER === 'high' ? 40 : 90);
-      if (now - lastTw >= tw) { drawTwinkle(now); lastTw = now; }
+      off.far += DRIFT.far * dt; off.near += DRIFT.near * dt;
+      off.farY = Math.sin(now * 0.00004) * h * 0.004;
+      off.nearY = Math.sin(now * 0.00007 + 1) * h * 0.014;
+      place();
       driftRaf = requestAnimationFrame(driftLoop);
     }
     function startDrift() {
@@ -258,7 +256,7 @@
       driftRaf = requestAnimationFrame(driftLoop);
     }
 
-    // метеор без дрейфа (reduced-motion): короткий цикл, заканчивается вместе со штрихом
+    // метеор: короткий цикл, заканчивается вместе со штрихом
     function meteorLoop(now) {
       meteorRaf = 0;
       if (!meteors.length) return;
@@ -269,24 +267,19 @@
     function tick() {
       if (document.hidden || !visible) return;
       const now = performance.now();
-      if (now > nextMeteor) {
+      if (now > nextMeteor && TIER !== 'low') {
         meteors.push({ x: rnd(0.1, 0.9) * w, y: rnd(0.05, 0.5) * h, vx: rnd(120, 240) * (Math.random() < 0.5 ? -1 : 1), vy: rnd(60, 130), t0: now });
         nextMeteor = now + rnd(5000, 12000);
-        if (!driftRaf && !meteorRaf) meteorRaf = requestAnimationFrame(meteorLoop);
+        if (!meteorRaf) meteorRaf = requestAnimationFrame(meteorLoop);
       }
-      if (!driftRaf && !meteorRaf) drawTwinkle(now);
+      if (!meteorRaf) drawTwinkle(now);
     }
 
-    // параллакс: статичный слой чуть отстаёт от скролла
     let ticking = false;
     function onScroll() {
       if (ticking || !visible) return;
       ticking = true;
-      requestAnimationFrame(() => {
-        const y = Math.min(H - h, window.scrollY * 0.035);
-        base.style.transform = `translate3d(0, ${-y}px, 0)`;
-        ticking = false;
-      });
+      requestAnimationFrame(() => { scrollY0 = window.scrollY; place(); ticking = false; });
     }
 
     // фон рисуем в первом кадре — после разметки, до старта интро
@@ -310,7 +303,7 @@
     wmS: 1, wmY: 0, wmO: 1,
     lightDrift: 0,
   };
-  const I = { dark: 1, eclipse: 0, wmO: 1, cueO: 0, moon: 0, beam: 0, glow: 0 };
+  const I = { dark: 1, eclipse: 0, wmO: 1, cueO: 0, moon: 0 };
   const P = { x: 0, y: 0 };
 
   const stageEl = document.getElementById('stage');
@@ -321,10 +314,7 @@
   const productCut = document.getElementById('productCut');
   const seqSpot = document.getElementById('seqSpot');
   const cue = document.getElementById('cue');
-  const moonHero = document.getElementById('moonHero');
-  const moonGlow = document.getElementById('moonGlow');
-  const moonWrap = document.getElementById('moonWrap');
-  const moonbeam = document.getElementById('moonbeam');
+  const moonBig = document.getElementById('moonBig');
 
   /* ------------------------------------------------------------------------
      Разрез как последовательность кадров. Перерисовка только когда кадр,
@@ -370,9 +360,11 @@
     }
     return null;
   }
-  function dprSeq() { return Math.min(isMobile() ? 2 : 1.5, window.devicePixelRatio || 1); }
+  function dprSeq() { return Math.min(1.5, window.devicePixelRatio || 1); }
+  // геометрия кадра в device px относительно сцены; canvas имеет размер самого кадра (dw × dh), а не экрана
   function seqGeometry() {
-    const cw = seqCanvas.width, ch = seqCanvas.height;
+    const d = dprSeq();
+    const cw = Math.round(window.innerWidth * d), ch = Math.round(window.innerHeight * d);
     const mob = isMobile();
     const k = mob ? (cw / SEQ.w) * 1.22 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.76;
     const dw = SEQ.w * k, dh = SEQ.h * k;
@@ -380,9 +372,10 @@
   }
   function sizeSeq() {
     const d = dprSeq();
-    seqCanvas.width = Math.round(window.innerWidth * d);
-    seqCanvas.height = Math.round(window.innerHeight * d);
     const g = seqGeometry();
+    seqCanvas.width = Math.round(g.dw); seqCanvas.height = Math.round(g.dh);
+    seqCanvas.style.left = `${(g.dx / d).toFixed(1)}px`; seqCanvas.style.top = `${(g.dy / d).toFixed(1)}px`;
+    seqCanvas.style.width = `${(g.dw / d).toFixed(1)}px`; seqCanvas.style.height = `${(g.dh / d).toFixed(1)}px`;
     placeSeqLabels(g.dx / d, g.dy / d, g.dw / d, g.dh / d);
     seqDirty = true;
     if (S.cutO > 0.001) drawSeq();
@@ -396,31 +389,16 @@
   }
   function drawSeq() {
     if (!seqDirty || seqLoaded === 0) return;
-    const g = seqGeometry();
+    const cw = seqCanvas.width, ch = seqCanvas.height;
     const f = Math.min(1, Math.max(0, S.spread)) * (SEQ.count - 1);
     const i0 = Math.floor(f), t = f - i0;
     const a = nearestFrame(i0), b = frames[Math.min(SEQ.count - 1, i0 + 1)];
     seqCtx.fillStyle = '#000';
-    seqCtx.fillRect(0, 0, g.cw, g.ch);
+    seqCtx.fillRect(0, 0, cw, ch);
     seqCtx.globalAlpha = 1;
-    if (a) seqCtx.drawImage(a, g.dx, g.dy, g.dw, g.dh);
-    if (b && b !== a && t > 0.02) { seqCtx.globalAlpha = t; seqCtx.drawImage(b, g.dx, g.dy, g.dw, g.dh); seqCtx.globalAlpha = 1; }
+    if (a) seqCtx.drawImage(a, 0, 0, cw, ch);
+    if (b && b !== a && t > 0.02) { seqCtx.globalAlpha = t; seqCtx.drawImage(b, 0, 0, cw, ch); seqCtx.globalAlpha = 1; }
     seqDirty = false;
-  }
-
-  // позиция луны (= источника света) — из CSS-переменных --moon-x/--moon-y: одна ось для всего
-  const MOON = { x: 12, y: 18 };
-  function readMoon() {
-    const cs = getComputedStyle(root);
-    const x = parseFloat(cs.getPropertyValue('--moon-x')), y = parseFloat(cs.getPropertyValue('--moon-y'));
-    if (!Number.isNaN(x)) MOON.x = x; if (!Number.isNaN(y)) MOON.y = y;
-  }
-  function aimBeam() {
-    readMoon();
-    const mx = MOON.x / 100 * window.innerWidth, my = MOON.y / 100 * window.innerHeight;
-    const tx = 0.5 * window.innerWidth, ty = 0.58 * window.innerHeight;
-    const deg = (Math.atan2(tx - mx, -(ty - my)) * 180 / Math.PI + 360) % 360;
-    stageEl.style.setProperty('--beam-angle', `${(deg - 16).toFixed(1)}deg`);
   }
 
   /* подписи к слоям на последнем кадре разлёта */
@@ -469,18 +447,9 @@
     if (stageOff) return;
     const vw = window.innerWidth, vh = window.innerHeight;
 
-    // свет идёт из точки луны (+ указатель, + лёгкий дрейф по скроллу)
-    const lx = (MOON.x + P.x * 0.6) / 100, ly = (MOON.y - P.y * 0.5) / 100 + S.lightDrift;
-    Light.set('hero', lx, ly, 0.35 + 0.65 * I.beam);
-    const L = Light.get();
-    stageEl.style.setProperty('--lx', `${(L.x * 100).toFixed(2)}%`);
-    stageEl.style.setProperty('--ly', `${(L.y * 100).toFixed(2)}%`);
-    moonbeam.style.opacity = (I.beam * S.eclipse).toFixed(3);
-    moonHero.style.opacity = (I.moon * S.eclipse).toFixed(3);
-    moonGlow.style.opacity = (I.glow * S.eclipse).toFixed(3);
-    const mpx = `${(-P.x * 2.2).toFixed(2)}px`, mpy = `${(-P.y * 2).toFixed(2)}px`;
-    moonWrap.style.setProperty('--mpx', mpx); moonWrap.style.setProperty('--mpy', mpy);
-    moonbeam.style.setProperty('--mpx', mpx); moonbeam.style.setProperty('--mpy', mpy);
+    // большая луна за кольцом логотипа: проявляется в интро, уходит вместе с кольцом; лёгкий параллакс от указателя
+    moonBig.style.opacity = (I.moon * S.eclipse).toFixed(3);
+    moonBig.style.setProperty('--mpx', `${(-P.x * 3).toFixed(2)}px`); moonBig.style.setProperty('--mpy', `${(-P.y * 2.6).toFixed(2)}px`);
     navEl.style.setProperty('--brand-o', `${S.brand}`);
     exposure.style.opacity = Math.max(I.dark, S.dark);
     eclipse.style.opacity = I.eclipse * S.eclipse;
@@ -501,8 +470,8 @@
     cue.style.opacity = S.cueO * I.cueO;
   }
 
-  sizeSeq(); aimBeam();
-  resizeHooks.push(() => { sizeSeq(); aimBeam(); render(); });
+  sizeSeq();
+  resizeHooks.push(() => { sizeSeq(); render(); });
 
   // сцена вне экрана: анимации стоят, звёзды не мерцают, render не нужен; свет принадлежит сцене, пока она видна
   if ('IntersectionObserver' in window) {
@@ -517,7 +486,7 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden && !stageOff) render(); });
 
   /* ------------------------------------------------------------------------
-     Интро: луна всходит → ореол → логотип → луч → заголовок
+     Интро: луна проступает за кольцом → логотип → заголовок
      ------------------------------------------------------------------------ */
   const letters = wordmark.querySelectorAll('.wordmark__word span');
   const wmMark = document.getElementById('wordmarkMark');
@@ -535,16 +504,14 @@
   });
 
   intro
-    .to(I, { moon: 1, duration: 1.6, ease: 'power2.out' }, 0.2)
-    .to(moonHero, { scale: 1, y: 0, duration: 2.2, ease: 'power2.out' }, 0.2)
-    .to(I, { glow: 1, duration: 1.6, ease: 'power2.out' }, 0.5)
+    .to(I, { moon: 1, duration: 2.0, ease: 'power2.out' }, 0.3)
+    .fromTo(moonBig, { scale: 0.96 }, { scale: 1, duration: 2.4, ease: 'power2.out' }, 0.3)
     .to(I, { dark: 0, duration: 1.4, ease: 'power2.out' }, 1.2)
     .to(wmMark, { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }, 0.9)
     .to(wmGlow, { opacity: 1, duration: 1.0, ease: 'power2.inOut' }, 1.0)
     .to(wmGlow, { opacity: 0, duration: 1.6, ease: 'power2.inOut' }, 2.3)
     .to(letters, { opacity: 1, y: 0, duration: 1.2, stagger: 0.06, ease: 'power3.out' }, 1.2)
     .to(wmSub, { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' }, 2.0)
-    .to(I, { beam: 1, duration: 1.6, ease: 'power1.inOut' }, 1.6)
     .to(I, { eclipse: 1, duration: 1.3 }, 2.4)
     .to(heroEyebrow, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 3.2)
     .to(heroLines, { y: 0, duration: 1.2, stagger: 0.12, ease: 'power3.out' }, 3.3)
@@ -656,7 +623,7 @@
       scrollTrigger: {
         trigger: stageEl, start: 'top top',
         end: END,
-        pin: true, scrub: D ? 0.5 : 0.4, anticipatePin: 1, invalidateOnRefresh: true,
+        pin: true, scrub: D ? 0.5 : 0.25, anticipatePin: 1, invalidateOnRefresh: true,
         onUpdate: (self) => {
           if (!D) autoPlayLayers(self);
           if (V === '1') { if (self.progress >= 0.10 && self.progress < 0.52) cineStart(); else cineStop(); }
@@ -970,8 +937,8 @@
      Линейка: цены, модели, рельс света, модальные окна, размеры
      Цены меняются только здесь. null → «— ₸».
      ------------------------------------------------------------------------ */
-  // ₸. Air / Balance / Prime — за базовый размер 1600 × 2000; Royal — диапазон для 1800 × 2000.
-  const PRICES = { air: 125000, balance: 220000, prime: 280000, royal: { from: 350000, to: 480000 } };
+  // ₸. Все цены — за размер 1600 × 2000 мм (Royal — фиксированная цена флагмана).
+  const PRICES = { air: 125000, balance: 220000, prime: 280000, royal: 1250000 };
   const OLD_PRICES = { prime: 350000 };   // полная цена до скидки; нет ключа → скидки нет
   const discountPct = (k) => (OLD_PRICES[k] ? Math.round((1 - PRICES[k] / OLD_PRICES[k]) * 100) : 0);
   const WHATSAPP = '77079550808';
@@ -1017,7 +984,7 @@
         { kind: 'cotton',  cm: 1,   name: 'Чехол из 100 % хлопка' },
       ],
     },
-    royal: { name: 'Eluna Royal', layers: null, dims: '1800 × 2000 мм' },
+    royal: { name: 'Eluna Royal', layers: null, dims: '1600 × 2000 мм' },
   };
   // уровни: метка и шкала света (1..4) — для карточек и силы прожектора
   const TIERS = [
@@ -1035,13 +1002,11 @@
     if (compact) return `<s class="price-old">${fmtMoney(old)}</s> → ${fmtMoney(p)} ₸`;
     return `<s class="price-old">${fmtMoney(old)} ₸</s><span class="price-new">${fmtMoney(p)} ₸</span><span class="save">−${discountPct(k)} %</span>`;
   };
-  const perNight = (p) => (p == null || typeof p === 'object' ? '' : `≈ ${fmtMoney(p / (15 * 365))} ₸ за ночь`);
   const waLink = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
   (function lineup() {
     document.querySelectorAll('[data-price]').forEach((el) => { el.innerHTML = priceHTML(el.dataset.price, el.hasAttribute('data-compact')); });
-    document.querySelectorAll('[data-night]').forEach((el) => { el.textContent = perNight(PRICES[el.dataset.night]); });
     document.querySelectorAll('[data-wa]').forEach((a) => { const m = MODELS[a.dataset.wa]; if (m) a.href = waLink(`Здравствуйте, интересует ${m.name}`); });
 
     // метки уровня
