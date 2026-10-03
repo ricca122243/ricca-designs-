@@ -1,7 +1,7 @@
 /* ==========================================================================
    ELUNA — сцена, свет, скролл, линейка
    Структура: качество устройства → свет (общий контроллер) → звёзды → сцена
-   (интро, скролл, WebGL-луна) → технология → модели (рельс, модальные окна,
+   (интро, скролл, луна) → технология → модели (рельс, модальные окна,
    размеры) → доставка → прочее. Все resize-обработчики — через один конвейер.
    ========================================================================== */
 (() => {
@@ -39,8 +39,8 @@
   mq.addEventListener('change', (e) => { mobile = e.matches; onResize(true); });
 
   /* ------------------------------------------------------------------------
-     Уровень качества: HIGH / MEDIUM / LOW. LOW — без WebGL (CSS-свет),
-     без мерцания звёзд и метеоров, кадры разлёта 1280×720.
+     Уровень качества: HIGH / MEDIUM / LOW. LOW — без мерцания звёзд
+     и метеоров, кадры разлёта 1280×720.
      ------------------------------------------------------------------------ */
   function probeGL(force) {
     try {
@@ -53,8 +53,8 @@
     const q = params.get('gl');
     if (q === 'off') return 'low';
     if (reduceMotion) return 'low';
-    if (!window.Moonlight || !probeGL(q === 'force')) return 'low';
     if (q === 'force') return 'high';
+    if (!probeGL(false)) return 'low';
     const mem = navigator.deviceMemory || 4, cores = navigator.hardwareConcurrency || 4;
     const dpr = window.devicePixelRatio || 1, w = window.innerWidth;
     const save = navigator.connection && navigator.connection.saveData;
@@ -248,14 +248,13 @@
      render() их сводит — так они никогда не спорят между собой.
      ------------------------------------------------------------------------ */
   const S = {
-    lr: 1, heroS: 1, heroY: 0, heroExp: 1, rx: 0, ry: 0,
     cutO: 0, cutExp: 1, cutS: 1.04, cutX: 0, cutY: 0,
     spread: 0, focus: -1,
     dark: 0, brand: 0, eclipse: 1, cueO: 1,
     wmS: 1, wmY: 0, wmO: 1,
     lightDrift: 0,
   };
-  const I = { dark: 1, lr: 0, exp: 0, eclipse: 0, wmO: 1, cueO: 0, moon: 0, beam: 0, glow: 0, lift: 4, heroS: 0.97 };
+  const I = { dark: 1, eclipse: 0, wmO: 1, cueO: 0, moon: 0, beam: 0, glow: 0 };
   const P = { x: 0, y: 0 };
 
   const stageEl = document.getElementById('stage');
@@ -263,10 +262,6 @@
   const wordmark = document.getElementById('wordmark');
   const exposure = document.getElementById('exposure');
   const eclipse = document.getElementById('eclipse');
-  const productHero = document.getElementById('productHero');
-  const productMedia = document.getElementById('productMedia');
-  const heroImg = document.getElementById('heroImg');
-  const heroGlCanvas = document.getElementById('heroGl');
   const productCut = document.getElementById('productCut');
   const cue = document.getElementById('cue');
   const moonHero = document.getElementById('moonHero');
@@ -403,51 +398,8 @@
   }
 
   /* ------------------------------------------------------------------------
-     WebGL-луна: фото как текстура + карта нормалей, свет из позиции луны
-     ------------------------------------------------------------------------ */
-  let GL = null, heroSrc = '';
-  // карта нормалей посчитана по ландшафтному мастеру 3840×2142; портретный кроп 9:16 берёт из неё полосу вокруг 52 %
-  const MASTER_ASPECT = 3840 / 2142;
-  function nrmMapFor(src) {
-    if (!/portrait/.test(src || '')) return { nrmU0: 0, nrmDu: 1 };
-    const du = (9 / 16) / MASTER_ASPECT;
-    return { nrmU0: Math.max(0, Math.min(1 - du, 0.52 - du / 2)), nrmDu: du };
-  }
-  function glCover() { return isMobile() ? { posX: 0.52, posY: 0.60 } : { posX: 0.50, posY: 0.56 }; }
-  function glScale(t) { return t === 'high' ? Math.min(window.devicePixelRatio || 1, 1.5) : 1; }
-  function dropGL() {
-    if (GL) { GL.destroy(); GL = null; }
-    productHero.classList.remove('has-gl');
-    TIER = 'low'; root.dataset.tier = TIER;
-    render();
-  }
-  function initGL() {
-    if (TIER === 'low' || !window.Moonlight || GL) return;
-    if (!(heroImg.complete && heroImg.naturalWidth)) return;
-    const inst = window.Moonlight.create({
-      canvas: heroGlCanvas, img: heroImg, tier: TIER,
-      normalSrc: TIER === 'high' ? 'img/hero-normal-2048.webp' : 'img/hero-normal.webp',
-      scale: glScale(TIER), cover: glCover(), force: params.get('gl') === 'force',
-      onFallback: dropGL,
-    });
-    if (!inst) { TIER = 'low'; root.dataset.tier = TIER; return; }
-    GL = inst;
-    GL.setTier(TIER);
-    heroSrc = heroImg.currentSrc;
-    GL.set(nrmMapFor(heroSrc));
-    GL.resize(stageEl.clientWidth || window.innerWidth, stageEl.clientHeight || window.innerHeight);
-    productHero.classList.add('has-gl');
-    render();
-  }
-  function setTier(t) {
-    TIER = t; root.dataset.tier = t;
-    if (t === 'low') { dropGL(); return; }
-    if (GL) { GL.setTier(t); GL.setScale(glScale(t)); GL.resize(stageEl.clientWidth, stageEl.clientHeight); }
-  }
-
-  /* ------------------------------------------------------------------------
      render(): сводит интро, скролл и указатель. Переменные пишутся на
-     владельцев (сцена, продукт, nav), не на :root.
+     владельцев (сцена, разрез, nav), не на :root.
      ------------------------------------------------------------------------ */
   let stageOff = false;
   function render() {
@@ -458,19 +410,9 @@
     const lx = (MOON.x + P.x * 0.6) / 100, ly = (MOON.y - P.y * 0.5) / 100 + S.lightDrift;
     Light.set('hero', lx, ly, 0.35 + 0.65 * I.beam);
     const L = Light.get();
-    const ls = Math.max(0.02, I.lr * S.lr * 2.1);
-    const heroExp = I.exp * S.heroExp;
-
-    if (GL) {
-      GL.set({ lightX: L.x, lightY: L.y, lightZ: isMobile() ? 0.46 : 0.38, intensity: L.i, exposure: heroExp, reveal: ls, revealX: lx, revealY: ly });
-    } else {
-      productHero.style.setProperty('--lx', `${(lx * 100).toFixed(2)}%`);
-      productHero.style.setProperty('--ly', `${(ly * 100).toFixed(2)}%`);
-      productHero.style.setProperty('--ls', ls.toFixed(4));
-      productHero.style.setProperty('--dim', `${(1 - heroExp).toFixed(3)}`);
-      productHero.classList.toggle('is-lit', I.lr * S.lr >= 0.999);
-    }
-    moonbeam.style.opacity = (I.beam * S.eclipse * (GL ? 0.8 : 1)).toFixed(3);
+    stageEl.style.setProperty('--lx', `${(L.x * 100).toFixed(2)}%`);
+    stageEl.style.setProperty('--ly', `${(L.y * 100).toFixed(2)}%`);
+    moonbeam.style.opacity = (I.beam * S.eclipse).toFixed(3);
     moonHero.style.opacity = (I.moon * S.eclipse).toFixed(3);
     moonGlow.style.opacity = (I.glow * S.eclipse).toFixed(3);
     const mpx = `${(-P.x * 2.2).toFixed(2)}px`, mpy = `${(-P.y * 2).toFixed(2)}px`;
@@ -479,11 +421,6 @@
     navEl.style.setProperty('--brand-o', `${S.brand}`);
     exposure.style.opacity = Math.max(I.dark, S.dark);
     eclipse.style.opacity = I.eclipse * S.eclipse;
-
-    productHero.style.transform =
-      `perspective(1600px) rotateX(${(S.rx + P.y).toFixed(3)}deg) rotateY(${(S.ry + P.x).toFixed(3)}deg) ` +
-      `translate3d(${(P.x * 3.4).toFixed(2)}px, ${S.heroY * vh / 100 + I.lift * vh / 100 - P.y * 2.6}px, 0) scale(${S.heroS * I.heroS})`;
-    productHero.style.opacity = S.heroExp > 0.01 ? 1 : 0;
 
     productCut.style.opacity = S.cutO;
     productCut.style.setProperty('--dim', `${(1 - S.cutExp).toFixed(3)}`);
@@ -500,34 +437,22 @@
   }
 
   sizeSeq(); aimBeam();
-  resizeHooks.push((w, h) => {
-    sizeSeq(); aimBeam();
-    if (GL) {
-      GL.resize(stageEl.clientWidth || w, stageEl.clientHeight || h);
-      if (heroImg.currentSrc !== heroSrc) {
-        heroSrc = heroImg.currentSrc;
-        const swap = () => { GL.updateTexture(); GL.set(nrmMapFor(heroSrc)); render(); };
-        if (heroImg.complete && heroImg.naturalWidth) swap(); else heroImg.addEventListener('load', swap, { once: true });
-      }
-    }
-    render();
-  });
+  resizeHooks.push(() => { sizeSeq(); aimBeam(); render(); });
 
   // сцена вне экрана: анимации стоят, звёзды не мерцают, render не нужен; свет принадлежит сцене, пока она видна
   if ('IntersectionObserver' in window) {
     new IntersectionObserver((es) => {
-      const on = es[0].isIntersecting;
+      const on = es[es.length - 1].isIntersecting; // пин ScrollTrigger переподвешивает сцену: записи «вне/внутри» приходят пачкой — важна последняя
       stageOff = !on;
       stageEl.classList.toggle('is-off', !on);
       stars.setVisible(on);
-      if (GL) { if (on) GL.wake(); else GL.sleep(); }
       if (on) { Light.claim('hero'); render(); }
     }, { threshold: 0 }).observe(stageEl);
   }
   document.addEventListener('visibilitychange', () => { if (!document.hidden && !stageOff) render(); });
 
   /* ------------------------------------------------------------------------
-     Интро: луна всходит → логотип → свет ложится на матрас → текст
+     Интро: луна всходит → ореол → логотип → луч → заголовок
      ------------------------------------------------------------------------ */
   const letters = wordmark.querySelectorAll('.wordmark__word span');
   const wmMark = document.getElementById('wordmarkMark');
@@ -545,30 +470,25 @@
   });
 
   intro
-    .to(I, { moon: 1, duration: 1.8, ease: 'power2.out' }, 0.2)
-    .to(moonHero, { scale: 1, y: 0, duration: 2.4, ease: 'power2.out' }, 0.2)
-    .to(I, { glow: 1, duration: 1.8, ease: 'power2.out' }, 0.6)
-    .to(I, { lift: 0, heroS: 1, duration: 2.6, ease: 'power3.out' }, 1.8)
-    .to(wmMark, { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }, 1.0)
-    .to(wmGlow, { opacity: 1, duration: 1.0, ease: 'power2.inOut' }, 1.1)
-    .to(wmGlow, { opacity: 0, duration: 1.6, ease: 'power2.inOut' }, 2.6)
-    .to(letters, { opacity: 1, y: 0, duration: 1.2, stagger: 0.07, ease: 'power3.out' }, 1.4)
-    .to(wmSub, { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' }, 2.3)
-    .to(I, { beam: 1, duration: 1.8, ease: 'power1.inOut' }, 1.8)
-    .to(I, { dark: 0.6, duration: 1.2 }, 1.9)
-    .to(I, { lr: 0.18, exp: 0.4, duration: 1.3, ease: 'power1.inOut' }, 2.0)
-    .to(I, { dark: 0.2, duration: 1.2 }, 2.8)
-    .to(I, { lr: 0.45, exp: 0.74, duration: 1.4, ease: 'power1.inOut' }, 2.9)
-    .to(I, { dark: 0, lr: 1.0, exp: 1, duration: 1.6, ease: 'power2.out' }, 3.5)
-    .to(I, { eclipse: 1, duration: 1.3 }, 3.6)
-    .to(heroEyebrow, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 3.9)
-    .to(heroLines, { y: 0, duration: 1.2, stagger: 0.12, ease: 'power3.out' }, 4.0)
-    .to(heroSub, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' }, 4.5)
-    .to(I, { cueO: 1, duration: 1.0 }, 5.2);
+    .to(I, { moon: 1, duration: 1.6, ease: 'power2.out' }, 0.2)
+    .to(moonHero, { scale: 1, y: 0, duration: 2.2, ease: 'power2.out' }, 0.2)
+    .to(I, { glow: 1, duration: 1.6, ease: 'power2.out' }, 0.5)
+    .to(I, { dark: 0, duration: 1.4, ease: 'power2.out' }, 1.2)
+    .to(wmMark, { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }, 0.9)
+    .to(wmGlow, { opacity: 1, duration: 1.0, ease: 'power2.inOut' }, 1.0)
+    .to(wmGlow, { opacity: 0, duration: 1.6, ease: 'power2.inOut' }, 2.3)
+    .to(letters, { opacity: 1, y: 0, duration: 1.2, stagger: 0.06, ease: 'power3.out' }, 1.2)
+    .to(wmSub, { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' }, 2.0)
+    .to(I, { beam: 1, duration: 1.6, ease: 'power1.inOut' }, 1.6)
+    .to(I, { eclipse: 1, duration: 1.3 }, 2.4)
+    .to(heroEyebrow, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 3.2)
+    .to(heroLines, { y: 0, duration: 1.2, stagger: 0.12, ease: 'power3.out' }, 3.3)
+    .to(heroSub, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' }, 3.8)
+    .to(I, { cueO: 1, duration: 1.0 }, 3.9);
 
   // проба кадра: 300 мс после старта интро; тяжёлый кадр → уровень ниже, пока сцена ещё тёмная
   function probeFrames() {
-    if (reduceMotion || TIER === 'low' || params.get('gl') === 'force') return;
+    if (reduceMotion || TIER === 'low') return;
     const deltas = []; let last = 0; const t0 = performance.now();
     const step = (now) => {
       if (last) deltas.push(now - last);
@@ -577,13 +497,12 @@
       if (deltas.length < 6) return;
       const d = deltas.slice(2).sort((a, b) => a - b);
       const p90 = d[Math.floor(d.length * 0.9)];
-      if (p90 > 34) setTier(TIER === 'high' ? 'medium' : 'low');
+      if (p90 > 34) { TIER = TIER === 'high' ? 'medium' : 'low'; root.dataset.tier = TIER; }
     };
     requestAnimationFrame(step);
   }
 
   function startIntro() {
-    initGL();
     if (reduceMotion) {
       intro.progress(1);
       body.classList.remove('is-intro');
@@ -597,17 +516,8 @@
 
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   if (!reduceMotion) window.scrollTo(0, 0);
-  // не начинаем раскрытие, пока фото не загрузилось — иначе свет осветит пустоту;
-  // страховка по таймеру: интро стартует в любом случае не позже чем через 2.5 с
-  let introStarted = false;
-  const kick = () => { if (introStarted) return; introStarted = true; startIntro(); };
-  if (heroImg.complete && heroImg.naturalWidth) kick();
-  else {
-    heroImg.addEventListener('load', kick, { once: true });
-    heroImg.addEventListener('error', kick, { once: true });
-    if (heroImg.decode) heroImg.decode().then(kick, () => {});
-    setTimeout(kick, 2500);
-  }
+  // фон уже нарисован — интро стартует со второго кадра
+  requestAnimationFrame(() => requestAnimationFrame(startIntro));
 
   if (!reduceMotion) {
     const hurry = () => {
@@ -624,7 +534,7 @@
   }
 
   /* ------------------------------------------------------------------------
-     Скролл-сцена (pinned). Короче: 380 % на десктопе, 260 % на телефоне.
+     Скролл-сцена (pinned): 170 % на десктопе, 130 % на телефоне.
      ------------------------------------------------------------------------ */
   const copyHero = document.getElementById('copyHero');
   const copyLayers = document.getElementById('copyLayers');
@@ -649,9 +559,9 @@
       onUpdate: render,
       scrollTrigger: {
         trigger: stageEl, start: 'top top',
-        end: D ? '+=200%' : '+=150%',
+        end: D ? '+=170%' : '+=130%',
         pin: true, scrub: D ? 0.5 : 0.4, anticipatePin: 1, invalidateOnRefresh: true,
-        onUpdate: (self) => { if (!D) autoPlayLayers(self); if (self.progress > 0.84) revealConcept(); },
+        onUpdate: (self) => { if (!D) autoPlayLayers(self); if (self.progress > 0.80) revealConcept(); },
       },
     });
 
@@ -660,9 +570,9 @@
       if (reduceMotion) return;
       if (self.progress < 0.08) autoArmed = true;
       if (!autoArmed || autoTween || self.direction < 0) return;
-      if (self.progress < 0.20 || self.progress > 0.30) return;
+      if (self.progress < 0.10 || self.progress > 0.20) return;
       autoArmed = false;
-      const from = self.progress, to = 0.70, dist = self.end - self.start;
+      const from = self.progress, to = 0.62, dist = self.end - self.start;
       const o = { p: from };
       autoTween = gsap.to(o, {
         p: to, duration: 6 * (to - from) / 0.5, ease: 'none',
@@ -672,42 +582,41 @@
     }
 
     tl
-      /* 0–12: камера облетает продукт, имя уходит в nav, свет чуть дрейфует */
-      .to(S, { heroS: 1.08, heroY: -3, rx: 6, ry: -4, lightDrift: 0.05, duration: 12, ease: 'power1.inOut' }, 0)
-      .to(S, { wmS: 0.7, wmY: -18, wmO: 0, duration: 10, ease: 'power1.in' }, 0)
-      .to(S, { brand: 1, duration: 6 }, 6)
-      .to(S, { eclipse: 0.35, duration: 12 }, 0)
-      .to(copyHero, { opacity: 0, y: -40, duration: 6 }, 2)
+      /* 0–8: имя уходит в nav, hero-текст уходит, свет чуть дрейфует */
+      .to(S, { lightDrift: 0.05, duration: 12, ease: 'power1.inOut' }, 0)
+      .to(S, { wmS: 0.7, wmY: -18, wmO: 0, duration: 8, ease: 'power1.in' }, 0)
+      .to(S, { brand: 1, duration: 5 }, 4)
+      .to(copyHero, { opacity: 0, y: -40, duration: 6 }, 1)
       .to(S, { cueO: 0, duration: 4 }, 0)
-      /* 12–22: фото уходит в темноту, разрез проявляется на его месте */
-      .to(S, { heroExp: 0, heroS: 1.14, heroY: -7, rx: 8, duration: 9, ease: 'power1.in' }, 12)
-      .to(S, { cutO: 1, cutS: 1.0, cutX: D ? 9 : 0, duration: 7 }, 14)
-      .to(S, { eclipse: 0, duration: 6 }, 13)
-      .to(copyLayers, { opacity: 1, duration: 5 }, 18)
-      /* 22–30: слои расходятся — быстро и ровно, без перелёта */
-      .to(S, { spread: 1, duration: 8, ease: 'power3.out' }, 22)
-      .to(S, { cutS: 0.9, cutY: D ? 1 : 0, duration: 8, ease: 'power2.out' }, 22)
-      /* 30–58: фокус по слоям сверху вниз */
-      .to(S, { focus: 0, duration: 0.01 }, 30)
-      .to(S, { focus: 1, duration: 0.01 }, 34)
-      .to(S, { focus: 2, duration: 0.01 }, 38)
-      .to(S, { focus: 3, duration: 0.01 }, 42)
-      .to(S, { focus: 4, duration: 0.01 }, 46)
-      .to(S, { focus: 5, duration: 0.01 }, 50)
-      .to(S, { focus: 6, duration: 0.01 }, 54)
-      .to(S, { focus: -1, duration: 0.01 }, 58)
-      /* 58–66: слои собираются */
-      .to(S, { spread: 0, duration: 8, ease: 'power3.inOut' }, 58)
-      .to(S, { cutS: 1.0, duration: 8, ease: 'power2.inOut' }, 58)
-      .to(copyLayers, { opacity: 0, duration: 5 }, 58)
-      /* 64–84: финальное утверждение, матрас уходит вправо и вверх */
-      .to(S, { cutExp: 0.45, cutS: 0.88, cutX: D ? 28 : 0, cutY: D ? 10 : -8, duration: 10 }, 64)
-      .to(shade, { opacity: D ? 1 : 0.6, duration: 8 }, 64)
-      .to(copyOutro, { opacity: 1, duration: 7 }, 67)
-      /* 84–100: сцена темнеет не до чёрного и уезжает вверх — следующая секция подхватывает сразу */
-      .to(S, { dark: 0.55, cutY: D ? -16 : -12, cutExp: 0.2, duration: 16, ease: 'power1.in' }, 84)
-      .to(copyOutro, { opacity: 0, y: -30, duration: 9, ease: 'power1.in' }, 86)
-      .to(shade, { opacity: 0, duration: 12 }, 88);
+      /* 4–12: разрез проявляется в центре */
+      .to(S, { cutO: 1, cutS: 1.0, cutX: D ? 9 : 0, duration: 8 }, 4)
+      .to(S, { eclipse: 0.35, duration: 8 }, 4)
+      .to(S, { eclipse: 0, duration: 6 }, 12)
+      .to(copyLayers, { opacity: 1, duration: 5 }, 8)
+      /* 12–20: слои расходятся — быстро и ровно, без перелёта */
+      .to(S, { spread: 1, duration: 8, ease: 'power3.out' }, 12)
+      .to(S, { cutS: 0.9, cutY: D ? 1 : 0, duration: 8, ease: 'power2.out' }, 12)
+      /* 20–48: фокус по слоям сверху вниз */
+      .to(S, { focus: 0, duration: 0.01 }, 20)
+      .to(S, { focus: 1, duration: 0.01 }, 24)
+      .to(S, { focus: 2, duration: 0.01 }, 28)
+      .to(S, { focus: 3, duration: 0.01 }, 32)
+      .to(S, { focus: 4, duration: 0.01 }, 36)
+      .to(S, { focus: 5, duration: 0.01 }, 40)
+      .to(S, { focus: 6, duration: 0.01 }, 44)
+      .to(S, { focus: -1, duration: 0.01 }, 48)
+      /* 48–56: слои собираются */
+      .to(S, { spread: 0, duration: 8, ease: 'power3.inOut' }, 48)
+      .to(S, { cutS: 1.0, duration: 8, ease: 'power2.inOut' }, 48)
+      .to(copyLayers, { opacity: 0, duration: 5 }, 48)
+      /* 54–76: финальное утверждение, матрас уходит вправо и вверх */
+      .to(S, { cutExp: 0.45, cutS: 0.88, cutX: D ? 28 : 0, cutY: D ? 10 : -8, duration: 10 }, 54)
+      .to(shade, { opacity: D ? 1 : 0.6, duration: 8 }, 54)
+      .to(copyOutro, { opacity: 1, duration: 7 }, 57)
+      /* 76–100: сцена темнеет не до чёрного и уезжает вверх — следующая секция подхватывает сразу */
+      .to(S, { dark: 0.55, cutY: D ? -16 : -12, cutExp: 0.2, duration: 24, ease: 'power1.in' }, 76)
+      .to(copyOutro, { opacity: 0, y: -30, duration: 9, ease: 'power1.in' }, 80)
+      .to(shade, { opacity: 0, duration: 12 }, 84);
     return tl;
   }
   mm.add('(min-width: 900px)', () => { buildStage(true); return () => {}; });
@@ -723,40 +632,6 @@
     });
     stageEl.addEventListener('pointerleave', () => { toX(0); toY(0); });
   }
-
-  // нажатие на матрас: вмятина в точке касания и упругий возврат
-  (function press() {
-    const dent = document.getElementById('dent');
-    const media = productMedia;
-    if (!dent || !media) return;
-    let last = 0, held = false, rect = null;
-    const place = (e) => {
-      if (!rect) rect = productHero.getBoundingClientRect();
-      dent.style.setProperty('--dx', `${((e.clientX - rect.left) / rect.width * 100).toFixed(1)}%`);
-      dent.style.setProperty('--dy', `${((e.clientY - rect.top) / rect.height * 100).toFixed(1)}%`);
-    };
-    const down = (e) => {
-      const now = performance.now(); if (now - last < 150) return; last = now;
-      held = true; rect = null; place(e);
-      if (navigator.vibrate) navigator.vibrate(8);
-      if (reduceMotion) { gsap.set(dent, { opacity: .7, scale: 1 }); return; }
-      gsap.killTweensOf([dent, media]);
-      gsap.to(dent, { opacity: .85, scale: 1, duration: .14, ease: 'power2.out' });
-      gsap.to(media, { scale: .986, y: 5, transformOrigin: '50% 60%', duration: .16, ease: 'power2.out' });
-    };
-    const move = (e) => { if (held) place(e); };
-    const up = () => {
-      if (!held) return; held = false;
-      gsap.killTweensOf([dent, media]);
-      gsap.to(dent, { opacity: 0, scale: .6, duration: .5, ease: 'power2.out' });
-      gsap.to(media, { scale: 1, y: 0, duration: .9, ease: 'elastic.out(1, 0.45)' });
-    };
-    productHero.addEventListener('pointerdown', down);
-    productHero.addEventListener('pointermove', move);
-    productHero.addEventListener('pointerup', up);
-    productHero.addEventListener('pointercancel', up);
-    productHero.addEventListener('pointerleave', up);
-  })();
 
   /* ------------------------------------------------------------------------
      Технология: список слоёв из данных + вкладки
@@ -1297,6 +1172,6 @@
   render();
 
   if (DEBUG) {
-    window.ELUNA = { intro, Light, get gl() { return GL; }, get tier() { return TIER; }, S, I, render, setTier };
+    window.ELUNA = { intro, Light, get tier() { return TIER; }, S, I, render };
   }
 })();

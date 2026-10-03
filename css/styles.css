@@ -177,7 +177,7 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 
 .eclipse {
   position: absolute; z-index: 1; pointer-events: none;
-  left: 50%; top: 46%; width: min(62vw, 72vh); aspect-ratio: 1;
+  left: 50%; top: 50%; width: min(62vw, 72vh); aspect-ratio: 1;
   transform: translate(-50%, -50%); border-radius: 50%;
   box-shadow: inset 0 0 0 1px rgba(var(--warm), 0.10), inset 0 -20px 60px -30px rgba(var(--warm), 0.18), 0 0 90px 10px rgba(var(--cool), 0.05);
   opacity: 0;
@@ -208,31 +208,6 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 /* экспозиция (CSS-путь) — чёрная плашка, не filter */
 .product::before { content: ""; position: absolute; inset: 0; z-index: 1; background: #000; opacity: var(--dim, 0); pointer-events: none; }
 .product::after { z-index: 2; }
-.product--hero img { object-position: 50% 56%; }
-/* световое пятно (CSS-путь): слой с «дырой», только transform */
-.light {
-  position: absolute; z-index: 1; left: var(--lx); top: var(--ly);
-  width: 320vmax; height: 320vmax; margin: -160vmax 0 0 -160vmax;
-  background: radial-gradient(circle, transparent 0 15%, rgba(6,7,12,0.55) 18.5%, rgba(6,7,12,0.92) 21.5%, #06070c 23.5%);
-  transform: scale(var(--ls, 0.02));
-  will-change: transform; pointer-events: none;
-}
-.product--hero.is-lit .light { display: none; }
-.product--hero::after {
-  background:
-    linear-gradient(to bottom, rgba(6,7,12,0.5), transparent 25%, transparent 70%, rgba(6,7,12,0.9)),
-    linear-gradient(to right, rgba(6,7,12,0.55), transparent 30%, transparent 72%, rgba(6,7,12,0.55)),
-    radial-gradient(ellipse 40% 30% at 78% 20%, rgba(var(--cool), 0.12), transparent 70%);
-}
-/* WebGL-путь: свет, экспозиция, раскрытие и виньетка — в шейдере */
-.product__media { position: absolute; inset: 0; }
-.product__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
-.product--hero.has-gl .product__gl { display: block; }
-.product--hero.has-gl img { visibility: hidden; }
-.product--hero.has-gl .light, .product--hero.has-gl .sheen { display: none; }
-.stage:has(.product--hero.has-gl) .moonbeam { opacity: 0 !important; }
-.product--hero.has-gl::before, .product--hero.has-gl::after { display: none; }
-
 .moon-wrap {
   position: absolute; z-index: 5; left: var(--moon-x); top: var(--moon-y); width: min(10vw, 14vh); aspect-ratio: 1;
   transform: translate(-50%, -50%) translate3d(var(--mpx, 0px), var(--mpy, 0px), 0);
@@ -248,32 +223,9 @@ body:not(.is-intro) .moon-hero { animation: moonDrift 14s ease-in-out infinite; 
 body:not(.is-intro) .moon-glow { animation: moonPulse 9s ease-in-out infinite; }
 @keyframes moonDrift { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(3px, -6px, 0); } }
 @keyframes moonPulse { 0%, 100% { opacity: .55; } 50% { opacity: .75; } }
-.product__float { position: absolute; inset: 0; }
-body:not(.is-intro) .product__float { animation: heroFloat 11s ease-in-out infinite; }
-@keyframes heroFloat { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -5px, 0); } }
 /* сцена вне экрана — бесконечные анимации стоят */
-.stage.is-off .moon-hero, .stage.is-off .moon-glow, .stage.is-off .product__float, .stage.is-off .sheen, .stage.is-off .cue__line::after { animation-play-state: paused; }
+.stage.is-off .moon-hero, .stage.is-off .moon-glow, .stage.is-off .cue__line::after { animation-play-state: paused; }
 .stage.is-off .seq, .stage.is-off .moonbeam { visibility: hidden; }
-.product__float img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 56%; }
-.sheen {
-  position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0;
-  background: linear-gradient(calc(var(--beam-angle) - 10deg), transparent 30%, rgba(var(--cool), .45) 46%, rgba(var(--warm), .18) 52%, transparent 66%);
-  will-change: opacity, transform;
-  -webkit-mask-image: radial-gradient(ellipse 48% 42% at 50% 54%, #000 40%, transparent 100%); mask-image: radial-gradient(ellipse 48% 42% at 50% 54%, #000 40%, transparent 100%);
-}
-body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
-@keyframes sheenPass { 0%, 70%, 100% { opacity: 0; transform: translateX(-12%); } 82% { opacity: .18; } 94% { opacity: 0; transform: translateX(12%); } }
-.dent {
-  position: absolute; z-index: 2; left: var(--dx, 50%); top: var(--dy, 50%); width: 30vmin; aspect-ratio: 1.7;
-  transform: translate(-50%, -50%) rotate(-12deg) scale(.6); opacity: 0; pointer-events: none;
-  background:
-    radial-gradient(ellipse at 50% 52%, rgba(0,0,0,.6) 0, rgba(0,0,0,.3) 34%, transparent 58%),
-    radial-gradient(ellipse 40% 26% at 36% 26%, rgba(var(--cool), .42) 0, transparent 70%),
-    radial-gradient(ellipse 42% 24% at 66% 78%, rgba(0,0,0,.35) 0, transparent 70%);
-  will-change: transform, opacity;
-}
-.product--hero { pointer-events: auto; cursor: pointer; transform-origin: 50% 60%; }
-.product--hero .light, .product--hero::before, .product--hero::after { pointer-events: none; }
 .moonbeam {
   position: absolute; z-index: 4; left: var(--moon-x); top: var(--moon-y); width: 120vmax; height: 120vmax; margin: -60vmax 0 0 -60vmax;
   translate: var(--mpx, 0px) var(--mpy, 0px);
@@ -721,9 +673,7 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
   .reveal { transform: none; transition-duration: 1s; }
   :root { --moon-x: 22%; --moon-y: 10%; --lx: 22%; --ly: 10%; }   /* свет на фото идёт сверху слева — луна там же */
   .moon-wrap { width: 20vw; }
-  .sheen { display: none; }
-  .eclipse { top: 48%; width: min(120vw, 70vh); }
-  .product--hero img { object-position: 52% 60%; }
+  .eclipse { top: 50%; width: min(120vw, 70vh); }
 
   .section-title { font-size: clamp(28px, 8vw, 40px); text-wrap: balance; }
   .tech, .models, .order { padding-top: clamp(56px, 12vw, 80px); padding-bottom: clamp(56px, 12vw, 80px); }
@@ -802,7 +752,7 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
   .cue__line::after { animation: none; }
-  .moon-hero, .moon-glow, .product__float, .sheen { animation: none !important; }
+  .moon-hero, .moon-glow { animation: none !important; }
   .moon-glow { opacity: .6; }
   .reveal, .reveal-line > span { opacity: 1; transform: none; }
   .xs--prime { gap: 10px; }
