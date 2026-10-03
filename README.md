@@ -80,3 +80,7 @@ fonts/              Unbounded 300/500, Inter (woff2) + Michroma-Regular.ttf (OFL
 ## Правовое
 
 `legal.html` — авторские права, товарный знак ELUNA, лицензии сторонних материалов (NASA, Natural Earth — общественное достояние; шрифты — OFL; GSAP — Standard License), оговорка «не публичная оферта». `privacy.html` — персональные данные. Реквизиты в обеих — [заполнить].
+
+## Готовая папка для хостинга
+
+`bash tools/build-dist.sh` — собирает `dist/ELUNA-site/` (только используемые файлы + `.htaccess`, `_headers`, `robots.txt`, `404.html`, `ЗАПУСК.html` с инструкцией) и `dist/ELUNA-site.zip`, проверяет, что все ссылки на файлы существуют. `dist/` в `.gitignore` — пересобирать после правок.

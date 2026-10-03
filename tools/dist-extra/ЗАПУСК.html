@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Запуск сайта ELUNA</title>
+  <style>
+    :root { --bg: #06070c; --ink: #f1ede6; --ink2: #c9c4bb; --ink3: #8f8a82; --line: rgba(241,237,230,.12); --gold: #c8a86b; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--ink2); font: 15px/1.7 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; overflow-x: clip; }
+    main { max-width: 820px; margin: 0 auto; padding: 56px 20px 80px; }
+    .brand { display: flex; align-items: center; gap: 12px; letter-spacing: .3em; font-size: 13px; color: var(--ink); }
+    .brand img { width: 30px; }
+    h1 { margin: 28px 0 8px; font-weight: 300; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; color: var(--ink); }
+    .lead { color: var(--ink3); margin: 0 0 32px; }
+    section { margin-top: 22px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 4px; background: rgba(255,255,255,.02); }
+    section.main { border-color: rgba(200,168,107,.5); background: rgba(200,168,107,.05); }
+    h2 { margin: 0 0 6px; font-weight: 400; font-size: 20px; color: var(--ink); }
+    .tag { display: inline-block; margin-bottom: 10px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+    ol, ul { margin: 10px 0 0; padding-left: 22px; }
+    li + li { margin-top: 6px; }
+    code { padding: 1px 6px; border-radius: 3px; background: rgba(255,255,255,.07); color: var(--ink); font-size: .92em; }
+    a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+    .warn { color: #e9c58f; }
+    .open { display: inline-block; margin-top: 14px; padding: 12px 22px; border: 1px solid rgba(241,237,230,.3); color: var(--ink); text-decoration: none; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+    .open:hover { border-color: var(--gold); }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand"><img src="img/mark.png" alt="">ELUNA</div>
+    <h1>Как запустить сайт</h1>
+    <p class="lead">В этой папке — весь сайт целиком: страницы, стили, анимации, шрифты, картинки. Её нужно один раз загрузить на хостинг — и сайт появится в интернете по ссылке.</p>
+
+    <section class="main">
+      <span class="tag">Способ 1 · быстро и бесплатно · 2 минуты</span>
+      <h2>Netlify Drop</h2>
+      <ol>
+        <li>Откройте <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">app.netlify.com/drop</a> и зарегистрируйтесь (через Google или e-mail).</li>
+        <li>Перетащите <b>всю папку <code>ELUNA-site</code></b> в окно браузера.</li>
+        <li>Через минуту сайт открыт по ссылке вида <code>что-то.netlify.app</code> — её можно сразу отправлять клиентам.</li>
+        <li>Своё имя: Site settings → <i>Change site name</i> → например <code>eluna-kz.netlify.app</code>.</li>
+        <li>Свой домен (например <code>eluna.kz</code>): Domain management → <i>Add a domain</i> и прописать у регистратора домена записи, которые покажет Netlify. HTTPS включится сам.</li>
+      </ol>
+      <p>Обновить сайт после правок: Deploys → перетащить новую папку ещё раз.</p>
+    </section>
+
+    <section>
+      <span class="tag">Способ 2 · свой домен .kz</span>
+      <h2>Казахстанский хостинг (PS.kz, Hoster.kz и другие)</h2>
+      <ol>
+        <li>Купите домен (.kz) и самый простой тариф хостинга (подойдёт любой — сайт статический, без базы данных и PHP).</li>
+        <li>В панели хостинга откройте «Файловый менеджер» (или подключитесь по FTP, например FileZilla).</li>
+        <li>Зайдите в папку сайта — обычно <code>public_html</code> или <code>www</code> — и загрузите туда <b>содержимое</b> папки <code>ELUNA-site</code> (не саму папку, а то, что внутри: <code>index.html</code>, <code>css</code>, <code>js</code>, <code>img</code> …). Удобно загрузить архив <code>.zip</code> и нажать «Распаковать».</li>
+        <li>Включите в панели бесплатный SSL-сертификат (Let’s Encrypt), чтобы адрес был <code>https://</code>.</li>
+      </ol>
+      <p>Файл <code>.htaccess</code> уже внутри: ускоряет загрузку (кеш и сжатие) и показывает красивую страницу 404.</p>
+    </section>
+
+    <section>
+      <span class="tag">Способ 3 · бесплатно, для тех, кто знаком с GitHub</span>
+      <h2>GitHub Pages</h2>
+      <ol>
+        <li>Создайте репозиторий, загрузите в него содержимое папки <code>ELUNA-site</code>.</li>
+        <li>Settings → Pages → Source: <i>Deploy from a branch</i>, ветка <code>main</code>, папка <code>/ (root)</code>.</li>
+        <li>Сайт будет по адресу <code>имя.github.io/репозиторий</code>; свой домен — там же, в поле <i>Custom domain</i>.</li>
+      </ol>
+    </section>
+
+    <section>
+      <span class="tag">После запуска — проверьте</span>
+      <h2>Что посмотреть и где поменять</h2>
+      <ul>
+        <li>Откройте сайт по ссылке на телефоне и компьютере: луна, расслойка матраса, карта, выбор размера.</li>
+        <li><b>Кнопка WhatsApp</b> — ведёт на <code>+7 707 955 08 08</code>. Номер меняется в файле <code>js/main.js</code>, строка <code>const WHATSAPP = '77079550808'</code>.</li>
+        <li><b>Цены</b> — там же, в <code>js/main.js</code>: <code>const PRICES = { air: 125000, balance: 220000, prime: 280000, royal: 1250000 }</code> и старая цена Prime в <code>OLD_PRICES</code>.</li>
+        <li><b>Реквизиты</b> (ИП/ТОО, БИН, адрес, e-mail) — впишите вместо пометок <code>[заполнить]</code> в <code>privacy.html</code> и <code>legal.html</code>.</li>
+      </ul>
+      <p class="warn">Важно: если открыть <code>index.html</code> двойным кликом прямо с компьютера, сайт откроется, но 3D-луна и часть эффектов браузер с диска не запускает (защита браузера). Настоящий вид — только по ссылке после загрузки на хостинг.</p>
+      <a class="open" href="index.html">Открыть сайт с диска (предпросмотр)</a>
+    </section>
+  </main>
+</body>
+</html>
