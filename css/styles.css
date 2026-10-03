@@ -26,7 +26,9 @@
   --container: 1360px;
 
   /* сцена: луна = источник света. Переменные кадра пишутся скриптом на владельцев, не на :root */
-  --ring: min(62vw, 72vh);
+  --moon-d: min(112vh, 72vw);
+  --moon-x: 78%;
+  --moon-y: 50%;
   --lx: 12%;
   --ly: 18%;
 
@@ -180,28 +182,23 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 @keyframes nebulaDriftM { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-3%, 2%, 0); } }
 .stage.is-off .nebula { animation-play-state: paused; }
 
-.eclipse {
-  position: absolute; z-index: 1; pointer-events: none;
-  left: 50%; top: 50%; width: var(--ring); aspect-ratio: 1;
-  transform: translate(-50%, -50%); border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(var(--warm), 0.10), inset 0 -20px 60px -30px rgba(var(--warm), 0.18), 0 0 90px 10px rgba(var(--cool), 0.05);
-  opacity: 0;
-}
-/* большая луна за кольцом: приглушена тёмной плашкой, читается как фон, не спорит с именем */
+/* луна: большая, справа, край уходит за экран; терминатор --term идёт слева направо только в интро */
 .moon-big {
-  position: absolute; z-index: 2; left: 50%; top: 50%; width: var(--ring); aspect-ratio: 1;
+  position: absolute; z-index: 2; left: var(--moon-x); top: var(--moon-y); width: var(--moon-d); aspect-ratio: 1;
   translate: -50% -50%;
   transform: translate3d(var(--mpx, 0px), var(--mpy, 0px), 0);
-  border-radius: 50%; overflow: hidden; opacity: 0; pointer-events: none; will-change: transform, opacity;
+  opacity: 0; pointer-events: none; will-change: transform, opacity;
 }
-.moon-big img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(.45) brightness(.4); }
-body:not(.is-intro) .moon-big img { animation: moonTurn 90s linear infinite; }
-@keyframes moonTurn { from { transform: scale(1.04) rotate(0deg); } to { transform: scale(1.04) rotate(360deg); } }
-.stage.is-off .moon-big img { animation-play-state: paused; }
-
+.moon-big img { display: block; width: 100%; height: 100%; filter: saturate(.35) brightness(.78) contrast(1.04); }
+.moon-big::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(94deg, transparent calc(var(--term, -18%) - 14%), rgba(5,6,10,.82) calc(var(--term, -18%) - 2%), rgba(5,6,10,.985) calc(var(--term, -18%) + 6%));
+  -webkit-mask-image: url(../img/moon-hd-1280.webp); mask-image: url(../img/moon-hd-1280.webp);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+}
 .wordmark {
-  position: absolute; z-index: 4; left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
+  position: absolute; z-index: 4; left: var(--gutter); top: 38%;
+  transform: translateY(-50%);
   display: flex; align-items: center; gap: 0.34em;
   font-family: var(--logo); font-weight: 400;
   font-size: clamp(44px, 8.6vw, 128px); line-height: 1; letter-spacing: 0.16em;
@@ -240,18 +237,8 @@ body:not(.is-intro) .moon-big img { animation: moonTurn 90s linear infinite; }
   -webkit-mask-image: radial-gradient(ellipse 62% 64% at 50% 50%, #000 40%, rgba(0,0,0,.55) 70%, transparent 100%);
           mask-image: radial-gradient(ellipse 62% 64% at 50% 50%, #000 40%, rgba(0,0,0,.55) 70%, transparent 100%);
 }
-/* прожектор по слою: вариант 2 — световая полоса, варианты 1 и 3 — тень вокруг слоя */
-.seq-spot { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; --sy: 50%; will-change: opacity; }
-:root[data-variant="2"] .seq-spot {
-  background: linear-gradient(to bottom, transparent calc(var(--sy) - 15%), rgba(var(--cool), .13) var(--sy), transparent calc(var(--sy) + 15%));
-}
-:root:not([data-variant="2"]) .seq-spot {
-  background: radial-gradient(ellipse 80% 22% at 50% var(--sy), transparent 0 48%, rgba(6,7,12,.66) 78%, rgba(6,7,12,.9) 100%);
-}
-/* варианты 1 и 2: разрез едва заметно «дышит», пока гость смотрит */
-:root:not([data-variant="3"]) body:not(.is-intro) .seq { animation: seqFloat 7s ease-in-out infinite; }
-@keyframes seqFloat { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -0.6vh, 0); } }
-.stage.is-off .seq { animation-play-state: paused; }
+/* прожектор по слою в фокусе: остальные уходят в тень */
+.seq-spot { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; --sy: 50%; will-change: opacity; background: radial-gradient(ellipse 80% 22% at 50% var(--sy), transparent 0 48%, rgba(6,7,12,.66) 78%, rgba(6,7,12,.9) 100%); }
 .product--cut::after {
   display: block;
   background:
@@ -265,8 +252,8 @@ body:not(.is-intro) .moon-big img { animation: moonTurn 90s linear infinite; }
 /* ---------- Текст сцены -------------------------------------------------- */
 
 .copy { position: absolute; z-index: 5; pointer-events: none; }
-.copy--hero { left: var(--gutter); bottom: clamp(56px, 10vh, 120px); max-width: 480px; }
-.hero-title { margin-top: 26px; font-family: var(--display); font-weight: 300; font-size: clamp(30px, 3vw, 46px); line-height: 1.12; }
+.copy--hero { left: var(--gutter); bottom: clamp(48px, 8vh, 96px); max-width: 620px; }
+.hero-title { margin-top: 22px; font-family: var(--display); font-weight: 300; font-size: clamp(26px, 2.4vw, 38px); line-height: 1.14; }
 .hero-title .line { display: block; overflow: hidden; }
 .hero-title .line > span { display: block; transform: translateY(110%); will-change: transform; }
 .hero-sub { margin-top: 22px; max-width: 400px; font-size: 15px; line-height: 1.7; color: var(--ink-2); opacity: 0; transform: translateY(14px); will-change: transform, opacity; }
@@ -301,13 +288,22 @@ body:not(.is-intro) .moon-big img { animation: moonTurn 90s linear infinite; }
 
 /* ---------- Подписи к разрезу в hero ------------------------------------ */
 
-.seq-labels { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; opacity: 0; }
-.seq-label { position: absolute; left: var(--x, 79%); top: var(--y); display: flex; align-items: center; gap: 14px; transform: translateY(-50%); font-size: 12px; letter-spacing: .04em; color: var(--ink-2); white-space: nowrap; transition: color .4s; }
-.seq-label::before { content: ""; width: clamp(40px, 5vw, 90px); height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); opacity: .7; }
-.seq-label .num { font-size: 10px; letter-spacing: .14em; color: var(--ink-3); margin-right: -4px; }
-.seq-label .spec { color: var(--ink-3); }
-.seq-label.is-active { color: var(--ink); }
-.seq-label.is-active .num { color: var(--gold); }
+/* выноски: якорь (--ax/--ay) ставит JS; от него наклонный отрезок вниз-вправо, затем вертикальный, у его конца — текст */
+.seq-labels { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0; --run: 22px; --drop: 18px; }
+.seq-label { position: absolute; left: var(--ax); top: var(--ay); width: 50vw; height: 0; opacity: var(--vis, 1); transition: opacity .35s; }
+.seq-label::before, .seq-label::after { content: ""; position: absolute; background: var(--gold); opacity: .75; }
+.seq-label::before { left: 0; top: 0; width: calc(var(--run) * 1.3); height: 1px; transform-origin: 0 50%; transform: rotate(40deg); }
+.seq-label::after { left: var(--run); top: calc(var(--run) * 0.84); width: 1px; height: calc(var(--drop) + var(--i) * 6px); }
+.seq-label__text {
+  position: absolute; left: calc(var(--run) + 9px + var(--shift, 0px)); top: calc(var(--run) * 0.84 + var(--drop) + var(--i) * 6px);
+  transform: translateY(-100%); display: flex; align-items: baseline; gap: 10px; white-space: nowrap;
+  font-size: 13px; letter-spacing: .03em; color: var(--ink-2); text-shadow: 0 1px 8px rgba(6,7,12,.9), 0 0 2px rgba(6,7,12,1); transition: color .4s;
+}
+.seq-label__text .num { font-size: 10px; letter-spacing: .14em; color: var(--ink-3); }
+.seq-label__text .spec { font-size: 11px; color: var(--ink-3); }
+.seq-label.is-active .seq-label__text { color: var(--ink); }
+.seq-label.is-active .seq-label__text .num { color: var(--gold); }
+.seq-label.is-active::before, .seq-label.is-active::after { opacity: 1; }
 
 /* ==========================================================================
    СЕКЦИИ
@@ -691,10 +687,10 @@ body:not(.is-intro) .moon-big img { animation: moonTurn 90s linear infinite; }
 
   .grain { display: none; }
   .stage { touch-action: pan-y; }
-  .wordmark { top: 46%; font-size: clamp(30px, 10.2vw, 52px); letter-spacing: 0.12em; gap: 0.3em; }
+  .wordmark { top: 44%; font-size: clamp(30px, 10.2vw, 52px); letter-spacing: 0.12em; gap: 0.3em; }
   .seq { -webkit-mask-image: radial-gradient(ellipse 56% 62% at 50% 50%, #000 34%, rgba(0,0,0,.5) 68%, transparent 100%); mask-image: radial-gradient(ellipse 56% 62% at 50% 50%, #000 34%, rgba(0,0,0,.5) 68%, transparent 100%); }
   .reveal { transform: none; transition-duration: 1s; }
-  :root { --ring: min(120vw, 70vh); }
+  :root { --moon-d: 124vw; --moon-x: 70%; --moon-y: 42%; }
 
   .section-title { font-size: clamp(28px, 8vw, 40px); text-wrap: balance; }
   .tech, .models, .order { padding-top: clamp(56px, 12vw, 80px); padding-bottom: clamp(56px, 12vw, 80px); }
@@ -714,9 +710,12 @@ body:not(.is-intro) .moon-big img { animation: moonTurn 90s linear infinite; }
   .copy--outro { top: auto; bottom: clamp(44px, 8vh, 90px); transform: none; }
   .statement { font-size: clamp(26px, 7vw, 40px); }
   body:not(.is-intro) .nebula { animation-name: nebulaDriftM; }
-  .seq-label { font-size: 10px; gap: 8px; left: 64%; white-space: nowrap; }
-  .seq-label::before { width: 14px; flex: none; }
-  .seq-label .name, .seq-label .spec { display: none; }
+  .seq-labels { --run: 12px; --drop: 10px; }
+  .seq-label::after { height: calc(var(--drop) + var(--i) * 3px); }
+  .seq-label__text { top: calc(var(--run) * 0.84 + var(--drop) + var(--i) * 3px); left: calc(var(--run) + 6px + var(--shift, 0px)); gap: 5px; font-size: 10px; }
+  .seq-label__text .name { font-size: 0; }
+  .seq-label__text .name::before { content: attr(data-short); font-size: 10px; }
+  .seq-label__text .spec { font-size: 9px; }
 
   .tlayers li { grid-template-columns: 30px minmax(0, 1fr) auto; gap: 8px 14px; padding: 14px 0; }
   .tlayers .text { display: none; }
@@ -771,30 +770,14 @@ body:not(.is-intro) .moon-big img { animation: moonTurn 90s linear infinite; }
   .trust { grid-template-columns: 1fr 1fr; }
 }
 
-/* переключатель вариантов (на время согласования) */
-.vpick {
-  position: fixed; z-index: 60; left: 50%; bottom: 14px; transform: translateX(-50%);
-  display: flex; align-items: center; gap: 4px; padding: 4px 6px 4px 12px;
-  border: 1px solid var(--line); border-radius: 999px; background: rgba(10,11,18,.94);
-  font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap;
-}
-.vpick__label { margin-right: 6px; }
-.vpick a { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; color: var(--ink-2); transition: background-color .3s, color .3s; }
-.vpick a b { font-weight: 500; color: var(--gold); }
-.vpick a:hover { color: var(--ink); background: rgba(255,255,255,.05); }
-:root[data-variant="1"] .vpick a[data-v="1"], :root[data-variant="2"] .vpick a[data-v="2"], :root[data-variant="3"] .vpick a[data-v="3"] { color: var(--ink); background: rgba(255,255,255,.1); }
 @media (max-width: 899px) {
   .waves, .silence__points { grid-template-columns: 1fr; }
-  .vpick { bottom: 10px; font-size: 10px; padding-left: 10px; transition: bottom .5s var(--ease-out); }
-  body:has(.sticky-cta.is-on) .vpick { bottom: calc(66px + env(safe-area-inset-bottom)); }
-  .vpick a { padding: 7px 9px; }
-  .vpick a span { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
   .cue__line::after { animation: none; }
-  .moon-big img, .nebula, .seq { animation: none !important; }
+  .nebula, .seq { animation: none !important; }
   .reveal, .reveal-line > span { opacity: 1; transform: none; }
   .xs--prime { gap: 10px; }
   .material__photo img { transition: none; }

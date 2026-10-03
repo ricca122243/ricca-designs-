@@ -69,15 +69,6 @@
   let TIER = detectTier();
   root.dataset.tier = TIER;
 
-  // вариант анимации слоёв: 1 «Кино», 2 «Живой скраб», 3 «Крупный план» — ?v=N, выбор запоминается
-  const VARIANT = (() => {
-    const q = params.get('v');
-    let v = ['1', '2', '3'].includes(q) ? q : null;
-    try { if (v) localStorage.setItem('eluna-v', v); else v = localStorage.getItem('eluna-v'); } catch (e) { /* приватный режим */ }
-    return ['1', '2', '3'].includes(v) ? v : '2';
-  })();
-  root.dataset.variant = VARIANT;
-
   /* ------------------------------------------------------------------------
      Слои матраса (сверху вниз) — для сцены и вкладки «Слои»
      ------------------------------------------------------------------------ */
@@ -299,18 +290,17 @@
     cutO: 0, cutExp: 1, cutS: 1.04, cutX: 0, cutY: 0,
     spread: 0, focus: -1,
     spot: 0, spotY: 50,
-    dark: 0, brand: 0, eclipse: 1, cueO: 1,
+    dark: 0, brand: 0, moonO: 1, moonX: 0, moonY: 0, cueO: 1,
     wmS: 1, wmY: 0, wmO: 1,
     lightDrift: 0,
   };
-  const I = { dark: 1, eclipse: 0, wmO: 1, cueO: 0, moon: 0 };
+  const I = { dark: 1, wmO: 1, cueO: 0, moon: 0, term: -18 };
   const P = { x: 0, y: 0 };
 
   const stageEl = document.getElementById('stage');
   const navEl = document.getElementById('nav');
   const wordmark = document.getElementById('wordmark');
   const exposure = document.getElementById('exposure');
-  const eclipse = document.getElementById('eclipse');
   const productCut = document.getElementById('productCut');
   const seqSpot = document.getElementById('seqSpot');
   const cue = document.getElementById('cue');
@@ -366,9 +356,10 @@
     const d = dprSeq();
     const cw = Math.round(window.innerWidth * d), ch = Math.round(window.innerHeight * d);
     const mob = isMobile();
-    const k = mob ? (cw / SEQ.w) * 1.22 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.76;
+    // телефон: кадр шириной 0.92 экрана, сдвинут влево — справа остаётся место под выноски
+    const k = mob ? (cw / SEQ.w) * 0.92 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.7;
     const dw = SEQ.w * k, dh = SEQ.h * k;
-    return { cw, ch, dw, dh, dx: (cw - dw) * 0.5, dy: (ch - dh) * 0.56 };
+    return { cw, ch, dw, dh, dx: mob ? -dw * 0.18 : (cw - dw) * 0.5, dy: (ch - dh) * (mob ? 0.5 : 0.56) };
   }
   function sizeSeq() {
     const d = dprSeq();
@@ -401,20 +392,48 @@
     seqDirty = false;
   }
 
-  /* подписи к слоям на последнем кадре разлёта */
+  /* подписи-выноски: от правого края слоя линия идёт вниз-вправо, затем вниз — к тексту (как на эскизе).
+     Контейнер не трансформируется вместе с разрезом: якоря пересчитываются из его transform в render(),
+     поэтому при наезде камеры линии следуют за слоями, а текст остаётся на экране */
   const seqLabels = document.getElementById('seqLabels');
   const SEQ_LABEL_Y = [9, 21, 30, 39, 49, 67, 87];
+  const SEQ_LABEL_X = [86, 86, 85, 85, 85, 83, 83];
+  const SHORT = ['Чехол', 'Латекс', 'Memory-гель', 'Койра', 'Пена HR', 'Пружины', 'Основание'];
   const seqLabelEls = LAYERS.map((l, i) => {
     const el = document.createElement('span');
     el.className = 'seq-label';
-    el.style.setProperty('--y', `${SEQ_LABEL_Y[i]}%`);
-    el.innerHTML = `<span class="num">${l.num}</span><span class="name">${l.name}</span><span class="spec">${Math.round(l.cm * 10)} мм</span>`;
+    el.style.setProperty('--i', i);
+    el.innerHTML = `<span class="seq-label__text"><span class="num">${l.num}</span><span class="name" data-short="${SHORT[i]}">${l.name}</span><span class="spec">${Math.round(l.cm * 10)} мм</span></span>`;
     seqLabels.appendChild(el);
     return el;
   });
-  function placeSeqLabels(x, y, w, h) {
-    seqLabels.style.left = `${x}px`; seqLabels.style.top = `${y}px`;
-    seqLabels.style.width = `${w}px`; seqLabels.style.height = `${h}px`;
+  let seqGeo = { dx: 0, dy: 0, dw: 1, dh: 1 };
+  function placeSeqLabels(x, y, w, h) { seqGeo = { dx: x, dy: y, dw: w, dh: h }; }
+  // якорь слоя i на экране с учётом transform разреза (масштаб вокруг центра экрана + сдвиг)
+  function labelAnchor(i, vw, vh) {
+    const ax = seqGeo.dx + SEQ_LABEL_X[i] / 100 * seqGeo.dw, ay = seqGeo.dy + SEQ_LABEL_Y[i] / 100 * seqGeo.dh;
+    const cx = vw / 2, cy = vh / 2;
+    return { x: cx + (ax - cx) * S.cutS + S.cutX * vw / 100, y: cy + (ay - cy) * S.cutS + S.cutY * vh / 100 };
+  }
+  const labelLast = [];
+  function placeLabels(vw, vh) {
+    const mob = isMobile();
+    const run = mob ? 12 : 22; // наклонный отрезок; ступенька — за счёт вертикали
+    for (let i = 0; i < seqLabelEls.length; i++) {
+      const a = labelAnchor(i, vw, vh);
+      const el = seqLabelEls[i];
+      const key = `${a.x.toFixed(1)}|${a.y.toFixed(1)}`;
+      if (labelLast[i] === key) continue;
+      labelLast[i] = key;
+      el.style.setProperty('--ax', `${a.x.toFixed(1)}px`);
+      el.style.setProperty('--ay', `${a.y.toFixed(1)}px`);
+      // текст справа от линии; если не помещается — сдвигается влево ровно настолько, чтобы остаться на экране
+      const w = el.firstElementChild.offsetWidth || 160;
+      const over = a.x + run + 9 + w - (vw - 12);
+      el.style.setProperty('--shift', `${over > 0 ? (-over).toFixed(1) : 0}px`);
+      // слой далеко за экраном (при наезде камеры) — выноска гаснет
+      el.style.setProperty('--vis', a.y < 48 || a.y > vh - 24 ? '0' : '1');
+    }
   }
   // где слой i лежит на экране (CSS px от верха сцены) на последнем кадре разлёта
   function layerScreenY(i) { const g = seqGeometry(); const d = dprSeq(); return (g.dy + SEQ_LABEL_Y[i] / 100 * g.dh) / d; }
@@ -447,12 +466,13 @@
     if (stageOff) return;
     const vw = window.innerWidth, vh = window.innerHeight;
 
-    // большая луна за кольцом логотипа: проявляется в интро, уходит вместе с кольцом; лёгкий параллакс от указателя
-    moonBig.style.opacity = (I.moon * S.eclipse).toFixed(3);
-    moonBig.style.setProperty('--mpx', `${(-P.x * 3).toFixed(2)}px`); moonBig.style.setProperty('--mpy', `${(-P.y * 2.6).toFixed(2)}px`);
+    // луна: проявляется терминатором в интро, по скроллу уходит вправо-вверх и гаснет; лёгкий параллакс от указателя
+    moonBig.style.opacity = (I.moon * S.moonO).toFixed(3);
+    moonBig.style.setProperty('--term', `${I.term.toFixed(2)}%`);
+    moonBig.style.setProperty('--mpx', `${(S.moonX * vw / 100 - P.x * 3).toFixed(2)}px`);
+    moonBig.style.setProperty('--mpy', `${(S.moonY * vh / 100 - P.y * 2.6).toFixed(2)}px`);
     navEl.style.setProperty('--brand-o', `${S.brand}`);
     exposure.style.opacity = Math.max(I.dark, S.dark);
-    eclipse.style.opacity = I.eclipse * S.eclipse;
 
     productCut.style.opacity = S.cutO;
     productCut.style.setProperty('--dim', `${(1 - S.cutExp).toFixed(3)}`);
@@ -460,12 +480,13 @@
     if (S.cutO > 0.001) { markSeq(); drawSeq(); }
     const focusI = Math.round(S.focus);
     setActiveLayer(S.cutO > 0.5 ? focusI : -1);
-    seqLabels.style.opacity = (S.cutO * smoothstep(S.spread, 0.8, 1) * (1 - S.spot)).toFixed(3);
+    seqLabels.style.opacity = (S.cutO * smoothstep(S.spread, 0.8, 1)).toFixed(3);
+    if (S.cutO > 0.001) placeLabels(vw, vh);
     seqSpot.style.opacity = S.spot.toFixed(3);
     seqSpot.style.setProperty('--sy', `${S.spotY.toFixed(2)}%`);
     seqLabelEls.forEach((el, i) => el.classList.toggle('is-active', i === focusI && S.cutO > 0.5));
 
-    wordmark.style.transform = `translate(-50%, calc(-50% + ${S.wmY}vh)) scale(${S.wmS})`;
+    wordmark.style.transform = `translate(0, calc(-50% + ${S.wmY}vh)) scale(${S.wmS})`;
     wordmark.style.opacity = S.wmO * I.wmO;
     cue.style.opacity = S.cueO * I.cueO;
   }
@@ -486,7 +507,7 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden && !stageOff) render(); });
 
   /* ------------------------------------------------------------------------
-     Интро: луна проступает за кольцом → логотип → заголовок
+     Интро (≈6.3 с, только при входе): по луне идёт терминатор → логотип → заголовок
      ------------------------------------------------------------------------ */
   const letters = wordmark.querySelectorAll('.wordmark__word span');
   const wmMark = document.getElementById('wordmarkMark');
@@ -504,19 +525,19 @@
   });
 
   intro
-    .to(I, { moon: 1, duration: 2.0, ease: 'power2.out' }, 0.3)
-    .fromTo(moonBig, { scale: 0.96 }, { scale: 1, duration: 2.4, ease: 'power2.out' }, 0.3)
-    .to(I, { dark: 0, duration: 1.4, ease: 'power2.out' }, 1.2)
-    .to(wmMark, { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }, 0.9)
-    .to(wmGlow, { opacity: 1, duration: 1.0, ease: 'power2.inOut' }, 1.0)
-    .to(wmGlow, { opacity: 0, duration: 1.6, ease: 'power2.inOut' }, 2.3)
-    .to(letters, { opacity: 1, y: 0, duration: 1.2, stagger: 0.06, ease: 'power3.out' }, 1.2)
-    .to(wmSub, { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' }, 2.0)
-    .to(I, { eclipse: 1, duration: 1.3 }, 2.4)
-    .to(heroEyebrow, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 3.2)
-    .to(heroLines, { y: 0, duration: 1.2, stagger: 0.12, ease: 'power3.out' }, 3.3)
-    .to(heroSub, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' }, 3.8)
-    .to(I, { cueO: 1, duration: 1.0 }, 3.9);
+    .to(I, { moon: 1, duration: 1.4, ease: 'power2.out' }, 0.2)
+    .to(I, { term: 112, duration: 4.6, ease: 'power2.inOut' }, 0.4)
+    .fromTo(moonBig, { scale: 1.06, x: '2vw' }, { scale: 1, x: 0, duration: 5.2, ease: 'power2.out' }, 0.3)
+    .to(I, { dark: 0, duration: 1.4, ease: 'power2.out' }, 0.8)
+    .to(wmMark, { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }, 1.8)
+    .to(wmGlow, { opacity: 1, duration: 1.0, ease: 'power2.inOut' }, 1.9)
+    .to(wmGlow, { opacity: 0, duration: 1.6, ease: 'power2.inOut' }, 3.2)
+    .to(letters, { opacity: 1, y: 0, duration: 1.2, stagger: 0.06, ease: 'power3.out' }, 2.0)
+    .to(wmSub, { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' }, 2.8)
+    .to(heroEyebrow, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 4.2)
+    .to(heroLines, { y: 0, duration: 1.2, stagger: 0.12, ease: 'power3.out' }, 4.3)
+    .to(heroSub, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' }, 4.8)
+    .to(I, { cueO: 1, duration: 1.0 }, 5.2);
 
   // проба кадра: 300 мс после старта интро; тяжёлый кадр → уровень ниже, пока сцена ещё тёмная
   function probeFrames() {
@@ -584,39 +605,11 @@
   function stopAuto() { if (autoTween) { autoTween.kill(); autoTween = null; } }
   ['touchstart', 'wheel', 'keydown', 'pointerdown'].forEach((ev) => window.addEventListener(ev, stopAuto, { passive: true }));
 
-  /* вариант 1 «Кино»: разлёт и обход слоёв идут по времени, а не по скроллу; скролл только собирает */
-  let cine = null, cineOn = false, cinePending = false;
-  const CINE_WALK = 1.2 + 7 * 0.85 + 0.6;
-  function cineStart() {
-    if (cineOn) return; cineOn = true; cinePending = false;
-    if (cine) cine.kill();
-    cine = gsap.timeline({ onUpdate: render, defaults: { ease: 'power2.inOut' } });
-    cine.to(S, { spread: 1, duration: 1.6, ease: 'power3.out' }, 0)
-      .to(S, { cutS: 0.9, duration: 1.6, ease: 'power2.out' }, 0)
-      .to(S, { spot: 0.85, spotY: spotY(0), duration: 0.6 }, 1.0);
-    for (let i = 0; i < 7; i++) cine.to(S, { focus: i, duration: 0.01 }, 1.2 + i * 0.85).to(S, { spotY: spotY(i), duration: 0.6 }, 1.0 + i * 0.85);
-    cine.to(S, { spot: 0, duration: 0.6 }, CINE_WALK - 0.6)
-      .to(S, { focus: -1, duration: 0.01 }, CINE_WALK - 0.6)
-      .call(() => { if (cinePending) cineStop(); }, null, CINE_WALK)
-      // дыхание: слои чуть сходятся и расходятся, пока гость смотрит
-      .to(S, { spread: 0.93, duration: 2.4, ease: 'sine.inOut', yoyo: true, repeat: -1 }, CINE_WALK);
-  }
-  function cineStop() {
-    if (!cineOn) return;
-    // гость долистал раньше, чем обход закончился — обход ускоряется, сборка после него
-    if (cine && cine.time() < CINE_WALK - 0.6) { cinePending = true; cine.timeScale(3.5); return; }
-    cineOn = false; cinePending = false;
-    if (cine) { cine.kill(); cine = null; }
-    gsap.to(S, { spread: 0, focus: -1, spot: 0, cutS: 1, duration: 1.0, ease: 'power3.inOut', onUpdate: render, overwrite: 'auto' });
-  }
-
   function buildStage(isDesktop) {
-    const D = isDesktop, V = VARIANT;
-    const END = V === '1' ? (D ? '+=150%' : '+=120%') : (D ? '+=170%' : '+=130%');
-    // телефон: окно запуска автопрокрутки, куда и за сколько секунд она довозит
-    const AUTO = V === '1' ? { dest: 0.58, dur: 9.5, ease: 'none' }
-      : V === '3' ? { dest: 0.62, dur: 11, ease: 'power1.inOut' }
-        : { dest: 0.62, dur: 6.5, ease: 'none' };
+    const D = isDesktop;
+    const END = D ? '+=170%' : '+=130%';
+    // телефон: окно запуска автопрокрутки 10–20 %, довозит до 62 % за 11 с
+    const AUTO = { dest: 0.62, dur: 11, ease: 'power1.inOut' };
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       onUpdate: render,
@@ -626,7 +619,6 @@
         pin: true, scrub: D ? 0.5 : 0.25, anticipatePin: 1, invalidateOnRefresh: true,
         onUpdate: (self) => {
           if (!D) autoPlayLayers(self);
-          if (V === '1') { if (self.progress >= 0.10 && self.progress < 0.52) cineStart(); else cineStop(); }
           if (self.progress > 0.80) revealConcept();
         },
       },
@@ -649,22 +641,17 @@
     }
 
     tl
-      /* 0–8: имя из центра уходит в nav, hero-текст уходит, свет чуть дрейфует */
+      /* 0–8: имя уходит в nav, луна уходит вправо-вверх и гаснет, hero-текст уходит */
       .to(S, { lightDrift: 0.05, duration: 12, ease: 'power1.inOut' }, 0)
       .to(S, { wmS: 0.5, wmY: -40, wmO: 0, duration: 8, ease: 'power1.in' }, 0)
+      .to(S, { moonX: 16, moonY: -12, moonO: 0, duration: 9, ease: 'power1.in' }, 0)
       .to(S, { brand: 1, duration: 5 }, 4)
       .to(copyHero, { opacity: 0, y: -40, duration: 6 }, 1)
       .to(S, { cueO: 0, duration: 4 }, 0)
       /* 4–12: разрез проявляется в центре */
-      .to(S, { cutO: 1, cutS: 1.0, cutX: D ? 9 : 0, duration: 8 }, 4)
-      .to(S, { eclipse: 0.35, duration: 8 }, 4)
-      .to(S, { eclipse: 0, duration: 6 }, 12)
+      .to(S, { cutO: 1, cutS: 1.0, cutX: D ? 4 : 0, duration: 8 }, 4)
       .to(copyLayers, { opacity: 1, duration: 5 }, 8);
 
-    if (V === '1') {
-      /* 12–52: сцена «припаркована» — разлёт и обход слоёв живут по времени (cineStart) */
-      tl.to(copyLayers, { opacity: 0, duration: 4 }, 52);
-    } else if (V === '3') {
       /* 12–18: разлёт; 18–46: камера по очереди подходит к каждому слою, остальные уходят в тень */
       const ZS = D ? 1.32 : 1.55;
       tl.to(S, { spread: 1, duration: 6, ease: 'power3.out' }, 12)
@@ -682,25 +669,7 @@
         .to(S, { spread: 0, duration: 6, ease: 'power3.inOut' }, 50)
         .to(S, { cutS: 1.0, duration: 6, ease: 'power2.inOut' }, 50)
         .to(copyLayers, { opacity: 0, duration: 4 }, 50);
-    } else {
-      /* 12–20: слои расходятся — быстро и ровно, без перелёта; световая полоса идёт по слоям */
-      tl.to(S, { spread: 1, duration: 8, ease: 'power3.out' }, 12)
-        .to(S, { cutS: 0.9, cutY: D ? 1 : 0, duration: 8, ease: 'power2.out' }, 12)
-        .to(S, { spot: 0.6, spotY: () => spotY(0), duration: 3 }, 18.5);
-      /* 20–48: фокус по слоям сверху вниз */
-      for (let i = 0; i < 7; i++) {
-        tl.to(S, { focus: i, duration: 0.01 }, 20 + i * 4);
-        if (i) tl.to(S, { spotY: () => spotY(i), duration: 3, ease: 'power2.inOut' }, 18.5 + i * 4);
-      }
-      tl.to(S, { focus: -1, duration: 0.01 }, 48)
-        .to(S, { spot: 0, duration: 3 }, 46.5)
-        /* 48–56: слои собираются */
-        .to(S, { spread: 0, duration: 8, ease: 'power3.inOut' }, 48)
-        .to(S, { cutS: 1.0, duration: 8, ease: 'power2.inOut' }, 48)
-        .to(copyLayers, { opacity: 0, duration: 5 }, 48);
-    }
-
-    const T = V === '1' ? 54 : V === '3' ? 56 : 54;
+    const T = 56;
     tl
       /* финальное утверждение, матрас уходит вправо и вверх */
       .to(S, { cutExp: 0.45, cutS: 0.88, cutX: D ? 28 : 0, cutY: D ? 10 : -8, duration: 10 }, T)
@@ -1260,9 +1229,11 @@
 
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
   window.addEventListener('load', () => ScrollTrigger.refresh());
+  // эмуляция телефона / поздний viewport meta: если ширина успела измениться — пересчитать всё
+  requestAnimationFrame(() => { if (window.innerWidth !== lastW || window.innerHeight !== lastH) onResize(true); });
   render();
 
   if (DEBUG) {
-    window.ELUNA = { intro, Light, get tier() { return TIER; }, get variant() { return VARIANT; }, S, I, render };
+    window.ELUNA = { intro, Light, get tier() { return TIER; }, S, I, render };
   }
 })();

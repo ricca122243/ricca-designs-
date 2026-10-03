@@ -7,7 +7,7 @@
   <meta name="description" content="ELUNA. Семь слоёв, собранных вокруг одного ощущения — тишины. Премиальный матрас ручной сборки.">
   <meta name="theme-color" content="#06070c">
   <!-- порядок загрузки: фон → луна → свет → текст → остальное -->
-  <link rel="preload" as="image" href="img/moon.webp">
+  <link rel="preload" as="image" href="img/moon-hd.webp" imagesrcset="img/moon-hd-1280.webp 1280w, img/moon-hd.webp 2048w" imagesizes="(max-width: 899px) 120vw, 70vw">
   <link rel="preload" as="font" type="font/woff2" href="fonts/Unbounded-300-normal.woff2" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="fonts/Inter-300-600-normal-cyrillic.woff2" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="fonts/Inter-300-600-normal-latin.woff2" crossorigin>
@@ -48,9 +48,8 @@
       <div class="stage__inner">
 
         <div class="nebula" aria-hidden="true"></div>
-        <div class="eclipse" id="eclipse" aria-hidden="true"></div>
-        <!-- большая луна за кольцом логотипа -->
-        <div class="moon-big" id="moonBig" aria-hidden="true"><img src="img/moon.webp" alt="" width="260" height="260" decoding="async" fetchpriority="high"></div>
+        <!-- луна: большая, справа, проявляется терминатором при входе -->
+        <div class="moon-big" id="moonBig" aria-hidden="true"><img src="img/moon-hd.webp" srcset="img/moon-hd-1280.webp 1280w, img/moon-hd.webp 2048w" sizes="(max-width: 899px) 120vw, 70vw" alt="" width="2048" height="2048" decoding="async" fetchpriority="high"></div>
 
         <div class="wordmark" id="wordmark" aria-hidden="true">
           <span class="wordmark__glow" id="wordmarkGlow"></span>
@@ -66,18 +65,18 @@
         <!-- продукт в разрезе: семь слоёв -->
         <figure class="product product--cut" id="productCut" aria-label="Матрас ELUNA в разрезе: семь слоёв расходятся по скроллу">
           <canvas class="seq" id="seq"></canvas>
-          <div class="seq-labels" id="seqLabels" aria-hidden="true"></div>
           <div class="seq-spot" id="seqSpot" aria-hidden="true"></div>
         </figure>
+        <div class="seq-labels" id="seqLabels" aria-hidden="true"></div>
 
         <!-- фаза 1 — hero -->
         <div class="copy copy--hero" id="copyHero">
-          <p class="eyebrow"><span>Коллекция Noir</span><span class="dot"></span><span>2026</span></p>
+          <p class="eyebrow"><span>Sleep Tech</span><span class="dot"></span><span>2026</span></p>
           <h1 class="hero-title">
-            <span class="line"><span>Сначала — тишина.</span></span>
-            <span class="line"><span>Потом — матрас.</span></span>
+            <span class="line"><span>Сон как в космосе.</span></span>
+            <span class="line"><span>Тишина, невесомость, семь слоёв.</span></span>
           </h1>
-          <p class="hero-sub">Семь слоёв, собранных вокруг одного ощущения невесомости.</p>
+          <p class="hero-sub">ELUNA Prime — матрас, который собирают вручную в Алматы.</p>
         </div>
 
         <div class="cue" id="cue" aria-hidden="true">
@@ -427,14 +426,6 @@
     </section>
 
   </main>
-
-  <!-- выбор варианта анимации слоёв (на время согласования) -->
-  <nav class="vpick" aria-label="Вариант анимации слоёв">
-    <span class="vpick__label">Слои</span>
-    <a href="?v=1" data-v="1"><b>1</b><span>Кино</span></a>
-    <a href="?v=2" data-v="2"><b>2</b><span>Скраб</span></a>
-    <a href="?v=3" data-v="3"><b>3</b><span>Крупный план</span></a>
-  </nav>
 
   <!-- ================================================================
        «Подробнее» — модальные окна моделей
