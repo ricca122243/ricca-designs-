@@ -1627,13 +1627,9 @@
     // ---- оформление в WhatsApp ----
     const form = document.getElementById('checkoutForm');
     if (form) {
-      const consent = document.getElementById('coConsent'), err = document.getElementById('coErr');
-      consent.addEventListener('change', () => { if (consent.checked) err.hidden = true; });
       form.addEventListener('submit', (e) => {
         e.preventDefault();
-        if (!consent.checked) { err.hidden = false; consent.focus(); return; }
-        const val = (id) => (document.getElementById(id).value || '').trim();
-        const url = waLink(message(order, { name: val('coName'), phone: val('phone'), note: val('coNote') }));
+        const url = waLink(message(order));
         const w = window.open(url, '_blank');
         if (w) w.opener = null; else window.location.href = url;
       });
