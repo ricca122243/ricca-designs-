@@ -186,16 +186,18 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .moon-big {
   position: absolute; z-index: 2; left: var(--moon-x); top: var(--moon-y); width: var(--moon-d); aspect-ratio: 1;
   translate: -50% -50%;
-  transform: translate3d(calc(var(--mpx, 0px) + var(--skyx, 0px)), calc(var(--mpy, 0px) + var(--skyy, 0px)), 0);
+  transform: translate3d(calc(var(--mpx, 0px) + var(--skyx, 0px)), calc(var(--mpy, 0px) + var(--skyy, 0px)), 0) scale(var(--ms, 1));
   opacity: 0; pointer-events: none; will-change: transform, opacity;
 }
 .moon-big img { display: block; width: 100%; height: 100%; filter: saturate(.35) brightness(.78) contrast(1.04); }
 /* WebGL-шар: карта поверхности NASA, освещение и вращение в шейдере; картинка остаётся постером и fallback */
-.moon-big__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
-.moon-big.is-gl .moon-big__gl { display: block; }
-.moon-big img { transition: opacity .6s; }
+/* холст всегда в раскладке (прозрачный, пока шар не проверен), фото и шар меняются плавно — без пустого кадра */
+.moon-big__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .9s ease; }
+.moon-big.is-gl .moon-big__gl { opacity: 1; }
+.moon-big img { transition: opacity .9s ease .25s; }
 .moon-big.is-gl img { opacity: 0; }
-.moon-big.is-gl::after { display: none; }
+.moon-big::after { transition: opacity .9s ease .25s; }
+.moon-big.is-gl::after { opacity: 0; }
 .moon-big::after {
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(94deg, transparent calc(var(--term, -18%) - 14%), rgba(5,6,10,.82) calc(var(--term, -18%) - 2%), rgba(5,6,10,.985) calc(var(--term, -18%) + 6%));
@@ -676,35 +678,43 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .trust__value { font-family: var(--display); font-weight: 300; font-size: 19px; line-height: 1.15; }
 .trust__label { font-size: 12.5px; line-height: 1.6; color: var(--ink-3); }
 
-.map { position: relative; width: 100%; aspect-ratio: 1040 / 578; }
-.map svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
-.map__bg, .map__video { position: absolute; left: 50%; top: 50%; width: 140%; height: auto; transform: translate(-50%, -50%); opacity: .75; pointer-events: none;
-  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 40%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 40%, transparent 100%); }
-.map__video { z-index: 0; aspect-ratio: 16 / 9; object-fit: cover; }
-.map__video + .map__bg { display: none; }
-/* снимок NASA (Blue Marble, июль + Black Marble — огни городов), страна выделена, края растворяются в фоне */
-.map__img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
-.map__line { fill: none; stroke: rgba(200,215,255,0.38); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.map__fill { stroke: none; }
-.map__lit { opacity: .9; transition: -webkit-mask-position .9s var(--ease-out), mask-position .9s var(--ease-out); }
-.map__lit path { fill: rgba(var(--warm), 0.08); stroke: rgba(var(--warm), 0.85); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
-.map__lit { -webkit-mask-image: radial-gradient(circle at var(--mx) var(--my), #000 0, rgba(0,0,0,.6) 10%, transparent 24%); mask-image: radial-gradient(circle at var(--mx) var(--my), #000 0, rgba(0,0,0,.6) 10%, transparent 24%); }
-.moon {
-  position: absolute; left: var(--mx); top: var(--my); width: 18%; aspect-ratio: 1; transform: translate(-50%, -50%);
-  border-radius: 50%; pointer-events: none;
-  background: radial-gradient(circle, rgba(var(--warm), 0.55), rgba(var(--warm), 0.18) 22%, rgba(var(--warm), 0.05) 45%, transparent 70%);
-  transition: left .9s var(--ease-out), top .9s var(--ease-out);
-}
-.moon img { position: absolute; left: 50%; top: 50%; width: 26%; height: auto; transform: translate(-50%, -50%); }
-.city { position: absolute; left: var(--x); top: var(--y); width: 28px; height: 28px; margin: -14px 0 0 -14px; display: grid; place-items: center; color: var(--ink-3); transition: color .5s, opacity .5s; }
-.city i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px rgba(241,237,230,0.06); transition: transform .5s var(--ease-out), box-shadow .5s; }
-.city span { position: absolute; left: 100%; top: 50%; transform: translate(2px, -50%); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; opacity: 0; transition: opacity .5s; }
-.city:hover, .city:focus-visible { color: var(--ink); }
+.map { position: relative; width: 100%; aspect-ratio: 2080 / 1174; }
+.map svg, .map__fx { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; pointer-events: none; }
+/* снимок NASA (Blue Marble, июль + Black Marble — огни городов); края кадра растворяются в космосе */
+.map__img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none;
+  /* ночь с орбиты: снимок в сине-серебряном «лунном» тоне, огни городов поверх — тёплые */
+  filter: grayscale(1) sepia(.45) hue-rotate(185deg) saturate(1.6) brightness(.8) contrast(1.14);
+  -webkit-mask-image: radial-gradient(ellipse 60% 62% at 50% 50%, #000 70%, transparent 100%); mask-image: radial-gradient(ellipse 60% 62% at 50% 50%, #000 70%, transparent 100%); }
+.map__line { fill: none; stroke: rgba(205,220,255,0.55); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+/* холст эффектов: граница с сиянием, волна, маршруты, огни, «рассвет» — обычная прозрачность, без режимов наложения (дёшево для GPU) */
+.map.is-fx .map__base { display: none; }
+/* появление: снимок проявляется из темноты, города загораются волной от Алматы (--dl ставит скрипт) */
+.map.is-anim .map__img { opacity: 0; transform: scale(1.06); transition: opacity 1.8s var(--ease-out), transform 3s var(--ease-out); }
+.map.is-anim.is-in .map__img { opacity: 1; transform: none; }
+.map.is-anim .city { opacity: 0; transform: scale(.2); }
+.map.is-anim.is-in .city { opacity: 1; transform: none; }
+.map.is-anim.is-in:not(.is-done) .city { transition-delay: var(--dl, 0s); }
+
+/* города — огни: тёплая точка с ореолом, мерцает; выбранный — золотой, с сонаром */
+.city { position: absolute; left: var(--x); top: var(--y); width: 28px; height: 28px; margin: -14px 0 0 -14px; display: grid; place-items: center; color: rgb(255,234,204); transition: color .5s, opacity .7s, transform .9s var(--ease-out); }
+.city i { position: relative; z-index: 1; width: 5px; height: 5px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px 1px rgba(255,212,150,.6), 0 0 16px 3px rgba(255,190,110,.18); transition: transform .5s var(--ease-out), box-shadow .5s; animation: cityTw 3.4s ease-in-out var(--tw, 0s) infinite alternate; }
+@keyframes cityTw { from { opacity: 1; } to { opacity: .5; } }
+.city::before, .city::after { content: ""; position: absolute; left: 50%; top: 50%; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; border: 1px solid rgba(200,168,107,.85); opacity: 0; pointer-events: none; }
+.city span { position: absolute; left: 100%; top: 50%; transform: translate(2px, -50%); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; color: var(--ink-2); text-shadow: 0 1px 8px rgba(0,0,0,.9); opacity: 0; transition: opacity .5s, color .5s; }
+.city:hover, .city:focus-visible { color: #fff; }
 .city:hover span, .city.is-on span { opacity: 1; }
+.city[data-city="Алматы"] { color: var(--gold); }
 .city.is-on { color: var(--gold); }
-.city.is-on i { transform: scale(1.5); box-shadow: 0 0 0 6px rgba(200,168,107,0.15), 0 0 16px rgba(200,168,107,0.7); }
-.map.has-pick .city:not(.is-on):not(:hover) { opacity: .45; }
-.city[data-city="Астана"] span, .city[data-city="Алматы"] span, .city[data-city="Шымкент"] span, .city[data-city="Актобе"] span, .city[data-city="Атырау"] span, .city[data-city="Усть-Каменогорск"] span { opacity: .7; }
+.city.is-on span { color: var(--gold); }
+.city.is-on i { transform: scale(1.6); animation: none; box-shadow: 0 0 8px 2px rgba(200,168,107,.85), 0 0 24px 7px rgba(200,168,107,.3); }
+.city.is-on::before, .city.is-on::after { animation: citySonar 2.8s cubic-bezier(.2,.6,.3,1) infinite; }
+.city.is-on::after { animation-delay: 1.4s; }
+@keyframes citySonar { 0% { transform: scale(.3); opacity: .95; } 100% { transform: scale(2.6); opacity: 0; } }
+.map:not(.is-live) .city i, .map:not(.is-live) .city::before, .map:not(.is-live) .city::after { animation-play-state: paused; }
+/* восточный край: подпись под точкой, чтобы не уходила за край карты */
+.city[data-city="Усть-Каменогорск"] span { left: 50%; top: 100%; transform: translate(-50%, 1px); }
+.city[data-city="Астана"] span, .city[data-city="Алматы"] span, .city[data-city="Шымкент"] span, .city[data-city="Актобе"] span, .city[data-city="Атырау"] span, .city[data-city="Усть-Каменогорск"] span { opacity: .75; }
+.city[data-city="Астана"].is-on span, .city[data-city="Алматы"].is-on span, .city[data-city="Шымкент"].is-on span, .city[data-city="Актобе"].is-on span, .city[data-city="Атырау"].is-on span, .city[data-city="Усть-Каменогорск"].is-on span { opacity: 1; }
 
 .cta { margin-top: clamp(56px, 8vh, 96px); padding-top: clamp(40px, 5vh, 56px); border-top: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 80px); align-items: center; }
 .cta__title { font-family: var(--display); font-weight: 300; font-size: clamp(30px, 3.6vw, 52px); line-height: 1.08; letter-spacing: -0.015em; }
@@ -859,4 +869,6 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .xs--prime { gap: 10px; }
   .material__photo img { transition: none; }
   .panel, .acc__body { animation: none; }
+  .city i, .city::before, .city::after { animation: none !important; }
+  .city.is-on::before { opacity: .7; transform: scale(1.5); }
 }

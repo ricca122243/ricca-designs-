@@ -75,7 +75,7 @@ void main() {
     if (!gl) return null;
 
     const state = { rot: 0, tiltX: 0.12, tiltY: -0.08, light: [-0.55, 0.3, 0.78], exp: 1 };
-    let prog, loc = {}, tex, ready = false, dead = false, raf = 0, asleep = false, draws = 0, dirty = true, lastT = 0, lastDraw = 0;
+    let prog, loc = {}, tex, ready = false, verified = false, dead = false, raf = 0, asleep = false, draws = 0, dirty = true, lastT = 0, lastDraw = 0;
     let minStep = opts.tier === 'high' ? 0 : 33;   // 60 или 30 кадров/с
     let spin = 0;                                   // рад/с — непрерывное вращение, 0 пока идёт интро
 
@@ -110,8 +110,7 @@ void main() {
       // без мип-карт: при диаметре 300–1000 px карта сэмплируется ≈ 1:1, а на шве долготы мипы давали тёмный пунктир
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       ready = true; dirty = true;
-      if (opts.onReady) opts.onReady();
-      loop();
+      loop();   // onReady — только после первого кадра, который реально нарисовался (см. draw)
     };
     img.onerror = () => { if (opts.onFallback) opts.onFallback(); };
     const maxTex = gl.getParameter(gl.MAX_TEXTURE_SIZE) || 2048;
@@ -122,17 +121,30 @@ void main() {
     // вернулись на вкладку — продолжить вращение
     document.addEventListener('visibilitychange', () => { if (!document.hidden) { lastT = 0; dirty = true; loop(); } });
 
+    function pass(light, exp) {
+      gl.uniform3f(loc.uLight, light[0], light[1], light[2]);
+      gl.uniform1f(loc.uExp, exp);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
     function draw(now) {
       const w = canvas.width, h = canvas.height;
       gl.viewport(0, 0, w, h);
-      gl.clear(gl.COLOR_BUFFER_BIT);
       gl.uniform1f(loc.uPx, 2 / Math.min(w, h));
       gl.uniform1f(loc.uRot, state.rot);
       gl.uniform2f(loc.uTilt, state.tiltX, state.tiltY);
-      gl.uniform3f(loc.uLight, state.light[0], state.light[1], state.light[2]);
-      gl.uniform1f(loc.uExp, state.exp);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      // первый кадр: пробный проход со светом в лоб — в центре диска должна быть светлая поверхность.
+      // Пусто/чёрно (драйвер, память, битая текстура) → остаётся HD-фото, а не пустой круг
+      if (!verified) {
+        pass([0, 0, 1], 1);
+        const px = new Uint8Array(4);
+        gl.readPixels(w >> 1, h >> 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        if (gl.getError() !== gl.NO_ERROR || px[3] < 200 || px[0] + px[1] + px[2] < 30) { dead = true; if (opts.onFallback) opts.onFallback(); return; }
+        verified = true;
+      }
+      pass(state.light, state.exp);
       draws++; dirty = false; lastDraw = now;
+      if (draws === 1 && opts.onReady) opts.onReady();
     }
 
     function frame(now) {

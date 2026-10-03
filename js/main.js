@@ -300,7 +300,7 @@
     wmS: 1, wmY: 0, wmO: 1,
     lightDrift: 0,
   };
-  const I = { dark: 1, wmO: 1, cueO: 0, moon: 0, term: -18 };
+  const I = { dark: 1, wmO: 1, cueO: 0, moon: 0, term: 30, ms: 1.06, mx: 2 };   // term 30 — луна входит уже освещённым серпом, не чёрным диском
   const P = { x: 0, y: 0 };
 
   const stageEl = document.getElementById('stage');
@@ -532,14 +532,15 @@
     const vw = window.innerWidth, vh = window.innerHeight;
 
     // луна: проявляется терминатором в интро, по скроллу уходит вправо-вверх и гаснет; лёгкий параллакс от указателя
-    svo(moonBig, (I.moon * S.moonO).toFixed(3));
+    sv(moonBig, 'opacity', (I.moon * S.moonO).toFixed(3));   // без visibility: шар и фото всегда в слое, ничего не теряется
     svar(moonBig, '--term', `${I.term.toFixed(2)}%`);
     if (moonGL) {
       // луна ушла со сцены — шар спит и не тратит кадры на расслойку
-      const vis = I.moon * S.moonO > 0.02;
+      const vis = S.moonO > 0.02;   // спит только когда луна ушла со сцены по скроллу, не во время входа
       if (vis) { moonGL.wake(); moonGL.set({ light: lightFromTerm(I.term), tiltY: -0.08 + P.x * 0.012, tiltX: 0.12 - P.y * 0.012 }); } else moonGL.sleep();
     }
-    svar(moonBig, '--mpx', `${(S.moonX * vw / 100 - P.x * 3).toFixed(2)}px`);
+    svar(moonBig, '--mpx', `${((S.moonX + I.mx) * vw / 100 - P.x * 3).toFixed(2)}px`);
+    svar(moonBig, '--ms', I.ms.toFixed(4));
     svar(moonBig, '--mpy', `${(S.moonY * vh / 100 - P.y * 2.6).toFixed(2)}px`);
     svar(navEl, '--brand-o', S.brand.toFixed(3));
     svo(exposure, Math.max(I.dark, S.dark).toFixed(3));
@@ -599,10 +600,11 @@
   });
 
   intro
-    .to(I, { moon: 1, duration: 1.4, ease: 'power2.out' }, 0.2)
-    .to(I, { term: 112, duration: 4.6, ease: 'power2.inOut' }, 0.4)
-    .fromTo(moonBig, { scale: 1.06, x: '2vw' }, { scale: 1, x: 0, duration: 5.2, ease: 'power2.out' }, 0.3)
-    .to(I, { dark: 0, duration: 1.4, ease: 'power2.out' }, 0.8)
+    .to(I, { moon: 1, duration: 1.0, ease: 'power2.out' }, 0.1)
+    .to(I, { term: 112, duration: 2.8, ease: 'power2.out' }, 0.3)
+    // наезд — через переменные, а не transform: иначе GSAP «замораживает» transform и луна перестаёт двигаться по скроллу
+    .to(I, { ms: 1, mx: 0, duration: 5.2, ease: 'power2.out' }, 0.3)
+    .to(I, { dark: 0, duration: 1.3, ease: 'power2.out' }, 0.3)
     .to(wmMark, { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }, 1.8)
     .to(wmGlow, { opacity: 1, duration: 1.0, ease: 'power2.inOut' }, 1.9)
     .to(wmGlow, { opacity: 0, duration: 1.6, ease: 'power2.inOut' }, 3.2)
@@ -938,7 +940,12 @@
   })();
 
   /* ------------------------------------------------------------------------
-     Доставка: клик по городу — луна и подсветка контура вокруг него
+     Доставка: Казахстан с орбиты. При появлении — волна света от Алматы,
+     граница прорисовывается, города загораются по мере прохода волны.
+     Дальше — пунктирные маршруты из Алматы с бегущими огнями, свет по
+     границе, полоса «рассвета» поперёк страны. Клик/наведение на город —
+     золотая дуга доставки из Алматы с кометой. Всё — один холст поверх
+     снимка, кадры идут только пока карта на экране.
      ------------------------------------------------------------------------ */
   (function delivery() {
     const map = document.getElementById('map');
@@ -947,6 +954,29 @@
     const cityEl = document.getElementById('deliveryCity');
     const daysEl = document.getElementById('deliveryDays');
     const cities = Array.from(map.querySelectorAll('.city'));
+    if (!cities.length) return;
+
+    const VW = 2080, VH = 1174;                         // система координат снимка и контура
+    const pos = (c) => [parseFloat(c.style.getPropertyValue('--x')) / 100 * VW, parseFloat(c.style.getPropertyValue('--y')) / 100 * VH];
+    const home = cities.find((c) => c.dataset.city === 'Алматы') || cities[0];
+    const A = pos(home);
+    // маршрут — квадратичная дуга из Алматы, выгнутая к северу
+    const routes = cities.filter((c) => c !== home).map((c, i) => {
+      const B = pos(c), dx = B[0] - A[0], dy = B[1] - A[1], len = Math.hypot(dx, dy) || 1;
+      let nx = -dy / len, ny = dx / len; if (ny > 0) { nx = -nx; ny = -ny; }
+      const C = [(A[0] + B[0]) / 2 + nx * len * 0.2, (A[1] + B[1]) / 2 + ny * len * 0.2];
+      return { el: c, B, C, len, period: 3.4 + len / 650, phase: (i * 0.618) % 1 };
+    });
+    const maxD = Math.max(1, ...routes.map((r) => r.len));
+    cities.forEach((c, i) => {
+      const B = pos(c);
+      c.style.setProperty('--dl', `${(0.2 + Math.hypot(B[0] - A[0], B[1] - A[1]) / maxD * 1.5).toFixed(2)}s`);
+      c.style.setProperty('--tw', `${(-((i * 1.37) % 3.4)).toFixed(2)}s`);
+    });
+
+    const animate = !reduceMotion && TIER !== 'low';
+    let pickR = null, pickT = -1e9;
+    let paint = () => {};
     function pick(btn) {
       cities.forEach((c) => { const on = c === btn; c.classList.toggle('is-on', on); c.setAttribute('aria-pressed', on ? 'true' : 'false'); });
       map.classList.add('has-pick');
@@ -955,15 +985,243 @@
       const name = btn.dataset.city;
       cityEl.textContent = name;
       daysEl.textContent = DELIVERY[name] || DELIVERY.default;
+      const r = routes.find((x) => x.el === btn) || null;
+      if (r !== pickR) { pickR = r; pickT = animate ? performance.now() / 1000 : -1e9; paint(); }
     }
     const hoverable = window.matchMedia('(hover: hover)').matches;
+    let hoverTo = 0;
     cities.forEach((c) => {
       c.addEventListener('click', () => pick(c));
-      c.addEventListener('mouseenter', () => { if (hoverable) pick(c); });
+      // наведение — с короткой задержкой, чтобы дуга не дёргалась, пока курсор пролетает над точками
+      c.addEventListener('mouseenter', () => { if (!hoverable) return; clearTimeout(hoverTo); hoverTo = setTimeout(() => pick(c), 90); });
+      c.addEventListener('mouseleave', () => clearTimeout(hoverTo));
     });
-    const first = map.querySelector('.city.is-on');
-    if (first) pick(first);
+    pick(map.querySelector('.city.is-on') || home);
 
+    // ---- холст эффектов ----
+    const lineEl = map.querySelector('.map__line');
+    const dStr = lineEl ? lineEl.getAttribute('d') : '';
+    let border = null;
+    try { border = new Path2D(dStr); } catch (e) { border = null; }
+    const cv = document.createElement('canvas');
+    const ctx = border && cv.getContext ? cv.getContext('2d') : null;
+    if (!ctx) { map.classList.add('is-in'); return; }
+    cv.className = 'map__fx'; cv.setAttribute('aria-hidden', 'true');
+    map.insertBefore(cv, cities[0]);
+    map.classList.add('is-fx');
+
+    // главный контур как ломаная: для прорисовки и бегущего света
+    const ring = [];
+    (dStr.split('Z')[0].match(/-?\d+(?:\.\d+)?/g) || []).forEach((n, i, a) => { if (i % 2) ring.push([+a[i - 1], +n]); });
+    if (ring.length > 1) ring.push(ring[0]);
+    const cum = [0];
+    for (let i = 1; i < ring.length; i++) cum.push(cum[i - 1] + Math.hypot(ring[i][0] - ring[i - 1][0], ring[i][1] - ring[i - 1][1]));
+    const PER = cum[cum.length - 1] || 1;
+    function along(s, o) {
+      s = ((s % PER) + PER) % PER;
+      let lo = 0, hi = cum.length - 1;
+      while (hi - lo > 1) { const m = (lo + hi) >> 1; if (cum[m] <= s) lo = m; else hi = m; }
+      const f = (s - cum[lo]) / ((cum[hi] - cum[lo]) || 1);
+      o[0] = ring[lo][0] + (ring[hi][0] - ring[lo][0]) * f; o[1] = ring[lo][1] + (ring[hi][1] - ring[lo][1]) * f;
+      return o;
+    }
+    const qb = (r, t, o) => { const u = 1 - t; o[0] = u * u * A[0] + 2 * u * t * r.C[0] + t * t * r.B[0]; o[1] = u * u * A[1] + 2 * u * t * r.C[1] + t * t * r.B[1]; return o; };
+    // часть дуги 0..t (де Кастельжо)
+    function arc(c, r, t) {
+      const c1x = A[0] + (r.C[0] - A[0]) * t, c1y = A[1] + (r.C[1] - A[1]) * t, e = qb(r, t, [0, 0]);
+      c.moveTo(A[0], A[1]); c.quadraticCurveTo(c1x, c1y, e[0], e[1]);
+    }
+    function sprite(rgb) {
+      const s = document.createElement('canvas'); s.width = s.height = 64;
+      const g = s.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gr.addColorStop(0, `rgba(${rgb},1)`); gr.addColorStop(0.16, `rgba(${rgb},.9)`); gr.addColorStop(0.42, `rgba(${rgb},.22)`); gr.addColorStop(1, `rgba(${rgb},0)`);
+      g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return s;
+    }
+    const WARM = sprite('255,222,165'), ICE = sprite('185,212,255'), WHITE = sprite('255,248,236');
+
+    let k = 1, u = 1, stat = null;
+    const q = [0, 0], q2 = [0, 0];
+    const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+    function dot(spr, x, y, rPx, a) { if (a <= 0.003) return; const r = rPx * u; ctx.globalAlpha = a; ctx.drawImage(spr, x - r, y - r, r * 2, r * 2); }
+    function strokeBorder(c, path) {
+      c.lineJoin = 'round'; c.lineCap = 'round';
+      c.strokeStyle = 'rgba(110,150,255,0.10)'; c.lineWidth = 8 * u; c.stroke(path);
+      c.strokeStyle = 'rgba(150,185,255,0.24)'; c.lineWidth = 2.8 * u; c.stroke(path);
+      c.strokeStyle = 'rgba(218,230,255,0.78)'; c.lineWidth = 1 * u; c.stroke(path);
+    }
+    function strokeRoute(c, r, t, a) {
+      c.globalAlpha = a; c.beginPath(); arc(c, r, t); c.stroke();
+    }
+    function routesStyle(c) { c.setLineDash([2.5 * u, 6 * u]); c.lineWidth = 1 * u; c.lineCap = 'round'; c.strokeStyle = 'rgb(200,216,255)'; }
+    // статичный слой: граница и пунктир маршрутов — рисуется один раз на размер
+    function buildStatic() {
+      stat = stat || document.createElement('canvas');
+      stat.width = cv.width; stat.height = cv.height;
+      const s = stat.getContext('2d');
+      s.setTransform(k, 0, 0, k, 0, 0);
+      strokeBorder(s, border);
+      routesStyle(s); routes.forEach((r) => strokeRoute(s, r, 1, 0.26)); s.setLineDash([]); s.globalAlpha = 1;
+    }
+    function size() {
+      const rc = map.getBoundingClientRect();
+      if (!rc.width) return;
+      const d = Math.min(isMobile() ? 1.5 : 2, window.devicePixelRatio || 1);
+      const w = Math.round(rc.width * d), h = Math.round(rc.height * d);
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+      k = w / VW; u = d / k;                            // u — единиц снимка в одном CSS-пикселе
+      buildStatic(); if (animate) buildDay(); paint();
+    }
+
+    const REVEAL = 2.9;
+    let revealAt = animate ? -1 : -1e9;                  // −1 — ещё не на экране
+    let live = false, raf = 0, last = 0;
+
+    function borderPart(f) {
+      const end = f * PER; ctx.beginPath(); ctx.moveTo(ring[0][0], ring[0][1]);
+      for (let i = 1; i < ring.length && cum[i] <= end; i++) ctx.lineTo(ring[i][0], ring[i][1]);
+      along(end, q); ctx.lineTo(q[0], q[1]);
+    }
+    function draw(t) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, cv.width, cv.height);
+      ctx.setTransform(k, 0, 0, k, 0, 0);
+      if (revealAt === -1) return;                       // до появления — пусто (снимок тоже скрыт)
+      const rt = t - revealAt;
+      if (rt < REVEAL) {
+        // граница прорисовывается, волна от Алматы зажигает маршруты
+        const f = clamp((rt - 0.25) / 2.3), fe = f < 0.5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
+        if (fe > 0) {
+          ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+          borderPart(fe);
+          ctx.strokeStyle = 'rgba(110,150,255,0.10)'; ctx.lineWidth = 8 * u; ctx.stroke();
+          ctx.strokeStyle = 'rgba(150,185,255,0.24)'; ctx.lineWidth = 2.8 * u; ctx.stroke();
+          ctx.strokeStyle = 'rgba(218,230,255,0.78)'; ctx.lineWidth = 1 * u; ctx.stroke();
+          along(fe * PER, q); dot(ICE, q[0], q[1], 14, 1 - clamp((rt - 2.3) / 0.5));
+        }
+        const wp = clamp((rt - 0.1) / 1.7), R = (1 - Math.pow(1 - wp, 3)) * maxD * 1.1;
+        if (wp < 1) {
+          ctx.globalAlpha = 1;
+          ctx.lineWidth = 1.6 * u; ctx.strokeStyle = `rgba(255,226,178,${(0.6 * (1 - wp)).toFixed(3)})`;
+          ctx.beginPath(); ctx.arc(A[0], A[1], R, 0, Math.PI * 2); ctx.stroke();
+          ctx.lineWidth = 7 * u; ctx.strokeStyle = `rgba(255,210,150,${(0.12 * (1 - wp)).toFixed(3)})`;
+          ctx.beginPath(); ctx.arc(A[0], A[1], R * 0.97, 0, Math.PI * 2); ctx.stroke();
+        }
+        routesStyle(ctx);
+        routes.forEach((r) => { const a = clamp((R - r.len * 0.35) / (r.len * 0.65)); if (a > 0) strokeRoute(ctx, r, a, 0.26); });
+        ctx.setLineDash([]); ctx.globalAlpha = 1;
+      } else {
+        ctx.drawImage(stat, 0, 0, VW, VH);
+      }
+      const amb = clamp((rt - 2.0) / 1.2);
+      if (amb > 0 && animate) { sweep(t, amb); runners(t, amb); packets(t, amb); }
+      selected(t);
+      ctx.globalAlpha = 1;
+    }
+    // «рассвет»: раз в 12 с с востока на запад идёт полоса дня — внутри неё снимок в настоящих цветах
+    // (ночной сине-серебряный вид — CSS-фильтр картинки). Дневной слой (снимок, обрезанный по границе)
+    // готовится один раз на размер; полоса — узкие вертикальные срезы этого слоя с плавной прозрачностью
+    const img = map.querySelector('.map__img');
+    let day = null, glow = null;
+    function buildDay() {
+      day = glow = null;
+      if (!img || !img.complete || !img.naturalWidth) return;
+      day = document.createElement('canvas'); day.width = cv.width; day.height = cv.height;
+      const d = day.getContext('2d'); d.setTransform(k, 0, 0, k, 0, 0); d.clip(border); d.drawImage(img, 0, 0, VW, VH);
+      glow = document.createElement('canvas'); glow.width = cv.width; glow.height = cv.height;
+      const g = glow.getContext('2d'); g.setTransform(k, 0, 0, k, 0, 0); g.fillStyle = 'rgb(226,236,255)'; g.fill(border);
+    }
+    if (img && !img.complete) img.addEventListener('load', () => { buildDay(); paint(); }, { once: true });
+    const BAND = 920, STRIPS = 56;
+    const sstep = (e0, e1, v) => { const x = clamp((v - e0) / (e1 - e0)); return x * x * (3 - 2 * x); };
+    function sweep(t, a) {
+      const ph = (t % 12) / 7; if (ph >= 1 || !day) return;
+      const x = VW + BAND / 2 - ph * (VW + BAND);
+      const env = a * Math.min(1, Math.sin(Math.PI * ph) * 2.2);
+      const left = (x - BAND / 2) * k, sw = BAND * k / STRIPS, H = cv.height, W = cv.width;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      for (let i = 0; i < STRIPS; i++) {
+        const sx = Math.round(left + i * sw), ex = Math.round(left + (i + 1) * sw);
+        const x0 = Math.max(0, sx), x1 = Math.min(W, ex);
+        if (x1 <= x0) continue;
+        const v = (i + 0.5) / STRIPS;                    // 0 — передний (западный) край полосы
+        const al = sstep(0.1, 0.3, v) * (1 - sstep(0.3, 1, v));
+        if (al > 0.01) { ctx.globalAlpha = 0.62 * env * al; ctx.drawImage(day, x0, 0, x1 - x0, H, x0, 0, x1 - x0, H); }
+        const edge = sstep(0.12, 0.26, v) * (1 - sstep(0.26, 0.34, v));   // светлая кромка терминатора
+        if (edge > 0.01) { ctx.globalAlpha = 0.13 * env * edge; ctx.drawImage(glow, x0, 0, x1 - x0, H, x0, 0, x1 - x0, H); }
+      }
+      ctx.setTransform(k, 0, 0, k, 0, 0);
+    }
+    // два огня бегут по границе с хвостом
+    function runners(t, a) {
+      const tail = PER * 0.05, N = 26;
+      ctx.lineCap = 'round'; ctx.strokeStyle = 'rgb(205,224,255)';
+      for (const off of [0, 0.5]) {
+        const s = ((t / 18 + off) % 1) * PER;
+        for (let i = 0; i < N; i++) {
+          const f0 = i / N, f1 = (i + 1) / N;
+          along(s - tail * (1 - f0), q); along(s - tail * (1 - f1), q2);
+          ctx.globalAlpha = a * f1 * 0.85; ctx.lineWidth = (0.5 + 1.8 * f1) * u;
+          ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.lineTo(q2[0], q2[1]); ctx.stroke();
+        }
+        along(s, q); dot(ICE, q[0], q[1], 10, a * 0.9);
+      }
+    }
+    // посылки: огонёк с коротким хвостом летит из Алматы по каждому маршруту
+    function packets(t, a) {
+      for (const r of routes) {
+        if (r === pickR) continue;
+        const p = (t / r.period + r.phase) % 1, s = p * p * (3 - 2 * p), fade = Math.sin(Math.PI * p) * a;
+        for (let j = 3; j >= 0; j--) { qb(r, Math.max(0, s - j * 0.03), q); dot(WARM, q[0], q[1], j ? 4 - j * 0.7 : 5.5, fade * (j ? 0.32 - j * 0.07 : 0.95)); }
+      }
+    }
+    // выбранный город: золотая дуга прорисовывается за 1 с, затем по ней кругами идёт комета
+    function selected(t) {
+      if (!pickR) return;
+      const r = pickR, dt = t - pickT, d = clamp(dt / 1.0), e = 1 - Math.pow(1 - d, 3);
+      if (dt < 0) return;
+      ctx.lineCap = 'round'; ctx.globalAlpha = 1;
+      ctx.beginPath(); arc(ctx, r, e);
+      ctx.strokeStyle = 'rgba(255,205,140,0.16)'; ctx.lineWidth = 7 * u; ctx.stroke();
+      const g = ctx.createLinearGradient(A[0], A[1], r.B[0], r.B[1]);
+      g.addColorStop(0, 'rgba(200,168,107,0.95)'); g.addColorStop(1, 'rgba(255,244,222,0.95)');
+      ctx.strokeStyle = g; ctx.lineWidth = 1.7 * u; ctx.stroke();
+      if (d < 1) { qb(r, e, q); dot(WHITE, q[0], q[1], 16, 1); return; }
+      if (!animate) return;
+      const p = ((dt - 1.0) % 2.6) / 2.6, s = p * p * (3 - 2 * p), fade = Math.sin(Math.PI * p);
+      for (let j = 5; j >= 0; j--) { qb(r, Math.max(0, s - j * 0.025), q); dot(j ? WARM : WHITE, q[0], q[1], j ? 6 - j * 0.8 : 11, fade * (j ? 0.4 - j * 0.06 : 1)); }
+    }
+
+    // компьютер — до 60 кадров/с (на 120-герцовых экранах лишнее не рисуем), телефон и средний уровень — 30
+    const minStep = isMobile() || TIER !== 'high' ? 32 : 15;
+    function frame(now) {
+      raf = 0;
+      if (!live) return;
+      if (now - last >= minStep) { last = now; draw(now / 1000); }
+      raf = requestAnimationFrame(frame);
+    }
+    // без анимации (reduced motion, слабое устройство) — один кадр по требованию
+    paint = () => { if (!live && cv.width) draw(performance.now() / 1000); };
+
+    if (animate) map.classList.add('is-anim');
+    else map.classList.add('is-in', 'is-done');
+    size();
+    if ('ResizeObserver' in window) new ResizeObserver(() => size()).observe(map);
+    else resizeHooks.push(size);
+
+    if (!animate) return;
+    if (!('IntersectionObserver' in window)) { map.classList.add('is-in', 'is-done'); revealAt = -1e9; paint(); return; }
+    new IntersectionObserver((es) => {
+      const en = es[es.length - 1];
+      if (revealAt === -1 && en.isIntersecting && en.intersectionRatio >= 0.3) {
+        revealAt = performance.now() / 1000;
+        pickT = Math.max(pickT, revealAt + 1.6);         // дуга выбранного города — после волны
+        map.classList.add('is-in');
+        setTimeout(() => map.classList.add('is-done'), 3600);
+      }
+      live = en.isIntersecting;
+      map.classList.toggle('is-live', live);
+      if (live && !raf) { last = 0; raf = requestAnimationFrame(frame); }
+      if (!live) paint();
+    }, { threshold: [0, 0.3] }).observe(map);
   })();
 
   /* ------------------------------------------------------------------------
