@@ -787,7 +787,10 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .button--wa { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-top: 6px; }
 .button--wa svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; }
 .button--wa svg path + path { fill: currentColor; stroke: none; }
-.footer__brand .amp { margin: 0 .45em; color: var(--gold); }
+.footer__studio { display: inline-flex; flex-direction: column; gap: 4px; padding-left: 20px; border-left: 1px solid var(--line); }
+.footer__studio b { font-family: var(--logo); font-weight: 400; font-size: 12px; letter-spacing: .24em; color: var(--ink-2); }
+.footer__studio small { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+@media (max-width: 899px) { .footer__studio { padding-left: 0; border-left: 0; } }
 
 /* ---------- Футер ------------------------------------------------------- */
 
