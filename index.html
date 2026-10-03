@@ -6,13 +6,24 @@
   <title>ELUNA — матрас, который раскрывается слой за слоем</title>
   <meta name="description" content="ELUNA. Семь слоёв, собранных вокруг одного ощущения — тишины. Премиальный матрас ручной сборки.">
   <meta name="theme-color" content="#06070c">
+  <!-- порядок загрузки: фон → матрас → свет → текст → остальное -->
+  <link rel="preload" as="image" href="img/hero-moon.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/moon.webp">
+  <link rel="preload" as="font" type="font/woff2" href="fonts/Unbounded-300-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="fonts/Inter-300-600-normal-cyrillic.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="fonts/Inter-300-600-normal-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/ttf" href="fonts/Michroma-Regular.ttf" crossorigin>
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="icon" type="image/png" href="img/mark.png">
+  <script defer src="vendor/gsap.min.js"></script>
+  <script defer src="vendor/ScrollTrigger.min.js"></script>
+  <script defer src="js/moonlight.js"></script>
+  <script defer src="js/main.js"></script>
 </head>
 <body class="is-intro">
 
-  <a class="skip-link" href="#manifesto">К содержанию</a>
+  <a class="skip-link" href="#concept">К содержанию</a>
 
   <!-- Космос: звёздное поле на всю страницу -->
   <canvas class="stars" id="stars" aria-hidden="true"></canvas>
@@ -22,19 +33,18 @@
   <header class="nav" id="nav">
     <a class="nav__brand" href="#top" aria-label="ELUNA — на главную"><img class="mark" src="img/mark.png" alt="" width="351" height="345">ELUNA</a>
     <nav class="nav__links" aria-label="Разделы">
-      <a href="#manifesto">Семь слоёв</a>
-      <a href="#motion">Сон вдвоём</a>
-      <a href="#lineup">Линейка</a>
-      <a href="#materials">Материалы</a>
-      <a href="#sizes">Размеры</a>
+      <a href="#concept">Концепция</a>
+      <a href="#tech">Технология</a>
+      <a href="#models">Модели</a>
+      <a href="#order">Доставка</a>
     </nav>
-    <a class="nav__cta" href="#lineup">Выбрать модель</a>
+    <a class="nav__cta" href="#models">Выбрать модель</a>
   </header>
 
   <main id="top">
 
     <!-- ================================================================
-         СЦЕНА: раскрытие продукта (pinned)
+         1. HERO — сцена: луна, свет, матрас, разрез (pinned)
          ================================================================ -->
     <section class="stage" id="stage" aria-label="ELUNA — вступление">
       <div class="stage__inner">
@@ -51,13 +61,17 @@
           </div>
         </div>
 
-        <!-- продукт: фото проявляется из темноты -->
         <!-- луна и её свет: единственный источник света на входе -->
         <div class="moon-wrap" id="moonWrap"><span class="moon-glow" id="moonGlow"></span><img class="moon-hero" id="moonHero" src="img/moon.webp" alt="" width="260" height="260" decoding="async" fetchpriority="high"></div>
         <div class="moonbeam" id="moonbeam" aria-hidden="true"></div>
+
+        <!-- продукт: фото — текстура, свет считается в WebGL (или CSS-слоями на слабых устройствах) -->
         <figure class="product product--hero" id="productHero">
           <div class="product__float">
-            <img src="img/hero-moon.webp" alt="Матрас ELUNA в лунном свете" width="1920" height="1071" decoding="async" fetchpriority="high">
+            <div class="product__media" id="productMedia">
+              <img id="heroImg" src="img/hero-moon.webp" alt="Матрас ELUNA в лунном свете" width="1920" height="1071" decoding="async" fetchpriority="high">
+              <canvas class="product__gl" id="heroGl" aria-hidden="true"></canvas>
+            </div>
             <div class="sheen" id="sheen" aria-hidden="true"></div>
             <div class="dent" id="dent" aria-hidden="true"></div>
           </div>
@@ -77,7 +91,7 @@
             <span class="line"><span>Сначала — тишина.</span></span>
             <span class="line"><span>Потом — матрас.</span></span>
           </h1>
-          <p class="hero-sub">Семь слоёв, собранных вокруг одного ощущения невесомости. Раскрывается постепенно — как и всё настоящее.</p>
+          <p class="hero-sub">Семь слоёв, собранных вокруг одного ощущения невесомости.</p>
         </div>
 
         <div class="cue" id="cue" aria-hidden="true">
@@ -89,16 +103,7 @@
         <div class="copy copy--layers" id="copyLayers">
           <p class="eyebrow"><span>Анатомия</span><span class="dot"></span><span>300 мм</span></p>
           <h2 class="section-title">Семь слоёв.<br><em>Одно ощущение.</em></h2>
-          <ol class="layer-list" id="layerList">
-            <li data-i="0"><span class="num">01</span><span class="name">Стёганый чехол из органического хлопка</span><span class="spec">15 мм</span></li>
-            <li data-i="1"><span class="num">02</span><span class="name">Натуральный латекс</span><span class="spec">30 мм</span></li>
-            <li data-i="2"><span class="num">03</span><span class="name">Memory-пена с гелевым охлаждением</span><span class="spec">40 мм</span></li>
-            <li data-i="3"><span class="num">04</span><span class="name">Кокосовая койра</span><span class="spec">30 мм</span></li>
-            <li data-i="4"><span class="num">05</span><span class="name">Высокоэластичная пена HR</span><span class="spec">40 мм</span></li>
-            <li data-i="5"><span class="num">06</span><span class="name">Независимые пружины · 7 зон</span><span class="spec">120 мм</span></li>
-            <li data-i="6"><span class="num">07</span><span class="name">Армированное основание</span><span class="spec">25 мм</span></li>
-          </ol>
-          <p class="layer-active" id="layerActive"><span class="num">01</span><span class="name">Стёганый чехол из органического хлопка</span></p>
+          <p class="layer-active" id="layerActive"><span class="num">01</span><span class="name">Стёганый чехол</span><span class="spec">15 мм</span></p>
         </div>
 
         <!-- тень слева под финальный текст -->
@@ -114,376 +119,455 @@
     </section>
 
     <!-- ================================================================
-         МАНИФЕСТ
+         2. КОНЦЕПЦИЯ — манифест и четыре факта в одной полосе
          ================================================================ -->
-    <section class="manifesto" id="manifesto" tabindex="-1">
-      <div class="container">
-        <p class="eyebrow reveal"><span>Манифест</span></p>
-        <h2 class="manifesto__text">
-          <span class="reveal-line"><span>Мы не делали матрас мягче или жёстче.</span></span>
-          <span class="reveal-line"><span>Мы убирали из него всё, что мешает</span></span>
-          <span class="reveal-line"><span>телу забыть о своём весе —</span></span>
-          <span class="reveal-line"><span>пока не осталась <em>тишина</em>.</span></span>
-        </h2>
-        <div class="manifesto__facts">
+    <section class="concept" id="concept" tabindex="-1">
+      <div class="container concept__grid">
+        <div>
+          <p class="eyebrow reveal"><span>Манифест</span></p>
+          <h2 class="concept__text manifesto__text">
+            <span class="reveal-line"><span>Мы не делали матрас мягче или жёстче.</span></span>
+            <span class="reveal-line"><span>Мы убирали из него всё, что мешает</span></span>
+            <span class="reveal-line"><span>телу забыть о своём весе —</span></span>
+            <span class="reveal-line"><span>пока не осталась <em>тишина</em>.</span></span>
+          </h2>
+        </div>
+        <div class="concept__facts">
           <div class="fact reveal"><span class="fact__value">7</span><span class="fact__label">слоёв, собранных вручную</span></div>
           <div class="fact reveal"><span class="fact__value"><span data-count="300">300</span><small> мм</small></span><span class="fact__label">высота, которая чувствуется</span></div>
-          <div class="fact reveal"><span class="fact__value" data-count="1200">1 200</span><span class="fact__label">независимых пружин на 160×200</span></div>
+          <div class="fact reveal"><span class="fact__value" data-count="1200">1 200</span><span class="fact__label">независимых пружин на 1600 × 2000 мм</span></div>
           <div class="fact reveal"><span class="fact__value" data-count="100">100</span><span class="fact__label">ночей, чтобы решить</span></div>
         </div>
       </div>
     </section>
 
     <!-- ================================================================
-         МАТЕРИАЛЫ
+         3. ТЕХНОЛОГИЯ — слои · материалы · сон вдвоём (вкладки)
          ================================================================ -->
-    <section class="materials" id="materials">
+    <section class="tech" id="tech" aria-labelledby="techTitle">
       <div class="container">
-        <div class="section-head reveal">
-          <p class="eyebrow"><span>Материалы</span><span class="dot"></span><span>04</span></p>
-          <h2 class="section-title">Природа — там,<br>где касается кожи.<br><em>Инженерия — глубже.</em></h2>
+        <div class="section-head section-head--tight reveal">
+          <p class="eyebrow"><span>Технология</span><span class="dot"></span><span>300 мм</span></p>
+          <h2 class="section-title" id="techTitle">Семь слоёв.<br><em>Одно ощущение.</em></h2>
         </div>
-        <div class="material-grid">
-          <article class="material reveal">
-            <div class="material__photo"><img src="img/cotton.webp" alt="Стёганый органический хлопок, макро" loading="lazy" decoding="async"></div>
-            <div class="material__body">
-              <span class="material__index">01</span>
-              <h3>Органический хлопок</h3>
-              <p>Стёганый чехол из сертифицированного хлопка GOTS. Дышит, впитывает и отдаёт влагу, не электризуется. Снимается и стирается.</p>
+
+        <div class="tabs reveal" role="tablist" aria-label="Технология">
+          <button class="tab" role="tab" id="tab-layers" type="button" aria-controls="panel-layers" aria-selected="true">Слои</button>
+          <button class="tab" role="tab" id="tab-materials" type="button" aria-controls="panel-materials" aria-selected="false" tabindex="-1">Материалы</button>
+          <button class="tab" role="tab" id="tab-motion" type="button" aria-controls="panel-motion" aria-selected="false" tabindex="-1">Сон вдвоём</button>
+        </div>
+
+        <div class="panel" id="panel-layers" role="tabpanel" aria-labelledby="tab-layers">
+          <ol class="tlayers" id="techLayers"><!-- строится из LAYERS в js/main.js --></ol>
+        </div>
+
+        <div class="panel" id="panel-materials" role="tabpanel" aria-labelledby="tab-materials" hidden>
+          <div class="material-grid">
+            <article class="material">
+              <div class="material__photo"><img src="img/cotton.webp" alt="Стёганый органический хлопок, макро" loading="lazy" decoding="async" width="480" height="596"></div>
+              <div class="material__body">
+                <span class="material__index">01</span>
+                <h3>Органический хлопок</h3>
+                <p>Стёганый чехол из сертифицированного хлопка GOTS. Дышит, впитывает и отдаёт влагу, не электризуется. Снимается и стирается.</p>
+              </div>
+            </article>
+            <article class="material">
+              <div class="material__photo"><img src="img/latex.webp" alt="Перфорированный натуральный латекс, макро" loading="lazy" decoding="async" width="480" height="596"></div>
+              <div class="material__body">
+                <span class="material__index">02</span>
+                <h3>Натуральный латекс</h3>
+                <p>Сок гевеи, вспененный по технологии Dunlop. Перфорация в семи зонах — воздух движется, когда движетесь вы.</p>
+              </div>
+            </article>
+            <article class="material">
+              <div class="material__photo"><img src="img/gel.webp" alt="Memory-пена с гелем, макро" loading="lazy" decoding="async" width="480" height="596"></div>
+              <div class="material__body">
+                <span class="material__index">03</span>
+                <h3>Memory-пена с гелем</h3>
+                <p>Повторяет контур тела за 4–6 секунд и не копит тепло: микрокапсулы геля отводят его к перфорированному латексу выше.</p>
+              </div>
+            </article>
+            <article class="material">
+              <div class="material__photo"><img src="img/coir.webp" alt="Кокосовая койра, макро" loading="lazy" decoding="async" width="420" height="521"></div>
+              <div class="material__body">
+                <span class="material__index">04</span>
+                <h3>Кокосовая койра</h3>
+                <p>Волокно, пропитанное латексом. Ортопедическая опора без ощущения доски — слой, который держит спину, пока латекс держит плечи.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-motion" role="tabpanel" aria-labelledby="tab-motion" hidden>
+          <div class="motion">
+            <div class="motion__head">
+              <div>
+                <p class="eyebrow"><span>Сон вдвоём</span><span class="dot"></span><span>Изоляция движения</span></p>
+                <h3 class="motion__title" id="motionTitle">Вы переворачиваетесь.<br><em>Партнёр не чувствует.</em></h3>
+              </div>
+              <div class="motion__copy">
+                <p class="motion__lead">Когда один человек меняет положение во сне, волна гаснет у центрального шва. Армированные пружины работают каждая сама по себе, и вторая половина матраса остаётся спокойной.</p>
+              </div>
             </div>
-          </article>
-          <article class="material reveal">
-            <div class="material__photo"><img src="img/latex.webp" alt="Перфорированный натуральный латекс, макро" loading="lazy" decoding="async"></div>
-            <div class="material__body">
-              <span class="material__index">02</span>
-              <h3>Натуральный латекс</h3>
-              <p>Сок гевеи, вспененный по технологии Dunlop. Перфорация в семи зонах — воздух движется, когда движетесь вы.</p>
+            <div class="motion__stage">
+              <canvas class="motion__canvas" id="motionCanvas" role="img" aria-label="Схема в разрезе: волна от движения на стороне А быстро затухает у центрального шва, сторона Б остаётся спокойной"></canvas>
+              <p class="motion__tag" id="motionTag" aria-hidden="true">Минимальная<br>передача движений</p>
+              <div class="motion__sides">
+                <div class="motion__side"><span class="motion__label">Сторона А</span><b>Вы меняете положение</b></div>
+                <div class="motion__side motion__side--b"><span class="motion__label">Сторона Б</span><b>Партнёр спит спокойно</b></div>
+              </div>
             </div>
-          </article>
-          <article class="material reveal">
-            <div class="material__photo"><img src="img/gel.webp" alt="Memory-пена с гелем, макро" loading="lazy" decoding="async"></div>
-            <div class="material__body">
-              <span class="material__index">03</span>
-              <h3>Memory-пена с гелем</h3>
-              <p>Повторяет контур тела за 4–6 секунд и не копит тепло: микрокапсулы геля отводят его к перфорированному латексу выше.</p>
+            <div class="motion__actions">
+              <button class="button button--ghost" id="motionBtn" type="button">Повернуться</button>
+              <span class="motion__hint">Или нажмите на матрас</span>
             </div>
-          </article>
-          <article class="material reveal">
-            <div class="material__photo"><img src="img/coir.webp" alt="Кокосовая койра, макро" loading="lazy" decoding="async"></div>
-            <div class="material__body">
-              <span class="material__index">04</span>
-              <h3>Кокосовая койра</h3>
-              <p>Волокно, пропитанное латексом. Ортопедическая опора без ощущения доски — слой, который держит спину, пока латекс держит плечи.</p>
-            </div>
-          </article>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ================================================================
-         СОН ВДВОЁМ — изоляция движения
+         4. МОДЕЛИ — Air → Balance → Prime → Royal, одна система
          ================================================================ -->
-    <section class="motion" id="motion" aria-labelledby="motionTitle">
+    <section class="models" id="models" aria-labelledby="modelsTitle">
       <div class="container">
-        <div class="motion__head">
-          <div>
-            <p class="eyebrow reveal"><span>Сон вдвоём</span><span class="dot"></span><span>Изоляция движения</span></p>
-            <h2 class="motion__title reveal" id="motionTitle">Вы переворачиваетесь.<br><em>Партнёр не чувствует.</em></h2>
-          </div>
-          <div class="motion__copy reveal">
-            <p class="motion__lead">Когда один человек меняет положение во сне, волна гаснет у центрального шва. Армированные пружины работают каждая сама по себе, и вторая половина матраса остаётся спокойной.</p>
-            <span class="motion__label">Минимальная передача движений</span>
-          </div>
+        <div class="section-head section-head--tight reveal">
+          <p class="eyebrow"><span>Линейка</span><span class="dot"></span><span>Четыре модели</span></p>
+          <h2 class="section-title" id="modelsTitle">Выберите свою модель.<br><em>Три матраса и один — под вас.</em></h2>
         </div>
 
-        <div class="motion__stage reveal">
-          <canvas class="motion__canvas" id="motionCanvas" role="img" aria-label="Схема в разрезе: волна от движения на стороне А быстро затухает у центрального шва, сторона Б остаётся спокойной"></canvas>
-          <p class="motion__tag" id="motionTag" aria-hidden="true">Минимальная<br>передача движений</p>
-          <div class="motion__sides">
-            <div class="motion__side"><span class="motion__label">Сторона А</span><b>Вы меняете положение</b></div>
-            <div class="motion__side motion__side--b"><span class="motion__label">Сторона Б</span><b>Партнёр спит спокойно</b></div>
-          </div>
-        </div>
-        <div class="motion__actions reveal">
-          <button class="button button--ghost" id="motionBtn" type="button">Повернуться</button>
-          <span class="motion__hint">Или нажмите на матрас</span>
-        </div>
+        <div class="mrail reveal" id="mrail" style="--lx: 62%; --li: .9">
+          <div class="mrail__light" aria-hidden="true"></div>
+          <div class="mrail__cards" id="mcards">
 
-        <div class="motion__facts">
-          <div class="motion__fact reveal"><span class="motion__fact-value" data-count="1200">1 200</span><span class="motion__fact-label">независимых карманов на 1600 × 2000 мм</span></div>
-          <div class="motion__fact reveal"><span class="motion__fact-value">7</span><span class="motion__fact-label">зон жёсткости по длине тела</span></div>
-          <div class="motion__fact reveal"><span class="motion__fact-value">Silent<small> Motion</small></span><span class="motion__fact-label">партнёр не чувствует, когда вы ворочаетесь</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================================================================
-         ЛИНЕЙКА — Air / Balance / Prime
-         ================================================================ -->
-    <section class="lineup" id="lineup" aria-labelledby="lineupTitle">
-      <div class="container">
-        <div class="section-head reveal">
-          <p class="eyebrow"><span>Линейка</span><span class="dot"></span><span>Три модели</span></p>
-          <h2 class="section-title" id="lineupTitle">Выберите свою модель.<br><em>Три матраса и один — под вас.</em></h2>
-        </div>
-
-        <!-- выбор модели: свет движется к выбранной строке, уровень задаёт силу света -->
-        <div class="picker reveal" id="picker">
-          <div class="px" id="pxStage" data-lvl="3">
-            <img class="px__moon" src="img/moon.webp" alt="" width="260" height="260" loading="lazy" decoding="async">
-            <div class="px__beam" id="pxBeam" aria-hidden="true"></div>
-            <div class="px__floor" aria-hidden="true"></div>
-            <figure class="px__item" aria-hidden="true">
-              <img class="px__img" src="img/hero.webp" alt="" loading="lazy" decoding="async" draggable="false">
-              <span class="px__shine"></span>
-            </figure>
-            <div class="px__caps" id="pxCaps" aria-live="polite"></div>
-          </div>
-          <ul class="pr" id="prList" aria-label="Модели и цены"></ul>
-        </div>
-        <p class="picker__note">Стоимость Eluna Custom указана для размера 1800 × 2000 мм. Для других размеров цена может отличаться.</p>
-
-
-        <!-- вид: шахматка / в ряд -->
-        <div class="view reveal" role="radiogroup" aria-label="Вид линейки">
-          <span class="view__label">Вид</span>
-          <button type="button" class="view__btn" role="radio" aria-checked="true" data-view="zigzag">Шахматка</button>
-          <button type="button" class="view__btn" role="radio" aria-checked="false" data-view="row">В ряд</button>
-        </div>
-
-        <div class="models models--zigzag" id="models">
-          <!-- Air -->
-          <article class="model model--air reveal" id="model-air" data-model="air">
-            <div class="model__visual"><div class="xs" data-xs="air" aria-label="Разрез Eluna Air: слои сверху вниз"></div></div>
-            <div class="model__body">
-              <p class="model__kicker"><span class="model__name">Eluna Air</span><span class="dot"></span><span class="model__height">220 мм</span></p>
-              <h3 class="model__title">Лёгкий старт.</h3>
-              <p class="model__meta">Для гостевой, детской или съёмной квартиры · мягкая / средняя</p>
-              <ul class="model__list">
+            <!-- Air -->
+            <article class="mcard" id="card-air" data-model="air" tabindex="0" aria-labelledby="card-air-title">
+              <p class="mcard__kicker"><span class="mcard__name">Eluna Air</span><span class="dot"></span><span>220 мм</span></p>
+              <span class="mcard__tier" data-tier="air"></span>
+              <h3 class="mcard__title" id="card-air-title">Лёгкий старт.</h3>
+              <p class="mcard__meta">Для гостевой, детской или съёмной квартиры</p>
+              <ul class="mcard__list">
                 <li>Армированные пружины</li>
                 <li>Натуральный кокос 10 мм</li>
                 <li>Двусторонний: зима / лето</li>
               </ul>
-              <div class="model__price"><span class="model__sum" data-price="air">— ₸</span><span class="model__night" data-night="air">≈ — ₸ за ночь</span></div>
-              <div class="model__actions">
+              <div class="mcard__price"><span class="mcard__sum" data-price="air">— ₸</span><span class="mcard__night" data-night="air">≈ — ₸ за ночь</span></div>
+              <div class="mcard__actions">
                 <a class="button button--ghost" data-wa="air" href="#" target="_blank" rel="noopener">Заказать</a>
-                <button type="button" class="more" aria-expanded="false" aria-controls="more-air">Подробнее</button>
+                <button type="button" class="more" data-open="mdl-air">Подробнее</button>
               </div>
-              <div class="model__more" id="more-air" hidden>
-                <ul class="model__list model__list--more">
-                  <li>Ортопена 20 мм с обеих сторон</li>
-                  <li>Термовойлок — долговечный, не сбивается и не собирает пыль</li>
-                  <li>Вискозный трикотаж сверху и снизу</li>
-                  <li>Еврокаркас по периметру, плотность 22</li>
-                  <li>Гарантия 5 лет · срок службы 15+ лет</li>
-                </ul>
-              </div>
-            </div>
-          </article>
+            </article>
 
-          <!-- Prime -->
-          <article class="model model--prime reveal reveal--soft" id="primeBlock" data-model="prime">
-            <span class="badge">Выбор Eluna</span>
-            <div class="model__visual"><div class="xs xs--prime" data-xs="prime" aria-label="Разрез Eluna Prime: слои раздвигаются, чтобы показать начинку"></div></div>
-            <div class="model__body">
-              <p class="model__kicker"><span class="model__name">Eluna Prime</span><span class="dot"></span><span class="model__height">280–300 мм</span></p>
-              <h3 class="model__title">Для тех, кто выбирает<br><em>раз и надолго.</em></h3>
-              <p class="model__meta">Самый натуральный матрас линейки</p>
-              <ul class="model__list">
-                <li>Чехол из 100 % хлопка ручной работы</li>
-                <li>Натуральный латекс 20 мм — микромассажный эффект</li>
-                <li>Натуральный кокос 20 мм — отвечает за жёсткость</li>
-              </ul>
-              <div class="model__price model__price--prime"><span class="model__sum" data-price="prime">— ₸</span><span class="model__night" data-night="prime">≈ — ₸ за ночь</span></div>
-              <div class="model__actions">
-                <a class="button button--primary" data-wa="prime" href="#" target="_blank" rel="noopener">Заказать Prime</a>
-                <button type="button" class="more" aria-expanded="false" aria-controls="more-prime">Подробнее</button>
-              </div>
-              <div class="model__more" id="more-prime" hidden>
-                <ul class="model__list model__list--more">
-                  <li>Армированные пружины — без эффекта гамака, тело лежит ровно</li>
-                  <li>Термовойлок с обеих сторон пружин</li>
-                  <li>Двусторонний: зима / лето</li>
-                  <li>Еврокаркас по периметру, плотность 22</li>
-                  <li>Гарантия 5 лет · срок службы 15+ лет</li>
-                </ul>
-                <aside class="reviews" aria-label="Отзывы о Eluna Prime">
-                  <p class="reviews__label">Отзывы</p>
-                  <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
-                  <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
-                </aside>
-              </div>
-            </div>
-          </article>
-
-          <!-- Balance -->
-          <article class="model model--balance model--flip reveal" id="model-balance" data-model="balance">
-            <div class="model__visual"><div class="xs" data-xs="balance" aria-label="Разрез Eluna Balance: слои сверху вниз"></div></div>
-            <div class="model__body">
-              <p class="model__kicker"><span class="model__name">Eluna Balance</span><span class="dot"></span><span class="model__height">230–250 мм</span></p>
-              <h3 class="model__title">Поддержка на каждый день.</h3>
-              <p class="model__meta">Для тех, кто спит на матрасе каждую ночь · средняя</p>
-              <ul class="model__list">
+            <!-- Balance -->
+            <article class="mcard" id="card-balance" data-model="balance" tabindex="0" aria-labelledby="card-balance-title">
+              <p class="mcard__kicker"><span class="mcard__name">Eluna Balance</span><span class="dot"></span><span>230–250 мм</span></p>
+              <span class="mcard__tier" data-tier="balance"></span>
+              <h3 class="mcard__title" id="card-balance-title">Поддержка на каждый день.</h3>
+              <p class="mcard__meta">Для тех, кто спит на матрасе каждую ночь</p>
+              <ul class="mcard__list">
                 <li>Усиленный боковой каркас</li>
                 <li>Два слоя натурального кокоса: 10 и 20 мм</li>
                 <li>Армированные пружины</li>
               </ul>
-              <div class="model__price"><span class="model__sum" data-price="balance">— ₸</span><span class="model__night" data-night="balance">≈ — ₸ за ночь</span></div>
-              <div class="model__actions">
+              <div class="mcard__price"><span class="mcard__sum" data-price="balance">— ₸</span><span class="mcard__night" data-night="balance">≈ — ₸ за ночь</span></div>
+              <div class="mcard__actions">
                 <a class="button button--ghost" data-wa="balance" href="#" target="_blank" rel="noopener">Заказать</a>
-                <button type="button" class="more" aria-expanded="false" aria-controls="more-balance">Подробнее</button>
+                <button type="button" class="more" data-open="mdl-balance">Подробнее</button>
               </div>
-              <div class="model__more" id="more-balance" hidden>
-                <ul class="model__list model__list--more">
-                  <li>Прослойка из термовойлока, ортопена 20 и 15 мм</li>
-                  <li>Плотный вискозный трикотаж · материалы из РФ</li>
-                  <li>Двусторонний: зима / лето</li>
-                  <li>Еврокаркас по периметру, плотность 22</li>
-                  <li>Гарантия 5 лет · срок службы 15+ лет</li>
-                </ul>
+            </article>
+
+            <!-- Prime -->
+            <article class="mcard mcard--prime is-on" id="card-prime" data-model="prime" tabindex="0" aria-labelledby="card-prime-title">
+              <span class="badge">Выбор Eluna</span>
+              <p class="mcard__kicker"><span class="mcard__name">Eluna Prime</span><span class="dot"></span><span>280–300 мм</span></p>
+              <span class="mcard__tier" data-tier="prime"></span>
+              <h3 class="mcard__title" id="card-prime-title">Для тех, кто выбирает <em>раз и надолго.</em></h3>
+              <p class="mcard__meta">Самый натуральный матрас линейки</p>
+              <ul class="mcard__list">
+                <li>Чехол из 100 % хлопка ручной работы</li>
+                <li>Натуральный латекс 20 мм — микромассажный эффект</li>
+                <li>Натуральный кокос 20 мм — отвечает за жёсткость</li>
+              </ul>
+              <div class="mcard__price mcard__price--prime"><span class="mcard__sum" data-price="prime">— ₸</span><span class="mcard__night" data-night="prime">≈ — ₸ за ночь</span></div>
+              <div class="mcard__actions">
+                <a class="button button--primary" data-wa="prime" href="#" target="_blank" rel="noopener">Заказать Prime</a>
+                <button type="button" class="more" data-open="mdl-prime">Подробнее</button>
               </div>
-            </div>
-          </article>
+            </article>
+
+            <!-- Royal -->
+            <article class="mcard mcard--royal" id="card-royal" data-model="royal" tabindex="0" aria-labelledby="card-royal-title">
+              <p class="mcard__kicker"><span class="mcard__name">Eluna Royal</span><span class="dot"></span><span>Под ваш размер</span></p>
+              <span class="mcard__tier" data-tier="royal"></span>
+              <h3 class="mcard__title" id="card-royal-title">Размер и конфигурация под вас.</h3>
+              <p class="mcard__meta">Флагман линейки — собирается под ваш проект</p>
+              <ul class="mcard__list">
+                <li>Нестандартный размер и начинка под ваш проект</li>
+                <li>Срок изготовления — 21 день</li>
+                <li>Гарантия 5 лет · срок службы 15+ лет</li>
+              </ul>
+              <div class="mcard__price"><span class="mcard__sum" data-price="royal">— ₸</span><span class="mcard__night mcard__note">для размера 1800 × 2000 мм</span></div>
+              <div class="mcard__actions">
+                <a class="button button--ghost" data-wa="royal" href="#" target="_blank" rel="noopener">Обсудить</a>
+                <button type="button" class="more" data-open="mdl-royal">Подробнее</button>
+              </div>
+            </article>
+
+          </div>
         </div>
 
-        <!-- Общие преимущества -->
+        <!-- Общее для всех моделей -->
         <ul class="perks reveal" aria-label="Общее для всех моделей">
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4c0 2 12 2 12 4s-12 2-12 4 12 2 12 4-12 2-12 4M6 4h12M6 20h12"/></svg><span><b>Армированные пружины</b>Без эффекта гамака — тело в балансе</span></li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21c-5 0-8-3.5-8-8 0-5 4-9 8-10 4 1 8 5 8 10 0 4.5-3 8-8 8ZM12 21V9M8 13c2 0 3-1 4-3 1 2 2 3 4 3"/></svg><span><b>Натуральный кокос</b>Во всех моделях линейки</span></li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M3 10h18M3 14h18"/></svg><span><b>Еврокаркас по периметру</b>Плотность 22 — края не проседают, на матрасе удобно сидеть</span></li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="1.2"/><circle cx="14" cy="7" r="1.2"/><circle cx="16" cy="14" r="1.2"/><circle cx="9" cy="15" r="1.2"/><path d="M4 20 20 4"/></svg><span><b>Внутри не копится пыль</b>Термовойлок не сбивается и служит долго</span></li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M12 3l-2 2M12 3l2 2M12 21l-2-2M12 21l2-2M5 12h14"/><circle cx="12" cy="12" r="3.5"/></svg><span><b>Двусторонний</b>Сторона «зима» и сторона «лето»</span></li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg><span><b>Гарантия 5 лет</b>Срок службы 15+ лет</span></li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg><span><b>Silent Motion</b>Партнёр не чувствует, когда ты ворочаешься</span></li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18"/><path d="M8 6h8M8 10h8M8 14h8M8 18h8"/></svg><span><b>Ортопедическая поддержка</b>Позвоночник остаётся в своём естественном положении</span></li>
+          <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4c0 2 12 2 12 4s-12 2-12 4 12 2 12 4-12 2-12 4M6 4h12M6 20h12"/></svg><b>Армированные пружины</b><small>Без эффекта гамака — тело в балансе</small></li>
+          <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21c-5 0-8-3.5-8-8 0-5 4-9 8-10 4 1 8 5 8 10 0 4.5-3 8-8 8ZM12 21V9M8 13c2 0 3-1 4-3 1 2 2 3 4 3"/></svg><b>Натуральный кокос</b><small>Во всех моделях линейки</small></li>
+          <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M3 10h18M3 14h18"/></svg><b>Еврокаркас</b><small>Плотность 22 — края не проседают, на матрасе удобно сидеть</small></li>
+          <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="1.2"/><circle cx="14" cy="7" r="1.2"/><circle cx="16" cy="14" r="1.2"/><circle cx="9" cy="15" r="1.2"/><path d="M4 20 20 4"/></svg><b>Без пыли внутри</b><small>Термовойлок не сбивается и служит долго</small></li>
+          <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M12 3l-2 2M12 3l2 2M12 21l-2-2M12 21l2-2M5 12h14"/><circle cx="12" cy="12" r="3.5"/></svg><b>Двусторонний</b><small>Сторона «зима» и сторона «лето»</small></li>
+          <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg><b>Гарантия 5 лет</b><small>Срок службы 15+ лет</small></li>
+          <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg><b>Silent Motion</b><small>Партнёр не чувствует, когда вы ворочаетесь</small></li>
+          <li tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18"/><path d="M8 6h8M8 10h8M8 14h8M8 18h8"/></svg><b>Ортопедическая поддержка</b><small>Позвоночник остаётся в своём естественном положении</small></li>
         </ul>
-
       </div>
     </section>
 
     <!-- ================================================================
-         РАЗМЕРЫ
+         5. ДОСТАВКА · ДОВЕРИЕ · CTA
          ================================================================ -->
-    <section class="sizes" id="sizes">
-      <div class="container">
-        <div class="section-head reveal">
-          <p class="eyebrow"><span>Размеры</span><span class="dot"></span><span>Eluna Prime · 280–300 мм</span></p>
-          <h2 class="section-title">Eluna Prime.<br><em>Шесть пропорций.</em></h2>
+    <section class="order" id="order">
+      <div class="container order__grid reveal">
+        <div class="order__text">
+          <p class="eyebrow"><span>Доставка</span><span class="dot"></span><span>Весь Казахстан</span></p>
+          <h2 class="delivery__title">Доставка по всему Казахстану.<br><em>От 7 дней до двери.</em></h2>
+          <p class="delivery__lead">Мы в Алматы: по городу привезём и установим сами. В остальные города — от 7 дней до двери, подъём включён. Нажмите на город.</p>
+          <p class="delivery__pick" aria-live="polite"><span class="delivery__city" id="deliveryCity">Алматы</span><span class="delivery__days" id="deliveryDays">мы здесь · доставка по городу</span></p>
+          <ul class="trust" aria-label="Гарантии">
+            <li class="trust__item"><span class="trust__value">100 ночей</span><span class="trust__label">пробного сна. Не подошёл — заберём и вернём деньги.</span></li>
+            <li class="trust__item"><span class="trust__value">5 лет</span><span class="trust__label">гарантии на каждый матрас. Срок службы — 15 лет и больше.</span></li>
+            <li class="trust__item"><span class="trust__value">Ручная сборка</span><span class="trust__label">Каждый матрас собирает один мастер — его подпись на этикетке.</span></li>
+            <li class="trust__item"><span class="trust__value">7 дней</span><span class="trust__label">до двери в любом городе Казахстана. Доставка до спальни включена.</span></li>
+          </ul>
         </div>
 
-        <div class="sizes__grid">
-          <div class="size-vis reveal" aria-hidden="true">
-            <div class="size-vis__glow"></div>
-            <div class="size-vis__mat" id="sizePreviewMat">
-              <span class="size-vis__w"><span id="sizePreviewW">1600</span> мм</span>
-              <span class="size-vis__h"><span id="sizePreviewH">2000</span> мм</span>
-            </div>
-          </div>
-
-          <div class="size-panel reveal">
-            <div class="size-options" id="sizeOptions" role="radiogroup" aria-label="Размер матраса">
-              <button type="button" role="radio" aria-checked="false" data-w="80"  data-h="200">800 × 2000</button>
-              <button type="button" role="radio" aria-checked="false" data-w="90"  data-h="200">900 × 2000</button>
-              <button type="button" role="radio" aria-checked="false" data-w="140" data-h="200">1400 × 2000</button>
-              <button type="button" role="radio" aria-checked="true"  data-w="160" data-h="200">1600 × 2000</button>
-              <button type="button" role="radio" aria-checked="false" data-w="180" data-h="200">1800 × 2000</button>
-              <button type="button" role="radio" aria-checked="false" data-w="200" data-h="200">2000 × 2000</button>
-            </div>
-
-            <div class="size-summary">
-              <div class="size-summary__row">
-                <span class="size-summary__label">Eluna Prime · <span id="sizeLabel">1600 × 2000</span> мм</span>
-                <span class="size-summary__price"><s class="price-old" id="sizeOld"></s><span id="sizePrice">—</span> ₸</span>
-              </div>
-              <p class="size-summary__note">Включая доставку, подъём и вынос старого матраса.<span id="sizeInstallment" hidden> Рассрочка 0 % на 12 месяцев — <span id="sizeMonthly">—</span> ₸ в месяц.</span></p>
-              <a class="button button--primary" id="sizeCta" href="#" target="_blank" rel="noopener">Заказать <span id="sizeCtaLabel">1600 × 2000</span></a>
-              <p class="size-summary__hint">Нестандартный размер? Сделаем под ваш проект — срок 21 день.</p>
-            </div>
-          </div>
+        <!-- Карта Казахстана: город «просвечивает» луной -->
+        <div class="map" id="map" style="--mx:73.60%;--my:80.29%">
+          <video class="map__video" id="mapVideo" muted loop playsinline preload="none" poster="img/orbit.webp" data-src="img/orbit.mp4" aria-hidden="true"></video>
+          <img class="map__bg" src="img/space.webp" alt="" loading="lazy" decoding="async" width="1920" height="1071">
+          <svg class="map__base" viewBox="0 0 1040 578" aria-hidden="true" focusable="false">
+            <defs><pattern id="mapGrid" width="52" height="52" patternUnits="userSpaceOnUse"><path d="M52 0H0V52" fill="none" stroke="rgba(241,237,230,0.05)" stroke-width="1"/></pattern></defs>
+            <path class="map__fill" d="M619.0 499.7L605.0 506.4L572.7 531.9L562.0 558.1L552.9 558.3L546.2 541.0L515.1 539.8L510.2 509.8L498.2 509.6L500.1 472.9L470.8 446.2L428.9 449.1L400.2 454.4L376.8 421.4L356.8 407.6L318.9 381.4L314.3 378.3L251.4 399.9L252.4 534.7L239.8 536.5L222.7 507.8L206.2 497.5L178.4 505.2L167.6 517.3L166.2 508.4L172.2 493.2L167.6 480.4L139.2 468.0L128.2 435.1L114.7 425.9L113.9 414.0L137.7 417.4L138.6 390.7L159.4 384.8L180.8 390.2L185.2 354.6L180.8 332.0L156.3 333.7L135.6 324.8L107.2 340.9L84.4 348.5L72.0 342.6L74.5 323.8L58.9 299.4L40.8 300.4L20.0 275.6L34.1 247.9L27.0 240.4L46.5 200.3L71.6 221.5L74.7 194.8L125.2 155.0L163.4 154.1L217.3 179.4L246.2 194.2L272.2 178.7L310.9 178.0L342.2 197.0L349.3 186.1L383.7 187.7L389.8 170.4L350.2 145.2L373.6 127.4L369.0 117.4L392.5 107.9L374.9 82.9L386.1 70.4L477.6 57.7L489.5 48.7L550.7 35.2L572.7 20.0L616.6 27.9L624.3 65.8L649.9 56.9L681.3 69.3L679.3 89.3L702.7 87.2L764.0 52.7L755.0 64.2L786.2 92.4L840.9 185.3L853.9 166.1L887.6 187.2L922.7 177.8L936.2 184.4L948.0 205.5L965.1 212.6L975.5 228.1L1007.0 223.2L1020.0 245.6L1001.4 269.9L981.1 273.4L979.9 310.0L966.3 326.6L917.8 314.5L900.2 380.0L887.6 388.1L839.2 402.7L861.2 466.2L844.4 475.8L846.4 496.6L831.3 491.2L819.0 478.1L782.8 474.3L742.2 473.3L733.3 477.3L698.5 461.9L684.6 469.5L680.8 491.1L640.6 478.5L624.5 483.6L619.0 499.7Z" fill="url(#mapGrid)"/>
+            <path class="map__line" d="M619.0 499.7L605.0 506.4L572.7 531.9L562.0 558.1L552.9 558.3L546.2 541.0L515.1 539.8L510.2 509.8L498.2 509.6L500.1 472.9L470.8 446.2L428.9 449.1L400.2 454.4L376.8 421.4L356.8 407.6L318.9 381.4L314.3 378.3L251.4 399.9L252.4 534.7L239.8 536.5L222.7 507.8L206.2 497.5L178.4 505.2L167.6 517.3L166.2 508.4L172.2 493.2L167.6 480.4L139.2 468.0L128.2 435.1L114.7 425.9L113.9 414.0L137.7 417.4L138.6 390.7L159.4 384.8L180.8 390.2L185.2 354.6L180.8 332.0L156.3 333.7L135.6 324.8L107.2 340.9L84.4 348.5L72.0 342.6L74.5 323.8L58.9 299.4L40.8 300.4L20.0 275.6L34.1 247.9L27.0 240.4L46.5 200.3L71.6 221.5L74.7 194.8L125.2 155.0L163.4 154.1L217.3 179.4L246.2 194.2L272.2 178.7L310.9 178.0L342.2 197.0L349.3 186.1L383.7 187.7L389.8 170.4L350.2 145.2L373.6 127.4L369.0 117.4L392.5 107.9L374.9 82.9L386.1 70.4L477.6 57.7L489.5 48.7L550.7 35.2L572.7 20.0L616.6 27.9L624.3 65.8L649.9 56.9L681.3 69.3L679.3 89.3L702.7 87.2L764.0 52.7L755.0 64.2L786.2 92.4L840.9 185.3L853.9 166.1L887.6 187.2L922.7 177.8L936.2 184.4L948.0 205.5L965.1 212.6L975.5 228.1L1007.0 223.2L1020.0 245.6L1001.4 269.9L981.1 273.4L979.9 310.0L966.3 326.6L917.8 314.5L900.2 380.0L887.6 388.1L839.2 402.7L861.2 466.2L844.4 475.8L846.4 496.6L831.3 491.2L819.0 478.1L782.8 474.3L742.2 473.3L733.3 477.3L698.5 461.9L684.6 469.5L680.8 491.1L640.6 478.5L624.5 483.6L619.0 499.7Z"/>
+          </svg>
+          <svg class="map__lit" viewBox="0 0 1040 578" aria-hidden="true" focusable="false">
+            <path d="M619.0 499.7L605.0 506.4L572.7 531.9L562.0 558.1L552.9 558.3L546.2 541.0L515.1 539.8L510.2 509.8L498.2 509.6L500.1 472.9L470.8 446.2L428.9 449.1L400.2 454.4L376.8 421.4L356.8 407.6L318.9 381.4L314.3 378.3L251.4 399.9L252.4 534.7L239.8 536.5L222.7 507.8L206.2 497.5L178.4 505.2L167.6 517.3L166.2 508.4L172.2 493.2L167.6 480.4L139.2 468.0L128.2 435.1L114.7 425.9L113.9 414.0L137.7 417.4L138.6 390.7L159.4 384.8L180.8 390.2L185.2 354.6L180.8 332.0L156.3 333.7L135.6 324.8L107.2 340.9L84.4 348.5L72.0 342.6L74.5 323.8L58.9 299.4L40.8 300.4L20.0 275.6L34.1 247.9L27.0 240.4L46.5 200.3L71.6 221.5L74.7 194.8L125.2 155.0L163.4 154.1L217.3 179.4L246.2 194.2L272.2 178.7L310.9 178.0L342.2 197.0L349.3 186.1L383.7 187.7L389.8 170.4L350.2 145.2L373.6 127.4L369.0 117.4L392.5 107.9L374.9 82.9L386.1 70.4L477.6 57.7L489.5 48.7L550.7 35.2L572.7 20.0L616.6 27.9L624.3 65.8L649.9 56.9L681.3 69.3L679.3 89.3L702.7 87.2L764.0 52.7L755.0 64.2L786.2 92.4L840.9 185.3L853.9 166.1L887.6 187.2L922.7 177.8L936.2 184.4L948.0 205.5L965.1 212.6L975.5 228.1L1007.0 223.2L1020.0 245.6L1001.4 269.9L981.1 273.4L979.9 310.0L966.3 326.6L917.8 314.5L900.2 380.0L887.6 388.1L839.2 402.7L861.2 466.2L844.4 475.8L846.4 496.6L831.3 491.2L819.0 478.1L782.8 474.3L742.2 473.3L733.3 477.3L698.5 461.9L684.6 469.5L680.8 491.1L640.6 478.5L624.5 483.6L619.0 499.7Z"/>
+          </svg>
+          <div class="moon" aria-hidden="true"><img src="img/moon.webp" alt="" width="260" height="260" loading="lazy" decoding="async"></div>
+          <button type="button" class="city" data-city="Астана" style="--x:60.62%;--y:30.12%" aria-pressed="false" aria-label="Астана: доставка от 7 дней"><i></i><span>Астана</span></button>
+          <button type="button" class="city is-on" data-city="Алматы" style="--x:73.60%;--y:80.29%" aria-pressed="true" aria-label="Алматы: доставка от 7 дней"><i></i><span>Алматы</span></button>
+          <button type="button" class="city" data-city="Шымкент" style="--x:56.32%;--y:86.23%" aria-pressed="false" aria-label="Шымкент: доставка от 7 дней"><i></i><span>Шымкент</span></button>
+          <button type="button" class="city" data-city="Караганда" style="--x:64.55%;--y:38.79%" aria-pressed="false" aria-label="Караганда: доставка от 7 дней"><i></i><span>Караганда</span></button>
+          <button type="button" class="city" data-city="Актобе" style="--x:27.16%;--y:35.62%" aria-pressed="false" aria-label="Актобе: доставка от 7 дней"><i></i><span>Актобе</span></button>
+          <button type="button" class="city" data-city="Тараз" style="--x:60.48%;--y:82.44%" aria-pressed="false" aria-label="Тараз: доставка от 7 дней"><i></i><span>Тараз</span></button>
+          <button type="button" class="city" data-city="Павлодар" style="--x:73.60%;--y:22.98%" aria-pressed="false" aria-label="Павлодар: доставка от 7 дней"><i></i><span>Павлодар</span></button>
+          <button type="button" class="city" data-city="Усть-Каменогорск" style="--x:86.88%;--y:37.84%" aria-pressed="false" aria-label="Усть-Каменогорск: доставка от 7 дней"><i></i><span>Усть-Каменогорск</span></button>
+          <button type="button" class="city" data-city="Семей" style="--x:81.31%;--y:34.93%" aria-pressed="false" aria-label="Семей: доставка от 7 дней"><i></i><span>Семей</span></button>
+          <button type="button" class="city" data-city="Атырау" style="--x:14.70%;--y:55.87%" aria-pressed="false" aria-label="Атырау: доставка от 7 дней"><i></i><span>Атырау</span></button>
+          <button type="button" class="city" data-city="Костанай" style="--x:42.21%;--y:17.28%" aria-pressed="false" aria-label="Костанай: доставка от 7 дней"><i></i><span>Костанай</span></button>
+          <button type="button" class="city" data-city="Кызылорда" style="--x:46.67%;--y:70.10%" aria-pressed="false" aria-label="Кызылорда: доставка от 7 дней"><i></i><span>Кызылорда</span></button>
+          <button type="button" class="city" data-city="Уральск" style="--x:13.45%;--y:29.74%" aria-pressed="false" aria-label="Уральск: доставка от 7 дней"><i></i><span>Уральск</span></button>
+          <button type="button" class="city" data-city="Петропавловск" style="--x:55.26%;--y:6.71%" aria-pressed="false" aria-label="Петропавловск: доставка от 7 дней"><i></i><span>Петропавловск</span></button>
+          <button type="button" class="city" data-city="Актау" style="--x:13.06%;--y:77.70%" aria-pressed="false" aria-label="Актау: доставка от 7 дней"><i></i><span>Актау</span></button>
+          <button type="button" class="city" data-city="Талдыкорган" style="--x:76.94%;--y:69.03%" aria-pressed="false" aria-label="Талдыкорган: доставка от 7 дней"><i></i><span>Талдыкорган</span></button>
+          <button type="button" class="city" data-city="Кокшетау" style="--x:55.85%;--y:16.78%" aria-pressed="false" aria-label="Кокшетау: доставка от 7 дней"><i></i><span>Кокшетау</span></button>
+          <button type="button" class="city" data-city="Туркестан" style="--x:53.14%;--y:79.91%" aria-pressed="false" aria-label="Туркестан: доставка от 7 дней"><i></i><span>Туркестан</span></button>
         </div>
       </div>
-    </section>
 
-    <!-- ================================================================
-         ДОВЕРИЕ + CTA
-         ================================================================ -->
-    <section class="trust" id="order">
-      <!-- Доставка: карта Казахстана, город «просвечивает» луной -->
       <div class="container">
-        <div class="delivery reveal" id="delivery">
-          <div class="delivery__head">
-            <p class="eyebrow"><span>Доставка</span><span class="dot"></span><span>Весь Казахстан</span></p>
-            <h2 class="delivery__title">Доставка по всему Казахстану.<br><em>От 7 дней до двери.</em></h2>
-            <p class="delivery__lead">Мы в Алматы: по городу привезём и установим сами. В остальные города — от 7 дней до двери, подъём включён. Нажмите на город.</p>
-            <p class="delivery__pick" aria-live="polite"><span class="delivery__city" id="deliveryCity">Алматы</span><span class="delivery__days" id="deliveryDays">мы здесь · доставка по городу</span></p>
-          </div>
-          <div class="map" id="map" data-bg style="--mx:73.60%;--my:80.29%">
-            <video class="map__video" id="mapVideo" muted loop playsinline preload="none" poster="img/orbit.webp" data-src="img/orbit.mp4" aria-hidden="true"></video>
-            <img class="map__bg" src="img/space.webp" alt="" loading="lazy" decoding="async">
-            <svg class="map__base" viewBox="0 0 1040 578" aria-hidden="true" focusable="false">
-              <defs><pattern id="mapGrid" width="52" height="52" patternUnits="userSpaceOnUse"><path d="M52 0H0V52" fill="none" stroke="rgba(241,237,230,0.05)" stroke-width="1"/></pattern></defs>
-              <path class="map__fill" d="M619.0 499.7L605.0 506.4L572.7 531.9L562.0 558.1L552.9 558.3L546.2 541.0L515.1 539.8L510.2 509.8L498.2 509.6L500.1 472.9L470.8 446.2L428.9 449.1L400.2 454.4L376.8 421.4L356.8 407.6L318.9 381.4L314.3 378.3L251.4 399.9L252.4 534.7L239.8 536.5L222.7 507.8L206.2 497.5L178.4 505.2L167.6 517.3L166.2 508.4L172.2 493.2L167.6 480.4L139.2 468.0L128.2 435.1L114.7 425.9L113.9 414.0L137.7 417.4L138.6 390.7L159.4 384.8L180.8 390.2L185.2 354.6L180.8 332.0L156.3 333.7L135.6 324.8L107.2 340.9L84.4 348.5L72.0 342.6L74.5 323.8L58.9 299.4L40.8 300.4L20.0 275.6L34.1 247.9L27.0 240.4L46.5 200.3L71.6 221.5L74.7 194.8L125.2 155.0L163.4 154.1L217.3 179.4L246.2 194.2L272.2 178.7L310.9 178.0L342.2 197.0L349.3 186.1L383.7 187.7L389.8 170.4L350.2 145.2L373.6 127.4L369.0 117.4L392.5 107.9L374.9 82.9L386.1 70.4L477.6 57.7L489.5 48.7L550.7 35.2L572.7 20.0L616.6 27.9L624.3 65.8L649.9 56.9L681.3 69.3L679.3 89.3L702.7 87.2L764.0 52.7L755.0 64.2L786.2 92.4L840.9 185.3L853.9 166.1L887.6 187.2L922.7 177.8L936.2 184.4L948.0 205.5L965.1 212.6L975.5 228.1L1007.0 223.2L1020.0 245.6L1001.4 269.9L981.1 273.4L979.9 310.0L966.3 326.6L917.8 314.5L900.2 380.0L887.6 388.1L839.2 402.7L861.2 466.2L844.4 475.8L846.4 496.6L831.3 491.2L819.0 478.1L782.8 474.3L742.2 473.3L733.3 477.3L698.5 461.9L684.6 469.5L680.8 491.1L640.6 478.5L624.5 483.6L619.0 499.7Z" fill="url(#mapGrid)"/>
-              <path class="map__line" d="M619.0 499.7L605.0 506.4L572.7 531.9L562.0 558.1L552.9 558.3L546.2 541.0L515.1 539.8L510.2 509.8L498.2 509.6L500.1 472.9L470.8 446.2L428.9 449.1L400.2 454.4L376.8 421.4L356.8 407.6L318.9 381.4L314.3 378.3L251.4 399.9L252.4 534.7L239.8 536.5L222.7 507.8L206.2 497.5L178.4 505.2L167.6 517.3L166.2 508.4L172.2 493.2L167.6 480.4L139.2 468.0L128.2 435.1L114.7 425.9L113.9 414.0L137.7 417.4L138.6 390.7L159.4 384.8L180.8 390.2L185.2 354.6L180.8 332.0L156.3 333.7L135.6 324.8L107.2 340.9L84.4 348.5L72.0 342.6L74.5 323.8L58.9 299.4L40.8 300.4L20.0 275.6L34.1 247.9L27.0 240.4L46.5 200.3L71.6 221.5L74.7 194.8L125.2 155.0L163.4 154.1L217.3 179.4L246.2 194.2L272.2 178.7L310.9 178.0L342.2 197.0L349.3 186.1L383.7 187.7L389.8 170.4L350.2 145.2L373.6 127.4L369.0 117.4L392.5 107.9L374.9 82.9L386.1 70.4L477.6 57.7L489.5 48.7L550.7 35.2L572.7 20.0L616.6 27.9L624.3 65.8L649.9 56.9L681.3 69.3L679.3 89.3L702.7 87.2L764.0 52.7L755.0 64.2L786.2 92.4L840.9 185.3L853.9 166.1L887.6 187.2L922.7 177.8L936.2 184.4L948.0 205.5L965.1 212.6L975.5 228.1L1007.0 223.2L1020.0 245.6L1001.4 269.9L981.1 273.4L979.9 310.0L966.3 326.6L917.8 314.5L900.2 380.0L887.6 388.1L839.2 402.7L861.2 466.2L844.4 475.8L846.4 496.6L831.3 491.2L819.0 478.1L782.8 474.3L742.2 473.3L733.3 477.3L698.5 461.9L684.6 469.5L680.8 491.1L640.6 478.5L624.5 483.6L619.0 499.7Z"/>
-            </svg>
-            <svg class="map__lit" viewBox="0 0 1040 578" aria-hidden="true" focusable="false">
-              <path d="M619.0 499.7L605.0 506.4L572.7 531.9L562.0 558.1L552.9 558.3L546.2 541.0L515.1 539.8L510.2 509.8L498.2 509.6L500.1 472.9L470.8 446.2L428.9 449.1L400.2 454.4L376.8 421.4L356.8 407.6L318.9 381.4L314.3 378.3L251.4 399.9L252.4 534.7L239.8 536.5L222.7 507.8L206.2 497.5L178.4 505.2L167.6 517.3L166.2 508.4L172.2 493.2L167.6 480.4L139.2 468.0L128.2 435.1L114.7 425.9L113.9 414.0L137.7 417.4L138.6 390.7L159.4 384.8L180.8 390.2L185.2 354.6L180.8 332.0L156.3 333.7L135.6 324.8L107.2 340.9L84.4 348.5L72.0 342.6L74.5 323.8L58.9 299.4L40.8 300.4L20.0 275.6L34.1 247.9L27.0 240.4L46.5 200.3L71.6 221.5L74.7 194.8L125.2 155.0L163.4 154.1L217.3 179.4L246.2 194.2L272.2 178.7L310.9 178.0L342.2 197.0L349.3 186.1L383.7 187.7L389.8 170.4L350.2 145.2L373.6 127.4L369.0 117.4L392.5 107.9L374.9 82.9L386.1 70.4L477.6 57.7L489.5 48.7L550.7 35.2L572.7 20.0L616.6 27.9L624.3 65.8L649.9 56.9L681.3 69.3L679.3 89.3L702.7 87.2L764.0 52.7L755.0 64.2L786.2 92.4L840.9 185.3L853.9 166.1L887.6 187.2L922.7 177.8L936.2 184.4L948.0 205.5L965.1 212.6L975.5 228.1L1007.0 223.2L1020.0 245.6L1001.4 269.9L981.1 273.4L979.9 310.0L966.3 326.6L917.8 314.5L900.2 380.0L887.6 388.1L839.2 402.7L861.2 466.2L844.4 475.8L846.4 496.6L831.3 491.2L819.0 478.1L782.8 474.3L742.2 473.3L733.3 477.3L698.5 461.9L684.6 469.5L680.8 491.1L640.6 478.5L624.5 483.6L619.0 499.7Z"/>
-            </svg>
-            <div class="moon" aria-hidden="true"><img src="img/moon.webp" alt="" width="260" height="260" loading="lazy" decoding="async"></div>
-            <button type="button" class="city" data-city="Астана" style="--x:60.62%;--y:30.12%" aria-pressed="false" aria-label="Астана: доставка от 7 дней"><i></i><span>Астана</span></button>
-            <button type="button" class="city is-on" data-city="Алматы" style="--x:73.60%;--y:80.29%" aria-pressed="true" aria-label="Алматы: доставка от 7 дней"><i></i><span>Алматы</span></button>
-            <button type="button" class="city" data-city="Шымкент" style="--x:56.32%;--y:86.23%" aria-pressed="false" aria-label="Шымкент: доставка от 7 дней"><i></i><span>Шымкент</span></button>
-            <button type="button" class="city" data-city="Караганда" style="--x:64.55%;--y:38.79%" aria-pressed="false" aria-label="Караганда: доставка от 7 дней"><i></i><span>Караганда</span></button>
-            <button type="button" class="city" data-city="Актобе" style="--x:27.16%;--y:35.62%" aria-pressed="false" aria-label="Актобе: доставка от 7 дней"><i></i><span>Актобе</span></button>
-            <button type="button" class="city" data-city="Тараз" style="--x:60.48%;--y:82.44%" aria-pressed="false" aria-label="Тараз: доставка от 7 дней"><i></i><span>Тараз</span></button>
-            <button type="button" class="city" data-city="Павлодар" style="--x:73.60%;--y:22.98%" aria-pressed="false" aria-label="Павлодар: доставка от 7 дней"><i></i><span>Павлодар</span></button>
-            <button type="button" class="city" data-city="Усть-Каменогорск" style="--x:86.88%;--y:37.84%" aria-pressed="false" aria-label="Усть-Каменогорск: доставка от 7 дней"><i></i><span>Усть-Каменогорск</span></button>
-            <button type="button" class="city" data-city="Семей" style="--x:81.31%;--y:34.93%" aria-pressed="false" aria-label="Семей: доставка от 7 дней"><i></i><span>Семей</span></button>
-            <button type="button" class="city" data-city="Атырау" style="--x:14.70%;--y:55.87%" aria-pressed="false" aria-label="Атырау: доставка от 7 дней"><i></i><span>Атырау</span></button>
-            <button type="button" class="city" data-city="Костанай" style="--x:42.21%;--y:17.28%" aria-pressed="false" aria-label="Костанай: доставка от 7 дней"><i></i><span>Костанай</span></button>
-            <button type="button" class="city" data-city="Кызылорда" style="--x:46.67%;--y:70.10%" aria-pressed="false" aria-label="Кызылорда: доставка от 7 дней"><i></i><span>Кызылорда</span></button>
-            <button type="button" class="city" data-city="Уральск" style="--x:13.45%;--y:29.74%" aria-pressed="false" aria-label="Уральск: доставка от 7 дней"><i></i><span>Уральск</span></button>
-            <button type="button" class="city" data-city="Петропавловск" style="--x:55.26%;--y:6.71%" aria-pressed="false" aria-label="Петропавловск: доставка от 7 дней"><i></i><span>Петропавловск</span></button>
-            <button type="button" class="city" data-city="Актау" style="--x:13.06%;--y:77.70%" aria-pressed="false" aria-label="Актау: доставка от 7 дней"><i></i><span>Актау</span></button>
-            <button type="button" class="city" data-city="Талдыкорган" style="--x:76.94%;--y:69.03%" aria-pressed="false" aria-label="Талдыкорган: доставка от 7 дней"><i></i><span>Талдыкорган</span></button>
-            <button type="button" class="city" data-city="Кокшетау" style="--x:55.85%;--y:16.78%" aria-pressed="false" aria-label="Кокшетау: доставка от 7 дней"><i></i><span>Кокшетау</span></button>
-            <button type="button" class="city" data-city="Туркестан" style="--x:53.14%;--y:79.91%" aria-pressed="false" aria-label="Туркестан: доставка от 7 дней"><i></i><span>Туркестан</span></button>
-          </div>
-        </div>
-      </div>
-      <div class="container">
-        <div class="trust__grid">
-          <div class="trust__item reveal">
-            <span class="trust__value">100 ночей</span>
-            <span class="trust__label">пробного сна. Не подошёл — заберём и вернём деньги, без вопросов.</span>
-          </div>
-          <div class="trust__item reveal">
-            <span class="trust__value">5 лет</span>
-            <span class="trust__label">гарантии на каждый матрас. Срок службы — 15 лет и больше.</span>
-          </div>
-          <div class="trust__item reveal">
-            <span class="trust__value">Ручная сборка</span>
-            <span class="trust__label">Каждый матрас собирает один мастер — его подпись на этикетке.</span>
-          </div>
-          <div class="trust__item reveal">
-            <span class="trust__value">7 дней</span>
-            <span class="trust__label">до двери в любом городе Казахстана. Доставка до спальни включена.</span>
-          </div>
-        </div>
-
         <div class="cta reveal">
-          <h2 class="cta__title">Начните с <em>тишины</em>.</h2>
-          <p class="cta__text">Оставьте номер — мастер-консультант поможет подобрать жёсткость и размер. Без скриптов и давления.</p>
-          <form class="cta__form" onsubmit="return false">
-            <label class="sr-only" for="phone">Телефон</label>
-            <input id="phone" type="tel" inputmode="tel" placeholder="+7 ___ ___ __ __" autocomplete="tel">
-            <button type="submit" class="button button--primary">Связаться</button>
-          </form>
-          <p class="cta__legal">Нажимая «Связаться», вы соглашаетесь с политикой обработки персональных данных.</p>
+          <div>
+            <h2 class="cta__title">Начните с <em>тишины</em>.</h2>
+            <p class="cta__text">Оставьте номер — мастер-консультант поможет подобрать жёсткость и размер. Без скриптов и давления.</p>
+          </div>
+          <div>
+            <form class="cta__form" onsubmit="return false">
+              <label class="sr-only" for="phone">Телефон</label>
+              <input id="phone" type="tel" inputmode="tel" placeholder="+7 ___ ___ __ __" autocomplete="tel">
+              <button type="submit" class="button button--primary">Связаться</button>
+            </form>
+            <p class="cta__legal">Нажимая «Связаться», вы соглашаетесь с политикой обработки персональных данных.</p>
+          </div>
         </div>
       </div>
     </section>
 
   </main>
+
+  <!-- ================================================================
+       «Подробнее» — модальные окна моделей
+       ================================================================ -->
+  <dialog class="mdl" id="mdl-air" aria-labelledby="mdl-air-title">
+    <form method="dialog" class="mdl__close"><button type="submit" aria-label="Закрыть">×</button></form>
+    <header class="mdl__head">
+      <p class="eyebrow"><span>Eluna Air</span><span class="dot"></span><span>220 мм</span></p>
+      <h2 class="mdl__title" id="mdl-air-title">Лёгкий старт.</h2>
+      <p class="mdl__price" data-price="air">— ₸</p>
+    </header>
+    <details class="acc" open><summary>Характеристики</summary>
+      <div class="acc__body">
+        <div class="xs" data-xs="air" aria-label="Разрез Eluna Air: слои сверху вниз"></div>
+        <ul class="mcard__list mcard__list--more">
+          <li>Ортопена 20 мм с обеих сторон</li>
+          <li>Термовойлок — долговечный, не сбивается и не собирает пыль</li>
+          <li>Вискозный трикотаж сверху и снизу</li>
+          <li>Еврокаркас по периметру, плотность 22</li>
+          <li>Гарантия 5 лет · срок службы 15+ лет</li>
+        </ul>
+      </div>
+    </details>
+    <details class="acc"><summary>Материалы</summary>
+      <div class="acc__body"><ul class="mcard__list mcard__list--more"><li>Вискозный трикотаж</li><li>Ортопена 20 мм</li><li>Термовойлок</li><li>Армированные пружины</li><li>Натуральный кокос 10 мм</li></ul></div>
+    </details>
+    <details class="acc"><summary>Жёсткость</summary>
+      <div class="acc__body"><p>Мягкая / средняя. Ортопена 20 мм с обеих сторон и натуральный кокос 10 мм — для гостевой, детской или съёмной квартиры.</p></div>
+    </details>
+    <details class="acc"><summary>Размеры и цена</summary>
+      <div class="acc__body"><div class="size-table" data-sizes="air"></div><p class="size-summary__hint">Нестандартный размер? Сделаем под ваш проект — срок 21 день.</p></div>
+    </details>
+    <footer class="mdl__actions"><a class="button button--ghost" data-wa="air" href="#" target="_blank" rel="noopener">Заказать Air</a></footer>
+  </dialog>
+
+  <dialog class="mdl" id="mdl-balance" aria-labelledby="mdl-balance-title">
+    <form method="dialog" class="mdl__close"><button type="submit" aria-label="Закрыть">×</button></form>
+    <header class="mdl__head">
+      <p class="eyebrow"><span>Eluna Balance</span><span class="dot"></span><span>230–250 мм</span></p>
+      <h2 class="mdl__title" id="mdl-balance-title">Поддержка на каждый день.</h2>
+      <p class="mdl__price" data-price="balance">— ₸</p>
+    </header>
+    <details class="acc" open><summary>Характеристики</summary>
+      <div class="acc__body">
+        <div class="xs" data-xs="balance" aria-label="Разрез Eluna Balance: слои сверху вниз"></div>
+        <ul class="mcard__list mcard__list--more">
+          <li>Прослойка из термовойлока, ортопена 20 и 15 мм</li>
+          <li>Плотный вискозный трикотаж · материалы из РФ</li>
+          <li>Двусторонний: зима / лето</li>
+          <li>Еврокаркас по периметру, плотность 22</li>
+          <li>Гарантия 5 лет · срок службы 15+ лет</li>
+        </ul>
+      </div>
+    </details>
+    <details class="acc"><summary>Материалы</summary>
+      <div class="acc__body"><ul class="mcard__list mcard__list--more"><li>Плотный вискозный трикотаж</li><li>Ортопена 20 и 15 мм</li><li>Термовойлок</li><li>Натуральный кокос 20 и 10 мм</li><li>Армированные пружины с усиленным боковым каркасом</li></ul></div>
+    </details>
+    <details class="acc"><summary>Жёсткость</summary>
+      <div class="acc__body"><p>Средняя. Два слоя натурального кокоса (10 и 20 мм) и усиленный боковой каркас — для тех, кто спит на матрасе каждую ночь.</p></div>
+    </details>
+    <details class="acc"><summary>Размеры и цена</summary>
+      <div class="acc__body"><div class="size-table" data-sizes="balance"></div><p class="size-summary__hint">Нестандартный размер? Сделаем под ваш проект — срок 21 день.</p></div>
+    </details>
+    <footer class="mdl__actions"><a class="button button--ghost" data-wa="balance" href="#" target="_blank" rel="noopener">Заказать Balance</a></footer>
+  </dialog>
+
+  <dialog class="mdl" id="mdl-prime" aria-labelledby="mdl-prime-title">
+    <form method="dialog" class="mdl__close"><button type="submit" aria-label="Закрыть">×</button></form>
+    <header class="mdl__head">
+      <p class="eyebrow"><span>Eluna Prime</span><span class="dot"></span><span>280–300 мм</span><span class="dot"></span><span>Выбор Eluna</span></p>
+      <h2 class="mdl__title" id="mdl-prime-title">Для тех, кто выбирает <em>раз и надолго.</em></h2>
+      <p class="mdl__price mdl__price--prime" data-price="prime">— ₸</p>
+    </header>
+    <details class="acc" open><summary>Характеристики</summary>
+      <div class="acc__body">
+        <div class="xs xs--prime is-open" data-xs="prime" aria-label="Разрез Eluna Prime: слои сверху вниз"></div>
+        <ul class="mcard__list mcard__list--more">
+          <li>Армированные пружины — без эффекта гамака, тело лежит ровно</li>
+          <li>Термовойлок с обеих сторон пружин</li>
+          <li>Двусторонний: зима / лето</li>
+          <li>Еврокаркас по периметру, плотность 22</li>
+          <li>Гарантия 5 лет · срок службы 15+ лет</li>
+        </ul>
+      </div>
+    </details>
+    <details class="acc"><summary>Материалы</summary>
+      <div class="acc__body"><ul class="mcard__list mcard__list--more"><li>Чехол из 100 % хлопка ручной работы</li><li>Натуральный латекс 20 мм — микромассажный эффект</li><li>Натуральный кокос 20 мм — отвечает за жёсткость</li><li>Термовойлок</li><li>Армированные пружины</li></ul></div>
+    </details>
+    <details class="acc"><summary>Жёсткость</summary>
+      <div class="acc__body"><p>Средняя / выше средней. За жёсткость отвечает натуральный кокос 20 мм, латекс 20 мм сверху даёт микромассажный эффект — тело расслабляется.</p></div>
+    </details>
+    <details class="acc"><summary>Размеры и цена</summary>
+      <div class="acc__body">
+        <!-- размеры Eluna Prime: цена = PRICES.prime × коэффициент -->
+        <div class="sizes" id="sizes">
+          <div class="sizes__grid">
+            <div class="size-vis" aria-hidden="true">
+              <div class="size-vis__glow"></div>
+              <div class="size-vis__mat" id="sizePreviewMat">
+                <span class="size-vis__w"><span id="sizePreviewW">1600</span> мм</span>
+                <span class="size-vis__h"><span id="sizePreviewH">2000</span> мм</span>
+              </div>
+            </div>
+            <div class="size-panel">
+              <div class="size-options" id="sizeOptions" role="radiogroup" aria-label="Размер матраса">
+                <button type="button" role="radio" aria-checked="false" data-w="80"  data-h="200">800 × 2000</button>
+                <button type="button" role="radio" aria-checked="false" data-w="90"  data-h="200">900 × 2000</button>
+                <button type="button" role="radio" aria-checked="false" data-w="140" data-h="200">1400 × 2000</button>
+                <button type="button" role="radio" aria-checked="true"  data-w="160" data-h="200">1600 × 2000</button>
+                <button type="button" role="radio" aria-checked="false" data-w="180" data-h="200">1800 × 2000</button>
+                <button type="button" role="radio" aria-checked="false" data-w="200" data-h="200">2000 × 2000</button>
+              </div>
+              <div class="size-summary">
+                <div class="size-summary__row">
+                  <span class="size-summary__label">Eluna Prime · <span id="sizeLabel">1600 × 2000</span> мм</span>
+                  <span class="size-summary__price"><s class="price-old" id="sizeOld"></s><span id="sizePrice">—</span> ₸</span>
+                </div>
+                <p class="size-summary__note">Включая доставку, подъём и вынос старого матраса.<span id="sizeInstallment" hidden> Рассрочка 0 % на 12 месяцев — <span id="sizeMonthly">—</span> ₸ в месяц.</span></p>
+                <a class="button button--primary" id="sizeCta" href="#" target="_blank" rel="noopener">Заказать <span id="sizeCtaLabel">1600 × 2000</span></a>
+                <p class="size-summary__hint">Нестандартный размер? Сделаем под ваш проект — срок 21 день.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+    <details class="acc"><summary>Отзывы</summary>
+      <div class="acc__body">
+        <aside class="reviews" aria-label="Отзывы о Eluna Prime">
+          <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
+          <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
+        </aside>
+      </div>
+    </details>
+    <footer class="mdl__actions"><a class="button button--primary" data-wa="prime" href="#" target="_blank" rel="noopener">Заказать Prime</a></footer>
+  </dialog>
+
+  <dialog class="mdl" id="mdl-royal" aria-labelledby="mdl-royal-title">
+    <form method="dialog" class="mdl__close"><button type="submit" aria-label="Закрыть">×</button></form>
+    <header class="mdl__head">
+      <p class="eyebrow"><span>Eluna Royal</span><span class="dot"></span><span>Флагман · индивидуально</span></p>
+      <h2 class="mdl__title" id="mdl-royal-title">Размер и конфигурация под вас.</h2>
+      <p class="mdl__price" data-price="royal">— ₸</p>
+      <p class="mdl__note">Стоимость указана для размера 1800 × 2000 мм. Для других размеров цена может отличаться.</p>
+    </header>
+    <details class="acc" open><summary>Характеристики</summary>
+      <div class="acc__body">
+        <ul class="mcard__list mcard__list--more">
+          <li>Нестандартный размер и начинка под ваш проект</li>
+          <li>Срок изготовления — 21 день</li>
+          <li>Еврокаркас по периметру, плотность 22</li>
+          <li>Двусторонний: зима / лето</li>
+          <li>Гарантия 5 лет · срок службы 15+ лет</li>
+        </ul>
+      </div>
+    </details>
+    <details class="acc"><summary>Материалы</summary>
+      <div class="acc__body"><p>Хлопок ручной работы, натуральный латекс, натуральный кокос, термовойлок, армированные пружины — состав и толщина слоёв подбираются под вас.</p></div>
+    </details>
+    <details class="acc"><summary>Жёсткость</summary>
+      <div class="acc__body"><p>Подбирается индивидуально: мягче, жёстче или разная на двух половинах матраса.</p></div>
+    </details>
+    <details class="acc"><summary>Размеры и цена</summary>
+      <div class="acc__body"><p><span data-price="royal">— ₸</span> для размера 1800 × 2000 мм. Другие размеры и конфигурации — по запросу.</p></div>
+    </details>
+    <footer class="mdl__actions"><a class="button button--ghost" data-wa="royal" href="#" target="_blank" rel="noopener">Обсудить Royal</a></footer>
+  </dialog>
 
   <!-- липкая плашка Prime (мобильный) -->
   <div class="sticky-cta" id="stickyCta" aria-hidden="true">
@@ -496,15 +580,11 @@
       <span class="footer__brand"><img class="mark" src="img/mark.png" alt="" width="351" height="345">ELUNA<small>Sleep Tech</small></span>
       <span class="footer__copy">© 2026 ELUNA. Матрасы ручной сборки.</span>
       <nav class="footer__links" aria-label="Служебные ссылки">
-        <a href="#">Доставка</a>
-        <a href="#">Гарантия</a>
-        <a href="#">Контакты</a>
+        <a href="#order">Доставка</a>
+        <a href="#models">Гарантия</a>
+        <a href="#order">Контакты</a>
       </nav>
     </div>
   </footer>
-
-  <script src="vendor/gsap.min.js"></script>
-  <script src="vendor/ScrollTrigger.min.js"></script>
-  <script src="js/main.js"></script>
 </body>
 </html>
