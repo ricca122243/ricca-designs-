@@ -1321,7 +1321,6 @@
   const OLD_PRICES = { prime: 350000 };   // полная цена до скидки; нет ключа → скидки нет
   const discountPct = (k) => (OLD_PRICES[k] ? Math.round((1 - PRICES[k] / OLD_PRICES[k]) * 100) : 0);
   const WHATSAPP = '77079550808';
-  const SIZE_K = { 1600: 1, 1800: 1.1 };   // стандартные размеры относительно 1600 × 2000; свой размер — по площади
   const MODELS = {
     air: {
       name: 'Eluna Air',
@@ -1500,7 +1499,7 @@
      Заказ: модель → размер → город → WhatsApp. Одно состояние order, хранится
      в localStorage (если доступен) и рисуется во всех местах сразу:
      секция «Размер», «Ваш выбор» у карты, итог внизу, липкая кнопка, ссылки WhatsApp.
-     Цена: 1600 × 2000 — базовая, 1800 × 2000 — × SIZE_K, свой размер — по площади;
+     Цена: 1600 × 2000 — базовая; каждый м² сверх 3,2 м² — +40 000 ₸ (1800 × 2000 = +16 000 ₸);
      округление до 1 000 ₸.
      ------------------------------------------------------------------------ */
   (function orderFlow() {
@@ -1511,11 +1510,15 @@
     try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved && MODELS[saved.model]) order = Object.assign(order, saved); } catch (e) { /* без хранилища — по умолчанию */ }
     const save = () => { try { localStorage.setItem(KEY, JSON.stringify(order)); } catch (e) { /* приватный режим */ } };
 
-    const kOf = (o) => (o.custom ? (o.w * o.h) / (1600 * 2000) : SIZE_K[o.w] || 1);
+    // 1800 × 2000 дороже 1600 × 2000 на 16 000 ₸ (+0,4 м²) → 40 000 ₸ за каждый м² сверх/меньше 3,2 м².
+    // Свой размер считается так же по площади; старая цена (Prime) — та же скидка в процентах.
+    const PER_M2 = 40000;
     function priceOf(o) {
-      const base = PRICES[o.model], old = OLD_PRICES[o.model], k = kOf(o);
+      const base = PRICES[o.model], old = OLD_PRICES[o.model];
       if (base == null || typeof base === 'object') return { v: null, o: null };
-      return { v: Math.round(base * k / 1000) * 1000, o: old ? Math.round(old * k / 1000) * 1000 : null };
+      const dA = (o.w * o.h) / 1e6 - 3.2;
+      const v = Math.round((base + dA * PER_M2) / 1000) * 1000;
+      return { v, o: old ? Math.round(v * old / base / 1000) * 1000 : null };
     }
     const sizeText = (o) => `${o.w} × ${o.h} мм`;
     const cityText = (c) => (!c ? 'город не выбран' : c === 'Алматы' ? 'Алматы — привезём и установим сами' : `${c} — от 7 дней до двери`);
@@ -1582,6 +1585,7 @@
       if (sticky) sticky.textContent = `${name} · ${o.w}×${o.h}${p.v == null ? '' : ` — ${fmtMoney(p.v)} ₸`}`;
       // все ссылки WhatsApp несут текущий выбор (модель — своя у кнопки)
       document.querySelectorAll('[data-wa]').forEach((a) => { a.href = waLink(message(Object.assign({}, o, { model: a.dataset.wa }))); });
+      const co = document.getElementById('checkoutWa'); if (co) co.href = waLink(message(o));
       // таблицы размеров в окнах «Подробнее»
       document.querySelectorAll('.size-table[data-sizes]').forEach((box) => {
         const m = box.dataset.sizes;
@@ -1625,15 +1629,6 @@
     render(false);
 
     // ---- оформление в WhatsApp ----
-    const form = document.getElementById('checkoutForm');
-    if (form) {
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const url = waLink(message(order));
-        const w = window.open(url, '_blank');
-        if (w) w.opener = null; else window.location.href = url;
-      });
-    }
     window.ELUNA_ORDER = { get: () => Object.assign({}, order), message: () => message(order) };
   })();
 
