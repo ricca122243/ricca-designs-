@@ -35,12 +35,13 @@ uniform float uReveal;     // масштаб раскрытия (как --ls у 
 uniform float uSpec;
 uniform float uRim;
 uniform float uNrmOn;
+uniform vec2  uNrmMap;     // (u0, du): какую часть карты нормалей (ландшафт) покрывает текущая текстура
 uniform vec3  uBg;
 
 void main() {
   vec2 tuv = uCover.zw + (vUv - uCover.zw) * uCover.xy;
   vec3 albedo = texture2D(uTex, tuv).rgb;
-  vec4 nr = texture2D(uNrm, tuv);
+  vec4 nr = texture2D(uNrm, vec2(uNrmMap.x + tuv.x * uNrmMap.y, tuv.y));
   vec3 n = normalize(mix(vec3(0.0, 0.0, 1.0), nr.xyz * 2.0 - 1.0, uNrmOn));
   float rough = mix(0.7, nr.a, uNrmOn);
 
@@ -66,7 +67,10 @@ void main() {
 
   // фото уже несёт лунный свет — это база; добавляем умеренную перезасветку рельефа
   float lum = dot(albedo, vec3(0.2126, 0.7152, 0.0722));
-  vec3 lit = albedo * (0.86 + 0.40 * ndl * atten * uIntensity);
+  // мягкая тень в углублениях стёжки: усиленная нормаль против направления света
+  vec3 nAo = normalize(vec3((nr.xy * 2.0 - 1.0) * 1.6, nr.z * 2.0 - 1.0));
+  float ao = mix(1.0, clamp(dot(nAo, L) * 0.5 + 0.5, 0.0, 1.0), uNrmOn);
+  vec3 lit = albedo * (0.86 + 0.40 * ndl * atten * uIntensity) * (0.92 + 0.08 * ao);
   lit = mix(lit, lit * uLightColor, 0.28 * ndl * atten * uIntensity);
   lit += spec * uLightColor * uIntensity * (0.35 + 0.65 * lum);
   lit += rim * uLightColor + fill * uFillColor * lum;
@@ -114,13 +118,13 @@ void main() {
     const state = {
       lightX: 0.12, lightY: 0.18, lightZ: 0.38, intensity: 1,
       exposure: 0, reveal: 0.02, revealX: 0.12, revealY: 0.18,
-      spec: 1, rim: 1,
+      spec: 1, rim: 1, nrmU0: 0, nrmDu: 1,
       lightColor: [0.74, 0.81, 1.0], fillColor: [1.0, 0.93, 0.84], bg: [6 / 255, 7 / 255, 12 / 255],
     };
     let scale = opts.scale || 1, tier = opts.tier || 'high';
     const cover = { posX: 0.5, posY: 0.56, ...(opts.cover || {}) };
-    const texAspect = opts.texAspect || (img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1.79);
-    let prog, loc = {}, texAlbedo, texNormal, nrmLoaded = false, lost = false, dead = false, raf = 0, dirty = true, lossCount = 0, lossTimer = 0;
+    let texAspect = opts.texAspect || (img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1.79);
+    let prog, loc = {}, texAlbedo, texNormal, nrmLoaded = false, lost = false, dead = false, raf = 0, dirty = true, lossCount = 0, lossTimer = 0, asleep = false, draws = 0;
     let readyResolve; const ready = new Promise((r) => { readyResolve = r; });
 
     function build() {
@@ -136,25 +140,14 @@ void main() {
       const aPos = gl.getAttribLocation(prog, 'aPos');
       gl.enableVertexAttribArray(aPos);
       gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-      ['uTex', 'uNrm', 'uRes', 'uCover', 'uLight', 'uLightColor', 'uFillColor', 'uIntensity', 'uExposure', 'uRevealC', 'uReveal', 'uSpec', 'uRim', 'uNrmOn', 'uBg']
+      ['uTex', 'uNrm', 'uRes', 'uCover', 'uLight', 'uLightColor', 'uFillColor', 'uIntensity', 'uExposure', 'uRevealC', 'uReveal', 'uSpec', 'uRim', 'uNrmOn', 'uNrmMap', 'uBg']
         .forEach((n) => { loc[n] = gl.getUniformLocation(prog, n); });
       gl.uniform1i(loc.uTex, 0);
       gl.uniform1i(loc.uNrm, 1);
 
       // albedo — уже декодированное фото
       texAlbedo = gl.createTexture();
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, texAlbedo);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      try {
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
-      } catch (e) { return false; }
-      const mip = isGL2 || (isPow2(img.naturalWidth) && isPow2(img.naturalHeight));
-      if (mip) { gl.generateMipmap(gl.TEXTURE_2D); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR); }
-      else gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      if (!uploadAlbedo()) return false;
 
       // нормали: пока не загрузились — плоская нормаль 1×1
       texNormal = gl.createTexture();
@@ -168,6 +161,23 @@ void main() {
       nrmLoaded = false;
       return true;
     }
+
+    function uploadAlbedo() {
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texAlbedo);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img); } catch (e) { return false; }
+      const mip = isGL2 || (isPow2(img.naturalWidth) && isPow2(img.naturalHeight));
+      if (mip) { gl.generateMipmap(gl.TEXTURE_2D); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR); }
+      else gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      if (img.naturalWidth && img.naturalHeight) texAspect = img.naturalWidth / img.naturalHeight;
+      return true;
+    }
+    // источник <picture> сменился (портрет ↔ ландшафт) — перезалить текстуру
+    function updateTexture() { if (dead || lost || !texAlbedo) return; if (uploadAlbedo()) { dirty = true; requestRender(); } }
 
     function loadNormal(src) {
       if (!src) return;
@@ -197,8 +207,8 @@ void main() {
 
     function draw() {
       raf = 0;
-      if (dead || lost || !prog) return;
-      dirty = false;
+      if (dead || lost || !prog || asleep) return;
+      dirty = false; draws++;
       const w = canvas.width, h = canvas.height;
       gl.viewport(0, 0, w, h);
       // object-fit: cover
@@ -217,12 +227,13 @@ void main() {
       gl.uniform1f(loc.uSpec, state.spec);
       gl.uniform1f(loc.uRim, state.rim);
       gl.uniform1f(loc.uNrmOn, nrmLoaded ? 1 : 0);
+      gl.uniform2f(loc.uNrmMap, state.nrmU0, state.nrmDu);
       gl.uniform3fv(loc.uBg, state.bg);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 
     function requestRender() {
-      if (dead || raf) return;
+      if (dead || raf || asleep) return;
       dirty = true;
       raf = requestAnimationFrame(draw);
     }
@@ -241,6 +252,10 @@ void main() {
       const spec = t === 'high' ? 1 : t === 'medium' ? 0.8 : 0.6;
       set({ spec, rim: t === 'high' ? 1 : 0 });
     }
+
+    // сцена вне экрана: кадры не рисуются, canvas убран из компоновки
+    function sleep() { asleep = true; if (raf) { cancelAnimationFrame(raf); raf = 0; } canvas.style.visibility = 'hidden'; }
+    function wake() { if (!asleep) return; asleep = false; canvas.style.visibility = ''; dirty = true; requestRender(); }
 
     function destroy() {
       if (dead) return;
@@ -278,7 +293,7 @@ void main() {
     loadNormal(opts.normalSrc);
     readyResolve();
 
-    return { ready, set, requestRender, resize, setTier, destroy, readCenter, get tier() { return tier; }, get state() { return state; }, setScale(s) { scale = s; } };
+    return { ready, set, requestRender, resize, setTier, destroy, readCenter, sleep, wake, updateTexture, get draws() { return draws; }, get tier() { return tier; }, get state() { return state; }, setScale(s) { scale = s; } };
   }
 
   window.Moonlight = { create };

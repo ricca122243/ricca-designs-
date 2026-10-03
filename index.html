@@ -7,7 +7,8 @@
   <meta name="description" content="ELUNA. Семь слоёв, собранных вокруг одного ощущения — тишины. Премиальный матрас ручной сборки.">
   <meta name="theme-color" content="#06070c">
   <!-- порядок загрузки: фон → матрас → свет → текст → остальное -->
-  <link rel="preload" as="image" href="img/hero-moon.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/hero-moon-1920.webp" imagesrcset="img/hero-moon-1280.webp 1280w, img/hero-moon-1920.webp 1920w, img/hero-moon-2560.webp 2560w, img/hero-moon-3840.webp 3840w" imagesizes="100vw" fetchpriority="high" media="(min-width: 900px), (orientation: landscape)">
+  <link rel="preload" as="image" href="img/hero-moon-portrait-1920.webp" imagesrcset="img/hero-moon-portrait-1280.webp 720w, img/hero-moon-portrait-1920.webp 1080w" imagesizes="100vw" fetchpriority="high" media="(max-width: 899px) and (orientation: portrait)">
   <link rel="preload" as="image" href="img/moon.webp">
   <link rel="preload" as="font" type="font/woff2" href="fonts/Unbounded-300-normal.woff2" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="fonts/Inter-300-600-normal-cyrillic.woff2" crossorigin>
@@ -69,7 +70,10 @@
         <figure class="product product--hero" id="productHero">
           <div class="product__float">
             <div class="product__media" id="productMedia">
-              <img id="heroImg" src="img/hero-moon.webp" alt="Матрас ELUNA в лунном свете" width="1920" height="1071" decoding="async" fetchpriority="high">
+              <picture>
+                <source media="(max-width: 899px) and (orientation: portrait)" srcset="img/hero-moon-portrait-1280.webp 720w, img/hero-moon-portrait-1920.webp 1080w" sizes="100vw">
+                <img id="heroImg" src="img/hero-moon-1920.webp" srcset="img/hero-moon-1280.webp 1280w, img/hero-moon-1920.webp 1920w, img/hero-moon-2560.webp 2560w, img/hero-moon-3840.webp 3840w" sizes="100vw" alt="Матрас ELUNA в лунном свете" width="3840" height="2142" decoding="async" fetchpriority="high">
+              </picture>
               <canvas class="product__gl" id="heroGl" aria-hidden="true"></canvas>
             </div>
             <div class="sheen" id="sheen" aria-hidden="true"></div>

@@ -230,6 +230,7 @@ body:not(.is-intro) .nav { opacity: 1; transform: none; }
 .product--hero.has-gl .product__gl { display: block; }
 .product--hero.has-gl img { visibility: hidden; }
 .product--hero.has-gl .light, .product--hero.has-gl .sheen { display: none; }
+.stage:has(.product--hero.has-gl) .moonbeam { opacity: 0 !important; }
 .product--hero.has-gl::before, .product--hero.has-gl::after { display: none; }
 
 .moon-wrap {
@@ -252,6 +253,7 @@ body:not(.is-intro) .product__float { animation: heroFloat 11s ease-in-out infin
 @keyframes heroFloat { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -5px, 0); } }
 /* сцена вне экрана — бесконечные анимации стоят */
 .stage.is-off .moon-hero, .stage.is-off .moon-glow, .stage.is-off .product__float, .stage.is-off .sheen, .stage.is-off .cue__line::after { animation-play-state: paused; }
+.stage.is-off .seq, .stage.is-off .moonbeam { visibility: hidden; }
 .product__float img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 56%; }
 .sheen {
   position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0;
@@ -273,7 +275,7 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 .product--hero { pointer-events: auto; cursor: pointer; transform-origin: 50% 60%; }
 .product--hero .light, .product--hero::before, .product--hero::after { pointer-events: none; }
 .moonbeam {
-  position: absolute; z-index: 4; left: var(--moon-x); top: var(--moon-y); width: 180vmax; height: 180vmax; margin: -90vmax 0 0 -90vmax;
+  position: absolute; z-index: 4; left: var(--moon-x); top: var(--moon-y); width: 120vmax; height: 120vmax; margin: -60vmax 0 0 -60vmax;
   translate: var(--mpx, 0px) var(--mpy, 0px);
   -webkit-mask-image: radial-gradient(circle closest-side, #000 0, rgba(0,0,0,.6) 45%, transparent 85%); mask-image: radial-gradient(circle closest-side, #000 0, rgba(0,0,0,.6) 45%, transparent 85%);
   background: conic-gradient(from var(--beam-angle) at 50% 50%, transparent 0deg, rgba(var(--cool), .06) 7deg, rgba(var(--cool), .13) 13deg, rgba(var(--warm), .05) 18deg, rgba(var(--cool), .06) 23deg, transparent 32deg);
@@ -359,8 +361,9 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
 /* ---------- 2. Концепция ------------------------------------------------- */
 
 .concept {
-  padding: clamp(72px, 10vh, 120px) 0 clamp(56px, 8vh, 96px);
-  background: linear-gradient(rgba(6,7,12,0) 0%, rgba(9,10,16,0.8) 30%, rgba(9,10,16,0.9) 100%);
+  margin-top: -34vh;   /* заходит на хвост сцены: без чёрной паузы между разрезом и манифестом */
+  padding: clamp(40px, 6vh, 64px) 0 clamp(56px, 8vh, 96px);
+  background: linear-gradient(rgba(6,7,12,0) 0%, rgba(9,10,16,0.85) 22%, rgba(9,10,16,0.9) 100%);
 }
 .concept__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(32px, 5vw, 80px); align-items: end; }
 .concept__text { margin-top: 26px; font-family: var(--display); font-weight: 300; font-size: clamp(22px, 2.3vw, 36px); line-height: 1.2; }
@@ -723,7 +726,8 @@ body:not(.is-intro) .sheen { animation: sheenPass 9s ease-in-out infinite; }
   .product--hero img { object-position: 52% 60%; }
 
   .section-title { font-size: clamp(28px, 8vw, 40px); text-wrap: balance; }
-  .concept, .tech, .models, .order { padding-top: clamp(56px, 12vw, 80px); padding-bottom: clamp(56px, 12vw, 80px); }
+  .tech, .models, .order { padding-top: clamp(56px, 12vw, 80px); padding-bottom: clamp(56px, 12vw, 80px); }
+  .concept { margin-top: -28vh; padding-top: 24px; padding-bottom: clamp(48px, 10vw, 64px); }
   .concept__grid { grid-template-columns: 1fr; gap: 32px; }
   .concept__text { font-size: clamp(22px, 6.4vw, 30px); }
   .section-head--tight { margin-bottom: 28px; }
