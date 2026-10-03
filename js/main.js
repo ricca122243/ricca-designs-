@@ -324,9 +324,11 @@
     if (moonGL || TIER === 'low' || reduceMotion || !window.MoonGL || !moonGlCanvas) return;
     const inst = window.MoonGL.create({
       canvas: moonGlCanvas, tier: isMobile() ? 'medium' : TIER, force: params.get('gl') === 'force',
-      src: TIER === 'high' || !isMobile() ? 'img/moon-map-2048.webp' : 'img/moon-map-1024.webp',
+      // компьютер — карта 4096 (резкие кратеры на большой луне), телефон — 2048/1024
+      src: !isMobile() ? 'img/moon-map-4096.webp' : TIER === 'high' ? 'img/moon-map-2048.webp' : 'img/moon-map-1024.webp',
+      srcSmall: 'img/moon-map-2048.webp',
       onReady: () => { moonBig.classList.add('is-gl'); sizeMoonGL(); render(); },
-      onFallback: () => { if (moonGL) { moonGL.destroy(); moonGL = null; } moonBig.classList.remove('is-gl'); },
+      onFallback: () => { const g = moonGL; moonGL = null; moonBig.classList.remove('is-gl'); if (g) try { g.destroy(); } catch (e) { /* уже потерян */ } render(); },
     });
     if (!inst) return;
     moonGL = inst;
@@ -335,7 +337,7 @@
   function sizeMoonGL() {
     if (!moonGL) return;
     const r = moonBig.getBoundingClientRect();
-    const d = Math.min(1.5, window.devicePixelRatio || 1);   // плотность 1.5 везде: резко и дёшево
+    const d = Math.min(isMobile() ? 1.5 : 2, window.devicePixelRatio || 1);   // компьютер — до 2 (Retina), телефон — 1.5
     moonGL.resize(r.width * d, r.height * d);
   }
   // направление света из «процента терминатора» интро: −18 % — источник за шаром, 112 % — спереди-слева

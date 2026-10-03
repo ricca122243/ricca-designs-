@@ -103,7 +103,7 @@ void main() {
       tex = gl.createTexture();
       gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+      try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img); } catch (e) { if (opts.onFallback) opts.onFallback(); return; }
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);         // долгота замыкается (ширина — степень двойки)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -114,7 +114,13 @@ void main() {
       loop();
     };
     img.onerror = () => { if (opts.onFallback) opts.onFallback(); };
-    img.src = opts.src;
+    const maxTex = gl.getParameter(gl.MAX_TEXTURE_SIZE) || 2048;
+    img.src = maxTex >= 4096 || !opts.srcSmall ? opts.src : opts.srcSmall;
+
+    // видеокарта может сбросить контекст (сон ноутбука, много вкладок) — тогда показываем HD-картинку, а не пустой круг
+    canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); dead = true; if (raf) cancelAnimationFrame(raf); raf = 0; if (opts.onFallback) opts.onFallback(); });
+    // вернулись на вкладку — продолжить вращение
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) { lastT = 0; dirty = true; loop(); } });
 
     function draw(now) {
       const w = canvas.width, h = canvas.height;
@@ -148,7 +154,7 @@ void main() {
       setTier(t) { minStep = t === 'high' ? 0 : 33; },
       resize(w, h) { const bw = Math.max(2, Math.round(w)), bh = Math.max(2, Math.round(h)); if (canvas.width !== bw || canvas.height !== bh) { canvas.width = bw; canvas.height = bh; } dirty = true; loop(); },
       sleep() { asleep = true; if (raf) { cancelAnimationFrame(raf); raf = 0; } lastT = 0; },
-      wake() { if (!asleep) return; asleep = false; dirty = true; loop(); },
+      wake() { if (asleep) { asleep = false; dirty = true; } loop(); },
       destroy() { dead = true; if (raf) cancelAnimationFrame(raf); try { const ext = gl.getExtension('WEBGL_lose_context'); if (ext) ext.loseContext(); } catch (e) { /* ignore */ } },
     };
   }
