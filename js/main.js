@@ -301,7 +301,7 @@
     wmS: 1, wmY: 0, wmO: 1,
     lightDrift: 0,
   };
-  const I = { dark: 1, wmO: 1, cueO: 0, moon: 0, term: 30, ms: 1.06, mx: 2 };   // term 30 — луна входит уже освещённым серпом, не чёрным диском
+  const I = { dark: 1, wmO: 1, cueO: 0, moon: 0, term: 30, ms: 1.06, mx: 2, hero: 1 };   // term 30 — луна входит уже освещённым серпом, не чёрным диском
   const P = { x: 0, y: 0 };
 
   const stageEl = document.getElementById('stage');
@@ -425,12 +425,12 @@
     if (vigCache.w === w && vigCache.h === h && vigCache.g) return vigCache.g;
     const mob = isMobile();
     // эллипс через масштаб: единичный радиальный градиент в центре, растянутый transform'ом
-    const rx = w * (mob ? 0.56 : 0.62), ry = h * (mob ? 0.62 : 0.64);
+    const rx = w * (mob ? 0.56 : 0.62), ry = h * (mob ? 0.56 : 0.64);
     const c = document.createElement('canvas'); c.width = w; c.height = h;
     const x = c.getContext('2d');
     x.translate(w / 2, h / 2); x.scale(rx, ry);
     const g = x.createRadialGradient(0, 0, 0, 0, 0, 1);
-    x.fillStyle = g; g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.34 : 0.40, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.68 : 0.70, 'rgba(0,0,0,.55)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = g; g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.3 : 0.40, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.64 : 0.70, 'rgba(0,0,0,.5)'); g.addColorStop(1, 'rgba(0,0,0,0)');
     x.fillRect(-w / rx, -h / ry, 2 * w / rx, 2 * h / ry);
     vigCache = { w, h, g: seqCtx.createPattern(c, 'no-repeat') };
     return vigCache.g;
@@ -447,6 +447,10 @@
     if (a) seqCtx.drawImage(a, 0, 0, cw, ch);
     if (b && b !== a && t > 0.02) { seqCtx.globalAlpha = t; seqCtx.drawImage(b, 0, 0, cw, ch); seqCtx.globalAlpha = 1; }
     // виньетка по краям — в сам кадр, вместо CSS-маски
+    // чёрный фон кадра → цвет страницы (#06070c), чтобы не было видно «коробки»
+    seqCtx.globalCompositeOperation = 'lighten';
+    seqCtx.fillStyle = '#06070c';
+    seqCtx.fillRect(0, 0, cw, ch);
     seqCtx.globalCompositeOperation = 'destination-in';
     seqCtx.fillStyle = seqVignette(cw, ch);
     seqCtx.fillRect(0, 0, cw, ch);
@@ -563,7 +567,7 @@
     if (seqLabels.__act !== act) { seqLabels.__act = act; seqLabelEls.forEach((el, i) => el.classList.toggle('is-active', i === act)); }
 
     sv(wordmark, 'transform', `translate(0, calc(-50% + ${S.wmY.toFixed(3)}vh)) scale(${S.wmS.toFixed(4)})`);
-    svo(wordmark, (S.wmO * I.wmO).toFixed(3));
+    svo(wordmark, (S.wmO * I.wmO * I.hero).toFixed(3));
     svo(cue, (S.cueO * I.cueO).toFixed(3));
   }
 
@@ -683,6 +687,9 @@
   }
   /* Расслойка открывается сама: дошёл до сцены — слои разлетаются, выноски прорастают,
      камера проходит по семи слоям и отходит. Скролл только вводит и выводит из сцены. */
+  // прожектор: в туре — лёгкий (на телефоне выключен, матрас мелкий — темнел весь кадр); сильнее — только когда слой выбрали нажатием
+  const SPOT_TOUR = () => (isMobile() ? 0 : 0.45);
+  const SPOT_PICK = () => (isMobile() ? 0.55 : 0.85);
   let layersTl = null, layersState = 'idle';   // idle | playing | done
   function playLayers() {
     if (layersState !== 'idle') return;
@@ -700,7 +707,7 @@
     seqLabelEls.forEach((el, i) => layersTl.call(() => el.classList.add('is-in'), null, 0.9 + i * 0.16));
     const t0 = 2.8;
     layersTl
-      .to(S, { cutS: ZS, cutY: () => focusY(0, ZS), spot: 1, spotY: () => spotY(0), duration: 0.9, ease: 'power2.inOut' }, t0)
+      .to(S, { cutS: ZS, cutY: () => focusY(0, ZS), spot: SPOT_TOUR(), spotY: () => spotY(0), duration: 0.9, ease: 'power2.inOut' }, t0)
       .to(S, { focus: 0, duration: 0.01 }, t0 + 0.45);
     for (let i = 1; i < 7; i++) {
       const t = t0 + 0.9 + (i - 1) * 0.85;   // 0.6 с движения + 0.25 с паузы на слое
@@ -731,7 +738,7 @@
   function camTo(i, dur) {
     const ZS = ZSc(), D = !isMobile();
     if (i < 0) return gsap.to(S, { cutS: 0.92, cutY: D ? 1 : 0, spot: 0, duration: dur, ease: 'power2.inOut', onUpdate: render, overwrite: 'auto', onStart: () => { gsap.delayedCall(dur / 2, () => { S.focus = -1; render(); }); } });
-    return gsap.to(S, { cutS: ZS, cutY: focusY(i, ZS), spot: 1, spotY: spotY(i), duration: dur, ease: 'power2.inOut', onUpdate: render, overwrite: 'auto', onStart: () => { gsap.delayedCall(dur / 2, () => { S.focus = i; render(); }); } });
+    return gsap.to(S, { cutS: ZS, cutY: focusY(i, ZS), spot: SPOT_PICK(), spotY: spotY(i), duration: dur, ease: 'power2.inOut', onUpdate: render, overwrite: 'auto', onStart: () => { gsap.delayedCall(dur / 2, () => { S.focus = i; render(); }); } });
   }
   // порядок: слои 0..6, общий вид, снова слои; start — с какого шага, wait — пауза перед первым шагом
   function startTour(start, wait) {
@@ -747,7 +754,7 @@
         tourTl.to(S, { cutS: 0.92, cutY: D ? 1 : 0, spot: 0, duration: 1.1, ease: 'power2.inOut' }, t).set(S, { focus: -1 }, t + 0.55);
         t += 1.1 + 2.4;
       } else {
-        tourTl.to(S, { cutS: ZS, cutY: () => focusY(i, ZS), spot: 1, spotY: () => spotY(i), duration: 0.9, ease: 'power2.inOut' }, t).set(S, { focus: i }, t + 0.45);
+        tourTl.to(S, { cutS: ZS, cutY: () => focusY(i, ZS), spot: SPOT_TOUR(), spotY: () => spotY(i), duration: 0.9, ease: 'power2.inOut' }, t).set(S, { focus: i }, t + 0.45);
         t += 0.9 + 1.9;
       }
     });
@@ -810,6 +817,21 @@
   }
 
 
+  /* Тексты сцены строго по очереди: hero → (пусто) → «Семь слоёв» → финал. Не в scrub-таймлайне:
+     при быстром скролле вверх на телефоне (весь переход ≈ 100 px) они раньше проявлялись одновременно и наезжали */
+  let phase = 'hero';
+  function setPhase(p) {
+    const ph = p < 0.05 ? 'hero' : p < 0.09 ? 'gap' : p < 0.66 ? 'layers' : 'out';
+    if (ph === phase) return;
+    phase = ph;
+    // уходящий текст гаснет за 0.2 с, входящий появляется после — двух текстов на экране не бывает
+    const out = reduceMotion ? 0 : 0.2, inn = reduceMotion ? 0 : 0.35, wait = reduceMotion ? 0 : 0.22;
+    const show = (el, on, extra) => gsap.to(el, Object.assign({ autoAlpha: on ? 1 : 0, duration: on ? inn : out, delay: on ? wait : 0, ease: 'power2.out', overwrite: true }, extra));
+    show(copyHero, ph === 'hero', { y: ph === 'hero' ? 0 : -24 });
+    show(copyLayers, ph === 'layers');
+    gsap.to(I, { hero: ph === 'hero' ? 1 : 0, duration: ph === 'hero' ? inn : out, delay: ph === 'hero' ? wait : 0, ease: 'power2.out', overwrite: 'auto', onUpdate: render });
+  }
+
   function buildStage(isDesktop) {
     const D = isDesktop;
     const END = D ? '+=120%' : '+=100%';
@@ -821,6 +843,7 @@
         end: END,
         pin: true, scrub: D ? 0.5 : 0.35, anticipatePin: 1, invalidateOnRefresh: true,
         onUpdate: (self) => {
+          setPhase(self.progress);
           layersCtl(self.progress);
           if (self.progress > 0.78) revealConcept();
         },
@@ -833,13 +856,10 @@
       .to(S, { wmS: 0.5, wmY: -40, wmO: 0, duration: 8, ease: 'power1.in' }, 0)
       .to(S, { moonX: 16, moonY: -12, moonO: 0, duration: 9, ease: 'power1.in' }, 0)
       .to(S, { brand: 1, duration: 5 }, 4)
-      .to(copyHero, { autoAlpha: 0, y: -40, duration: 6 }, 1)
       .to(S, { cueO: 0, duration: 4 }, 0)
       /* 4–12: собранный матрас проявляется в центре; дальше сцена «припаркована» — расслойка идёт по времени (playLayers) */
       .to(S, { cutO: 1, cutX: D ? 4 : 0, duration: 8 }, 4)
-      .to(copyLayers, { autoAlpha: 1, duration: 5 }, 8)
       /* 66–84: выход из расслойки — стопка мягко отходит вглубь и тает, подписи гаснут, появляется утверждение */
-      .to(copyLayers, { autoAlpha: 0, duration: 5 }, 66)
       .to(S, { outExp: 0.35, outS: 0.82, outY: -6, duration: 18, ease: 'power1.inOut' }, 66)
       .to(shade, { autoAlpha: D ? 0.9 : 0.7, duration: 10, ease: 'power1.inOut' }, 68)
       .to(copyOutro, { autoAlpha: 1, duration: 8, ease: 'power1.out' }, 72)

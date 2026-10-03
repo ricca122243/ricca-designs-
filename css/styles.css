@@ -848,6 +848,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .hero-sub { font-size: 14px; line-height: 1.6; margin-top: 16px; }
   .cue { display: none; }
 
+  .seq-spot { background: radial-gradient(ellipse 95% 18% at 50% 50%, transparent 0 50%, rgba(6,7,12,.45) 80%, rgba(6,7,12,.65) 100%); }
   .copy--layers { top: 13vh; bottom: clamp(44px, 8vh, 90px); transform: none; width: auto; right: var(--gutter); }
   .copy--layers .section-title { font-size: clamp(28px, 7.6vw, 40px); }
   .layer-active { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; font-size: 14px; }
