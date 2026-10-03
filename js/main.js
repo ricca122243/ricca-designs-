@@ -293,6 +293,7 @@
     cutO: 0, cutExp: 1, cutS: 1.04, cutX: 0, cutY: 0,
     spread: 0, focus: -1,
     spot: 0, spotY: 50,
+    outY: 0, outS: 1, outExp: 1,
     dark: 0, brand: 0, moonO: 1, moonX: 0, moonY: 0, cueO: 1,
     wmS: 1, wmY: 0, wmO: 1,
     lightDrift: 0,
@@ -387,9 +388,9 @@
     const cw = Math.round(window.innerWidth * d), ch = Math.round(window.innerHeight * d);
     const mob = isMobile();
     // телефон: кадр шириной 0.92 экрана, сдвинут влево — справа остаётся место под выноски
-    const k = mob ? (cw / SEQ.w) * 0.92 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.7;
+    const k = mob ? (cw / SEQ.w) * 0.82 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.7;
     const dw = SEQ.w * k, dh = SEQ.h * k;
-    return { cw, ch, dw, dh, dx: mob ? -dw * 0.18 : (cw - dw) * 0.5, dy: (ch - dh) * (mob ? 0.5 : 0.56) };
+    return { cw, ch, dw, dh, dx: mob ? -dw * 0.12 : (cw - dw) * 0.5, dy: (ch - dh) * (mob ? 0.5 : 0.56) };
   }
   function sizeSeq() {
     const d = dprSeq();
@@ -453,7 +454,7 @@
     const el = document.createElement('span');
     el.className = 'seq-label';
     el.style.setProperty('--i', i);
-    el.innerHTML = `<span class="seq-label__text"><span class="num">${l.num}</span><span class="name" data-short="${SHORT[i]}">${l.name}</span><span class="spec">${Math.round(l.cm * 10)} мм</span></span>`;
+    el.innerHTML = `<i class="seq-label__dot seq-label__dot--a"></i><i class="seq-label__dot seq-label__dot--b"></i><span class="seq-label__text"><span class="num">${l.num}</span><span class="name" data-short="${SHORT[i]}">${l.name}</span><span class="spec">${Math.round(l.cm * 10)} мм</span></span>`;
     seqLabels.appendChild(el);
     return el;
   });
@@ -463,12 +464,13 @@
   function labelAnchor(i, vw, vh) {
     const ax = seqGeo.dx + SEQ_LABEL_X[i] / 100 * seqGeo.dw, ay = seqGeo.dy + SEQ_LABEL_Y[i] / 100 * seqGeo.dh;
     const cx = vw / 2, cy = vh / 2;
-    return { x: cx + (ax - cx) * S.cutS + S.cutX * vw / 100, y: cy + (ay - cy) * S.cutS + S.cutY * vh / 100 };
+    const sc = S.cutS * S.outS;
+    return { x: cx + (ax - cx) * sc + S.cutX * vw / 100, y: cy + (ay - cy) * sc + (S.cutY + S.outY) * vh / 100 };
   }
   const labelLast = [];
   function placeLabels(vw, vh) {
     const mob = isMobile();
-    const run = mob ? 12 : 22; // наклонный отрезок; ступенька — за счёт вертикали
+    const run = mob ? 14 : 32; // наклонный отрезок; ступенька — за счёт вертикали
     for (let i = 0; i < seqLabelEls.length; i++) {
       const a = labelAnchor(i, vw, vh);
       const el = seqLabelEls[i];
@@ -478,7 +480,7 @@
       el.style.setProperty('--ax', `${a.x.toFixed(1)}px`);
       el.style.setProperty('--ay', `${a.y.toFixed(1)}px`);
       // текст справа от линии; если не помещается — сдвигается влево ровно настолько, чтобы остаться на экране
-      const w = el.firstElementChild.offsetWidth || 160;
+      const w = el.querySelector('.seq-label__text').offsetWidth || 160;
       const over = a.x + run + 9 + w - (vw - 12);
       el.style.setProperty('--shift', `${over > 0 ? (-over).toFixed(1) : 0}px`);
       // слой далеко за экраном (при наезде камеры) — выноска гаснет
@@ -526,12 +528,13 @@
     exposure.style.opacity = Math.max(I.dark, S.dark);
 
     productCut.style.opacity = S.cutO;
-    productCut.style.setProperty('--dim', `${(1 - S.cutExp).toFixed(3)}`);
-    productCut.style.transform = `translate3d(${S.cutX * vw / 100}px, ${S.cutY * vh / 100}px, 0) scale(${S.cutS})`;
+    productCut.style.setProperty('--dim', `${(1 - S.cutExp * S.outExp).toFixed(3)}`);
+    productCut.style.transform = `translate3d(${S.cutX * vw / 100}px, ${(S.cutY + S.outY) * vh / 100}px, 0) scale(${S.cutS * S.outS})`;
     if (S.cutO > 0.001) { markSeq(); drawSeq(); }
     const focusI = Math.round(S.focus);
     setActiveLayer(S.cutO > 0.5 ? focusI : -1);
-    seqLabels.style.opacity = (S.cutO * smoothstep(S.spread, 0.8, 1)).toFixed(3);
+    seqLabels.style.opacity = (S.cutO * smoothstep(S.spread, 0.8, 1) * smoothstep(S.outExp, 0.3, 1)).toFixed(3);
+    seqLabels.classList.toggle('is-focus', S.spot > 0.5);
     if (S.cutO > 0.001) placeLabels(vw, vh);
     seqSpot.style.opacity = S.spot.toFixed(3);
     seqSpot.style.setProperty('--sy', `${S.spotY.toFixed(2)}%`);
@@ -654,15 +657,55 @@
     if (conceptShown) return; conceptShown = true;
     document.querySelectorAll('#concept .reveal, #concept .manifesto__text').forEach((el) => el.classList.add('is-in'));
   }
-  let autoTween = null, autoArmed = true;
-  function stopAuto() { if (autoTween) { autoTween.kill(); autoTween = null; } }
-  ['touchstart', 'wheel', 'keydown', 'pointerdown'].forEach((ev) => window.addEventListener(ev, stopAuto, { passive: true }));
+  /* Расслойка открывается сама: дошёл до сцены — слои разлетаются, выноски прорастают,
+     камера проходит по семи слоям и отходит. Скролл только вводит и выводит из сцены. */
+  let layersTl = null, layersState = 'idle';   // idle | playing | done
+  function playLayers() {
+    if (layersState !== 'idle') return;
+    layersState = 'playing';
+    const D = !isMobile(), ZS = D ? 1.32 : 1.3;
+    seqLabelEls.forEach((el) => el.classList.remove('is-in'));
+    if (reduceMotion) {
+      S.spread = 1; S.cutS = 0.92; seqLabelEls.forEach((el) => el.classList.add('is-in'));
+      layersState = 'done'; render(); return;
+    }
+    layersTl = gsap.timeline({ onUpdate: render, onComplete: () => { layersState = 'done'; layersTl = null; } });
+    layersTl
+      .to(S, { spread: 1, duration: 1.6, ease: 'power3.out' }, 0)
+      .to(S, { cutS: 0.92, duration: 1.6, ease: 'power2.out' }, 0);
+    seqLabelEls.forEach((el, i) => layersTl.call(() => el.classList.add('is-in'), null, 0.9 + i * 0.16));
+    const t0 = 2.8;
+    layersTl
+      .to(S, { cutS: ZS, cutY: () => focusY(0, ZS), spot: 1, spotY: () => spotY(0), duration: 0.9, ease: 'power2.inOut' }, t0)
+      .to(S, { focus: 0, duration: 0.01 }, t0 + 0.45);
+    for (let i = 1; i < 7; i++) {
+      const t = t0 + 0.9 + (i - 1) * 0.85;   // 0.6 с движения + 0.25 с паузы на слое
+      layersTl
+        .to(S, { cutY: () => focusY(i, ZS), spotY: () => spotY(i), duration: 0.6, ease: 'power2.inOut' }, t)
+        .to(S, { focus: i, duration: 0.01 }, t + 0.3);
+    }
+    const tEnd = t0 + 0.9 + 6 * 0.85 + 0.45;
+    layersTl
+      .to(S, { cutS: 0.92, cutY: D ? 1 : 0, spot: 0, duration: 0.9, ease: 'power2.inOut' }, tEnd)
+      .to(S, { focus: -1, duration: 0.01 }, tEnd + 0.3);
+  }
+  function resetLayers() {
+    if (layersState === 'idle') return;
+    if (layersTl) { layersTl.kill(); layersTl = null; }
+    layersState = 'idle';
+    seqLabelEls.forEach((el) => el.classList.remove('is-in'));
+    gsap.to(S, { spread: 0, cutS: 1, cutY: 0, spot: 0, focus: -1, duration: 0.6, ease: 'power2.out', onUpdate: render, overwrite: 'auto' });
+  }
+  function layersCtl(p) {
+    if (p >= 0.10 && layersState === 'idle') playLayers();
+    else if (p < 0.04) resetLayers();
+    // долистал до финала раньше конца сценария — он ускоряется и доигрывает
+    if (p > 0.68 && layersTl && layersTl.timeScale() === 1) layersTl.timeScale(3);
+  }
 
   function buildStage(isDesktop) {
     const D = isDesktop;
-    const END = D ? '+=170%' : '+=130%';
-    // телефон: окно запуска автопрокрутки 10–20 %, довозит до 62 % за 11 с
-    const AUTO = { dest: 0.62, dur: 11, ease: 'power1.inOut' };
+    const END = D ? '+=120%' : '+=100%';
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       onUpdate: render,
@@ -671,27 +714,11 @@
         end: END,
         pin: true, scrub: D ? 0.5 : 0.25, anticipatePin: 1, invalidateOnRefresh: true,
         onUpdate: (self) => {
-          if (!D) autoPlayLayers(self);
-          if (self.progress > 0.80) revealConcept();
+          layersCtl(self.progress);
+          if (self.progress > 0.78) revealConcept();
         },
       },
     });
-
-    /* телефон: довели сцену до разлёта — дальше она едет сама до сборки; любое касание возвращает управление */
-    function autoPlayLayers(self) {
-      if (reduceMotion) return;
-      if (self.progress < 0.08) autoArmed = true;
-      if (!autoArmed || autoTween || self.direction < 0) return;
-      if (self.progress < 0.10 || self.progress > 0.20) return;
-      autoArmed = false;
-      const from = self.progress, to = AUTO.dest, dist = self.end - self.start;
-      const o = { p: from };
-      autoTween = gsap.to(o, {
-        p: to, duration: AUTO.dur * (to - from) / (to - 0.10), ease: AUTO.ease,
-        onUpdate: () => window.scrollTo(0, self.start + dist * o.p),
-        onComplete: () => { autoTween = null; },
-      });
-    }
 
     tl
       /* 0–8: имя уходит в nav, луна уходит вправо-вверх и гаснет, hero-текст уходит */
@@ -701,37 +728,18 @@
       .to(S, { brand: 1, duration: 5 }, 4)
       .to(copyHero, { opacity: 0, y: -40, duration: 6 }, 1)
       .to(S, { cueO: 0, duration: 4 }, 0)
-      /* 4–12: разрез проявляется в центре */
-      .to(S, { cutO: 1, cutS: 1.0, cutX: D ? 4 : 0, duration: 8 }, 4)
-      .to(copyLayers, { opacity: 1, duration: 5 }, 8);
-
-      /* 12–18: разлёт; 18–46: камера по очереди подходит к каждому слою, остальные уходят в тень */
-      const ZS = D ? 1.32 : 1.55;
-      tl.to(S, { spread: 1, duration: 6, ease: 'power3.out' }, 12)
-        .to(S, { cutS: 0.9, cutY: D ? 1 : 0, duration: 6, ease: 'power2.out' }, 12)
-        .to(S, { cutS: ZS, cutY: () => focusY(0, ZS), spot: 1, spotY: () => spotY(0), duration: 4, ease: 'power2.inOut' }, 18)
-        .to(S, { focus: 0, duration: 0.01 }, 19.5);
-      for (let i = 1; i < 7; i++) {
-        const t = 18 + i * 4;
-        tl.to(S, { cutY: () => focusY(i, ZS), spotY: () => spotY(i), duration: 3, ease: 'power2.inOut' }, t)
-          .to(S, { focus: i, duration: 0.01 }, t + 1.5);
-      }
-      tl.to(S, { cutS: 0.9, cutY: D ? 1 : 0, spot: 0, duration: 4, ease: 'power2.inOut' }, 46)
-        .to(S, { focus: -1, duration: 0.01 }, 47)
-        /* 50–56: слои собираются */
-        .to(S, { spread: 0, duration: 6, ease: 'power3.inOut' }, 50)
-        .to(S, { cutS: 1.0, duration: 6, ease: 'power2.inOut' }, 50)
-        .to(copyLayers, { opacity: 0, duration: 4 }, 50);
-    const T = 56;
-    tl
-      /* финальное утверждение, матрас уходит вправо и вверх */
-      .to(S, { cutExp: 0.45, cutS: 0.88, cutX: D ? 28 : 0, cutY: D ? 10 : -8, duration: 10 }, T)
-      .to(shade, { opacity: D ? 1 : 0.6, duration: 8 }, T)
-      .to(copyOutro, { opacity: 1, duration: 7 }, T + 3)
-      /* 76–100: сцена темнеет не до чёрного и уезжает вверх — следующая секция подхватывает сразу */
-      .to(S, { dark: 0.55, cutY: D ? -16 : -12, cutExp: 0.2, duration: 24, ease: 'power1.in' }, 76)
-      .to(copyOutro, { opacity: 0, y: -30, duration: 9, ease: 'power1.in' }, 80)
-      .to(shade, { opacity: 0, duration: 12 }, 84);
+      /* 4–12: собранный матрас проявляется в центре; дальше сцена «припаркована» — расслойка идёт по времени (playLayers) */
+      .to(S, { cutO: 1, cutX: D ? 4 : 0, duration: 8 }, 4)
+      .to(copyLayers, { opacity: 1, duration: 5 }, 8)
+      /* 70–82: финальное утверждение, разложенный матрас уходит вправо и вверх */
+      .to(copyLayers, { opacity: 0, duration: 5 }, 68)
+      .to(S, { outExp: 0.45, outS: 0.94, cutX: D ? 28 : 0, outY: D ? 10 : -8, duration: 12 }, 70)
+      .to(shade, { opacity: D ? 1 : 0.6, duration: 8 }, 70)
+      .to(copyOutro, { opacity: 1, duration: 7 }, 73)
+      /* 84–100: сцена темнеет не до чёрного и уезжает вверх — следующая секция подхватывает сразу */
+      .to(S, { dark: 0.55, outY: D ? -16 : -12, outExp: 0.2, duration: 16, ease: 'power1.in' }, 84)
+      .to(copyOutro, { opacity: 0, y: -30, duration: 9, ease: 'power1.in' }, 86)
+      .to(shade, { opacity: 0, duration: 12 }, 88);
     return tl;
   }
   mm.add('(min-width: 900px)', () => { buildStage(true); return () => {}; });
@@ -1290,6 +1298,6 @@
   render();
 
   if (DEBUG) {
-    window.ELUNA = { intro, Light, get tier() { return TIER; }, get moon() { return moonGL; }, S, I, render };
+    window.ELUNA = { intro, Light, get tier() { return TIER; }, get moon() { return moonGL; }, get layers() { return layersState; }, S, I, render };
   }
 })();
