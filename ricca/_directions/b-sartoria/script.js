@@ -122,7 +122,6 @@
       dock.classList.toggle('is-on', heroBottom < 0 && showTop > vh * 0.85 && !menuOpen);
     }
 
-    updateSewing();
   };
   const requestScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } };
   window.addEventListener('scroll', requestScroll, { passive: true });
@@ -169,124 +168,137 @@
   const clipSrc = (name) => `${VIDEO}${name}.${canWebm ? 'webm' : 'mp4'}`;
   const safePlay = (v) => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
 
-  /* ---------- Как мы делаем: сцена + шов ---------- */
-  const steps = $$('.step');
-  const stepsList = $('.steps');
+  /* ---------- Как мы делаем: фильм по главам ---------- */
+  const film = $('[data-chapters]');
+  const chs = $$('.ch');
   const stageVids = $$('.stage__v');
   const stageNo = $('[data-stage-no]');
   const stageName = $('[data-stage-name]');
-  let activeIdx = -1;
+  const stageDesc = $('[data-stage-desc]');
+  const sewn = $('.chapters__list');
+  const DUR = 4600;               // сколько длится глава в автоматическом режиме
+  let active = 0;
   let front = 0;
-  let stageClips = [];
+  let clips = [];
   let clipPos = 0;
+  let auto = !reduce.matches;
+  let inView = false;
+  let timer = 0;
+  let started = false;
 
-  function updateSewing() {
-    if (!stepsList) return;
-    const r = stepsList.getBoundingClientRect();
-    const vh = window.innerHeight;
-    const p = (vh * 0.5 - r.top) / Math.max(1, r.height);
-    stepsList.style.setProperty('--sewn', Math.min(1, Math.max(0, p)).toFixed(4));
-  }
-
-  function loadInto(v, name, loop) {
-    v.loop = loop;
+  function loadInto(v, name) {
     v.poster = `${POSTER}${name}.webp`;
-    if (reduce.matches) { v.removeAttribute('src'); v.load(); return; }
+    if (reduce.matches) { v.removeAttribute('src'); return; }
     v.src = clipSrc(name);
-    v.playbackRate = 0.8;
-    v.defaultPlaybackRate = 0.8;
   }
 
-  function stageShow(idx) {
-    if (idx === activeIdx || !stageVids.length) return;
-    activeIdx = idx;
-    const step = steps[idx];
-    steps.forEach((s, i) => {
-      s.classList.toggle('is-active', i === idx);
-      s.classList.toggle('is-done', i < idx);
-    });
-    const n = step.classList.contains('step--final') ? '—' : String(idx + 1).padStart(2, '0');
-    stageNo.textContent = n;
-    stageName.textContent = step.dataset.name;
-    if (!mqDesk.matches) return;
-
-    stageClips = step.dataset.clips.split(' ');
-    clipPos = 0;
-    const back = stageVids[1 - front];
-    const cur = stageVids[front];
-    loadInto(back, stageClips[0], stageClips.length === 1);
-    const swap = () => {
-      back.classList.add('is-on');
-      cur.classList.remove('is-on');
-      setTimeout(() => { cur.pause(); }, 1000);
-      front = 1 - front;
-    };
-    if (reduce.matches) { swap(); return; }
-    back.addEventListener('loadeddata', function once() {
-      back.removeEventListener('loadeddata', once);
-      back.playbackRate = 0.8;
-      safePlay(back);
-      swap();
-    });
-    back.load();
+  function schedule() {
+    clearTimeout(timer);
+    if (!auto || !inView) return;
+    const d = chs[active].classList.contains('ch--final') ? DUR + 1600 : DUR;
+    film.style.setProperty('--dur', `${d}ms`);
+    timer = setTimeout(() => select((active + 1) % chs.length, false), d);
   }
 
-  // Шаг из двух клипов (раскрой → обивка) идёт цепочкой
-  stageVids.forEach((v) => v.addEventListener('ended', () => {
-    if (stageClips.length < 2 || !v.classList.contains('is-on')) return;
-    clipPos = (clipPos + 1) % stageClips.length;
-    v.poster = `${POSTER}${stageClips[clipPos]}.webp`;
-    v.src = clipSrc(stageClips[clipPos]);
-    v.playbackRate = 0.8;
-    safePlay(v);
-  }));
+  function select(idx, byUser) {
+    if (byUser && auto) { auto = false; film.classList.remove('is-auto'); }
+    const changed = idx !== active || !started;
+    active = idx;
+    const ch = chs[idx];
+    chs.forEach((c, i) => {
+      c.classList.toggle('is-active', i === idx);
+      c.classList.toggle('is-done', i < idx);
+      c.setAttribute('aria-pressed', String(i === idx));
+    });
+    // перезапуск полоски-стежка у активной главы
+    const bar = $('.ch__bar', ch);
+    if (bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; }
+    sewn.style.setProperty('--sewn', (idx / (chs.length - 1)).toFixed(4));
+    stageNo.textContent = ch.classList.contains('ch--final') ? '—' : String(idx + 1).padStart(2, '0');
+    stageName.textContent = ch.dataset.name;
+    if (stageDesc) stageDesc.textContent = ch.dataset.text;
 
-  if (steps.length && 'IntersectionObserver' in window) {
-    const stepIO = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) stageShow(steps.indexOf(e.target));
-      });
-    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
-    steps.forEach((s) => stepIO.observe(s));
+    if (changed) {
+      started = true;
+      clips = ch.dataset.clips.split(' ');
+      clipPos = 0;
+      const back = stageVids[1 - front];
+      const cur = stageVids[front];
+      back.loop = clips.length === 1;
+      loadInto(back, clips[0]);
+      const swap = () => {
+        back.classList.add('is-on');
+        cur.classList.remove('is-on');
+        back.removeAttribute('aria-hidden');
+        cur.setAttribute('aria-hidden', 'true');
+        setTimeout(() => cur.pause(), 1000);
+        front = 1 - front;
+      };
+      if (reduce.matches || !back.src) { swap(); }
+      else {
+        back.addEventListener('loadeddata', function once() {
+          back.removeEventListener('loadeddata', once);
+          back.playbackRate = 0.8;
+          if (inView) safePlay(back);
+          swap();
+        });
+        back.load();
+      }
+    }
+    schedule();
+  }
 
-    // Телефон: у каждого шага свой ролик, играет только видимый
-    const inlineIO = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        const v = e.target;
-        if (mqDesk.matches) return;
-        if (e.isIntersecting) {
-          if (reduce.matches) return;
-          if (!v.dataset.ready) {
-            v.src = clipSrc(v.dataset.src);
-            v.dataset.ready = '1';
+  if (film && chs.length) {
+    if (auto) film.classList.add('is-auto');
+    chs.forEach((c, i) => c.addEventListener('click', () => select(i, true)));
+
+    // Глава из двух клипов (раскрой → обивка) идёт цепочкой
+    stageVids.forEach((v) => v.addEventListener('ended', () => {
+      if (!v.classList.contains('is-on') || clips.length < 2) return;
+      clipPos = (clipPos + 1) % clips.length;
+      v.poster = `${POSTER}${clips[clipPos]}.webp`;
+      v.src = clipSrc(clips[clipPos]);
+      v.playbackRate = 0.8;
+      safePlay(v);
+    }));
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          inView = e.isIntersecting;
+          const v = stageVids[front];
+          if (inView) {
+            if (!started) select(active, false);
+            else if (!reduce.matches && v.src) safePlay(v);
+            schedule();
+          } else {
+            clearTimeout(timer);
+            stageVids.forEach((x) => x.pause());
           }
-          v.playbackRate = 0.8;
-          safePlay(v);
-        } else if (!v.paused) {
-          v.pause();
-        }
-      });
-    }, { threshold: 0.6 });
-    $$('.step__media video').forEach((v) => {
-      v.addEventListener('loadeddata', () => { v.playbackRate = 0.8; });
-      inlineIO.observe(v);
-    });
+        });
+      }, { threshold: 0.35 }).observe(film);
+    }
   }
-  if (steps.length) stageShow(0);
 
   /* ---------- Фильм целиком ---------- */
-  const film = $('#film');
-  const filmVideo = film ? $('video', film) : null;
+  const filmDlg = $('#film');
+  const filmVideo = filmDlg ? $('video', filmDlg) : null;
   $$('[data-film-open]').forEach((b) => b.addEventListener('click', () => {
-    if (!film) return;
-    if (typeof film.showModal === 'function') film.showModal(); else film.setAttribute('open', '');
+    if (!filmDlg) return;
+    stageVids.forEach((x) => x.pause());
+    clearTimeout(timer);
+    if (typeof filmDlg.showModal === 'function') filmDlg.showModal(); else filmDlg.setAttribute('open', '');
     if (!reduce.matches) safePlay(filmVideo);
   }));
-  const closeFilm = () => { filmVideo.pause(); if (film.open) film.close(); };
-  if (film) {
-    $('[data-film-close]', film).addEventListener('click', closeFilm);
-    film.addEventListener('click', (e) => { if (e.target === film) closeFilm(); });
-    film.addEventListener('close', () => filmVideo.pause());
+  const closeFilm = () => { filmVideo.pause(); if (filmDlg.open) filmDlg.close(); };
+  if (filmDlg) {
+    $('[data-film-close]', filmDlg).addEventListener('click', closeFilm);
+    filmDlg.addEventListener('click', (e) => { if (e.target === filmDlg) closeFilm(); });
+    filmDlg.addEventListener('close', () => {
+      filmVideo.pause();
+      if (inView && !reduce.matches && stageVids[front].src) safePlay(stageVids[front]);
+      schedule();
+    });
   }
 
   /* ---------- Примерочная: образцы тканей и кож ---------- */

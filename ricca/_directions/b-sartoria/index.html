@@ -107,10 +107,11 @@
 <!-- ═════════════ HERO ═════════════ -->
 <section class="hero" id="top" data-chapter="Начало">
   <div class="wrap hero__grid">
-    <p class="hero__folio eyebrow" data-reveal>
+    <p class="hero__folio eyebrow">
       <span>Ателье мягкой мебели · Алматы</span>
       <span class="hero__folio-r">Шоурум открыт ежедневно, 10:00–20:00</span>
     </p>
+    <div class="ruler" aria-hidden="true"><div class="ruler__nums"><span style="--i:0">0</span><span style="--i:1">10</span><span style="--i:2">20</span><span style="--i:3">30</span><span style="--i:4">40</span><span style="--i:5">50</span><span style="--i:6">60</span><span style="--i:7">70</span><span style="--i:8">80</span><span style="--i:9">90</span><span style="--i:10">100</span><span style="--i:11">110</span><span style="--i:12">120</span><span style="--i:13">130</span><span style="--i:14">140</span><span style="--i:15">150</span><span style="--i:16">160</span><span style="--i:17">170</span><span style="--i:18">180</span></div></div>
 
     <h1 class="hero__title" aria-label="Мебель по мерке вашего дома">
       <span class="line"><span>Мебель</span></span>
@@ -118,7 +119,7 @@
       <span class="line"><span>вашего дома</span></span>
     </h1>
 
-    <div class="hero__copy" data-reveal>
+    <div class="hero__copy">
       <p class="hero__sub">Диваны, кровати и&nbsp;кресла на&nbsp;заказ и&nbsp;собственные коллекции. Проектируем, шьём и&nbsp;собираем в&nbsp;своём ателье в&nbsp;Алматы.</p>
       <div class="hero__cta">
         <a class="btn" href="#showroom">Посетить шоурум</a>
@@ -127,7 +128,7 @@
     </div>
 
     <div class="hero__visual">
-      <figure class="frame frame--hero" data-reveal="frame">
+      <figure class="frame frame--hero" data-reveal="frame" data-hero-frame>
         <div class="frame__img">
           <img src="media/living-warm.webp" srcset="media/living-warm.webp 513w, media/living-warm@2x.webp 1026w" sizes="(min-width: 1000px) 420px, 78vw" width="513" height="640" alt="Светлый угловой диван с подушками в гостиной: льняные шторы, паркет ёлочкой, мягкий дневной свет" fetchpriority="high">
         </div>
@@ -140,7 +141,7 @@
       </a>
     </div>
 
-    <div class="hero__foot" data-reveal>
+    <div class="hero__foot">
       <span>ул.&nbsp;Алишера Навои, 208/2 · ЖК&nbsp;«Шахристан»</span>
       <span class="hero__seam" aria-hidden="true"></span>
       <a href="#atelier" class="hero__scroll">Листайте</a>
@@ -204,7 +205,7 @@
     <div class="runhead" data-reveal><span class="runhead__no">02</span><span class="runhead__t">Каталог</span><span class="runhead__seam"></span><span class="runhead__r">Альбом эскизов</span></div>
 
     <div class="sec__head">
-      <h2 class="h2" data-reveal>Шесть направлений — <em>одна линия</em></h2>
+      <h2 class="h2" data-reveal>Шесть направлений&nbsp;— <em>одна линия</em></h2>
       <div class="sec__aside" data-reveal>
         <p class="body">Модели из&nbsp;коллекций можно адаптировать под ваш интерьер: размер, ткань, отделку дерева.</p>
         <p class="note">Цена зависит от&nbsp;размера, ткани и&nbsp;отделки. Рассчитаем её в&nbsp;WhatsApp или в&nbsp;шоуруме.</p>
@@ -380,102 +381,51 @@
       </div>
     </div>
 
-    <div class="process__body">
-      <div class="stage" aria-hidden="true">
+    <div class="film-ch" data-chapters>
+      <div class="stage">
         <div class="stage__frame">
           <div class="stage__screen">
-            <video class="stage__v is-on" muted playsinline loop preload="none" poster="../../img/process/step-01-design.webp"></video>
-            <video class="stage__v" muted playsinline loop preload="none"></video>
+            <video class="stage__v is-on" muted playsinline preload="none" poster="../../img/process/step-01-design.webp" aria-label="Кадры из ателье RICCA: текущий шаг"></video>
+            <video class="stage__v" muted playsinline preload="none" aria-hidden="true"></video>
           </div>
         </div>
-        <div class="stage__cap">
-          <span class="stage__count"><b data-stage-no>01</b> / 08</span>
-          <span class="stage__name" data-stage-name>Проект</span>
-        </div>
+        <p class="stage__cap" aria-live="polite"><span class="stage__count"><b data-stage-no>01</b> / 08</span><span class="stage__name" data-stage-name>Проект</span></p>
       </div>
 
-      <ol class="steps">
-        <li class="steps__line" aria-hidden="true"><span class="steps__sewn"><i class="needle"></i></span></li>
-        <li class="step" data-clips="step-01-design" data-name="Проект">
-          <span class="step__dot" aria-hidden="true"></span>
-          <div class="step__media"><video muted playsinline loop preload="none" poster="../../img/process/step-01-design.webp" data-src="step-01-design" aria-label="Дизайнер строит 3D-модель дивана на компьютере"></video></div>
-          <div class="step__text">
-            <span class="step__no">01</span>
-            <h3 class="step__t">Проект</h3>
-            <p>Модель строят в&nbsp;3D: пропорции, посадка и&nbsp;размер под вашу комнату.</p>
-          </div>
-        </li>
-        <li class="step" data-clips="step-03-pattern" data-name="Раскрой">
-          <span class="step__dot" aria-hidden="true"></span>
-          <div class="step__media"><video muted playsinline loop preload="none" poster="../../img/process/step-03-pattern.webp" data-src="step-03-pattern" aria-label="Мастер размечает деталь по лекалу"></video></div>
-          <div class="step__text">
-            <span class="step__no">02</span>
-            <h3 class="step__t">Раскрой</h3>
-            <p>Детали размечают и&nbsp;кроят по&nbsp;лекалам.</p>
-          </div>
-        </li>
-        <li class="step" data-clips="step-02-sewing" data-name="Пошив">
-          <span class="step__dot" aria-hidden="true"></span>
-          <div class="step__media"><video muted playsinline loop preload="none" poster="../../img/process/step-02-sewing.webp" data-src="step-02-sewing" aria-label="Пошив чехла на промышленной швейной машине"></video></div>
-          <div class="step__text">
-            <span class="step__no">03</span>
-            <h3 class="step__t">Пошив</h3>
-            <p>Чехлы шьют на&nbsp;промышленных машинах, строчка к&nbsp;строчке.</p>
-          </div>
-        </li>
-        <li class="step" data-clips="step-04-sanding" data-name="Каркас">
-          <span class="step__dot" aria-hidden="true"></span>
-          <div class="step__media"><video muted playsinline loop preload="none" poster="../../img/process/step-04-sanding.webp" data-src="step-04-sanding" aria-label="Шлифовка деревянного каркаса"></video></div>
-          <div class="step__text">
-            <span class="step__no">04</span>
-            <h3 class="step__t">Каркас</h3>
-            <p>Деревянный каркас шлифуют до&nbsp;гладкости.</p>
-          </div>
-        </li>
-        <li class="step" data-clips="step-05-lacquer" data-name="Лак">
-          <span class="step__dot" aria-hidden="true"></span>
-          <div class="step__media"><video muted playsinline loop preload="none" poster="../../img/process/step-05-lacquer.webp" data-src="step-05-lacquer" aria-label="Деревянную деталь покрывают лаком из краскопульта"></video></div>
-          <div class="step__text">
-            <span class="step__no">05</span>
-            <h3 class="step__t">Лак</h3>
-            <p>Дерево получает цвет и&nbsp;защитный слой лака.</p>
-          </div>
-        </li>
-        <li class="step" data-clips="step-06-fabric" data-name="Ткань">
-          <span class="step__dot" aria-hidden="true"></span>
-          <div class="step__media"><video muted playsinline loop preload="none" poster="../../img/process/step-06-fabric.webp" data-src="step-06-fabric" aria-label="Выбор ткани по образцам из палитры"></video></div>
-          <div class="step__text">
-            <span class="step__no">06</span>
-            <h3 class="step__t">Ткань</h3>
-            <p>Ткань выбирают по&nbsp;живым образцам из&nbsp;нашей палитры.</p>
-          </div>
-        </li>
-        <li class="step" data-clips="step-07-cutting step-08-upholstery" data-name="Обивка">
-          <span class="step__dot" aria-hidden="true"></span>
-          <div class="step__media"><video muted playsinline loop preload="none" poster="../../img/process/step-08-upholstery.webp" data-src="step-08-upholstery" aria-label="Обивка: ткань закрепляют на каркасе степлером"></video></div>
-          <div class="step__text">
-            <span class="step__no">07</span>
-            <h3 class="step__t">Обивка</h3>
-            <p>Ткань кроят по&nbsp;месту, натягивают и&nbsp;закрепляют на&nbsp;каркасе.</p>
-          </div>
-        </li>
-        <li class="step" data-clips="step-09-assembly" data-name="Сборка">
-          <span class="step__dot" aria-hidden="true"></span>
-          <div class="step__media"><video muted playsinline loop preload="none" poster="../../img/process/step-09-assembly.webp" data-src="step-09-assembly" aria-label="Мастер собирает диван в шоуруме"></video></div>
-          <div class="step__text">
-            <span class="step__no">08</span>
-            <h3 class="step__t">Сборка</h3>
-            <p>Мастер собирает изделие и&nbsp;проверяет посадку, швы и&nbsp;линии.</p>
-          </div>
-        </li>
-        <li class="step step--final" data-clips="step-10-finished" data-name="Готово">
-          <span class="step__knot" aria-hidden="true"></span>
-          <div class="step__media"><video muted playsinline loop preload="none" poster="../../img/process/step-10-finished.webp" data-src="step-10-finished" aria-label="Готовый светло-серый диван в шоуруме"></video></div>
-          <div class="step__text">
-            <p class="step__final">Готово. <em>Остаётся только сесть.</em></p>
-          </div>
-        </li>
-      </ol>
+      <div class="chapters">
+        <p class="chapters__hint">Главы фильма · выберите шаг</p>
+        <ol class="chapters__list">
+          <li class="chapters__line" aria-hidden="true"><span class="chapters__sewn"></span></li>
+          <li><button class="ch is-active" type="button" aria-pressed="true" data-clips="step-01-design" data-name="Проект" data-text="Модель строят в 3D: пропорции, посадка и размер под вашу комнату.">
+            <span class="ch__no">01</span><span class="ch__t">Проект</span><span class="ch__p">Модель строят в&nbsp;3D: пропорции, посадка и&nbsp;размер под вашу комнату.</span><span class="ch__bar" aria-hidden="true"></span>
+          </button></li>
+          <li><button class="ch" type="button" aria-pressed="false" data-clips="step-03-pattern" data-name="Раскрой" data-text="Детали размечают и кроят по лекалам.">
+            <span class="ch__no">02</span><span class="ch__t">Раскрой</span><span class="ch__p">Детали размечают и&nbsp;кроят по&nbsp;лекалам.</span><span class="ch__bar" aria-hidden="true"></span>
+          </button></li>
+          <li><button class="ch" type="button" aria-pressed="false" data-clips="step-02-sewing" data-name="Пошив" data-text="Чехлы шьют на промышленных машинах, строчка к строчке.">
+            <span class="ch__no">03</span><span class="ch__t">Пошив</span><span class="ch__p">Чехлы шьют на&nbsp;промышленных машинах, строчка к&nbsp;строчке.</span><span class="ch__bar" aria-hidden="true"></span>
+          </button></li>
+          <li><button class="ch" type="button" aria-pressed="false" data-clips="step-04-sanding" data-name="Каркас" data-text="Деревянный каркас шлифуют до гладкости.">
+            <span class="ch__no">04</span><span class="ch__t">Каркас</span><span class="ch__p">Деревянный каркас шлифуют до&nbsp;гладкости.</span><span class="ch__bar" aria-hidden="true"></span>
+          </button></li>
+          <li><button class="ch" type="button" aria-pressed="false" data-clips="step-05-lacquer" data-name="Лак" data-text="Дерево получает цвет и защитный слой лака.">
+            <span class="ch__no">05</span><span class="ch__t">Лак</span><span class="ch__p">Дерево получает цвет и&nbsp;защитный слой лака.</span><span class="ch__bar" aria-hidden="true"></span>
+          </button></li>
+          <li><button class="ch" type="button" aria-pressed="false" data-clips="step-06-fabric" data-name="Ткань" data-text="Ткань выбирают по живым образцам из нашей палитры.">
+            <span class="ch__no">06</span><span class="ch__t">Ткань</span><span class="ch__p">Ткань выбирают по&nbsp;живым образцам из&nbsp;нашей палитры.</span><span class="ch__bar" aria-hidden="true"></span>
+          </button></li>
+          <li><button class="ch" type="button" aria-pressed="false" data-clips="step-07-cutting step-08-upholstery" data-name="Обивка" data-text="Ткань кроят по месту, натягивают и закрепляют на каркасе.">
+            <span class="ch__no">07</span><span class="ch__t">Обивка</span><span class="ch__p">Ткань кроят по&nbsp;месту, натягивают и&nbsp;закрепляют на&nbsp;каркасе.</span><span class="ch__bar" aria-hidden="true"></span>
+          </button></li>
+          <li><button class="ch" type="button" aria-pressed="false" data-clips="step-09-assembly" data-name="Сборка" data-text="Мастер собирает изделие и проверяет посадку, швы и линии.">
+            <span class="ch__no">08</span><span class="ch__t">Сборка</span><span class="ch__p">Мастер собирает изделие и&nbsp;проверяет посадку, швы и&nbsp;линии.</span><span class="ch__bar" aria-hidden="true"></span>
+          </button></li>
+          <li><button class="ch ch--final" type="button" aria-pressed="false" data-clips="step-10-finished" data-name="Готово" data-text="Остаётся только сесть.">
+            <span class="ch__no" aria-hidden="true"></span><span class="ch__t">Готово.</span><span class="ch__p"><em>Остаётся только сесть.</em></span><span class="ch__bar" aria-hidden="true"></span>
+          </button></li>
+        </ol>
+      </div>
+      <p class="stage__desc" data-stage-desc aria-hidden="true">Модель строят в&nbsp;3D: пропорции, посадка и&nbsp;размер под вашу комнату.</p>
     </div>
   </div>
 </section>
@@ -495,7 +445,7 @@
     <div class="fitting" data-reveal>
       <div class="fitting__stage">
         <p class="fitting__kicker eyebrow">Примерочная</p>
-        <svg class="sofa" viewBox="0 0 800 430" role="img" aria-labelledby="sofa-title">
+        <svg class="sofa" viewBox="0 120 800 300" role="img" aria-labelledby="sofa-title">
           <title id="sofa-title">Эскиз дивана в выбранной ткани</title>
           <defs>
             <g id="sofa-geo">
@@ -613,10 +563,10 @@
     <div class="clients">
       <p class="eyebrow eyebrow--light" data-reveal>Нам доверяли</p>
       <ul class="clients__list" data-reveal>
-        <li>The Ritz-Carlton, Almaty</li>
-        <li>Esentai Mall</li>
-        <li>MEGA Alma-Ata</li>
-        <li>Koktobe City</li>
+        <li><span><span class="nw">The Ritz-Carlton,</span> <span class="nw">Almaty</span></span></li>
+        <li><span class="nw">Esentai Mall</span></li>
+        <li><span class="nw">MEGA Alma-Ata</span></li>
+        <li><span class="nw">Koktobe City</span></li>
         <li>ABR</li>
         <li>MAKAN</li>
       </ul>
@@ -641,7 +591,7 @@
           </figure>
           <figure class="frame frame--tall showroom__pic2" data-reveal="frame">
             <div class="frame__img"><img src="../../img/showroom/sofa-01.webp" srcset="../../img/showroom/sofa-01.webp 478w, ../../img/showroom/sofa-01@2x.webp 956w" sizes="(min-width: 1000px) 190px, 38vw" width="478" height="850" loading="lazy" alt="Светло-серый диван с мягкими подушками на деревянном основании в шоуруме RICCA DESIGNS"></div>
-            <figcaption class="cap"><span class="cap__no">04</span>Посадка и&nbsp;подушки</figcaption>
+            <figcaption class="cap"><span class="cap__no">04</span>Посадка</figcaption>
           </figure>
         </div>
       </div>
@@ -655,7 +605,7 @@
           </div>
         </div>
         <dl class="fiche__rows">
-          <div class="fiche__row"><dt>Адрес</dt><dd>г.&nbsp;Алматы, ул.&nbsp;Алишера Навои,&nbsp;208/2, ЖК&nbsp;«Шахристан»</dd></div>
+          <div class="fiche__row"><dt>Адрес</dt><dd><span class="nw">ул.&nbsp;Алишера Навои,&nbsp;208/2</span><br>ЖК&nbsp;«Шахристан», Алматы</dd></div>
           <div class="fiche__row"><dt>Часы</dt><dd>Ежедневно, 10:00–20:00</dd></div>
           <div class="fiche__row"><dt>Основной / WhatsApp</dt><dd><a href="tel:+77084802047" class="nowrap">+7&nbsp;(708)&nbsp;480-20-47</a></dd></div>
           <div class="fiche__row"><dt>Отдел заказов</dt><dd><a href="tel:+77079550808" class="nowrap">+7&nbsp;(707)&nbsp;955-08-08</a></dd></div>
@@ -728,8 +678,8 @@
     </div>
 
     <div class="ftr__mark" aria-hidden="true">
-      <svg class="ftr__mono" viewBox="0 0 521.1 256.9"><use href="#rd"/></svg>
-      <span class="ftr__wm">RICCA</span>
+      <svg class="ftr__wm" viewBox="0 0 1000 176" preserveAspectRatio="xMidYMid meet"><text x="2" y="172" textLength="996" lengthAdjust="spacing">RICCA</text></svg>
+      <p class="ftr__sub"><svg class="ftr__mono" viewBox="0 0 521.1 256.9"><use href="#rd"/></svg><span>Designs · Almaty · Мебель по&nbsp;мерке</span></p>
     </div>
 
     <div class="ftr__bar">

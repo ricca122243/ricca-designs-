@@ -113,6 +113,7 @@
   $$('.sketch').forEach((svg) => {
     $$('.sk-line > *, .sk-dim path, .sk-floor', svg).forEach((n, i) => {
       n.setAttribute('pathLength', '1');
+      n.classList.add('sk-draw');
       n.style.setProperty('--sd', `${200 + i * 85}ms`);
     });
   });
@@ -353,6 +354,7 @@
     planLinks.forEach((a) => a.classList.toggle('is-active', a.dataset.hall === id));
     navLinks.forEach((a) => a.classList.toggle('is-active', a.getAttribute('href') === `#${id}`));
     if (planNow) planNow.textContent = name ? `Зал ${name}` : 'Вестибюль';
+    if (plan) { plan.classList.toggle('is-muted', id === 'collections'); plan.classList.toggle('is-dark', id === 'business'); }
   };
   if ('IntersectionObserver' in window) {
     const io4 = new IntersectionObserver((entries) => {
@@ -361,6 +363,34 @@
       });
     }, { rootMargin: '-48% 0px -48% 0px', threshold: 0 });
     halls.forEach((h) => io4.observe(h));
+  }
+
+  /* ---------- Курсор «Подойти ближе» ---------- */
+  if (mqHover.matches && !reduced) {
+    const cur = document.createElement('div');
+    cur.className = 'cursor';
+    cur.setAttribute('aria-hidden', 'true');
+    cur.innerHTML = '<span>Подойти<br>ближе</span>';
+    document.body.append(cur);
+    root.classList.add('has-cursor');
+    let tx = -200, ty = -200, cx = -200, cy = -200, craf = 0;
+    const loop = () => {
+      craf = 0;
+      cx += (tx - cx) * 0.2;
+      cy += (ty - cy) * 0.2;
+      cur.style.transform = `translate3d(${cx.toFixed(1)}px, ${cy.toFixed(1)}px, 0)`;
+      if (Math.abs(tx - cx) > 0.2 || Math.abs(ty - cy) > 0.2) craf = requestAnimationFrame(loop);
+    };
+    document.addEventListener('pointermove', (e) => {
+      tx = e.clientX; ty = e.clientY;
+      if (!cur.classList.contains('is-on')) { cx = tx; cy = ty; }
+      if (!craf) craf = requestAnimationFrame(loop);
+    }, { passive: true });
+    $$('button.work[data-lightbox]').forEach((el) => {
+      el.addEventListener('pointerenter', () => cur.classList.add('is-on'));
+      el.addEventListener('pointerleave', () => cur.classList.remove('is-on'));
+      el.addEventListener('click', () => cur.classList.remove('is-on'));
+    });
   }
 
   mqReduce.addEventListener('change', (e) => {
