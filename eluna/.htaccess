@@ -1,4 +1,6 @@
-# ELUNA — настройки для Apache (большинство хостингов .kz)
+# ELUNA — настройки для Apache (большинство хостингов .kz: cPanel, ISPmanager, ps.kz, hoster.kz)
+# На Netlify / Cloudflare Pages файл не используется — там работает _headers.
+# Если хостинг показывает «500 Internal Server Error» — удалите этот файл: сайт работает и без него.
 AddType image/webp .webp
 AddType font/woff2 .woff2
 AddType font/ttf .ttf
@@ -6,10 +8,14 @@ AddDefaultCharset utf-8
 DirectoryIndex index.html
 ErrorDocument 404 /404.html
 
+# сжатие текста (AddOutputFilterByType живёт в mod_filter — без него директива дала бы ошибку 500)
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript image/svg+xml font/ttf
+  <IfModule mod_filter.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain application/javascript text/javascript image/svg+xml font/ttf
+  </IfModule>
 </IfModule>
 
+# кеш: картинки и шрифты — год, стили и скрипты — неделя (в ссылках ?v=…), страницы — всегда свежие
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType image/webp "access plus 1 year"
@@ -20,4 +26,16 @@ ErrorDocument 404 /404.html
   ExpiresByType application/javascript "access plus 7 days"
   ExpiresByType text/javascript "access plus 7 days"
   ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(webp|png|jpe?g|svg|woff2|ttf)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
 </IfModule>

@@ -84,7 +84,8 @@ def doc_dialog(fname, did, title):
 legal_css = re.search(r'<style>(.*?)</style>', read('privacy.html'), re.S).group(1)
 legal_css = legal_css.replace('html, body { overflow-x: clip; }', '').replace('body { background: var(--bg); }', '')
 legal_css = legal_css.replace('.legal {', '.mdl--doc .legal {')
-legal_css += '\n    .mdl--doc { overflow-x: hidden; }\n'.replace('max-width: 780px; margin: 0 auto; padding: clamp(40px, 8vh, 96px) var(--gutter) 80px;', 'padding: clamp(28px, 4vw, 44px) clamp(20px, 3vw, 36px) 40px;')
+legal_css = legal_css.replace('max-width: 780px; margin: 0 auto; padding: clamp(40px, 8vh, 96px) var(--gutter) 80px;', 'padding: clamp(28px, 4vw, 44px) clamp(20px, 3vw, 36px) 40px;')
+legal_css += '\n    .mdl--doc { overflow-x: hidden; }\n'
 html = html.replace('</head>', f'  <style>{legal_css}</style>\n</head>', 1)
 dialogs = doc_dialog('privacy.html', 'privacy', 'Политика конфиденциальности') + doc_dialog('legal.html', 'legal', 'Авторские права')
 html = html.replace('  <!-- липкая плашка Prime', dialogs + '\n  <!-- липкая плашка Prime', 1)
