@@ -22,21 +22,21 @@
   <link rel="preload" as="font" type="font/woff2" href="fonts/Inter-300-600-normal-latin.woff2" crossorigin>
   <link rel="preload" as="font" type="font/ttf" href="fonts/Michroma-Regular.ttf" crossorigin>
   <link rel="stylesheet" href="css/fonts.css">
-  <link rel="stylesheet" href="css/styles.css?v=7">
-  <link rel="stylesheet" href="css/polish-base.css?v=7">
-  <link rel="stylesheet" href="css/polish-concept.css?v=7">
-  <link rel="stylesheet" href="css/polish-tech.css?v=7">
-  <link rel="stylesheet" href="css/polish-models.css?v=7">
-  <link rel="stylesheet" href="css/polish-order.css?v=7">
-  <link rel="stylesheet" href="css/polish-final.css?v=7">
+  <link rel="stylesheet" href="css/styles.css?v=12">
+  <link rel="stylesheet" href="css/polish-base.css?v=12">
+  <link rel="stylesheet" href="css/polish-concept.css?v=12">
+  <link rel="stylesheet" href="css/polish-tech.css?v=12">
+  <link rel="stylesheet" href="css/polish-models.css?v=12">
+  <link rel="stylesheet" href="css/polish-order.css?v=12">
+  <link rel="stylesheet" href="css/polish-final.css?v=12">
   <link rel="icon" type="image/png" href="img/mark.png">
-  <noscript><style>.exposure{display:none}.nav{opacity:1;transform:none}.wordmark__word span,.wordmark__mark,.wordmark__sub,.copy--hero .eyebrow,.hero-sub{opacity:1;transform:none}.hero-title .line>span{transform:none}.moon-big{opacity:1}.reveal,.reveal-line>span{opacity:1;transform:none}.stage-wrap{height:100vh}.strata__layer{translate:none!important}.strata__wrap{opacity:0}.strata__controls{display:none}</style></noscript>
+  <noscript><style>.exposure{display:none}.nav{opacity:1;transform:none}.wordmark__word span,.wordmark__mark,.wordmark__sub,.copy--hero .eyebrow,.hero-sub{opacity:1;transform:none}.hero-title .line>span{transform:none}.moon-big{opacity:1}.reveal,.reveal-line>span{opacity:1;transform:none}.stage-wrap{height:100vh}.strata__layer{translate:none!important;opacity:1!important}.strata__closed{display:none}.strata__controls{display:none}</style></noscript>
   <script defer src="vendor/gsap.min.js"></script>
-  <script defer src="js/core.js?v=7"></script>
-  <script defer src="js/moon.js?v=7"></script>
-  <script defer src="js/hero.js?v=7"></script>
-  <script defer src="js/strata.js?v=7"></script>
-  <script defer src="js/main.js?v=7"></script>
+  <script defer src="js/core.js?v=12"></script>
+  <script defer src="js/moon.js?v=12"></script>
+  <script defer src="js/hero.js?v=12"></script>
+  <script defer src="js/strata.js?v=12"></script>
+  <script defer src="js/main.js?v=12"></script>
 </head>
 <body class="is-intro">
 
@@ -146,8 +146,8 @@
               <img class="strata__layer" data-i="3" src="img/layers/l4.webp" alt="" decoding="async" loading="lazy" style="--x:4.203;--y:33.358;--w:95.797;--dx:0.0;--dy:0.293;--k:3">
               <img class="strata__layer" data-i="2" src="img/layers/l3.webp" alt="" decoding="async" loading="lazy" style="--x:3.91;--y:24.927;--w:96.09;--dx:0.196;--dy:5.572;--k:2">
               <img class="strata__layer" data-i="1" src="img/layers/l2.webp" alt="" decoding="async" loading="lazy" style="--x:3.715;--y:16.789;--w:96.285;--dx:0.293;--dy:10.337;--k:1">
-              <img class="strata__wrap" src="img/layers/wrap.webp" alt="" decoding="async" loading="lazy" style="--x:4.203;--y:28.886;--w:95.797">
               <img class="strata__layer" data-i="0" src="img/layers/l1.webp" alt="" decoding="async" loading="lazy" style="--x:2.639;--y:1.246;--w:97.361;--dx:0.782;--dy:17.009;--k:0">
+              <img class="strata__closed" src="img/layers/closed.webp" alt="" decoding="async" loading="lazy" style="--x:-4.832;--y:16.342;--w:105.113">
             </div>
           </div>
           <div class="strata__controls">
@@ -607,6 +607,28 @@
       <div class="rv__viewport" data-reviews="prime" tabindex="0" role="region" aria-label="Отзывы покупателей, лента прокручивается сама">
         <ul class="rv__track"></ul>
       </div>
+      <div class="rv__actions"><button type="button" class="button button--ghost rv__write" aria-expanded="false" aria-controls="rvForm">Оставить отзыв</button></div>
+      <form class="rv__form" id="rvForm" hidden novalidate>
+        <fieldset class="rv__rate" data-value="5">
+          <legend>Ваша оценка</legend>
+          <div class="rv__stars">
+            <label><input type="radio" name="rate" value="1"><span aria-hidden="true">★</span><span class="sr-only">1 из 5</span></label>
+            <label><input type="radio" name="rate" value="2"><span aria-hidden="true">★</span><span class="sr-only">2 из 5</span></label>
+            <label><input type="radio" name="rate" value="3"><span aria-hidden="true">★</span><span class="sr-only">3 из 5</span></label>
+            <label><input type="radio" name="rate" value="4"><span aria-hidden="true">★</span><span class="sr-only">4 из 5</span></label>
+            <label><input type="radio" name="rate" value="5" checked><span aria-hidden="true">★</span><span class="sr-only">5 из 5</span></label>
+          </div>
+        </fieldset>
+        <label class="rv__field"><span>Имя</span><input name="name" required maxlength="40" autocomplete="given-name"></label>
+        <label class="rv__field"><span>Город</span><input name="city" maxlength="40" autocomplete="address-level2"></label>
+        <label class="rv__field rv__field--wide"><span>Отзыв</span><textarea name="text" required minlength="20" maxlength="700" rows="4" placeholder="Как вы спите на Eluna Prime? Что изменилось?"></textarea></label>
+        <p class="rv__error" role="alert" hidden></p>
+        <div class="rv__submit">
+          <button class="button button--primary" type="submit">Отправить отзыв</button>
+          <p class="rv__legal">Отзыв придёт нам в WhatsApp — опубликуем после проверки. Нажимая кнопку, вы соглашаетесь с <a href="privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a>.</p>
+        </div>
+        <p class="rv__thanks" role="status" hidden>Спасибо! Отзыв открыт в WhatsApp — нажмите «Отправить». После проверки он появится в ленте.</p>
+      </form>
     </section>
     <details class="acc" open><summary>Характеристики</summary>
       <div class="acc__body">

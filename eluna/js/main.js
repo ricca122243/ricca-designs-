@@ -570,36 +570,84 @@
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
   /* ------------------------------------------------------------------------
-     Отзывы в окне «Подробнее» — бегущая лента. Впишите НАСТОЯЩИЕ отзывы
-     покупателей в REVIEWS: text — текст, name — имя, city — город, size — размер.
+     Отзывы в окне «Подробнее» — бегущая лента + форма «Оставить отзыв».
+     REVIEWS — только НАСТОЯЩИЕ отзывы покупателей (text, name, city, size, rate 1–5).
+     Мнение специалиста — с его согласия: добавьте role (например, «Врач-ортопед»)
+     и clinic — карточка получит отдельный бейдж «Мнение специалиста».
      Пока список пуст, в ленте аккуратные шаблоны «здесь появится отзыв».
+     Новые отзывы с сайта приходят в WhatsApp — после проверки впишите их сюда.
      ------------------------------------------------------------------------ */
   const REVIEWS = {
     prime: [
-      // { text: 'Текст отзыва покупателя', name: 'Имя', city: 'Алматы', size: '1600 × 2000' },
+      // { text: 'Текст отзыва покупателя', name: 'Имя', city: 'Алматы', size: '1600 × 2000', rate: 5 },
+      // { text: 'Слова врача', name: 'Имя Фамилия', role: 'Врач-ортопед', clinic: 'Клиника, город' },
     ],
   };
+  const stars = (n) => `<span class="rv__stars-row" aria-label="Оценка ${n} из 5">${'★'.repeat(n)}<i>${'★'.repeat(5 - n)}</i></span>`;
+  function reviewCard(r, dup, kind) {
+    const hide = dup ? ' aria-hidden="true"' : '';
+    if (!r && kind === 'expert') return `<li class="rv__card rv__card--empty rv__card--expert"${hide}><span class="rv__badge">Мнение специалиста</span><blockquote><p>Здесь появится мнение врача-ортопеда о Eluna Prime.</p></blockquote><p class="rv__who"><b>Имя врача</b><span>Врач-ортопед · клиника</span></p></li>`;
+    if (!r) return `<li class="rv__card rv__card--empty"${hide}><blockquote><p>Здесь появится отзыв покупателя Eluna Prime — о том, как изменился его сон.</p></blockquote><p class="rv__who"><b>Имя покупателя</b><span>Город · размер</span></p></li>`;
+    const expert = !!r.role;
+    const meta = expert ? [r.role, r.clinic].filter(Boolean).join(' · ') : [r.city, r.size].filter(Boolean).join(' · ');
+    const rate = r.rate ? stars(Math.max(1, Math.min(5, Math.round(r.rate)))) : '';
+    return `<li class="rv__card${expert ? ' rv__card--expert' : ''}${r.pending ? ' rv__card--pending' : ''}"${hide}>${expert ? '<span class="rv__badge">Мнение специалиста</span>' : ''}${r.pending ? '<span class="rv__badge rv__badge--pending">Ваш отзыв · на проверке</span>' : ''}${rate}<blockquote><p>${esc(r.text)}</p></blockquote><p class="rv__who"><b>${esc(r.name || 'Покупатель Eluna')}</b>${meta ? `<span>${esc(meta)}</span>` : ''}</p></li>`;
+  }
   (function reviews() {
-    const SLOTS = 5;
     const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     document.querySelectorAll('[data-reviews]').forEach((vp) => {
+      const key = vp.dataset.reviews;
       const track = vp.querySelector('.rv__track'); if (!track) return;
-      const real = (REVIEWS[vp.dataset.reviews] || []).filter((r) => r && r.text);
-      const list = real.length ? real : Array.from({ length: SLOTS }, () => null);
-      const card = (r, dup) => {
-        const hide = dup ? ' aria-hidden="true"' : '';
-        if (!r) return `<li class="rv__card rv__card--empty"${hide}><blockquote><p>Здесь появится отзыв покупателя Eluna Prime — о том, как изменился его сон.</p></blockquote><p class="rv__who"><b>Имя покупателя</b><span>Город · размер</span></p></li>`;
-        const meta = [r.city, r.size].filter(Boolean).join(' · ');
-        return `<li class="rv__card"${hide}><blockquote><p>${esc(r.text)}</p></blockquote><p class="rv__who"><b>${esc(r.name || 'Покупатель Eluna')}</b>${meta ? `<span>${esc(meta)}</span>` : ''}</p></li>`;
+      const extra = [];   // отзыв, который посетитель только что отправил (виден только ему, с пометкой «на проверке»)
+      const paint = () => {
+        const real = extra.concat((REVIEWS[key] || []).filter((r) => r && r.text));
+        const hasExpert = real.some((r) => r.role);
+        const empties = Math.max(0, 5 - real.length) - (hasExpert ? 0 : 1);
+        // карточка специалиста — второй в ленте, пока настоящей нет
+        const list = real.map((r) => ({ r })).concat(Array.from({ length: Math.max(0, empties) }, () => ({ r: null })));
+        if (!hasExpert) list.splice(Math.min(1, list.length), 0, { r: null, kind: 'expert' });
+        track.innerHTML = list.map((x) => reviewCard(x.r, false, x.kind)).join('') + (reduceMotion ? '' : list.map((x) => reviewCard(x.r, true, x.kind)).join(''));
+        vp.style.setProperty('--rv-dur', `${Math.max(28, list.length * 9)}s`);
       };
-      // вторая копия — только для бесшовного круга: читалке она не нужна
-      track.innerHTML = list.map((r) => card(r, false)).join('') + (reduceMotion ? '' : list.map((r) => card(r, true)).join(''));
-      vp.style.setProperty('--rv-dur', `${Math.max(28, list.length * 9)}s`);
+      paint();
       vp.classList.toggle('is-static', reduceMotion);
-      const hint = vp.parentElement.querySelector('.rv__hint');
+      const sec = vp.closest('.rv');
+      const hint = sec.querySelector('.rv__hint');
       if (hint) hint.textContent = reduceMotion ? 'листайте вбок' : canHover ? 'наведите, чтобы остановить' : 'нажмите, чтобы остановить';
       // на телефоне наведения нет: касание ставит ленту на паузу и снимает её
       if (!reduceMotion) vp.addEventListener('click', () => vp.classList.toggle('is-paused'));
+
+      // ---- форма «Оставить отзыв»: отзыв уходит в WhatsApp на проверку ----
+      const btn = sec.querySelector('.rv__write'), form = sec.querySelector('.rv__form');
+      if (!btn || !form) return;
+      const rateBox = form.querySelector('.rv__rate'), err = form.querySelector('.rv__error'), thanks = form.querySelector('.rv__thanks');
+      btn.addEventListener('click', () => {
+        const show = form.hidden;
+        form.hidden = !show; btn.setAttribute('aria-expanded', show ? 'true' : 'false');
+        btn.textContent = show ? 'Свернуть форму' : 'Оставить отзыв';
+        if (show) { thanks.hidden = true; requestAnimationFrame(() => { form.scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }); form.querySelector('input[name="name"]').focus({ preventScroll: true }); }); }
+      });
+      form.addEventListener('change', (e) => { if (e.target.name === 'rate') rateBox.dataset.value = e.target.value; });
+      form.addEventListener('input', () => { if (!err.hidden) err.hidden = true; });
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fd = new FormData(form);
+        const name = String(fd.get('name') || '').trim(), city = String(fd.get('city') || '').trim(), text = String(fd.get('text') || '').trim();
+        const rate = +fd.get('rate') || 5;
+        const bad = !name ? 'Напишите, как вас зовут.' : text.length < 20 ? 'Пара предложений о сне на Eluna Prime — хотя бы 20 символов.' : '';
+        err.hidden = !bad; err.textContent = bad;
+        if (bad) { (name ? form.querySelector('textarea') : form.querySelector('input[name="name"]')).focus(); return; }
+        const o = window.ELUNA_ORDER ? window.ELUNA_ORDER.get() : {};
+        const size = o && o.model === key && o.w ? `${o.w} × ${o.h}` : '';
+        const head = [`Отзыв о Eluna ${key[0].toUpperCase()}${key.slice(1)} — с сайта`, `Оценка: ${'★'.repeat(rate)}${'☆'.repeat(5 - rate)} (${rate}/5)`, `Имя: ${name}`, city && `Город: ${city}`, size && `Размер: ${size}`].filter(Boolean);
+        const msg = `${head.join('\n')}\n\n«${text}»`;
+        window.open(waLink(msg), '_blank', 'noopener');
+        extra.unshift({ text, name, city, size, rate, pending: true });
+        paint();
+        form.reset(); rateBox.dataset.value = '5';
+        thanks.hidden = false;
+        btn.textContent = 'Оставить ещё отзыв'; btn.setAttribute('aria-expanded', 'true');
+      });
     });
   })();
 

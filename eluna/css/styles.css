@@ -377,9 +377,9 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .strata__halo {
   position: absolute; inset: -14% -6% -10% -30%; pointer-events: none; z-index: 0;
   background:
-    radial-gradient(ellipse 44% 34% at 46% 55%, rgba(132, 156, 255, .17), transparent 70%),
-    radial-gradient(ellipse 34% 12% at 42% 74%, rgba(214, 222, 255, .16), transparent 72%),
-    radial-gradient(ellipse 60% 50% at 60% 40%, rgba(70, 90, 190, .10), transparent 72%);
+    radial-gradient(ellipse 44% 34% at 46% 55%, rgba(132, 156, 255, .08), transparent 70%),
+    radial-gradient(ellipse 34% 12% at 42% 74%, rgba(214, 222, 255, .06), transparent 72%),
+    radial-gradient(ellipse 60% 50% at 60% 40%, rgba(70, 90, 190, .06), transparent 72%);
   transform: translate3d(calc(var(--px) * 2.4%), calc(var(--py) * 2.4%), 0);
   transition: transform 1.2s var(--ease-out), opacity 1s var(--ease-out);
 }
@@ -389,7 +389,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .strata__float { position: absolute; inset: 0; }
 .strata__stage[data-state="closed"] .strata__float { animation: strataFloat 7s ease-in-out infinite alternate; }
 @keyframes strataFloat { from { transform: translate3d(0, -0.7%, 0); } to { transform: translate3d(0, 0.7%, 0); } }
-.strata__layer, .strata__wrap {
+.strata__layer {
   position: absolute; left: calc(var(--x) * 1%); top: calc(var(--y) * 1%); width: calc(var(--w) * 1%); height: auto; max-width: none;
   pointer-events: none; user-select: none; -webkit-user-drag: none;
 }
@@ -401,11 +401,21 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 }
 .strata__stage[data-state="open"] .strata__layer {
   translate: 0 0;
-  transition: translate 1.15s cubic-bezier(.62, 0, .2, 1) calc(.16s + var(--k) * 55ms), opacity .5s var(--ease-out), transform .6s var(--ease-out), filter .6s var(--ease-out);
+  transition: translate 1.15s cubic-bezier(.62, 0, .2, 1) calc(.16s + var(--k) * 55ms), opacity .32s ease, transform .6s var(--ease-out), filter .6s var(--ease-out);
 }
-/* боковина собранного матраса — ткань с фото: исчезает первой при открытии, появляется последней при закрытии */
-.strata__wrap { opacity: 1; transition: opacity .55s ease .95s; }
-.strata__stage[data-state="open"] .strata__wrap { opacity: 0; transition: opacity .38s ease 0s; }
+/* собранный вид — матрас с фото (мягкие углы, свечение); слои сходятся под ним и гаснут, когда он проявился */
+.strata__stage[data-state="closed"] .strata__layer {
+  opacity: 0;
+  transition: translate 1.05s cubic-bezier(.66, 0, .22, 1) calc((6 - var(--k)) * 40ms), opacity .4s ease 1.05s, transform .6s var(--ease-out), filter .6s var(--ease-out);
+}
+.strata__closed {
+  position: absolute; left: calc(var(--x) * 1%); top: calc(var(--y) * 1%); width: calc(var(--w) * 1%); height: auto; max-width: none;
+  pointer-events: none; user-select: none; -webkit-user-drag: none;
+  transform-origin: 42% 58%;
+  opacity: 1; transform: none;
+  transition: opacity .6s ease .78s, transform 1s var(--ease-out) .78s;
+}
+.strata__stage[data-state="open"] .strata__closed { opacity: 0; transform: scale(1.03); transition: opacity .46s ease, transform .7s var(--ease-out); }
 
 /* подсветка слоя: остальные уходят в тень, выбранный чуть выдвигается навстречу */
 .strata__stage[data-active] .strata__layer { filter: brightness(.4) saturate(.55); }
@@ -525,7 +535,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
   .strata__title { font-size: clamp(34px, 4.1vw, 80px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .strata__layer, .strata__stage[data-state="open"] .strata__layer, .strata__wrap, .strata__stage[data-state="open"] .strata__wrap { transition-duration: .01s !important; transition-delay: 0s !important; }
+  .strata__layer, .strata__stage[data-state="open"] .strata__layer, .strata__closed, .strata__stage[data-state="open"] .strata__closed { transition-duration: .01s !important; transition-delay: 0s !important; }
   .strata__stage[data-state="closed"] .strata__float, .strata__thumb::after { animation: none !important; }
 }
 

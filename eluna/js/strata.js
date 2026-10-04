@@ -26,7 +26,7 @@
   const btnOpen = document.getElementById('strataOpen');
   const btnClose = document.getElementById('strataClose');
   const sw = btnOpen.closest('.strata__switch');
-  const wrapEl = stage.querySelector('.strata__wrap');
+  const wrapEl = stage.querySelector('.strata__closed');   // собранный матрас (фото)
   // широкая раскладка (список и матрас рядом): там наведение показывает карточку; на узкой — только нажатие,
   // чтобы карточка не двигала страницу под курсором
   const side = window.matchMedia('(min-width: 1100px)');
@@ -149,7 +149,8 @@
     else img.addEventListener('load', () => buildMask(img, k), { once: true });
   });
   if (wrapEl) {
-    const mk = () => { try { wrapMask = readMask(wrapEl); } catch (e) { wrapMask = null; } };
+    // порог выше: свечение вокруг матраса полупрозрачное — по нему матрас не открывается
+    const mk = () => { try { wrapMask = readMask(wrapEl); wrapMask.min = 200; } catch (e) { wrapMask = null; } };
     if (wrapEl.complete && wrapEl.naturalWidth) mk(); else wrapEl.addEventListener('load', mk, { once: true });
   }
   const inMask = (m, el, cx, cy) => {
@@ -158,7 +159,7 @@
     if (cx < r.left || cx > r.right || cy < r.top || cy > r.bottom) return false;
     const px = Math.min(m.w - 1, Math.floor((cx - r.left) / r.width * m.w));
     const py = Math.min(m.h - 1, Math.floor((cy - r.top) / r.height * m.h));
-    return m.a[(py * m.w + px) * 4 + 3] > 110;
+    return m.a[(py * m.w + px) * 4 + 3] > (m.min || 110);
   };
   function hit(cx, cy) {
     // верхний слой — первый в списке (чехол лежит поверх латекса и т. д.)
@@ -166,7 +167,7 @@
     return -1;
   }
   // собранный матрас: боковина или любой из придвинутых слоёв; маски ещё не готовы — считаем попаданием
-  const hitClosed = (cx, cy) => (!wrapMask && !masks[0]) || inMask(wrapMask, wrapEl, cx, cy) || hit(cx, cy) >= 0;
+  const hitClosed = (cx, cy) => (!wrapMask && !masks[0]) || inMask(wrapMask, wrapEl, cx, cy);
   if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
     let raf = 0, lx = 0, ly = 0;
     stage.addEventListener('pointermove', (e) => {
