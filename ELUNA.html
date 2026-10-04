@@ -3507,6 +3507,12 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
   transition: translate 1.05s cubic-bezier(.66, 0, .22, 1) calc((6 - var(--k)) * 40ms), opacity .28s ease .86s, transform .6s var(--ease-out), filter .6s var(--ease-out);
 }
 .strata__closed { transition: opacity .42s ease .82s, transform 1s var(--ease-out) .82s; }
+/* открытие: слои проявляются под ещё непрозрачным фото, а фото быстро гаснет, когда слои уже расходятся —
+   без «просвечивания» пружин сквозь боковину */
+.strata__stage[data-state="open"] .strata__layer {
+  transition: translate 1.15s cubic-bezier(.62, 0, .2, 1) calc(.16s + var(--k) * 55ms), opacity .14s ease, transform .6s var(--ease-out), filter .6s var(--ease-out);
+}
+.strata__stage[data-state="open"] .strata__closed { transition: opacity .2s ease .16s, transform .7s var(--ease-out); }
 @media (prefers-reduced-motion: reduce) {
   .strata__float, .strata__stage[data-state="closed"] .strata__float { transition: none !important; }
 }
