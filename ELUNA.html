@@ -3517,6 +3517,61 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
   .strata__float, .strata__stage[data-state="closed"] .strata__float { transition: none !important; }
 }
 
+/* ---- Модели: «кому подходит» — слоган, чертёж с фигурами трёх телосложений, шкала жёсткости ----
+   Подходящие фигуры «наливаются» зелёным (аврора), «можно» — до половины, неподходящие — пунктир. */
+.mcard { --fit-rgb: 92, 216, 164; }
+.mfit { margin-top: 16px; }
+.mfit__motto {
+  font-family: var(--display); font-weight: 300; font-size: 15px; line-height: 1.35; letter-spacing: .005em;
+  background: var(--silver); -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+}
+.mfit__plan {
+  position: relative; margin-top: 12px; padding: 10px 12px 10px; border-radius: 10px;
+  border: 1px solid rgba(196, 210, 255, .14);
+  background:
+    linear-gradient(rgba(196, 210, 255, .045) 1px, transparent 1px) 0 0 / 12px 12px,
+    linear-gradient(90deg, rgba(196, 210, 255, .045) 1px, transparent 1px) 0 0 / 12px 12px,
+    rgba(8, 12, 30, .32);
+}
+/* уголки, как на чертеже */
+.mfit__plan::before, .mfit__plan::after { content: ""; position: absolute; width: 8px; height: 8px; border: solid rgba(214, 222, 242, .38); pointer-events: none; }
+.mfit__plan::before { left: 5px; top: 5px; border-width: 1px 0 0 1px; }
+.mfit__plan::after { right: 5px; bottom: 5px; border-width: 0 1px 1px 0; }
+.mfit__legend { display: flex; justify-content: flex-end; gap: 10px; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.mfit__key { display: inline-flex; align-items: center; gap: 5px; }
+.mfit__key::before { content: ""; width: 7px; height: 7px; border-radius: 2px; border: 1px solid rgba(var(--fit-rgb), .75); }
+.mfit__key--2::before { background: rgba(var(--fit-rgb), .85); }
+.mfit__key--1::before { background: linear-gradient(0deg, rgba(var(--fit-rgb), .85) 50%, transparent 50%); }
+.mfit__bodies {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 2px;
+  border-bottom: 1px dashed rgba(196, 210, 255, .22);   /* «пол» под фигурами */
+}
+.mfit__body { display: flex; flex-direction: column; align-items: center; margin: 0; }
+.mfit__fig { position: relative; width: 40px; height: 74px; }
+.mfit__fig svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.mfit__line g > * { fill: none; stroke: rgba(214, 222, 242, .55); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.mfit__axis { fill: none; stroke: rgba(214, 222, 242, .16); stroke-dasharray: 2 3; vector-effect: non-scaling-stroke; }
+.mfit__body[data-fit="0"] .mfit__line g > * { stroke: rgba(214, 222, 242, .26); stroke-dasharray: 2 2; }
+.mfit__fill {
+  position: absolute; inset: 0; clip-path: inset(100% 0 0 0);
+  transition: clip-path 1.6s cubic-bezier(.3, .7, .2, 1) calc(.2s + var(--d, 0s));
+  filter: drop-shadow(0 0 6px rgba(var(--fit-rgb), .42));
+}
+.mfit__fill g > * { fill: rgba(var(--fit-rgb), .8); }
+.mfit.is-in .mfit__body[data-fit="2"] .mfit__fill { clip-path: inset(0 0 0 0); }
+.mfit.is-in .mfit__body[data-fit="1"] .mfit__fill { clip-path: inset(52% 0 0 0); }
+.mfit__body figcaption { margin: 6px 0 7px; font-size: 10.5px; letter-spacing: .05em; color: var(--ink-3); white-space: nowrap; transition: color .8s var(--ease-out) .9s; }
+.mfit.is-in .mfit__body[data-fit="2"] figcaption { color: rgba(var(--fit-rgb), .95); }
+.mfit__firm { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 10px; font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.mfit__firm b { margin-left: auto; font-weight: 500; font-size: 12.5px; letter-spacing: .02em; text-transform: none; color: var(--ink); white-space: nowrap; }
+.mfit__scale { display: inline-flex; gap: 3px; }
+.mfit__scale i { width: 13px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, .12); }
+.mfit__scale i.on { background: linear-gradient(90deg, rgba(var(--fit-rgb), .55), rgba(var(--fit-rgb), .95)); box-shadow: 0 0 6px rgba(var(--fit-rgb), .3); }
+.mfit__scale i.any { background: linear-gradient(90deg, rgba(var(--cool), .45), rgba(var(--aurora-rgb), .8)); }
+.mfit__who { margin-top: 10px; font-size: 12.5px; line-height: 1.5; color: rgba(214, 222, 242, .72); }
+@media (prefers-reduced-motion: reduce) { .mfit__fill, .mfit__body figcaption { transition: none; } }
+
   </style>
   <style>
     
@@ -3680,7 +3735,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
           <div class="fact reveal"><span class="fact__value">7</span><span class="fact__label">слоёв, собранных вручную</span></div>
           <div class="fact reveal"><span class="fact__value"><span data-count="300">300</span><small> мм</small></span><span class="fact__label">высота, которая чувствуется</span></div>
           <div class="fact reveal"><span class="fact__value" data-count="1200">1 200</span><span class="fact__label">независимых пружин на 1600&nbsp;×&nbsp;2000&nbsp;мм</span></div>
-          <div class="fact reveal"><span class="fact__value" data-count="100">100</span><span class="fact__label">ночей, чтобы решить</span></div>
+          <div class="fact reveal"><span class="fact__value" data-count="5">5</span><span class="fact__label">дней пробного сна на любой матрас</span></div>
         </div>
       </div>
     </section>
@@ -3811,7 +3866,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
         <div class="section-head section-head--tight reveal">
           <p class="eyebrow"><span>Линейка</span><span class="dot"></span><span>Четыре модели</span></p>
           <h2 class="section-title" id="modelsTitle">Выберите свою модель.<br><em>Три матраса и один — под вас.</em></h2>
-          <p class="section-note">Все цены — за размер 1600 × 2000 мм.</p>
+          <p class="section-note">Все цены — за размер 1600 × 2000 мм. На любую модель — 5 дней пробного сна.</p>
         </div>
 
         <div class="mrail reveal" id="mrail" style="--lx: 62%; --li: .9">
@@ -3824,6 +3879,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
               <span class="mcard__tier" data-tier="air"></span>
               <h3 class="mcard__title" id="card-air-title">Лёгкий старт.</h3>
               <p class="mcard__meta">Для гостевой, детской или съёмной квартиры</p>
+              <div class="mfit" data-fit="air" role="group" aria-label="Кому подходит Air"></div>
               <ul class="mcard__list">
                 <li>Армированные пружины</li>
                 <li>Натуральный кокос 10 мм</li>
@@ -3842,6 +3898,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
               <span class="mcard__tier" data-tier="balance"></span>
               <h3 class="mcard__title" id="card-balance-title">Поддержка на&nbsp;каждый день.</h3>
               <p class="mcard__meta">Для тех, кто спит на матрасе каждую ночь</p>
+              <div class="mfit" data-fit="balance" role="group" aria-label="Кому подходит Balance"></div>
               <ul class="mcard__list">
                 <li>Усиленный боковой каркас</li>
                 <li>Два слоя натурального кокоса: 10 и 20 мм</li>
@@ -3861,6 +3918,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
               <span class="mcard__tier" data-tier="prime"></span>
               <h3 class="mcard__title" id="card-prime-title">Для тех, кто выбирает <em>раз и надолго.</em></h3>
               <p class="mcard__meta">Самый натуральный матрас линейки</p>
+              <div class="mfit" data-fit="prime" role="group" aria-label="Кому подходит Prime"></div>
               <ul class="mcard__list">
                 <li>Чехол из 100 % хлопка ручной работы</li>
                 <li>Натуральный латекс 20&nbsp;мм — микромассажный эффект</li>
@@ -3880,6 +3938,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
               <span class="mcard__tier" data-tier="royal"></span>
               <h3 class="mcard__title" id="card-royal-title">Размер и конфигурация под вас.</h3>
               <p class="mcard__meta">Флагман линейки — собирается под ваш проект</p>
+              <div class="mfit" data-fit="royal" role="group" aria-label="Кому подходит Royal"></div>
               <ul class="mcard__list">
                 <li>Нестандартный размер и начинка под ваш проект</li>
                 <li>Срок изготовления — 21 день</li>
@@ -3971,7 +4030,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
           <div class="order-pick" id="orderPick"><span class="order-pick__label">Ваш выбор</span><span class="order-pick__text" id="orderPickText">Eluna Prime · 1600 × 2000 мм</span><a href="#sizes" class="order-pick__edit">изменить</a></div>
           <p class="delivery__pick" aria-live="polite"><span class="delivery__city" id="deliveryCity">Алматы</span><span class="delivery__days" id="deliveryDays">мы здесь · доставка по городу</span></p>
           <ul class="trust" aria-label="Гарантии">
-            <li class="trust__item"><span class="trust__value">100 ночей</span><span class="trust__label">пробного сна. Не подошёл — заберём и вернём деньги.</span></li>
+            <li class="trust__item"><span class="trust__value">5 дней</span><span class="trust__label">пробного сна на любой матрас — достаточно, чтобы почувствовать комфорт. Не подошёл — заберём и вернём деньги.</span></li>
             <li class="trust__item"><span class="trust__value">5 лет</span><span class="trust__label">гарантии на каждый матрас. Срок службы — 15 лет и больше.</span></li>
             <li class="trust__item"><span class="trust__value">Ручная сборка</span><span class="trust__label">Каждый матрас собирает один мастер — его подпись на этикетке.</span></li>
             <li class="trust__item"><span class="trust__value">7 дней</span><span class="trust__label">до двери в любом городе Казахстана. Доставка до спальни включена.</span></li>
@@ -4216,7 +4275,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
     <ul>
       <li>обработать заявку и связаться с вами по заказу;</li>
       <li>согласовать размер, жёсткость, стоимость, срок изготовления и доставки;</li>
-      <li>выполнить доставку, установку и гарантийные обязательства (5 лет, 100 ночей пробного сна).</li>
+      <li>выполнить доставку, установку и гарантийные обязательства (гарантия 5 лет, 5 дней пробного сна).</li>
     </ul>
 
     <h2>4. Как передаются данные</h2>
@@ -5965,7 +6024,7 @@ void main() {
      Цены меняются только здесь. null → «— ₸».
      ------------------------------------------------------------------------ */
   // ₸. Все цены — за размер 1600 × 2000 мм (Royal — фиксированная цена флагмана).
-  const PRICES = { air: 125000, balance: 220000, prime: 280000, royal: 1250000 };
+  const PRICES = { air: 125000, balance: 220000, prime: 280000, royal: 1240000 };
   const OLD_PRICES = { prime: 350000 };   // полная цена до скидки; нет ключа → скидки нет
   const discountPct = (k) => (OLD_PRICES[k] ? Math.round((1 - PRICES[k] / OLD_PRICES[k]) * 100) : 0);
   const WHATSAPP = '77079550808';
@@ -6128,6 +6187,66 @@ void main() {
       const t = TIERS.find((x) => x.key === el.dataset.tier);
       if (t) el.innerHTML = `<span class="tier" data-lvl="${t.lvl}"><span>${esc(t.tier)}</span>${meter(t.lvl)}</span>`;
     });
+
+    // «кому подходит»: слоган, чертёж с фигурами трёх телосложений (подходящие заполняются зелёным),
+    // шкала жёсткости и одна строка совета. Ориентир по весу — общий, а не медицинская рекомендация.
+    const FIT = {
+      air:     { motto: 'Мягко. Легко. Без лишнего.', firm: 2, firmText: 'мягкая / средняя', fit: [2, 1, 0],
+                 who: 'Лёгкому телосложению и детям: мягко принимает плечи, если спите на боку.' },
+      balance: { motto: 'Равновесие — каждую ночь.', firm: 3, firmText: 'средняя', fit: [2, 2, 1],
+                 who: 'Универсальная жёсткость: до 90 кг, сон на спине и на боку.' },
+      prime:   { motto: 'Природа держит спину.', firm: 4, firmText: 'выше средней', fit: [1, 2, 2],
+                 who: 'Среднему и крупному телосложению — когда спине нужна твёрдая, ровная опора.' },
+      royal:   { motto: 'Сшит под вас — как костюм.', firm: 0, firmText: 'любая — под вас', fit: [2, 2, 2],
+                 who: 'Любому телосложению: подберём жёсткость — даже разную для двух половин.' },
+    };
+    const BUILDS = ['до&nbsp;60&nbsp;кг', '60–90&nbsp;кг', '90+&nbsp;кг'];
+    const FIT_WORD = ['не рекомендуем', 'можно', 'подходит'];
+    // фигура-пиктограмма в стиле чертежа: 0 — лёгкое, 1 — среднее, 2 — крупное телосложение
+    const figure = (b) => {
+      const tw = [15, 19, 25][b], lw = [6.6, 8.2, 10.6][b], aw = [4, 4.6, 5.4][b], hr = [6.4, 6.8, 7.2][b];
+      const cx = 24, x0 = cx - tw / 2, yT = 2 * hr + 4, yL = yT + 33, hL = 99 - yL;
+      return `<circle cx="${cx}" cy="${hr + 1}" r="${hr}"/>`
+        + `<rect x="${x0}" y="${yT}" width="${tw}" height="35" rx="${(tw * 0.3).toFixed(1)}"/>`
+        + `<rect x="${(x0 - aw - 1.6).toFixed(1)}" y="${yT + 1}" width="${aw}" height="30" rx="${aw / 2}"/>`
+        + `<rect x="${(x0 + tw + 1.6).toFixed(1)}" y="${yT + 1}" width="${aw}" height="30" rx="${aw / 2}"/>`
+        + `<rect x="${(cx - lw - 0.8).toFixed(1)}" y="${yL}" width="${lw}" height="${hL.toFixed(1)}" rx="${(lw / 2).toFixed(1)}"/>`
+        + `<rect x="${cx + 0.8}" y="${yL}" width="${lw}" height="${hL.toFixed(1)}" rx="${(lw / 2).toFixed(1)}"/>`;
+    };
+    document.querySelectorAll('.mfit[data-fit]').forEach((box) => {
+      const f = FIT[box.dataset.fit];
+      if (!f) return;
+      const name = `Eluna ${box.dataset.fit[0].toUpperCase()}${box.dataset.fit.slice(1)}`;
+      box.setAttribute('aria-label', `${name}: кому подходит`);
+      const bodies = BUILDS.map((label, b) => `
+          <figure class="mfit__body" data-fit="${f.fit[b]}" style="--d:${(b * 0.18).toFixed(2)}s">
+            <div class="mfit__fig" aria-hidden="true">
+              <svg class="mfit__line" viewBox="0 0 48 100" preserveAspectRatio="xMidYMax meet"><g>${figure(b)}</g><path class="mfit__axis" d="M24 -2V101"/></svg>
+              <div class="mfit__fill"><svg viewBox="0 0 48 100" preserveAspectRatio="xMidYMax meet"><g>${figure(b)}</g></svg></div>
+            </div>
+            <figcaption><span>${label}</span><span class="sr-only"> — ${FIT_WORD[f.fit[b]]}</span></figcaption>
+          </figure>`).join('');
+      const scale = [1, 2, 3, 4, 5].map((k) => `<i class="${f.firm === 0 ? 'any' : k <= f.firm ? 'on' : ''}"></i>`).join('');
+      box.innerHTML = `
+        <p class="mfit__motto">${esc(f.motto)}</p>
+        <div class="mfit__plan">
+          <p class="mfit__legend" aria-hidden="true"><span class="mfit__key mfit__key--2">подходит</span><span class="mfit__key mfit__key--1">можно</span></p>
+          <div class="mfit__bodies">${bodies}
+          </div>
+          <p class="mfit__firm"><span class="mfit__k">Жёсткость</span><span class="mfit__scale" aria-hidden="true">${scale}</span><b>${esc(f.firmText)}</b></p>
+        </div>
+        <p class="mfit__who">${esc(f.who)}</p>`;
+    });
+    // зелёный «наливается» в фигуры, когда карточка появляется на экране
+    (() => {
+      const boxes = document.querySelectorAll('.mfit');
+      if (reduceMotion || !('IntersectionObserver' in window)) { boxes.forEach((b) => b.classList.add('is-in')); return; }
+      const io = new IntersectionObserver((es) => es.forEach((en) => {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('is-in'); io.unobserve(en.target);
+      }), { threshold: 0.35 });
+      boxes.forEach((b) => io.observe(b));
+    })();
 
     // разрезы
     document.querySelectorAll('.xs[data-xs]').forEach((box) => {

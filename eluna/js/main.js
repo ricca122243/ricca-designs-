@@ -503,7 +503,7 @@
      Цены меняются только здесь. null → «— ₸».
      ------------------------------------------------------------------------ */
   // ₸. Все цены — за размер 1600 × 2000 мм (Royal — фиксированная цена флагмана).
-  const PRICES = { air: 125000, balance: 220000, prime: 280000, royal: 1250000 };
+  const PRICES = { air: 125000, balance: 220000, prime: 280000, royal: 1240000 };
   const OLD_PRICES = { prime: 350000 };   // полная цена до скидки; нет ключа → скидки нет
   const discountPct = (k) => (OLD_PRICES[k] ? Math.round((1 - PRICES[k] / OLD_PRICES[k]) * 100) : 0);
   const WHATSAPP = '77079550808';
@@ -666,6 +666,66 @@
       const t = TIERS.find((x) => x.key === el.dataset.tier);
       if (t) el.innerHTML = `<span class="tier" data-lvl="${t.lvl}"><span>${esc(t.tier)}</span>${meter(t.lvl)}</span>`;
     });
+
+    // «кому подходит»: слоган, чертёж с фигурами трёх телосложений (подходящие заполняются зелёным),
+    // шкала жёсткости и одна строка совета. Ориентир по весу — общий, а не медицинская рекомендация.
+    const FIT = {
+      air:     { motto: 'Мягко. Легко. Без лишнего.', firm: 2, firmText: 'мягкая / средняя', fit: [2, 1, 0],
+                 who: 'Лёгкому телосложению и детям: мягко принимает плечи, если спите на боку.' },
+      balance: { motto: 'Равновесие — каждую ночь.', firm: 3, firmText: 'средняя', fit: [2, 2, 1],
+                 who: 'Универсальная жёсткость: до 90 кг, сон на спине и на боку.' },
+      prime:   { motto: 'Природа держит спину.', firm: 4, firmText: 'выше средней', fit: [1, 2, 2],
+                 who: 'Среднему и крупному телосложению — когда спине нужна твёрдая, ровная опора.' },
+      royal:   { motto: 'Сшит под вас — как костюм.', firm: 0, firmText: 'любая — под вас', fit: [2, 2, 2],
+                 who: 'Любому телосложению: подберём жёсткость — даже разную для двух половин.' },
+    };
+    const BUILDS = ['до&nbsp;60&nbsp;кг', '60–90&nbsp;кг', '90+&nbsp;кг'];
+    const FIT_WORD = ['не рекомендуем', 'можно', 'подходит'];
+    // фигура-пиктограмма в стиле чертежа: 0 — лёгкое, 1 — среднее, 2 — крупное телосложение
+    const figure = (b) => {
+      const tw = [15, 19, 25][b], lw = [6.6, 8.2, 10.6][b], aw = [4, 4.6, 5.4][b], hr = [6.4, 6.8, 7.2][b];
+      const cx = 24, x0 = cx - tw / 2, yT = 2 * hr + 4, yL = yT + 33, hL = 99 - yL;
+      return `<circle cx="${cx}" cy="${hr + 1}" r="${hr}"/>`
+        + `<rect x="${x0}" y="${yT}" width="${tw}" height="35" rx="${(tw * 0.3).toFixed(1)}"/>`
+        + `<rect x="${(x0 - aw - 1.6).toFixed(1)}" y="${yT + 1}" width="${aw}" height="30" rx="${aw / 2}"/>`
+        + `<rect x="${(x0 + tw + 1.6).toFixed(1)}" y="${yT + 1}" width="${aw}" height="30" rx="${aw / 2}"/>`
+        + `<rect x="${(cx - lw - 0.8).toFixed(1)}" y="${yL}" width="${lw}" height="${hL.toFixed(1)}" rx="${(lw / 2).toFixed(1)}"/>`
+        + `<rect x="${cx + 0.8}" y="${yL}" width="${lw}" height="${hL.toFixed(1)}" rx="${(lw / 2).toFixed(1)}"/>`;
+    };
+    document.querySelectorAll('.mfit[data-fit]').forEach((box) => {
+      const f = FIT[box.dataset.fit];
+      if (!f) return;
+      const name = `Eluna ${box.dataset.fit[0].toUpperCase()}${box.dataset.fit.slice(1)}`;
+      box.setAttribute('aria-label', `${name}: кому подходит`);
+      const bodies = BUILDS.map((label, b) => `
+          <figure class="mfit__body" data-fit="${f.fit[b]}" style="--d:${(b * 0.18).toFixed(2)}s">
+            <div class="mfit__fig" aria-hidden="true">
+              <svg class="mfit__line" viewBox="0 0 48 100" preserveAspectRatio="xMidYMax meet"><g>${figure(b)}</g><path class="mfit__axis" d="M24 -2V101"/></svg>
+              <div class="mfit__fill"><svg viewBox="0 0 48 100" preserveAspectRatio="xMidYMax meet"><g>${figure(b)}</g></svg></div>
+            </div>
+            <figcaption><span>${label}</span><span class="sr-only"> — ${FIT_WORD[f.fit[b]]}</span></figcaption>
+          </figure>`).join('');
+      const scale = [1, 2, 3, 4, 5].map((k) => `<i class="${f.firm === 0 ? 'any' : k <= f.firm ? 'on' : ''}"></i>`).join('');
+      box.innerHTML = `
+        <p class="mfit__motto">${esc(f.motto)}</p>
+        <div class="mfit__plan">
+          <p class="mfit__legend" aria-hidden="true"><span class="mfit__key mfit__key--2">подходит</span><span class="mfit__key mfit__key--1">можно</span></p>
+          <div class="mfit__bodies">${bodies}
+          </div>
+          <p class="mfit__firm"><span class="mfit__k">Жёсткость</span><span class="mfit__scale" aria-hidden="true">${scale}</span><b>${esc(f.firmText)}</b></p>
+        </div>
+        <p class="mfit__who">${esc(f.who)}</p>`;
+    });
+    // зелёный «наливается» в фигуры, когда карточка появляется на экране
+    (() => {
+      const boxes = document.querySelectorAll('.mfit');
+      if (reduceMotion || !('IntersectionObserver' in window)) { boxes.forEach((b) => b.classList.add('is-in')); return; }
+      const io = new IntersectionObserver((es) => es.forEach((en) => {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('is-in'); io.unobserve(en.target);
+      }), { threshold: 0.35 });
+      boxes.forEach((b) => io.observe(b));
+    })();
 
     // разрезы
     document.querySelectorAll('.xs[data-xs]').forEach((box) => {

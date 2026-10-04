@@ -245,3 +245,58 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
 @media (prefers-reduced-motion: reduce) {
   .strata__float, .strata__stage[data-state="closed"] .strata__float { transition: none !important; }
 }
+
+/* ---- Модели: «кому подходит» — слоган, чертёж с фигурами трёх телосложений, шкала жёсткости ----
+   Подходящие фигуры «наливаются» зелёным (аврора), «можно» — до половины, неподходящие — пунктир. */
+.mcard { --fit-rgb: 92, 216, 164; }
+.mfit { margin-top: 16px; }
+.mfit__motto {
+  font-family: var(--display); font-weight: 300; font-size: 15px; line-height: 1.35; letter-spacing: .005em;
+  background: var(--silver); -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+}
+.mfit__plan {
+  position: relative; margin-top: 12px; padding: 10px 12px 10px; border-radius: 10px;
+  border: 1px solid rgba(196, 210, 255, .14);
+  background:
+    linear-gradient(rgba(196, 210, 255, .045) 1px, transparent 1px) 0 0 / 12px 12px,
+    linear-gradient(90deg, rgba(196, 210, 255, .045) 1px, transparent 1px) 0 0 / 12px 12px,
+    rgba(8, 12, 30, .32);
+}
+/* уголки, как на чертеже */
+.mfit__plan::before, .mfit__plan::after { content: ""; position: absolute; width: 8px; height: 8px; border: solid rgba(214, 222, 242, .38); pointer-events: none; }
+.mfit__plan::before { left: 5px; top: 5px; border-width: 1px 0 0 1px; }
+.mfit__plan::after { right: 5px; bottom: 5px; border-width: 0 1px 1px 0; }
+.mfit__legend { display: flex; justify-content: flex-end; gap: 10px; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.mfit__key { display: inline-flex; align-items: center; gap: 5px; }
+.mfit__key::before { content: ""; width: 7px; height: 7px; border-radius: 2px; border: 1px solid rgba(var(--fit-rgb), .75); }
+.mfit__key--2::before { background: rgba(var(--fit-rgb), .85); }
+.mfit__key--1::before { background: linear-gradient(0deg, rgba(var(--fit-rgb), .85) 50%, transparent 50%); }
+.mfit__bodies {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 2px;
+  border-bottom: 1px dashed rgba(196, 210, 255, .22);   /* «пол» под фигурами */
+}
+.mfit__body { display: flex; flex-direction: column; align-items: center; margin: 0; }
+.mfit__fig { position: relative; width: 40px; height: 74px; }
+.mfit__fig svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.mfit__line g > * { fill: none; stroke: rgba(214, 222, 242, .55); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.mfit__axis { fill: none; stroke: rgba(214, 222, 242, .16); stroke-dasharray: 2 3; vector-effect: non-scaling-stroke; }
+.mfit__body[data-fit="0"] .mfit__line g > * { stroke: rgba(214, 222, 242, .26); stroke-dasharray: 2 2; }
+.mfit__fill {
+  position: absolute; inset: 0; clip-path: inset(100% 0 0 0);
+  transition: clip-path 1.6s cubic-bezier(.3, .7, .2, 1) calc(.2s + var(--d, 0s));
+  filter: drop-shadow(0 0 6px rgba(var(--fit-rgb), .42));
+}
+.mfit__fill g > * { fill: rgba(var(--fit-rgb), .8); }
+.mfit.is-in .mfit__body[data-fit="2"] .mfit__fill { clip-path: inset(0 0 0 0); }
+.mfit.is-in .mfit__body[data-fit="1"] .mfit__fill { clip-path: inset(52% 0 0 0); }
+.mfit__body figcaption { margin: 6px 0 7px; font-size: 10.5px; letter-spacing: .05em; color: var(--ink-3); white-space: nowrap; transition: color .8s var(--ease-out) .9s; }
+.mfit.is-in .mfit__body[data-fit="2"] figcaption { color: rgba(var(--fit-rgb), .95); }
+.mfit__firm { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 10px; font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.mfit__firm b { margin-left: auto; font-weight: 500; font-size: 12.5px; letter-spacing: .02em; text-transform: none; color: var(--ink); white-space: nowrap; }
+.mfit__scale { display: inline-flex; gap: 3px; }
+.mfit__scale i { width: 13px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, .12); }
+.mfit__scale i.on { background: linear-gradient(90deg, rgba(var(--fit-rgb), .55), rgba(var(--fit-rgb), .95)); box-shadow: 0 0 6px rgba(var(--fit-rgb), .3); }
+.mfit__scale i.any { background: linear-gradient(90deg, rgba(var(--cool), .45), rgba(var(--aurora-rgb), .8)); }
+.mfit__who { margin-top: 10px; font-size: 12.5px; line-height: 1.5; color: rgba(214, 222, 242, .72); }
+@media (prefers-reduced-motion: reduce) { .mfit__fill, .mfit__body figcaption { transition: none; } }
