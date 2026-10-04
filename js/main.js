@@ -162,13 +162,17 @@
           tctx0.fillStyle = g; tctx0.fillRect(x - r, y - r, r * 2, r * 2);
         }
         // пыль: очень мелкие слабые звёзды по всему небу — та же «зернистость», что на фото матраса
+        // одна заливка на «ведро» (оттенок × 6 уровней яркости) вместо тысяч смен fillStyle
         const dust = Math.round((w * H) / (mob ? 1100 : 700) / (TIER === 'low' ? 2 : 1));
+        const buckets = new Map();
         for (let i = 0; i < dust; i++) {
-          const c = tint(Math.random() * 0.8);
-          tctx0.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${rnd(0.06, 0.3)})`;
+          const c = tint(Math.random() * 0.8), a = (0.06 + Math.floor(Math.random() * 6) * 0.048).toFixed(3);
+          const key = `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+          let path = buckets.get(key); if (!path) { path = new Path2D(); buckets.set(key, path); }
           const s = Math.random() < 0.85 ? 0.7 : 1.1;
-          tctx0.fillRect(Math.random() * w, Math.random() * H, s, s);
+          path.rect(Math.random() * w, Math.random() * H, s, s);
         }
+        buckets.forEach((path, key) => { tctx0.fillStyle = key; tctx0.fill(path); });
         const band =Math.round((w * H) / (mob ? 2400 : 1400) / (TIER === 'low' ? 2 : 1));
         for (let i = 0; i < band; i++) {
           const u = Math.random();
@@ -438,7 +442,9 @@
           if (!old) seqLoaded++;
           frames[i] = fr;
           if (old && old.close) old.close();
-          if (S.cutO > 0.001) { seqDirty = true; drawSeq(); }
+          // перерисовка — только если пришёл кадр, который сейчас на экране (или соседний для смешивания)
+          const f = Math.min(1, Math.max(0, S.spread)) * (SEQ.count - 1);
+          if (S.cutO > 0.001 && Math.abs(i - f) < 1.5) { seqDirty = true; drawSeq(); }
         }
         next();
       });
