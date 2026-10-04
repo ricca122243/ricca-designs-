@@ -3469,6 +3469,36 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
   .strata__t2 { white-space: nowrap; }
 }
 
+/* ---- Собранный матрас — как на фото: крупный план, вплотную к списку, уходит за край экрана ----
+   Масштаб (--zoom) считает strata.js: ровно столько, чтобы дальний конец ушёл за правый край экрана.
+   Открыли — камера плавно отъезжает и слои расходятся; закрыли — слои сходятся и камера снова наезжает. */
+.strata__float {
+  transform-origin: 3.2% 47.6%;
+  scale: 1;
+  transition: scale 1.1s cubic-bezier(.62, 0, .2, 1);
+}
+.strata__stage[data-state="closed"] .strata__float {
+  scale: var(--zoom, 1);
+  transition: scale 1.3s cubic-bezier(.66, 0, .22, 1) .3s;
+}
+/* запасной мягкий край — если экран так широк, что даже крупный план до него не достаёт */
+.strata__closed {
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 90%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0, #000 90%, transparent 100%);
+}
+@media (min-width: 1100px) {
+  /* срез больше не в середине экрана: убираем растворение всего кадра справа… */
+  .strata__visual { -webkit-mask-image: none; mask-image: none; }
+  /* …а у раскрытых слоёв (они обрезаны по краю кадра) растворяется только их собственный край */
+  .strata__layer {
+    -webkit-mask-image: linear-gradient(90deg, #000 0, #000 76%, transparent 99%);
+    mask-image: linear-gradient(90deg, #000 0, #000 76%, transparent 99%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .strata__float, .strata__stage[data-state="closed"] .strata__float { transition: none !important; }
+}
+
   </style>
   <style>
     
@@ -5167,7 +5197,23 @@ void main() {
 
   let open = false, pinned = -1, hovered = -1, shown = -2;
   let lr = 0;
-  const relayout = () => { if (lr) return; lr = requestAnimationFrame(() => { lr = 0; layoutLines(); }); };
+  const relayout = () => { if (lr) return; lr = requestAnimationFrame(() => { lr = 0; fitZoom(); layoutLines(); }); };
+
+  /* ---- собранный матрас крупным планом, как на фото: от списка до края экрана ----
+     Камера «наезжает» ровно настолько, чтобы дальний конец матраса ушёл за правый край экрана —
+     тогда кадр режет край экрана, а не картинка (никакой искусственной «стенки» сбоку).
+     «Открыть» — камера отъезжает к 1 и показывает все семь слоёв. */
+  const visual = root.querySelector('.strata__visual');
+  const CORNER = 0.032, EDGE = 1.0028;   // ближний угол и правый край фото матраса — доли ширины кадра
+  function fitZoom() {
+    const r = visual.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+    if (!r.width) return;
+    const ox = r.left + CORNER * r.width, edge = r.left + EDGE * r.width;
+    const z = Math.min(1.9, Math.max(1, (vw + 0.06 * r.width - ox) / (edge - ox)));
+    stage.style.setProperty('--zoom', z.toFixed(3));
+    // фото под реальный размер на экране: уменьшенная заранее версия не даёт ряби на мелких полосках боковины
+    if (wrapEl && wrapEl.srcset) wrapEl.sizes = Math.round(r.width * 1.0511 * z) + 'px';
+  }
 
   /* ---- открыть / закрыть ---- */
   function setOpen(v, opts) {

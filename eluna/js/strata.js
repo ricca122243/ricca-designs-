@@ -46,7 +46,23 @@
 
   let open = false, pinned = -1, hovered = -1, shown = -2;
   let lr = 0;
-  const relayout = () => { if (lr) return; lr = requestAnimationFrame(() => { lr = 0; layoutLines(); }); };
+  const relayout = () => { if (lr) return; lr = requestAnimationFrame(() => { lr = 0; fitZoom(); layoutLines(); }); };
+
+  /* ---- собранный матрас крупным планом, как на фото: от списка до края экрана ----
+     Камера «наезжает» ровно настолько, чтобы дальний конец матраса ушёл за правый край экрана —
+     тогда кадр режет край экрана, а не картинка (никакой искусственной «стенки» сбоку).
+     «Открыть» — камера отъезжает к 1 и показывает все семь слоёв. */
+  const visual = root.querySelector('.strata__visual');
+  const CORNER = 0.032, EDGE = 1.0028;   // ближний угол и правый край фото матраса — доли ширины кадра
+  function fitZoom() {
+    const r = visual.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+    if (!r.width) return;
+    const ox = r.left + CORNER * r.width, edge = r.left + EDGE * r.width;
+    const z = Math.min(1.9, Math.max(1, (vw + 0.06 * r.width - ox) / (edge - ox)));
+    stage.style.setProperty('--zoom', z.toFixed(3));
+    // фото под реальный размер на экране: уменьшенная заранее версия не даёт ряби на мелких полосках боковины
+    if (wrapEl && wrapEl.srcset) wrapEl.sizes = Math.round(r.width * 1.0511 * z) + 'px';
+  }
 
   /* ---- открыть / закрыть ---- */
   function setOpen(v, opts) {
