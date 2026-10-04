@@ -199,8 +199,10 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
 }
 
 /* ---- Собранный матрас — как на фото: крупный план, вплотную к списку, уходит за край экрана ----
-   Масштаб (--zoom) считает strata.js: ровно столько, чтобы дальний конец ушёл за правый край экрана.
-   Открыли — камера плавно отъезжает и слои расходятся; закрыли — слои сходятся и камера снова наезжает. */
+   --zoom считает strata.js: камера наезжает ровно настолько, чтобы дальний конец матраса ушёл
+   за правый край экрана (на сверхшироких вся пара «список + матрас» ещё и сдвигается вправо —
+   --gshift, — чтобы они оставались рядом). Открыли — камера плавно
+   отъезжает и слои расходятся; закрыли — слои сходятся и камера снова наезжает. */
 .strata__float {
   transform-origin: 3.2% 47.6%;
   scale: 1;
@@ -210,20 +212,30 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
   scale: var(--zoom, 1);
   transition: scale 1.3s cubic-bezier(.66, 0, .22, 1) .3s;
 }
-/* запасной мягкий край — если экран так широк, что даже крупный план до него не достаёт */
-.strata__closed {
-  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 90%, transparent 100%);
-  mask-image: linear-gradient(90deg, #000 0, #000 90%, transparent 100%);
-}
+/* подгонка под размер окна (загрузка, поворот, ресайз) — сразу, без анимации */
+.strata__stage.is-refit .strata__float { transition: none !important; }
+/* слои — в своей обёртке: у раскрытых слоёв (они обрезаны по краю кадра) растворяется правый край,
+   а подсветка выбранного слоя (drop-shadow на самом слое) маской не режется */
+.strata__layers { position: absolute; inset: 0; }
 @media (min-width: 1100px) {
-  /* срез больше не в середине экрана: убираем растворение всего кадра справа… */
-  .strata__visual { -webkit-mask-image: none; mask-image: none; }
-  /* …а у раскрытых слоёв (они обрезаны по краю кадра) растворяется только их собственный край */
-  .strata__layer {
-    -webkit-mask-image: linear-gradient(90deg, #000 0, #000 76%, transparent 99%);
-    mask-image: linear-gradient(90deg, #000 0, #000 76%, transparent 99%);
+  .strata__visual {
+    -webkit-mask-image: none; mask-image: none;
+    /* картинка с переключателем помещается под меню и на невысоких экранах (1366×768, 1827×762) */
+    height: clamp(420px, min(86vh, 100vh - 150px), 1000px);
   }
+  .strata__layers {
+    -webkit-mask-image: linear-gradient(90deg, #000 0, #000 80%, transparent 99%);
+    mask-image: linear-gradient(90deg, #000 0, #000 80%, transparent 99%);
+  }
+  .strata__grid { translate: var(--gshift, 0px) 0; }
+  /* список во всю колонку — угол матраса ближе к строкам */
+  .strata__list, .strata__detail { max-width: none; }
 }
+/* закрытие: фото проявляется, а сжатые слои под ним гаснут быстро — без «двойного» матраса */
+.strata__stage[data-state="closed"] .strata__layer {
+  transition: translate 1.05s cubic-bezier(.66, 0, .22, 1) calc((6 - var(--k)) * 40ms), opacity .28s ease .86s, transform .6s var(--ease-out), filter .6s var(--ease-out);
+}
+.strata__closed { transition: opacity .42s ease .82s, transform 1s var(--ease-out) .82s; }
 @media (prefers-reduced-motion: reduce) {
   .strata__float, .strata__stage[data-state="closed"] .strata__float { transition: none !important; }
 }

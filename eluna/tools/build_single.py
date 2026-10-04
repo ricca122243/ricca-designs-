@@ -57,6 +57,12 @@ html = re.sub(r'<link rel="icon" type="image/png" href="([^"]+)">', lambda m: f'
 def pick_src(m):
     tag = m.group(0)
     ss = re.search(r'\ssrcset="([^"]+)"', tag)
+    if ss and 'strata__closed' in tag:
+        # собранный матрас: все размеры внутри файла — браузер берёт подходящий, боковины без ряби
+        cands = [c.strip().split() for c in ss.group(1).split(',')]
+        inl = ', '.join(f'{data_uri(u)} {d}' for u, d in cands)
+        tag = re.sub(r'\ssrc="[^"]+"', f' src="{cands[0][0]}"', tag)   # запасной src — самый лёгкий
+        return tag.replace(ss.group(0), f' srcset="{inl}"')
     if ss:
         cands = [c.strip().split()[0] for c in ss.group(1).split(',')]
         # для луны хватает 1280: шар рисует WebGL, фото — только постер

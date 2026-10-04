@@ -1026,6 +1026,9 @@
         const g = fit.getBoundingClientRect(), navH = (document.getElementById('nav') || {}).offsetHeight || 72;
         const top = g.top + window.scrollY, h = g.height, avail = window.innerHeight - navH;
         y = top - navH - (h <= avail - 16 ? (avail - h) / 2 : 8);
+        // переключатель «Закрыть / Открыть» под картинкой должен быть виден целиком
+        const ctl = target.querySelector('.strata__controls');
+        if (ctl) { const cb = ctl.getBoundingClientRect().bottom + window.scrollY; if (cb - y > window.innerHeight - 14) y = cb - window.innerHeight + 14; }
       }
       E.scroll.to(y);
       if (target.hasAttribute('tabindex')) target.focus({ preventScroll: true });

@@ -54,12 +54,30 @@
      «Открыть» — камера отъезжает к 1 и показывает все семь слоёв. */
   const visual = root.querySelector('.strata__visual');
   const CORNER = 0.032, EDGE = 1.0028;   // ближний угол и правый край фото матраса — доли ширины кадра
+  const ZMAX = 1.9;                       // крупнее фото уже теряет чёткость
+  let zNow = '', gNow = 0, toggledAt = -1e9;
   function fitZoom() {
     const r = visual.getBoundingClientRect(), vw = document.documentElement.clientWidth;
     if (!r.width) return;
-    const ox = r.left + CORNER * r.width, edge = r.left + EDGE * r.width;
-    const z = Math.min(1.9, Math.max(1, (vw + 0.06 * r.width - ox) / (edge - ox)));
-    stage.style.setProperty('--zoom', z.toFixed(3));
+    const left = r.left - gNow;             // положение без нашего же сдвига пары
+    const ox = left + CORNER * r.width, edge = left + EDGE * r.width;
+    const need = vw + 0.06 * r.width;      // дальний конец — чуть за правым краем экрана
+    // телефон/планшет: матрас и так во всю ширину — берём крупнее, как на фото (по высоте кадра места хватает)
+    const zMin = !side.matches && r.height > r.width ? 1.3 : 1;
+    const z = Math.min(ZMAX, Math.max(zMin, (need - ox) / (edge - ox)));
+    // сверхширокий экран: масштаб упёрся в потолок — вся пара «список + матрас» сдвигается вправо,
+    // так матрас уходит за край, а от списка не отрывается
+    const g = side.matches ? Math.round(Math.max(0, need - (ox + (edge - ox) * z))) : 0;
+    if (g !== gNow) { root.style.setProperty('--gshift', g + 'px'); gNow = g; }
+    const zs = z.toFixed(3);
+    if (zs !== zNow) {
+      // подгонка под окно (загрузка, поворот, ресайз) — сразу; во время открытия/закрытия — плавно
+      const refit = performance.now() - toggledAt > 1800;
+      if (refit) stage.classList.add('is-refit');
+      stage.style.setProperty('--zoom', zs);
+      if (refit) { void stage.offsetWidth; requestAnimationFrame(() => stage.classList.remove('is-refit')); }
+      zNow = zs;
+    }
     // фото под реальный размер на экране: уменьшенная заранее версия не даёт ряби на мелких полосках боковины
     if (wrapEl && wrapEl.srcset) wrapEl.sizes = Math.round(r.width * 1.0511 * z) + 'px';
   }
@@ -69,6 +87,7 @@
     v = !!v;
     if (v === open && !(opts && opts.force)) return;
     open = v;
+    if (!(opts && opts.force)) toggledAt = performance.now();
     stage.dataset.state = v ? 'open' : 'closed';
     root.classList.toggle('is-open', v);
     sw.dataset.state = v ? 'open' : 'closed';
