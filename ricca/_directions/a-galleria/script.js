@@ -37,6 +37,23 @@
     }
   });
 
+  /* ---------- Плавный переход по якорям ---------- */
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    const id = a.getAttribute('href').slice(1);
+    const target = id ? document.getElementById(id) : null;
+    if (!target && id !== 'top') return;
+    e.preventDefault();
+    const y = id === 'top' || !target ? 0 : target.getBoundingClientRect().top + window.scrollY - (id === 'collections' ? 0 : 72);
+    window.scrollTo({ top: Math.max(0, y), behavior: reduced ? 'auto' : 'smooth' });
+    if (target) {
+      if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+      target.focus({ preventScroll: true });
+    }
+    if (id) history.replaceState(null, '', `#${id}`);
+  });
+
   /* ---------- Вход героя ---------- */
   const enter = () => requestAnimationFrame(() => root.classList.add('is-loaded'));
   const fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();

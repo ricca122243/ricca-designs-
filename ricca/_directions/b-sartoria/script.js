@@ -66,6 +66,16 @@
       if (batch.length && !raf) raf = requestAnimationFrame(flush);
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
     revealEls.forEach((el) => io.observe(el));
+    // Страховка: при быстром пролёте или переходе по якорю проявляем всё, что уже выше края экрана
+    let sweepT = 0;
+    const sweepPassed = () => {
+      const lim = window.innerHeight * 0.92;
+      revealEls.forEach((el) => {
+        if (el.classList.contains('is-in')) return;
+        if (el.getBoundingClientRect().top < lim) { io.unobserve(el); el.classList.add('is-in'); }
+      });
+    };
+    window.addEventListener('scroll', () => { clearTimeout(sweepT); sweepT = setTimeout(sweepPassed, 160); }, { passive: true });
     // Колонтитулы проявляются вместе со своим швом
     $$('.runhead').forEach((el) => { if (!el.hasAttribute('data-reveal')) io.observe(el); });
   } else {
