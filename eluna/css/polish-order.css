@@ -1,0 +1,554 @@
+/* ELUNA — полировка: Размер · Доставка · Оформить */
+/* ==========================================================================
+   Язык «space glass»: navy-стекло + волосяная кромка + лунный блик сверху,
+   таблетки для переключателей, лунное свечение для активного/фокуса.
+   Шампань — только Prime, цены и метка выбранного города.
+   Подключается после styles.css и polish-base.css — только переопределения.
+   ========================================================================== */
+
+.configure, .order {
+  --o-glass: linear-gradient(180deg, rgba(var(--cool), .065), rgba(var(--cool), .012) 42%, rgba(var(--cool), 0) 100%), var(--glass);
+  --o-hi: inset 0 1px 0 rgba(255, 255, 255, .055);
+  --o-deep: 0 40px 80px -44px rgba(0, 0, 0, .95);
+  --o-well: rgba(5, 8, 22, .5);
+  --o-thumb: linear-gradient(180deg, #ffffff 0%, #e3e8f2 55%, #c3cadc 100%);
+  --o-thumb-glow: 0 0 24px -6px rgba(var(--cool), .75), inset 0 -1px 0 rgba(20, 30, 70, .16), inset 0 1px 0 #fff;
+  --o-dim: rgba(var(--cool), .5);
+}
+
+/* ==========================================================================
+   1. РАЗМЕР
+   ========================================================================== */
+
+/* ---------- модель: стеклянный сегментный переключатель -------------------- */
+
+.cfg__models {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: min(100%, 580px); max-width: none;
+  gap: 2px; padding: 4px;
+  border-radius: 999px;
+  background: rgba(10, 14, 32, .62);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  box-shadow: 0 24px 50px -24px rgba(0, 0, 0, .85), var(--o-hi);
+}
+.cfg__models button {
+  position: relative; isolation: isolate;
+  padding: 14px 8px; border: 0; border-radius: 999px;
+  font-family: var(--sans); font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ink-2); background: none;
+  transition: color .5s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.cfg__models button::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+  background: var(--o-thumb); box-shadow: var(--o-thumb-glow);
+  opacity: 0; transform: scale(.92);
+  transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
+}
+.cfg__models button:hover { color: #fff; border-color: transparent; }
+.cfg__models button[aria-checked="true"] { color: #0a0f23; background: none; border-color: transparent; cursor: default; }
+.cfg__models button[aria-checked="true"]::after { opacity: 1; transform: none; }
+/* Prime — флагман: бегунок с тёплым шампань-отливом */
+.cfg__models button[data-m="prime"][aria-checked="true"]::after {
+  background: linear-gradient(180deg, #fffdf8 0%, #f1e8d6 55%, #dccaa3 100%);
+  box-shadow: 0 0 24px -6px rgba(var(--gold-rgb), .7), inset 0 -1px 0 rgba(90, 64, 20, .18), inset 0 1px 0 #fff;
+}
+.cfg__models button:focus-visible { outline-offset: -3px; border-radius: 999px; }
+.cfg__models button[aria-checked="true"]:focus-visible { outline-color: rgba(60, 80, 160, .7); }
+
+/* ---------- превью: матрас сверху, парит в лунном свете -------------------- */
+
+.sizes__grid { align-items: center; }
+.configure .size-vis { max-width: 480px; }
+
+/* орбита и ось — тонкие линии «чертежа» вокруг */
+.size-vis::before {
+  content: ""; position: absolute; inset: 1%; border-radius: 50%; pointer-events: none;
+  border: 1px solid rgba(var(--cool), .1);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, rgba(0, 0, 0, .25) 100%); mask-image: linear-gradient(180deg, #000 0%, #000 55%, rgba(0, 0, 0, .25) 100%);
+}
+.size-vis::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 112%; height: 112%; transform: translate(-50%, -50%); pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(var(--cool), 0), rgba(var(--cool), .12) 30%, rgba(var(--cool), .12) 70%, rgba(var(--cool), 0)) center / 100% 1px no-repeat,
+    linear-gradient(180deg, rgba(var(--cool), 0), rgba(var(--cool), .12) 30%, rgba(var(--cool), .12) 70%, rgba(var(--cool), 0)) center / 1px 100% no-repeat;
+  opacity: .7;
+}
+.size-vis__glow {
+  top: 52%; width: 96%; height: 96%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(var(--cool), .2), rgba(var(--cool), .07) 52%, rgba(var(--cool), 0) 100%);
+}
+.size-vis__mat {
+  z-index: 1;
+  border: 0; border-radius: 10px;
+  background:
+    /* лунный ключевой свет слева сверху — мягкий «объём» подушки */
+    radial-gradient(110% 80% at 16% 4%, rgba(255, 255, 255, .34), rgba(255, 255, 255, 0) 60%),
+    /* спад к правому нижнему углу — ткань уходит в тень */
+    radial-gradient(95% 75% at 96% 102%, rgba(12, 18, 52, .46), rgba(12, 18, 52, 0) 72%),
+    /* лёгкий холодный тон: ткань в лунном свете, не серый пластик */
+    linear-gradient(180deg, rgba(var(--cool), .06), rgba(40, 52, 110, .16)),
+    url(../img/quilt-top.webp) center / 100% 100% no-repeat,
+    #d8dded;
+  box-shadow:
+    /* кант: светлая кромка сверху, мягкий валик по периметру */
+    inset 0 1px 0 rgba(255, 255, 255, .9),
+    inset 0 0 0 1px rgba(255, 255, 255, .34),
+    inset 0 0 22px 0 rgba(22, 30, 76, .26),
+    inset 0 -14px 20px -16px rgba(12, 18, 52, .6),
+    /* боковина матраса — тонкая полоса толщины под нижней кромкой */
+    0 5px 0 -1px #6c7591,
+    0 6px 0 -1px rgba(20, 26, 56, .9),
+    /* тень и лунное свечение вокруг */
+    0 34px 46px -20px rgba(0, 0, 0, .85),
+    0 0 64px -8px rgba(var(--cool), .36),
+    0 0 150px 0 rgba(var(--cool), .1);
+}
+/* мягкая тень под матрасом — «парит» над полем */
+.size-vis__mat::before {
+  content: ""; position: absolute; left: 6%; right: 6%; top: auto; bottom: -26px; height: 26px;
+  border: 0; border-radius: 50%; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, .55), rgba(0, 0, 0, 0));
+  filter: blur(4px);
+}
+
+/* размеры — чертёжные линии с засечками */
+/* gap: 0 — иначе flex разносит число и «мм» как отдельные элементы («1600   мм»);
+   отступ до линий даём полям ::before/::after */
+.size-vis__w, .size-vis__h {
+  display: flex; align-items: center; gap: 0;
+  font-size: 10px; letter-spacing: .1em; color: var(--ink-2); font-weight: 500;
+}
+.size-vis__w > span, .size-vis__h > span { margin-inline-end: .4em; font-family: var(--display); font-weight: 300; letter-spacing: .04em; color: #fff; font-size: 12px; }
+.size-vis__w::before, .size-vis__h::before { margin-inline-end: 12px; }
+.size-vis__w::after, .size-vis__h::after { margin-inline-start: 12px; }
+.size-vis__w { left: 0; right: 0; top: 100%; transform: translateY(16px); }
+.size-vis__h { left: 100%; top: 0; bottom: 0; transform: translateX(16px); transform-origin: 50% 50%; writing-mode: vertical-rl; }
+.size-vis__w::before, .size-vis__w::after,
+.size-vis__h::before, .size-vis__h::after { content: ""; flex: 1 1 0; min-width: 0; min-height: 0; }
+.size-vis__w::before, .size-vis__w::after {
+  height: 7px;
+  background: linear-gradient(var(--o-dim), var(--o-dim)) center / 100% 1px no-repeat;
+}
+.size-vis__w::before { border-left: 1px solid var(--o-dim); }
+.size-vis__w::after { border-right: 1px solid var(--o-dim); }
+.size-vis__h::before, .size-vis__h::after {
+  width: 7px;
+  background: linear-gradient(var(--o-dim), var(--o-dim)) center / 1px 100% no-repeat;
+}
+.size-vis__h::before { border-top: 1px solid var(--o-dim); }
+.size-vis__h::after { border-bottom: 1px solid var(--o-dim); }
+
+/* ---------- композиция (≥900px): слева — матрас, справа — все настройки ------
+   Модель стоит над стеклянной панелью размеров, а не над матрасом: глаз идёт
+   сверху вниз по одной колонке (модель → размер → цена → кнопка), без зигзага.
+   .sizes__grid «растворяется» (display: contents) — разметка та же. */
+@media (min-width: 900px) {
+  .cfg {
+    display: grid;
+    grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+    grid-template-rows: auto auto;
+    column-gap: clamp(32px, 4.4vw, 72px);
+    align-items: start;
+  }
+  .sizes__grid { display: contents; }
+  .cfg__models { grid-column: 2; grid-row: 1; width: 100%; margin: 0 0 14px; }
+  .configure .size-vis { grid-column: 1; grid-row: 1 / 3; align-self: center; width: 100%; max-width: 460px; }
+  .size-panel { grid-column: 2; grid-row: 2; }
+}
+
+/* ---------- панель выбора: стеклянная карточка ----------------------------- */
+
+.size-panel {
+  position: relative;
+  padding: clamp(20px, 2.4vw, 34px);
+  border-radius: 18px;
+  background: var(--o-glass);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(18px) saturate(130%); backdrop-filter: blur(18px) saturate(130%);
+  box-shadow: var(--o-hi), var(--o-deep);
+}
+.size-panel::before {
+  content: ""; position: absolute; left: 14%; right: 14%; top: -1px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(var(--cool), 0), rgba(var(--cool), .55), rgba(var(--cool), 0));
+}
+
+/* размеры — сегментный переключатель (дорожка-колодец + серебряный бегунок) */
+.size-options {
+  gap: 2px; padding: 4px;
+  border-radius: 999px;
+  background: var(--o-well);
+  border: 1px solid var(--glass-line);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .35);
+}
+.size-options button {
+  position: relative; isolation: isolate;
+  padding: 15px 8px; border: 0; border-radius: 999px;
+  font-family: var(--display); font-weight: 300; font-size: 14px; letter-spacing: .01em; white-space: nowrap;
+  color: var(--ink-2); background: none;
+  transition: color .5s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.size-options button::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+  background: var(--o-thumb); box-shadow: var(--o-thumb-glow);
+  opacity: 0; transform: scale(.92);
+  transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
+}
+.size-options button:hover { color: #fff; border-color: transparent; }
+.size-options button[aria-checked="true"] { color: #0a0f23; font-weight: 500; background: none; border-color: transparent; }
+.size-options button[aria-checked="true"]::after { opacity: 1; transform: none; }
+.size-options button:focus-visible { outline-offset: -3px; border-radius: 999px; }
+.size-options button[aria-checked="true"]:focus-visible { outline-color: rgba(60, 80, 160, .7); }
+
+/* ---------- свой размер: ползунки и поля ----------------------------------- */
+
+.cfg-custom { margin-top: 22px; gap: 14px; }
+.cfg-range { grid-template-columns: 68px minmax(0, 1fr) auto; gap: 16px; }
+.cfg-range label { font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; font-weight: 500; color: var(--ink-2); }
+
+.cfg-range input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  height: 30px; margin: 0; padding: 0;
+  background: transparent; accent-color: auto; cursor: pointer;
+}
+.cfg-range input[type="range"]:focus { outline: none; }
+.cfg-range input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px; border-radius: 99px;
+  background: linear-gradient(90deg, rgba(var(--cool), .42), rgba(var(--cool), .14));
+  box-shadow: inset 0 0 0 1px rgba(var(--cool), .1);
+}
+.cfg-range input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 20px; height: 20px; margin-top: -8px; border: 0; border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #ffffff 0%, #e6eaf3 40%, #aeb7cc 100%);
+  box-shadow: 0 0 0 4px rgba(var(--cool), .12), 0 0 18px 2px rgba(var(--cool), .45), 0 2px 6px rgba(0, 0, 0, .55);
+  transition: box-shadow .35s var(--ease-out), transform .35s var(--ease-out);
+}
+.cfg-range input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.08); }
+.cfg-range input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(var(--cool), .3), 0 0 22px 4px rgba(var(--cool), .6), 0 2px 6px rgba(0, 0, 0, .55); }
+.cfg-range input[type="range"]::-moz-range-track {
+  height: 4px; border: 0; border-radius: 99px;
+  background: rgba(var(--cool), .16);
+}
+.cfg-range input[type="range"]::-moz-range-progress {
+  height: 4px; border-radius: 99px;
+  background: linear-gradient(90deg, rgba(var(--cool), .35), #e8ecf6);
+}
+.cfg-range input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px; border: 0; border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #ffffff 0%, #e6eaf3 40%, #aeb7cc 100%);
+  box-shadow: 0 0 0 4px rgba(var(--cool), .12), 0 0 18px 2px rgba(var(--cool), .45), 0 2px 6px rgba(0, 0, 0, .55);
+}
+.cfg-range input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 5px rgba(var(--cool), .3), 0 0 22px 4px rgba(var(--cool), .6); }
+
+.cfg-num { gap: 8px; font-size: 11px; letter-spacing: .08em; color: var(--ink-2); }
+.cfg-num input {
+  width: 86px; padding: 10px 12px;
+  border-radius: 10px; border: 1px solid var(--glass-line);
+  background: var(--o-well);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .4);
+  font-family: var(--display); font-weight: 300; font-size: 14px; color: #fff;
+  -moz-appearance: textfield; appearance: textfield;
+  transition: border-color .35s, box-shadow .35s;
+}
+.cfg-num input::-webkit-inner-spin-button, .cfg-num input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.cfg-num input:hover { border-color: var(--line-2); }
+.cfg-num input:focus { outline: none; border-color: rgba(var(--cool), .6); box-shadow: inset 0 1px 3px rgba(0, 0, 0, .4), 0 0 0 3px rgba(var(--cool), .14), 0 0 18px -4px rgba(var(--cool), .5); }
+.cfg-custom .size-summary__hint { margin-top: 2px; font-size: 12.5px; line-height: 1.6; color: var(--ink-2); }
+
+/* ---------- итог: цена, рассрочка, кнопка --------------------------------- */
+
+.size-summary { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
+.size-summary__row { align-items: flex-end; }
+.size-summary__label { font-size: 13px; letter-spacing: .03em; color: var(--ink-2); padding-bottom: 4px; }
+.size-summary__label #sizeModel { color: #fff; }
+.size-summary__price {
+  font-weight: 300; font-size: clamp(28px, 2.6vw, 38px); letter-spacing: -.005em; color: #fff; text-align: right;
+  text-shadow: 0 0 26px rgba(var(--warm), .26);
+  font-variant-numeric: tabular-nums;
+}
+.size-summary__price .price-old { margin-bottom: 10px; font-size: .38em; letter-spacing: .02em; color: var(--ink-2); }
+.size-summary__note { margin-top: 16px; font-size: 13px; color: var(--ink-2); }
+.size-summary__note #sizeMonthly { color: #fff; white-space: nowrap; }
+.size-summary__price { white-space: nowrap; }
+.size-summary .button { margin-top: 22px; }
+
+/* ==========================================================================
+   2. ДОСТАВКА
+   ========================================================================== */
+
+/* секция прозрачная — космос виден, как и в остальных разделах */
+.order { background: none; }
+
+.delivery__title { color: #fff; font-size: clamp(26px, 2.3vw, 36px); line-height: 1.16; text-wrap: balance; }
+.delivery__lead { color: var(--ink-2); }
+
+/* «Ваш выбор» — стеклянная карточка: метка + «изменить» сверху, выбор крупно */
+.order-pick {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px 16px;
+  margin-top: 28px; padding: 16px 16px 18px 20px;
+  border-radius: 14px; border: 1px solid var(--glass-line);
+  background: var(--o-glass);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: var(--o-hi), 0 24px 50px -30px rgba(0, 0, 0, .9);
+}
+.order-pick__label {
+  grid-column: 1; grid-row: 1;
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 10.5px; letter-spacing: .2em; font-weight: 500; color: var(--ink-2);
+}
+.order-pick__label::before {
+  content: ""; flex: none; width: 4px; height: 4px; border-radius: 50%;
+  background: #e4e9f6; box-shadow: 0 0 0 1px rgba(var(--cool), .12), 0 0 8px 1px rgba(var(--cool), .75);
+}
+/* pretty — не оставляет «000 ₸» сиротой на второй строке (пробелы в цене — обычные, из JS) */
+.order-pick__text { grid-column: 1 / -1; grid-row: 2; font-family: var(--display); font-weight: 300; font-size: 16px; line-height: 1.4; color: #fff; text-wrap: pretty; }
+.order-pick__edit {
+  grid-column: 2; grid-row: 1; margin: 0;
+  padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line-2);
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase; font-weight: 500; text-decoration: none;
+  color: var(--ink-2); background: rgba(var(--cool), .03);
+  transition: color .4s, border-color .4s, background-color .4s;
+}
+.order-pick__edit:hover { color: #fff; border-color: rgba(var(--cool), .5); background: rgba(var(--cool), .08); }
+.order-pick__edit:focus-visible { border-radius: 999px; }
+
+/* выбранный город — крупно; срок — стеклянная плашка с меткой цвета точки на карте */
+.delivery__pick { margin-top: 26px; padding-top: 0; border-top: 0; align-items: center; gap: 12px 18px; }
+.delivery__city { color: #fff; font-size: clamp(24px, 1.9vw, 30px); text-shadow: 0 0 30px rgba(var(--cool), .2); }
+.delivery__days {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 14px 8px 12px; border-radius: 999px;
+  border: 1px solid rgba(var(--cool), .2); background: rgba(var(--cool), .05);
+  font-size: 10.5px; letter-spacing: .18em; color: #d3dbf1;
+}
+.delivery__days::before {
+  content: ""; flex: none; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--gold); box-shadow: 0 0 8px 1px rgba(var(--gold-rgb), .7);
+}
+
+/* гарантии — одна стеклянная панель, ячейки разделены волосяными линиями */
+.trust {
+  counter-reset: trust;
+  margin-top: 30px; padding: 0; border-top: 0; gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-radius: 16px; border: 1px solid var(--glass-line);
+  background: var(--o-glass);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  box-shadow: var(--o-hi), var(--o-deep);
+  overflow: hidden;
+}
+.trust__item { counter-increment: trust; position: relative; gap: 10px; padding: 22px 20px 22px; }
+.trust__item:nth-child(2n) { border-left: 1px solid var(--line); }
+.trust__item:nth-child(n + 3) { border-top: 1px solid var(--line); }
+.trust__item::before {
+  content: counter(trust, decimal-leading-zero);
+  content: counter(trust, decimal-leading-zero) / "";
+  font-family: var(--logo); font-size: 10px; letter-spacing: .1em; line-height: 1;
+  color: #a2abc2;
+  background: var(--silver-soft); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+.trust__value { color: #fff; font-size: clamp(18px, 1.45vw, 21px); }
+.trust__label { font-size: 12.5px; color: var(--ink-2); }
+
+/* карта: снимок обрезан по контуру страны (тот же контур, что в .map__line, с мягкой кромкой) —
+   тёмный прямоугольник снимка исчезает, Казахстан «висит» в космосе; уголки «видоискателя» */
+.order { --kz-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2080 1174' preserveAspectRatio='none'%3E%3Cfilter id='f' x='-5%' y='-5%' width='110%' height='110%'%3E%3CfeMorphology operator='dilate' radius='6'/%3E%3CfeGaussianBlur stdDeviation='5'/%3E%3C/filter%3E%3Cpath filter='url(%23f)' d='M2002 512L1993 509L1986 512L1981 511L1976 518L1974 521L1974 524L1978 529L1976 533L1976 538L1969 546L1968 551L1961 554L1956 554L1953 557L1950 558L1942 558L1931 559L1928 562L1922 577L1919 593L1923 613L1922 622L1926 630L1926 637L1926 642L1921 644L1918 653L1906 653L1897 662L1894 663L1891 667L1883 669L1882 668L1884 662L1883 660L1880 657L1873 658L1868 657L1861 656L1856 657L1852 659L1844 658L1827 652L1819 646L1813 644L1810 642L1806 641L1804 642L1802 660L1795 675L1788 702L1783 712L1779 732L1774 744L1770 758L1772 760L1773 761L1780 762L1785 764L1786 766L1785 777L1781 786L1778 786L1772 780L1770 779L1768 778L1754 784L1751 782L1747 781L1746 773L1744 771L1741 770L1735 774L1704 786L1696 784L1689 787L1685 787L1682 791L1677 791L1674 793L1669 792L1657 801L1657 803L1658 805L1664 809L1675 807L1678 810L1687 813L1687 815L1681 817L1680 818L1682 822L1679 832L1681 848L1680 855L1683 860L1684 865L1686 870L1697 901L1696 905L1694 910L1699 914L1701 922L1700 925L1698 926L1694 923L1693 923L1681 931L1680 932L1681 934L1689 938L1689 941L1679 945L1676 945L1674 947L1670 959L1672 964L1674 968L1673 972L1676 985L1676 988L1674 988L1672 987L1668 980L1660 972L1650 970L1644 971L1638 969L1634 962L1627 956L1626 952L1626 948L1625 947L1619 949L1618 949L1609 947L1603 946L1599 943L1591 941L1586 943L1582 942L1573 943L1566 940L1563 941L1561 940L1558 939L1555 939L1551 940L1548 938L1545 938L1540 940L1534 938L1531 935L1523 933L1518 934L1512 938L1506 940L1501 938L1498 940L1497 939L1495 939L1491 938L1482 937L1479 938L1473 937L1470 937L1468 938L1465 944L1462 946L1459 945L1441 943L1426 934L1420 933L1415 928L1412 925L1405 922L1395 914L1397 918L1396 919L1388 920L1385 918L1384 919L1382 924L1378 925L1367 930L1363 940L1364 947L1360 958L1360 963L1364 974L1356 972L1355 968L1353 966L1349 966L1346 964L1338 965L1335 964L1332 962L1330 959L1328 956L1316 954L1308 949L1302 949L1299 950L1287 944L1280 946L1275 949L1274 949L1271 947L1267 947L1263 951L1259 950L1258 953L1255 955L1255 960L1248 963L1249 965L1251 969L1250 970L1247 969L1246 969L1245 973L1245 976L1241 980L1243 984L1246 984L1241 988L1236 988L1230 1000L1228 1000L1226 1000L1225 997L1223 995L1218 997L1216 999L1214 1004L1211 1006L1207 1014L1200 1018L1198 1022L1184 1024L1178 1031L1174 1033L1173 1035L1174 1038L1171 1038L1168 1039L1166 1039L1163 1041L1162 1043L1161 1043L1157 1045L1158 1049L1157 1056L1153 1059L1150 1060L1148 1063L1145 1065L1141 1073L1137 1076L1137 1077L1136 1077L1135 1082L1135 1088L1136 1090L1138 1090L1138 1094L1137 1096L1138 1097L1138 1098L1137 1098L1133 1097L1131 1099L1120 1093L1112 1085L1109 1084L1113 1080L1115 1073L1114 1070L1115 1069L1115 1066L1114 1066L1113 1068L1112 1067L1111 1068L1106 1057L1102 1060L1098 1058L1055 1061L1051 1060L1049 1057L1045 1037L1042 1020L1040 1002L1017 1001L1018 974L1019 971L1022 933L1007 941L995 912L983 904L967 883L964 883L944 895L888 889L833 899L831 898L793 852L790 847L790 840L788 837L673 756L623 771L554 795L554 1048L549 1048L545 1051L538 1052L532 1053L529 1051L526 1045L519 1038L513 1026L506 1016L506 1009L504 1006L496 998L471 980L468 978L464 978L435 984L415 993L405 1002L390 1019L392 1008L392 1004L390 1002L390 998L388 995L390 989L392 988L397 978L398 975L400 972L401 964L400 959L398 955L396 953L396 950L396 950L398 953L400 956L403 961L404 958L404 953L403 951L399 950L399 948L392 945L386 944L385 945L384 947L382 946L378 940L372 941L367 944L366 943L361 935L359 930L356 926L355 926L355 922L354 919L348 920L347 922L345 921L336 922L336 920L338 911L338 901L336 894L334 892L333 889L331 889L329 887L325 877L323 870L319 863L317 862L316 850L313 847L310 845L293 842L290 840L288 836L288 824L288 823L289 825L290 824L292 818L300 820L306 819L306 820L311 821L312 822L314 820L318 820L322 824L324 824L323 826L324 827L330 830L334 829L337 825L340 825L341 825L341 827L345 827L350 828L350 827L349 825L344 821L338 822L337 821L334 814L328 808L326 808L322 804L322 801L323 799L321 798L322 796L327 795L328 792L333 790L336 793L336 790L335 787L336 785L335 783L338 777L342 771L343 768L345 770L349 771L356 767L359 763L360 766L364 767L367 769L370 767L374 768L394 766L412 773L416 772L421 774L426 771L428 771L428 770L427 769L423 768L421 766L418 766L410 762L409 760L405 759L404 756L404 750L406 749L410 742L414 737L420 725L420 722L421 719L423 706L423 702L422 698L418 693L421 695L420 692L420 690L417 692L416 690L418 686L418 688L420 687L421 682L421 684L423 681L425 681L426 677L425 676L421 674L419 664L416 664L412 659L406 660L398 660L394 657L390 656L389 660L386 664L382 665L378 664L378 666L380 667L381 669L375 669L370 664L371 661L370 660L367 664L363 664L365 661L364 661L361 662L358 661L355 658L356 655L355 652L353 653L352 657L351 657L348 653L333 648L328 651L322 652L319 655L316 654L312 663L312 658L309 661L306 661L305 665L304 668L303 668L304 665L301 666L297 663L295 669L294 670L295 666L294 667L288 675L287 675L287 672L285 674L279 681L276 682L272 686L270 685L269 688L267 686L266 689L264 687L264 689L260 685L260 689L259 689L258 691L257 688L253 687L253 684L254 691L252 690L252 688L251 687L251 688L249 688L245 685L249 692L246 692L245 689L244 689L245 693L248 696L248 698L248 698L246 697L243 693L241 693L245 698L244 698L239 697L241 699L242 703L233 697L226 692L223 692L218 687L210 686L211 684L209 681L206 680L208 675L211 673L214 672L216 673L220 678L227 677L231 672L217 649L208 627L204 625L193 607L187 603L169 603L158 598L157 600L156 608L155 609L147 603L144 600L146 596L141 588L145 585L148 582L144 580L144 576L142 573L144 570L143 569L115 559L127 524L135 518L140 511L140 508L140 504L138 501L128 495L134 461L137 457L147 453L153 446L154 442L151 436L154 433L152 430L153 429L157 427L160 421L164 418L168 419L185 436L186 439L189 444L192 452L194 454L196 458L199 458L205 462L207 460L221 454L226 448L225 444L224 442L221 441L221 437L217 426L216 409L215 408L211 406L211 405L213 404L219 408L223 408L232 402L238 395L248 392L250 390L251 388L247 382L251 372L267 373L277 364L287 362L292 359L294 358L293 354L295 352L294 351L298 350L300 349L302 348L302 341L304 339L304 336L309 338L308 340L308 341L311 341L314 339L314 337L312 331L312 329L313 328L316 328L320 333L331 334L334 333L337 336L341 336L341 339L340 341L334 343L338 347L345 347L347 346L349 343L351 343L352 344L354 349L356 349L360 346L359 339L364 333L366 333L371 335L374 334L377 330L382 330L384 326L385 327L387 334L390 340L392 345L395 348L401 348L406 345L408 346L411 346L411 348L413 349L418 346L423 346L423 345L424 344L426 346L432 345L435 346L437 349L444 353L445 354L443 356L443 356L444 360L447 365L456 367L459 367L462 369L463 372L467 373L469 380L475 386L484 390L485 392L482 396L480 406L482 411L485 413L490 412L494 407L492 400L492 395L491 393L492 390L492 388L486 385L488 383L487 380L492 378L494 378L500 382L504 386L511 388L512 394L523 403L524 404L530 404L533 408L535 408L539 412L558 399L562 386L569 388L571 384L575 382L574 378L577 375L578 375L582 381L586 382L588 381L586 376L588 375L590 374L595 376L598 375L604 375L608 373L610 379L614 380L616 387L620 389L622 390L627 386L633 387L634 386L635 375L636 372L643 373L645 375L651 373L652 375L655 376L658 371L661 370L664 372L665 375L671 376L675 378L675 382L673 385L672 387L674 389L677 389L677 394L678 394L682 394L685 399L690 402L702 403L706 406L714 405L719 409L719 411L715 411L714 412L715 414L718 416L722 413L729 412L731 410L736 402L736 398L738 392L740 390L746 391L748 398L753 402L773 404L777 403L803 395L804 394L806 389L810 366L812 364L816 362L812 360L808 350L802 348L800 349L796 347L787 346L783 342L783 338L763 337L762 335L757 334L756 334L756 332L760 330L760 328L762 326L760 324L752 322L746 318L745 320L742 321L739 315L739 313L740 311L749 311L756 305L763 300L771 301L776 296L781 293L788 288L784 283L783 277L777 275L777 268L773 268L771 264L772 260L778 258L780 254L788 247L785 244L790 243L795 241L799 243L802 243L806 240L814 245L817 244L824 243L830 246L835 244L837 237L836 234L821 230L816 225L810 227L803 224L795 223L793 221L792 216L795 212L797 207L799 207L802 211L805 212L811 207L810 202L809 201L802 202L800 204L799 204L792 203L790 200L782 199L780 198L781 196L786 198L788 197L788 193L791 193L792 190L795 187L795 185L790 181L785 181L784 178L786 177L789 176L792 176L794 178L796 179L796 177L795 171L797 171L801 168L805 169L808 172L811 173L812 175L813 176L814 176L814 173L820 174L822 173L824 173L825 177L832 177L832 172L851 171L853 172L852 173L850 174L850 177L856 182L857 181L857 178L859 175L857 171L859 169L870 166L874 167L878 166L882 167L884 165L883 162L886 160L895 161L900 159L903 158L911 155L920 159L920 158L925 157L926 155L924 152L925 151L927 152L929 150L933 151L938 148L944 148L946 147L948 148L951 146L955 149L958 150L966 145L970 146L975 151L979 151L980 149L979 142L980 140L980 137L986 134L991 134L992 129L997 130L1005 131L1009 126L1014 124L1015 125L1016 130L1038 124L1049 123L1053 120L1062 120L1068 118L1073 118L1078 113L1081 114L1092 114L1095 113L1101 107L1104 106L1110 108L1117 107L1120 101L1123 100L1124 99L1118 95L1119 93L1118 92L1122 90L1124 91L1127 90L1131 91L1137 90L1138 87L1141 85L1142 79L1148 80L1152 84L1154 84L1154 80L1152 78L1151 75L1153 74L1161 76L1164 81L1171 77L1178 80L1187 80L1193 83L1199 90L1204 91L1212 94L1215 91L1220 89L1222 84L1228 85L1232 82L1235 82L1240 83L1238 85L1238 88L1247 98L1246 105L1247 107L1246 111L1248 114L1248 119L1252 122L1257 123L1260 127L1260 130L1255 132L1254 134L1256 144L1257 145L1257 151L1253 151L1248 150L1247 152L1247 154L1250 154L1250 160L1252 161L1256 166L1258 165L1263 159L1269 160L1270 165L1274 164L1278 165L1281 164L1281 158L1283 156L1294 157L1299 164L1301 164L1303 162L1303 160L1302 159L1297 157L1299 151L1296 148L1296 147L1303 148L1307 154L1309 155L1310 157L1308 160L1316 163L1316 165L1314 165L1313 166L1311 166L1311 169L1314 172L1312 177L1312 179L1316 179L1320 174L1325 176L1327 176L1325 170L1323 169L1318 169L1319 166L1321 164L1323 163L1338 164L1339 166L1339 169L1342 170L1343 174L1357 177L1359 174L1360 175L1363 176L1364 176L1365 172L1368 171L1368 170L1368 168L1368 168L1371 168L1372 169L1375 169L1372 181L1370 182L1363 181L1360 182L1358 185L1361 186L1356 187L1355 194L1351 196L1351 198L1352 200L1351 202L1358 206L1356 210L1359 212L1366 207L1367 203L1370 203L1371 200L1374 200L1377 201L1382 198L1389 199L1390 203L1392 202L1394 200L1397 201L1399 204L1399 206L1405 210L1408 202L1406 200L1407 195L1408 194L1415 195L1417 190L1421 189L1422 184L1428 184L1434 186L1453 174L1450 169L1453 166L1456 166L1462 166L1488 155L1487 152L1490 149L1499 151L1501 150L1505 148L1508 148L1510 142L1515 142L1520 141L1521 143L1516 144L1514 147L1518 149L1518 152L1514 159L1510 163L1501 161L1496 162L1501 170L1502 173L1503 175L1554 211L1565 223L1594 267L1620 311L1640 346L1662 393L1665 396L1668 397L1665 391L1666 390L1669 392L1671 393L1672 388L1676 386L1681 386L1684 383L1686 377L1683 373L1684 367L1685 366L1692 366L1693 361L1696 359L1703 362L1705 360L1706 360L1707 365L1711 368L1714 368L1715 366L1717 367L1717 370L1713 383L1715 384L1723 382L1729 383L1730 388L1732 391L1730 396L1732 399L1741 398L1745 395L1748 396L1754 396L1761 400L1763 400L1766 400L1768 398L1770 398L1772 397L1775 397L1778 400L1788 394L1789 393L1789 388L1790 387L1792 386L1802 388L1805 386L1808 380L1818 380L1823 380L1826 384L1831 385L1836 388L1841 389L1844 393L1847 395L1847 399L1848 402L1854 406L1858 414L1857 419L1860 425L1860 431L1863 432L1864 434L1866 434L1869 432L1874 436L1879 436L1882 440L1885 440L1888 443L1891 442L1894 444L1896 449L1893 450L1893 455L1898 458L1899 463L1904 469L1904 475L1905 477L1907 478L1913 476L1917 478L1924 476L1926 479L1930 478L1932 481L1936 479L1939 479L1938 484L1939 485L1940 485L1945 482L1946 482L1950 486L1954 478L1963 472L1963 469L1968 467L1970 463L1973 464L1976 464L1976 465L1976 468L1977 470L1975 472L1971 473L1969 476L1969 478L1971 480L1975 480L1979 483L1979 487L1980 488L1984 491L1984 495L1988 499L1989 501L1996 502L2000 504L2002 512ZM289 794L290 790L293 788L294 789L292 792L292 796L291 797L290 797L289 794ZM285 806L284 807L281 806L277 798L279 790L283 789L282 790L280 792L279 793L278 798L279 800L280 799L281 804L284 805L286 804L285 806ZM312 802L312 804L310 804L309 800L307 799L306 797L309 799L310 798L312 802ZM402 763L402 766L401 767L399 766L396 763L395 761L397 760L398 758L400 758L402 763ZM269 704L270 707L269 710L268 711L267 708L264 701L266 701L269 704Z'/%3E%3C/svg%3E"); }
+.map__img {
+  -webkit-mask-image: var(--kz-mask); -webkit-mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; -webkit-mask-composite: source-over;
+  mask-image: var(--kz-mask); mask-size: 100% 100%; mask-repeat: no-repeat; mask-position: center; mask-composite: add;
+}
+.map::before {
+  --c: rgba(var(--cool), .3); --l: 20px;
+  content: ""; position: absolute; inset: 1% 2.5% 1% 1%; pointer-events: none;
+  background:
+    linear-gradient(var(--c), var(--c)) left top / var(--l) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) left top / 1px var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) right top / var(--l) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) right top / 1px var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) left bottom / var(--l) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) left bottom / 1px var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) right bottom / var(--l) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) right bottom / 1px var(--l) no-repeat;
+}
+
+/* компьютер: текст слева по центру карты, гарантии — полосой на всю ширину */
+@media (min-width: 1100px) {
+  .order__grid {
+    grid-template-columns: minmax(0, .74fr) minmax(0, 1.26fr);
+    grid-template-rows: 1fr repeat(5, auto) 1fr auto;
+    column-gap: clamp(32px, 4vw, 64px); row-gap: 0;
+    align-items: start;
+  }
+  .order__text { display: contents; }
+  .order__text > .eyebrow { grid-column: 1; grid-row: 2; }
+  .order__text > .delivery__title { grid-column: 1; grid-row: 3; }
+  .order__text > .delivery__lead { grid-column: 1; grid-row: 4; }
+  .order__text > .order-pick { grid-column: 1; grid-row: 5; }
+  .order-pick__text { font-size: clamp(14px, 1.12vw, 16px); }
+  .order__text > .delivery__pick { grid-column: 1; grid-row: 6; }
+  .order__grid > .map { grid-column: 2; grid-row: 1 / 8; align-self: center; }
+  .order__text > .trust {
+    grid-column: 1 / -1; grid-row: 8;
+    margin-top: clamp(36px, 5vh, 64px);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .trust__item { padding: clamp(24px, 2.2vw, 32px) clamp(20px, 2vw, 30px); }
+  .trust__item:nth-child(n) { border-left: 0; border-top: 0; }
+  .trust__item + .trust__item { border-left: 1px solid var(--line); }
+}
+/* 1100–1439: колонке текста чуть больше места — «Ваш выбор» помещается в строку */
+@media (min-width: 1100px) and (max-width: 1439px) {
+  .order__grid { grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr); }
+  .order-pick { padding-inline: 18px 14px; }
+}
+
+/* планшет: как на телефоне — карта сразу после «Ваш выбор», гарантии ниже */
+@media (min-width: 900px) and (max-width: 1099px) {
+  .order__grid { row-gap: 0; }
+  .order__text { display: contents; }
+  .order__grid > .map { order: 4; margin-top: 24px; width: 100%; }
+  .order__grid .delivery__pick { order: 5; }
+  .order__grid .trust { order: 6; }
+  .delivery__lead, .order-pick { max-width: 640px; }
+}
+
+/* ==========================================================================
+   3. ОФОРМИТЬ — одна стеклянная панель
+   ========================================================================== */
+
+.cta.checkout {
+  position: relative;
+  margin-top: clamp(64px, 9vh, 112px);
+  padding: clamp(24px, 4.4vw, 64px);
+  border: 1px solid var(--glass-line); border-radius: 24px;
+  background:
+    radial-gradient(70% 80% at 92% -10%, rgba(var(--cool), .11), rgba(var(--cool), 0) 60%),
+    var(--o-glass);
+  -webkit-backdrop-filter: blur(20px) saturate(130%); backdrop-filter: blur(20px) saturate(130%);
+  box-shadow: var(--o-hi), 0 60px 120px -60px rgba(0, 0, 0, .95), 0 0 0 1px rgba(0, 0, 0, .18);
+  align-items: start;
+}
+/* лунный блик по верхней кромке */
+.cta.checkout::before {
+  content: ""; position: absolute; left: 10%; right: 10%; top: -1px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(var(--cool), 0), rgba(var(--cool), .6), rgba(255, 255, 255, .7) 50%, rgba(var(--cool), .6), rgba(var(--cool), 0));
+}
+.checkout .cta__title { margin-top: 18px; color: #fff; }
+.checkout .cta__text { color: var(--ink-2); }
+
+/* чек: колодец внутри панели, строки через волосяные линии */
+.checkout__sum {
+  margin-top: 28px; max-width: none;
+  padding: 4px 22px;
+  border-radius: 16px; border: 1px solid var(--line);
+  background: var(--o-well);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), inset 0 10px 30px -20px rgba(0, 0, 0, .6);
+}
+.checkout__sum div { align-items: baseline; padding: 16px 0; }
+.checkout__sum div:last-child { border-bottom: 0; }
+.checkout__sum dt { flex: none; font-size: 10.5px; letter-spacing: .2em; font-weight: 500; color: var(--ink-2); }
+.checkout__sum dd { font-weight: 300; font-size: 15px; line-height: 1.35; color: #fff; text-wrap: balance; }
+.checkout__sum dd[data-o="price"] { font-size: 19px; text-shadow: 0 0 22px rgba(var(--warm), .25); white-space: nowrap; }
+.checkout__sum dd[data-o="price"] .price-old { margin-right: 10px; font-size: .68em; color: var(--ink-2); text-shadow: none; }
+
+/* WhatsApp: та же серебряная таблетка, иконка — фирменный зелёный, приглушённый */
+.checkout .button--wa { margin-top: 0; padding-top: 21px; padding-bottom: 21px; font-size: 12px; letter-spacing: .18em; }
+.checkout .button--wa svg { width: 20px; height: 20px; color: #0f7d5f; }
+.checkout .cta__legal { margin-top: 16px; font-size: 12px; line-height: 1.65; color: var(--ink-2); }
+.checkout .cta__legal a { color: #e3e8f4; text-decoration-color: rgba(var(--cool), .5); }
+.checkout .cta__legal a:hover { color: #fff; text-decoration-color: #fff; }
+
+/* компьютер: слева — заголовок, справа — чек; снизу полоса с пояснением и кнопкой */
+@media (min-width: 1100px) {
+  .checkout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr auto auto;
+    column-gap: clamp(40px, 6vw, 96px); row-gap: 0;
+  }
+  .checkout > div:first-child, .checkout__form { display: contents; }
+  .checkout .eyebrow { grid-column: 1; grid-row: 1; }
+  .checkout .cta__title { grid-column: 1; grid-row: 2; }
+  .checkout .cta__text { grid-column: 1; grid-row: 3; }
+  .checkout__sum { grid-column: 2; grid-row: 1 / 4; margin-top: 0; }
+  /* волосяная линия над нижней полосой — элемент сетки */
+  .cta.checkout::after {
+    content: ""; grid-column: 1 / -1; grid-row: 4; height: 1px; margin-top: clamp(32px, 4vh, 44px);
+    background: linear-gradient(90deg, rgba(196, 210, 255, 0), var(--line-2) 12%, var(--line-2) 88%, rgba(196, 210, 255, 0));
+  }
+  .checkout .cta__legal { grid-column: 1; grid-row: 5; align-self: center; margin-top: clamp(26px, 3.4vh, 36px); max-width: 520px; }
+  .checkout .button--wa { grid-column: 2; grid-row: 5; align-self: center; margin-top: clamp(26px, 3.4vh, 36px); }
+}
+
+/* ==========================================================================
+   ТЕЛЕФОН / ПЛАНШЕТ
+   ========================================================================== */
+
+@media (max-width: 899px) {
+  .cfg__models { width: 100%; }
+  .configure .size-vis { width: min(100%, 300px); height: min(calc(100vw - 2 * var(--gutter) - 40px), 280px); margin: 4px auto 44px; }
+  .size-vis::after { width: 104%; height: 104%; }
+  .size-vis__w { transform: translateY(12px); }
+  .size-vis__h { transform: translateX(12px); }
+  .size-panel { padding: 20px 18px 22px; border-radius: 16px; }
+  .size-options button { padding: 14px 6px; font-size: 13px; }
+  .delivery__title { font-size: clamp(26px, 7vw, 34px); }
+  .order-pick { margin-top: 24px; }
+  .map::before { inset: 3% 4%; --l: 14px; }
+  .trust { margin-top: 24px; }
+  .delivery__pick { margin-top: 22px; }
+  .cta.checkout { margin-top: clamp(48px, 12vw, 72px); border-radius: 20px; }
+  .checkout__sum { padding: 2px 16px; }
+  .checkout__sum div { padding: 14px 0; gap: 12px; }
+  .checkout__sum dd[data-o="price"] { font-size: 17px; }
+  .checkout .button--wa { margin-top: 24px; }
+}
+@media (max-width: 1099px) {
+  .checkout { row-gap: 0; }
+  .checkout .button--wa { margin-top: 28px; }
+}
+
+@media (max-width: 599px) {
+  /* модель — одна строка таблеток */
+  .cfg__models { width: 100%; }
+  .cfg__models button { padding: 13px 2px; font-size: 10px; letter-spacing: .12em; }
+  /* размеры: два стандарта рядом, свой — на всю ширину */
+  .size-options { grid-template-columns: repeat(2, minmax(0, 1fr)); border-radius: 26px; }
+  .size-options button[data-custom] { grid-column: 1 / -1; }
+  .size-options button { font-size: 13px; }
+  .cfg-range { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; }
+  .cfg-range label { grid-column: 1; grid-row: 1; }
+  .cfg-range .cfg-num { grid-column: 2; grid-row: 1 / 3; align-self: end; }
+  .cfg-range input[type="range"] { grid-column: 1; grid-row: 2; }
+  .size-summary__row { gap: 14px; }
+  .size-summary__price { font-size: 30px; text-align: left; }
+  .trust__item { padding: 18px 16px 20px; }
+  .trust__value { font-size: 17px; }
+  .trust__label { font-size: 12px; }
+  .cta.checkout { padding: 28px 16px 22px; }
+  .checkout .eyebrow, .checkout .cta__title, .checkout .cta__text, .checkout .cta__legal { padding-inline: 4px; }
+  .checkout__sum { padding: 2px 14px; }
+  .checkout__sum dt { font-size: 10px; letter-spacing: .14em; }
+  .checkout__sum dd { font-size: 14px; }
+  /* «Связаться в WhatsApp» — в одну строку и на 360px */
+  .checkout .button--wa { padding-inline: 18px; letter-spacing: .14em; white-space: nowrap; }
+}
+
+@media (max-width: 380px) {
+  /* кнопки — в одну строку, по центру */
+  .size-summary .button { padding-inline: 16px; letter-spacing: .12em; white-space: nowrap; text-align: center; }
+}
+@media (max-width: 360px) {
+  .cfg__models button { letter-spacing: .06em; }
+  .size-options button { font-size: 12px; }
+}
+
+/* ---------- меньше движения ------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .cfg__models button::after, .size-options button::after { transform: none; transition: none; }
+  .cfg-range input[type="range"]:hover::-webkit-slider-thumb { transform: none; }
+}

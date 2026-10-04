@@ -1,0 +1,361 @@
+/* ELUNA — полировка: tech
+   «Технология» — три панели в языке space glass:
+   · Материалы — стеклянные карточки с крупным макро-фото (4:5), серебряные номера, волосяные линии;
+   · Сон вдвоём — холст в стеклянной «приборной» раме с едва заметной сеткой, легенда сторон;
+   · Тишина — две осциллограммы на сетке прибора, ELUNA подсвечена лунным светом.
+   Подключается после styles.css — только переопределения, разметка и JS не трогаются. */
+
+/* ==========================================================================
+   Общее для панели
+   ========================================================================== */
+
+#tech {
+  --tech-card-bg:
+    linear-gradient(160deg, rgba(var(--cool), .075), rgba(var(--cool), 0) 55%),
+    var(--glass);
+  --tech-card-shadow:
+    0 34px 70px -44px rgba(0, 0, 0, .9),
+    0 1px 0 rgba(255, 255, 255, .02),
+    inset 0 1px 0 rgba(255, 255, 255, .055);
+}
+
+/* серебряные «широкие» номера — как у «Расслойки» */
+#tech .material__index,
+#tech .wave figcaption .num {
+  font-family: var(--logo);
+  font-weight: 400;
+  background: var(--silver-soft);
+  -webkit-background-clip: text; background-clip: text;
+  color: #b8c0d4; -webkit-text-fill-color: transparent;
+}
+
+/* ==========================================================================
+   1. Материалы
+   ========================================================================== */
+
+.material-grid { gap: clamp(14px, 1.6vw, 22px); align-items: stretch; }
+
+.material {
+  position: relative; isolation: isolate;
+  gap: 0;
+  padding: 9px 9px 24px;
+  border-radius: 18px;
+  background: var(--tech-card-bg);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: var(--tech-card-shadow);
+  transition: transform .9s var(--ease-out), border-color .6s var(--ease-out);
+}
+/* лунный ободок и свечение при наведении — через прозрачность, без анимации тени */
+.material::after {
+  content: ""; position: absolute; inset: -1px; z-index: -1; border-radius: inherit; pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(var(--cool), .26), 0 30px 70px -34px rgba(var(--cool), .34);
+  background: radial-gradient(90% 40% at 50% 0%, rgba(var(--cool), .07), transparent 70%);
+  opacity: 0; transition: opacity .7s var(--ease-out);
+}
+
+/* лунная кромка по верхнему краю карточки */
+.material::before,
+.wave::before {
+  content: ""; position: absolute; left: 14%; right: 14%; top: -1px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(var(--cool), 0), rgba(var(--cool), .38), rgba(var(--cool), 0));
+}
+.wave--eluna::before { left: 8%; right: 8%; background: linear-gradient(90deg, rgba(var(--cool), 0), rgba(255, 255, 255, .7), rgba(var(--cool), 0)); }
+
+/* фото во всю ширину карточки */
+.material__photo {
+  width: 100%; aspect-ratio: 4 / 5;
+  border-radius: 10px; /* концентрично карточке: 18 − 9 */
+  background: #0b0f22;
+  transform: translateZ(0); /* скругление обрезает масштаб картинки и в Safari */
+}
+.material__photo img {
+  opacity: .94;
+  transform: scale(1.015);
+  filter: saturate(.92) contrast(1.03);
+}
+/* тонкая внутренняя кромка + мягкое затемнение к низу: снимок «садится» в стекло */
+.material__photo::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(5, 7, 19, 0) 58%, rgba(5, 7, 19, .42) 100%),
+    radial-gradient(120% 80% at 50% 0%, rgba(var(--cool), .06), transparent 60%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07), inset 0 1px 0 rgba(255, 255, 255, .1);
+}
+
+.material__body { padding: 20px 12px 0; }
+
+/* номер · волосяная линия до края карточки */
+.material__index {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 14px;
+  font-size: 12px; letter-spacing: .06em; line-height: 1;
+}
+.material__index::after {
+  content: ""; flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--line-2), rgba(196, 210, 255, 0));
+}
+
+.material h3 { margin-bottom: 10px; font-size: clamp(17px, 1.3vw, 19px); color: #fff; letter-spacing: -.005em; }
+.material p { font-size: 13.5px; line-height: 1.66; color: var(--ink-2); }
+
+@media (hover: hover) {
+  .material:hover { transform: translateY(-4px); border-color: rgba(var(--cool), .24); }
+  .material:hover::after { opacity: 1; }
+  .material:hover .material__photo img { transform: scale(1.07); opacity: 1; }
+}
+
+/* ==========================================================================
+   2. Сон вдвоём
+   ========================================================================== */
+
+/* подзаголовок панели — ступенью ниже заголовка секции (раньше был того же размера, 44px),
+   колонка заголовка шире: обе панели держат ровно две строки */
+#tech .motion__head { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: clamp(24px, 4.6vw, 84px); }
+#tech .motion__title { font-size: clamp(27px, 2.45vw, 38px); line-height: 1.12; text-wrap: balance; }
+
+/* лид — колонка с волосяной линией слева (и в «Тишине» тоже) */
+#tech .motion__copy { padding: 4px 0 8px clamp(18px, 2vw, 28px); border-left: 1px solid var(--line); }
+#tech .motion__lead { color: var(--ink-2); text-wrap: pretty; }
+
+/* сцена — стеклянная приборная рама. Холст внутри по-прежнему width: 100% */
+.motion__stage {
+  --pad: clamp(16px, 2.2vw, 30px);
+  isolation: isolate;
+  margin-top: clamp(24px, 3vw, 40px);
+  padding: calc(var(--pad) * .6) var(--pad) var(--pad);
+  border-radius: 18px;
+  border: 1px solid var(--glass-line);
+  background:
+    radial-gradient(55% 60% at 50% 100%, rgba(var(--cool), .07), transparent 72%),
+    linear-gradient(180deg, rgba(var(--cool), .05), rgba(var(--cool), 0) 45%),
+    var(--glass);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: var(--tech-card-shadow);
+}
+/* едва заметная точечная сетка чертежа, гаснет к краям */
+.motion__stage::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+  background-image: radial-gradient(rgba(var(--cool), .2) 1px, transparent 1.4px);
+  background-size: 28px 28px;
+  background-position: calc(var(--pad) - 14px) 0;
+  -webkit-mask-image: radial-gradient(75% 70% at 50% 45%, #000 20%, transparent 80%);
+  mask-image: radial-gradient(75% 70% at 50% 45%, #000 20%, transparent 80%);
+  opacity: .55;
+}
+/* лунная кромка сверху */
+.motion__stage::after {
+  content: ""; position: absolute; left: 12%; right: 12%; top: -1px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(var(--cool), 0), rgba(var(--cool), .45), rgba(var(--cool), 0));
+}
+
+/* подпись над правой половиной — внутри рамы, у шва */
+.motion__tag {
+  --seam: calc(var(--pad) + 6px + (100% - 2 * var(--pad) - 12px) * .5042);
+  top: calc(var(--pad) * .6 + 2%);
+  left: calc(var(--seam) - .5px);
+  right: var(--pad);
+  width: auto;
+  padding-left: 20px;
+  border-left: 0;
+  font-size: 10.5px; letter-spacing: .28em; color: #fff;
+}
+.motion__tag::before {
+  content: ""; position: absolute; left: 0; top: 2px; bottom: 2px; width: 1px;
+  background: linear-gradient(180deg, rgba(var(--gold-rgb), .9), rgba(var(--gold-rgb), .15));
+}
+
+/* легенда сторон: волосяная линия, пунктир шва продолжается между колонками */
+.motion__sides {
+  position: relative;
+  gap: 0;
+  margin: 6px 6px 0; padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.motion__sides::before {
+  content: ""; position: absolute; left: calc(50.42% - .5px); top: 0; bottom: 0; width: 1px; pointer-events: none;
+  background: repeating-linear-gradient(180deg, rgba(var(--gold-rgb), .4) 0 3px, transparent 3px 9px);
+  -webkit-mask-image: linear-gradient(180deg, #000, transparent);
+  mask-image: linear-gradient(180deg, #000, transparent);
+}
+.motion__side { gap: 10px; padding-right: 20px; }
+.motion__side--b { padding-left: clamp(20px, 2.4vw, 34px); padding-right: 0; margin-left: .4%; }
+.motion__side b { color: #fff; line-height: 1.25; }
+.motion__side--b b { color: var(--ink); }
+
+/* метки повторяют фигуры на схеме: сплошная — вы, контур — партнёр */
+.motion__side .motion__label { display: flex; align-items: center; gap: 12px; color: var(--ink-3); letter-spacing: .2em; }
+.motion__side .motion__label::before {
+  content: ""; flex: none; width: 20px; height: 8px; border-radius: 99px;
+  background: rgba(241, 237, 230, .94);
+  box-shadow: 0 0 12px -2px rgba(var(--warm), .5);
+}
+.motion__side--b .motion__label::before {
+  background: rgba(241, 237, 230, .14);
+  box-shadow: inset 0 0 0 1px rgba(241, 237, 230, .55);
+}
+
+.motion__actions { gap: 20px; margin-top: clamp(20px, 2.4vw, 28px); }
+.motion__hint { display: inline-flex; align-items: center; gap: 14px; letter-spacing: .24em; }
+.motion__hint::before { content: ""; width: 28px; height: 1px; background: linear-gradient(90deg, rgba(var(--cool), 0), var(--line-2)); }
+
+/* ==========================================================================
+   3. Тишина — две осциллограммы
+   ========================================================================== */
+
+.waves { gap: clamp(14px, 1.8vw, 24px); }
+
+.wave {
+  position: relative; isolation: isolate;
+  padding: clamp(16px, 1.8vw, 22px) clamp(16px, 1.8vw, 24px) 16px;
+  border-radius: 16px;
+  border: 1px solid var(--glass-line);
+  background: var(--tech-card-bg);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: var(--tech-card-shadow);
+}
+/* экран прибора: центральная ось + сетка делений */
+.wave svg {
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(var(--cool), .18), rgba(var(--cool), .18)) 0 50% / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, rgba(var(--cool), .07) 0 1px, transparent 1px 6.25%),
+    repeating-linear-gradient(180deg, rgba(var(--cool), .055) 0 1px, transparent 1px 25%),
+    rgba(4, 6, 18, .35);
+  box-shadow: inset 0 0 0 1px rgba(var(--cool), .07);
+}
+.wave__line { stroke-width: 1.5; }
+.wave__line--noisy { stroke: rgba(var(--warm), .62); }
+.wave__line--calm { stroke: #eef2ff; filter: drop-shadow(0 0 5px rgba(var(--cool), .75)); }
+
+.wave figcaption {
+  margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px; letter-spacing: .03em; color: var(--ink-2);
+}
+.wave figcaption .num { font-size: 11px; letter-spacing: .06em; }
+.wave figcaption .spec { display: inline-flex; align-items: center; min-height: 27px; font-size: 11.5px; letter-spacing: .08em; color: var(--ink-3); }
+
+/* ELUNA: лунный свет — ободок, свечение, «0 дБ» в стеклянной таблетке */
+.wave--eluna {
+  border-color: rgba(var(--cool), .3);
+  background:
+    radial-gradient(70% 60% at 50% 40%, rgba(var(--cool), .1), transparent 72%),
+    var(--tech-card-bg);
+  box-shadow: var(--tech-card-shadow), 0 0 60px -24px rgba(var(--cool), .45);
+}
+.wave--eluna figcaption { color: var(--ink); }
+.wave--eluna figcaption .spec {
+  padding: 0 13px; border-radius: 999px;
+  font-family: var(--sans); font-weight: 500; font-size: 11.5px; letter-spacing: .06em; line-height: 1; font-variant-numeric: tabular-nums;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(var(--cool), .16), rgba(var(--cool), .05));
+  border: 1px solid rgba(var(--cool), .34);
+  box-shadow: 0 0 18px -6px rgba(var(--cool), .6), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+/* три пункта: волосяная линия с «зажжённым» началом */
+.silence__points { gap: clamp(18px, 2.6vw, 36px); margin-top: clamp(28px, 3.4vw, 44px); }
+.silence__points li { position: relative; padding-top: 20px; }
+.silence__points li::before {
+  content: ""; position: absolute; left: 0; top: -1px; width: 56px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, #fff, rgba(var(--cool), 0));
+  box-shadow: 0 0 10px rgba(var(--cool), .6);
+}
+.silence__points b { font-family: var(--display); font-weight: 300; font-size: 16px; line-height: 1.3; color: #fff; letter-spacing: 0; }
+.silence__points span { max-width: 56ch; margin-top: 10px; font-size: 13.5px; line-height: 1.66; }
+
+/* ==========================================================================
+   Адаптив
+   ========================================================================== */
+
+@media (max-width: 1100px) {
+  .material__photo { aspect-ratio: 4 / 3; }
+}
+
+@media (max-width: 899px) {
+  .material__photo { width: 100%; }
+  /* на телефоне стекло без размытия фона: дешевле в прокрутке, плотнее подложка */
+  .material, .motion__stage, .wave {
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    background-color: transparent;
+  }
+  .material, .wave { background: linear-gradient(160deg, rgba(var(--cool), .07), rgba(var(--cool), 0) 55%), var(--glass-2); }
+  .wave--eluna { background: radial-gradient(70% 60% at 50% 40%, rgba(var(--cool), .1), transparent 72%), linear-gradient(160deg, rgba(var(--cool), .07), rgba(var(--cool), 0) 55%), var(--glass-2); }
+  .motion__stage {
+    background:
+      radial-gradient(55% 60% at 50% 100%, rgba(var(--cool), .07), transparent 72%),
+      linear-gradient(180deg, rgba(var(--cool), .05), rgba(var(--cool), 0) 45%),
+      var(--glass-2);
+  }
+
+  #tech .motion__head { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  /* «Вы переворачиваетесь.» — одной строкой от 340px; ни одно слово не шире колонки даже на 320px */
+  #tech .motion__title { font-size: clamp(20px, 6.1vw, 34px); }
+  #tech .motion__copy { padding: 2px 0 2px 16px; }
+  .motion__stage { --pad: 14px; margin-top: 24px; border-radius: 16px; }
+  .motion__tag { padding-left: 12px; letter-spacing: .18em; font-size: 9.5px; }
+  /* на телефоне легенда во всю ширину рамы (6px вставки съедают строку «Партнёр спит») */
+  .motion__sides { margin: 6px 0 0; }
+  .motion__sides::before { left: calc(6px + (100% - 12px) * .5042 - .5px); }
+  .motion__side { padding-right: 12px; }
+  .motion__side--b { padding-left: 14px; }
+  .motion__side .motion__label { gap: 8px; font-size: 10px; letter-spacing: .14em; }
+  .motion__side .motion__label::before { width: 16px; height: 7px; }
+  .motion__side b { font-size: clamp(12.5px, 3.6vw, 15px); } /* «Партнёр спит» держит строку от 360px */
+  .motion__actions { gap: 14px 18px; }
+
+  .wave { padding: 14px 14px 14px; }
+  .wave figcaption { gap: 10px; font-size: 12px; letter-spacing: .02em; }
+  .wave figcaption .spec { font-size: 11px; letter-spacing: .04em; white-space: nowrap; }
+  .silence__points li { padding-top: 16px; }
+}
+
+/* телефон: материалы — горизонтальная лента со снапом, крупные квадратные фото */
+@media (max-width: 599px) {
+  .material-grid {
+    display: flex; gap: 12px;
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 2px var(--gutter) 6px;
+    overflow-x: auto; overflow-y: hidden;
+    scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter);
+    overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .material-grid::-webkit-scrollbar { display: none; }
+  .material { flex: 0 0 min(80vw, 330px); scroll-snap-align: start; padding: 8px 8px 22px; border-radius: 16px; }
+  .material__photo { aspect-ratio: 1; border-radius: 9px; }
+  .material__body { padding: 18px 10px 0; }
+  .material h3 { font-size: 18px; }
+  .motion__hint::before { display: none; }
+}
+
+/* телефон: под лентой — волосяная шкала, серебряный бегунок едет вслед за пальцем
+   (scroll-driven, только где поддерживается; без поддержки шкалы просто нет) */
+@supports (animation-timeline: scroll()) and (timeline-scope: --a) {
+  @media (max-width: 599px) {
+    #panel-materials { position: relative; timeline-scope: --mat; padding-bottom: 20px; }
+    #panel-materials .material-grid { scroll-timeline: --mat x; }
+    #panel-materials::before,
+    #panel-materials::after {
+      content: ""; position: absolute; left: 0; bottom: 0; height: 1px; pointer-events: none;
+    }
+    #panel-materials::before { right: 0; background: var(--line); }
+    #panel-materials::after {
+      width: 25%;
+      background: linear-gradient(90deg, rgba(var(--cool), .35), #fff 70%, rgba(var(--cool), .5));
+      box-shadow: 0 0 8px rgba(var(--cool), .55);
+      animation: techMatRail linear both;
+      animation-timeline: --mat;
+    }
+  }
+}
+@keyframes techMatRail { from { transform: translateX(0); } to { transform: translateX(300%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  /* бегунок движется только пальцем пользователя — это обратная связь, а не анимация */
+  #panel-materials::after { animation-duration: auto !important; }
+  .material, .material::after { transition: none; }
+  .material:hover { transform: none; }
+  .material:hover .material__photo img { transform: scale(1.015); }
+}

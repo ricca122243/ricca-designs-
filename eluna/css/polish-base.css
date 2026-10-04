@@ -1,0 +1,351 @@
+/* ELUNA — полировка: base */
+/* ==========================================================================
+   Глобальные примитивы в языке «space glass»: navy-стекло, волосяные линии,
+   лунное серебро. Шампань остаётся только у Prime и цен (их стили — в секциях).
+   Подключается после styles.css — только переопределения.
+   ========================================================================== */
+
+:root {
+  /* серебро для вторых строк заголовков (тоньше начертание — чуть светлее низ градиента) */
+  --em-silver: linear-gradient(180deg, #f2f4f9 0%, #d3d9e6 30%, #a4adc3 62%, #7f88a1 100%);
+  --em-silver-light: linear-gradient(180deg, #f4f6fb 0%, #d8dde9 36%, #a9b2c8 72%, #8e97af 100%);
+  --em-silver-solid: #b4bdd2;
+  --pill: 999px;
+  --moon-ring: rgba(var(--cool), .85);
+  --glass-hi: inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+/* ---------- выделение и фокус: лунный свет вместо золота ------------------ */
+
+::selection { background: rgba(var(--cool), .34); color: #fff; }
+
+:focus-visible { outline: 2px solid var(--moon-ring); outline-offset: 4px; }
+.skip-link { border-radius: var(--pill); padding: 12px 20px; }
+.skip-link:focus-visible { outline-color: rgba(var(--cool), .9); }
+
+/* зерно: едва ощутимая плёнка, без «грязи» на navy */
+.grain { opacity: .022; }
+
+/* ---------- eyebrow: лунная точка ----------------------------------------- */
+
+.eyebrow .dot {
+  width: 3px; height: 3px;
+  background: #e4e9f6;
+  box-shadow: 0 0 0 1px rgba(var(--cool), .12), 0 0 7px 1px rgba(var(--cool), .7);
+}
+
+/* ---------- заголовки: белая первая строка, серебряная вторая -------------- */
+
+.section-title { color: #fff; text-shadow: 0 0 40px rgba(var(--cool), .16); }
+
+/* em — металлическое серебро. После интро main.js разбивает буквы на inline-block
+   span.char, поэтому градиент повторён и на самих буквах (вертикальный — шов не виден). */
+.section-title em,
+.section-title em .char,
+.motion__title em,
+.motion__title em .char,
+.delivery__title em,
+.delivery__title em .char,
+.cta__title em,
+.cta__title em .char,
+.mcard__title em,
+.mcard__title em .char,
+.mdl__title em {
+  color: var(--em-silver-solid);
+  background: var(--em-silver);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+/* тонкое начертание (300) — светлее, чтобы штрих не тонул в navy */
+.motion__title em, .motion__title em .char,
+.delivery__title em, .delivery__title em .char,
+.cta__title em, .cta__title em .char,
+.mcard__title em, .mcard__title em .char,
+.mdl__title em { background-image: var(--em-silver-light); }
+/* градиент, обрезанный по тексту, иначе срезает нижние выносные (у, д, р) */
+.section-title em, .motion__title em, .delivery__title em, .cta__title em, .mcard__title em, .mdl__title em { padding-bottom: .06em; }
+.section-title em .char, .motion__title em .char, .delivery__title em .char, .cta__title em .char, .mcard__title em .char { padding-bottom: .06em; margin-bottom: -.06em; }
+
+/* буквы под курсором / пальцем: лунный свет поверх серебра */
+@media (hover: hover) {
+  .section-title em .char:hover, .motion__title em .char:hover, .delivery__title em .char:hover,
+  .cta__title em .char:hover, .mcard__title em .char:hover { -webkit-text-fill-color: #fff; color: #fff; text-shadow: 0 0 14px rgba(var(--cool), .9), 0 0 36px rgba(var(--cool), .45); }
+}
+.section-title em .char.is-lit, .motion__title em .char.is-lit, .delivery__title em .char.is-lit,
+.cta__title em .char.is-lit, .mcard__title em .char.is-lit { -webkit-text-fill-color: #fff; color: #fff; text-shadow: 0 0 14px rgba(var(--cool), .9), 0 0 36px rgba(var(--cool), .45); }
+
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .section-title em, .section-title em .char, .motion__title em, .motion__title em .char,
+  .delivery__title em, .delivery__title em .char, .cta__title em, .cta__title em .char,
+  .mcard__title em, .mcard__title em .char, .mdl__title em { background: none; -webkit-text-fill-color: currentColor; color: var(--em-silver-solid); }
+}
+
+/* ---------- кнопки: таблетки ---------------------------------------------- */
+
+.button {
+  isolation: isolate;
+  border-radius: var(--pill);
+  padding: 17px 32px;
+  font-size: 11.5px; letter-spacing: .16em;
+  border: 1px solid transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+.button:focus-visible { border-radius: var(--pill); outline-offset: 4px; }
+
+/* главная: светящееся серебро, тёмно-синий текст */
+.button--primary {
+  color: #0a0f23;
+  background: linear-gradient(180deg, #ffffff 0%, #eef1f8 38%, #cfd6e6 100%);
+  border-color: rgba(255, 255, 255, .55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -1px 0 rgba(30, 42, 90, .18),
+    0 12px 32px -16px rgba(var(--cool), .55);
+}
+.button--primary:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 40%, #dbe1ee 100%);
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    inset 0 -1px 0 rgba(30, 42, 90, .14),
+    0 0 0 4px rgba(var(--cool), .08),
+    0 18px 44px -14px rgba(var(--cool), .7),
+    0 0 32px -6px rgba(var(--cool), .45);
+}
+.button--primary:active { transform: translateY(0); }
+/* блик от общего источника света (--lx/--li пишет скрипт) — теперь мягкий, под текстом */
+.button--primary::after {
+  z-index: -1; border-radius: inherit;
+  background: radial-gradient(120% 140% at var(--lx, 50%) -40%, rgba(255, 255, 255, .9), rgba(255, 255, 255, 0) 55%);
+  opacity: var(--li, .6);
+}
+/* проход света по наведению — один раз, без цикла */
+.button--primary::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, .85) 48%, rgba(var(--cool), .35) 54%, transparent 70%);
+  transform: translateX(-110%); opacity: 0;
+  transition: transform 1s var(--ease-out), opacity .4s;
+}
+.button--primary:hover::before { transform: translateX(110%); opacity: 1; }
+
+/* вторичная: стеклянная таблетка с волосяной линией */
+.button--ghost {
+  color: var(--ink);
+  background: linear-gradient(180deg, rgba(var(--cool), .07), rgba(var(--cool), .015)), rgba(10, 14, 32, .46);
+  border-color: rgba(196, 210, 255, .2);
+  box-shadow: var(--glass-hi), 0 16px 36px -24px rgba(0, 0, 0, .9);
+}
+.button--ghost:hover {
+  color: #fff;
+  border-color: rgba(var(--cool), .5);
+  background: linear-gradient(180deg, rgba(var(--cool), .14), rgba(var(--cool), .04)), rgba(12, 17, 38, .56);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 0 26px -8px rgba(var(--cool), .55);
+  transform: translateY(-1px);
+}
+
+/* WhatsApp — та же главная таблетка, крупнее */
+.button--wa { padding-top: 19px; padding-bottom: 19px; font-size: 12px; }
+.button--wa svg { width: 19px; height: 19px; }
+
+/* ---------- навигация ------------------------------------------------------ */
+
+.nav { transition: opacity 1.2s var(--ease-out), transform 1.2s var(--ease-out), padding .6s var(--ease-out); }
+.nav.is-solid { padding-top: 14px; padding-bottom: 14px; }
+
+/* подложка: navy-стекло с волосяной линией снизу (вместо тёмного градиента) */
+.nav::before {
+  inset: 0;
+  background: linear-gradient(180deg, rgba(8, 11, 27, .9), rgba(8, 11, 27, .78));
+  -webkit-backdrop-filter: blur(22px) saturate(140%); backdrop-filter: blur(22px) saturate(140%);
+  border-bottom: 1px solid rgba(196, 210, 255, .1);
+  box-shadow: 0 18px 40px -28px rgba(0, 0, 0, .9);
+}
+/* лунный блик посередине нижней кромки */
+.nav::after {
+  content: ""; position: absolute; left: 50%; bottom: 0; z-index: -1; width: min(560px, 60vw); height: 1px;
+  transform: translateX(-50%); pointer-events: none;
+  background: linear-gradient(90deg, rgba(var(--cool), 0), rgba(var(--cool), .38), rgba(var(--cool), 0));
+  opacity: 0; transition: opacity .5s var(--ease-out);
+}
+.nav.is-solid::after { opacity: 1; }
+
+/* Логотип в меню. Если прыгнуть сразу глубоко (восстановленный скролл, Home/End,
+   якорь при загрузке), сцена не успевает дописать --brand-o, и логотип остаётся
+   почти невидимым. Плотная подложка появляется только после того, как логотип
+   полностью проявился при обычном скролле, поэтому в этом состоянии он всегда виден целиком. */
+.nav.is-solid .nav__brand { opacity: 1; transition: opacity .6s var(--ease-out); }
+
+.nav__links a { padding: 8px 0; }
+.nav__links a::after {
+  left: 0; right: 0; bottom: 1px;
+  background: linear-gradient(90deg, rgba(var(--cool), 0), rgba(255, 255, 255, .95) 50%, rgba(var(--cool), 0));
+  box-shadow: 0 0 8px rgba(var(--cool), .7);
+  transform: scaleX(0); transform-origin: 50% 50%;
+  transition: transform .5s var(--ease-out);
+}
+.nav__links a:hover::after, .nav__links a:focus-visible::after { right: 0; transform: scaleX(1); }
+.nav__links a:hover { color: #fff; }
+
+.nav__cta {
+  padding: 12px 22px; border-radius: var(--pill);
+  color: var(--ink);
+  background: linear-gradient(180deg, rgba(var(--cool), .08), rgba(var(--cool), .02)), rgba(10, 14, 32, .5);
+  border: 1px solid rgba(196, 210, 255, .22);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  box-shadow: var(--glass-hi);
+  transition: border-color .4s, background-color .4s, box-shadow .4s, color .4s;
+}
+.nav__cta:hover {
+  color: #fff;
+  border-color: rgba(var(--cool), .55);
+  background: linear-gradient(180deg, rgba(var(--cool), .16), rgba(var(--cool), .05)), rgba(12, 17, 38, .55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 0 24px -6px rgba(var(--cool), .55);
+}
+.nav__cta:focus-visible { border-radius: var(--pill); }
+
+/* ---------- вкладки «Технология»: стеклянный сегментный переключатель ------ */
+
+.tabs {
+  width: fit-content; max-width: 100%;
+  gap: 2px; padding: 4px;
+  border: 1px solid var(--glass-line); border-radius: var(--pill);
+  background: rgba(10, 14, 32, .62);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  box-shadow: 0 24px 50px -24px rgba(0, 0, 0, .85), var(--glass-hi);
+  overflow-x: auto; overscroll-behavior-x: contain;
+}
+.tab {
+  isolation: isolate; flex: 0 0 auto;
+  padding: 13px 24px; border-radius: var(--pill);
+  font-size: 11px; letter-spacing: .2em; color: var(--ink-2);
+  transition: color .5s var(--ease-out), background-color .4s var(--ease-out);
+}
+/* неактивный сегмент под курсором слегка подсвечивается: видно, что это кнопка */
+@media (hover: hover) {
+  .tab:not([aria-selected="true"]):hover { background-color: rgba(var(--cool), .07); }
+}
+/* активная — бело-серебряная таблетка, как бегунок у «Открыть / Закрыть» */
+.tab::after {
+  left: 0; right: 0; top: 0; bottom: 0; height: auto; z-index: -1; border-radius: inherit;
+  background: linear-gradient(180deg, #ffffff, #d3d9e8 70%, #b9c2d8);
+  box-shadow: 0 0 26px -6px rgba(var(--cool), .75), inset 0 -1px 0 rgba(0, 0, 0, .12);
+  transform: none; opacity: 0;
+  transition: opacity .5s var(--ease-out);
+}
+.tab:hover { color: #fff; }
+.tab[aria-selected="true"] { color: #0a0f23; cursor: default; }
+.tab[aria-selected="true"]::after { transform: none; opacity: 1; }
+.tab:focus-visible { border-radius: var(--pill); outline-offset: -3px; outline-color: rgba(var(--cool), .95); }
+.tab[aria-selected="true"]:focus-visible { outline-color: rgba(60, 80, 160, .7); }
+
+/* ---------- футер --------------------------------------------------------- */
+
+.footer {
+  padding: 44px 0 calc(34px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(5, 7, 19, .55), rgba(5, 7, 19, .9) 70%);
+}
+/* лунный блик на верхней линии */
+.footer::before {
+  content: ""; position: absolute; left: 50%; top: -1px; width: min(720px, 70vw); height: 1px; transform: translateX(-50%);
+  background: linear-gradient(90deg, rgba(var(--cool), 0), rgba(var(--cool), .45), rgba(var(--cool), 0));
+  pointer-events: none;
+}
+.footer__inner {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "brand links" "rule rule" "copy studio";
+  align-items: center; gap: 0 40px;
+}
+.footer__inner::before { content: ""; grid-area: rule; height: 1px; margin: 28px 0 24px; background: var(--line); }
+.footer__brand { grid-area: brand; font-size: 15px; }
+.footer__brand small { color: var(--ink-3); }
+.footer__links { grid-area: links; justify-content: flex-end; gap: 10px 30px; }
+.footer__links a { position: relative; padding: 6px 0; color: var(--ink-2); transition: color .4s; }
+.footer__links a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: linear-gradient(90deg, rgba(var(--cool), 0), rgba(255, 255, 255, .9) 50%, rgba(var(--cool), 0));
+  transform: scaleX(0); transition: transform .5s var(--ease-out);
+}
+.footer__links a:hover { color: #fff; }
+.footer__links a:hover::after, .footer__links a:focus-visible::after { transform: scaleX(1); }
+/* копирайт: одной строкой там, где помещается; при переносе строки ровные, без «сироты» в конце */
+.footer__copy { grid-area: copy; max-width: none; font-size: 11.5px; line-height: 1.6; color: var(--ink-3); letter-spacing: .03em; text-wrap: balance; }
+/* студия справа: выровнена по правому краю контейнера, без лишней вертикальной черты */
+.footer__studio { grid-area: studio; justify-self: end; padding-left: 0; border-left: 0; align-items: flex-end; text-align: right; }
+.footer__studio b {
+  background: var(--silver-soft); -webkit-background-clip: text; background-clip: text;
+  color: #b9c1d4; -webkit-text-fill-color: transparent;
+}
+/* трекинг оставляет хвост справа: компенсация, чтобы обе строки студии сходились в один край */
+@media (min-width: 900px) {
+  .footer__studio b { margin-right: -.24em; }
+  .footer__studio small { margin-right: -.14em; }
+}
+
+@media (max-width: 899px) {
+  .footer { padding-top: 36px; }
+  .footer__inner { grid-template-columns: minmax(0, 1fr); grid-template-areas: "brand" "links" "rule" "studio" "copy"; gap: 0; }
+  .footer__links { justify-content: flex-start; margin-top: 18px; gap: 6px 22px; }
+  .footer__inner::before { margin: 22px 0 20px; }
+  .footer__studio { justify-self: start; align-items: flex-start; text-align: left; margin-bottom: 14px; }
+}
+
+/* ---------- липкая плашка Prime (телефон): стеклянный остров --------------- */
+
+.sticky-cta {
+  left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom));
+  gap: 12px;
+  padding: 7px 7px 7px 18px;
+  border-radius: var(--pill);
+  background: linear-gradient(180deg, rgba(var(--cool), .08), rgba(var(--cool), .02)), rgba(10, 14, 32, .74);
+  border: 1px solid rgba(196, 210, 255, .18);
+  -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 24px 48px -16px rgba(0, 0, 0, .9), 0 0 0 1px rgba(0, 0, 0, .25), var(--glass-hi);
+  transform: translateY(calc(100% + 24px + env(safe-area-inset-bottom)));
+}
+/* цена важнее одной строки: на узком экране текст переносится, а не обрезается */
+.sticky-cta__text { min-width: 0; white-space: normal; line-height: 1.35; color: var(--ink); text-wrap: balance; }
+/* text-wrap: balance переносит строку по фразам: цена «280 000 ₸» не рвётся пополам (main.js ставит обычные пробелы) */
+.sticky-cta__btn {
+  flex: none;
+  padding: 12px 18px; border-radius: var(--pill);
+  color: #0a0f23;
+  background: linear-gradient(180deg, #ffffff 0%, #eef1f8 38%, #cfd6e6 100%);
+  box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgba(30, 42, 90, .18), 0 0 22px -6px rgba(var(--cool), .6);
+  letter-spacing: .16em;
+}
+.sticky-cta__btn:focus-visible { border-radius: var(--pill); outline-offset: 3px; }
+
+/* ---------- телефон ------------------------------------------------------- */
+
+@media (max-width: 899px) {
+  .nav.is-solid { padding-top: 12px; padding-bottom: 12px; }
+  .nav__cta { padding: 11px 18px; }
+  .tab { padding: 12px 18px; }
+  .button { padding: 16px 26px; }
+}
+@media (max-width: 599px) {
+  .tabs { width: 100%; }
+  .tab { flex: 1 0 auto; padding: 12px 14px; font-size: 10.5px; letter-spacing: .14em; }
+  /* Длинный eyebrow «Технология» на телефоне ломался посреди фразы, и «ЗВУК» оставался один.
+     С трекингом .11em он помещается в строку от 375 px, а на более узком экране переносится ровно. */
+  .tech .eyebrow { gap: 10px; letter-spacing: .11em; }
+  .eyebrow > span { text-wrap: balance; }
+}
+@media (max-width: 374px) {
+  .tech .eyebrow { gap: 8px; letter-spacing: .08em; }
+}
+@media (max-width: 380px) {
+  .tab { padding: 12px 10px; letter-spacing: .1em; }
+  .sticky-cta { gap: 10px; padding-left: 16px; }
+  .sticky-cta__btn { padding: 12px 15px; }
+}
+
+/* ---------- меньше движения ------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .button--primary::before { display: none; }
+  .button--primary:hover, .button--ghost:hover { transform: none; }
+  .nav { transition: none; }
+}

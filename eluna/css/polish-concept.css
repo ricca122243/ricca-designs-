@@ -1,0 +1,207 @@
+/* ELUNA — полировка: concept
+   Манифест на всю ширину (белая строка → серебро → шампань «тишина»),
+   под ним — стеклянная «приборная» панель из четырёх чисел с волосяными разделителями.
+   Только CSS-переопределения поверх styles.css. */
+
+/* ---------- полоса и переход от «Расслойки» ----------------------------- */
+
+.concept {
+  padding: clamp(84px, 12.5vh, 156px) 0 clamp(88px, 13vh, 156px);
+  overflow-x: clip;
+}
+.concept__grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(56px, 9vh, 104px);
+  align-items: start;
+}
+
+/* блок манифеста: своя плоскость для лунного свечения позади текста */
+.concept__grid > div:first-child { position: relative; isolation: isolate; }
+.concept__grid > div:first-child::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  left: -12%; right: 18%; top: -38%; bottom: -46%;
+  background:
+    radial-gradient(ellipse 46% 42% at 34% 58%, rgba(var(--cool), .085), transparent 72%),
+    radial-gradient(ellipse 30% 26% at 62% 70%, rgba(110, 132, 230, .07), transparent 74%);
+}
+
+/* подпись «Манифест»: искра · слово · волосяная линия до края контейнера — она же граница секции */
+.concept .eyebrow { gap: 16px; color: var(--ink-2); letter-spacing: .22em; }
+.concept .eyebrow::before {
+  content: ""; flex: none; width: 11px; height: 11px; margin-right: -2px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'><path fill='%23ffffff' d='M5 0C5.35 3.55 6.45 4.65 10 5 6.45 5.35 5.35 6.45 5 10 4.65 6.45 3.55 5.35 0 5 3.55 4.65 4.65 3.55 5 0Z'/></svg>") center / contain no-repeat;
+  filter: drop-shadow(0 0 4px rgba(var(--cool), .9)) drop-shadow(0 0 10px rgba(var(--cool), .45));
+}
+.concept .eyebrow::after {
+  content: ""; flex: 1 1 auto; min-width: 24px; height: 1px;
+  background: linear-gradient(90deg, rgba(var(--cool), .34), rgba(var(--cool), .12) 45%, rgba(var(--cool), 0));
+}
+
+/* ---------- манифест ----------------------------------------------------- */
+
+.concept__text {
+  margin-top: clamp(28px, 4.2vh, 44px);
+  max-width: 24.5em;
+  /* крупнее: самая длинная строка (~24.2em) занимает ~80–95% колонки — без пустого правого поля;
+     на 900px размер стыкуется с планшетным (3.5vw), без скачка */
+  font-size: clamp(22px, calc(13px + 2vw), 48px);
+  line-height: 1.24;
+  letter-spacing: -0.012em;
+}
+/* первая строка — чистый белый, как заголовок постера */
+.concept__text .reveal-line:first-child > span {
+  color: #fff;
+  text-shadow: 0 0 42px rgba(var(--cool), .16);
+}
+/* дальше — металлическое серебро; градиент повторяется на каждой визуальной строке (на телефоне строки переносятся) */
+.concept__text .reveal-line:nth-child(n+2) > span {
+  background: linear-gradient(180deg, #ffffff 0%, #e3e7f1 30%, #b4bcd0 68%, #9099b2 100%) 0 0 / 100% 1.24em repeat-y;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+}
+/* «тишина» — единственный тёплый акцент секции: шампань с мягким свечением */
+.concept__text em {
+  color: var(--gold); -webkit-text-fill-color: var(--gold);
+  text-shadow: 0 0 30px rgba(var(--gold-rgb), .2);
+}
+/* буквы под курсором/пальцем загораются белым и на серебре */
+.concept__text .char { transition: color .9s var(--ease-out), -webkit-text-fill-color .9s var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .concept__text .char:hover { -webkit-text-fill-color: #fff; }
+}
+.concept__text .char.is-lit { -webkit-text-fill-color: #fff; }
+
+/* ---------- факты: стеклянная панель ------------------------------------ */
+
+.concept__facts {
+  position: relative; isolation: isolate;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  padding: 0;
+  border-top: 0;
+  border-radius: 18px;
+}
+/* само стекло — на псевдоэлементе: проявляется вместе с первым фактом */
+.concept__facts::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 140% at 12% -20%, rgba(var(--cool), .09), transparent 55%),
+    linear-gradient(180deg, rgba(var(--cool), .035), rgba(var(--cool), 0) 70%),
+    var(--glass);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: 0 40px 80px -48px rgba(0, 0, 0, .9), 0 0 120px -56px rgba(var(--cool), .22), 0 0 0 1px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .05);
+  transition: opacity 1.2s var(--ease-out);
+}
+/* лунный блик на верхней кромке стекла */
+.concept__facts::after {
+  content: ""; position: absolute; top: 0; left: 8%; right: 38%; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .34) 40%, rgba(255, 255, 255, 0));
+  transition: opacity 1.2s var(--ease-out);
+}
+@media (scripting: enabled) {
+  @supports selector(:has(*)) {
+    .concept__facts:not(:has(.fact.is-in))::before,
+    .concept__facts:not(:has(.fact.is-in))::after { opacity: 0; }
+  }
+}
+
+.fact {
+  position: relative;
+  gap: 0;
+  padding: clamp(28px, 4vh, 40px) clamp(22px, 2.3vw, 38px) clamp(26px, 3.6vh, 36px);
+}
+/* вертикальные волосяные разделители, гаснущие к краям */
+.fact + .fact::before {
+  content: ""; position: absolute; left: 0; top: 18%; bottom: 18%; width: 1px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(var(--cool), 0), rgba(var(--cool), .2) 50%, rgba(var(--cool), 0));
+}
+
+.fact__value {
+  display: block;
+  font-size: clamp(38px, 3.5vw, 60px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  padding-bottom: .06em;
+  background: var(--silver);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+}
+.fact__value small {
+  font-size: .36em; letter-spacing: .06em; margin-left: .3em;
+  -webkit-text-fill-color: #a6aec4;
+}
+
+/* короткая лунная черта между числом и подписью */
+.fact__label {
+  margin-top: clamp(16px, 2.2vh, 22px);
+  max-width: 25ch;
+  font-size: clamp(13.5px, .95vw, 15px);
+  line-height: 1.5;
+  color: var(--ink-2);
+  text-wrap: balance;
+}
+.fact__label::before {
+  content: ""; display: block; width: 24px; height: 1px; margin-bottom: 14px;
+  background: linear-gradient(90deg, rgba(var(--cool), .78), rgba(var(--cool), .12));
+  box-shadow: 0 0 6px rgba(var(--cool), .25);
+}
+
+/* ---------- планшет и телефон: манифест в колонку, факты 2 × 2 ---------- */
+
+@media (max-width: 899px) {
+  .concept { padding-top: clamp(80px, 16vw, 120px); padding-bottom: clamp(64px, 14vw, 96px); }
+  .concept__grid { gap: clamp(40px, 9vw, 64px); }
+  .concept__text { font-size: clamp(22px, 6.1vw, 34px); margin-top: 24px; max-width: none; }
+
+  .concept__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; border-radius: 16px; }
+  .concept__facts::after { right: 30%; }
+  .fact { padding: 24px 18px 22px; }
+  /* сетка «плюсом»: вертикаль между колонками, горизонталь между рядами */
+  .fact + .fact::before { content: none; }
+  .fact:nth-child(even)::before {
+    content: ""; position: absolute; left: 0; top: 16%; bottom: 16%; width: 1px; pointer-events: none;
+    background: linear-gradient(180deg, rgba(var(--cool), 0), rgba(var(--cool), .2) 50%, rgba(var(--cool), 0));
+  }
+  .fact:nth-child(4)::before { top: 0; background: linear-gradient(180deg, rgba(var(--cool), .2), rgba(var(--cool), 0) 84%); }
+  .fact:nth-child(2)::before { bottom: 0; background: linear-gradient(180deg, rgba(var(--cool), 0) 16%, rgba(var(--cool), .2)); }
+  .fact:nth-child(n+3)::after {
+    content: ""; position: absolute; top: 0; height: 1px; pointer-events: none;
+  }
+  .fact:nth-child(3)::after { left: 16%; right: 0; background: linear-gradient(90deg, rgba(var(--cool), 0), rgba(var(--cool), .2)); }
+  .fact:nth-child(4)::after { left: 0; right: 16%; background: linear-gradient(90deg, rgba(var(--cool), .2), rgba(var(--cool), 0)); }
+
+  .fact__value { font-size: clamp(32px, 9vw, 48px); }
+  .fact__label { font-size: 13px; margin-top: 14px; max-width: none; }
+  .fact__label::before { margin-bottom: 12px; width: 20px; }
+}
+
+/* планшет: манифест держит четыре строки, как на десктопе (без рваных переносов),
+   числа чуть сдержаннее, чтобы не перекрикивать текст */
+@media (min-width: 600px) and (max-width: 899px) {
+  .concept__text { font-size: 3.5vw; }   /* самая длинная строка ≈24.2em ≤ колонка 88vw */
+  .fact__value { font-size: clamp(32px, 5.4vw, 44px); }
+}
+
+@media (max-width: 599px) {
+  .concept { padding-top: 64px; }
+  /* «телу забыть / о своём весе —»: предлог не висит в конце строки.
+     Невидимый float сужает только первую строку третьей фразы (между «телу забыть» ≈7.1em и «…о» ≈8.1em).
+     Шрифт и колонка на телефонах масштабируются вместе (vw), поэтому перенос одинаков на 360–599px. */
+  .concept__text .reveal-line:nth-child(3) > span { text-wrap: wrap; }
+  .concept__text .reveal-line:nth-child(3) > span::before {
+    content: ""; float: right; width: calc(100% - 7.6em); height: 1px; pointer-events: none;
+  }
+  .concept__facts { gap: 0; }
+  .fact { padding: 22px 16px 20px; }
+  .fact__value { font-size: clamp(30px, 8.6vw, 38px); }
+  .fact__label { font-size: 12.5px; line-height: 1.5; }
+}
+
+/* без анимаций: стекло видно сразу */
+@media (prefers-reduced-motion: reduce) {
+  .concept__facts::before, .concept__facts::after { opacity: 1 !important; transition: none; }
+}
