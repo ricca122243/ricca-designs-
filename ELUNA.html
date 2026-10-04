@@ -3538,11 +3538,12 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
 .mfit__plan::before, .mfit__plan::after { content: ""; position: absolute; width: 8px; height: 8px; border: solid rgba(214, 222, 242, .38); pointer-events: none; }
 .mfit__plan::before { left: 5px; top: 5px; border-width: 1px 0 0 1px; }
 .mfit__plan::after { right: 5px; bottom: 5px; border-width: 0 1px 1px 0; }
-.mfit__legend { display: flex; justify-content: flex-end; gap: 10px; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.mfit__legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 10px; margin-bottom: 4px; font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
 .mfit__key { display: inline-flex; align-items: center; gap: 5px; }
-.mfit__key::before { content: ""; width: 7px; height: 7px; border-radius: 2px; border: 1px solid rgba(var(--fit-rgb), .75); }
+.mfit__key::before { content: ""; width: 9px; height: 9px; border-radius: 1.5px; border: 1px solid rgba(var(--fit-rgb), .75); }
 .mfit__key--2::before { background: rgba(var(--fit-rgb), .85); }
 .mfit__key--1::before { background: linear-gradient(0deg, rgba(var(--fit-rgb), .85) 50%, transparent 50%); }
+.mfit__key--0::before { border: 1px dashed rgba(214, 222, 242, .45); }
 .mfit__bodies {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 2px;
   border-bottom: 1px dashed rgba(196, 210, 255, .22);   /* «пол» под фигурами */
@@ -3554,23 +3555,33 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
 .mfit__axis { fill: none; stroke: rgba(214, 222, 242, .16); stroke-dasharray: 2 3; vector-effect: non-scaling-stroke; }
 .mfit__body[data-fit="0"] .mfit__line g > * { stroke: rgba(214, 222, 242, .26); stroke-dasharray: 2 2; }
 .mfit__fill {
-  position: absolute; inset: 0; clip-path: inset(100% 0 0 0);
+  position: absolute; inset: 0; clip-path: inset(100% -8px 0 -8px);
   transition: clip-path 1.6s cubic-bezier(.3, .7, .2, 1) calc(.2s + var(--d, 0s));
   filter: drop-shadow(0 0 6px rgba(var(--fit-rgb), .42));
 }
 .mfit__fill g > * { fill: rgba(var(--fit-rgb), .8); }
-.mfit.is-in .mfit__body[data-fit="2"] .mfit__fill { clip-path: inset(0 0 0 0); }
-.mfit.is-in .mfit__body[data-fit="1"] .mfit__fill { clip-path: inset(52% 0 0 0); }
+.mfit.is-in .mfit__body[data-fit="2"] .mfit__fill { clip-path: inset(-8px -8px 0 -8px); }
+.mfit.is-in .mfit__body[data-fit="1"] .mfit__fill { clip-path: inset(52% -8px 0 -8px); }
 .mfit__body figcaption { margin: 6px 0 7px; font-size: 10.5px; letter-spacing: .05em; color: var(--ink-3); white-space: nowrap; transition: color .8s var(--ease-out) .9s; }
 .mfit.is-in .mfit__body[data-fit="2"] figcaption { color: rgba(var(--fit-rgb), .95); }
 .mfit__firm { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 10px; font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
-.mfit__firm b { margin-left: auto; font-weight: 500; font-size: 12.5px; letter-spacing: .02em; text-transform: none; color: var(--ink); white-space: nowrap; }
+.mfit__firm b { flex-basis: 100%; margin-left: 0; text-align: right; font-weight: 500; font-size: 12.5px; letter-spacing: .02em; text-transform: none; color: var(--ink); white-space: nowrap; }
 .mfit__scale { display: inline-flex; gap: 3px; }
 .mfit__scale i { width: 13px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, .12); }
 .mfit__scale i.on { background: linear-gradient(90deg, rgba(var(--fit-rgb), .55), rgba(var(--fit-rgb), .95)); box-shadow: 0 0 6px rgba(var(--fit-rgb), .3); }
 .mfit__scale i.any { background: linear-gradient(90deg, rgba(var(--cool), .45), rgba(var(--aurora-rgb), .8)); }
 .mfit__who { margin-top: 10px; font-size: 12.5px; line-height: 1.5; color: rgba(214, 222, 242, .72); }
 @media (prefers-reduced-motion: reduce) { .mfit__fill, .mfit__body figcaption { transition: none; } }
+.mfit__motto { text-wrap: balance; }
+.mfit__who { text-wrap: pretty; }
+/* 4 колонки: подпись и слоган одной высоты — чертежи в ряду начинаются на одном уровне */
+@media (min-width: 1280px) {
+  .mcard__meta, .mfit__motto { min-height: 2lh; }
+}
+/* 1280–1365: строка рассрочки Royal в одну строку — суммы всех карточек на одном уровне */
+@media (min-width: 1280px) and (max-width: 1365px) { .mcard__night { letter-spacing: .02em; } }
+/* 900–1023: пункты меню не прилипают к логотипу и кнопке */
+@media (min-width: 900px) and (max-width: 1023px) { .nav__links { gap: 22px; } }
 
   </style>
   <style>
@@ -3735,7 +3746,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
           <div class="fact reveal"><span class="fact__value">7</span><span class="fact__label">слоёв, собранных вручную</span></div>
           <div class="fact reveal"><span class="fact__value"><span data-count="300">300</span><small> мм</small></span><span class="fact__label">высота, которая чувствуется</span></div>
           <div class="fact reveal"><span class="fact__value" data-count="1200">1 200</span><span class="fact__label">независимых пружин на 1600&nbsp;×&nbsp;2000&nbsp;мм</span></div>
-          <div class="fact reveal"><span class="fact__value" data-count="5">5</span><span class="fact__label">дней пробного сна на любой матрас</span></div>
+          <div class="fact reveal"><span class="fact__value" data-count="5">5</span><span class="fact__label">дней пробного сна на&nbsp;любой матрас</span></div>
         </div>
       </div>
     </section>
@@ -3866,7 +3877,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
         <div class="section-head section-head--tight reveal">
           <p class="eyebrow"><span>Линейка</span><span class="dot"></span><span>Четыре модели</span></p>
           <h2 class="section-title" id="modelsTitle">Выберите свою модель.<br><em>Три матраса и один — под вас.</em></h2>
-          <p class="section-note">Все цены — за размер 1600 × 2000 мм. На любую модель — 5 дней пробного сна.</p>
+          <p class="section-note">Все цены&nbsp;— за&nbsp;размер 1600&nbsp;×&nbsp;2000&nbsp;мм. На&nbsp;любую модель&nbsp;— 5&nbsp;дней пробного сна.</p>
         </div>
 
         <div class="mrail reveal" id="mrail" style="--lx: 62%; --li: .9">
@@ -3879,7 +3890,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
               <span class="mcard__tier" data-tier="air"></span>
               <h3 class="mcard__title" id="card-air-title">Лёгкий старт.</h3>
               <p class="mcard__meta">Для гостевой, детской или съёмной квартиры</p>
-              <div class="mfit" data-fit="air" role="group" aria-label="Кому подходит Air"></div>
+              <div class="mfit" data-fit="air"></div>
               <ul class="mcard__list">
                 <li>Армированные пружины</li>
                 <li>Натуральный кокос 10 мм</li>
@@ -3898,7 +3909,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
               <span class="mcard__tier" data-tier="balance"></span>
               <h3 class="mcard__title" id="card-balance-title">Поддержка на&nbsp;каждый день.</h3>
               <p class="mcard__meta">Для тех, кто спит на матрасе каждую ночь</p>
-              <div class="mfit" data-fit="balance" role="group" aria-label="Кому подходит Balance"></div>
+              <div class="mfit" data-fit="balance"></div>
               <ul class="mcard__list">
                 <li>Усиленный боковой каркас</li>
                 <li>Два слоя натурального кокоса: 10 и 20 мм</li>
@@ -3918,7 +3929,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
               <span class="mcard__tier" data-tier="prime"></span>
               <h3 class="mcard__title" id="card-prime-title">Для тех, кто выбирает <em>раз и надолго.</em></h3>
               <p class="mcard__meta">Самый натуральный матрас линейки</p>
-              <div class="mfit" data-fit="prime" role="group" aria-label="Кому подходит Prime"></div>
+              <div class="mfit" data-fit="prime"></div>
               <ul class="mcard__list">
                 <li>Чехол из 100 % хлопка ручной работы</li>
                 <li>Натуральный латекс 20&nbsp;мм — микромассажный эффект</li>
@@ -3938,7 +3949,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
               <span class="mcard__tier" data-tier="royal"></span>
               <h3 class="mcard__title" id="card-royal-title">Размер и конфигурация под вас.</h3>
               <p class="mcard__meta">Флагман линейки — собирается под ваш проект</p>
-              <div class="mfit" data-fit="royal" role="group" aria-label="Кому подходит Royal"></div>
+              <div class="mfit" data-fit="royal"></div>
               <ul class="mcard__list">
                 <li>Нестандартный размер и начинка под ваш проект</li>
                 <li>Срок изготовления — 21 день</li>
@@ -4030,7 +4041,7 @@ html { scrollbar-color: rgba(190, 206, 255, .28) #070a18; }
           <div class="order-pick" id="orderPick"><span class="order-pick__label">Ваш выбор</span><span class="order-pick__text" id="orderPickText">Eluna Prime · 1600 × 2000 мм</span><a href="#sizes" class="order-pick__edit">изменить</a></div>
           <p class="delivery__pick" aria-live="polite"><span class="delivery__city" id="deliveryCity">Алматы</span><span class="delivery__days" id="deliveryDays">мы здесь · доставка по городу</span></p>
           <ul class="trust" aria-label="Гарантии">
-            <li class="trust__item"><span class="trust__value">5 дней</span><span class="trust__label">пробного сна на любой матрас — достаточно, чтобы почувствовать комфорт. Не подошёл — заберём и вернём деньги.</span></li>
+            <li class="trust__item"><span class="trust__value">5 дней</span><span class="trust__label">пробного сна на&nbsp;любой матрас. Не&nbsp;подошёл&nbsp;— заберём и&nbsp;вернём деньги.</span></li>
             <li class="trust__item"><span class="trust__value">5 лет</span><span class="trust__label">гарантии на каждый матрас. Срок службы — 15 лет и больше.</span></li>
             <li class="trust__item"><span class="trust__value">Ручная сборка</span><span class="trust__label">Каждый матрас собирает один мастер — его подпись на этикетке.</span></li>
             <li class="trust__item"><span class="trust__value">7 дней</span><span class="trust__label">до двери в любом городе Казахстана. Доставка до спальни включена.</span></li>
@@ -6191,14 +6202,14 @@ void main() {
     // «кому подходит»: слоган, чертёж с фигурами трёх телосложений (подходящие заполняются зелёным),
     // шкала жёсткости и одна строка совета. Ориентир по весу — общий, а не медицинская рекомендация.
     const FIT = {
-      air:     { motto: 'Мягко. Легко. Без лишнего.', firm: 2, firmText: 'мягкая / средняя', fit: [2, 1, 0],
-                 who: 'Лёгкому телосложению и детям: мягко принимает плечи, если спите на боку.' },
-      balance: { motto: 'Равновесие — каждую ночь.', firm: 3, firmText: 'средняя', fit: [2, 2, 1],
-                 who: 'Универсальная жёсткость: до 90 кг, сон на спине и на боку.' },
-      prime:   { motto: 'Природа держит спину.', firm: 4, firmText: 'средняя / выше средней', fit: [2, 2, 2],
-                 who: 'Любому телосложению: латекс мягко принимает тело, кокос держит спину ровно.' },
-      royal:   { motto: 'Сшит под вас — как костюм.', firm: 0, firmText: 'любая — под вас', fit: [2, 2, 2],
-                 who: 'Любому телосложению: подберём жёсткость — даже разную для двух половин.' },
+      air:     { motto: 'Мягко. Легко. Без лишнего.', firm: 2, firmText: 'мягкая / средняя', fit: [2, 1, 0],
+                 who: 'Людям лёгкого телосложения и детям: мягко принимает плечи, если спите на боку.' },
+      balance: { motto: 'Равновесие мягкости и опоры.', firm: 3, firmText: 'средняя', fit: [2, 2, 1],
+                 who: 'Универсальная жёсткость: до 90 кг, сон на спине и на боку.' },
+      prime:   { motto: 'Природа держит спину.', firm: 4, firmText: 'средняя / выше средней', fit: [2, 2, 2],
+                 who: 'Любому телосложению: латекс мягко принимает тело, кокос держит спину ровно.' },
+      royal:   { motto: 'Сшит по мерке — как костюм.', firm: 0, firmText: 'подбирается индивидуально', fit: [2, 2, 2],
+                 who: 'Любому телосложению: подберём жёсткость — даже разную для двух половин.' },
     };
     const BUILDS = ['до&nbsp;60&nbsp;кг', '60–90&nbsp;кг', '90+&nbsp;кг'];
     const FIT_WORD = ['не рекомендуем', 'можно', 'подходит'];
@@ -6217,7 +6228,7 @@ void main() {
       const f = FIT[box.dataset.fit];
       if (!f) return;
       const name = `Eluna ${box.dataset.fit[0].toUpperCase()}${box.dataset.fit.slice(1)}`;
-      box.setAttribute('aria-label', `${name}: кому подходит`);
+      box.setAttribute('role', 'group'); box.setAttribute('aria-label', `${name}: кому подходит`);
       const bodies = BUILDS.map((label, b) => `
           <figure class="mfit__body" data-fit="${f.fit[b]}" style="--d:${(b * 0.18).toFixed(2)}s">
             <div class="mfit__fig" aria-hidden="true">
@@ -6230,7 +6241,7 @@ void main() {
       box.innerHTML = `
         <p class="mfit__motto">${esc(f.motto)}</p>
         <div class="mfit__plan">
-          <p class="mfit__legend" aria-hidden="true"><span class="mfit__key mfit__key--2">подходит</span><span class="mfit__key mfit__key--1">можно</span></p>
+          <p class="mfit__legend" aria-hidden="true"><span class="mfit__key mfit__key--2">подходит</span>${f.fit.includes(1) ? '<span class="mfit__key mfit__key--1">можно</span>' : ''}${f.fit.includes(0) ? '<span class="mfit__key mfit__key--0">не рекомендуем</span>' : ''}</p>
           <div class="mfit__bodies">${bodies}
           </div>
           <p class="mfit__firm"><span class="mfit__k">Жёсткость</span><span class="mfit__scale" aria-hidden="true">${scale}</span><b>${esc(f.firmText)}</b></p>
@@ -6299,6 +6310,7 @@ void main() {
       const mid = track.scrollLeft + track.clientWidth / 2;
       let best = -1, bd = 1e9;
       cards.forEach((m, k) => { const d = Math.abs(m.offsetLeft + m.offsetWidth / 2 - mid); if (d < bd) { bd = d; best = k; } });
+      if (track.scrollLeft < 2) best = 0; else if (track.scrollLeft > track.scrollWidth - track.clientWidth - 2) best = cards.length - 1;
       cards.forEach((m, k) => m.classList.toggle('is-center', k === best));
       if (best >= 0) select(best);
     }

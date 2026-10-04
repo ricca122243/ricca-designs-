@@ -670,14 +670,14 @@
     // «кому подходит»: слоган, чертёж с фигурами трёх телосложений (подходящие заполняются зелёным),
     // шкала жёсткости и одна строка совета. Ориентир по весу — общий, а не медицинская рекомендация.
     const FIT = {
-      air:     { motto: 'Мягко. Легко. Без лишнего.', firm: 2, firmText: 'мягкая / средняя', fit: [2, 1, 0],
-                 who: 'Лёгкому телосложению и детям: мягко принимает плечи, если спите на боку.' },
-      balance: { motto: 'Равновесие — каждую ночь.', firm: 3, firmText: 'средняя', fit: [2, 2, 1],
-                 who: 'Универсальная жёсткость: до 90 кг, сон на спине и на боку.' },
-      prime:   { motto: 'Природа держит спину.', firm: 4, firmText: 'средняя / выше средней', fit: [2, 2, 2],
-                 who: 'Любому телосложению: латекс мягко принимает тело, кокос держит спину ровно.' },
-      royal:   { motto: 'Сшит под вас — как костюм.', firm: 0, firmText: 'любая — под вас', fit: [2, 2, 2],
-                 who: 'Любому телосложению: подберём жёсткость — даже разную для двух половин.' },
+      air:     { motto: 'Мягко. Легко. Без лишнего.', firm: 2, firmText: 'мягкая / средняя', fit: [2, 1, 0],
+                 who: 'Людям лёгкого телосложения и детям: мягко принимает плечи, если спите на боку.' },
+      balance: { motto: 'Равновесие мягкости и опоры.', firm: 3, firmText: 'средняя', fit: [2, 2, 1],
+                 who: 'Универсальная жёсткость: до 90 кг, сон на спине и на боку.' },
+      prime:   { motto: 'Природа держит спину.', firm: 4, firmText: 'средняя / выше средней', fit: [2, 2, 2],
+                 who: 'Любому телосложению: латекс мягко принимает тело, кокос держит спину ровно.' },
+      royal:   { motto: 'Сшит по мерке — как костюм.', firm: 0, firmText: 'подбирается индивидуально', fit: [2, 2, 2],
+                 who: 'Любому телосложению: подберём жёсткость — даже разную для двух половин.' },
     };
     const BUILDS = ['до&nbsp;60&nbsp;кг', '60–90&nbsp;кг', '90+&nbsp;кг'];
     const FIT_WORD = ['не рекомендуем', 'можно', 'подходит'];
@@ -696,7 +696,7 @@
       const f = FIT[box.dataset.fit];
       if (!f) return;
       const name = `Eluna ${box.dataset.fit[0].toUpperCase()}${box.dataset.fit.slice(1)}`;
-      box.setAttribute('aria-label', `${name}: кому подходит`);
+      box.setAttribute('role', 'group'); box.setAttribute('aria-label', `${name}: кому подходит`);
       const bodies = BUILDS.map((label, b) => `
           <figure class="mfit__body" data-fit="${f.fit[b]}" style="--d:${(b * 0.18).toFixed(2)}s">
             <div class="mfit__fig" aria-hidden="true">
@@ -709,7 +709,7 @@
       box.innerHTML = `
         <p class="mfit__motto">${esc(f.motto)}</p>
         <div class="mfit__plan">
-          <p class="mfit__legend" aria-hidden="true"><span class="mfit__key mfit__key--2">подходит</span><span class="mfit__key mfit__key--1">можно</span></p>
+          <p class="mfit__legend" aria-hidden="true"><span class="mfit__key mfit__key--2">подходит</span>${f.fit.includes(1) ? '<span class="mfit__key mfit__key--1">можно</span>' : ''}${f.fit.includes(0) ? '<span class="mfit__key mfit__key--0">не рекомендуем</span>' : ''}</p>
           <div class="mfit__bodies">${bodies}
           </div>
           <p class="mfit__firm"><span class="mfit__k">Жёсткость</span><span class="mfit__scale" aria-hidden="true">${scale}</span><b>${esc(f.firmText)}</b></p>
@@ -778,6 +778,7 @@
       const mid = track.scrollLeft + track.clientWidth / 2;
       let best = -1, bd = 1e9;
       cards.forEach((m, k) => { const d = Math.abs(m.offsetLeft + m.offsetWidth / 2 - mid); if (d < bd) { bd = d; best = k; } });
+      if (track.scrollLeft < 2) best = 0; else if (track.scrollLeft > track.scrollWidth - track.clientWidth - 2) best = cards.length - 1;
       cards.forEach((m, k) => m.classList.toggle('is-center', k === best));
       if (best >= 0) select(best);
     }
