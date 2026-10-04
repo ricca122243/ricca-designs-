@@ -116,6 +116,7 @@
   const stars = (function stars() {
     const far = document.getElementById('stars');
     if (!far) return { setVisible() {} };
+    const moonEl = document.getElementById('moonBig');
     // ближний слой (яркие звёзды с ореолом) и мерцание — отдельные canvas
     const near = document.createElement('canvas');
     near.className = 'stars stars--near'; near.setAttribute('aria-hidden', 'true');
@@ -263,9 +264,12 @@
       off.far += DRIFT.far * dt; off.near += DRIFT.near * dt;
       off.farY = Math.sin(now * 0.00004) * h * 0.004;
       off.nearY = Math.sin(now * 0.00007 + 1) * h * 0.014;
-      // луна плывёт вместе с небом: медленное покачивание в такт дальнему слою
-      root.style.setProperty('--skyx', `${(Math.sin(now * 0.00003) * w * 0.012).toFixed(2)}px`);
-      root.style.setProperty('--skyy', `${(off.farY * 1.6).toFixed(2)}px`);
+      // луна плывёт вместе с небом: медленное покачивание в такт дальнему слою.
+      // Переменные — на самой луне, не на :root (иначе каждый кадр пересчитывались стили всей страницы), и только пока она видна
+      if (moonEl && +(moonEl.style.opacity || 1) > 0.02) {
+        moonEl.style.setProperty('--skyx', `${(Math.sin(now * 0.00003) * w * 0.012).toFixed(2)}px`);
+        moonEl.style.setProperty('--skyy', `${(off.farY * 1.6).toFixed(2)}px`);
+      }
       place();
       driftRaf = requestAnimationFrame(driftLoop);
     }
@@ -387,24 +391,58 @@
   let seqLoaded = 0, seqStarted = false, seqDirty = true;
   const seqLast = { f: -1, w: 0, h: 0, loaded: 0 };
 
-  function frameSrc(i) { return `${SEQ.base}f${String(i + 1).padStart(SEQ.pad, '0')}.webp`; }
+  function frameSrc(i, fb) { return `${fb ? SEQ.fallback : SEQ.base}f${String(i + 1).padStart(SEQ.pad, '0')}.webp`; }
+  // кадр → готовая к рисованию картинка ровно размера canvas с уже вшитой виньеткой (ImageBitmap, иначе canvas).
+  // Так в кадре анимации нет ни масштабирования, ни маски, ни повторного декодирования, а память — в 3–8 раз меньше,
+  // чем у исходных картинок 1440×1920 (браузер на телефоне выгружал их и декодировал заново прямо во время «Открыть»)
+  function fetchFrame(i) {
+    return new Promise((res) => {
+      const im = new Image();
+      im.decoding = 'async';
+      im.onload = () => (im.decode ? im.decode() : Promise.resolve()).then(() => res(im), () => res(im));
+      // кадр 1440 не пришёл — берём тот же кадр из 1080 (геометрия та же)
+      im.onerror = () => { if (SEQ.fallback && !im.dataset.fb) { im.dataset.fb = '1'; im.src = frameSrc(i, true); } else res(null); };
+      im.src = frameSrc(i);
+    });
+  }
+  function bakeFrame(im) {
+    const w = seqCanvas.width, h = seqCanvas.height;
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.drawImage(im, 0, 0, w, h);
+    x.globalCompositeOperation = 'destination-in';
+    x.drawImage(seqVignette(w, h), 0, 0);
+    if (!window.createImageBitmap) return Promise.resolve(c);
+    return createImageBitmap(c).then((bm) => { c.width = c.height = 0; return bm; }, () => c);
+  }
+  let bakeGen = 0, bakeW = 0, bakeH = 0;
   function loadSeq() {
     if (seqStarted) return;
     seqStarted = true;
+    bakeAll();
+  }
+  // загрузка (первым — закрытый матрас, потом раскрытый и середина) и запекание под текущий размер canvas
+  function bakeAll() {
+    const gen = ++bakeGen;
+    bakeW = seqCanvas.width; bakeH = seqCanvas.height;
     const order = [0, SEQ.count - 1, Math.floor(SEQ.count / 2)];
     for (let i = 0; i < SEQ.count; i++) if (!order.includes(i)) order.push(i);
     let k = 0;
     const next = () => {
-      if (k >= order.length) return;
+      if (k >= order.length || gen !== bakeGen) return;
       const i = order[k++];
-      const im = new Image();
-      im.decoding = 'async';
-      // декодируем заранее, чтобы первый drawImage кадра не бил по кадру скролла
-      im.onload = () => { const done = () => { frames[i] = im; seqLoaded++; if (S.cutO > 0.001) { seqDirty = true; drawSeq(); } next(); }; if (im.decode) im.decode().then(done, done); else done(); };
-      // 2560-кадр не пришёл — берём тот же кадр из 1920 (рисуется с масштабом, геометрия не меняется)
-      im.onerror = () => { if (SEQ.fallback && !im.dataset.fb) { im.dataset.fb = '1'; im.src = `${SEQ.fallback}f${String(i + 1).padStart(SEQ.pad, '0')}.webp`; } else next(); };
-      im.src = frameSrc(i);
-      if (k < 4) next();
+      fetchFrame(i).then((im) => (im ? bakeFrame(im) : null)).then((fr) => {
+        if (gen !== bakeGen) { if (fr && fr.close) fr.close(); return; }
+        if (fr) {
+          const old = frames[i];
+          if (!old) seqLoaded++;
+          frames[i] = fr;
+          if (old && old.close) old.close();
+          if (S.cutO > 0.001) { seqDirty = true; drawSeq(); }
+        }
+        next();
+      });
+      if (k < 3) next();
     };
     next();
   }
@@ -442,6 +480,10 @@
     placeSeqLabels(g.dx / d, g.dy / d, g.dw / d, g.dh / d);
     seqDirty = true;
     if (S.cutO > 0.001) drawSeq();
+    // размер canvas поменялся — кадры перепекаются (пока идёт — рисуются прежние с масштабом)
+    if (seqStarted && (seqCanvas.width !== bakeW || seqCanvas.height !== bakeH)) {
+      clearTimeout(sizeSeq.t); sizeSeq.t = setTimeout(bakeAll, 400);
+    }
   }
   function markSeq() {
     const f = Math.min(1, Math.max(0, S.spread)) * (SEQ.count - 1);
@@ -450,9 +492,9 @@
       seqDirty = true;
     }
   }
-  let vigCache = { w: 0, h: 0, g: null };
+  let vigCache = { w: 0, h: 0, c: null };
   function seqVignette(w, h) {
-    if (vigCache.w === w && vigCache.h === h && vigCache.g) return vigCache.g;
+    if (vigCache.w === w && vigCache.h === h && vigCache.c) return vigCache.c;
     // край кадра растворяется в небе страницы: слева широко (там текст), сверху и снизу мягко, справа — узкая кромка у края экрана
     const c = document.createElement('canvas'); c.width = w; c.height = h;
     const x = c.getContext('2d');
@@ -463,8 +505,8 @@
     const gy = x.createLinearGradient(0, 0, 0, h);
     gy.addColorStop(0, 'rgba(0,0,0,0)'); gy.addColorStop(0.14, 'rgba(0,0,0,1)'); gy.addColorStop(0.84, 'rgba(0,0,0,1)'); gy.addColorStop(1, 'rgba(0,0,0,0)');
     x.fillStyle = gy; x.fillRect(0, 0, w, h);
-    vigCache = { w, h, g: seqCtx.createPattern(c, 'no-repeat') };
-    return vigCache.g;
+    vigCache = { w, h, c };
+    return c;
   }
   function drawSeq() {
     if (!seqDirty || seqLoaded === 0) return;
@@ -475,13 +517,9 @@
     seqCtx.globalCompositeOperation = 'source-over';
     seqCtx.globalAlpha = 1;
     seqCtx.clearRect(0, 0, cw, ch);
+    // виньетка уже вшита в кадр (bakeFrame); между соседними кадрами — лёгкое смешивание
     if (a) seqCtx.drawImage(a, 0, 0, cw, ch);
     if (b && b !== a && t > 0.02) { seqCtx.globalAlpha = t; seqCtx.drawImage(b, 0, 0, cw, ch); seqCtx.globalAlpha = 1; }
-    // виньетка по краям — в сам кадр, вместо CSS-маски
-    seqCtx.globalCompositeOperation = 'destination-in';
-    seqCtx.fillStyle = seqVignette(cw, ch);
-    seqCtx.fillRect(0, 0, cw, ch);
-    seqCtx.globalCompositeOperation = 'source-over';
     seqDirty = false;
   }
 
@@ -725,6 +763,7 @@
     const ph = p < 0.05 ? 'hero' : p < 0.09 ? 'gap' : p < 0.66 ? 'layers' : 'out';
     if (ph === phase) return;
     phase = ph;
+    stageEl.classList.toggle('is-layers', ph === 'layers');
     // уходящий текст гаснет за 0.2 с, входящий появляется после — двух текстов на экране не бывает
     const out = reduceMotion ? 0 : 0.2, inn = reduceMotion ? 0 : 0.35, wait = reduceMotion ? 0 : 0.22;
     const show = (el, on, extra) => gsap.to(el, Object.assign({ autoAlpha: on ? 1 : 0, duration: on ? inn : out, delay: on ? wait : 0, ease: 'power2.out', overwrite: true }, extra));
