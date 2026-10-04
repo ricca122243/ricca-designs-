@@ -295,10 +295,10 @@ RICCA DESIGNS — ателье мягкой мебели в Алматы. Про
 | MEGA Alma-Ata | торгово-развлекательный центр | подтверждено заказчиком |
 | Koktobe City | жилой комплекс (застройщик Kusto Home) | подтверждено заказчиком |
 | ABR | ресторанная компания | подтверждено заказчиком |
-| MAKAN | — | подтверждено заказчиком (латиницей, через K) |
+| MACAN | — | подтверждено заказчиком |
 | ~~БСК~~ | не опознан | **не показывать до уточнения** |
 
-Строка для сайта: The Ritz-Carlton, Almaty · Esentai Mall · MEGA Alma-Ata · Koktobe City · ABR · MAKAN
+Строка для сайта: The Ritz-Carlton, Almaty · Esentai Mall · MEGA Alma-Ata · Koktobe City · ABR · MACAN
 
 ---
 
