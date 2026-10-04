@@ -22,21 +22,21 @@
   <link rel="preload" as="font" type="font/woff2" href="fonts/Inter-300-600-normal-latin.woff2" crossorigin>
   <link rel="preload" as="font" type="font/ttf" href="fonts/Michroma-Regular.ttf" crossorigin>
   <link rel="stylesheet" href="css/fonts.css">
-  <link rel="stylesheet" href="css/styles.css?v=6">
-  <link rel="stylesheet" href="css/polish-base.css?v=6">
-  <link rel="stylesheet" href="css/polish-concept.css?v=6">
-  <link rel="stylesheet" href="css/polish-tech.css?v=6">
-  <link rel="stylesheet" href="css/polish-models.css?v=6">
-  <link rel="stylesheet" href="css/polish-order.css?v=6">
-  <link rel="stylesheet" href="css/polish-final.css?v=6">
+  <link rel="stylesheet" href="css/styles.css?v=7">
+  <link rel="stylesheet" href="css/polish-base.css?v=7">
+  <link rel="stylesheet" href="css/polish-concept.css?v=7">
+  <link rel="stylesheet" href="css/polish-tech.css?v=7">
+  <link rel="stylesheet" href="css/polish-models.css?v=7">
+  <link rel="stylesheet" href="css/polish-order.css?v=7">
+  <link rel="stylesheet" href="css/polish-final.css?v=7">
   <link rel="icon" type="image/png" href="img/mark.png">
   <noscript><style>.exposure{display:none}.nav{opacity:1;transform:none}.wordmark__word span,.wordmark__mark,.wordmark__sub,.copy--hero .eyebrow,.hero-sub{opacity:1;transform:none}.hero-title .line>span{transform:none}.moon-big{opacity:1}.reveal,.reveal-line>span{opacity:1;transform:none}.stage-wrap{height:100vh}.strata__layer{translate:none!important}.strata__wrap{opacity:0}.strata__controls{display:none}</style></noscript>
   <script defer src="vendor/gsap.min.js"></script>
-  <script defer src="js/core.js?v=6"></script>
-  <script defer src="js/moon.js?v=6"></script>
-  <script defer src="js/hero.js?v=6"></script>
-  <script defer src="js/strata.js?v=6"></script>
-  <script defer src="js/main.js?v=6"></script>
+  <script defer src="js/core.js?v=7"></script>
+  <script defer src="js/moon.js?v=7"></script>
+  <script defer src="js/hero.js?v=7"></script>
+  <script defer src="js/strata.js?v=7"></script>
+  <script defer src="js/main.js?v=7"></script>
 </head>
 <body class="is-intro">
 
@@ -601,6 +601,13 @@
       <h2 class="mdl__title" id="mdl-prime-title">Для тех, кто выбирает <em>раз и надолго.</em></h2>
       <p class="mdl__price mdl__price--prime" data-price="prime">— ₸</p>
     </header>
+    <!-- Отзывы: бегущая лента (js/main.js → REVIEWS). Карточки строятся из данных, лента едет сама, наведение / касание её останавливает -->
+    <section class="rv" aria-labelledby="rv-prime-title">
+      <div class="rv__head"><p class="rv__title" id="rv-prime-title">Отзывы о Eluna Prime</p><span class="rv__hint" aria-hidden="true">наведите, чтобы остановить</span></div>
+      <div class="rv__viewport" data-reviews="prime" tabindex="0" role="region" aria-label="Отзывы покупателей, лента прокручивается сама">
+        <ul class="rv__track"></ul>
+      </div>
+    </section>
     <details class="acc" open><summary>Характеристики</summary>
       <div class="acc__body">
         <div class="xs xs--prime is-open" data-xs="prime" aria-label="Разрез Eluna Prime: слои сверху вниз"></div>
@@ -622,15 +629,6 @@
     <details class="acc"><summary>Размеры и цена</summary>
       <div class="acc__body">
         <div class="size-table" data-sizes="prime"></div>
-      </div>
-    </details>
-    <!-- «Отзывы» скрыты, пока нет настоящих отзывов: уберите hidden и впишите их -->
-    <details class="acc" hidden><summary>Отзывы</summary>
-      <div class="acc__body">
-        <aside class="reviews" aria-label="Отзывы о Eluna Prime">
-          <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
-          <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
-        </aside>
       </div>
     </details>
     <footer class="mdl__actions"><a class="button button--primary" data-wa="prime" href="#" target="_blank" rel="noopener">Заказать Prime</a></footer>

@@ -67,3 +67,50 @@
 @media (max-width: 599px) {
   .tier, .motion__tag { font-size: 10.5px; }
 }
+
+/* ---- Отзывы в окне Prime: бегущая лента (js/main.js → REVIEWS) ---- */
+.rv { padding: 0 0 clamp(18px, 2.4vw, 26px); }
+.rv__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 0 var(--mdl-px, 28px) 12px; }
+.rv__title { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); font-weight: 500; }
+.rv__hint { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+.rv__viewport {
+  position: relative; overflow: hidden; padding: 4px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.rv__viewport:focus-visible { outline: 2px solid rgba(var(--cool), .7); outline-offset: -2px; border-radius: 14px; }
+.rv__track { display: flex; width: max-content; margin: 0; padding: 0; animation: rvRun var(--rv-dur, 45s) linear infinite; will-change: transform; }
+@keyframes rvRun { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
+.rv__viewport:hover .rv__track, .rv__viewport:focus-visible .rv__track, .rv__viewport.is-paused .rv__track { animation-play-state: paused; }
+/* отступ — у карточки справа (не gap): тогда −50 % ровно одна копия и круг бесшовный */
+.rv__card {
+  flex: none; width: clamp(240px, 32vw, 300px); margin-right: 14px; list-style: none;
+  display: flex; flex-direction: column; justify-content: space-between; gap: 14px;
+  padding: 18px 20px 16px; border-radius: 14px;
+  border: 1px solid var(--glass-line);
+  background: linear-gradient(160deg, rgba(var(--cool), .07), rgba(var(--cool), 0) 60%), rgba(12, 17, 38, .58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+  transition: border-color .4s, transform .4s var(--ease-out);
+}
+.rv__viewport:hover .rv__card:hover { border-color: rgba(var(--gold-rgb), .45); transform: translateY(-2px); }
+.rv__card blockquote { position: relative; margin: 0; padding-top: 24px; }
+.rv__card blockquote::before {
+  content: "\201C"; position: absolute; left: -2px; top: -4px;
+  font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1;
+  background: linear-gradient(180deg, #f3e3bd, var(--gold)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--gold);
+}
+.rv__card blockquote p { font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
+.rv__who { display: flex; flex-direction: column; gap: 2px; padding-top: 12px; border-top: 1px solid var(--line); }
+.rv__who b { font-weight: 500; font-size: 13px; color: var(--ink); }
+.rv__who span { font-size: 11.5px; letter-spacing: .04em; color: var(--ink-3); }
+.rv__card--empty { border-style: dashed; }
+.rv__card--empty blockquote p { color: var(--ink-3); font-style: italic; }
+/* без анимации (reduced motion): обычная горизонтальная прокрутка с привязкой */
+.rv__viewport.is-static { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-mask-image: none; mask-image: none; padding-inline: var(--mdl-px, 28px); }
+.rv__viewport.is-static .rv__track { animation: none; }
+.rv__viewport.is-static .rv__card { scroll-snap-align: start; }
+@media (max-width: 599px) {
+  .rv__card { width: 76vw; }
+  .rv__head { flex-direction: column; align-items: flex-start; gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) { .rv__track { animation: none !important; } }

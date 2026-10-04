@@ -569,6 +569,40 @@
   const waLink = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
+  /* ------------------------------------------------------------------------
+     Отзывы в окне «Подробнее» — бегущая лента. Впишите НАСТОЯЩИЕ отзывы
+     покупателей в REVIEWS: text — текст, name — имя, city — город, size — размер.
+     Пока список пуст, в ленте аккуратные шаблоны «здесь появится отзыв».
+     ------------------------------------------------------------------------ */
+  const REVIEWS = {
+    prime: [
+      // { text: 'Текст отзыва покупателя', name: 'Имя', city: 'Алматы', size: '1600 × 2000' },
+    ],
+  };
+  (function reviews() {
+    const SLOTS = 5;
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    document.querySelectorAll('[data-reviews]').forEach((vp) => {
+      const track = vp.querySelector('.rv__track'); if (!track) return;
+      const real = (REVIEWS[vp.dataset.reviews] || []).filter((r) => r && r.text);
+      const list = real.length ? real : Array.from({ length: SLOTS }, () => null);
+      const card = (r, dup) => {
+        const hide = dup ? ' aria-hidden="true"' : '';
+        if (!r) return `<li class="rv__card rv__card--empty"${hide}><blockquote><p>Здесь появится отзыв покупателя Eluna Prime — о том, как изменился его сон.</p></blockquote><p class="rv__who"><b>Имя покупателя</b><span>Город · размер</span></p></li>`;
+        const meta = [r.city, r.size].filter(Boolean).join(' · ');
+        return `<li class="rv__card"${hide}><blockquote><p>${esc(r.text)}</p></blockquote><p class="rv__who"><b>${esc(r.name || 'Покупатель Eluna')}</b>${meta ? `<span>${esc(meta)}</span>` : ''}</p></li>`;
+      };
+      // вторая копия — только для бесшовного круга: читалке она не нужна
+      track.innerHTML = list.map((r) => card(r, false)).join('') + (reduceMotion ? '' : list.map((r) => card(r, true)).join(''));
+      vp.style.setProperty('--rv-dur', `${Math.max(28, list.length * 9)}s`);
+      vp.classList.toggle('is-static', reduceMotion);
+      const hint = vp.parentElement.querySelector('.rv__hint');
+      if (hint) hint.textContent = reduceMotion ? 'листайте вбок' : canHover ? 'наведите, чтобы остановить' : 'нажмите, чтобы остановить';
+      // на телефоне наведения нет: касание ставит ленту на паузу и снимает её
+      if (!reduceMotion) vp.addEventListener('click', () => vp.classList.toggle('is-paused'));
+    });
+  })();
+
   (function lineup() {
     document.querySelectorAll('[data-price]').forEach((el) => { el.innerHTML = priceHTML(el.dataset.price, el.hasAttribute('data-compact')); });
     // под ценой в карточке — платёж в рассрочку 0 % на 12 месяцев
