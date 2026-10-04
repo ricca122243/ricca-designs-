@@ -425,12 +425,12 @@
     if (vigCache.w === w && vigCache.h === h && vigCache.g) return vigCache.g;
     const mob = isMobile();
     // эллипс через масштаб: единичный радиальный градиент в центре, растянутый transform'ом
-    const rx = w * (mob ? 0.56 : 0.62), ry = h * (mob ? 0.56 : 0.64);
+    const rx = w * (mob ? 0.56 : 0.62), ry = h * (mob ? 0.62 : 0.64);
     const c = document.createElement('canvas'); c.width = w; c.height = h;
     const x = c.getContext('2d');
     x.translate(w / 2, h / 2); x.scale(rx, ry);
     const g = x.createRadialGradient(0, 0, 0, 0, 0, 1);
-    x.fillStyle = g; g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.3 : 0.40, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.64 : 0.70, 'rgba(0,0,0,.5)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = g; g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.34 : 0.40, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.68 : 0.70, 'rgba(0,0,0,.55)'); g.addColorStop(1, 'rgba(0,0,0,0)');
     x.fillRect(-w / rx, -h / ry, 2 * w / rx, 2 * h / ry);
     vigCache = { w, h, g: seqCtx.createPattern(c, 'no-repeat') };
     return vigCache.g;
@@ -582,7 +582,7 @@
       stageEl.classList.toggle('is-off', !on);
       stars.setVisible(on);
       if (moonGL && !on) moonGL.sleep();
-      if (tourTl) { if (on) tourTl.resume(); else tourTl.pause(); }
+      if (tourTl) { if (on && phase === 'layers') tourTl.resume(); else tourTl.pause(); }
       if (on) { Light.claim('hero'); render(); }
     }, { threshold: 0 }).observe(stageEl);
   }
@@ -759,6 +759,7 @@
       }
     });
     tourTl.set({}, {}, t);
+    if (phase !== 'layers') tourTl.pause();
     syncPlay();
   }
   function stopTour() { if (tourTl) { tourTl.kill(); tourTl = null; } clearTimeout(tourAuto); syncPlay(); }
@@ -803,8 +804,8 @@
     if (best >= 0 && bd < vh * 0.12) goLayer(best);
   });
   function layersCtl(p) {
+    // раскрывается один раз за визит: скролл вверх к луне больше не собирает матрас обратно
     if (p >= 0.10 && layersState === 'idle') playLayers();
-    else if (p < 0.04) resetLayers();
     // долистал до финала раньше конца сценария — он ускоряется и доигрывает
     if (p > 0.68 && layersTl && layersTl.timeScale() === 1) layersTl.timeScale(3);
     // финал сцены: тур стоп, камера на общий вид; вернулся назад — тур снова
@@ -829,6 +830,8 @@
     const show = (el, on, extra) => gsap.to(el, Object.assign({ autoAlpha: on ? 1 : 0, duration: on ? inn : out, delay: on ? wait : 0, ease: 'power2.out', overwrite: true }, extra));
     show(copyHero, ph === 'hero', { y: ph === 'hero' ? 0 : -24 });
     show(copyLayers, ph === 'layers');
+    // тур по слоям идёт, только пока видна расслойка; ушли к луне — пауза, вернулись — продолжение
+    if (tourTl) { if (ph === 'layers') tourTl.resume(); else if (ph !== 'out') tourTl.pause(); }
     gsap.to(I, { hero: ph === 'hero' ? 1 : 0, duration: ph === 'hero' ? inn : out, delay: ph === 'hero' ? wait : 0, ease: 'power2.out', overwrite: 'auto', onUpdate: render });
   }
 
