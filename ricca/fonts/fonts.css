@@ -1,0 +1,222 @@
+/*
+ * RICCA DESIGNS — локальные шрифты (woff2, вариативные, только латиница + кириллица)
+ * ------------------------------------------------------------------------------
+ * Подключение (пути внутри файла относительные, работают из любой папки):
+ *   из корня ricca/:      <link rel="stylesheet" href="fonts/fonts.css">
+ *   из ricca/css/*.css:    @import url("../fonts/fonts.css");
+ * Браузер скачивает только те начертания и подмножества, которые реально
+ * используются на странице, поэтому объявлять все семейства — безопасно.
+ *
+ * Лицензии: все шесть семейств — SIL Open Font License 1.1 (OFL.txt в каждой папке).
+ * Источник файлов: Google Fonts через npm-пакеты @fontsource-variable/* v5.3.
+ *
+ * Пары (подробно — в fonts/specimen.html):
+ *   A «Galleria»     — Noto Serif Display (заголовки) + Manrope (текст, капитель)
+ *   B «Sartoria»     — Cormorant (заголовки)          + Ysabeau Office (текст, капитель)
+ *   C «Gran Turismo» — Playfair (заголовки)           + Montserrat (широкие заглавные, текст)
+ *
+ * Для цифр в антиквах (телефон, адрес) ставьте font-variant-numeric: lining-nums;
+ * у Cormorant и Playfair по умолчанию старостильные цифры.
+ */
+
+/* ===== Noto Serif Display — Дисплейная антиква, высокий контраст (дидона). Оси: wght 100–900, wdth 62.5–100. ===== */
+@font-face {
+  font-family: 'Noto Serif Display';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-display: swap;
+  src: url("noto-serif-display/noto-serif-display-cyrillic-var-normal.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Noto Serif Display';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-display: swap;
+  src: url("noto-serif-display/noto-serif-display-latin-var-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Noto Serif Display';
+  font-style: italic;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-display: swap;
+  src: url("noto-serif-display/noto-serif-display-cyrillic-var-italic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Noto Serif Display';
+  font-style: italic;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-display: swap;
+  src: url("noto-serif-display/noto-serif-display-latin-var-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ===== Cormorant — Дисплейная гарамона, тонкие засечки, роскошный курсив. Ось: wght 300–700. ===== */
+@font-face {
+  font-family: 'Cormorant';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("cormorant/cormorant-cyrillic-var-normal.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Cormorant';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("cormorant/cormorant-latin-var-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Cormorant';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("cormorant/cormorant-cyrillic-var-italic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Cormorant';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("cormorant/cormorant-latin-var-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ===== Playfair — Playfair 2 (не Playfair Display!). Оси: opsz 5–1200 (включается автоматически по кеглю), wght 300–900. Ширина фиксирована: wdth 112.5 (широкая). ===== */
+@font-face {
+  font-family: 'Playfair';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url("playfair/playfair-cyrillic-var-normal.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Playfair';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url("playfair/playfair-latin-var-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Playfair';
+  font-style: italic;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url("playfair/playfair-cyrillic-var-italic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Playfair';
+  font-style: italic;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url("playfair/playfair-latin-var-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ===== Manrope — Текстовый гротеск, спокойный и современный. Ось: wght 200–800. Курсива нет. ===== */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("manrope/manrope-cyrillic-var-normal.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("manrope/manrope-latin-var-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ===== Montserrat — Широкий геометрический гротеск для разреженных заглавных. Ось: wght 100–900. ===== */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("montserrat/montserrat-cyrillic-var-normal.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("montserrat/montserrat-latin-var-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("montserrat/montserrat-cyrillic-var-italic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("montserrat/montserrat-latin-var-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ===== Ysabeau Office — Гуманистический гротеск — компаньон Cormorant от того же автора. Ось: wght 1–1000. Цифры моноширинные, лининговые. ===== */
+@font-face {
+  font-family: 'Ysabeau Office';
+  font-style: normal;
+  font-weight: 1 1000;
+  font-display: swap;
+  src: url("ysabeau-office/ysabeau-office-cyrillic-var-normal.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Ysabeau Office';
+  font-style: normal;
+  font-weight: 1 1000;
+  font-display: swap;
+  src: url("ysabeau-office/ysabeau-office-latin-var-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Ysabeau Office';
+  font-style: italic;
+  font-weight: 1 1000;
+  font-display: swap;
+  src: url("ysabeau-office/ysabeau-office-cyrillic-var-italic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Ysabeau Office';
+  font-style: italic;
+  font-weight: 1 1000;
+  font-display: swap;
+  src: url("ysabeau-office/ysabeau-office-latin-var-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ===== Готовые стеки с системными запасными шрифтами ===== */
+:root {
+  --rd-font-noto-serif-display: 'Noto Serif Display', 'Didot', 'Bodoni 72', 'Times New Roman', serif;
+  --rd-font-cormorant: 'Cormorant', 'Garamond', 'Georgia', 'Times New Roman', serif;
+  --rd-font-playfair: 'Playfair', 'Didot', 'Georgia', 'Times New Roman', serif;
+  --rd-font-manrope: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --rd-font-montserrat: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --rd-font-ysabeau: 'Ysabeau Office', 'Optima', 'Candara', 'Segoe UI', system-ui, sans-serif;
+}
