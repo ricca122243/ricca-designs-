@@ -7,23 +7,40 @@
 <meta name="description" content="Ателье мягкой мебели в Алматы: диваны, кровати и кресла на заказ и собственные коллекции. Шоурум на Навои, 208/2. Гарантия 3 года, доставка по Казахстану.">
 <meta name="theme-color" content="#F4F1EC">
 <meta name="format-detection" content="telephone=no">
+<!-- TODO: домен ещё не подтверждён (почта — @ricca-designs.kz). Если сайт будет на другом адресе,
+     поправить все https://ricca-designs.kz/ ниже: og:url, canonical, og:image и JSON-LD (url, image, logo). -->
+<link rel="canonical" href="https://ricca-designs.kz/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:site_name" content="RICCA DESIGNS">
+<meta property="og:url" content="https://ricca-designs.kz/">
 <meta property="og:title" content="RICCA DESIGNS — ателье мягкой мебели в Алматы">
 <meta property="og:description" content="Мебель по мерке: диваны, кровати и кресла на заказ и собственные коллекции. Шоурум на Навои, 208/2.">
-<meta property="og:image" content="img/logo/og-image.jpg">
+<meta property="og:image" content="https://ricca-designs.kz/img/logo/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Монограмма RD и подпись RICCA DESIGNS · ALMATY на светлом фоне">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="img/logo/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="img/logo/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="img/logo/apple-touch-icon.png">
-<!-- Критичные шрифты: только кириллица прямого начертания. Курсив и латиница грузятся по необходимости. -->
+<!-- Шрифты первого экрана: кириллица Noto (прямой и курсив «по мерке») и Manrope целиком.
+     Пробелы берутся из кириллических файлов (см. unicode-range в css/site.css), поэтому латиница Noto
+     первому экрану не нужна и догружается позже. -->
 <link rel="preload" href="fonts/noto-serif-display/noto-serif-display-cyrillic-var-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/noto-serif-display/noto-serif-display-cyrillic-var-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/manrope/manrope-cyrillic-var-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" as="image" href="img/interior/living-01-warm.webp" imagesrcset="img/interior/living-01-warm.webp 513w, img/interior/living-01-warm@2x.webp 1026w" imagesizes="(min-width: 768px) 460px, 92vw" fetchpriority="high">
-<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="preload" href="fonts/manrope/manrope-latin-var-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" as="image" href="img/interior/living-01-wide-warm.webp" imagesrcset="img/interior/living-01-wide-warm.webp 513w, img/interior/living-01-wide-warm@2x.webp 1026w" imagesizes="calc(100vw - 64px)" media="(max-width: 767px)" fetchpriority="high">
+<link rel="preload" as="image" href="img/interior/living-01-warm.webp" imagesrcset="img/interior/living-01-warm.webp 513w, img/interior/living-01-warm@2x.webp 1026w" imagesizes="400px" media="(min-width: 768px)" fetchpriority="high">
 <link rel="stylesheet" href="css/site.css">
-<script>document.documentElement.classList.add('js');</script>
+<script>
+  (function (d, m) {
+    d.classList.add('js');
+    // Закреплённый проход по коллекциям включаем до первой отрисовки, чтобы не было скачка вёрстки
+    if (m('(min-width: 1024px) and (min-height: 620px)').matches && !m('(prefers-reduced-motion: reduce)').matches) d.classList.add('enf-on');
+  })(document.documentElement, window.matchMedia.bind(window));
+</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -39,6 +56,9 @@
     "addressCountry": "KZ"
   },
   "openingHours": "Mo-Su 10:00-20:00",
+  "url": "https://ricca-designs.kz/",
+  "image": "https://ricca-designs.kz/img/logo/og-image.jpg",
+  "logo": "https://ricca-designs.kz/img/logo/apple-touch-icon.png",
   "hasMap": "https://go.2gis.com/1SUmO",
   "sameAs": ["https://instagram.com/ricca.designs", "https://go.2gis.com/1SUmO"]
 }
@@ -70,8 +90,11 @@
       <a href="#business">Для бизнеса</a>
       <a href="#showroom">Шоурум</a>
     </nav>
+    <!-- Контакты как данные. Номера заданы в CONFIG в js/site.js: WhatsApp/основной +7 (708) 480-20-47, отдел заказов +7 (707) 955-08-08.
+         Скрипт сам переписывает все ссылки [data-wa] и [data-tel]. Ссылки в HTML — запасной вариант без JS; при смене номера
+         поправьте также: href="https://wa.me/77084802047" (поиск по файлу), href="tel:…" и JSON-LD в <head>. -->
     <a class="hdr__wa" href="https://wa.me/77084802047" data-wa="general">
-      <svg aria-hidden="true"><use href="#i-wa"/></svg><span class="hdr__wa-t">WhatsApp</span><span class="vh hdr__wa-sr">Написать в WhatsApp</span>
+      <svg aria-hidden="true"><use href="#i-wa"/></svg><span class="hdr__wa-t" aria-hidden="true">WhatsApp</span><span class="vh hdr__wa-sr">Написать в WhatsApp</span>
     </a>
     <button class="hdr__menu" type="button" aria-expanded="false" aria-controls="menu" aria-label="Открыть меню">
       <span class="hdr__menu-label" aria-hidden="true">Меню</span>
@@ -83,17 +106,17 @@
 <!-- Мобильное меню — план экспозиции -->
 <div class="menu" id="menu" hidden>
   <nav class="menu__nav" aria-label="Разделы сайта">
-    <a href="#atelier"><span>I</span>Ателье</a>
-    <a href="#collections"><span>II</span>Коллекции</a>
-    <a href="#process"><span>III</span>Производство</a>
-    <a href="#materials"><span>IV</span>Материалы</a>
-    <a href="#business"><span>V</span>Для бизнеса</a>
-    <a href="#showroom"><span>VI</span>Шоурум и&nbsp;контакты</a>
+    <a href="#atelier"><span aria-hidden="true">I</span>Ателье</a>
+    <a href="#collections"><span aria-hidden="true">II</span>Коллекции</a>
+    <a href="#process"><span aria-hidden="true">III</span>Производство</a>
+    <a href="#materials"><span aria-hidden="true">IV</span>Материалы</a>
+    <a href="#business"><span aria-hidden="true">V</span>Для бизнеса</a>
+    <a href="#showroom"><span aria-hidden="true">VI</span>Шоурум и&nbsp;контакты</a>
   </nav>
   <div class="menu__foot">
     <p class="menu__k">Шоурум · ежедневно 10:00–20:00</p>
-    <a href="tel:+77084802047" class="menu__tel tel">+7&nbsp;(708)&nbsp;480-20-47</a>
-    <p class="menu__addr">ул.&nbsp;Алишера Навои, 208/2, ЖК&nbsp;«Шахристан»</p>
+    <a href="tel:+77084802047" class="menu__tel tel" data-tel="main">+7&nbsp;(708)&nbsp;480-20-47</a>
+    <a class="menu__addr" href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">ул.&nbsp;Алишера Навои,&nbsp;208/2, ЖК&nbsp;«Шахристан»<span class="menu__addr-go">Маршрут в&nbsp;2ГИС</span><span class="vh"> (откроется в новой вкладке)</span></a>
     <a class="btn btn--solid btn--wide" href="https://wa.me/77084802047" data-wa="general"><svg aria-hidden="true"><use href="#i-wa"/></svg>Написать в&nbsp;WhatsApp</a>
     <a class="link menu__ig" href="https://instagram.com/ricca.designs" target="_blank" rel="noopener">Instagram @ricca.designs<span class="vh"> (откроется в новой вкладке)</span></a>
   </div>
@@ -107,23 +130,30 @@
     <p class="eyebrow hero__eyebrow" data-hero>Ателье мягкой мебели · Алматы</p>
     <h1 class="hero__title" id="hero-title">
       <span class="ln"><span data-hero>Мебель</span></span>
-      <span class="ln ln--in"><span data-hero><em>по&nbsp;мерке</em></span></span>
+      <span class="ln ln--in"><span data-hero><em>по</em> <em>мерке</em></span></span>
       <span class="ln"><span data-hero>вашего дома</span></span>
     </h1>
     <div class="hero__foot" data-hero>
       <p class="hero__sub">Диваны, кровати и&nbsp;кресла на&nbsp;заказ и&nbsp;собственные коллекции.<span class="hero__sub-more"> Проектируем, шьём и&nbsp;собираем в&nbsp;своём ателье в&nbsp;Алматы.</span></p>
       <div class="hero__cta" data-hero-cta>
-        <a class="btn btn--solid" href="#showroom">Посетить шоурум</a>
+        <a class="btn btn--solid" href="#showroom" data-visit>Посетить шоурум</a>
         <a class="link link--wa" href="https://wa.me/77084802047" data-wa="general"><svg aria-hidden="true"><use href="#i-wa"/></svg>Написать в&nbsp;WhatsApp</a>
       </div>
+      <!-- Телефон и планшет: адрес шоурума сразу на первом экране (на десктопе — полоса внизу экрана) -->
+      <a class="hero__visit" href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener"><span>Шоурум на&nbsp;Навои,&nbsp;208/2 · <span class="nw">ежедневно 10–20</span></span><svg aria-hidden="true"><use href="#i-arrow"/></svg><span class="vh"> — маршрут в 2ГИС (откроется в новой вкладке)</span></a>
     </div>
 
     <figure class="hero__work" data-hero>
-      <button class="work work--p45" type="button" data-lightbox data-full="img/interior/living-01-warm@2x.webp" data-w="1026" data-h="1280" data-caption="N° 00 · Гостиная. Угловой диван, вязаный пуф, льняные шторы" aria-label="Открыть фотографию гостиной крупнее">
-        <span class="work__win"><img src="img/interior/living-01-warm.webp" srcset="img/interior/living-01-warm.webp 513w, img/interior/living-01-warm@2x.webp 1026w" sizes="(min-width: 768px) 460px, 92vw" width="513" height="640" alt="Светлый угловой диван с подушками в гостиной: льняные шторы, паркет ёлочкой, мягкий дневной свет" fetchpriority="high" decoding="async"></span>
+      <!-- TODO для заказчика: переснять фото первого экрана — не меньше 2000 px по длинной стороне.
+           Сейчас исходник 513×640, поэтому окно ограничено ~400 px, а лайтбокс не увеличивает его больше родного размера (data-max). -->
+      <button class="work work--p45 work--hero" type="button" data-lightbox data-full="img/interior/living-01-warm@2x.webp" data-w="1026" data-h="1280" data-max="513" data-caption="Nº 00 · Гостиная · настроение RICCA. Угловой диван, вязаный пуф, льняной тюль" aria-label="Открыть фотографию гостиной крупнее">
+        <span class="work__win"><picture>
+          <source media="(max-width: 767px)" srcset="img/interior/living-01-wide-warm.webp 513w, img/interior/living-01-wide-warm@2x.webp 1026w" sizes="calc(100vw - 64px)" width="513" height="342">
+          <img src="img/interior/living-01-warm.webp" srcset="img/interior/living-01-warm.webp 513w, img/interior/living-01-warm@2x.webp 1026w" sizes="400px" width="513" height="640" alt="Светлый угловой диван с подушками в гостиной: льняной тюль, паркет ёлочкой, мягкий дневной свет" fetchpriority="high" decoding="async">
+        </picture></span>
       </button>
       <figcaption class="label label--hero">
-        <span class="label__no">N° 00</span>
+        <span class="label__no">Nº 00</span>
         <span class="label__title">Гостиная</span>
         <span class="label__meta">Настроение RICCA</span>
       </figcaption>
@@ -144,34 +174,34 @@
   <div class="wrap">
     <header class="hall__head">
       <p class="plaque" data-reveal><span class="plaque__no" aria-hidden="true">I</span><span class="plaque__name">Ателье</span></p>
-      <h2 class="h2" id="atelier-title" data-reveal>Мы начинаем <em>с&nbsp;пропорций</em></h2>
+      <h2 class="h2" id="atelier-title" data-reveal>Мы начинаем с&nbsp;пропорций</h2>
     </header>
 
     <div class="atelier">
       <p class="atelier__lead" data-reveal>Проект, раскрой, пошив, каркас и&nbsp;обивка&nbsp;— в&nbsp;одних руках. Поэтому мы отвечаем за&nbsp;каждую вещь целиком.</p>
 
       <figure class="atelier__work exhibit">
-        <button class="work work--p45" type="button" data-lightbox data-full="img/showroom/sofa-03-warm@2x.webp" data-w="956" data-h="1700" data-caption="Шоурум на Навои, 208/2 · посадку проверяют сидя" aria-label="Открыть фотографию дивана в шоуруме крупнее">
+        <button class="work work--p45" type="button" data-lightbox data-full="img/showroom/sofa-03-warm@2x.webp" data-w="956" data-h="1700" data-caption="Шоурум на&nbsp;Навои,&nbsp;208/2 · посадку проверяют сидя" data-max="478" aria-label="Открыть фотографию дивана в шоуруме крупнее">
           <span class="work__win"><img src="img/showroom/sofa-03-warm.webp" srcset="img/showroom/sofa-03-warm.webp 478w, img/showroom/sofa-03-warm@2x.webp 956w" sizes="(min-width: 1024px) 330px, 56vw" width="478" height="850" loading="lazy" decoding="async" style="object-position: 50% 72%" alt="Угол светлого дивана в шоуруме: глубокая посадка, мягкие модули и подушка из той же ткани"></span>
         </button>
         <figcaption class="label">
-          <span class="label__no">Шоурум · Навои, 208/2</span>
+          <span class="label__no">Шоурум · Навои,&nbsp;208/2</span>
           <span class="label__title">Посадку проверяют сидя</span>
           <span class="label__meta">Фотография</span>
         </figcaption>
       </figure>
 
       <div class="atelier__body" data-reveal>
-        <p>RICCA DESIGNS&nbsp;— ателье мягкой мебели в&nbsp;Алматы. Мы делаем мебель на&nbsp;заказ&nbsp;— под конкретную комнату, свет и&nbsp;привычки семьи&nbsp;— и&nbsp;выпускаем собственные коллекции.</p>
+        <p>RICCA&nbsp;DESIGNS&nbsp;— ателье мягкой мебели в&nbsp;Алматы. Мы делаем мебель на&nbsp;заказ&nbsp;— под конкретную комнату, свет и&nbsp;привычки семьи&nbsp;— и&nbsp;выпускаем собственные коллекции.</p>
         <p>Работаем с&nbsp;частными заказчиками, дизайнерами интерьера и&nbsp;коммерческими объектами.</p>
         <p class="atelier__sign">Мы не&nbsp;гонимся за&nbsp;трендами. Хорошая форма не&nbsp;требует объяснений.</p>
       </div>
     </div>
 
     <ul class="pillars" role="list">
-      <li data-reveal><span class="pillars__no">01</span><h3>Своё ателье</h3><p>От&nbsp;3D-проекта до&nbsp;сборки&nbsp;— в&nbsp;одних руках.</p></li>
-      <li data-reveal><span class="pillars__no">02</span><h3><em lang="it">Su misura</em></h3><p>По&nbsp;мерке: размер, ткань и&nbsp;детали&nbsp;— под ваш интерьер.</p></li>
-      <li data-reveal><span class="pillars__no">03</span><h3>Гарантия 3&nbsp;года</h3><p>И&nbsp;доставка по&nbsp;Казахстану.</p></li>
+      <li data-reveal><h3>Своё ателье</h3><p>От&nbsp;3D-проекта до&nbsp;сборки&nbsp;— в&nbsp;одних руках.</p></li>
+      <li data-reveal><h3 lang="it">Su misura</h3><p>По&nbsp;мерке: размер, ткань и&nbsp;детали&nbsp;— под&nbsp;ваш интерьер.</p></li>
+      <li data-reveal><h3>Гарантия 3&nbsp;года</h3><p>И&nbsp;доставка по&nbsp;Казахстану.</p></li>
     </ul>
   </div>
 </section>
@@ -182,7 +212,7 @@
     <div class="enfilade__move" data-move>
       <header class="enfilade__intro">
         <p class="plaque" data-reveal><span class="plaque__no" aria-hidden="true">II</span><span class="plaque__name">Коллекции</span></p>
-        <h2 class="h2" id="collections-title" data-reveal>Шесть направлений&nbsp;— <em>одна линия</em></h2>
+        <h2 class="h2" id="collections-title" data-reveal>Шесть направлений&nbsp;— одна линия</h2>
         <p class="enfilade__sub" data-reveal>Модели из&nbsp;коллекций адаптируем под ваш интерьер: размер, ткань, отделку дерева.</p>
         <p class="enfilade__note" data-reveal>Цена зависит от&nbsp;размера, ткани и&nbsp;отделки. Рассчитаем её в&nbsp;WhatsApp или в&nbsp;шоуруме.</p>
         <p class="enfilade__hint" aria-hidden="true"><span>Пройдите по&nbsp;залу</span><svg><use href="#i-arrow"/></svg></p>
@@ -192,15 +222,13 @@
 
       <!-- 01 -->
       <article class="exhibit exhibit--p916" aria-labelledby="ex1">
-        <button class="work work--p916" type="button" data-lightbox data-full="img/showroom/sofa-01-warm@2x.webp" data-w="956" data-h="1700" data-caption="N° 01 · Мягкая мебель — диван в шоуруме RICCA DESIGNS" aria-label="Открыть фотографию дивана крупнее">
+        <button class="work work--p916" type="button" data-lightbox data-full="img/showroom/sofa-01-warm@2x.webp" data-w="956" data-h="1700" data-caption="Nº 01 · Мягкая мебель&nbsp;— диван в&nbsp;шоуруме RICCA&nbsp;DESIGNS" data-max="478" aria-label="Открыть фотографию дивана крупнее">
           <span class="work__win"><img src="img/showroom/sofa-01-warm.webp" srcset="img/showroom/sofa-01-warm.webp 478w, img/showroom/sofa-01-warm@2x.webp 956w" sizes="(min-width: 1024px) 280px, 74vw" width="478" height="850" loading="lazy" decoding="async" alt="Светлый диван с мягкими подушками на деревянном цоколе в шоуруме RICCA DESIGNS"></span>
         </button>
         <div class="label">
-          <span class="label__no">N° 01</span>
+          <span class="label__no">Nº 01 · шоурум</span>
           <h3 class="label__title" id="ex1">Мягкая мебель</h3>
           <p class="label__text">Диваны&nbsp;— прямые и&nbsp;угловые, в&nbsp;размер вашей гостиной.</p>
-          <p class="label__meta">Фотография · шоурум на&nbsp;Навои</p>
-          <a class="link link--sm" href="https://wa.me/77084802047" data-wa="col" data-col="Мягкая мебель">Запросить подборку</a>
         </div>
       </article>
 
@@ -229,28 +257,25 @@
           </span>
         </div>
         <div class="label">
-          <span class="label__no">N° 02</span>
+          <span class="label__no">Nº 02 · эскиз</span>
           <h3 class="label__title" id="ex2">Дизайнерские кровати</h3>
-          <p class="label__text">Изголовье, ткань и&nbsp;размер&nbsp;— под вашу спальню.</p>
-          <p class="label__meta">Эскиз · фото моделей в&nbsp;шоуруме</p>
-          <a class="link link--sm" href="https://wa.me/77084802047" data-wa="col" data-col="Дизайнерские кровати">Запросить подборку</a>
+          <p class="label__text">Изголовье, ткань и&nbsp;размер&nbsp;— под&nbsp;вашу спальню.</p>
         </div>
       </article>
 
       <!-- 03 · ELUNA — ореховое паспарту -->
       <article class="exhibit exhibit--l32" aria-labelledby="ex3">
-        <button class="work work--l32 work--walnut" type="button" data-lightbox data-dark data-full="img/eluna/mattress-layers-walnut.webp" data-w="1200" data-h="800" data-caption="N° 03 · ELUNA — матрас в разрезе" aria-label="Открыть изображение матраса ELUNA крупнее">
+        <button class="work work--l32 work--walnut" type="button" data-lightbox data-dark data-full="img/eluna/mattress-layers-walnut.webp" data-w="1200" data-h="800" data-caption="Nº 03 · ELUNA&nbsp;— матрас в&nbsp;разрезе" aria-label="Открыть изображение матраса ELUNA крупнее">
           <span class="work__win"><img src="img/eluna/mattress-layers-walnut-800.webp" srcset="img/eluna/mattress-layers-walnut-800.webp 800w, img/eluna/mattress-layers-walnut.webp 1200w" sizes="(min-width: 1024px) 460px, 74vw" width="800" height="533" loading="lazy" decoding="async" alt="Угол матраса ELUNA в разрезе: стёганый чехол, слои наполнителя и независимые пружины"></span>
         </button>
         <div class="label">
-          <span class="label__no">N° 03</span>
+          <span class="label__no">Nº 03 · ELUNA</span>
           <h3 class="label__title" id="ex3">Ортопедические матрасы</h3>
-          <p class="label__text">ELUNA&nbsp;— наш бренд матрасов. Слои и&nbsp;жёсткость подбираем под вас.</p>
-          <p class="label__meta">ELUNA · матрас в&nbsp;разрезе</p>
+          <p class="label__text">ELUNA&nbsp;— наш бренд матрасов. Слои и&nbsp;жёсткость подбираем под&nbsp;вас.</p>
           <span class="label__links">
             <!-- TODO: окончательный адрес сайта ELUNA уточняется; пока ведёт на сайт ELUNA в корне этого репозитория -->
             <a class="link link--sm" href="../index.html">Сайт ELUNA</a>
-            <a class="link link--sm link--quiet" href="https://wa.me/77084802047" data-wa="eluna">Спросить в&nbsp;WhatsApp</a>
+            <a class="link link--sm link--quiet" href="https://wa.me/77084802047" data-wa="eluna"><span class="vh">Спросить про матрасы ELUNA в </span>WhatsApp<span class="vh"> (откроется в новой вкладке)</span></a>
           </span>
         </div>
       </article>
@@ -282,11 +307,9 @@
           </span>
         </div>
         <div class="label">
-          <span class="label__no">N° 04</span>
+          <span class="label__no">Nº 04 · эскиз</span>
           <h3 class="label__title" id="ex4">Столы и&nbsp;консоли</h3>
-          <p class="label__text">Спокойная пара для мягкой мебели: дерево, камень, металл.</p>
-          <p class="label__meta">Эскиз · фото моделей в&nbsp;шоуруме</p>
-          <a class="link link--sm" href="https://wa.me/77084802047" data-wa="col" data-col="Столы и консоли">Запросить подборку</a>
+          <p class="label__text">Спокойная пара для&nbsp;мягкой мебели.</p>
         </div>
       </article>
 
@@ -314,34 +337,51 @@
           </span>
         </div>
         <div class="label">
-          <span class="label__no">N° 05</span>
-          <h3 class="label__title" id="ex5">Кресла для отдыха</h3>
+          <span class="label__no">Nº 05 · эскиз</span>
+          <h3 class="label__title" id="ex5">Кресла для&nbsp;отдыха</h3>
           <p class="label__text">Кресла, в&nbsp;которых хочется задержаться с&nbsp;книгой.</p>
-          <p class="label__meta">Эскиз · фото моделей в&nbsp;шоуруме</p>
-          <a class="link link--sm" href="https://wa.me/77084802047" data-wa="col" data-col="Кресла для отдыха">Запросить подборку</a>
         </div>
       </article>
 
-      <!-- 06 -->
-      <article class="exhibit exhibit--p916" aria-labelledby="ex6">
-        <button class="work work--p916" type="button" data-lightbox data-full="img/showroom/sofa-02-warm@2x.webp" data-w="956" data-h="1700" data-caption="N° 06 · Коллекции 2026 — диван в шоуруме" aria-label="Открыть фотографию дивана крупнее">
-          <span class="work__win"><img src="img/showroom/sofa-02-warm.webp" srcset="img/showroom/sofa-02-warm.webp 478w, img/showroom/sofa-02-warm@2x.webp 956w" sizes="(min-width: 1024px) 280px, 74vw" width="478" height="850" loading="lazy" decoding="async" alt="Светлый диван с глубоким сиденьем и двумя подушками у светлой стены шоурума"></span>
-        </button>
+      <!-- 06 · заглушка-эскиз до съёмки коллекции 2026 -->
+      <article class="exhibit exhibit--sq" aria-labelledby="ex6">
+        <div class="work work--sketch">
+          <span class="work__win">
+            <svg class="sketch" viewBox="0 0 400 300" role="img" aria-label="Эскиз низкого модульного дивана на деревянном цоколе">
+              <g class="sk-guide"><path d="M40 250 L200 66 L360 250"/><path d="M200 40 V262"/></g>
+              <g class="sk-line">
+                <path class="sk-fill" d="M58 184 V124 Q58 106 76 106 H324 Q342 106 342 124 V184 Z"/>
+                <rect class="sk-fill" x="76" y="116" width="80" height="60" rx="16"/>
+                <rect class="sk-fill" x="160" y="116" width="80" height="60" rx="16"/>
+                <rect class="sk-fill" x="244" y="116" width="80" height="60" rx="16"/>
+                <path class="sk-fill" d="M262 132 Q266 120 290 124 Q304 127 303 146 Q302 164 288 166 Q270 167 263 157 Q257 145 262 132 Z"/>
+                <rect class="sk-fill" x="44" y="186" width="312" height="42" rx="8"/>
+                <rect class="sk-fill" x="74" y="168" width="82" height="26" rx="10"/>
+                <rect class="sk-fill" x="159" y="168" width="82" height="26" rx="10"/>
+                <rect class="sk-fill" x="244" y="168" width="82" height="26" rx="10"/>
+                <rect class="sk-fill" x="38" y="136" width="38" height="92" rx="13"/>
+                <rect class="sk-fill" x="324" y="136" width="38" height="92" rx="13"/>
+                <rect class="sk-fill" x="62" y="228" width="276" height="22" rx="1.5"/>
+              </g>
+              <g class="sk-seam"><path d="M80 182 H150 M165 182 H235 M250 182 H320"/><path d="M50 212 H350"/></g>
+              <g class="sk-dim"><path d="M38 76 V98 M362 76 V98"/><path d="M38 87 H160 M240 87 H362"/><path d="M34 91 L42 83 M358 91 L366 83"/><text x="200" y="91">2026</text></g>
+              <path class="sk-floor" d="M24 250 H376"/>
+            </svg>
+          </span>
+        </div>
         <div class="label">
-          <span class="label__no">N° 06</span>
+          <span class="label__no">Nº 06 · эскиз</span>
           <h3 class="label__title" id="ex6">Коллекции 2026</h3>
-          <p class="label__text">Новые модели этого года. Спросите, что уже стоит в&nbsp;шоуруме.</p>
-          <p class="label__meta">Фотография · шоурум на&nbsp;Навои</p>
-          <a class="link link--sm" href="https://wa.me/77084802047" data-wa="col" data-col="Коллекции 2026">Запросить подборку</a>
+          <p class="label__text">Новые модели 2026&nbsp;года. Спросите, что уже стоит в&nbsp;шоуруме.</p>
         </div>
       </article>
 
-      <aside class="enfilade__end" aria-label="Конец зала">
+      <div class="enfilade__end" role="group" aria-label="Конец зала">
         <p class="enfilade__end-k">Конец зала</p>
-        <p class="enfilade__end-t">Все направления можно увидеть и&nbsp;потрогать в&nbsp;шоуруме на&nbsp;Навои.</p>
-        <a class="link" href="#showroom">Посетить шоурум</a>
-        <a class="link link--quiet link--next" href="#process">Следующий зал · Производство<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
-      </aside>
+        <p class="enfilade__end-t">Посадку, ткань и&nbsp;отделку лучше оценить вживую&nbsp;— в&nbsp;шоуруме на&nbsp;Навои.</p>
+        <a class="link" href="https://wa.me/77084802047" data-wa="collection"><svg aria-hidden="true"><use href="#i-wa"/></svg>Запросить подборку<span class="vh"> в WhatsApp (откроется в новой вкладке)</span></a>
+        <a class="link link--quiet" href="#showroom" data-visit>Посетить шоурум</a>
+      </div>
       </div>
     </div>
 
@@ -358,9 +398,9 @@
   <div class="wrap">
     <header class="hall__head">
       <p class="plaque" data-reveal><span class="plaque__no" aria-hidden="true">III</span><span class="plaque__name">Производство</span></p>
-      <h2 class="h2" id="process-title" data-reveal>От&nbsp;эскиза до&nbsp;<em>последнего шва</em></h2>
+      <h2 class="h2" id="process-title" data-reveal>От&nbsp;эскиза до&nbsp;последнего шва</h2>
       <div class="hall__lead hall__lead--row" data-reveal>
-        <p>Восемь шагов одного дивана&nbsp;— в&nbsp;кадрах из&nbsp;нашего ателье. Выберите шаг или смотрите подряд.</p>
+        <p>Восемь шагов одного дивана&nbsp;— в&nbsp;кадрах из&nbsp;нашего ателье. Выберите шаг или&nbsp;смотрите подряд.</p>
         <button class="film-btn" type="button" data-film>
           <span class="film-btn__play" aria-hidden="true"></span>
           <span><b>Фильм целиком</b><small>20&nbsp;секунд · без звука</small></span>
@@ -369,7 +409,7 @@
     </header>
 
     <div class="reel" data-reel>
-      <figure class="reel__stage">
+      <figure class="reel__stage" aria-label="Кадры из ателье RICCA">
         <div class="work work--p916 reel__work">
           <span class="work__win reel__screen">
             <video class="reel__v is-on" muted playsinline preload="none" width="478" height="850" data-poster="img/process/step-01-design.webp" aria-label="Кадры из ателье RICCA: текущий шаг"></video>
@@ -377,17 +417,17 @@
           </span>
         </div>
         <figcaption class="reel__cap">
-          <span class="reel__count" aria-hidden="true">Сцена <b data-reel-no>01</b> / 09</span>
+          <span class="reel__count" aria-hidden="true" data-reel-count>Шаг <b>01</b> / 08</span>
           <span class="reel__rail" aria-hidden="true"><i data-reel-rail></i></span>
-          <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false">Пауза</button>
+          <button class="reel__toggle" type="button" data-reel-toggle>Пауза</button>
         </figcaption>
       </figure>
 
       <div class="reel__chapters">
-        <p class="reel__hint" id="reel-hint">Главы · выберите шаг</p>
+        <p class="reel__hint" id="reel-hint">Шаги · выберите любой</p>
         <ol class="reel__list" aria-labelledby="reel-hint">
-          <li><button class="ch is-active" type="button" aria-pressed="true" data-clips="step-01-design" data-text="Модель строят в&nbsp;3D: пропорции, посадка и&nbsp;размер под вашу комнату.">
-            <span class="ch__no">01</span><span class="ch__t">Проект</span><span class="ch__p">Модель строят в&nbsp;3D: пропорции, посадка и&nbsp;размер под вашу комнату.</span><span class="ch__bar" aria-hidden="true"></span>
+          <li><button class="ch is-active" type="button" aria-pressed="true" data-clips="step-01-design" data-text="Модель строят в&nbsp;3D: пропорции, посадка и&nbsp;размер под&nbsp;вашу комнату.">
+            <span class="ch__no">01</span><span class="ch__t">Проект</span><span class="ch__p">Модель строят в&nbsp;3D: пропорции, посадка и&nbsp;размер под&nbsp;вашу комнату.</span><span class="ch__bar" aria-hidden="true"></span>
           </button></li>
           <li><button class="ch" type="button" aria-pressed="false" data-clips="step-03-pattern" data-text="Детали размечают и&nbsp;кроят по&nbsp;лекалам.">
             <span class="ch__no">02</span><span class="ch__t">Раскрой</span><span class="ch__p">Детали размечают и&nbsp;кроят по&nbsp;лекалам.</span><span class="ch__bar" aria-hidden="true"></span>
@@ -410,12 +450,14 @@
           <li><button class="ch" type="button" aria-pressed="false" data-clips="step-09-assembly" data-text="Мастер собирает изделие и&nbsp;проверяет посадку, швы и&nbsp;линии.">
             <span class="ch__no">08</span><span class="ch__t">Сборка</span><span class="ch__p">Мастер собирает изделие и&nbsp;проверяет посадку, швы и&nbsp;линии.</span><span class="ch__bar" aria-hidden="true"></span>
           </button></li>
-          <li><button class="ch ch--final" type="button" aria-pressed="false" data-clips="step-10-finished" data-text="Готово. Остаётся только сесть.">
-            <span class="ch__no">09</span><span class="ch__t">Готово</span><span class="ch__p"><em>Остаётся только сесть.</em></span><span class="ch__bar" aria-hidden="true"></span>
+          <li class="reel__coda"><button class="ch ch--final" type="button" aria-pressed="false" data-clips="step-10-finished" data-text="Готово. Остаётся только сесть.">
+            <span class="ch__no" aria-hidden="true"></span><span class="ch__t">Готово</span><span class="ch__p">Остаётся только сесть.</span><span class="ch__bar" aria-hidden="true"></span>
           </button></li>
         </ol>
       </div>
-      <p class="reel__desc" data-reel-desc aria-live="polite">Модель строят в&nbsp;3D: пропорции, посадка и&nbsp;размер под вашу комнату.</p>
+      <!-- Описание шага (телефон): все тексты лежат в одной ячейке сетки, высота блока не скачет -->
+      <p class="reel__desc" data-reel-desc><span class="is-on">Модель строят в&nbsp;3D: пропорции, посадка и&nbsp;размер под&nbsp;вашу комнату.</span></p>
+      <p class="vh" data-reel-live aria-live="polite"></p>
     </div>
   </div>
 </section>
@@ -425,46 +467,49 @@
   <div class="wrap materials">
     <div class="materials__text">
       <p class="plaque" data-reveal><span class="plaque__no" aria-hidden="true">IV</span><span class="plaque__name">Материалы</span></p>
-      <h2 class="h2" id="materials-title" data-reveal>Ткань выбирают <em>руками</em></h2>
-      <p class="hall__lead" data-reveal>В&nbsp;шоуруме собрана палитра тканей и&nbsp;кож. Образцы можно потрогать, сравнить рядом и&nbsp;вместе с&nbsp;нами выбрать тот, что подойдёт вашему интерьеру и&nbsp;образу жизни.</p>
-      <div class="materials__cta" data-reveal>
-        <a class="btn btn--solid" href="https://wa.me/77084802047" data-wa="fabric" data-fabric-cta>Подобрать ткань в&nbsp;шоуруме</a>
-        <p class="materials__note">Напишите, какой образец понравился,&nbsp;— подготовим похожие к&nbsp;вашему визиту.</p>
-      </div>
+      <h2 class="h2" id="materials-title" data-reveal>Ткань выбирают руками</h2>
+      <p class="hall__lead" data-reveal>В&nbsp;шоуруме собрана палитра тканей и&nbsp;кож. Образцы можно потрогать, сравнить рядом и&nbsp;вместе с&nbsp;нами выбрать ткань, которая подойдёт вашему интерьеру и&nbsp;образу жизни.</p>
     </div>
 
     <figure class="tray exhibit" aria-labelledby="tray-cap">
       <div class="work tray__mat">
-        <div class="tray__grid" role="radiogroup" aria-label="Образцы из кадров ателье" data-swatches>
-          <button class="swatch" type="button" role="radio" aria-checked="true" data-sample="Образец I" data-desc="Ткань на&nbsp;каркасе">
-            <img src="img/materials/sample-01-fabric-on-frame.webp" width="260" height="260" loading="lazy" decoding="async" alt="Мягкая обивочная ткань с ворсом, натянутая на каркас">
-            <span class="swatch__no">I</span>
+        <!-- Фактуры: честные кропы из кадров ателье. Названия описывают то, что видно в кадре; заменить съёмкой палитры. -->
+        <div class="tray__grid" role="radiogroup" aria-label="Фактуры из кадров ателье" data-swatches>
+          <button class="swatch" type="button" role="radio" aria-checked="true" aria-label="Мягкий ворс, тёплый серый" data-name="Мягкий ворс" data-tone="Тёплый серый">
+            <img src="img/materials/swatch-01-velour.webp" width="360" height="360" loading="lazy" decoding="async" alt="">
+            <span class="swatch__name" aria-hidden="true">Мягкий ворс</span>
           </button>
-          <button class="swatch" type="button" role="radio" aria-checked="false" tabindex="-1" data-sample="Образец II" data-desc="Каталог палитры">
-            <img src="img/materials/sample-02-palette-book.webp" width="220" height="220" loading="lazy" decoding="async" alt="Руки перелистывают рельефные ткани в каталоге палитры">
-            <span class="swatch__no">II</span>
+          <button class="swatch" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="Гладкая ткань, светлый серо-зелёный" data-name="Гладкая ткань" data-tone="Светлый серо-зелёный">
+            <img src="img/materials/swatch-02-smooth.webp" width="190" height="190" loading="lazy" decoding="async" alt="">
+            <span class="swatch__name" aria-hidden="true">Гладкая ткань</span>
           </button>
-          <button class="swatch" type="button" role="radio" aria-checked="false" tabindex="-1" data-sample="Образец III" data-desc="Книга образцов">
-            <img src="img/materials/sample-03-sample-strips.webp" width="210" height="210" loading="lazy" decoding="async" alt="Полосы тёмных образцов ткани с зубчатым краем в книге образцов">
-            <span class="swatch__no">III</span>
+          <button class="swatch" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="Рельефное плетение, тёмно-серый" data-name="Рельефное плетение" data-tone="Тёмно-серый">
+            <img src="img/materials/swatch-03-relief.webp" width="184" height="184" loading="lazy" decoding="async" alt="">
+            <span class="swatch__name" aria-hidden="true">Рельефное плетение</span>
           </button>
-          <button class="swatch" type="button" role="radio" aria-checked="false" tabindex="-1" data-sample="Образец IV" data-desc="Обивка дивана в&nbsp;шоуруме">
-            <img src="img/materials/sample-04-showroom-fabric.webp" width="230" height="230" loading="lazy" decoding="async" alt="Светлая обивка дивана и подушка крупным планом">
-            <span class="swatch__no">IV</span>
+          <button class="swatch" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="Мягкое плетение, светлый серо-бежевый" data-name="Мягкое плетение" data-tone="Светлый серо-бежевый">
+            <img src="img/materials/swatch-04-soft-weave.webp" width="240" height="240" loading="lazy" decoding="async" alt="">
+            <span class="swatch__name" aria-hidden="true">Мягкое плетение</span>
           </button>
         </div>
       </div>
       <figcaption class="label tray__label" id="tray-cap">
-        <span class="label__no" data-sample-no>Образец I</span>
-        <span class="label__title" data-sample-desc>Ткань на&nbsp;каркасе</span>
-        <span class="label__text">Фрагменты из&nbsp;кадров ателье. Полная палитра тканей и&nbsp;кож&nbsp;— в&nbsp;шоуруме.</span>
+        <span class="label__no">Фактура</span>
+        <span class="label__title" data-sample-name>Мягкий ворс</span>
+        <span class="label__text"><span data-sample-tone>Тёплый серый</span>. Фрагменты из&nbsp;кадров ателье&nbsp;— полная палитра тканей и&nbsp;кож в&nbsp;шоуруме.</span>
       </figcaption>
     </figure>
 
+    <!-- Телефон: кнопка идёт после образцов, чтобы выбранная фактура вела прямо в WhatsApp -->
+    <div class="materials__cta materials__cta--after" data-reveal>
+      <a class="btn btn--solid" href="https://wa.me/77084802047" data-wa="fabric" data-fabric-cta>Подобрать ткань в&nbsp;шоуруме</a>
+      <p class="materials__note">Напишите&nbsp;— подготовим образцы к&nbsp;вашему визиту.</p>
+    </div>
+
     <div class="equipment">
       <dl class="equipment__list">
-        <div data-reveal><dt>SCM · Италия</dt><dd>Станки для работы с&nbsp;деревом.</dd></div>
-        <div data-reveal><dt>Dürkopp Adler · Германия</dt><dd>Промышленные швейные машины.</dd></div>
+        <div data-reveal><dt>SCM · Италия</dt><dd>Станки для&nbsp;работы с&nbsp;деревом.</dd></div>
+        <div data-reveal><dt>Dürkopp&nbsp;Adler&nbsp;· Германия</dt><dd>Промышленные швейные машины.</dd></div>
       </dl>
       <blockquote class="equipment__quote" data-reveal><p>Хорошее оборудование не&nbsp;заменяет мастера. Оно позволяет ему быть точным.</p></blockquote>
     </div>
@@ -476,27 +521,27 @@
   <div class="wrap">
     <header class="hall__head">
       <p class="plaque" data-reveal><span class="plaque__no" aria-hidden="true">V</span><span class="plaque__name">Для бизнеса</span></p>
-      <h2 class="h2" id="business-title" data-reveal>Мебель для отелей, ресторанов <em>и&nbsp;жилых проектов</em></h2>
-      <p class="hall__lead" data-reveal>Комплектуем отели, рестораны, апарт-комплексы, жилые проекты и&nbsp;офисы. Делаем изделия по&nbsp;вашему проекту, адаптируем наши модели под задачу объекта и&nbsp;сопровождаем работу от&nbsp;первой идеи до&nbsp;монтажа.</p>
+      <h2 class="h2" id="business-title" data-reveal>Мебель для&nbsp;отелей, ресторанов и&nbsp;жилых проектов</h2>
+      <p class="hall__lead" data-reveal>Делаем изделия по&nbsp;вашему проекту и&nbsp;сопровождаем объект до&nbsp;монтажа.</p>
     </header>
 
     <div class="biz">
       <ol class="segments" role="list">
-        <li data-reveal><span class="segments__no">01</span><h3>Отели</h3><p>Лобби, лаунжи, номера.</p></li>
-        <li data-reveal><span class="segments__no">02</span><h3>Рестораны</h3><p>Диваны, банкетки и&nbsp;кресла под планировку зала.</p></li>
-        <li data-reveal><span class="segments__no">03</span><h3>Апарт-комплексы</h3><p>Общие зоны и&nbsp;апартаменты.</p></li>
-        <li data-reveal><span class="segments__no">04</span><h3>Жилые проекты</h3><p>Лобби и&nbsp;общественные пространства.</p></li>
-        <li data-reveal><span class="segments__no">05</span><h3>Офисы</h3><p>Переговорные, приёмные, кабинеты.</p></li>
+        <li data-reveal><h3>Отели</h3><p>Лобби, лаунжи, номера.</p></li>
+        <li data-reveal><h3>Рестораны</h3><p>Банкетки и&nbsp;кресла под&nbsp;зал.</p></li>
+        <li data-reveal><h3>Апарт-комплексы</h3><p>Общие зоны и&nbsp;апартаменты.</p></li>
+        <li data-reveal><h3>Жилые проекты</h3><p>Лобби и&nbsp;общие зоны.</p></li>
+        <li data-reveal><h3>Офисы</h3><p>Переговорные и&nbsp;кабинеты.</p></li>
       </ol>
 
       <div class="services">
         <div class="services__item" data-reveal><h3>Изделия по&nbsp;проекту</h3><p>По&nbsp;чертежам и&nbsp;техническому заданию дизайнера или архитектора.</p></div>
-        <div class="services__item" data-reveal><h3>Адаптация моделей</h3><p>Меняем размеры, ткани и&nbsp;отделку под стиль и&nbsp;нагрузку объекта.</p></div>
+        <div class="services__item" data-reveal><h3>Адаптация моделей</h3><p>Меняем размеры, ткани и&nbsp;отделку под&nbsp;стиль и&nbsp;нагрузку объекта.</p></div>
         <div class="services__item" data-reveal><h3>От&nbsp;идеи до&nbsp;монтажа</h3><p>Ведём проект на&nbsp;каждом этапе&nbsp;— до&nbsp;установки на&nbsp;объекте.</p></div>
         <div class="services__cta" data-reveal>
           <a class="btn btn--light btn--wide" href="https://wa.me/77084802047" data-wa="business">Обсудить проект</a>
           <p class="services__k">Отдел заказов</p>
-          <a class="services__tel tel" href="tel:+77079550808">+7&nbsp;(707)&nbsp;955-08-08</a>
+          <a class="services__tel tel" href="tel:+77079550808" data-tel="orders">+7&nbsp;(707)&nbsp;955-08-08</a>
         </div>
       </div>
     </div>
@@ -504,14 +549,14 @@
     <div class="donors" aria-labelledby="clients-title">
       <h3 class="donors__title" id="clients-title" data-reveal>Нам доверяли</h3>
       <ul class="donors__list" role="list" data-reveal>
-        <li>The&nbsp;Ritz-Carlton, Almaty</li>
-        <li>Esentai Mall</li>
-        <li>MEGA Alma-Ata</li>
-        <li>Koktobe City</li>
+        <li><span class="nw">The&nbsp;Ritz-Carlton,</span> <span class="nw">Almaty</span></li>
+        <li><span class="nw">Esentai Mall</span></li>
+        <li><span class="nw">MEGA Alma-Ata</span></li>
+        <li><span class="nw">Koktobe City</span></li>
         <li>ABR</li>
         <!-- TODO: написание клиента уточняется у заказчика (MACAN или MAKAN, бриф склоняется к MACAN).
              Это единственное место на сайте, где встречается имя, — правьте только здесь. -->
-        <li data-client="macan">MACAN</li>
+        <li data-client="macan"><span class="nw">MACAN</span></li>
       </ul>
     </div>
   </div>
@@ -525,17 +570,17 @@
         <p class="plaque" data-reveal><span class="plaque__no" aria-hidden="true">VI</span><span class="plaque__name">Шоурум и&nbsp;контакты</span></p>
         <h2 class="h2" id="showroom-title" data-reveal>Приходите <em>на&nbsp;примерку</em></h2>
         <p class="hall__lead" data-reveal>Мягкую мебель выбирают сидя. Пробуйте посадку, трогайте ткани и&nbsp;кожу, обсуждайте размеры&nbsp;— без спешки.</p>
-        <p class="visit__note" data-reveal>Напишите нам перед визитом&nbsp;— подготовим образцы под ваш интерьер.</p>
+        <p class="visit__note" data-reveal>Напишите нам перед визитом&nbsp;— подготовим образцы под&nbsp;ваш интерьер.</p>
       </header>
 
       <figure class="visit__work exhibit">
-        <button class="work work--p45" type="button" data-lightbox data-full="img/showroom/sofa-04-warm@2x.webp" data-w="956" data-h="1700" data-caption="Шоурум RICCA DESIGNS · ул. Алишера Навои, 208/2" aria-label="Открыть фотографию шоурума крупнее">
+        <button class="work work--p45" type="button" data-lightbox data-full="img/showroom/sofa-04-warm@2x.webp" data-w="956" data-h="1700" data-caption="Шоурум RICCA&nbsp;DESIGNS · ул.&nbsp;Алишера Навои,&nbsp;208/2" data-max="478" aria-label="Открыть фотографию шоурума крупнее">
           <span class="work__win"><img src="img/showroom/sofa-04-warm.webp" srcset="img/showroom/sofa-04-warm.webp 478w, img/showroom/sofa-04-warm@2x.webp 956w" sizes="(min-width: 1024px) 480px, 86vw" width="478" height="850" loading="lazy" decoding="async" style="object-position: 50% 66%" alt="Зал шоурума: длинный светлый диван на деревянном цоколе, портьера и мягкий пуф на переднем плане"></span>
         </button>
         <figcaption class="label">
           <span class="label__no">Шоурум · ЖК «Шахристан»</span>
           <span class="label__title">Модульный диван в&nbsp;зале</span>
-          <span class="label__meta">Фотография · постоянная экспозиция</span>
+          <span class="label__meta">Фотография · шоурум на&nbsp;Навои</span>
         </figcaption>
       </figure>
     </div>
@@ -550,18 +595,25 @@
           <p class="card__days">Ежедневно, Пн–Вс</p>
         </div>
 
+        <div class="card__addr">
+          <p class="card__addr-k">Адрес</p>
+          <p class="card__addr-t">г.&nbsp;Алматы, ул.&nbsp;Алишера Навои,&nbsp;208/2<br>ЖК&nbsp;«Шахристан»</p>
+          <a class="link" href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">Маршрут в&nbsp;2ГИС<svg aria-hidden="true"><use href="#i-arrow"/></svg><span class="vh"> (откроется в новой вкладке)</span></a>
+        </div>
+
+        <div class="card__cta">
+          <a class="btn btn--solid btn--wide" href="https://wa.me/77084802047" data-wa="showroom"><svg aria-hidden="true"><use href="#i-wa"/></svg>Записаться на&nbsp;визит</a>
+          <a class="link card__call" href="tel:+77084802047" data-tel="main">Позвонить<span class="vh"> в RICCA DESIGNS</span></a>
+        </div>
+
         <dl class="card__rows">
-          <div class="card__row">
-            <dt>Адрес</dt>
-            <dd>г.&nbsp;Алматы, ул.&nbsp;Алишера Навои, 208/2<br>ЖК&nbsp;«Шахристан»</dd>
-          </div>
           <div class="card__row card__row--main">
-            <dt>Основной · WhatsApp</dt>
-            <dd><a class="card__tel tel" href="tel:+77084802047">+7&nbsp;(708)&nbsp;480-20-47</a></dd>
+            <dt>Основной телефон · WhatsApp</dt>
+            <dd><a class="card__tel tel" href="tel:+77084802047" data-tel="main">+7&nbsp;(708)&nbsp;480-20-47</a></dd>
           </div>
           <div class="card__row card__row--small">
             <dt>Отдел заказов</dt>
-            <dd><a class="tel" href="tel:+77079550808">+7&nbsp;(707)&nbsp;955-08-08</a></dd>
+            <dd><a class="tel" href="tel:+77079550808" data-tel="orders">+7&nbsp;(707)&nbsp;955-08-08</a></dd>
           </div>
           <div class="card__row card__row--small">
             <dt>Почта</dt>
@@ -572,14 +624,6 @@
             <dd><a href="https://instagram.com/ricca.designs" target="_blank" rel="noopener">@ricca.designs<span class="vh"> (откроется в новой вкладке)</span></a></dd>
           </div>
         </dl>
-
-        <div class="card__cta">
-          <a class="btn btn--solid btn--wide" href="https://wa.me/77084802047" data-wa="showroom">Записаться на&nbsp;визит</a>
-          <div class="card__links">
-            <a class="link" href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">Маршрут в&nbsp;2ГИС<span class="vh"> (откроется в новой вкладке)</span></a>
-            <a class="link" href="tel:+77084802047">Позвонить<span class="vh"> в RICCA DESIGNS</span></a>
-          </div>
-        </div>
 
         <p class="card__trust">Гарантия 3&nbsp;года · Доставка по&nbsp;Казахстану · <a href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">Отзывы в&nbsp;2ГИС<span class="vh"> (откроется в новой вкладке)</span></a></p>
       </div>
@@ -603,26 +647,25 @@
     <!-- стены: двери всех залов на одной оси — анфилада -->
     <path class="plan__walls" d="M1 1 H11 M19 1 H29 V169 H1 V1 M1 21 H11 M19 21 H29 M1 63 H11 M19 63 H29 M1 89 H11 M19 89 H29 M1 109 H11 M19 109 H29 M1 139 H11 M19 139 H29"/>
   </svg>
-  <p class="plan__now" data-plan-now>I · Ателье</p>
 </div>
 
 <!-- ============ ПОДВАЛ ============ -->
 <footer class="colophon">
   <div class="wrap">
     <div class="colophon__top">
-      <p class="colophon__tag">Мебель <em>по&nbsp;мерке.</em><br>Ателье мягкой мебели в&nbsp;Алматы.</p>
+      <p class="colophon__tag">Мебель по&nbsp;мерке.<br>Ателье мягкой мебели в&nbsp;Алматы.</p>
       <a class="btn btn--solid" href="https://wa.me/77084802047" data-wa="general"><svg aria-hidden="true"><use href="#i-wa"/></svg>Написать в&nbsp;WhatsApp</a>
     </div>
 
     <div class="colophon__cols">
-      <nav aria-label="Каталог">
+      <nav class="colophon__col--extra" aria-label="Каталог">
         <h2>Каталог</h2>
         <ul role="list">
           <li><a href="#collections">Мягкая мебель</a></li>
           <li><a href="#collections">Дизайнерские кровати</a></li>
           <li><a href="#collections">Матрасы ELUNA</a></li>
           <li><a href="#collections">Столы и&nbsp;консоли</a></li>
-          <li><a href="#collections">Кресла для отдыха</a></li>
+          <li><a href="#collections">Кресла для&nbsp;отдыха</a></li>
           <li><a href="#collections">Коллекции 2026</a></li>
         </ul>
       </nav>
@@ -636,11 +679,11 @@
           <li><a href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">Отзывы в&nbsp;2ГИС<span class="vh"> (откроется в новой вкладке)</span></a></li>
         </ul>
       </nav>
-      <nav aria-label="Об ателье">
+      <nav class="colophon__col--extra" aria-label="Об ателье">
         <h2>Об ателье</h2>
         <ul role="list">
           <li><a href="#process">О&nbsp;производстве</a></li>
-          <li><a href="#materials">Станки SCM и&nbsp;Dürkopp Adler</a></li>
+          <li><a href="#materials">Станки SCM и&nbsp;Dürkopp&nbsp;Adler</a></li>
           <li><a href="#materials">Палитра тканей и&nbsp;кож</a></li>
           <li><a href="#business">Для бизнеса</a></li>
           <li><a href="#contacts">Контакты</a></li>
@@ -648,16 +691,17 @@
       </nav>
       <div class="colophon__contact">
         <h2>Шоурум</h2>
-        <p><a class="colophon__tel tel" href="tel:+77084802047">+7&nbsp;(708)&nbsp;480-20-47</a></p>
+        <p><a class="colophon__tel tel" href="tel:+77084802047" data-tel="main">+7&nbsp;(708)&nbsp;480-20-47</a></p>
         <p><a href="mailto:hello@ricca-designs.kz">hello@ricca-designs.kz</a></p>
-        <p>ул.&nbsp;Алишера Навои, 208/2</p>
+        <p><a href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">ул.&nbsp;Алишера Навои,&nbsp;208/2<span class="vh"> — маршрут в 2ГИС (откроется в новой вкладке)</span></a></p>
         <p class="nums">Пн–Вс, 10:00–20:00</p>
       </div>
     </div>
 
+    <!-- Фирменный знак: монограмма RD крупно, как слепое тиснение, и тот же локап, что в шапке -->
     <div class="colophon__mark" aria-hidden="true">
-      <svg class="colophon__wm" viewBox="0 0 1000 150" preserveAspectRatio="xMidYMid meet"><text x="500" y="138" text-anchor="middle" textLength="992" lengthAdjust="spacing">RICCA</text></svg>
-      <p class="colophon__sub"><svg class="colophon__rd"><use href="#rd"/></svg><span>Designs · Almaty</span></p>
+      <svg class="colophon__emboss"><use href="#rd"/></svg>
+      <span class="logo__word colophon__word"><b>RICCA</b><small>DESIGNS · ALMATY</small></span>
     </div>
 
     <div class="colophon__base">
@@ -672,8 +716,8 @@
 
 <!-- Мобильная плашка: Шоурум · WhatsApp -->
 <nav class="mbar" data-mbar aria-label="Быстрые действия">
-  <a href="#showroom">Шоурум</a>
-  <a href="https://wa.me/77084802047" data-wa="showroom"><svg aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
+  <a href="#showroom" data-visit>Шоурум</a>
+  <a href="https://wa.me/77084802047" data-wa="general" data-mbar-wa><svg aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
 </nav>
 
 <!-- Лайтбокс: фото на штукатурке, фильм — в ореховом зале -->
@@ -683,7 +727,10 @@
       <div class="lb__media" data-lb-media></div>
       <figcaption class="lb__cap" data-lb-cap></figcaption>
     </figure>
-    <button class="lb__close" type="button" data-lb-close>Закрыть</button>
+    <div class="lb__tools">
+      <button class="lb__btn" type="button" data-lb-play hidden>Пауза</button>
+      <button class="lb__btn" type="button" data-lb-close>Закрыть</button>
+    </div>
   </div>
 </dialog>
 
