@@ -264,6 +264,7 @@
         if (reduced) { back.removeAttribute('src'); swap(); }
         else {
           back.defaultPlaybackRate = 0.8;
+          cur.pause();   // старый ролик замирает на кадре, пока грузится новый: декодируется всегда один
           back.src = clipSrc(clips[0]);
           back.addEventListener('loadeddata', function once() {
             back.removeEventListener('loadeddata', once);
@@ -326,7 +327,7 @@
     }
   }
 
-  /* ---------- Примерочная: образцы (radiogroup) → эскиз и сообщение в WhatsApp ---------- */
+  /* ---------- Примерочная: образцы (radiogroup) → образец ткани и сообщение в WhatsApp ---------- */
   const swWrap = $('[data-swatches]');
   let fabricHref = '';
   if (swWrap) {
@@ -339,7 +340,9 @@
     const texA = $('[data-fabric-tex]');
     const colB = $('[data-fabric-color-next]');
     const texB = $('[data-fabric-tex-next]');
-    const sweep = $('.sofa__fill--next');
+    const sweep = $('.sample__fill--next');
+    const capEl = $('[data-sample-cap]');
+    const capNo = $('[data-sample-cap-no]');
     let sweepTimer = 0;
     const texUrl = (t) => `${CONFIG.texture}${t}.webp`;
     const applyA = (b) => { if (colA) colA.setAttribute('fill', b.dataset.c); if (texA) texA.setAttribute('href', texUrl(b.dataset.t)); };
@@ -359,6 +362,8 @@
       if (nameEl) nameEl.textContent = b.dataset.name;
       if (toneEl) toneEl.textContent = b.dataset.tone;
       if (descEl) descEl.innerHTML = b.dataset.d || '';
+      if (capEl) capEl.textContent = `${b.dataset.name} · ${b.dataset.tone}`;
+      if (capNo) capNo.textContent = `${String(i + 1).padStart(2, '0')} / ${String(btns.length).padStart(2, '0')}`;
       fabricHref = waUrl(CONFIG.msg.fabric(`${b.dataset.name}, ${b.dataset.tone}`));
       if (cta) cta.href = fabricHref;
       paint(b, animate);
@@ -461,6 +466,7 @@
   const mbarWaGeneral = mbarWa ? mbarWa.href : '';
   const albumBar = $('.album__bar');
   const reelCap = $('.reel__cap');
+  const fitCta = $('.fitting__cta');
   let chapterId = '';
   let ticking = false;
   function onScroll() {
@@ -484,12 +490,12 @@
 
       if (mbar) {
         // Плашка не дублирует кнопки первого экрана; с появлением карточки визита прячется до конца страницы;
-        // не закрывает ленту коллекций и её полоску
+        // не закрывает ленту коллекций и её полоску, образцы примерочной и её кнопки
         const zone = vh - 84;
         const ctaGone = heroCta.getBoundingClientRect().bottom < 0;
         const cardReached = card.getBoundingClientRect().top < vh;
         const over = (el) => { if (!el) return false; const r = el.getBoundingClientRect(); return r.bottom > zone && r.top < vh; };
-        mbar.classList.toggle('is-on', ctaGone && !cardReached && !menuOpen && !over(album) && !over(albumBar) && !over(reelCap));
+        mbar.classList.toggle('is-on', ctaGone && !cardReached && !menuOpen && !over(album) && !over(albumBar) && !over(reelCap) && !over(swWrap) && !over(fitCta));
         // В разделе «Материалы» WhatsApp в плашке несёт выбранный образец
         if (mbarWa && fabricHref) {
           const m = materials.getBoundingClientRect();

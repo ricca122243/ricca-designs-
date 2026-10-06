@@ -219,6 +219,7 @@
     const toggle = $('[data-reel-toggle]', reel);
     const STEPS = chs.filter((c) => !c.classList.contains('ch--final')).length;
     let active = 0, front = 0, clips = [], clipPos = 0, inView = false, timer = 0, started = false;
+    let loadToken = 0, pending = null;   // защита от двойного выбора шага во время загрузки
     let auto = !reduced;
     const descs = [];
     if (desc) {
@@ -265,26 +266,31 @@
         clipPos = 0;
         const back = vids[1 - front];
         const cur = vids[front];
+        const token = ++loadToken;          // актуален только последний запрос
         back.loop = auto && clips.length === 1;
         back.poster = posterOf(clips[0]);
         // Одновременно декодируется только один ролик: старый ставим на паузу и снимаем источник
         const swap = () => {
+          if (token !== loadToken) return;  // выбор уже сменился — этот ролик не показываем
+          pending = null;
           cur.pause();
           back.classList.add('is-on'); cur.classList.remove('is-on');
           back.removeAttribute('aria-hidden'); cur.setAttribute('aria-hidden', 'true');
           front = 1 - front;
-          setTimeout(() => { if (cur !== vids[front]) { cur.removeAttribute('src'); cur.load(); } }, 1000);
+          // источник снимаем, только если этот элемент не стал снова загружать следующий шаг
+          setTimeout(() => { if (cur !== vids[front] && cur !== pending) { cur.removeAttribute('src'); cur.load(); } }, 1000);
         };
         if (reduced) { back.removeAttribute('src'); swap(); }
         else {
+          pending = back;
           back.defaultPlaybackRate = 0.8;
-          back.src = clipSrc(clips[0]);
-          back.addEventListener('loadeddata', function once() {
-            back.removeEventListener('loadeddata', once);
+          back.onloadeddata = () => {        // одно свойство вместо накопления слушателей
+            back.onloadeddata = null;
             back.playbackRate = 0.8;
             swap();
-            if (inView && (auto || byUser)) safePlay(back);
-          });
+            if (token === loadToken && inView && (auto || byUser)) safePlay(back);
+          };
+          back.src = clipSrc(clips[0]);
           back.load();
         }
       }

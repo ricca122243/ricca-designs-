@@ -144,7 +144,7 @@
   <div class="hero__band" data-hero>
     <div class="wrap hero__band-in">
       <div class="hero__cta" data-hero-cta>
-        <a class="btn btn--milk" href="#showroom" data-visit>Посетить шоурум</a>
+        <a class="btn btn--milk btn--stitch" href="#showroom" data-visit>Посетить шоурум</a>
         <a class="link link--on-dark link--wa" href="https://wa.me/77084802047" data-wa="general"><svg aria-hidden="true"><use href="#i-wa"/></svg>Написать в&nbsp;WhatsApp</a>
       </div>
       <!-- 2ГИС: карточка шоурума (маршрут и отзывы) -->
@@ -439,27 +439,20 @@
 
     <div class="fitting" data-reveal>
       <div class="fitting__stage">
-        <p class="eyebrow fitting__kicker">Примерочная</p>
-        <svg class="sofa" viewBox="60 130 680 240" role="img" aria-labelledby="sofa-title">
-          <title id="sofa-title">Эскиз дивана в выбранной ткани</title>
-          <defs>
-            <g id="sofa-geo">
-              <rect x="162" y="150" width="238" height="126" rx="20"/>
-              <rect x="400" y="150" width="238" height="126" rx="20"/>
-              <rect x="162" y="286" width="476" height="40"/>
-              <rect x="162" y="250" width="238" height="56" rx="13"/>
-              <rect x="400" y="250" width="238" height="56" rx="13"/>
-              <rect x="70" y="196" width="92" height="130" rx="12"/>
-              <rect x="638" y="196" width="92" height="130" rx="12"/>
-            </g>
-          </defs>
-          <line class="sk-floor" x1="40" y1="352" x2="760" y2="352"/>
-          <rect class="sofa__base" x="84" y="326" width="632" height="18"/>
-          <g class="sofa__fill"><use href="#sofa-geo"/></g>
-          <g class="sofa__fill sofa__fill--next" fill="url(#fabricNext)"><use href="#sofa-geo"/></g>
-          <g class="sofa__shade"><use href="#sofa-geo"/></g>
-          <g class="sofa__lines"><use href="#sofa-geo"/></g>
-        </svg>
+        <!-- Образец ткани в чёрной раме — как фотографии на странице. Тон и фактура меняются скриптом (паттерны #fabric / #fabricNext в спрайте) -->
+        <figure class="sample">
+          <div class="sample__frame">
+            <div class="sample__win">
+              <svg class="sample__svg" role="img" aria-labelledby="sample-title">
+                <title id="sample-title">Образец выбранной ткани</title>
+                <rect class="sample__fill" width="100%" height="100%" fill="url(#fabric)"/>
+                <rect class="sample__fill sample__fill--next" width="100%" height="100%" fill="url(#fabricNext)"/>
+                <rect class="sample__shade" width="100%" height="100%" fill="url(#shade)"/>
+              </svg>
+            </div>
+          </div>
+          <figcaption class="cap"><span class="cap__no nums" data-sample-cap-no>01 / 08</span><span data-sample-cap>Букле · молоко</span></figcaption>
+        </figure>
       </div>
 
       <div class="fitting__panel">
