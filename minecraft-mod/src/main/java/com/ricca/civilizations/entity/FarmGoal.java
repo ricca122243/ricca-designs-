@@ -108,6 +108,24 @@ public class FarmGoal extends Goal {
 
     private void work(int x, int z, BlockPos ground, BlockPos crop, BlockPos hallPos) {
         Level level = settler.level();
+
+        // Выравниваем поле: над грядкой не должно быть земли и камня, а под ней — ямы.
+        for (int dy = 0; dy <= 2; dy++) {
+            BlockPos above = crop.above(dy);
+            BlockState s = level.getBlockState(above);
+            if (!s.isAir() && !s.canBeReplaced() && !s.is(Blocks.WHEAT) && !s.liquid() && !s.is(Blocks.BEDROCK)) {
+                level.destroyBlock(above, false);
+                settler.swing(InteractionHand.MAIN_HAND);
+                return;
+            }
+        }
+        BlockState groundNow = level.getBlockState(ground);
+        if (groundNow.canBeReplaced() && !groundNow.liquid()) {
+            level.setBlock(ground, Blocks.DIRT.defaultBlockState(), 3);
+            settler.swing(InteractionHand.MAIN_HAND);
+            return;
+        }
+
         BlockState g = level.getBlockState(ground);
         BlockState c = level.getBlockState(crop);
 

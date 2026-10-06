@@ -24,13 +24,13 @@ import java.util.List;
  * сколько домов построено. Ратуша же «рожает» новых жителей, когда есть еда.
  */
 public class TownHallBlockEntity extends BlockEntity {
-    private static final int GROWTH_INTERVAL_TICKS = 200;
-    private static final int FOOD_PER_SETTLER = 10;
+    private static final int GROWTH_INTERVAL_TICKS = 600;
+    private static final int FOOD_PER_SETTLER = 15;
 
     private String kingdom = "";
     private int wood = 80;
     private int stone = 150;
-    private int food = 20;
+    private int food = 0;
     private int housesBuilt = 0;
     private int nextHouse = 0;
     private int growthTimer = 0;

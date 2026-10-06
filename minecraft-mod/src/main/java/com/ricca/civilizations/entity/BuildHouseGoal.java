@@ -4,6 +4,7 @@ import com.ricca.civilizations.Civilizations;
 import com.ricca.civilizations.block.TownHallBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
@@ -22,7 +23,15 @@ import java.util.List;
  * один за другим, снизу вверх, тратя дерево и камень со склада ратуши.
  */
 public class BuildHouseGoal extends Goal {
-    private record PlanBlock(int x, int y, int z, Block block) {}
+    /**
+     * Один шаг плана. fillOnly = true — фундамент: ставим блок, только если там пусто
+     * (яма), а землю и камень не трогаем. Иначе место сначала расчищается.
+     */
+    private record PlanBlock(int x, int y, int z, Block block, boolean fillOnly) {
+        PlanBlock(int x, int y, int z, Block block) {
+            this(x, y, z, block, false);
+        }
+    }
 
     private static final List<PlanBlock> HOUSE_PLAN = buildHousePlan();
     private static final int SIZE = KingdomLayout.HOUSE_SIZE;
@@ -30,7 +39,7 @@ public class BuildHouseGoal extends Goal {
     private static final int PLACE_DELAY_TICKS = 16;
     private static final int NO_RESOURCES_DELAY_TICKS = 60;
     private static final double REACH_SQR = 5.5 * 5.5;
-    private static final int STUCK_LIMIT_TICKS = 120;
+    private static final int STUCK_LIMIT_TICKS = 160;
 
     private final SettlerEntity settler;
     private int index;
@@ -126,18 +135,54 @@ public class BuildHouseGoal extends Goal {
 
         BlockState current = level.getBlockState(target);
         Block wanted = plan.block();
-        if (current.canBeReplaced() && !current.is(wanted)) {
-            if (!hall.take(woodCost(wanted), stoneCost(wanted))) {
-                cooldown = NO_RESOURCES_DELAY_TICKS; // ждём, пока принесут ресурсы
-                return;
-            }
-            BlockState state = wanted.defaultBlockState();
-            level.setBlock(target, state, 3);
-            level.playSound(null, target, state.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0f, 0.9f);
-            settler.swing(InteractionHand.MAIN_HAND);
+        if (current.is(wanted) && !(wanted == Blocks.AIR)) {
+            index++;
+            return;
         }
-        // Если там уже стоит что-то чужое (камень, земля) — оставляем и идём дальше.
+        if (wanted == Blocks.AIR && (current.isAir() || current.canBeReplaced())) {
+            index++;
+            return;
+        }
+
+        // Фундамент: только заполняем пустоты, землю не копаем.
+        if (plan.fillOnly() && !current.canBeReplaced()) {
+            index++;
+            return;
+        }
+
+        // Расчистка: мешает земля, камень, листва — выкапываем (камень идёт на склад).
+        if (!current.canBeReplaced() && !current.isAir()) {
+            dig(level, target, current, hall);
+            settler.swing(InteractionHand.MAIN_HAND);
+            return; // блок поставим на следующем заходе
+        }
+
+        if (wanted == Blocks.AIR) {
+            index++;
+            return;
+        }
+        if (!hall.take(woodCost(wanted), stoneCost(wanted))) {
+            cooldown = NO_RESOURCES_DELAY_TICKS; // ждём, пока принесут ресурсы
+            return;
+        }
+        BlockState state = wanted.defaultBlockState();
+        level.setBlock(target, state, 3);
+        level.playSound(null, target, state.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0f, 0.9f);
+        settler.swing(InteractionHand.MAIN_HAND);
         index++;
+    }
+
+    /** Выкопать мешающий блок. Камень и бревна отправляются на склад. */
+    private static void dig(Level level, BlockPos pos, BlockState state, TownHallBlockEntity hall) {
+        if (state.is(Blocks.BEDROCK) || state.liquid()) {
+            return;
+        }
+        if (state.is(BlockTags.BASE_STONE_OVERWORLD) || state.is(Blocks.COBBLESTONE)) {
+            hall.addStone(1);
+        } else if (state.is(BlockTags.LOGS)) {
+            hall.addWood(4);
+        }
+        level.destroyBlock(pos, false);
     }
 
     private TownHallBlockEntity townHall() {
@@ -161,7 +206,11 @@ public class BuildHouseGoal extends Goal {
         BlockPos origin = houseOrigin();
         while (index < HOUSE_PLAN.size()) {
             PlanBlock plan = HOUSE_PLAN.get(index);
-            if (!level.getBlockState(origin.offset(plan.x(), plan.y(), plan.z())).is(plan.block())) {
+            BlockState current = level.getBlockState(origin.offset(plan.x(), plan.y(), plan.z()));
+            boolean done = plan.block() == Blocks.AIR ? current.canBeReplaced()
+                    : plan.fillOnly() ? !current.canBeReplaced()
+                    : current.is(plan.block());
+            if (!done) {
                 break;
             }
             index++;
@@ -183,6 +232,22 @@ public class BuildHouseGoal extends Goal {
     private static List<PlanBlock> buildHousePlan() {
         List<PlanBlock> plan = new ArrayList<>();
         int size = KingdomLayout.HOUSE_SIZE;
+        // Фундамент: до 4 блоков вниз заполняем ямы булыжником.
+        for (int y = -4; y <= -1; y++) {
+            for (int x = 0; x < size; x++) {
+                for (int z = 0; z < size; z++) {
+                    plan.add(new PlanBlock(x, y, z, Blocks.COBBLESTONE, true));
+                }
+            }
+        }
+        // Расчистка площадки: всё, что торчит из склона внутри дома и на 1 блок вокруг, выкапывается.
+        for (int y = 0; y <= 5; y++) {
+            for (int x = -1; x <= size; x++) {
+                for (int z = -1; z <= size; z++) {
+                    plan.add(new PlanBlock(x, y, z, Blocks.AIR));
+                }
+            }
+        }
         for (int x = 0; x < size; x++) {
             for (int z = 0; z < size; z++) {
                 plan.add(new PlanBlock(x, 0, z, Blocks.COBBLESTONE));
