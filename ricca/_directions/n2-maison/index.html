@@ -16,14 +16,14 @@
 <meta property="og:url" content="https://ricca-designs.kz/">
 <meta property="og:title" content="RICCA DESIGNS — ателье мягкой мебели в Алматы">
 <meta property="og:description" content="Мебель по мерке: диваны, кровати и кресла на заказ и собственные коллекции. Шоурум на Навои, 208/2.">
-<meta property="og:image" content="https://ricca-designs.kz/img/og-maison.jpg">
+<meta property="og:image" content="media/og-maison.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="RICCA — ателье мягкой мебели, Алматы. Молочная надпись на чёрном.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="media/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="../../img/logo/favicon-32.png" sizes="32x32">
-<link rel="apple-touch-icon" href="../../img/logo/apple-touch-icon.png">
+<link rel="icon" href="media/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="media/apple-touch-icon.png">
 <!-- Шрифты первого экрана: Montserrat (заголовок, капитель), Manrope (текст), курсив Noto — одно слово «по мерке» -->
 <link rel="preload" href="../../fonts/montserrat/montserrat-cyrillic-var-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../fonts/montserrat/montserrat-latin-var-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -154,20 +154,21 @@
         <span class="hero__visit-h nums">Пн–Вс, 10:00–20:00</span>
         <span class="vh"> — маршрут в 2ГИС (откроется в новой вкладке)</span>
       </a>
+
+      <figure class="hero__work">
+        <!-- TODO для заказчика: переснять фото первого экрана — не меньше 2000 px по длинной стороне.
+             Сейчас исходник 513×640, поэтому окно ограничено 420 px, а лайтбокс не увеличивает его больше родного размера (data-max). -->
+        <button class="work work--p45 work--hero" type="button" data-lightbox data-full="../../img/interior/living-01@2x.webp" data-w="1026" data-h="1280" data-max="513" data-caption="Гостиная · настроение RICCA. Угловой диван, вязаный пуф, льняной тюль" aria-label="Открыть фотографию гостиной крупнее">
+          <span class="work__win"><picture>
+            <source media="(max-width: 767px)" srcset="../../img/interior/living-01-wide.webp 513w, ../../img/interior/living-01-wide@2x.webp 1026w" sizes="calc(100vw - 40px)" width="513" height="342">
+            <img src="../../img/interior/living-01.webp" srcset="../../img/interior/living-01.webp 513w, ../../img/interior/living-01@2x.webp 1026w" sizes="420px" width="513" height="640" alt="Светлый угловой диван с подушками в гостиной: льняной тюль, паркет ёлочкой, мягкий дневной свет" fetchpriority="high" decoding="async">
+          </picture></span>
+        </button>
+        <figcaption class="cap cap--on-dark"><span class="cap__no">Nº 00</span><span>Гостиная · настроение RICCA</span></figcaption>
+      </figure>
     </div>
   </div>
 
-  <figure class="hero__work" data-hero>
-    <!-- TODO для заказчика: переснять фото первого экрана — не меньше 2000 px по длинной стороне.
-         Сейчас исходник 513×640, поэтому окно ограничено 420 px, а лайтбокс не увеличивает его больше родного размера (data-max). -->
-    <button class="work work--p45 work--hero" type="button" data-lightbox data-full="../../img/interior/living-01@2x.webp" data-w="1026" data-h="1280" data-max="513" data-caption="Гостиная · настроение RICCA. Угловой диван, вязаный пуф, льняной тюль" aria-label="Открыть фотографию гостиной крупнее">
-      <span class="work__win"><picture>
-        <source media="(max-width: 767px)" srcset="../../img/interior/living-01-wide.webp 513w, ../../img/interior/living-01-wide@2x.webp 1026w" sizes="calc(100vw - 40px)" width="513" height="342">
-        <img src="../../img/interior/living-01.webp" srcset="../../img/interior/living-01.webp 513w, ../../img/interior/living-01@2x.webp 1026w" sizes="420px" width="513" height="640" alt="Светлый угловой диван с подушками в гостиной: льняной тюль, паркет ёлочкой, мягкий дневной свет" fetchpriority="high" decoding="async">
-      </picture></span>
-    </button>
-    <figcaption class="cap cap--on-dark"><span class="cap__no">Nº 00</span><span>Гостиная · настроение RICCA</span></figcaption>
-  </figure>
 </section>
 
 <!-- ============ 01 · АТЕЛЬЕ ============ -->
