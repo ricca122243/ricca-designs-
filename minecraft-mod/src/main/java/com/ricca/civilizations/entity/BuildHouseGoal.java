@@ -1,6 +1,7 @@
 package com.ricca.civilizations.entity;
 
 import com.ricca.civilizations.Civilizations;
+import com.ricca.civilizations.block.TownHallBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -17,20 +18,17 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * Цель ИИ: поселенец идёт к своей стройплощадке рядом с ратушей
- * и ставит блоки дома один за другим, снизу вверх.
+ * Работа строителя: занять участок, идти к нему и ставить блоки дома
+ * один за другим, снизу вверх, тратя дерево и камень со склада ратуши.
  */
 public class BuildHouseGoal extends Goal {
-    /** Один блок плана: смещение от угла дома и что туда ставить. */
     private record PlanBlock(int x, int y, int z, Block block) {}
 
-    /** Где стоят дома относительно ратуши (по номеру дома). */
-    private static final int[][] HOUSE_OFFSETS = {{5, 0, -2}, {-9, 0, -2}, {-2, 0, 5}};
-
     private static final List<PlanBlock> HOUSE_PLAN = buildHousePlan();
+    private static final int SIZE = KingdomLayout.HOUSE_SIZE;
 
-    private static final int HOUSE_SIZE = 5;
     private static final int PLACE_DELAY_TICKS = 16;
+    private static final int NO_RESOURCES_DELAY_TICKS = 60;
     private static final double REACH_SQR = 5.5 * 5.5;
     private static final int STUCK_LIMIT_TICKS = 120;
 
@@ -38,8 +36,6 @@ public class BuildHouseGoal extends Goal {
     private int index;
     private int cooldown;
     private int stuckTicks;
-    private int searchCooldown;
-    private boolean finished;
 
     public BuildHouseGoal(SettlerEntity settler) {
         this.settler = settler;
@@ -48,32 +44,26 @@ public class BuildHouseGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (finished || settler.level().isClientSide) {
+        if (settler.getProfession() != Profession.BUILDER || settler.level().isClientSide) {
             return false;
         }
-        if (settler.getTownHall() == null) {
-            // Поселенец без ратуши (например, из яйца призыва) ищет её поблизости.
-            if (--searchCooldown > 0) {
-                return false;
-            }
-            searchCooldown = 100;
-            BlockPos found = findTownHallNearby();
-            if (found == null) {
-                return false;
-            }
-            settler.setTownHall(found);
-        }
-        // Если ратушу сломали, строить больше нечего.
-        if (!settler.level().getBlockState(settler.getTownHall()).is(Civilizations.TOWN_HALL.get())) {
-            settler.setTownHall(null);
+        TownHallBlockEntity hall = townHall();
+        if (hall == null) {
             return false;
+        }
+        if (settler.getHouseIndex() < 0) {
+            int claimed = hall.claimHouse();
+            if (claimed < 0) {
+                return false; // все участки заняты
+            }
+            settler.setHouseIndex(claimed);
         }
         return true;
     }
 
     @Override
     public boolean canContinueToUse() {
-        return !finished && settler.getTownHall() != null;
+        return settler.getProfession() == Profession.BUILDER && settler.getHouseIndex() >= 0 && townHall() != null;
     }
 
     @Override
@@ -96,30 +86,34 @@ public class BuildHouseGoal extends Goal {
 
     @Override
     public void tick() {
+        TownHallBlockEntity hall = townHall();
+        if (hall == null) {
+            return;
+        }
         if (index >= HOUSE_PLAN.size()) {
-            finished = true;
+            hall.houseFinished();
+            settler.setHouseIndex(-1);
             return;
         }
         Level level = settler.level();
-        BlockPos target = targetPos(HOUSE_PLAN.get(index));
+        BlockPos origin = houseOrigin();
+        PlanBlock plan = HOUSE_PLAN.get(index);
+        BlockPos target = origin.offset(plan.x(), plan.y(), plan.z());
         Vec3 center = target.getCenter();
 
         settler.getLookControl().setLookAt(center.x, center.y, center.z);
 
         // Строитель стоит снаружи дома, а не внутри и не на стенах.
-        BlockPos standPos = standingSpotFor(target);
-        Vec3 stand = standPos.getCenter();
         boolean inTheWay = settler.getBoundingBox().intersects(new AABB(target));
         boolean tooFar = settler.distanceToSqr(center) > REACH_SQR;
-
-        if (tooFar || inTheWay || isInsideFootprint(settler.blockPosition())) {
+        if (tooFar || inTheWay || KingdomLayout.inside(origin, SIZE, settler.blockPosition())) {
+            Vec3 stand = KingdomLayout.standingSpot(settler, origin, SIZE, target).getCenter();
             if (settler.getNavigation().isDone() || settler.tickCount % 20 == 0) {
                 settler.getNavigation().moveTo(stand.x, stand.y, stand.z, 0.5);
             }
             if (++stuckTicks > STUCK_LIMIT_TICKS) {
-                // Не можем дойти — пропускаем этот блок.
                 stuckTicks = 0;
-                index++;
+                index++; // не можем дойти — пропускаем блок
             }
             return;
         }
@@ -131,79 +125,55 @@ public class BuildHouseGoal extends Goal {
         cooldown = PLACE_DELAY_TICKS;
 
         BlockState current = level.getBlockState(target);
-        Block wanted = HOUSE_PLAN.get(index).block();
+        Block wanted = plan.block();
         if (current.canBeReplaced() && !current.is(wanted)) {
+            if (!hall.take(woodCost(wanted), stoneCost(wanted))) {
+                cooldown = NO_RESOURCES_DELAY_TICKS; // ждём, пока принесут ресурсы
+                return;
+            }
             BlockState state = wanted.defaultBlockState();
             level.setBlock(target, state, 3);
             level.playSound(null, target, state.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0f, 0.9f);
             settler.swing(InteractionHand.MAIN_HAND);
         }
-        // Если там уже стоит что-то чужое (камень, земля) — оставляем как есть и идём дальше.
+        // Если там уже стоит что-то чужое (камень, земля) — оставляем и идём дальше.
         index++;
     }
 
-    /** Угол дома (минимальные x и z) в мире. */
-    private BlockPos houseOrigin() {
-        BlockPos hall = settler.getTownHall();
-        int[] o = HOUSE_OFFSETS[Math.floorMod(settler.getHouseIndex(), HOUSE_OFFSETS.length)];
-        return hall.offset(o[0], o[1], o[2]);
-    }
-
-    private boolean isInsideFootprint(BlockPos pos) {
-        BlockPos origin = houseOrigin();
-        return pos.getX() >= origin.getX() && pos.getX() < origin.getX() + HOUSE_SIZE
-                && pos.getZ() >= origin.getZ() && pos.getZ() < origin.getZ() + HOUSE_SIZE
-                && pos.getY() >= origin.getY() - 1 && pos.getY() <= origin.getY() + 5;
-    }
-
-    /** Ближайшая к поселенцу точка на кольце вокруг дома, с которой видно нужный блок. */
-    private BlockPos standingSpotFor(BlockPos target) {
-        BlockPos origin = houseOrigin();
-        int minX = origin.getX() - 1, maxX = origin.getX() + HOUSE_SIZE;
-        int minZ = origin.getZ() - 1, maxZ = origin.getZ() + HOUSE_SIZE;
-        int y = origin.getY() + 1;
-        BlockPos[] candidates = {
-                new BlockPos(minX, y, target.getZ()),
-                new BlockPos(maxX, y, target.getZ()),
-                new BlockPos(target.getX(), y, minZ),
-                new BlockPos(target.getX(), y, maxZ)
-        };
-        BlockPos best = candidates[0];
-        double bestDist = Double.MAX_VALUE;
-        for (BlockPos c : candidates) {
-            double d = settler.distanceToSqr(c.getCenter());
-            if (d < bestDist) {
-                bestDist = d;
-                best = c;
-            }
+    private TownHallBlockEntity townHall() {
+        BlockPos pos = settler.getTownHall();
+        if (pos == null) {
+            return null;
         }
-        return best;
+        if (!settler.level().getBlockState(pos).is(Civilizations.TOWN_HALL.get())) {
+            settler.setTownHall(null);
+            return null;
+        }
+        return TownHallBlockEntity.at(settler.level(), pos);
     }
 
-    private BlockPos targetPos(PlanBlock plan) {
-        return houseOrigin().offset(plan.x(), plan.y(), plan.z());
+    private BlockPos houseOrigin() {
+        return KingdomLayout.houseOrigin(settler.getTownHall(), settler.getHouseIndex());
     }
 
     private void skipAlreadyBuilt() {
         Level level = settler.level();
+        BlockPos origin = houseOrigin();
         while (index < HOUSE_PLAN.size()) {
             PlanBlock plan = HOUSE_PLAN.get(index);
-            if (!level.getBlockState(targetPos(plan)).is(plan.block())) {
+            if (!level.getBlockState(origin.offset(plan.x(), plan.y(), plan.z())).is(plan.block())) {
                 break;
             }
             index++;
         }
     }
 
-    private BlockPos findTownHallNearby() {
-        BlockPos origin = settler.blockPosition();
-        Level level = settler.level();
-        for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-12, -4, -12), origin.offset(12, 4, 12))) {
-            if (level.getBlockState(pos).is(Civilizations.TOWN_HALL.get())) {
-                return pos.immutable();
-            }
-        }
-        return null;
+    private static int woodCost(Block block) {
+        return block == Blocks.OAK_PLANKS || block == Blocks.OAK_LOG ? 1 : 0;
+    }
+
+    private static int stoneCost(Block block) {
+        return block == Blocks.COBBLESTONE ? 1 : 0;
     }
 
     /**
@@ -212,14 +182,12 @@ public class BuildHouseGoal extends Goal {
      */
     private static List<PlanBlock> buildHousePlan() {
         List<PlanBlock> plan = new ArrayList<>();
-        int size = HOUSE_SIZE;
-        // Пол
+        int size = KingdomLayout.HOUSE_SIZE;
         for (int x = 0; x < size; x++) {
             for (int z = 0; z < size; z++) {
                 plan.add(new PlanBlock(x, 0, z, Blocks.COBBLESTONE));
             }
         }
-        // Стены, три яруса
         for (int y = 1; y <= 3; y++) {
             for (int x = 0; x < size; x++) {
                 for (int z = 0; z < size; z++) {
@@ -238,13 +206,11 @@ public class BuildHouseGoal extends Goal {
                 }
             }
         }
-        // Крыша
         for (int x = 0; x < size; x++) {
             for (int z = 0; z < size; z++) {
                 plan.add(new PlanBlock(x, 4, z, Blocks.OAK_PLANKS));
             }
         }
-        // Факел внутри
         plan.add(new PlanBlock(2, 1, 1, Blocks.TORCH));
         return plan;
     }

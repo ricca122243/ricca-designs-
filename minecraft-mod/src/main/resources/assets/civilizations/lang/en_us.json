@@ -6,6 +6,16 @@
   "item.civilizations.knight_sword": "Knight's Sword",
   "item.civilizations.settler_spawn_egg": "Settler Spawn Egg",
   "entity.civilizations.settler": "Settler",
-  "entity.civilizations.settler.named": "Settler of %s",
-  "civilizations.kingdom.founded": "The Kingdom of %s is founded! Your settlers are starting to build."
+  "civilizations.kingdom.founded": "The Kingdom of %s is founded! Right-click the Town Hall to see your kingdom.",
+  "entity.civilizations.settler.builder": "Builder",
+  "entity.civilizations.settler.builder.named": "Builder of %s",
+  "entity.civilizations.settler.lumberjack": "Lumberjack",
+  "entity.civilizations.settler.lumberjack.named": "Lumberjack of %s",
+  "entity.civilizations.settler.farmer": "Farmer",
+  "entity.civilizations.settler.farmer.named": "Farmer of %s",
+  "entity.civilizations.settler.warrior": "Warrior",
+  "entity.civilizations.settler.warrior.named": "Warrior of %s",
+  "civilizations.townhall.title": "=== Kingdom of %s ===",
+  "civilizations.townhall.population": "Population: %s (warriors: %s), houses built: %s",
+  "civilizations.townhall.resources": "Storage: wood %s, stone %s, food %s"
 }

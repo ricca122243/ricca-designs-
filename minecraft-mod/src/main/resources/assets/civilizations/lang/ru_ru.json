@@ -6,6 +6,16 @@
   "item.civilizations.knight_sword": "Рыцарский меч",
   "item.civilizations.settler_spawn_egg": "Яйцо призыва поселенца",
   "entity.civilizations.settler": "Поселенец",
-  "entity.civilizations.settler.named": "Поселенец королевства %s",
-  "civilizations.kingdom.founded": "Королевство %s основано! Поселенцы начинают строить."
+  "civilizations.kingdom.founded": "Королевство %s основано! Кликните по ратуше, чтобы увидеть сводку.",
+  "entity.civilizations.settler.builder": "Строитель",
+  "entity.civilizations.settler.builder.named": "Строитель королевства %s",
+  "entity.civilizations.settler.lumberjack": "Дровосек",
+  "entity.civilizations.settler.lumberjack.named": "Дровосек королевства %s",
+  "entity.civilizations.settler.farmer": "Фермер",
+  "entity.civilizations.settler.farmer.named": "Фермер королевства %s",
+  "entity.civilizations.settler.warrior": "Воин",
+  "entity.civilizations.settler.warrior.named": "Воин королевства %s",
+  "civilizations.townhall.title": "=== Королевство %s ===",
+  "civilizations.townhall.population": "Жителей: %s (воинов: %s), домов построено: %s",
+  "civilizations.townhall.resources": "Склад: дерево %s, камень %s, еда %s"
 }

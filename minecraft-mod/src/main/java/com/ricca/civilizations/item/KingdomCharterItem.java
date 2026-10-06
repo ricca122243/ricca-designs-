@@ -1,6 +1,8 @@
 package com.ricca.civilizations.item;
 
 import com.ricca.civilizations.Civilizations;
+import com.ricca.civilizations.block.TownHallBlockEntity;
+import com.ricca.civilizations.entity.Profession;
 import com.ricca.civilizations.entity.SettlerEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -21,7 +23,8 @@ import java.util.List;
  * появится Ратуша и трое поселенцев, которые начнут строить дома.
  */
 public class KingdomCharterItem extends Item {
-    private static final int[][] SETTLER_OFFSETS = {{2, 0, 2}, {-2, 0, 2}, {0, 0, -2}};
+    private static final int[][] SETTLER_OFFSETS = {{2, 0, 2}, {-2, 0, 2}, {2, 0, -2}, {-2, 0, -2}};
+    private static final Profession[] STARTING_PROFESSIONS = {Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER, Profession.WARRIOR};
 
     public KingdomCharterItem(Properties properties) {
         super(properties);
@@ -47,6 +50,10 @@ public class KingdomCharterItem extends Item {
 
         // Ставим ратушу
         level.setBlock(pos, Civilizations.TOWN_HALL.get().defaultBlockState(), 3);
+        TownHallBlockEntity hall = TownHallBlockEntity.at(level, pos);
+        if (hall != null) {
+            hall.setKingdom(kingdomName);
+        }
 
         // Призываем поселенцев
         for (int i = 0; i < SETTLER_OFFSETS.length; i++) {
@@ -56,11 +63,9 @@ public class KingdomCharterItem extends Item {
             }
             int[] o = SETTLER_OFFSETS[i];
             settler.moveTo(pos.getX() + 0.5 + o[0], pos.getY(), pos.getZ() + 0.5 + o[2], level.random.nextFloat() * 360f, 0f);
-            settler.setKingdom(kingdomName);
             settler.setTownHall(pos);
-            settler.setHouseIndex(i);
-            settler.setCustomName(Component.translatable("entity.civilizations.settler.named", kingdomName));
-            settler.setCustomNameVisible(true);
+            settler.setKingdom(kingdomName);
+            settler.setProfession(STARTING_PROFESSIONS[i]);
             settler.setPersistenceRequired();
             level.addFreshEntity(settler);
         }

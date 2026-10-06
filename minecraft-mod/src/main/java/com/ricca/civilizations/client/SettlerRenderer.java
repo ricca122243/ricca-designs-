@@ -13,6 +13,7 @@ public class SettlerRenderer extends MobRenderer<SettlerEntity, VillagerModel<Se
 
     public SettlerRenderer(EntityRendererProvider.Context context) {
         super(context, new VillagerModel<>(context.bakeLayer(ModelLayers.VILLAGER)), 0.5f);
+        this.addLayer(new ProfessionLayer(this));
     }
 
     @Override

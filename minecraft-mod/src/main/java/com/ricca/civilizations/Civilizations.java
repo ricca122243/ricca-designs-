@@ -1,6 +1,8 @@
 package com.ricca.civilizations;
 
 import com.mojang.logging.LogUtils;
+import com.ricca.civilizations.block.TownHallBlock;
+import com.ricca.civilizations.block.TownHallBlockEntity;
 import com.ricca.civilizations.entity.SettlerEntity;
 import com.ricca.civilizations.item.KingdomCharterItem;
 import net.minecraft.core.registries.Registries;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
@@ -41,18 +44,24 @@ public class Civilizations {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
     // --- Блоки ---
 
     /** Ратуша: сердце королевства. Вокруг неё поселенцы строят дома. */
-    public static final DeferredBlock<Block> TOWN_HALL = BLOCKS.registerSimpleBlock("town_hall",
+    public static final DeferredBlock<TownHallBlock> TOWN_HALL = BLOCKS.registerBlock("town_hall",
+            TownHallBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.GOLD)
                     .strength(3.0f, 6.0f)
                     .lightLevel(state -> 10)
                     .requiresCorrectToolForDrops());
     public static final DeferredItem<BlockItem> TOWN_HALL_ITEM = ITEMS.registerSimpleBlockItem("town_hall", TOWN_HALL);
+
+    /** Хранилище данных королевства внутри блока ратуши. */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TownHallBlockEntity>> TOWN_HALL_BE = BLOCK_ENTITIES.register("town_hall",
+            () -> BlockEntityType.Builder.of(TownHallBlockEntity::new, TOWN_HALL.get()).build(null));
 
     // --- Предметы ---
 
@@ -97,6 +106,7 @@ public class Civilizations {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         ENTITIES.register(modEventBus);
+        BLOCK_ENTITIES.register(modEventBus);
         TABS.register(modEventBus);
 
         modEventBus.addListener(this::registerAttributes);
