@@ -221,7 +221,7 @@ em { font-style: italic; }
 .logo__wm { display: flex; flex-direction: column; gap: 6px; padding-left: 14px; border-left: 1px solid var(--hair); }
 .hdr.is-dark .logo__wm { border-color: var(--hair-d); }
 .logo__main { font-size: 16px; font-weight: 600; line-height: 1; letter-spacing: .5em; margin-right: -.5em; }
-.logo__sub { font-size: 11px; font-weight: 600; line-height: 1; letter-spacing: .22em; text-transform: uppercase; opacity: .64; }
+.logo__sub { font-size: 11px; font-weight: 600; line-height: 1; letter-spacing: .22em; text-transform: uppercase; opacity: .64; white-space: nowrap; }
 .hdr__nav { display: flex; gap: clamp(20px, 2.3vw, 36px); margin-left: auto; }
 .hdr__nav a {
   display: inline-flex; align-items: center; min-height: 44px; white-space: nowrap;
@@ -278,6 +278,8 @@ em { font-style: italic; }
   .hdr__wa { width: 44px; padding: 0; justify-content: center; }
   .hdr__wa-t { display: none; }
   .ico { width: 20px; height: 20px; }
+  /* при открытом меню подпись «Закрыть» шире «Меню» — иконку WhatsApp убираем, кнопка есть внизу меню */
+  .menu-open .hdr__wa { display: none; }
 }
 
 /* Мобильное меню — чёрное */
@@ -449,6 +451,11 @@ em { font-style: italic; }
   .hero__copy { grid-column: 1 / span 7; }
   .hero__visual { grid-column: 8 / span 5; grid-row: 3; align-self: start; margin-top: 40px; }
 }
+/* Планшет в портрете: первый экран не растягиваем на всю высоту — заголовок не повисает в пустоте */
+@media (min-width: 760px) and (max-width: 1099px) and (orientation: portrait) {
+  .hero { min-height: 0; padding-bottom: clamp(40px, 5vw, 64px); }
+  .hero__title { margin-top: clamp(40px, 6vh, 96px); }
+}
 @media (max-width: 759px) {
   .hero { min-height: 0; padding-top: calc(var(--hdr) + 10px); padding-bottom: 0; }
   .hero__grid { grid-template-rows: auto auto auto auto; }
@@ -484,7 +491,7 @@ em { font-style: italic; }
 }
 .pillar { padding: 32px 32px 0 0; }
 .pillar + .pillar { padding-left: 32px; border-left: 1px solid var(--hair-2); }
-.pillar__no { font-family: var(--f-sans); font-size: var(--fs-label); font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--stone); }
+.pillar__no { display: block; font-family: var(--f-serif); font-style: italic; font-size: 22px; font-weight: 400; line-height: 1; letter-spacing: 0; color: var(--stone); }
 .pillar__t { margin: 18px 0 10px; font-family: var(--f-serif); font-size: var(--fs-h3); font-weight: 500; line-height: 1.08; color: var(--ink); }
 .pillar__t i { font-weight: 500; }
 .pillar p { max-width: 22em; }
@@ -501,7 +508,7 @@ em { font-style: italic; }
   .pillar, .pillar + .pillar { padding: 26px 0 28px; border-left: 0; }
   .pillar + .pillar { border-top: 1px solid var(--hair-2); }
   .pillar { display: grid; grid-template-columns: 44px 1fr; column-gap: 8px; }
-  .pillar__no { grid-row: 1 / 3; padding-top: 8px; }
+  .pillar__no { grid-row: 1 / 3; padding-top: 6px; }
   .pillar__t { margin: 0 0 8px; }
 }
 
@@ -769,14 +776,14 @@ em { font-style: italic; }
 .biz__side { grid-column: 8 / span 5; display: grid; align-content: start; gap: 8px; }
 .services li { display: grid; grid-template-columns: 44px minmax(0, 1fr); padding: 0 0 30px; }
 .services li + li { padding-top: 30px; border-top: 1px solid var(--hair-d); }
-.services__no { grid-row: 1 / 3; font-size: var(--fs-label); font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--on-dark-3); padding-top: 8px; }
+.services__no { grid-row: 1 / 3; font-family: var(--f-serif); font-style: italic; font-size: 22px; font-weight: 400; line-height: 1; letter-spacing: 0; color: var(--on-dark-3); padding-top: 6px; }
 .services h3 { font-family: var(--f-serif); font-size: 28px; font-weight: 500; line-height: 1.1; color: var(--on-dark); }
 .services p { margin-top: 8px; font-size: 16px; color: var(--on-dark-2); max-width: 26em; }
 .biz__cta { display: flex; flex-wrap: wrap; align-items: center; gap: 22px 36px; margin-top: 18px; }
 .biz__phone { display: grid; gap: 4px; min-height: 44px; text-decoration: none; color: var(--on-dark); }
 .biz__phone b { font-family: var(--f-serif); font-size: 26px; font-weight: 400; white-space: nowrap; }
 .biz__phone span { font-size: var(--fs-label); font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--on-dark-3); }
-.biz__phone:hover { color: #fff; }
+.biz__phone:hover { color: var(--on-dark); }
 
 .clients { margin-top: clamp(104px, 11vw, 168px); }
 .clients__list {

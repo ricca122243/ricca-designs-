@@ -218,7 +218,7 @@
     const live = $('[data-reel-live]', reel);
     const toggle = $('[data-reel-toggle]', reel);
     const STEPS = chs.filter((c) => !c.classList.contains('ch--final')).length;
-    let active = 0, front = 0, clips = [], clipPos = 0, inView = false, timer = 0, started = false;
+    let active = 0, front = 0, clips = [], clipPos = 0, inView = false, timer = 0, started = false, releaseT = 0;
     let auto = !reduced;
     const descs = [];
     if (desc) {
@@ -265,6 +265,7 @@
         started = true;
         clips = chs[idx].dataset.clips.split(' ');
         clipPos = 0;
+        clearTimeout(releaseT);   // скрытый ролик сейчас получит новый источник — отложенное освобождение отменяем
         const back = vids[1 - front];
         const cur = vids[front];
         back.loop = auto && clips.length === 1;
@@ -273,6 +274,11 @@
           back.classList.add('is-on'); cur.classList.remove('is-on');
           back.removeAttribute('aria-hidden'); cur.setAttribute('aria-hidden', 'true');
           front = 1 - front;
+          // после перекрёстного затухания скрытый ролик отдаёт источник — декодер держит только видимый
+          clearTimeout(releaseT);
+          releaseT = setTimeout(() => {
+            if (!cur.classList.contains('is-on') && cur.hasAttribute('src')) { cur.removeAttribute('src'); cur.load(); }
+          }, reduced ? 0 : 1100);
         };
         // один декодер: текущий ролик останавливаем сразу, он остаётся кадром до появления следующего
         cur.pause();
