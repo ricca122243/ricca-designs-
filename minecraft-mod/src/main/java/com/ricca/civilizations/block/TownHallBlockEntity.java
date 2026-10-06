@@ -4,6 +4,7 @@ import com.ricca.civilizations.Civilizations;
 import com.ricca.civilizations.entity.KingdomLayout;
 import com.ricca.civilizations.entity.Profession;
 import com.ricca.civilizations.entity.SettlerEntity;
+import com.ricca.civilizations.kingdom.KingdomSavedData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -31,9 +32,16 @@ public class TownHallBlockEntity extends BlockEntity {
     private int wood = 80;
     private int stone = 150;
     private int food = 0;
+    private int gold = 20;
     private int housesBuilt = 0;
     private int nextHouse = 0;
     private int growthTimer = 0;
+    private int taxTimer = 0;
+
+    private static final int TAX_INTERVAL_TICKS = 1200;
+    private static final int SELL_THRESHOLD = 150;
+    private static final int SELL_BATCH = 50;
+    private static final int SELL_PRICE = 10;
 
     public TownHallBlockEntity(BlockPos pos, BlockState state) {
         super(Civilizations.TOWN_HALL_BE.get(), pos, state);
@@ -62,6 +70,53 @@ public class TownHallBlockEntity extends BlockEntity {
     public int getStone() { return stone; }
     public int getFood() { return food; }
     public int getHousesBuilt() { return housesBuilt; }
+    public int getGold() { return gold; }
+    public void addGold(int amount) { gold += amount; setChanged(); }
+
+    /** Радиус территории королевства: растёт с числом домов. */
+    public int territoryRadius() {
+        return 20 + housesBuilt * 5;
+    }
+
+    /** Нанять жителя за золото. */
+    public boolean hire(Profession profession, int cost) {
+        if (gold < cost || !(level instanceof ServerLevel)) {
+            return false;
+        }
+        SettlerEntity settler = spawnSettler(profession);
+        if (settler == null) {
+            return false;
+        }
+        gold -= cost;
+        setChanged();
+        return true;
+    }
+
+    @Nullable
+    private SettlerEntity spawnSettler(Profession profession) {
+        BlockPos pos = getBlockPos();
+        SettlerEntity settler = Civilizations.SETTLER.get().create(level);
+        if (settler == null) {
+            return null;
+        }
+        double angle = level.random.nextDouble() * Math.PI * 2;
+        settler.moveTo(pos.getX() + 0.5 + Math.cos(angle) * 2, pos.getY(), pos.getZ() + 0.5 + Math.sin(angle) * 2,
+                level.random.nextFloat() * 360f, 0f);
+        settler.setTownHall(pos);
+        settler.setKingdom(kingdom);
+        settler.setProfession(profession);
+        settler.setPersistenceRequired();
+        level.addFreshEntity(settler);
+        return settler;
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level instanceof ServerLevel serverLevel) {
+            KingdomSavedData.get(serverLevel).add(getBlockPos());
+        }
+    }
 
     public void addWood(int amount) { wood += amount; setChanged(); }
     public void addStone(int amount) { stone += amount; setChanged(); }
@@ -113,6 +168,7 @@ public class TownHallBlockEntity extends BlockEntity {
         player.displayClientMessage(Component.translatable("civilizations.townhall.title", kingdom).withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.population", population, warriors, housesBuilt), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.resources", wood, stone, food), false);
+        player.displayClientMessage(Component.translatable("civilizations.townhall.gold", gold, territoryRadius()).withStyle(ChatFormatting.YELLOW), false);
     }
 
     // --- Рост королевства ---
@@ -120,6 +176,10 @@ public class TownHallBlockEntity extends BlockEntity {
     public static void serverTick(Level level, BlockPos pos, BlockState state, TownHallBlockEntity th) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
+        }
+        if (++th.taxTimer >= TAX_INTERVAL_TICKS) {
+            th.taxTimer = 0;
+            th.collectTaxes(serverLevel);
         }
         if (++th.growthTimer < GROWTH_INTERVAL_TICKS) {
             return;
@@ -132,22 +192,27 @@ public class TownHallBlockEntity extends BlockEntity {
             return;
         }
 
-        SettlerEntity newcomer = Civilizations.SETTLER.get().create(level);
-        if (newcomer == null) {
-            return;
-        }
         th.food -= FOOD_PER_SETTLER;
         th.setChanged();
 
-        Profession profession = Profession.byId(level.random.nextInt(Profession.values().length));
-        double angle = level.random.nextDouble() * Math.PI * 2;
-        newcomer.moveTo(pos.getX() + 0.5 + Math.cos(angle) * 2, pos.getY(), pos.getZ() + 0.5 + Math.sin(angle) * 2,
-                level.random.nextFloat() * 360f, 0f);
-        newcomer.setKingdom(th.kingdom);
-        newcomer.setTownHall(pos);
-        newcomer.setProfession(profession);
-        newcomer.setPersistenceRequired();
-        level.addFreshEntity(newcomer);
+        // Новые жители — только рабочие; воинов и стражников нанимает игрок.
+        Profession[] workers = {Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER};
+        th.spawnSettler(workers[level.random.nextInt(workers.length)]);
+    }
+
+    /** Раз в минуту: налог с каждого жителя и продажа излишков со склада. */
+    private void collectTaxes(ServerLevel serverLevel) {
+        int population = settlers(serverLevel).size();
+        gold += population;
+        if (wood > SELL_THRESHOLD) {
+            wood -= SELL_BATCH;
+            gold += SELL_PRICE;
+        }
+        if (stone > SELL_THRESHOLD) {
+            stone -= SELL_BATCH;
+            gold += SELL_PRICE;
+        }
+        setChanged();
     }
 
     // --- Сохранение ---
@@ -159,6 +224,7 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putInt("Wood", wood);
         tag.putInt("Stone", stone);
         tag.putInt("Food", food);
+        tag.putInt("Gold", gold);
         tag.putInt("HousesBuilt", housesBuilt);
         tag.putInt("NextHouse", nextHouse);
     }
@@ -170,6 +236,7 @@ public class TownHallBlockEntity extends BlockEntity {
         wood = tag.getInt("Wood");
         stone = tag.getInt("Stone");
         food = tag.getInt("Food");
+        gold = tag.getInt("Gold");
         housesBuilt = tag.getInt("HousesBuilt");
         nextHouse = tag.getInt("NextHouse");
     }

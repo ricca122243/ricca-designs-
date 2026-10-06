@@ -4,7 +4,9 @@ import com.mojang.logging.LogUtils;
 import com.ricca.civilizations.block.TownHallBlock;
 import com.ricca.civilizations.block.TownHallBlockEntity;
 import com.ricca.civilizations.entity.SettlerEntity;
+import com.ricca.civilizations.item.CommandStaffItem;
 import com.ricca.civilizations.item.KingdomCharterItem;
+import com.ricca.civilizations.kingdom.TerritoryHandler;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +27,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -70,6 +73,11 @@ public class Civilizations {
             KingdomCharterItem::new,
             new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
 
+    /** Жезл командира: управление жителями. */
+    public static final DeferredItem<Item> COMMAND_STAFF = ITEMS.registerItem("command_staff",
+            CommandStaffItem::new,
+            new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
     /** Рыцарский меч: чуть сильнее железного. */
     public static final DeferredItem<SwordItem> KNIGHT_SWORD = ITEMS.registerItem("knight_sword",
             props -> new SwordItem(Tiers.IRON, props.attributes(SwordItem.createAttributes(Tiers.IRON, 5, -2.2f))),
@@ -96,6 +104,7 @@ public class Civilizations {
                     .icon(() -> KINGDOM_CHARTER.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         output.accept(KINGDOM_CHARTER.get());
+                        output.accept(COMMAND_STAFF.get());
                         output.accept(TOWN_HALL_ITEM.get());
                         output.accept(KNIGHT_SWORD.get());
                         output.accept(SETTLER_SPAWN_EGG.get());
@@ -110,6 +119,7 @@ public class Civilizations {
         TABS.register(modEventBus);
 
         modEventBus.addListener(this::registerAttributes);
+        NeoForge.EVENT_BUS.register(new TerritoryHandler());
         LOGGER.info("Civilizations loaded. Long live the kingdom!");
     }
 

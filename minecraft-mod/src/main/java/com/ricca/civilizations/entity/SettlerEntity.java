@@ -29,6 +29,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 /**
  * Поселенец: житель королевства. Помнит свою ратушу, имеет профессию
@@ -46,6 +47,15 @@ public class SettlerEntity extends PathfinderMob {
     private BlockPos townHall;
     /** Какой участок под дом занял этот строитель. −1 — никакой. */
     private int houseIndex = -1;
+    /** Приказ игрока: идти сюда и ждать. */
+    @Nullable
+    private BlockPos orderPos;
+    /** Игрок, за которым житель следует. */
+    @Nullable
+    private UUID followPlayer;
+    /** Пост стражника. */
+    @Nullable
+    private BlockPos guardPost;
 
     public SettlerEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
@@ -70,6 +80,9 @@ public class SettlerEntity extends PathfinderMob {
             }
         });
         this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0, true));
+        this.goalSelector.addGoal(2, new FollowPlayerGoal(this));
+        this.goalSelector.addGoal(2, new OrderGoal(this));
+        this.goalSelector.addGoal(3, new GuardPostGoal(this));
         this.goalSelector.addGoal(3, new BuildHouseGoal(this));
         this.goalSelector.addGoal(3, new ChopTreesGoal(this));
         this.goalSelector.addGoal(3, new FarmGoal(this));
@@ -111,9 +124,23 @@ public class SettlerEntity extends PathfinderMob {
         return Profession.byId(this.entityData.get(PROFESSION));
     }
 
+    /** Воин или стражник: дерётся, а не убегает. */
     public boolean isWarrior() {
-        return getProfession() == Profession.WARRIOR;
+        Profession p = getProfession();
+        return p == Profession.WARRIOR || p == Profession.GUARD;
     }
+
+    @Nullable
+    public BlockPos getOrderPos() { return orderPos; }
+    public void setOrderPos(@Nullable BlockPos pos) { this.orderPos = pos; }
+
+    @Nullable
+    public UUID getFollowPlayer() { return followPlayer; }
+    public void setFollowPlayer(@Nullable UUID player) { this.followPlayer = player; }
+
+    @Nullable
+    public BlockPos getGuardPost() { return guardPost; }
+    public void setGuardPost(@Nullable BlockPos pos) { this.guardPost = pos; }
 
     public void setProfession(Profession profession) {
         this.entityData.set(PROFESSION, profession.ordinal());
@@ -122,7 +149,10 @@ public class SettlerEntity extends PathfinderMob {
     }
 
     private void applyProfessionStats(Profession profession) {
-        boolean warrior = profession == Profession.WARRIOR;
+        boolean warrior = profession == Profession.WARRIOR || profession == Profession.GUARD;
+        if (profession == Profession.GUARD && guardPost == null && townHall != null) {
+            guardPost = townHall;
+        }
         setBase(Attributes.MAX_HEALTH, warrior ? 30.0 : 20.0);
         setBase(Attributes.ATTACK_DAMAGE, warrior ? 6.0 : 2.0);
         setBase(Attributes.ARMOR, warrior ? 6.0 : 0.0);
@@ -176,6 +206,15 @@ public class SettlerEntity extends PathfinderMob {
         tag.putString("Kingdom", getKingdom());
         tag.putInt("Profession", getProfession().ordinal());
         tag.putInt("HouseIndex", houseIndex);
+        if (orderPos != null) {
+            tag.putLong("OrderPos", orderPos.asLong());
+        }
+        if (guardPost != null) {
+            tag.putLong("GuardPost", guardPost.asLong());
+        }
+        if (followPlayer != null) {
+            tag.putUUID("FollowPlayer", followPlayer);
+        }
         if (townHall != null) {
             tag.putInt("TownHallX", townHall.getX());
             tag.putInt("TownHallY", townHall.getY());
@@ -190,6 +229,9 @@ public class SettlerEntity extends PathfinderMob {
         this.entityData.set(PROFESSION, tag.getInt("Profession"));
         applyProfessionStats(getProfession());
         houseIndex = tag.contains("HouseIndex") ? tag.getInt("HouseIndex") : -1;
+        orderPos = tag.contains("OrderPos") ? BlockPos.of(tag.getLong("OrderPos")) : null;
+        guardPost = tag.contains("GuardPost") ? BlockPos.of(tag.getLong("GuardPost")) : null;
+        followPlayer = tag.hasUUID("FollowPlayer") ? tag.getUUID("FollowPlayer") : null;
         if (tag.contains("TownHallX")) {
             setTownHall(new BlockPos(tag.getInt("TownHallX"), tag.getInt("TownHallY"), tag.getInt("TownHallZ")));
         } else {
