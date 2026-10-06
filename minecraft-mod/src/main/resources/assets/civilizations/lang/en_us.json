@@ -1,0 +1,11 @@
+{
+  "itemGroup.civilizations": "Civilizations",
+  "block.civilizations.town_hall": "Town Hall",
+  "item.civilizations.kingdom_charter": "Kingdom Charter",
+  "item.civilizations.kingdom_charter.tooltip": "Right-click the ground to found your kingdom",
+  "item.civilizations.knight_sword": "Knight's Sword",
+  "item.civilizations.settler_spawn_egg": "Settler Spawn Egg",
+  "entity.civilizations.settler": "Settler",
+  "entity.civilizations.settler.named": "Settler of %s",
+  "civilizations.kingdom.founded": "The Kingdom of %s is founded! Your settlers are starting to build."
+}

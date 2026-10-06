@@ -1,0 +1,11 @@
+{
+  "itemGroup.civilizations": "Цивилизации",
+  "block.civilizations.town_hall": "Ратуша",
+  "item.civilizations.kingdom_charter": "Королевская грамота",
+  "item.civilizations.kingdom_charter.tooltip": "Кликните правой кнопкой по земле, чтобы основать королевство",
+  "item.civilizations.knight_sword": "Рыцарский меч",
+  "item.civilizations.settler_spawn_egg": "Яйцо призыва поселенца",
+  "entity.civilizations.settler": "Поселенец",
+  "entity.civilizations.settler.named": "Поселенец королевства %s",
+  "civilizations.kingdom.founded": "Королевство %s основано! Поселенцы начинают строить."
+}
