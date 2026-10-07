@@ -267,13 +267,19 @@ public class SettlerEntity extends PathfinderMob {
     }
 
     @Override
-    protected void serverAiStep() {
-        if (getControllingPassenger() instanceof Player) {
-            getNavigation().stop();
-            setTarget(null);
-            return;
+    public void tick() {
+        super.tick();
+        if (!level().isClientSide) {
+            // Пока игрок управляет жителем, его собственный ИИ выключен.
+            boolean ridden = getControllingPassenger() instanceof Player;
+            if (ridden != isNoAi()) {
+                setNoAi(ridden);
+                if (ridden) {
+                    getNavigation().stop();
+                    setTarget(null);
+                }
+            }
         }
-        super.serverAiStep();
     }
 
     @Override
