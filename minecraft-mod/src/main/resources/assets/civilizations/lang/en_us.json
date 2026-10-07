@@ -117,5 +117,6 @@
   "civilizations.cmd.home": "Everyone returns to their duties",
   "civilizations.cmd.kingdom_line": "%s: %s blocks away (%s, %s), relation %s",
   "civilizations.map.extra": "level %s, villages %s %s",
-  "civilizations.map.legend": "green ally, blue neutral, orange cold, red war"
+  "civilizations.map.legend": "green ally, blue neutral, orange cold, red war",
+  "generator.civilizations.medieval": "Medieval Realms"
 }
