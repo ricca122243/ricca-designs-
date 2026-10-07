@@ -100,7 +100,7 @@ public class KingdomCommands {
         if (hall == null) return 0;
         int n = 0;
         for (SettlerEntity s : hall.settlers(player.serverLevel())) {
-            if (s.isWarrior() && s.getProfession() != Profession.GUARD) {
+            if (s.isSoldier()) {
                 s.setOrderPos(null);
                 s.setFollowPlayer(player.getUUID());
                 n++;

@@ -12,6 +12,7 @@ import com.ricca.civilizations.item.CommandStaffItem;
 import com.ricca.civilizations.item.KingdomCharterItem;
 import com.ricca.civilizations.item.KingdomMapItem;
 import com.ricca.civilizations.item.MithrilTier;
+import com.ricca.civilizations.item.RulerBookItem;
 import com.ricca.civilizations.kingdom.KingdomCommands;
 import com.ricca.civilizations.kingdom.NpcKingdomSpawner;
 import com.ricca.civilizations.kingdom.TerritoryHandler;
@@ -153,6 +154,11 @@ public class Civilizations {
             CommandStaffItem::new,
             new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
+    /** Книга правителя: управление королевством без команд. */
+    public static final DeferredItem<Item> RULER_BOOK = ITEMS.registerItem("ruler_book",
+            RulerBookItem::new,
+            new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
     /** Карта земель: показывает все королевства. */
     public static final DeferredItem<Item> KINGDOM_MAP = ITEMS.registerItem("kingdom_map",
             KingdomMapItem::new,
@@ -196,6 +202,7 @@ public class Civilizations {
                         output.accept(KINGDOM_CHARTER.get());
                         output.accept(COMMAND_STAFF.get());
                         output.accept(KINGDOM_MAP.get());
+                        output.accept(RULER_BOOK.get());
                         output.accept(TOWN_HALL_ITEM.get());
                         output.accept(KNIGHT_SWORD.get());
                         output.accept(CATAPULT_ITEM.get());

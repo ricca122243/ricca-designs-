@@ -80,6 +80,7 @@ public class KingdomCharterItem extends Item {
         // Основателю выдаётся жезл командира.
         giveItem(player, new ItemStack(Civilizations.COMMAND_STAFF.get()));
         giveItem(player, new ItemStack(Civilizations.KINGDOM_MAP.get()));
+        giveItem(player, new ItemStack(Civilizations.RULER_BOOK.get()));
         return InteractionResult.CONSUME;
     }
 

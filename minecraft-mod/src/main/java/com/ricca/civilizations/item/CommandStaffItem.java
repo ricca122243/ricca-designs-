@@ -192,8 +192,10 @@ public class CommandStaffItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (level.isClientSide) {
-            com.ricca.civilizations.client.ClientHooks.openKingdomMenu();
+        if (level instanceof ServerLevel serverLevel) {
+            RulerBookItem.writeData(stack, serverLevel, player);
+        } else {
+            com.ricca.civilizations.client.ClientHooks.openRulerBook();
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }

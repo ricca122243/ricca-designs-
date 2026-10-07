@@ -7,7 +7,11 @@ public final class ClientHooks {
     private ClientHooks() {}
 
     public static void openKingdomMenu() {
-        Minecraft.getInstance().setScreen(new KingdomMenuScreen());
+        Minecraft.getInstance().setScreen(new RulerBookScreen());
+    }
+
+    public static void openRulerBook() {
+        Minecraft.getInstance().setScreen(new RulerBookScreen());
     }
 
     public static void openKingdomMap() {

@@ -180,14 +180,31 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         return Profession.byId(this.entityData.get(PROFESSION));
     }
 
-    /** Воин, стражник или лучник: дерётся, а не убегает. */
+    /** Любой боец: дерётся, а не убегает. */
     public boolean isWarrior() {
         Profession p = getProfession();
-        return p == Profession.WARRIOR || p == Profession.GUARD || p == Profession.ARCHER;
+        return p == Profession.WARRIOR || p == Profession.GUARD || p == Profession.ARCHER
+                || p == Profession.KNIGHT || p == Profession.CROSSBOWMAN || p == Profession.PIKEMAN;
     }
 
+    /** Боец, которого можно отправить в поход (стражники остаются дома). */
+    public boolean isSoldier() {
+        return isWarrior() && getProfession() != Profession.GUARD;
+    }
+
+    /** Стрелок: лучник или арбалетчик. */
     public boolean isArcher() {
-        return getProfession() == Profession.ARCHER;
+        Profession p = getProfession();
+        return p == Profession.ARCHER || p == Profession.CROSSBOWMAN;
+    }
+
+    /** Базовый урон по профессии (вооружение кузнеца добавляется сверху). */
+    public double professionDamage() {
+        return switch (getProfession()) {
+            case KNIGHT -> 3.0;
+            case PIKEMAN -> 4.0;
+            default -> 2.0;
+        };
     }
 
     public int getTier() {
@@ -228,7 +245,10 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         double dy = target.getY(0.33) - arrow.getY();
         double dz = target.getZ() - getZ();
         double dist = Math.sqrt(dx * dx + dz * dz);
-        arrow.shoot(dx, dy + dist * 0.2, dz, 1.6f, 6.0f);
+        if (getProfession() == Profession.CROSSBOWMAN) {
+            arrow.setBaseDamage(arrow.getBaseDamage() * 1.8);
+        }
+        arrow.shoot(dx, dy + dist * 0.2, dz, getProfession() == Profession.CROSSBOWMAN ? 2.4f : 1.6f, 5.0f);
         playSound(SoundEvents.SKELETON_SHOOT, 1.0f, 1.0f / (getRandom().nextFloat() * 0.4f + 0.8f));
         level().addFreshEntity(arrow);
     }
@@ -293,11 +313,12 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     }
 
     private void applyProfessionStats(Profession profession) {
-        boolean warrior = profession == Profession.WARRIOR || profession == Profession.GUARD;
+        boolean warrior = isWarrior();
         if (profession == Profession.GUARD && guardPost == null && townHall != null) {
             guardPost = townHall;
         }
-        setBase(Attributes.MAX_HEALTH, warrior ? 30.0 : 20.0);
+        setBase(Attributes.MAX_HEALTH, profession == Profession.KNIGHT ? 40.0 : warrior ? 30.0 : 20.0);
+        setBase(Attributes.ATTACK_DAMAGE, professionDamage());
         setHealth(getMaxHealth());
         equipForProfession(profession);
     }
@@ -364,6 +385,25 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
                 setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_INGOT));
                 setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0x3A3A3A));
                 setItemSlot(EquipmentSlot.LEGS, dyed(Items.LEATHER_LEGGINGS, 0x3A3A3A));
+            }
+            case KNIGHT -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(sword));
+                setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
+                setItemSlot(EquipmentSlot.HEAD, new ItemStack(tier >= 3 ? Items.DIAMOND_HELMET : Items.IRON_HELMET));
+                setItemSlot(EquipmentSlot.CHEST, new ItemStack(tier >= 3 ? Items.DIAMOND_CHESTPLATE : Items.IRON_CHESTPLATE));
+                setItemSlot(EquipmentSlot.LEGS, new ItemStack(tier >= 3 ? Items.DIAMOND_LEGGINGS : Items.IRON_LEGGINGS));
+                setItemSlot(EquipmentSlot.FEET, new ItemStack(tier >= 3 ? Items.DIAMOND_BOOTS : Items.IRON_BOOTS));
+            }
+            case CROSSBOWMAN -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
+                setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.CHAINMAIL_CHESTPLATE));
+                setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0x4A3A2A));
+            }
+            case PIKEMAN -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.TRIDENT));
+                setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.CHAINMAIL_CHESTPLATE));
+                setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.CHAINMAIL_LEGGINGS));
+                setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
             }
             case ARCHER -> {
                 setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));

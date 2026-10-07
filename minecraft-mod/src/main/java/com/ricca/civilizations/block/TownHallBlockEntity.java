@@ -524,7 +524,7 @@ public class TownHallBlockEntity extends BlockEntity {
             for (SettlerEntity s : th.settlers(serverLevel)) {
                 if (s.isWarrior()) {
                     net.minecraft.world.entity.ai.attributes.AttributeInstance a = s.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
-                    if (a != null) a.setBaseValue(2.0 + th.arms / 4.0);
+                    if (a != null) a.setBaseValue(s.professionDamage() + th.arms / 4.0);
                 }
             }
         }
@@ -600,6 +600,9 @@ public class TownHallBlockEntity extends BlockEntity {
                         : builders < 3 ? Profession.BUILDER
                         : warriors < 4 ? Profession.WARRIOR
                         : archers < 2 && wallBuilt ? Profession.ARCHER
+                        : tier >= 2 && countOf(settlers, Profession.PIKEMAN) < 2 ? Profession.PIKEMAN
+                        : tier >= 2 && countOf(settlers, Profession.CROSSBOWMAN) < 2 ? Profession.CROSSBOWMAN
+                        : tier >= 3 && countOf(settlers, Profession.KNIGHT) < 2 ? Profession.KNIGHT
                         : lumberjacks < 1 ? Profession.LUMBERJACK
                         : farmers < 1 ? Profession.FARMER
                         : miners < 1 ? Profession.MINER
@@ -656,7 +659,7 @@ public class TownHallBlockEntity extends BlockEntity {
 
         List<SettlerEntity> warriors = new java.util.ArrayList<>();
         for (SettlerEntity s : settlers(serverLevel)) {
-            if (s.getProfession() == Profession.WARRIOR || s.getProfession() == Profession.ARCHER) warriors.add(s);
+            if (s.isSoldier()) warriors.add(s);
         }
         if (warriors.size() < 6) return; // в набег идут не меньше шести
 
@@ -700,7 +703,7 @@ public class TownHallBlockEntity extends BlockEntity {
 
         List<SettlerEntity> soldiers = new java.util.ArrayList<>();
         for (SettlerEntity s : settlers(serverLevel)) {
-            if ((s.getProfession() == Profession.WARRIOR || s.getProfession() == Profession.ARCHER) && s.getOrderPos() == null) soldiers.add(s);
+            if (s.isSoldier() && s.getOrderPos() == null) soldiers.add(s);
         }
         if (soldiers.size() < 4) return;
         int sent = 0;
@@ -753,7 +756,7 @@ public class TownHallBlockEntity extends BlockEntity {
         int sent = 0;
         for (SettlerEntity s : settlers(serverLevel)) {
             if (sent >= 2) break;
-            if ((s.getProfession() == Profession.WARRIOR || s.getProfession() == Profession.ARCHER) && s.getOrderPos() == null) {
+            if (s.isSoldier() && s.getOrderPos() == null) {
                 s.setOrderPos(target);
                 sent++;
             }
