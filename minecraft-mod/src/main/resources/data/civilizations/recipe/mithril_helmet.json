@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "MMM",
+    "M M"
+  ],
+  "key": {
+    "M": {
+      "item": "civilizations:mithril_ingot"
+    }
+  },
+  "result": {
+    "id": "civilizations:mithril_helmet",
+    "count": 1
+  }
+}

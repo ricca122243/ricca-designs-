@@ -188,23 +188,10 @@ public class CommandStaffItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (!(level instanceof ServerLevel serverLevel)) {
-            return InteractionResultHolder.success(stack);
+        if (level.isClientSide) {
+            com.ricca.civilizations.client.ClientHooks.openKingdomMenu();
         }
-        List<BlockPos> halls = KingdomSavedData.get(serverLevel).halls(serverLevel);
-        if (halls.isEmpty()) {
-            say(player, Component.translatable("civilizations.staff.no_kingdoms").withStyle(ChatFormatting.GRAY));
-            return InteractionResultHolder.consume(stack);
-        }
-        say(player, Component.translatable("civilizations.staff.kingdoms_title").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
-        for (BlockPos pos : halls) {
-            TownHallBlockEntity hall = TownHallBlockEntity.at(level, pos);
-            String name = hall != null && !hall.getKingdom().isEmpty() ? hall.getKingdom() : "?";
-            int distance = (int) Math.sqrt(player.blockPosition().distSqr(pos));
-            say(player, Component.translatable("civilizations.staff.kingdom_line", name, distance, direction(player.blockPosition(), pos),
-                    pos.getX(), pos.getY(), pos.getZ()));
-        }
-        return InteractionResultHolder.consume(stack);
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
 
     private static String direction(BlockPos from, BlockPos to) {

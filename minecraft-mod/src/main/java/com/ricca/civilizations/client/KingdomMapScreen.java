@@ -68,18 +68,22 @@ public class KingdomMapScreen extends Screen {
             int z = cz + (int) ((k.getInt("Z") - pz) * scale);
             int r = Math.max(3, (int) (k.getInt("R") * scale));
             boolean mine = !me.isEmpty() && me.equals(name);
-            int color = mine ? 0x6040C040 : k.getBoolean("Npc") ? 0x60C04040 : 0x604080C0;
-            int border = mine ? 0xFF40C040 : k.getBoolean("Npc") ? 0xFFC04040 : 0xFF4080C0;
+            int rel = k.getInt("Rel");
+            int rgb = mine ? 0x40C040 : rel >= 50 ? 0x60D060 : rel <= -40 ? 0xD03030 : rel < 0 ? 0xD09030 : 0x4080C0;
+            int color = 0x60000000 | rgb;
+            int border = 0xFF000000 | rgb;
             fillCircle(g, x, z, r, color);
             g.fill(x - 2, z - 2, x + 2, z + 2, border);
             g.drawCenteredString(this.font, name, x, z - r - 11, 0xFFFFFF);
             g.drawCenteredString(this.font, Component.translatable("civilizations.map.pop", k.getInt("Pop"), k.getInt("Houses")), x, z + r + 2, 0xCCCCCC);
+            g.drawCenteredString(this.font, Component.translatable("civilizations.map.extra", k.getInt("Tier"), k.getInt("Villages"), mine ? "" : rel), x, z + r + 12, 0x999999);
         }
 
         // Игрок
         g.fill(cx - 2, cz - 2, cx + 2, cz + 2, 0xFFFFFFFF);
         g.drawCenteredString(this.font, Component.translatable("civilizations.map.you"), cx, cz + 5, 0xFFFFFF);
         g.drawCenteredString(this.font, Component.translatable("civilizations.map.scale", (int) (1 / scale)), this.width / 2, top + PANEL_H - 11, 0x888888);
+        g.drawString(this.font, Component.translatable("civilizations.map.legend"), left + 4, top + PANEL_H - 11, 0x888888);
     }
 
     private static void fillCircle(GuiGraphics g, int cx, int cz, int r, int color) {

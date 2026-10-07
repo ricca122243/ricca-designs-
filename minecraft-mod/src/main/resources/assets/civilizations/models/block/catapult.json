@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "civilizations:block/catapult_top",
+    "side": "civilizations:block/catapult_side",
+    "bottom": "minecraft:block/oak_planks"
+  }
+}

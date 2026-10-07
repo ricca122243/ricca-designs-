@@ -1,7 +1,6 @@
 {
   "replace": false,
   "values": [
-    "civilizations:town_hall",
     "civilizations:mithril_ore"
   ]
 }

@@ -43,8 +43,9 @@ public class KingdomMapItem extends Item {
         tag.putInt("PX", player.getBlockX());
         tag.putInt("PZ", player.getBlockZ());
         tag.putString("Me", player.getName().getString());
+        KingdomSavedData data = KingdomSavedData.get(level);
         ListTag list = new ListTag();
-        for (BlockPos pos : KingdomSavedData.get(level).halls(level)) {
+        for (BlockPos pos : data.halls(level)) {
             TownHallBlockEntity hall = TownHallBlockEntity.at(level, pos);
             CompoundTag k = new CompoundTag();
             k.putString("Name", hall != null && !hall.getKingdom().isEmpty() ? hall.getKingdom() : "?");
@@ -54,6 +55,9 @@ public class KingdomMapItem extends Item {
             k.putInt("Pop", hall != null ? hall.settlers(level).size() : 0);
             k.putInt("Houses", hall != null ? hall.getHousesBuilt() : 0);
             k.putBoolean("Npc", hall != null && hall.isNpc());
+            k.putInt("Rel", hall != null ? data.relation(hall.getKingdom(), player.getName().getString()) : 0);
+            k.putInt("Villages", hall != null ? data.villagesOwnedBy(hall.getKingdom()) : 0);
+            k.putInt("Tier", hall != null ? hall.getTier() : 1);
             list.add(k);
         }
         tag.put("Kingdoms", list);

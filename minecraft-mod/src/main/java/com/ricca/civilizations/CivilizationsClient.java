@@ -2,6 +2,7 @@ package com.ricca.civilizations;
 
 import com.ricca.civilizations.client.SettlerRenderer;
 import net.minecraft.client.renderer.entity.PillagerRenderer;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -18,5 +19,6 @@ public class CivilizationsClient {
     static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(Civilizations.SETTLER.get(), SettlerRenderer::new);
         event.registerEntityRenderer(Civilizations.BANDIT.get(), PillagerRenderer::new);
+        event.registerEntityRenderer(Civilizations.BOULDER.get(), ThrownItemRenderer::new);
     }
 }

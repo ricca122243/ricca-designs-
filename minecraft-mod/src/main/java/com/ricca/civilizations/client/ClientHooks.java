@@ -6,6 +6,10 @@ import net.minecraft.client.Minecraft;
 public final class ClientHooks {
     private ClientHooks() {}
 
+    public static void openKingdomMenu() {
+        Minecraft.getInstance().setScreen(new KingdomMenuScreen());
+    }
+
     public static void openKingdomMap() {
         Minecraft.getInstance().setScreen(new KingdomMapScreen());
     }

@@ -87,6 +87,7 @@ public final class Blueprint {
     }
 
     public static int stoneCost(BlockState s) {
+        if (s.is(com.ricca.civilizations.Civilizations.CATAPULT.get())) return 4;
         return s.is(Blocks.COBBLESTONE) || s.is(Blocks.COBBLESTONE_WALL) || s.is(Blocks.STONE_BRICKS) ? 1 : 0;
     }
 
@@ -227,6 +228,11 @@ public final class Blueprint {
                 }
             }
         }
+        // Катапульты по углам крыши
+        plan.add(new Step(1, 7, 1, com.ricca.civilizations.Civilizations.CATAPULT.get().defaultBlockState(), false, false));
+        plan.add(new Step(size - 2, 7, 1, com.ricca.civilizations.Civilizations.CATAPULT.get().defaultBlockState(), false, false));
+        plan.add(new Step(1, 7, size - 2, com.ricca.civilizations.Civilizations.CATAPULT.get().defaultBlockState(), false, false));
+        plan.add(new Step(size - 2, 7, size - 2, com.ricca.civilizations.Civilizations.CATAPULT.get().defaultBlockState(), false, false));
         plan.add(new Step(0, 8, 0, Blocks.TORCH.defaultBlockState(), false, false));
         plan.add(new Step(size - 1, 8, 0, Blocks.TORCH.defaultBlockState(), false, false));
         plan.add(new Step(0, 8, size - 1, Blocks.TORCH.defaultBlockState(), false, false));
