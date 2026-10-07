@@ -10,12 +10,14 @@ import net.minecraft.world.entity.PathfinderMob;
 public final class KingdomLayout {
     public static final int HOUSE_SIZE = 5;
     public static final int FARM_SIZE = 5;
+    public static final int QUARRY_SIZE = 5;
 
     /** Углы домов (x, z). Север (−z) оставлен под поле. */
     private static final int[][] HOUSE_OFFSETS = {
             {5, -2}, {-9, -2}, {-2, 5}, {5, 5}, {-9, 5}, {5, -9}, {-9, -9}, {-2, 12}
     };
     private static final int[] FARM_OFFSET = {-2, -9};
+    private static final int[] QUARRY_OFFSET = {8, 12};
 
     private KingdomLayout() {}
 
@@ -32,6 +34,10 @@ public final class KingdomLayout {
         return hall.offset(FARM_OFFSET[0], 0, FARM_OFFSET[1]);
     }
 
+    public static BlockPos quarryOrigin(BlockPos hall) {
+        return hall.offset(QUARRY_OFFSET[0], 0, QUARRY_OFFSET[1]);
+    }
+
     /** Находится ли точка внутри площадки размером size×size с углом origin (по высоте — с запасом). */
     public static boolean inside(BlockPos origin, int size, BlockPos pos) {
         return pos.getX() >= origin.getX() && pos.getX() < origin.getX() + size
@@ -44,7 +50,7 @@ public final class KingdomLayout {
         if (pos.distManhattan(hall) <= 2) {
             return true;
         }
-        if (inside(farmOrigin(hall), FARM_SIZE, pos)) {
+        if (inside(farmOrigin(hall), FARM_SIZE, pos) || inside(quarryOrigin(hall), QUARRY_SIZE, pos)) {
             return true;
         }
         for (int i = 0; i < HOUSE_OFFSETS.length; i++) {

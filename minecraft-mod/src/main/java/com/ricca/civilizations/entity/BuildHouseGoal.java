@@ -45,6 +45,7 @@ public class BuildHouseGoal extends Goal {
     private int index;
     private int cooldown;
     private int stuckTicks;
+    private int passes;
 
     public BuildHouseGoal(SettlerEntity settler) {
         this.settler = settler;
@@ -78,6 +79,7 @@ public class BuildHouseGoal extends Goal {
     @Override
     public void start() {
         index = 0;
+        passes = 0;
         skipAlreadyBuilt();
         cooldown = PLACE_DELAY_TICKS;
         stuckTicks = 0;
@@ -100,6 +102,15 @@ public class BuildHouseGoal extends Goal {
             return;
         }
         if (index >= HOUSE_PLAN.size()) {
+            // Проходим план ещё раз: вдруг что-то пропустили (не смогли дойти).
+            if (passes < 3) {
+                passes++;
+                index = 0;
+                skipAlreadyBuilt();
+                if (index < HOUSE_PLAN.size()) {
+                    return;
+                }
+            }
             hall.houseFinished();
             settler.setHouseIndex(-1);
             return;

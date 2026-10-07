@@ -37,6 +37,7 @@ public class TownHallBlockEntity extends BlockEntity {
     private int stone = 150;
     private int food = 0;
     private int gold = 20;
+    private int iron = 0;
     private int housesBuilt = 0;
     private int nextHouse = 0;
     private int growthTimer = 0;
@@ -92,6 +93,8 @@ public class TownHallBlockEntity extends BlockEntity {
     public int getFood() { return food; }
     public int getHousesBuilt() { return housesBuilt; }
     public int getGold() { return gold; }
+    public int getIron() { return iron; }
+    public void addIron(int amount) { iron += amount; setChanged(); }
     public boolean isNpc() { return npc; }
 
     /** Сделать королевство компьютерным и выдать ему стартовые запасы. */
@@ -206,7 +209,7 @@ public class TownHallBlockEntity extends BlockEntity {
         }
         player.displayClientMessage(Component.translatable("civilizations.townhall.title", kingdom).withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.population", population, warriors, housesBuilt), false);
-        player.displayClientMessage(Component.translatable("civilizations.townhall.resources", wood, stone, food), false);
+        player.displayClientMessage(Component.translatable("civilizations.townhall.resources", wood, stone, food, iron), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.gold", gold, territoryRadius()).withStyle(ChatFormatting.YELLOW), false);
     }
 
@@ -260,19 +263,25 @@ public class TownHallBlockEntity extends BlockEntity {
         if (++npcTimer >= NPC_HIRE_INTERVAL_TICKS) {
             npcTimer = 0;
             List<SettlerEntity> settlers = settlers(serverLevel);
-            int warriors = 0;
-            int guards = 0;
-            int builders = 0;
+            int warriors = 0, guards = 0, builders = 0, miners = 0, lumberjacks = 0, farmers = 0;
             for (SettlerEntity s : settlers) {
-                if (s.getProfession() == Profession.WARRIOR) warriors++;
-                if (s.getProfession() == Profession.GUARD) guards++;
-                if (s.getProfession() == Profession.BUILDER) builders++;
+                switch (s.getProfession()) {
+                    case WARRIOR -> warriors++;
+                    case GUARD -> guards++;
+                    case BUILDER -> builders++;
+                    case MINER -> miners++;
+                    case LUMBERJACK -> lumberjacks++;
+                    case FARMER -> farmers++;
+                }
             }
             if (gold >= 50) {
                 Profession want = guards < 2 ? Profession.GUARD
                         : warriors < 2 ? Profession.WARRIOR
                         : builders < 1 ? Profession.BUILDER
-                        : settlers.size() < 6 + housesBuilt * 3 ? Profession.byId(level.random.nextInt(4)) : null;
+                        : lumberjacks < 1 ? Profession.LUMBERJACK
+                        : farmers < 1 ? Profession.FARMER
+                        : miners < 1 ? Profession.MINER
+                        : settlers.size() < 6 + housesBuilt * 3 ? Profession.byId(level.random.nextInt(Profession.values().length)) : null;
                 if (want != null) {
                     hire(want, 50);
                 }
@@ -369,7 +378,7 @@ public class TownHallBlockEntity extends BlockEntity {
         int count = settlers(serverLevel).size();
         int cap = 6 + housesBuilt * 3;
         int arriving = 3 + level.random.nextInt(3);
-        Profession[] workers = {Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER};
+        Profession[] workers = {Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER, Profession.MINER};
         int spawned = 0;
         for (int i = 0; i < arriving && count + i < cap; i++) {
             spawnSettler(workers[level.random.nextInt(workers.length)]);
@@ -428,6 +437,7 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putInt("Stone", stone);
         tag.putInt("Food", food);
         tag.putInt("Gold", gold);
+        tag.putInt("Iron", iron);
         tag.putBoolean("Npc", npc);
         tag.putLong("LastDay", lastDay);
         tag.putInt("HousesBuilt", housesBuilt);
@@ -442,6 +452,7 @@ public class TownHallBlockEntity extends BlockEntity {
         stone = tag.getInt("Stone");
         food = tag.getInt("Food");
         gold = tag.getInt("Gold");
+        iron = tag.getInt("Iron");
         npc = tag.getBoolean("Npc");
         lastDay = tag.contains("LastDay") ? tag.getLong("LastDay") : -1;
         housesBuilt = tag.getInt("HousesBuilt");

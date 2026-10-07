@@ -17,7 +17,7 @@
   "entity.civilizations.settler.warrior.named": "Warrior of %s",
   "civilizations.townhall.title": "=== Kingdom of %s ===",
   "civilizations.townhall.population": "Population: %s (warriors: %s), houses built: %s",
-  "civilizations.townhall.resources": "Storage: wood %s, stone %s, food %s",
+  "civilizations.townhall.resources": "Storage: wood %s, stone %s, food %s, iron %s",
   "item.civilizations.command_staff": "Command Staff",
   "item.civilizations.command_staff.tooltip1": "Click a settler to select, click again to follow/release",
   "item.civilizations.command_staff.tooltip2": "Shift+click a settler: change profession. Click ground: send",
@@ -55,5 +55,7 @@
   "civilizations.capture.defended": "%s still has %s defenders. Defeat them first!",
   "civilizations.capture.done": "%s has captured the kingdom of %s!",
   "civilizations.immigrants": "%s new settlers arrived in %s",
-  "civilizations.bandits": "%s bandits are attacking %s!"
+  "civilizations.bandits": "%s bandits are attacking %s!",
+  "entity.civilizations.settler.miner": "Miner",
+  "entity.civilizations.settler.miner.named": "Miner of %s"
 }

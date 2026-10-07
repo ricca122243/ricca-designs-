@@ -17,7 +17,7 @@
   "entity.civilizations.settler.warrior.named": "Воин королевства %s",
   "civilizations.townhall.title": "=== Королевство %s ===",
   "civilizations.townhall.population": "Жителей: %s (воинов: %s), домов построено: %s",
-  "civilizations.townhall.resources": "Склад: дерево %s, камень %s, еда %s",
+  "civilizations.townhall.resources": "Склад: дерево %s, камень %s, еда %s, железо %s",
   "item.civilizations.command_staff": "Жезл командира",
   "item.civilizations.command_staff.tooltip1": "Клик по жителю: выбрать. Ещё клик: следовать / отпустить",
   "item.civilizations.command_staff.tooltip2": "Shift+клик по жителю: сменить профессию. Клик по земле: отправить",
@@ -55,5 +55,7 @@
   "civilizations.capture.defended": "У королевства %s ещё %s защитников. Сначала победите их!",
   "civilizations.capture.done": "%s захватывает королевство %s!",
   "civilizations.immigrants": "В %2$s пришли новые поселенцы: %1$s",
-  "civilizations.bandits": "Разбойники (%s) напали на %s!"
+  "civilizations.bandits": "Разбойники (%s) напали на %s!",
+  "entity.civilizations.settler.miner": "Шахтёр",
+  "entity.civilizations.settler.miner.named": "Шахтёр королевства %s"
 }

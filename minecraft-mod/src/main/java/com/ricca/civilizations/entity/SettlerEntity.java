@@ -98,6 +98,7 @@ public class SettlerEntity extends PathfinderMob {
         this.goalSelector.addGoal(3, new BuildHouseGoal(this));
         this.goalSelector.addGoal(3, new ChopTreesGoal(this));
         this.goalSelector.addGoal(3, new FarmGoal(this));
+        this.goalSelector.addGoal(3, new MineGoal(this));
         this.goalSelector.addGoal(4, new MoveTowardsRestrictionGoal(this, 0.5));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.4));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0f));
@@ -207,6 +208,11 @@ public class SettlerEntity extends PathfinderMob {
                 setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
                 setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
             }
+            case MINER -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_PICKAXE));
+                setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0x6E6E6E));
+                setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0x6E6E6E));
+            }
             case GUARD -> {
                 setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
                 setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
@@ -227,11 +233,12 @@ public class SettlerEntity extends PathfinderMob {
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (player.getItemInHand(hand).isEmpty() && player.isShiftKeyDown() && !isVehicle()) {
+        // Клик пустой рукой (без Shift): игрок «вселяется» в жителя. Shift — выйти.
+        if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown() && !isVehicle() && hand == InteractionHand.MAIN_HAND) {
             if (!level().isClientSide) {
                 setOrderPos(null);
                 setFollowPlayer(null);
-                player.startRiding(this);
+                player.startRiding(this, true);
             }
             return InteractionResult.sidedSuccess(level().isClientSide);
         }
