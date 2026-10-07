@@ -120,5 +120,6 @@
   "civilizations.map.legend": "зелёный союзник, синий нейтрал, оранжевый холод, красный война",
   "generator.civilizations.medieval": "Средневековые земли",
   "civilizations.menu.build.palisade": "Частокол",
-  "civilizations.staff.ordered.palisade": "Заказан частокол: нужно дерева %s, камня %s (на складе: дерева %s, камня %s)"
+  "civilizations.staff.ordered.palisade": "Заказан частокол: нужно дерева %s, камня %s (на складе: дерева %s, камня %s)",
+  "civilizations.staff.skill": "Навык строительства: %s/5"
 }

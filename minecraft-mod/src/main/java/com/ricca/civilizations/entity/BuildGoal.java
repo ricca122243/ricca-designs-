@@ -118,8 +118,10 @@ public class BuildGoal extends Goal {
         Vec3 center = target.getCenter();
         settler.getLookControl().setLookAt(center.x, center.y, center.z);
 
+        int skill = settler.getBuildSkill();
+        double reach = 5.5 + (skill - 1) * 0.6;
         boolean inTheWay = settler.getBoundingBox().intersects(new AABB(target));
-        boolean tooFar = settler.distanceToSqr(center) > REACH_SQR;
+        boolean tooFar = settler.distanceToSqr(center) > reach * reach;
         boolean insideSite = !blueprint.walkInside()
                 && KingdomLayout.insideBox(origin, blueprint.minX, blueprint.minZ, blueprint.maxX, blueprint.maxZ, settler.blockPosition());
         if (tooFar || inTheWay || insideSite) {
@@ -140,7 +142,7 @@ public class BuildGoal extends Goal {
         if (--cooldown > 0) {
             return;
         }
-        cooldown = PLACE_DELAY_TICKS;
+        cooldown = Math.max(3, PLACE_DELAY_TICKS - (skill - 1) * 2);
 
         BlockState current = level.getBlockState(target);
         if (step.fillOnly() && !current.canBeReplaced()) {
@@ -151,6 +153,7 @@ public class BuildGoal extends Goal {
         if (!current.canBeReplaced() && !current.isAir()) {
             dig(level, target, current, hall);
             settler.swing(InteractionHand.MAIN_HAND);
+            settler.addBuildXp(1);
             return;
         }
         if (step.isAir()) {
@@ -164,6 +167,7 @@ public class BuildGoal extends Goal {
         level.setBlock(target, step.state(), step.quiet() ? 18 : 3);
         level.playSound(null, target, step.state().getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0f, 0.9f);
         settler.swing(InteractionHand.MAIN_HAND);
+        settler.addBuildXp(1);
         index++;
     }
 

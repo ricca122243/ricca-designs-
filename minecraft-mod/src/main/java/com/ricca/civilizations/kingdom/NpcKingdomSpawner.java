@@ -34,7 +34,7 @@ public class NpcKingdomSpawner {
     private static final int MIN_DISTANCE = 200;
     private static final int EXTRA_DISTANCE = 120;
     private static final Profession[] STARTING = {
-            Profession.BUILDER, Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER,
+            Profession.BUILDER, Profession.BUILDER, Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER,
             Profession.MINER, Profession.WARRIOR, Profession.WARRIOR, Profession.GUARD, Profession.GUARD
     };
 

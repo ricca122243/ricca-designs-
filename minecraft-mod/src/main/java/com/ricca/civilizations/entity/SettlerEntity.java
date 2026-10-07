@@ -70,6 +70,8 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     private BlockPos projectOrigin;
     /** Сытость 0..20, как у игрока. */
     private int hunger = 20;
+    /** Опыт строителя: сколько блоков поставил. Навык растёт с опытом. */
+    private int buildXp = 0;
     private int hungerTimer = 0;
     private int healTimer = 0;
     private int stuckTimer = 0;
@@ -433,6 +435,15 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         return hunger;
     }
 
+    public void addBuildXp(int amount) {
+        buildXp += amount;
+    }
+
+    /** Навык строительства 1..5: быстрее кладёт и дальше достаёт. */
+    public int getBuildSkill() {
+        return Math.min(5, 1 + buildXp / 120);
+    }
+
     /** Голод как у игрока: сытость падает, еда берётся со склада, без еды житель слабеет и умирает. */
     private void tickHunger() {
         if (++hungerTimer >= 60) { // раз в минуту −1
@@ -576,6 +587,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         tag.putInt("HouseIndex", houseIndex);
         tag.putInt("Tier", getTier());
         tag.putInt("Hunger", hunger);
+        tag.putInt("BuildXp", buildXp);
         if (projectType != null) {
             tag.putString("Project", projectType.name());
         }
@@ -607,6 +619,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         houseIndex = tag.contains("HouseIndex") ? tag.getInt("HouseIndex") : -1;
         this.entityData.set(TIER, tag.contains("Tier") ? tag.getInt("Tier") : 1);
         hunger = tag.contains("Hunger") ? tag.getInt("Hunger") : 20;
+        buildXp = tag.getInt("BuildXp");
         projectType = null;
         projectOrigin = tag.contains("ProjectOrigin") ? BlockPos.of(tag.getLong("ProjectOrigin")) : null;
         if (tag.contains("Project")) {

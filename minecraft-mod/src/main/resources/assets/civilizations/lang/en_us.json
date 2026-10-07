@@ -120,5 +120,6 @@
   "civilizations.map.legend": "green ally, blue neutral, orange cold, red war",
   "generator.civilizations.medieval": "Medieval Realms",
   "civilizations.menu.build.palisade": "Palisade",
-  "civilizations.staff.ordered.palisade": "Palisade ordered: needs %s wood, %s stone (storage: %s wood, %s stone)"
+  "civilizations.staff.ordered.palisade": "Palisade ordered: needs %s wood, %s stone (storage: %s wood, %s stone)",
+  "civilizations.staff.skill": "Building skill: %s/5"
 }

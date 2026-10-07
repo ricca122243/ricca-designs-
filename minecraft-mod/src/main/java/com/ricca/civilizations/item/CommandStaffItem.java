@@ -81,6 +81,9 @@ public class CommandStaffItem extends Item {
             setSelected(stack, settler.getUUID());
             say(player, Component.translatable("civilizations.staff.selected", settler.getDisplayName()));
             say(player, Component.translatable("civilizations.staff.status", (int) settler.getHealth(), (int) settler.getMaxHealth(), settler.getHunger()).withStyle(ChatFormatting.GRAY));
+            if (settler.getProfession() == Profession.BUILDER) {
+                say(player, Component.translatable("civilizations.staff.skill", settler.getBuildSkill()).withStyle(ChatFormatting.GRAY));
+            }
             return InteractionResult.CONSUME;
         }
 

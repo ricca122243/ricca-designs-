@@ -23,8 +23,8 @@ import java.util.List;
  * появится Ратуша и трое поселенцев, которые начнут строить дома.
  */
 public class KingdomCharterItem extends Item {
-    private static final int[][] SETTLER_OFFSETS = {{2, 0, 2}, {-2, 0, 2}, {2, 0, -2}, {-2, 0, -2}, {3, 0, 0}, {-3, 0, 0}, {0, 0, 3}};
-    private static final Profession[] STARTING_PROFESSIONS = {Profession.BUILDER, Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER, Profession.WARRIOR, Profession.MINER, Profession.GUARD};
+    private static final int[][] SETTLER_OFFSETS = {{2, 0, 2}, {-2, 0, 2}, {2, 0, -2}, {-2, 0, -2}, {3, 0, 0}, {-3, 0, 0}, {0, 0, 3}, {0, 0, -3}};
+    private static final Profession[] STARTING_PROFESSIONS = {Profession.BUILDER, Profession.BUILDER, Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER, Profession.WARRIOR, Profession.MINER, Profession.GUARD};
 
     public KingdomCharterItem(Properties properties) {
         super(properties);

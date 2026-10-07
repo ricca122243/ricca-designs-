@@ -529,7 +529,7 @@ public class TownHallBlockEntity extends BlockEntity {
             if (gold >= 50) {
                 Profession want = guards < 2 ? Profession.GUARD
                         : warriors < 2 ? Profession.WARRIOR
-                        : builders < 2 ? Profession.BUILDER
+                        : builders < 3 ? Profession.BUILDER
                         : warriors < 4 ? Profession.WARRIOR
                         : archers < 2 && wallBuilt ? Profession.ARCHER
                         : lumberjacks < 1 ? Profession.LUMBERJACK
@@ -754,9 +754,13 @@ public class TownHallBlockEntity extends BlockEntity {
         int cap = 6 + housesBuilt * 3;
         int arriving = 3 + level.random.nextInt(3);
         Profession[] workers = {Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER, Profession.MINER, Profession.SHEPHERD};
+        int builders = 0;
+        for (SettlerEntity s : settlers(serverLevel)) if (s.getProfession() == Profession.BUILDER) builders++;
         int spawned = 0;
         for (int i = 0; i < arriving && count + i < cap; i++) {
-            spawnSettler(workers[level.random.nextInt(workers.length)]);
+            Profession p = builders < 3 ? Profession.BUILDER : workers[level.random.nextInt(workers.length)];
+            if (p == Profession.BUILDER) builders++;
+            spawnSettler(p);
             spawned++;
         }
         if (spawned > 0) {
