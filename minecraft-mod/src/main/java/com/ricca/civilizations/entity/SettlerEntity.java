@@ -46,10 +46,13 @@ import java.util.UUID;
  * Поселенец: житель королевства. Помнит свою ратушу, имеет профессию
  * и занимается своим делом: строит, рубит лес, пашет или охраняет.
  */
-public class SettlerEntity extends PathfinderMob {
+public class SettlerEntity extends PathfinderMob implements net.minecraft.world.entity.monster.RangedAttackMob {
     private static final EntityDataAccessor<String> KINGDOM =
             SynchedEntityData.defineId(SettlerEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> PROFESSION =
+            SynchedEntityData.defineId(SettlerEntity.class, EntityDataSerializers.INT);
+    /** Уровень снаряжения королевства: 1 камень, 2 железо, 3 железо+алмазный меч, 4 алмаз. */
+    private static final EntityDataAccessor<Integer> TIER =
             SynchedEntityData.defineId(SettlerEntity.class, EntityDataSerializers.INT);
 
     private static final int HOME_RADIUS = 24;
@@ -58,6 +61,9 @@ public class SettlerEntity extends PathfinderMob {
     private BlockPos townHall;
     /** Какой участок под дом занял этот строитель. −1 — никакой. */
     private int houseIndex = -1;
+    /** Текущий проект строителя. */
+    @Nullable
+    private Blueprint.Type projectType;
     /** Приказ игрока: идти сюда и ждать. */
     @Nullable
     private BlockPos orderPos;
@@ -91,11 +97,22 @@ public class SettlerEntity extends PathfinderMob {
                 return !isWarrior() && super.canUse();
             }
         });
-        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.0, true));
+        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.0, true) {
+            @Override
+            public boolean canUse() {
+                return !isArcher() && super.canUse();
+            }
+        });
+        this.goalSelector.addGoal(1, new net.minecraft.world.entity.ai.goal.RangedAttackGoal(this, 1.0, 30, 14.0f) {
+            @Override
+            public boolean canUse() {
+                return isArcher() && super.canUse();
+            }
+        });
         this.goalSelector.addGoal(2, new FollowPlayerGoal(this));
         this.goalSelector.addGoal(2, new OrderGoal(this));
         this.goalSelector.addGoal(3, new GuardPostGoal(this));
-        this.goalSelector.addGoal(3, new BuildHouseGoal(this));
+        this.goalSelector.addGoal(3, new BuildGoal(this));
         this.goalSelector.addGoal(3, new ChopTreesGoal(this));
         this.goalSelector.addGoal(3, new FarmGoal(this));
         this.goalSelector.addGoal(3, new MineGoal(this));
@@ -123,6 +140,7 @@ public class SettlerEntity extends PathfinderMob {
         super.defineSynchedData(builder);
         builder.define(KINGDOM, "");
         builder.define(PROFESSION, Profession.BUILDER.ordinal());
+        builder.define(TIER, 1);
     }
 
     // --- Королевство и профессия ---
@@ -140,10 +158,50 @@ public class SettlerEntity extends PathfinderMob {
         return Profession.byId(this.entityData.get(PROFESSION));
     }
 
-    /** Воин или стражник: дерётся, а не убегает. */
+    /** Воин, стражник или лучник: дерётся, а не убегает. */
     public boolean isWarrior() {
         Profession p = getProfession();
-        return p == Profession.WARRIOR || p == Profession.GUARD;
+        return p == Profession.WARRIOR || p == Profession.GUARD || p == Profession.ARCHER;
+    }
+
+    public boolean isArcher() {
+        return getProfession() == Profession.ARCHER;
+    }
+
+    public int getTier() {
+        return this.entityData.get(TIER);
+    }
+
+    /** Сменить уровень снаряжения (вызывает ратуша, когда королевство растёт). */
+    public void setTier(int tier) {
+        if (tier != getTier()) {
+            this.entityData.set(TIER, tier);
+            equipForProfession(getProfession());
+        }
+    }
+
+    @Nullable
+    public Blueprint.Type getProjectType() {
+        return projectType;
+    }
+
+    public void setProject(@Nullable Blueprint.Type type, int houseIndex) {
+        this.projectType = type;
+        this.houseIndex = houseIndex;
+    }
+
+    /** Лучник стреляет из лука. */
+    @Override
+    public void performRangedAttack(LivingEntity target, float velocity) {
+        net.minecraft.world.entity.projectile.Arrow arrow = new net.minecraft.world.entity.projectile.Arrow(level(), this, new ItemStack(Items.ARROW), getMainHandItem());
+        arrow.pickup = net.minecraft.world.entity.projectile.AbstractArrow.Pickup.DISALLOWED;
+        double dx = target.getX() - getX();
+        double dy = target.getY(0.33) - arrow.getY();
+        double dz = target.getZ() - getZ();
+        double dist = Math.sqrt(dx * dx + dz * dz);
+        arrow.shoot(dx, dy + dist * 0.2, dz, 1.6f, 6.0f);
+        playSound(SoundEvents.SKELETON_SHOOT, 1.0f, 1.0f / (getRandom().nextFloat() * 0.4f + 0.8f));
+        level().addFreshEntity(arrow);
     }
 
     public boolean isEnemy(SettlerEntity other) {
@@ -180,45 +238,59 @@ public class SettlerEntity extends PathfinderMob {
         equipForProfession(profession);
     }
 
-    /** Инструменты и одежда по профессии. Урон и броня берутся из предметов. */
+    /** Инструменты и одежда по профессии и уровню королевства. Урон и броня берутся из предметов. */
     private void equipForProfession(Profession profession) {
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             setItemSlot(slot, ItemStack.EMPTY);
             setDropChance(slot, 0.0f);
         }
+        int tier = getTier();
+        net.minecraft.world.item.Item sword = tier <= 1 ? Items.STONE_SWORD : tier == 2 ? Items.IRON_SWORD : Items.DIAMOND_SWORD;
+        net.minecraft.world.item.Item chest = tier <= 1 ? Items.LEATHER_CHESTPLATE : tier <= 3 ? Items.IRON_CHESTPLATE : Items.DIAMOND_CHESTPLATE;
+        net.minecraft.world.item.Item helmet = tier <= 1 ? Items.LEATHER_HELMET : tier <= 3 ? Items.IRON_HELMET : Items.DIAMOND_HELMET;
+        net.minecraft.world.item.Item legs = tier <= 1 ? Items.LEATHER_LEGGINGS : tier <= 3 ? Items.IRON_LEGGINGS : Items.DIAMOND_LEGGINGS;
+        net.minecraft.world.item.Item pick = tier <= 1 ? Items.WOODEN_PICKAXE : tier == 2 ? Items.STONE_PICKAXE : Items.IRON_PICKAXE;
+        net.minecraft.world.item.Item axe = tier <= 1 ? Items.WOODEN_AXE : tier == 2 ? Items.STONE_AXE : Items.IRON_AXE;
+        net.minecraft.world.item.Item hoe = tier <= 1 ? Items.WOODEN_HOE : tier == 2 ? Items.STONE_HOE : Items.IRON_HOE;
         switch (profession) {
             case BUILDER -> {
-                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_PICKAXE));
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(pick));
                 setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0xC86E2C));
                 setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0xC86E2C));
             }
             case LUMBERJACK -> {
-                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_AXE));
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(axe));
                 setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0x3C8A3C));
             }
             case FARMER -> {
-                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_HOE));
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(hoe));
                 setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0xD8B830));
                 setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0xD8B830));
             }
-            case WARRIOR -> {
-                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
-                setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
-                setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
-                setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
-                setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
-            }
             case MINER -> {
-                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_PICKAXE));
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(pick));
                 setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0x6E6E6E));
                 setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0x6E6E6E));
             }
-            case GUARD -> {
-                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+            case WARRIOR -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(sword));
                 setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
-                setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.CHAINMAIL_CHESTPLATE));
-                setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.CHAINMAIL_HELMET));
-                setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.CHAINMAIL_LEGGINGS));
+                setItemSlot(EquipmentSlot.CHEST, tier <= 1 ? dyed(Items.LEATHER_CHESTPLATE, 0x8A2A2A) : new ItemStack(chest));
+                setItemSlot(EquipmentSlot.HEAD, tier <= 1 ? dyed(Items.LEATHER_HELMET, 0x8A2A2A) : new ItemStack(helmet));
+                setItemSlot(EquipmentSlot.LEGS, tier <= 1 ? dyed(Items.LEATHER_LEGGINGS, 0x8A2A2A) : new ItemStack(legs));
+            }
+            case GUARD -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(sword));
+                setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
+                setItemSlot(EquipmentSlot.CHEST, tier <= 1 ? dyed(Items.LEATHER_CHESTPLATE, 0x2A3A6A) : new ItemStack(Items.CHAINMAIL_CHESTPLATE));
+                setItemSlot(EquipmentSlot.HEAD, tier <= 1 ? dyed(Items.LEATHER_HELMET, 0x2A3A6A) : new ItemStack(Items.CHAINMAIL_HELMET));
+                setItemSlot(EquipmentSlot.LEGS, tier <= 1 ? dyed(Items.LEATHER_LEGGINGS, 0x2A3A6A) : new ItemStack(Items.CHAINMAIL_LEGGINGS));
+            }
+            case ARCHER -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+                setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0x2F5A2F));
+                setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0x2F5A2F));
+                setItemSlot(EquipmentSlot.LEGS, dyed(Items.LEATHER_LEGGINGS, 0x2F5A2F));
             }
         }
     }
@@ -341,6 +413,10 @@ public class SettlerEntity extends PathfinderMob {
         tag.putString("Kingdom", getKingdom());
         tag.putInt("Profession", getProfession().ordinal());
         tag.putInt("HouseIndex", houseIndex);
+        tag.putInt("Tier", getTier());
+        if (projectType != null) {
+            tag.putString("Project", projectType.name());
+        }
         if (orderPos != null) {
             tag.putLong("OrderPos", orderPos.asLong());
         }
@@ -364,6 +440,14 @@ public class SettlerEntity extends PathfinderMob {
         this.entityData.set(PROFESSION, tag.getInt("Profession"));
         applyProfessionStats(getProfession());
         houseIndex = tag.contains("HouseIndex") ? tag.getInt("HouseIndex") : -1;
+        this.entityData.set(TIER, tag.contains("Tier") ? tag.getInt("Tier") : 1);
+        projectType = null;
+        if (tag.contains("Project")) {
+            try {
+                projectType = Blueprint.Type.valueOf(tag.getString("Project"));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
         orderPos = tag.contains("OrderPos") ? BlockPos.of(tag.getLong("OrderPos")) : null;
         guardPost = tag.contains("GuardPost") ? BlockPos.of(tag.getLong("GuardPost")) : null;
         followPlayer = tag.hasUUID("FollowPlayer") ? tag.getUUID("FollowPlayer") : null;

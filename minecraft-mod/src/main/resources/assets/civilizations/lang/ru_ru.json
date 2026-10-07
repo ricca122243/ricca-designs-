@@ -20,8 +20,8 @@
   "civilizations.townhall.resources": "Склад: дерево %s, камень %s, еда %s, железо %s",
   "item.civilizations.command_staff": "Жезл командира",
   "item.civilizations.command_staff.tooltip1": "Клик по жителю: выбрать. Ещё клик: следовать / отпустить",
-  "item.civilizations.command_staff.tooltip2": "Shift+клик по жителю: сменить профессию. Клик по земле: отправить",
-  "item.civilizations.command_staff.tooltip3": "Клик по ратуше: сводка. Shift+клик: нанять строителя / захватить чужую ратушу",
+  "item.civilizations.command_staff.tooltip2": "Shift+клик по жителю: сменить профессию (инструмент во второй руке — выбрать нужную). Клик по земле: отправить",
+  "item.civilizations.command_staff.tooltip3": "Shift+клик по ратуше с булыжником/досками/сундуком во второй руке: заказать стену/дом/склад",
   "entity.civilizations.settler.guard": "Стражник",
   "entity.civilizations.settler.guard.named": "Стражник королевства %s",
   "civilizations.staff.selected": "Выбран: %s",
@@ -57,5 +57,13 @@
   "civilizations.immigrants": "В %2$s пришли новые поселенцы: %1$s",
   "civilizations.bandits": "Разбойники (%s) напали на %s!",
   "entity.civilizations.settler.miner": "Шахтёр",
-  "entity.civilizations.settler.miner.named": "Шахтёр королевства %s"
+  "entity.civilizations.settler.miner.named": "Шахтёр королевства %s",
+  "entity.civilizations.settler.archer": "Лучник",
+  "entity.civilizations.settler.archer.named": "Лучник королевства %s",
+  "civilizations.staff.ordered.house": "Заказан дом: нужно дерева %s, камня %s (на складе: дерева %s, камня %s)",
+  "civilizations.staff.ordered.warehouse": "Заказан склад: нужно дерева %s, камня %s (на складе: дерева %s, камня %s)",
+  "civilizations.staff.ordered.wall": "Заказана стена: нужно дерева %s, камня %s (на складе: дерева %s, камня %s)",
+  "civilizations.townhall.tier": "Уровень королевства %s. Склад %s, стена %s, заказов в очереди: %s",
+  "civilizations.tier.up": "Королевство %s достигло уровня %s! Жители получают снаряжение лучше.",
+  "civilizations.raid.looted": "%s ограбило %s: дерева %s, камня %s, еды %s, золота %s"
 }

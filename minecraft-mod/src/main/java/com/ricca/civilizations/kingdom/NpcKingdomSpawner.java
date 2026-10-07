@@ -33,7 +33,7 @@ public class NpcKingdomSpawner {
     private static final int EXTRA_DISTANCE = 120;
     private static final Profession[] STARTING = {
             Profession.BUILDER, Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER,
-            Profession.MINER, Profession.WARRIOR, Profession.WARRIOR
+            Profession.MINER, Profession.WARRIOR, Profession.WARRIOR, Profession.GUARD, Profession.GUARD
     };
 
     /** Участок, который ждёт загрузки чанков. */
@@ -86,15 +86,13 @@ public class NpcKingdomSpawner {
             }
             int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, p.x, p.z);
             BlockPos pos = new BlockPos(p.x, y, p.z);
-            BlockState ground = level.getBlockState(pos.below());
-            boolean ok = ground.is(BlockTags.DIRT) || ground.is(BlockTags.BASE_STONE_OVERWORLD)
-                    || ground.is(Blocks.SAND) || ground.is(BlockTags.SNOW) || ground.is(Blocks.GRAVEL);
-            if (!ok && p.attempts < 6) {
-                // Вода или что-то неподходящее — сдвигаем участок и ждём новые чанки.
+            boolean ok = isGoodSite(level, pos);
+            if (!ok && p.attempts < 10) {
+                // Вода или горы — сдвигаем участок и ждём новые чанки.
                 forceChunks(level, p.x, p.z, false);
                 p.attempts++;
-                p.x += level.random.nextInt(61) - 30;
-                p.z += level.random.nextInt(61) - 30;
+                p.x += level.random.nextInt(81) - 40;
+                p.z += level.random.nextInt(81) - 40;
                 forceChunks(level, p.x, p.z, true);
                 continue;
             }
@@ -108,11 +106,34 @@ public class NpcKingdomSpawner {
         }
     }
 
+    /** Участок годится, если вокруг (±16 блоков) суша и перепад высот небольшой. */
+    private static boolean isGoodSite(ServerLevel level, BlockPos center) {
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        for (int dx = -16; dx <= 16; dx += 8) {
+            for (int dz = -16; dz <= 16; dz += 8) {
+                int x = center.getX() + dx;
+                int z = center.getZ() + dz;
+                if (!level.isLoaded(new BlockPos(x, 64, z))) {
+                    return false;
+                }
+                int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+                BlockState ground = level.getBlockState(new BlockPos(x, y - 1, z));
+                if (ground.liquid() || ground.is(Blocks.ICE) || ground.is(Blocks.PACKED_ICE)) {
+                    return false;
+                }
+                minY = Math.min(minY, y);
+                maxY = Math.max(maxY, y);
+            }
+        }
+        return maxY - minY <= 8;
+    }
+
     private static void forceChunks(ServerLevel level, int x, int z, boolean force) {
         int cx = SectionPos.blockToSectionCoord(x);
         int cz = SectionPos.blockToSectionCoord(z);
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
                 level.setChunkForced(cx + dx, cz + dz, force);
             }
         }

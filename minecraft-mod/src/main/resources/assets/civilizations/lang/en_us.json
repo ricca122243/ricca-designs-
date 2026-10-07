@@ -20,8 +20,8 @@
   "civilizations.townhall.resources": "Storage: wood %s, stone %s, food %s, iron %s",
   "item.civilizations.command_staff": "Command Staff",
   "item.civilizations.command_staff.tooltip1": "Click a settler to select, click again to follow/release",
-  "item.civilizations.command_staff.tooltip2": "Shift+click a settler: change profession. Click ground: send",
-  "item.civilizations.command_staff.tooltip3": "Click Town Hall: report. Shift+click: hire builder / capture enemy hall",
+  "item.civilizations.command_staff.tooltip2": "Shift+click a settler: change profession (hold a tool in offhand to pick). Click ground: send",
+  "item.civilizations.command_staff.tooltip3": "Shift+click Town Hall with cobblestone/planks/chest in offhand: order wall/house/warehouse",
   "entity.civilizations.settler.guard": "Guard",
   "entity.civilizations.settler.guard.named": "Guard of %s",
   "civilizations.staff.selected": "Selected: %s",
@@ -57,5 +57,13 @@
   "civilizations.immigrants": "%s new settlers arrived in %s",
   "civilizations.bandits": "%s bandits are attacking %s!",
   "entity.civilizations.settler.miner": "Miner",
-  "entity.civilizations.settler.miner.named": "Miner of %s"
+  "entity.civilizations.settler.miner.named": "Miner of %s",
+  "entity.civilizations.settler.archer": "Archer",
+  "entity.civilizations.settler.archer.named": "Archer of %s",
+  "civilizations.staff.ordered.house": "House ordered: needs %s wood, %s stone (storage: %s wood, %s stone)",
+  "civilizations.staff.ordered.warehouse": "Warehouse ordered: needs %s wood, %s stone (storage: %s wood, %s stone)",
+  "civilizations.staff.ordered.wall": "Wall ordered: needs %s wood, %s stone (storage: %s wood, %s stone)",
+  "civilizations.townhall.tier": "Kingdom level %s. Warehouse %s, wall %s, orders queued: %s",
+  "civilizations.tier.up": "%s reached level %s! Its people get better gear.",
+  "civilizations.raid.looted": "%s looted %s: %s wood, %s stone, %s food, %s gold"
 }

@@ -2,6 +2,8 @@ package com.ricca.civilizations.item;
 
 import com.ricca.civilizations.Civilizations;
 import com.ricca.civilizations.block.TownHallBlockEntity;
+import com.ricca.civilizations.entity.Blueprint;
+import net.minecraft.world.item.Items;
 import com.ricca.civilizations.entity.Profession;
 import com.ricca.civilizations.entity.SettlerEntity;
 import com.ricca.civilizations.kingdom.KingdomSavedData;
@@ -59,8 +61,16 @@ public class CommandStaffItem extends Item {
 
         if (player.isShiftKeyDown()) {
             Profession next = Profession.byId(settler.getProfession().ordinal() + 1);
+            ItemStack off = player.getOffhandItem();
+            if (off.is(Items.BOW)) next = Profession.ARCHER;
+            else if (off.is(Items.IRON_SWORD) || off.is(Items.STONE_SWORD)) next = Profession.WARRIOR;
+            else if (off.is(Items.SHIELD)) next = Profession.GUARD;
+            else if (off.is(Items.WOODEN_PICKAXE) || off.is(Items.STONE_PICKAXE) || off.is(Items.IRON_PICKAXE)) next = Profession.MINER;
+            else if (off.is(Items.WOODEN_AXE) || off.is(Items.STONE_AXE) || off.is(Items.IRON_AXE)) next = Profession.LUMBERJACK;
+            else if (off.is(Items.WOODEN_HOE) || off.is(Items.STONE_HOE) || off.is(Items.IRON_HOE)) next = Profession.FARMER;
+            else if (off.is(Items.OAK_PLANKS)) next = Profession.BUILDER;
             settler.setProfession(next);
-            settler.setHouseIndex(-1);
+            settler.setProject(null, -1);
             say(player, Component.translatable("civilizations.staff.profession_changed", settler.getDisplayName()));
             return InteractionResult.CONSUME;
         }
@@ -108,6 +118,17 @@ public class CommandStaffItem extends Item {
             if (player.isShiftKeyDown()) {
                 String mine = player.getName().getString();
                 if (hall.getKingdom().isEmpty() || hall.getKingdom().equals(mine)) {
+                    // Заказ постройки: что в левой руке, то и строим.
+                    ItemStack off = player.getOffhandItem();
+                    Blueprint.Type orderType = off.is(Items.COBBLESTONE) ? Blueprint.Type.WALL
+                            : off.is(Items.OAK_PLANKS) ? Blueprint.Type.HOUSE
+                            : off.is(Items.CHEST) ? Blueprint.Type.WAREHOUSE : null;
+                    if (orderType != null) {
+                        Blueprint bp = hall.order(orderType);
+                        say(player, Component.translatable("civilizations.staff.ordered." + orderType.name().toLowerCase(),
+                                bp.totalWood(), bp.totalStone(), hall.getWood(), hall.getStone()));
+                        return InteractionResult.CONSUME;
+                    }
                     if (hall.hire(Profession.BUILDER, HIRE_COST)) {
                         say(player, Component.translatable("civilizations.staff.hired", HIRE_COST));
                     } else {

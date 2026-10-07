@@ -2,6 +2,7 @@ package com.ricca.civilizations.block;
 
 import com.ricca.civilizations.Civilizations;
 import com.ricca.civilizations.entity.BanditEntity;
+import com.ricca.civilizations.entity.Blueprint;
 import com.ricca.civilizations.entity.KingdomLayout;
 import com.ricca.civilizations.entity.Profession;
 import com.ricca.civilizations.entity.SettlerEntity;
@@ -33,13 +34,20 @@ public class TownHallBlockEntity extends BlockEntity {
     private static final int FOOD_PER_SETTLER = 15;
 
     private String kingdom = "";
-    private int wood = 80;
+    private int wood = 120;
     private int stone = 150;
     private int food = 0;
     private int gold = 20;
     private int iron = 0;
     private int housesBuilt = 0;
     private int nextHouse = 0;
+    private boolean warehouseBuilt = false;
+    private boolean wallBuilt = false;
+    /** Заказы игрока: что строить в первую очередь. */
+    private final List<Blueprint.Type> orders = new java.util.ArrayList<>();
+    private int tier = 1;
+    private int tierTimer = 0;
+    private int tricklesTimer = 0;
     private int growthTimer = 0;
     private int taxTimer = 0;
 
@@ -92,6 +100,83 @@ public class TownHallBlockEntity extends BlockEntity {
     public int getStone() { return stone; }
     public int getFood() { return food; }
     public int getHousesBuilt() { return housesBuilt; }
+    public boolean isWarehouseBuilt() { return warehouseBuilt; }
+    public boolean isWallBuilt() { return wallBuilt; }
+    public int getTier() { return tier; }
+
+    /** Проект для строителя. */
+    public record Project(Blueprint.Type type, int houseIndex) {}
+
+    /**
+     * Что строить следующим: заказы игрока, затем два дома, склад, стена, остальные дома.
+     * null — строить нечего.
+     */
+    @Nullable
+    public Project claimProject() {
+        if (!orders.isEmpty()) {
+            Blueprint.Type type = orders.remove(0);
+            setChanged();
+            return type == Blueprint.Type.HOUSE ? claimHouseProject() : new Project(type, -1);
+        }
+        if (housesBuilt + 0 < 2 && nextHouse < 2) {
+            return claimHouseProject();
+        }
+        if (!warehouseBuilt) {
+            return new Project(Blueprint.Type.WAREHOUSE, -1);
+        }
+        if (!wallBuilt) {
+            return new Project(Blueprint.Type.WALL, -1);
+        }
+        return claimHouseProject();
+    }
+
+    @Nullable
+    private Project claimHouseProject() {
+        int idx = claimHouse();
+        return idx < 0 ? null : new Project(Blueprint.Type.HOUSE, idx);
+    }
+
+    public void projectFinished(Blueprint.Type type, int houseIndex) {
+        switch (type) {
+            case HOUSE -> housesBuilt++;
+            case WAREHOUSE -> warehouseBuilt = true;
+            case WALL -> {
+                wallBuilt = true;
+                if (level instanceof ServerLevel serverLevel) {
+                    for (SettlerEntity s : settlers(serverLevel)) {
+                        if (s.getProfession() == Profession.GUARD) {
+                            s.setGuardPost(KingdomLayout.gatePos(getBlockPos()));
+                        }
+                    }
+                }
+            }
+        }
+        setChanged();
+    }
+
+    /** Заказ игрока. Возвращает, сколько ресурсов нужно на постройку. */
+    public Blueprint order(Blueprint.Type type) {
+        orders.add(type);
+        setChanged();
+        return Blueprint.of(type);
+    }
+
+    /** Уровень королевства: растёт с постройками. Меняет снаряжение всех жителей. */
+    private void updateTier(ServerLevel serverLevel) {
+        int t = 1;
+        if (warehouseBuilt) t++;
+        if (wallBuilt) t++;
+        if (housesBuilt >= 4 && iron >= 20) t++;
+        if (t != tier) {
+            tier = t;
+            setChanged();
+            for (SettlerEntity s : settlers(serverLevel)) {
+                s.setTier(tier);
+            }
+            serverLevel.getServer().getPlayerList().broadcastSystemMessage(
+                    Component.translatable("civilizations.tier.up", kingdom, tier).withStyle(ChatFormatting.AQUA), false);
+        }
+    }
     public int getGold() { return gold; }
     public int getIron() { return iron; }
     public void addIron(int amount) { iron += amount; setChanged(); }
@@ -146,7 +231,11 @@ public class TownHallBlockEntity extends BlockEntity {
                 level.random.nextFloat() * 360f, 0f);
         settler.setTownHall(pos);
         settler.setKingdom(kingdom);
+        settler.setTier(tier);
         settler.setProfession(profession);
+        if (profession == Profession.GUARD && wallBuilt) {
+            settler.setGuardPost(KingdomLayout.gatePos(pos));
+        }
         settler.setPersistenceRequired();
         level.addFreshEntity(settler);
         return settler;
@@ -211,6 +300,8 @@ public class TownHallBlockEntity extends BlockEntity {
         player.displayClientMessage(Component.translatable("civilizations.townhall.population", population, warriors, housesBuilt), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.resources", wood, stone, food, iron), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.gold", gold, territoryRadius()).withStyle(ChatFormatting.YELLOW), false);
+        player.displayClientMessage(Component.translatable("civilizations.townhall.tier", tier,
+                warehouseBuilt ? "✔" : "✘", wallBuilt ? "✔" : "✘", orders.size()).withStyle(ChatFormatting.AQUA), false);
     }
 
     // --- Рост королевства ---
@@ -225,6 +316,14 @@ public class TownHallBlockEntity extends BlockEntity {
         }
         if (th.npc) {
             th.npcTick(serverLevel);
+        }
+        if (++th.tierTimer >= 600) {
+            th.tierTimer = 0;
+            th.updateTier(serverLevel);
+        }
+        if (++th.tricklesTimer >= 200) {
+            th.tricklesTimer = 0;
+            th.trickle(serverLevel);
         }
         long day = level.getDayTime() / 24000L;
         if (th.lastDay < 0) {
@@ -263,7 +362,7 @@ public class TownHallBlockEntity extends BlockEntity {
         if (++npcTimer >= NPC_HIRE_INTERVAL_TICKS) {
             npcTimer = 0;
             List<SettlerEntity> settlers = settlers(serverLevel);
-            int warriors = 0, guards = 0, builders = 0, miners = 0, lumberjacks = 0, farmers = 0;
+            int warriors = 0, guards = 0, builders = 0, miners = 0, lumberjacks = 0, farmers = 0, archers = 0;
             for (SettlerEntity s : settlers) {
                 switch (s.getProfession()) {
                     case WARRIOR -> warriors++;
@@ -272,15 +371,17 @@ public class TownHallBlockEntity extends BlockEntity {
                     case MINER -> miners++;
                     case LUMBERJACK -> lumberjacks++;
                     case FARMER -> farmers++;
+                    case ARCHER -> archers++;
                 }
             }
             if (gold >= 50) {
                 Profession want = guards < 2 ? Profession.GUARD
                         : warriors < 2 ? Profession.WARRIOR
-                        : builders < 1 ? Profession.BUILDER
+                        : builders < 2 ? Profession.BUILDER
                         : lumberjacks < 1 ? Profession.LUMBERJACK
                         : farmers < 1 ? Profession.FARMER
                         : miners < 1 ? Profession.MINER
+                        : archers < 1 && wallBuilt ? Profession.ARCHER
                         : settlers.size() < 6 + housesBuilt * 3 ? Profession.byId(level.random.nextInt(Profession.values().length)) : null;
                 if (want != null) {
                     hire(want, 50);
@@ -296,7 +397,9 @@ public class TownHallBlockEntity extends BlockEntity {
         }
         if (++raidTimer >= RAID_INTERVAL_TICKS) {
             raidTimer = 0;
-            if (level.random.nextFloat() < 0.6f) {
+            // Когда ресурсов мало, королевство идёт грабить соседей гораздо охотнее.
+            boolean scarce = wood < 40 || stone < 40 || food < 10;
+            if (level.random.nextFloat() < (scarce ? 0.9f : 0.4f)) {
                 startRaid(serverLevel);
             }
         }
@@ -318,7 +421,7 @@ public class TownHallBlockEntity extends BlockEntity {
 
         List<SettlerEntity> warriors = new java.util.ArrayList<>();
         for (SettlerEntity s : settlers(serverLevel)) {
-            if (s.getProfession() == Profession.WARRIOR) warriors.add(s);
+            if (s.getProfession() == Profession.WARRIOR || s.getProfession() == Profession.ARCHER) warriors.add(s);
         }
         if (warriors.size() < 2) return;
 
@@ -339,10 +442,27 @@ public class TownHallBlockEntity extends BlockEntity {
     }
 
     private void endRaid(ServerLevel serverLevel) {
+        int survivors = 0;
         for (SettlerEntity s : settlers(serverLevel)) {
             if (raidTarget != null && raidTarget.equals(s.getOrderPos())) {
                 s.setOrderPos(null);
+                if (s.blockPosition().distSqr(raidTarget) < 20 * 20) {
+                    survivors++;
+                }
             }
+        }
+        // Выжившие у вражеской ратуши уносят добычу со склада.
+        TownHallBlockEntity victim = raidTarget != null ? TownHallBlockEntity.at(level, raidTarget) : null;
+        if (victim != null && survivors > 0 && victim.countDefenders(serverLevel) == 0) {
+            int w = Math.min(victim.wood, 15 * survivors);
+            int st = Math.min(victim.stone, 15 * survivors);
+            int f = Math.min(victim.food, 5 * survivors);
+            int g = Math.min(victim.gold, 10 * survivors);
+            victim.wood -= w; victim.stone -= st; victim.food -= f; victim.gold -= g;
+            victim.setChanged();
+            wood += w; stone += st; food += f; gold += g;
+            serverLevel.getServer().getPlayerList().broadcastSystemMessage(
+                    Component.translatable("civilizations.raid.looted", kingdom, victim.kingdom, w, st, f, g).withStyle(ChatFormatting.RED), false);
         }
         raidTarget = null;
         setChanged();
@@ -412,6 +532,23 @@ public class TownHallBlockEntity extends BlockEntity {
                 Component.translatable("civilizations.bandits", count, kingdom).withStyle(ChatFormatting.DARK_RED), false);
     }
 
+    /** Подстраховка: рабочие приносят немного ресурсов «между делом», чтобы стройка не вставала навсегда. */
+    private void trickle(ServerLevel serverLevel) {
+        int lumber = 0, miners = 0, farmers = 0;
+        for (SettlerEntity s : settlers(serverLevel)) {
+            switch (s.getProfession()) {
+                case LUMBERJACK -> lumber++;
+                case MINER -> miners++;
+                case FARMER -> farmers++;
+                default -> { }
+            }
+        }
+        wood += lumber * 2;
+        stone += miners * 2;
+        food += farmers;
+        setChanged();
+    }
+
     /** Раз в минуту: налог с каждого жителя и продажа излишков со склада. */
     private void collectTaxes(ServerLevel serverLevel) {
         int population = settlers(serverLevel).size();
@@ -438,6 +575,12 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putInt("Food", food);
         tag.putInt("Gold", gold);
         tag.putInt("Iron", iron);
+        tag.putBoolean("WarehouseBuilt", warehouseBuilt);
+        tag.putBoolean("WallBuilt", wallBuilt);
+        tag.putInt("Tier", tier);
+        net.minecraft.nbt.ListTag orderList = new net.minecraft.nbt.ListTag();
+        for (Blueprint.Type t : orders) orderList.add(net.minecraft.nbt.StringTag.valueOf(t.name()));
+        tag.put("Orders", orderList);
         tag.putBoolean("Npc", npc);
         tag.putLong("LastDay", lastDay);
         tag.putInt("HousesBuilt", housesBuilt);
@@ -453,6 +596,13 @@ public class TownHallBlockEntity extends BlockEntity {
         food = tag.getInt("Food");
         gold = tag.getInt("Gold");
         iron = tag.getInt("Iron");
+        warehouseBuilt = tag.getBoolean("WarehouseBuilt");
+        wallBuilt = tag.getBoolean("WallBuilt");
+        tier = tag.contains("Tier") ? tag.getInt("Tier") : 1;
+        orders.clear();
+        for (net.minecraft.nbt.Tag t : tag.getList("Orders", net.minecraft.nbt.Tag.TAG_STRING)) {
+            try { orders.add(Blueprint.Type.valueOf(t.getAsString())); } catch (IllegalArgumentException ignored) { }
+        }
         npc = tag.getBoolean("Npc");
         lastDay = tag.contains("LastDay") ? tag.getLong("LastDay") : -1;
         housesBuilt = tag.getInt("HousesBuilt");

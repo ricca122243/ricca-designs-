@@ -13,7 +13,14 @@ import net.minecraft.resources.ResourceLocation;
 
 /** Поселенец выглядит как человек: держит инструменты, носит броню по профессии. */
 public class SettlerRenderer extends HumanoidMobRenderer<SettlerEntity, HumanoidModel<SettlerEntity>> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/player/wide/steve.png");
+    private static final String[] SKINS = {"steve", "alex", "ari", "efe", "kai", "makena", "noor", "sunny", "zuri"};
+    private static final ResourceLocation[] TEXTURES = new ResourceLocation[SKINS.length];
+
+    static {
+        for (int i = 0; i < SKINS.length; i++) {
+            TEXTURES[i] = ResourceLocation.withDefaultNamespace("textures/entity/player/wide/" + SKINS[i] + ".png");
+        }
+    }
 
     public SettlerRenderer(EntityRendererProvider.Context context) {
         super(context, new HumanoidModel<>(context.bakeLayer(ModelLayers.ZOMBIE)), 0.5f);
@@ -25,7 +32,7 @@ public class SettlerRenderer extends HumanoidMobRenderer<SettlerEntity, Humanoid
 
     @Override
     public ResourceLocation getTextureLocation(SettlerEntity entity) {
-        return TEXTURE;
+        return TEXTURES[Math.floorMod(entity.getUUID().hashCode(), TEXTURES.length)];
     }
 
     @Override
