@@ -56,6 +56,7 @@ public class BuildGoal extends Goal {
                 return false; // строить нечего
             }
             settler.setProject(project.type(), project.houseIndex());
+            settler.setProjectOrigin(project.origin());
         }
         return true;
     }
@@ -69,7 +70,9 @@ public class BuildGoal extends Goal {
     public void start() {
         Blueprint.Type type = settler.getProjectType();
         blueprint = type == null ? null : Blueprint.of(type);
-        origin = type == null ? BlockPos.ZERO : Blueprint.origin(type, settler.getTownHall(), settler.getHouseIndex());
+        origin = type == null ? BlockPos.ZERO
+                : settler.getProjectOrigin() != null ? settler.getProjectOrigin()
+                : Blueprint.origin(type, settler.getTownHall(), settler.getHouseIndex());
         index = 0;
         passes = 0;
         cooldown = PLACE_DELAY_TICKS;
@@ -106,6 +109,7 @@ public class BuildGoal extends Goal {
             }
             hall.projectFinished(blueprint.type, settler.getHouseIndex());
             settler.setProject(null, -1);
+            settler.setProjectOrigin(null);
             return;
         }
 
@@ -116,10 +120,12 @@ public class BuildGoal extends Goal {
 
         boolean inTheWay = settler.getBoundingBox().intersects(new AABB(target));
         boolean tooFar = settler.distanceToSqr(center) > REACH_SQR;
-        boolean insideSite = blueprint.type != Blueprint.Type.WALL
+        boolean insideSite = !blueprint.walkInside()
                 && KingdomLayout.insideBox(origin, blueprint.minX, blueprint.minZ, blueprint.maxX, blueprint.maxZ, settler.blockPosition());
         if (tooFar || inTheWay || insideSite) {
-            Vec3 stand = KingdomLayout.standingSpotBox(settler, origin, blueprint.minX, blueprint.minZ, blueprint.maxX, blueprint.maxZ, target).getCenter();
+            Vec3 stand = blueprint.walkInside()
+                    ? new Vec3(center.x + (inTheWay ? 1.5 : 0), origin.getY(), center.z)
+                    : KingdomLayout.standingSpotBox(settler, origin, blueprint.minX, blueprint.minZ, blueprint.maxX, blueprint.maxZ, target).getCenter();
             if (settler.getNavigation().isDone() || settler.tickCount % 20 == 0) {
                 settler.getNavigation().moveTo(stand.x, stand.y, stand.z, 0.5);
             }

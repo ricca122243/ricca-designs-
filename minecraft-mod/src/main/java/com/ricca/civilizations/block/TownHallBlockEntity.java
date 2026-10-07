@@ -45,6 +45,13 @@ public class TownHallBlockEntity extends BlockEntity {
     private boolean warehouseBuilt = false;
     private boolean wallBuilt = false;
     private boolean penBuilt = false;
+    private boolean leveled = false;
+    private boolean keepBuilt = false;
+    private boolean shipBuilt = false;
+    private boolean shipSearched = false;
+    @Nullable
+    private BlockPos shipOrigin;
+    private boolean shipEastWest = true;
     private int helpTicks = 0;
     @Nullable
     private BlockPos helpTarget;
@@ -112,7 +119,9 @@ public class TownHallBlockEntity extends BlockEntity {
     public int getTier() { return tier; }
 
     /** Проект для строителя. */
-    public record Project(Blueprint.Type type, int houseIndex) {}
+    public record Project(Blueprint.Type type, int houseIndex, @Nullable BlockPos origin) {
+        public Project(Blueprint.Type type, int houseIndex) { this(type, houseIndex, null); }
+    }
 
     /**
      * Что строить следующим: заказы игрока, затем два дома, склад, стена, остальные дома.
@@ -125,7 +134,10 @@ public class TownHallBlockEntity extends BlockEntity {
             setChanged();
             return type == Blueprint.Type.HOUSE ? claimHouseProject() : new Project(type, -1);
         }
-        if (housesBuilt + 0 < 2 && nextHouse < 2) {
+        if (!leveled) {
+            return new Project(Blueprint.Type.LEVELING, -1);
+        }
+        if (nextHouse < 2) {
             return claimHouseProject();
         }
         if (!warehouseBuilt) {
@@ -136,6 +148,19 @@ public class TownHallBlockEntity extends BlockEntity {
         }
         if (!wallBuilt) {
             return new Project(Blueprint.Type.WALL, -1);
+        }
+        if (!keepBuilt) {
+            return new Project(Blueprint.Type.KEEP, -1);
+        }
+        if (!shipBuilt) {
+            if (!shipSearched && level instanceof ServerLevel serverLevel) {
+                shipSearched = true;
+                findShipSite(serverLevel);
+                setChanged();
+            }
+            if (shipOrigin != null) {
+                return new Project(shipEastWest ? Blueprint.Type.SHIP_EW : Blueprint.Type.SHIP_NS, -1, shipOrigin);
+            }
         }
         return claimHouseProject();
     }
@@ -151,6 +176,15 @@ public class TownHallBlockEntity extends BlockEntity {
             case HOUSE -> housesBuilt++;
             case WAREHOUSE -> warehouseBuilt = true;
             case PEN -> penBuilt = true;
+            case LEVELING -> leveled = true;
+            case KEEP -> keepBuilt = true;
+            case SHIP_EW, SHIP_NS -> {
+                shipBuilt = true;
+                if (level instanceof ServerLevel sl) {
+                    sl.getServer().getPlayerList().broadcastSystemMessage(
+                            Component.translatable("civilizations.ship", kingdom).withStyle(ChatFormatting.AQUA), false);
+                }
+            }
             case WALL -> {
                 wallBuilt = true;
                 if (level instanceof ServerLevel serverLevel) {
@@ -165,6 +199,38 @@ public class TownHallBlockEntity extends BlockEntity {
         setChanged();
     }
 
+    /** Ищем воду у берега в радиусе 48 блоков: там встанет корабль. */
+    private void findShipSite(ServerLevel serverLevel) {
+        BlockPos hall = getBlockPos();
+        for (int r = 16; r <= 48; r += 4) {
+            for (int angle = 0; angle < 360; angle += 20) {
+                int x = hall.getX() + (int) (Math.cos(Math.toRadians(angle)) * r);
+                int z = hall.getZ() + (int) (Math.sin(Math.toRadians(angle)) * r);
+                if (!serverLevel.isLoaded(new BlockPos(x, 64, z))) continue;
+                int y = serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
+                BlockPos surface = new BlockPos(x, y - 1, z);
+                if (!serverLevel.getBlockState(surface).is(net.minecraft.world.level.block.Blocks.WATER)) continue;
+                // Берег рядом? Ищем сушу на этой же высоте в 4 направлениях.
+                for (net.minecraft.core.Direction dir : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+                    BlockPos land = surface.relative(dir, 2);
+                    BlockState ls = serverLevel.getBlockState(land);
+                    if (!ls.liquid() && !ls.isAir() && serverLevel.getBlockState(land.above()).isAir()) {
+                        // Корабль уходит от берега в противоположную сторону
+                        net.minecraft.core.Direction away = dir.getOpposite();
+                        boolean ew = away.getAxis() == net.minecraft.core.Direction.Axis.X;
+                        BlockPos start = surface.relative(away, 1).above(); // палуба на уровне поверхности воды
+                        BlockPos origin = ew
+                                ? (away == net.minecraft.core.Direction.EAST ? start.offset(0, 0, -2) : start.offset(-6, 0, -2))
+                                : (away == net.minecraft.core.Direction.SOUTH ? start.offset(-2, 0, 0) : start.offset(-2, 0, -6));
+                        shipOrigin = origin;
+                        shipEastWest = ew;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
     /** Заказ игрока. Возвращает, сколько ресурсов нужно на постройку. */
     public Blueprint order(Blueprint.Type type) {
         orders.add(type);
@@ -177,7 +243,7 @@ public class TownHallBlockEntity extends BlockEntity {
         int t = 1;
         if (warehouseBuilt) t++;
         if (wallBuilt) t++;
-        if (housesBuilt >= 4 && iron >= 20) t++;
+        if (keepBuilt && iron >= 20) t++;
         if (t != tier) {
             tier = t;
             setChanged();
@@ -318,6 +384,8 @@ public class TownHallBlockEntity extends BlockEntity {
         player.displayClientMessage(Component.translatable("civilizations.townhall.gold", gold, territoryRadius()).withStyle(ChatFormatting.YELLOW), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.tier", tier,
                 warehouseBuilt ? "✔" : "✘", wallBuilt ? "✔" : "✘", orders.size()).withStyle(ChatFormatting.AQUA), false);
+        player.displayClientMessage(Component.translatable("civilizations.townhall.buildings",
+                leveled ? "✔" : "✘", penBuilt ? "✔" : "✘", keepBuilt ? "✔" : "✘", shipBuilt ? "✔" : shipSearched && shipOrigin == null ? "—" : "✘").withStyle(ChatFormatting.AQUA), false);
     }
 
     // --- Рост королевства ---
@@ -410,6 +478,8 @@ public class TownHallBlockEntity extends BlockEntity {
                 Profession want = guards < 2 ? Profession.GUARD
                         : warriors < 2 ? Profession.WARRIOR
                         : builders < 2 ? Profession.BUILDER
+                        : warriors < 4 ? Profession.WARRIOR
+                        : archers < 2 && wallBuilt ? Profession.ARCHER
                         : lumberjacks < 1 ? Profession.LUMBERJACK
                         : farmers < 1 ? Profession.FARMER
                         : miners < 1 ? Profession.MINER
@@ -459,11 +529,11 @@ public class TownHallBlockEntity extends BlockEntity {
         for (SettlerEntity s : settlers(serverLevel)) {
             if (s.getProfession() == Profession.WARRIOR || s.getProfession() == Profession.ARCHER) warriors.add(s);
         }
-        if (warriors.size() < 2) return;
+        if (warriors.size() < 6) return; // в набег идут не меньше шести
 
         int sent = 0;
         for (SettlerEntity w : warriors) {
-            if (sent >= 4) break;
+            if (sent >= 8) break;
             w.setFollowPlayer(null);
             w.setOrderPos(target);
             sent++;
@@ -625,6 +695,19 @@ public class TownHallBlockEntity extends BlockEntity {
             if (level.random.nextInt(4) == 0) {
                 data.adjustRelation(kingdom, hall.kingdom, level.random.nextInt(11) - 4); // чуть чаще к миру
             }
+            // Союзники делятся излишками.
+            if (data.allied(kingdom, hall.kingdom)) {
+                boolean traded = false;
+                if (wood > 150 && hall.wood < 60) { wood -= 30; hall.wood += 30; traded = true; }
+                if (stone > 150 && hall.stone < 60) { stone -= 30; hall.stone += 30; traded = true; }
+                if (food > 60 && hall.food < 15) { food -= 15; hall.food += 15; traded = true; }
+                if (traded) {
+                    hall.setChanged();
+                    setChanged();
+                    serverLevel.getServer().getPlayerList().broadcastSystemMessage(
+                            Component.translatable("civilizations.trade", kingdom, hall.kingdom).withStyle(ChatFormatting.GREEN), false);
+                }
+            }
         }
     }
 
@@ -681,6 +764,12 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putBoolean("WarehouseBuilt", warehouseBuilt);
         tag.putBoolean("WallBuilt", wallBuilt);
         tag.putBoolean("PenBuilt", penBuilt);
+        tag.putBoolean("Leveled", leveled);
+        tag.putBoolean("KeepBuilt", keepBuilt);
+        tag.putBoolean("ShipBuilt", shipBuilt);
+        tag.putBoolean("ShipSearched", shipSearched);
+        tag.putBoolean("ShipEW", shipEastWest);
+        if (shipOrigin != null) tag.putLong("ShipOrigin", shipOrigin.asLong());
         tag.putInt("Tier", tier);
         net.minecraft.nbt.ListTag orderList = new net.minecraft.nbt.ListTag();
         for (Blueprint.Type t : orders) orderList.add(net.minecraft.nbt.StringTag.valueOf(t.name()));
@@ -703,6 +792,12 @@ public class TownHallBlockEntity extends BlockEntity {
         warehouseBuilt = tag.getBoolean("WarehouseBuilt");
         wallBuilt = tag.getBoolean("WallBuilt");
         penBuilt = tag.getBoolean("PenBuilt");
+        leveled = tag.getBoolean("Leveled");
+        keepBuilt = tag.getBoolean("KeepBuilt");
+        shipBuilt = tag.getBoolean("ShipBuilt");
+        shipSearched = tag.getBoolean("ShipSearched");
+        shipEastWest = !tag.contains("ShipEW") || tag.getBoolean("ShipEW");
+        shipOrigin = tag.contains("ShipOrigin") ? BlockPos.of(tag.getLong("ShipOrigin")) : null;
         tier = tag.contains("Tier") ? tag.getInt("Tier") : 1;
         orders.clear();
         for (net.minecraft.nbt.Tag t : tag.getList("Orders", net.minecraft.nbt.Tag.TAG_STRING)) {

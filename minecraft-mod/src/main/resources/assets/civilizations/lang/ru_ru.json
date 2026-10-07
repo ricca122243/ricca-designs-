@@ -75,5 +75,10 @@
   "civilizations.relation.ally": "%s — ваш союзник (отношения %s)",
   "civilizations.relation.neutral": "%s относится к вам нейтрально (отношения %s)",
   "civilizations.relation.cold": "%s вам не доверяет (отношения %s). Помогут дары: изумруд, золото или алмаз во второй руке + Shift+клик",
-  "civilizations.relation.war": "%s ВОЮЕТ с вами (отношения %s)! Их воины нападают на вас"
+  "civilizations.relation.war": "%s ВОЮЕТ с вами (отношения %s)! Их воины нападают на вас",
+  "civilizations.staff.ordered.keep": "Заказан замок: нужно дерева %s, камня %s (на складе: дерева %s, камня %s)",
+  "civilizations.staff.ordered.leveling": "Заказано выравнивание земли: бесплатно (на складе: дерева %3$s, камня %4$s)",
+  "civilizations.townhall.buildings": "Земля выровнена %s, загон %s, замок %s, корабль %s",
+  "civilizations.ship": "%s спустило на воду корабль у своей пристани!",
+  "civilizations.trade": "%s отправляет припасы союзнику %s"
 }

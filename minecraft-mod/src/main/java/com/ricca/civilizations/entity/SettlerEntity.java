@@ -64,6 +64,8 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     /** Текущий проект строителя. */
     @Nullable
     private Blueprint.Type projectType;
+    @Nullable
+    private BlockPos projectOrigin;
     /** Приказ игрока: идти сюда и ждать. */
     @Nullable
     private BlockPos orderPos;
@@ -192,7 +194,14 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     public void setProject(@Nullable Blueprint.Type type, int houseIndex) {
         this.projectType = type;
         this.houseIndex = houseIndex;
+        if (type == null) {
+            this.projectOrigin = null;
+        }
     }
+
+    @Nullable
+    public BlockPos getProjectOrigin() { return projectOrigin; }
+    public void setProjectOrigin(@Nullable BlockPos pos) { this.projectOrigin = pos; }
 
     /** Лучник стреляет из лука. */
     @Override
@@ -461,6 +470,9 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         if (projectType != null) {
             tag.putString("Project", projectType.name());
         }
+        if (projectOrigin != null) {
+            tag.putLong("ProjectOrigin", projectOrigin.asLong());
+        }
         if (orderPos != null) {
             tag.putLong("OrderPos", orderPos.asLong());
         }
@@ -486,6 +498,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         houseIndex = tag.contains("HouseIndex") ? tag.getInt("HouseIndex") : -1;
         this.entityData.set(TIER, tag.contains("Tier") ? tag.getInt("Tier") : 1);
         projectType = null;
+        projectOrigin = tag.contains("ProjectOrigin") ? BlockPos.of(tag.getLong("ProjectOrigin")) : null;
         if (tag.contains("Project")) {
             try {
                 projectType = Blueprint.Type.valueOf(tag.getString("Project"));

@@ -124,7 +124,9 @@ public class CommandStaffItem extends Item {
                     Blueprint.Type orderType = off.is(Items.COBBLESTONE) ? Blueprint.Type.WALL
                             : off.is(Items.OAK_PLANKS) ? Blueprint.Type.HOUSE
                             : off.is(Items.CHEST) ? Blueprint.Type.WAREHOUSE
-                            : off.is(Items.OAK_FENCE) ? Blueprint.Type.PEN : null;
+                            : off.is(Items.OAK_FENCE) ? Blueprint.Type.PEN
+                            : off.is(Items.STONE_BRICKS) ? Blueprint.Type.KEEP
+                            : off.is(Items.DIRT) ? Blueprint.Type.LEVELING : null;
                     if (orderType != null) {
                         Blueprint bp = hall.order(orderType);
                         say(player, Component.translatable("civilizations.staff.ordered." + orderType.name().toLowerCase(),

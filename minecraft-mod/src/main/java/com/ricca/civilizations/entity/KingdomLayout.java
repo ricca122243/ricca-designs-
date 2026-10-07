@@ -18,8 +18,12 @@ public final class KingdomLayout {
 
     /** Углы домов (x, z). Север (−z) оставлен под поле. */
     private static final int[][] HOUSE_OFFSETS = {
-            {5, -2}, {-9, -2}, {-2, 5}, {5, 5}, {-9, 5}, {5, -9}, {-9, -9}, {-2, 12}
+            {5, -2}, {-9, -2}, {-2, 5}, {5, 5}, {-9, 5}, {5, -9}, {-9, -9}, {-2, 12},
+            // второе кольцо — за стеной
+            {18, 5}, {18, 12}, {-23, -9}, {-23, -2}, {-23, 5}, {-23, 12}, {-9, 21}, {-2, 21}, {5, 21}
     };
+    public static final int KEEP_SIZE = 9;
+    private static final int[] KEEP_OFFSET = {-4, -27};
     private static final int[] FARM_OFFSET = {-2, -9};
     private static final int[] QUARRY_OFFSET = {8, 12};
     private static final int[] WAREHOUSE_OFFSET = {-9, 12};
@@ -48,6 +52,15 @@ public final class KingdomLayout {
 
     public static BlockPos penOrigin(BlockPos hall) {
         return hall.offset(PEN_OFFSET[0], 0, PEN_OFFSET[1]);
+    }
+
+    public static BlockPos keepOrigin(BlockPos hall) {
+        return hall.offset(KEEP_OFFSET[0], 0, KEEP_OFFSET[1]);
+    }
+
+    /** Площадка выравнивания: всё внутри стены. */
+    public static BlockPos levelingOrigin(BlockPos hall) {
+        return wallOrigin(hall).offset(1, 0, 1);
     }
 
     public static BlockPos wallOrigin(BlockPos hall) {
@@ -106,7 +119,8 @@ public final class KingdomLayout {
             return true;
         }
         if (inside(farmOrigin(hall), FARM_SIZE, pos) || inside(quarryOrigin(hall), QUARRY_SIZE, pos)
-                || inside(warehouseOrigin(hall), HOUSE_SIZE, pos) || inside(penOrigin(hall), PEN_SIZE, pos)) {
+                || inside(warehouseOrigin(hall), HOUSE_SIZE, pos) || inside(penOrigin(hall), PEN_SIZE, pos)
+                || inside(keepOrigin(hall), KEEP_SIZE, pos)) {
             return true;
         }
         BlockPos w = wallOrigin(hall);

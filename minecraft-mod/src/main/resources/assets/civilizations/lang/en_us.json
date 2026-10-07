@@ -75,5 +75,10 @@
   "civilizations.relation.ally": "%s is your ally (relation %s)",
   "civilizations.relation.neutral": "%s is neutral to you (relation %s)",
   "civilizations.relation.cold": "%s distrusts you (relation %s). Gifts help: emerald, gold, diamond in offhand + Shift+click",
-  "civilizations.relation.war": "%s is at WAR with you (relation %s)! Their warriors attack you on sight"
+  "civilizations.relation.war": "%s is at WAR with you (relation %s)! Their warriors attack you on sight",
+  "civilizations.staff.ordered.keep": "Keep ordered: needs %s wood, %s stone (storage: %s wood, %s stone)",
+  "civilizations.staff.ordered.leveling": "Land leveling ordered: free (storage: %3$s wood, %4$s stone)",
+  "civilizations.townhall.buildings": "Leveled %s, pen %s, keep %s, ship %s",
+  "civilizations.ship": "%s has launched a ship at its harbor!",
+  "civilizations.trade": "%s sends supplies to its ally %s"
 }

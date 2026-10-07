@@ -23,7 +23,7 @@ public final class Blueprint {
         }
     }
 
-    public enum Type { HOUSE, WAREHOUSE, WALL, PEN }
+    public enum Type { LEVELING, HOUSE, WAREHOUSE, WALL, PEN, KEEP, SHIP_EW, SHIP_NS }
 
     public final Type type;
     public final List<Step> steps;
@@ -43,6 +43,10 @@ public final class Blueprint {
     public static final Blueprint WAREHOUSE = warehouse();
     public static final Blueprint WALL = wall();
     public static final Blueprint PEN = pen();
+    public static final Blueprint LEVELING = leveling();
+    public static final Blueprint KEEP = keep();
+    public static final Blueprint SHIP_EW = ship(true);
+    public static final Blueprint SHIP_NS = ship(false);
 
     public static Blueprint of(Type type) {
         return switch (type) {
@@ -50,16 +54,28 @@ public final class Blueprint {
             case WAREHOUSE -> WAREHOUSE;
             case WALL -> WALL;
             case PEN -> PEN;
+            case LEVELING -> LEVELING;
+            case KEEP -> KEEP;
+            case SHIP_EW -> SHIP_EW;
+            case SHIP_NS -> SHIP_NS;
         };
     }
 
-    /** Угол постройки в мире. */
+    /** Строитель работает, стоя рядом с блоком (а не с кольца вокруг площадки). */
+    public boolean walkInside() {
+        return type == Type.WALL || type == Type.LEVELING || type == Type.SHIP_EW || type == Type.SHIP_NS;
+    }
+
+    /** Угол постройки в мире (для корабля угол задаёт ратуша, здесь null). */
     public static BlockPos origin(Type type, BlockPos hall, int houseIndex) {
         return switch (type) {
             case HOUSE -> KingdomLayout.houseOrigin(hall, houseIndex);
             case WAREHOUSE -> KingdomLayout.warehouseOrigin(hall);
             case WALL -> KingdomLayout.wallOrigin(hall);
             case PEN -> KingdomLayout.penOrigin(hall);
+            case LEVELING -> KingdomLayout.levelingOrigin(hall);
+            case KEEP -> KingdomLayout.keepOrigin(hall);
+            case SHIP_EW, SHIP_NS -> hall;
         };
     }
 
@@ -71,7 +87,7 @@ public final class Blueprint {
     }
 
     public static int stoneCost(BlockState s) {
-        return s.is(Blocks.COBBLESTONE) || s.is(Blocks.COBBLESTONE_WALL) ? 1 : 0;
+        return s.is(Blocks.COBBLESTONE) || s.is(Blocks.COBBLESTONE_WALL) || s.is(Blocks.STONE_BRICKS) ? 1 : 0;
     }
 
     /** Сколько всего нужно ресурсов на чертёж. */
@@ -154,6 +170,105 @@ public final class Blueprint {
         for (int x = 0; x < size; x++)
             for (int z = 0; z < size; z++)
                 plan.add(new Step(x, 4, z, Blocks.OAK_PLANKS.defaultBlockState(), false, false));
+    }
+
+    /** Выравнивание: всё внутри стены срезается до уровня ратуши, ямы засыпаются землёй. */
+    private static Blueprint leveling() {
+        List<Step> plan = new ArrayList<>();
+        int w = KingdomLayout.WALL_WIDTH - 2;
+        int d = KingdomLayout.WALL_DEPTH - 2;
+        for (int y = -3; y <= -2; y++)
+            for (int x = 0; x < w; x++)
+                for (int z = 0; z < d; z++)
+                    plan.add(new Step(x, y, z, Blocks.DIRT.defaultBlockState(), true, false));
+        for (int x = 0; x < w; x++)
+            for (int z = 0; z < d; z++)
+                plan.add(new Step(x, -1, z, Blocks.GRASS_BLOCK.defaultBlockState(), true, false));
+        // Срезаем сверху вниз, чтобы не оставлять «висящих» кусков
+        for (int y = 6; y >= 0; y--)
+            for (int x = 0; x < w; x++)
+                for (int z = 0; z < d; z++)
+                    plan.add(new Step(x, y, z, Blocks.AIR.defaultBlockState(), false, false));
+        return new Blueprint(Type.LEVELING, plan, 0, 0, w - 1, d - 1);
+    }
+
+    /** Замок-донжон 9x9: каменные стены в 5 блоков, зубцы, бойницы, вход с юга. */
+    private static Blueprint keep() {
+        List<Step> plan = new ArrayList<>();
+        int size = KingdomLayout.KEEP_SIZE;
+        foundation(plan, size);
+        clear(plan, size, 9);
+        for (int x = 0; x < size; x++)
+            for (int z = 0; z < size; z++)
+                plan.add(new Step(x, 0, z, Blocks.COBBLESTONE.defaultBlockState(), false, false));
+        for (int y = 1; y <= 5; y++) {
+            for (int x = 0; x < size; x++) {
+                for (int z = 0; z < size; z++) {
+                    boolean edge = x == 0 || z == 0 || x == size - 1 || z == size - 1;
+                    if (!edge) continue;
+                    boolean door = z == size - 1 && x == size / 2 && y <= 2;
+                    if (door) continue;
+                    boolean corner = (x == 0 || x == size - 1) && (z == 0 || z == size - 1);
+                    boolean window = y == 3 && !corner && (x % 2 == 0) && (z % 2 == 0);
+                    Block block = window ? Blocks.GLASS_PANE : corner ? Blocks.STONE_BRICKS : Blocks.COBBLESTONE;
+                    plan.add(new Step(x, y, z, block.defaultBlockState(), false, false));
+                }
+            }
+        }
+        for (int x = 0; x < size; x++)
+            for (int z = 0; z < size; z++)
+                plan.add(new Step(x, 6, z, Blocks.COBBLESTONE.defaultBlockState(), false, false));
+        // Зубцы
+        for (int x = 0; x < size; x++) {
+            for (int z = 0; z < size; z++) {
+                boolean edge = x == 0 || z == 0 || x == size - 1 || z == size - 1;
+                if (edge && (x + z) % 2 == 0) {
+                    plan.add(new Step(x, 7, z, Blocks.COBBLESTONE.defaultBlockState(), false, false));
+                }
+            }
+        }
+        plan.add(new Step(0, 8, 0, Blocks.TORCH.defaultBlockState(), false, false));
+        plan.add(new Step(size - 1, 8, 0, Blocks.TORCH.defaultBlockState(), false, false));
+        plan.add(new Step(0, 8, size - 1, Blocks.TORCH.defaultBlockState(), false, false));
+        plan.add(new Step(size - 1, 8, size - 1, Blocks.TORCH.defaultBlockState(), false, false));
+        plan.add(new Step(size / 2, 1, 2, Blocks.TORCH.defaultBlockState(), false, false));
+        plan.add(new Step(2, 1, size / 2, Blocks.TORCH.defaultBlockState(), false, false));
+        plan.add(new Step(size - 3, 1, size / 2, Blocks.TORCH.defaultBlockState(), false, false));
+        return new Blueprint(Type.KEEP, plan, 0, 0, size - 1, size - 1);
+    }
+
+    /** Корабль 7x5 на воде: палуба из досок, борта-перила, мачта и парус. Угол — у берега. */
+    private static Blueprint ship(boolean eastWest) {
+        List<Step> plan = new ArrayList<>();
+        int len = 7;
+        int wid = 5;
+        for (int a = 0; a < len; a++) {
+            for (int b = 0; b < wid; b++) {
+                boolean tip = (a == 0 || a == len - 1) && (b == 0 || b == wid - 1);
+                if (tip) continue;
+                int x = eastWest ? a : b;
+                int z = eastWest ? b : a;
+                plan.add(new Step(x, 0, z, Blocks.OAK_PLANKS.defaultBlockState(), false, false));
+                boolean edge = a == 0 || a == len - 1 || b == 0 || b == wid - 1;
+                if (edge) {
+                    plan.add(new Step(x, 1, z, Blocks.OAK_FENCE.defaultBlockState(), false, false));
+                }
+            }
+        }
+        int mx = eastWest ? len / 2 : wid / 2;
+        int mz = eastWest ? wid / 2 : len / 2;
+        for (int y = 1; y <= 6; y++)
+            plan.add(new Step(mx, y, mz, Blocks.OAK_LOG.defaultBlockState(), false, false));
+        for (int y = 3; y <= 5; y++) {
+            for (int o = -1; o <= 1; o++) {
+                if (o == 0) continue;
+                int x = eastWest ? mx : mx + o;
+                int z = eastWest ? mz + o : mz;
+                plan.add(new Step(x, y, z, Blocks.WHITE_WOOL.defaultBlockState(), false, false));
+            }
+        }
+        plan.add(new Step(mx, 7, mz, Blocks.TORCH.defaultBlockState(), false, false));
+        return new Blueprint(eastWest ? Type.SHIP_EW : Type.SHIP_NS, plan, 0, 0, eastWest ? len - 1 : wid - 1, eastWest ? wid - 1 : len - 1);
     }
 
     /** Загон 7x7: забор по кругу, калитка на западе, внутри ровная трава. */
