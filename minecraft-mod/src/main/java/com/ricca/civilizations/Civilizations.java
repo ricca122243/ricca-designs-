@@ -3,9 +3,11 @@ package com.ricca.civilizations;
 import com.mojang.logging.LogUtils;
 import com.ricca.civilizations.block.TownHallBlock;
 import com.ricca.civilizations.block.TownHallBlockEntity;
+import com.ricca.civilizations.entity.BanditEntity;
 import com.ricca.civilizations.entity.SettlerEntity;
 import com.ricca.civilizations.item.CommandStaffItem;
 import com.ricca.civilizations.item.KingdomCharterItem;
+import com.ricca.civilizations.item.KingdomMapItem;
 import com.ricca.civilizations.kingdom.NpcKingdomSpawner;
 import com.ricca.civilizations.kingdom.TerritoryHandler;
 import net.minecraft.core.registries.Registries;
@@ -13,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.monster.Pillager;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -79,6 +82,11 @@ public class Civilizations {
             CommandStaffItem::new,
             new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
+    /** Карта земель: показывает все королевства. */
+    public static final DeferredItem<Item> KINGDOM_MAP = ITEMS.registerItem("kingdom_map",
+            KingdomMapItem::new,
+            new Item.Properties().stacksTo(1));
+
     /** Рыцарский меч: чуть сильнее железного. */
     public static final DeferredItem<SwordItem> KNIGHT_SWORD = ITEMS.registerItem("knight_sword",
             props -> new SwordItem(Tiers.IRON, props.attributes(SwordItem.createAttributes(Tiers.IRON, 5, -2.2f))),
@@ -91,6 +99,16 @@ public class Civilizations {
             () -> EntityType.Builder.of(SettlerEntity::new, MobCategory.CREATURE)
                     .sized(0.6f, 1.95f)
                     .build(ResourceLocation.fromNamespaceAndPath(MODID, "settler").toString()));
+
+    /** Разбойник: налётчик, нападающий на королевства. */
+    public static final DeferredHolder<EntityType<?>, EntityType<BanditEntity>> BANDIT = ENTITIES.register("bandit",
+            () -> EntityType.Builder.of(BanditEntity::new, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f)
+                    .build(ResourceLocation.fromNamespaceAndPath(MODID, "bandit").toString()));
+
+    public static final DeferredItem<Item> BANDIT_SPAWN_EGG = ITEMS.registerItem("bandit_spawn_egg",
+            props -> new DeferredSpawnEggItem(BANDIT, 0x4A3B2A, 0x8A8A8A, props),
+            new Item.Properties());
 
     public static final DeferredItem<Item> SETTLER_SPAWN_EGG = ITEMS.registerItem("settler_spawn_egg",
             props -> new DeferredSpawnEggItem(SETTLER, 0x6B4F2A, 0xC8A060, props),
@@ -106,9 +124,11 @@ public class Civilizations {
                     .displayItems((parameters, output) -> {
                         output.accept(KINGDOM_CHARTER.get());
                         output.accept(COMMAND_STAFF.get());
+                        output.accept(KINGDOM_MAP.get());
                         output.accept(TOWN_HALL_ITEM.get());
                         output.accept(KNIGHT_SWORD.get());
                         output.accept(SETTLER_SPAWN_EGG.get());
+                        output.accept(BANDIT_SPAWN_EGG.get());
                     })
                     .build());
 
@@ -128,5 +148,6 @@ public class Civilizations {
     /** Характеристики поселенца: здоровье, скорость и т.д. */
     private void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(SETTLER.get(), SettlerEntity.createAttributes().build());
+        event.put(BANDIT.get(), Pillager.createAttributes().build());
     }
 }

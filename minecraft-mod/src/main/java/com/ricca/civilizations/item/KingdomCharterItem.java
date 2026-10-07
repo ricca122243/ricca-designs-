@@ -77,10 +77,15 @@ public class KingdomCharterItem extends Item {
             context.getItemInHand().shrink(1);
         }
         // Основателю выдаётся жезл командира.
-        if (!player.getInventory().add(new net.minecraft.world.item.ItemStack(Civilizations.COMMAND_STAFF.get()))) {
-            player.drop(new net.minecraft.world.item.ItemStack(Civilizations.COMMAND_STAFF.get()), false);
-        }
+        giveItem(player, new ItemStack(Civilizations.COMMAND_STAFF.get()));
+        giveItem(player, new ItemStack(Civilizations.KINGDOM_MAP.get()));
         return InteractionResult.CONSUME;
+    }
+
+    private static void giveItem(Player player, ItemStack stack) {
+        if (!player.getInventory().add(stack)) {
+            player.drop(stack, false);
+        }
     }
 
     @Override

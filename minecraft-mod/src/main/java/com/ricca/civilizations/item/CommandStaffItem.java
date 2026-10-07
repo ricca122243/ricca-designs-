@@ -106,10 +106,21 @@ public class CommandStaffItem extends Item {
                 return InteractionResult.PASS;
             }
             if (player.isShiftKeyDown()) {
-                if (hall.hire(Profession.BUILDER, HIRE_COST)) {
-                    say(player, Component.translatable("civilizations.staff.hired", HIRE_COST));
-                } else {
-                    say(player, Component.translatable("civilizations.staff.no_gold", HIRE_COST, hall.getGold()).withStyle(ChatFormatting.RED));
+                String mine = player.getName().getString();
+                if (hall.getKingdom().isEmpty() || hall.getKingdom().equals(mine)) {
+                    if (hall.hire(Profession.BUILDER, HIRE_COST)) {
+                        say(player, Component.translatable("civilizations.staff.hired", HIRE_COST));
+                    } else {
+                        say(player, Component.translatable("civilizations.staff.no_gold", HIRE_COST, hall.getGold()).withStyle(ChatFormatting.RED));
+                    }
+                } else if (level instanceof ServerLevel serverLevel) {
+                    // Чужая ратуша: захват, если защитников не осталось.
+                    int defenders = hall.countDefenders(serverLevel);
+                    if (defenders > 0) {
+                        say(player, Component.translatable("civilizations.capture.defended", hall.getKingdom(), defenders).withStyle(ChatFormatting.RED));
+                    } else {
+                        hall.capture(serverLevel, mine);
+                    }
                 }
             } else {
                 hall.sendStats(player);

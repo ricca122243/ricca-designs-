@@ -21,7 +21,7 @@
   "item.civilizations.command_staff": "Command Staff",
   "item.civilizations.command_staff.tooltip1": "Click a settler to select, click again to follow/release",
   "item.civilizations.command_staff.tooltip2": "Shift+click a settler: change profession. Click ground: send",
-  "item.civilizations.command_staff.tooltip3": "Click Town Hall: report. Shift+click: hire builder (50 gold)",
+  "item.civilizations.command_staff.tooltip3": "Click Town Hall: report. Shift+click: hire builder / capture enemy hall",
   "entity.civilizations.settler.guard": "Guard",
   "entity.civilizations.settler.guard.named": "Guard of %s",
   "civilizations.staff.selected": "Selected: %s",
@@ -42,5 +42,18 @@
   "civilizations.townhall.deposited.food": "+%s food to storage",
   "civilizations.townhall.deposited.gold": "+%s gold to treasury",
   "civilizations.raid.started": "%s is raiding %s with %s warriors!",
-  "civilizations.npc.spawned": "Three kingdoms have risen in this land: %s, %s and %s. Use the Command Staff in the air to find them."
+  "civilizations.npc.spawned": "Three kingdoms have risen in this land: %s, %s and %s. Use the Command Staff in the air to find them.",
+  "item.civilizations.kingdom_map": "Map of the Realms",
+  "item.civilizations.kingdom_map.tooltip": "Right-click to see every kingdom",
+  "item.civilizations.bandit_spawn_egg": "Bandit Spawn Egg",
+  "entity.civilizations.bandit": "Bandit",
+  "civilizations.map.title": "Map of the Realms",
+  "civilizations.map.loading": "Reading the map...",
+  "civilizations.map.pop": "%s people, %s houses",
+  "civilizations.map.you": "You",
+  "civilizations.map.scale": "1 px = %s blocks",
+  "civilizations.capture.defended": "%s still has %s defenders. Defeat them first!",
+  "civilizations.capture.done": "%s has captured the kingdom of %s!",
+  "civilizations.immigrants": "%s new settlers arrived in %s",
+  "civilizations.bandits": "%s bandits are attacking %s!"
 }

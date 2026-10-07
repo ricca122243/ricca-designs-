@@ -1,6 +1,7 @@
 package com.ricca.civilizations.block;
 
 import com.ricca.civilizations.Civilizations;
+import com.ricca.civilizations.entity.BanditEntity;
 import com.ricca.civilizations.entity.KingdomLayout;
 import com.ricca.civilizations.entity.Profession;
 import com.ricca.civilizations.entity.SettlerEntity;
@@ -11,7 +12,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -50,6 +54,10 @@ public class TownHallBlockEntity extends BlockEntity {
     private static final int RAID_INTERVAL_TICKS = 9000;
     private static final int RAID_DURATION_TICKS = 2400;
     private static final int RAID_RANGE = 600;
+
+    private long lastDay = -1;
+    private int banditTimer = 0;
+    private static final int BANDIT_INTERVAL_TICKS = 14400;
 
     private static final int TAX_INTERVAL_TICKS = 1200;
     private static final int SELL_THRESHOLD = 150;
@@ -215,6 +223,19 @@ public class TownHallBlockEntity extends BlockEntity {
         if (th.npc) {
             th.npcTick(serverLevel);
         }
+        long day = level.getDayTime() / 24000L;
+        if (th.lastDay < 0) {
+            th.lastDay = day;
+        } else if (day != th.lastDay) {
+            th.lastDay = day;
+            th.dailyImmigrants(serverLevel);
+        }
+        if (++th.banditTimer >= BANDIT_INTERVAL_TICKS) {
+            th.banditTimer = level.random.nextInt(BANDIT_INTERVAL_TICKS / 3);
+            if (level.random.nextFloat() < 0.5f) {
+                th.banditRaid(serverLevel);
+            }
+        }
         if (++th.growthTimer < GROWTH_INTERVAL_TICKS) {
             return;
         }
@@ -240,16 +261,21 @@ public class TownHallBlockEntity extends BlockEntity {
             npcTimer = 0;
             List<SettlerEntity> settlers = settlers(serverLevel);
             int warriors = 0;
+            int guards = 0;
             int builders = 0;
             for (SettlerEntity s : settlers) {
                 if (s.getProfession() == Profession.WARRIOR) warriors++;
+                if (s.getProfession() == Profession.GUARD) guards++;
                 if (s.getProfession() == Profession.BUILDER) builders++;
             }
-            if (gold >= 50 && settlers.size() < 4 + housesBuilt * 2 + 4) {
-                Profession want = warriors < 2 ? Profession.WARRIOR
+            if (gold >= 50) {
+                Profession want = guards < 2 ? Profession.GUARD
+                        : warriors < 2 ? Profession.WARRIOR
                         : builders < 1 ? Profession.BUILDER
-                        : Profession.byId(level.random.nextInt(4));
-                hire(want, 50);
+                        : settlers.size() < 6 + housesBuilt * 3 ? Profession.byId(level.random.nextInt(4)) : null;
+                if (want != null) {
+                    hire(want, 50);
+                }
             }
         }
 
@@ -313,6 +339,70 @@ public class TownHallBlockEntity extends BlockEntity {
         setChanged();
     }
 
+    /** Сколько воинов и стражников ещё защищают королевство. */
+    public int countDefenders(ServerLevel serverLevel) {
+        int n = 0;
+        for (SettlerEntity s : settlers(serverLevel)) {
+            if (s.isWarrior()) n++;
+        }
+        return n;
+    }
+
+    /** Захват: все жители переходят под новое имя, королевство больше не компьютерное. */
+    public void capture(ServerLevel serverLevel, String newKingdom) {
+        String old = kingdom;
+        for (SettlerEntity s : settlers(serverLevel)) {
+            s.setOrderPos(null);
+            s.setKingdom(newKingdom);
+        }
+        kingdom = newKingdom;
+        npc = false;
+        raidActiveTicks = 0;
+        raidTarget = null;
+        setChanged();
+        serverLevel.getServer().getPlayerList().broadcastSystemMessage(
+                Component.translatable("civilizations.capture.done", newKingdom, old).withStyle(ChatFormatting.GOLD), false);
+    }
+
+    /** Каждый игровой день к королевству приходят новые поселенцы. */
+    private void dailyImmigrants(ServerLevel serverLevel) {
+        int count = settlers(serverLevel).size();
+        int cap = 6 + housesBuilt * 3;
+        int arriving = 3 + level.random.nextInt(3);
+        Profession[] workers = {Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER};
+        int spawned = 0;
+        for (int i = 0; i < arriving && count + i < cap; i++) {
+            spawnSettler(workers[level.random.nextInt(workers.length)]);
+            spawned++;
+        }
+        if (spawned > 0) {
+            for (ServerPlayer p : serverLevel.players()) {
+                if (p.blockPosition().distSqr(getBlockPos()) < 96 * 96) {
+                    p.displayClientMessage(Component.translatable("civilizations.immigrants", spawned, kingdom), true);
+                }
+            }
+        }
+    }
+
+    /** Набег разбойников: несколько налётчиков появляются в 25 блоках от ратуши. */
+    private void banditRaid(ServerLevel serverLevel) {
+        int count = 3 + level.random.nextInt(3);
+        double angle = level.random.nextDouble() * Math.PI * 2;
+        BlockPos hall = getBlockPos();
+        for (int i = 0; i < count; i++) {
+            int x = hall.getX() + (int) (Math.cos(angle) * 25) + level.random.nextInt(5) - 2;
+            int z = hall.getZ() + (int) (Math.sin(angle) * 25) + level.random.nextInt(5) - 2;
+            int y = serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+            BanditEntity bandit = Civilizations.BANDIT.get().create(serverLevel);
+            if (bandit == null) continue;
+            bandit.moveTo(x + 0.5, y, z + 0.5, level.random.nextFloat() * 360f, 0f);
+            bandit.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(bandit.blockPosition()), MobSpawnType.EVENT, null);
+            serverLevel.addFreshEntity(bandit);
+        }
+        serverLevel.getServer().getPlayerList().broadcastSystemMessage(
+                Component.translatable("civilizations.bandits", count, kingdom).withStyle(ChatFormatting.DARK_RED), false);
+    }
+
     /** Раз в минуту: налог с каждого жителя и продажа излишков со склада. */
     private void collectTaxes(ServerLevel serverLevel) {
         int population = settlers(serverLevel).size();
@@ -339,6 +429,7 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putInt("Food", food);
         tag.putInt("Gold", gold);
         tag.putBoolean("Npc", npc);
+        tag.putLong("LastDay", lastDay);
         tag.putInt("HousesBuilt", housesBuilt);
         tag.putInt("NextHouse", nextHouse);
     }
@@ -352,6 +443,7 @@ public class TownHallBlockEntity extends BlockEntity {
         food = tag.getInt("Food");
         gold = tag.getInt("Gold");
         npc = tag.getBoolean("Npc");
+        lastDay = tag.contains("LastDay") ? tag.getLong("LastDay") : -1;
         housesBuilt = tag.getInt("HousesBuilt");
         nextHouse = tag.getInt("NextHouse");
     }

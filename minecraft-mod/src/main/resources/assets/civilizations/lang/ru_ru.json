@@ -21,7 +21,7 @@
   "item.civilizations.command_staff": "Жезл командира",
   "item.civilizations.command_staff.tooltip1": "Клик по жителю: выбрать. Ещё клик: следовать / отпустить",
   "item.civilizations.command_staff.tooltip2": "Shift+клик по жителю: сменить профессию. Клик по земле: отправить",
-  "item.civilizations.command_staff.tooltip3": "Клик по ратуше: сводка. Shift+клик: нанять строителя (50 золота)",
+  "item.civilizations.command_staff.tooltip3": "Клик по ратуше: сводка. Shift+клик: нанять строителя / захватить чужую ратушу",
   "entity.civilizations.settler.guard": "Стражник",
   "entity.civilizations.settler.guard.named": "Стражник королевства %s",
   "civilizations.staff.selected": "Выбран: %s",
@@ -42,5 +42,18 @@
   "civilizations.townhall.deposited.food": "+%s еды на склад",
   "civilizations.townhall.deposited.gold": "+%s золота в казну",
   "civilizations.raid.started": "Королевство %s напало на %s: в набег ушло воинов: %s!",
-  "civilizations.npc.spawned": "В этих землях поднялись три королевства: %s, %s и %s. Кликните жезлом в воздух, чтобы узнать, где они."
+  "civilizations.npc.spawned": "В этих землях поднялись три королевства: %s, %s и %s. Кликните жезлом в воздух, чтобы узнать, где они.",
+  "item.civilizations.kingdom_map": "Карта земель",
+  "item.civilizations.kingdom_map.tooltip": "Правый клик — показать все королевства",
+  "item.civilizations.bandit_spawn_egg": "Яйцо призыва разбойника",
+  "entity.civilizations.bandit": "Разбойник",
+  "civilizations.map.title": "Карта земель",
+  "civilizations.map.loading": "Читаем карту...",
+  "civilizations.map.pop": "жителей: %s, домов: %s",
+  "civilizations.map.you": "Вы",
+  "civilizations.map.scale": "1 пиксель = %s блоков",
+  "civilizations.capture.defended": "У королевства %s ещё %s защитников. Сначала победите их!",
+  "civilizations.capture.done": "%s захватывает королевство %s!",
+  "civilizations.immigrants": "В %2$s пришли новые поселенцы: %1$s",
+  "civilizations.bandits": "Разбойники (%s) напали на %s!"
 }

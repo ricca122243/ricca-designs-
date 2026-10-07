@@ -9,7 +9,18 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -66,7 +77,8 @@ public class SettlerEntity extends PathfinderMob {
                 .add(Attributes.MAX_HEALTH, 20.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.5)
                 .add(Attributes.FOLLOW_RANGE, 32.0)
-                .add(Attributes.ATTACK_DAMAGE, 2.0);
+                .add(Attributes.ATTACK_DAMAGE, 2.0)
+                .add(Attributes.STEP_HEIGHT, 1.0);
     }
 
     @Override
@@ -163,9 +175,110 @@ public class SettlerEntity extends PathfinderMob {
             guardPost = townHall;
         }
         setBase(Attributes.MAX_HEALTH, warrior ? 30.0 : 20.0);
-        setBase(Attributes.ATTACK_DAMAGE, warrior ? 6.0 : 2.0);
-        setBase(Attributes.ARMOR, warrior ? 6.0 : 0.0);
         setHealth(getMaxHealth());
+        equipForProfession(profession);
+    }
+
+    /** Инструменты и одежда по профессии. Урон и броня берутся из предметов. */
+    private void equipForProfession(Profession profession) {
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            setItemSlot(slot, ItemStack.EMPTY);
+            setDropChance(slot, 0.0f);
+        }
+        switch (profession) {
+            case BUILDER -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_PICKAXE));
+                setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0xC86E2C));
+                setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0xC86E2C));
+            }
+            case LUMBERJACK -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_AXE));
+                setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0x3C8A3C));
+            }
+            case FARMER -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_HOE));
+                setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0xD8B830));
+                setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0xD8B830));
+            }
+            case WARRIOR -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+                setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
+                setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+                setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
+                setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
+            }
+            case GUARD -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+                setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
+                setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.CHAINMAIL_CHESTPLATE));
+                setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.CHAINMAIL_HELMET));
+                setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.CHAINMAIL_LEGGINGS));
+            }
+        }
+    }
+
+    private static ItemStack dyed(net.minecraft.world.item.Item item, int rgb) {
+        ItemStack stack = new ItemStack(item);
+        stack.set(DataComponents.DYED_COLOR, new DyedItemColor(rgb, false));
+        return stack;
+    }
+
+    // --- Вселение: игрок садится «в» жителя и управляет им ---
+
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (player.getItemInHand(hand).isEmpty() && player.isShiftKeyDown() && !isVehicle()) {
+            if (!level().isClientSide) {
+                setOrderPos(null);
+                setFollowPlayer(null);
+                player.startRiding(this);
+            }
+            return InteractionResult.sidedSuccess(level().isClientSide);
+        }
+        return super.mobInteract(player, hand);
+    }
+
+    @Nullable
+    @Override
+    public LivingEntity getControllingPassenger() {
+        return getFirstPassenger() instanceof Player player ? player : super.getControllingPassenger();
+    }
+
+    @Override
+    protected Vec3 getRiddenInput(Player player, Vec3 travelVector) {
+        float strafe = player.xxa * 0.5f;
+        float forward = player.zza;
+        if (forward <= 0.0f) {
+            forward *= 0.4f;
+        }
+        return new Vec3(strafe, 0.0, forward);
+    }
+
+    @Override
+    protected float getRiddenSpeed(Player player) {
+        return (float) getAttributeValue(Attributes.MOVEMENT_SPEED) * 0.55f;
+    }
+
+    @Override
+    protected void tickRidden(Player player, Vec3 travelVector) {
+        super.tickRidden(player, travelVector);
+        setRot(player.getYRot(), player.getXRot() * 0.5f);
+        this.yRotO = this.yBodyRot = this.yHeadRot = getYRot();
+    }
+
+    @Override
+    protected void serverAiStep() {
+        if (getControllingPassenger() instanceof Player) {
+            getNavigation().stop();
+            setTarget(null);
+            return;
+        }
+        super.serverAiStep();
+    }
+
+    @Override
+    protected Vec3 getPassengerAttachmentPoint(Entity entity, EntityDimensions dimensions, float scale) {
+        return new Vec3(0.0, 0.55 * scale, 0.0);
     }
 
     private void setBase(net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attribute, double value) {
