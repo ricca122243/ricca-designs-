@@ -1,10 +1,13 @@
-/* RICCA DESIGNS — основа сайта. Ванильный JS, без зависимостей. */
+/* RICCA DESIGNS — «Sartoria Nera». Ванильный JS, без зависимостей.
+   Механика перенесена из galleria-final/js/site.js: CONFIG, [data-wa]/[data-tel], фильм по главам
+   (декодируется один ролик), лайтбокс без увеличения сверх родного размера, образцы → WhatsApp,
+   правила мобильной плашки, якоря с учётом шапки. */
 (() => {
   'use strict';
 
   /* ---------- Константы: контакты и тексты WhatsApp — менять здесь ----------
      Скрипт переписывает все ссылки [data-wa] и [data-tel] (href и видимый номер у .tel).
-     Те же номера записаны в JSON-LD в <head> и в запасных href без JS. */
+     Номера также записаны в JSON-LD в <head> и в запасных href без JS. */
   const CONFIG = {
     wa: '77084802047',                          // основной / WhatsApp: +7 (708) 480-20-47
     tel: {
@@ -19,12 +22,10 @@
       master: 'Здравствуйте! У меня вопрос к мастеру RICCA.',
       collection: 'Здравствуйте! Пришлите, пожалуйста, подборку моделей RICCA.',
       col: (name) => `Здравствуйте! Пришлите, пожалуйста, подборку: «${name}».`,
-      // Названия и тона образцов на сайте условные (палитра ещё не подтверждена) — сообщение их не утверждает
-      fabric: (name) => `Здравствуйте! Хочу подобрать ткань в шоуруме. На сайте понравился образец «${name}» — подскажите, что есть похожего в палитре.`
+      fabric: (name) => `Здравствуйте! Хочу подобрать ткань в шоуруме. На сайте понравилась фактура «${name}».`
     },
-    video: 'video/',                // ролики производства (общие)
-    poster: 'img/mono/',            // дуотон-постеры шагов
-    posterSuffix: '-mono.webp',
+    video: 'video/',
+    poster: 'img/process/',
     reelChapterMs: 4600
   };
 
@@ -33,18 +34,14 @@
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const mqNav = window.matchMedia('(min-width: 1180px)');       // навигация в шапке; ниже — бургер
-  const mqMobile = window.matchMedia('(max-width: 767px)');
+  const mqMobile = window.matchMedia('(max-width: 759px)');
+  const mqDesk = window.matchMedia('(min-width: 1100px)');
   let reduced = mqReduce.matches;
   if (reduced) root.classList.add('reduce');
-  // Экономия трафика: при Save-Data или 2G фильм по главам показывает только постеры
-  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  const lite = !!(conn && (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '')));
   const hasIO = 'IntersectionObserver' in window;
   const safePlay = (v) => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
   const canWebm = (() => { const v = document.createElement('video'); return !!v.canPlayType && v.canPlayType('video/webm; codecs="vp9"') !== ''; })();
   const clipSrc = (name) => `${CONFIG.video}${name}.${canWebm ? 'webm' : 'mp4'}`;
-  const posterOf = (name) => `${CONFIG.poster}${name}${CONFIG.posterSuffix}`;
 
   /* ---------- Телефоны из CONFIG ---------- */
   $$('[data-tel]').forEach((a) => {
@@ -65,38 +62,36 @@
     a.href = waUrl(text);
     a.target = '_blank';
     a.rel = 'noopener';
-    if (!a.querySelector('.vh--tab')) {
+    if (!a.querySelector('.vh')) {
       const hint = document.createElement('span');
-      hint.className = 'vh vh--tab';
+      hint.className = 'vh';
       hint.textContent = ' (откроется в новой вкладке)';
       a.append(hint);
     }
   });
 
-  /* ---------- Переход по якорям с учётом шапки ---------- */
+  /* ---------- Якоря с учётом шапки ---------- */
   const hdr = $('#hdr');
-  const hdrOffset = () => hdr.offsetHeight || (mqMobile.matches ? 60 : mqNav.matches ? 84 : 68);
+  const hdrOffset = () => hdr.offsetHeight;
   const scrollYFor = (id, target) => {
     if (id === 'top' || !target) return 0;
-    // к колонтитулу раздела, а не к верху секции: без пустого поля под шапкой
-    const anchor = id === 'contacts' ? target : ($('.folio', target) || target);
-    const gap = id === 'contacts' ? 16 : mqMobile.matches ? 28 : 56;
+    const mobile = mqMobile.matches;
+    const anchor = id === 'contacts' ? target : ($('.runhead', target) || target);
+    const gap = id === 'contacts' ? 16 : mobile ? 24 : 48;
+    // колонтитул, который ещё не появился, сдвинут на 22px (data-reveal) — считаем по его итоговому месту
     const tf = getComputedStyle(anchor).transform;
     const shift = tf && tf !== 'none' ? new DOMMatrixReadOnly(tf).m42 : 0;
     return anchor.getBoundingClientRect().top - shift + window.scrollY - hdrOffset() - gap;
   };
-  let anchorT = 0;
   const goTo = (id, focus) => {
     const target = id === 'top' ? null : document.getElementById(id);
     if (!target && id !== 'top') return false;
+    hdr.classList.remove('is-hidden');
     window.scrollTo({ top: Math.max(0, scrollYFor(id, target)), behavior: reduced ? 'auto' : 'smooth' });
     if (target && focus) {
       if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
       target.focus({ preventScroll: true });
     }
-    // по окончании якорного скролла шапка всегда видна — меню и WhatsApp доступны сразу
-    clearTimeout(anchorT);
-    anchorT = setTimeout(() => { hdr.classList.remove('is-hidden'); lastY = window.scrollY; }, reduced ? 50 : 900);
     return true;
   };
   document.addEventListener('click', (e) => {
@@ -104,50 +99,55 @@
     if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     let id = a.getAttribute('href').slice(1);
     if (id === 'main') return;
-    // «Посетить шоурум» на телефоне ведёт сразу к карточке визита (часы, адрес и маршрут — первыми)
+    // «Посетить шоурум» на телефоне ведёт сразу к карточке визита (адрес и маршрут — первыми), на десктопе — в раздел
     if (a.hasAttribute('data-visit') && id === 'showroom' && mqMobile.matches) id = 'contacts';
+    if (id === 'contacts' && !mqMobile.matches) id = 'showroom';
     if (!goTo(id || 'top', true)) return;
     e.preventDefault();
     history.replaceState(null, '', id === 'top' ? location.pathname : `#${id}`);
   });
 
-  /* ---------- Вход первого экрана ---------- */
+  /* ---------- Первый экран ---------- */
   const enter = () => requestAnimationFrame(() => {
     root.classList.add('is-loaded');
-    setTimeout(() => root.classList.add('hero-done'), reduced ? 0 : 2000);
+    setTimeout(() => root.classList.add('hero-done'), reduced ? 0 : 1900);
   });
   const fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
   Promise.race([fontsReady, new Promise((r) => setTimeout(r, 600))]).then(enter);
 
-  /* ---------- Меню (телефон, планшет и ноутбук до 1180) ---------- */
+  /* ---------- Мобильное меню ---------- */
   const menuBtn = $('.hdr__menu');
   const menu = $('#menu');
+  const menuTxt = $('.hdr__menu-txt');
+  let menuOpen = false;
   const setMenu = (open) => {
+    menuOpen = open;
     menuBtn.setAttribute('aria-expanded', String(open));
     menuBtn.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
-    const label = $('.hdr__menu-label', menuBtn);
-    if (label) label.textContent = open ? 'Закрыть' : 'Меню';
+    if (menuTxt) menuTxt.textContent = open ? 'Закрыть' : 'Меню';
     root.classList.toggle('menu-open', open);
-    $$('main, .ftr, .mbar, .rule, .skip').forEach((el) => { el.inert = open; });
+    // всё, что под меню, недоступно ни с клавиатуры, ни для экранного диктора
+    $$('main, .ftr, .mbar, .tape, .skip').forEach((el) => { el.inert = open; });
     if (open) {
       menu.hidden = false;
-      requestAnimationFrame(() => menu.classList.add('is-open'));
+      requestAnimationFrame(() => requestAnimationFrame(() => menu.classList.add('is-open')));
       document.body.style.overflow = 'hidden';
+      hdr.classList.remove('is-hidden');
       const first = $('a', menu);
       if (first) first.focus({ preventScroll: true });
     } else {
       menu.classList.remove('is-open');
       document.body.style.overflow = '';
-      const done = () => { if (menuBtn.getAttribute('aria-expanded') !== 'true') menu.hidden = true; };
-      reduced ? done() : setTimeout(done, 500);
+      const done = () => { if (!menuOpen) menu.hidden = true; };
+      reduced ? done() : setTimeout(done, 800);
     }
     onScroll();
   };
   if (menuBtn && menu) {
-    menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
+    menuBtn.addEventListener('click', () => setMenu(!menuOpen));
     $$('a', menu).forEach((a) => a.addEventListener('click', () => setMenu(false)));
     document.addEventListener('keydown', (e) => {
-      if (menuBtn.getAttribute('aria-expanded') !== 'true') return;
+      if (!menuOpen) return;
       if (e.key === 'Escape') { setMenu(false); menuBtn.focus(); }
       if (e.key === 'Tab') {
         const items = [menuBtn, ...$$('a, button', menu)];
@@ -156,65 +156,57 @@
         else if (!e.shiftKey && i === items.length - 1) { e.preventDefault(); items[0].focus(); }
       }
     });
-    mqNav.addEventListener('change', (e) => { if (e.matches) setMenu(false); });
+    mqDesk.addEventListener('change', () => { if (menuOpen) setMenu(false); });
   }
 
-  /* ---------- Проявления ---------- */
+  /* ---------- Появления и эскизы ---------- */
   $$('[data-reveal]').forEach((el) => {
     const sibs = Array.from(el.parentElement.children).filter((n) => n.hasAttribute('data-reveal'));
     el.style.setProperty('--d', `${Math.min(sibs.indexOf(el), 5) * 90}ms`);
   });
-  const revealTargets = $$('[data-reveal]');
+  $$('.sk').forEach((svg) => {
+    $$('rect, path, line, circle', svg).forEach((el) => {
+      if (el.matches('.sk-seam, .sk-dim, .sk-floor, .sk-shadow')) return;
+      el.setAttribute('pathLength', '1');
+    });
+  });
+  const revealEls = $$('[data-reveal], .runhead');
   if (hasIO && !reduced) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((en) => {
         if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
       });
     }, { rootMargin: '0px 0px -6% 0px', threshold: 0.1 });
-    revealTargets.forEach((el) => io.observe(el));
-    // Фокус с клавиатуры попал в непроявленный блок — проявляем сразу (CSS :focus-within делает это без перехода)
-    document.addEventListener('focusin', (e) => {
-      const el = e.target.closest ? e.target.closest('[data-reveal]') : null;
-      if (el && !el.classList.contains('is-in')) { io.unobserve(el); el.classList.add('is-in'); }
-    });
+    revealEls.forEach((el) => io.observe(el));
     // Страховка: при переходе по якорю проявляем всё, что уже выше края экрана
     let sweepT = 0;
     window.addEventListener('scroll', () => {
       clearTimeout(sweepT);
       sweepT = setTimeout(() => {
-        const lim = window.innerHeight * 0.94;
-        revealTargets.forEach((el) => {
-          if (!el.classList.contains('is-in') && el.getBoundingClientRect().top < lim) { io.unobserve(el); el.classList.add('is-in'); }
+        const lim = window.innerHeight * 0.92;
+        revealEls.forEach((el) => {
+          if (el.classList.contains('is-in')) return;
+          if (el.getBoundingClientRect().top < lim) { io.unobserve(el); el.classList.add('is-in'); }
         });
       }, 160);
     }, { passive: true });
   } else {
-    revealTargets.forEach((el) => el.classList.add('is-in'));
+    revealEls.forEach((el) => el.classList.add('is-in'));
   }
 
-  /* ---------- Альбом на телефоне: счётчик и линия ---------- */
+  /* ---------- Каталог на телефоне: линия прогресса ---------- */
   const album = $('[data-album]');
-  const albumBar = $('[data-album-bar]');
-  const albumCount = $('[data-album-count]');
-  const cards = album ? $$('.card', album) : [];
-  const onAlbumScroll = () => {
-    if (!album || !mqMobile.matches) return;
-    const max = album.scrollWidth - album.clientWidth;
-    const p = max > 0 ? album.scrollLeft / max : 0;
-    if (albumBar) albumBar.style.transform = `scaleX(${Math.max(p, 1 / cards.length).toFixed(4)})`;
-    const ref = album.scrollLeft + (parseFloat(getComputedStyle(album).paddingLeft) || 0);
-    let best = 0, bestD = Infinity;
-    cards.forEach((c, i) => { const d = Math.abs(c.offsetLeft - ref); if (d < bestD) { bestD = d; best = i; } });
-    if (p > 0.98) best = cards.length - 1;
-    if (albumCount) albumCount.textContent = `${String(best + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
-  };
-  if (album) album.addEventListener('scroll', onAlbumScroll, { passive: true });
+  if (album) {
+    album.addEventListener('scroll', () => {
+      const m = album.scrollWidth - album.clientWidth;
+      album.parentElement.style.setProperty('--album-p', m > 0 ? (album.scrollLeft / m).toFixed(4) : 0);
+    }, { passive: true });
+  }
 
   /* ---------- Производство: фильм по главам ----------
      Режимы: «подряд» (шаги сменяются сами, клип в петле) и «стоп». Кнопка «Пауза» останавливает и смену шагов,
-     и само видео. Выбранный вручную шаг проигрывается один раз. Одновременно декодируется только один ролик:
-     уходящий ставится на паузу до того, как следующий получит src, и теряет src через секунду после наплыва.
-     При Save-Data / 2G и при prefers-reduced-motion — только постеры. */
+     и само видео. Выбранный вручную шаг проигрывается один раз. Одновременно декодируется ОДИН ролик:
+     текущий ставится на паузу до загрузки следующего. */
   const reel = $('[data-reel]');
   const reelApi = { pause() {}, resume() {} };
   if (reel) {
@@ -225,47 +217,42 @@
     const desc = $('[data-reel-desc]', reel);
     const live = $('[data-reel-live]', reel);
     const toggle = $('[data-reel-toggle]', reel);
-    const list = $('[data-reel-list]', reel);
     const STEPS = chs.filter((c) => !c.classList.contains('ch--final')).length;
-    const stills = reduced || lite;           // без видео: только постеры
-    let active = 0, front = 0, clips = [], clipPos = 0, inView = false, timer = 0, started = false;
-    let loadToken = 0;
-    let auto = !stills;
+    let active = 0, front = 0, clips = [], clipPos = 0, inView = false, timer = 0, started = false, releaseT = 0;
+    let auto = !reduced;
     const descs = [];
     if (desc) {
       desc.replaceChildren(...chs.map((c, i) => {
         const sp = document.createElement('span');
         sp.innerHTML = c.dataset.text;
-        if (i === 0) sp.className = 'is-on'; else sp.setAttribute('aria-hidden', 'true');
+        if (i === 0) sp.className = 'is-on';
+        else sp.setAttribute('aria-hidden', 'true');
         descs.push(sp);
         return sp;
       }));
     }
-    const dropSrc = (v) => { if (v.hasAttribute('src')) { v.pause(); v.removeAttribute('src'); v.load(); } };
+    const posterOf = (n) => `${CONFIG.poster}${n}.webp`;
     const setAuto = (on) => {
-      auto = on && !stills;
+      auto = on && !reduced;
       reel.classList.toggle('is-auto', auto);
-      if (toggle) toggle.textContent = auto ? 'Пауза' : 'Дальше';
+      if (toggle) toggle.textContent = auto ? 'Пауза' : 'Смотреть';
     };
     const setUI = (idx) => {
       const ch = chs[idx];
       const final = ch.classList.contains('ch--final');
       chs.forEach((c, i) => { c.classList.toggle('is-active', i === idx); c.setAttribute('aria-pressed', String(i === idx)); });
-      if (countEl) countEl.innerHTML = final ? '<b>Готово</b>' : `<span class="reel__count-w">Шаг </span><b>${String(idx + 1).padStart(2, '0')}</b> / ${String(STEPS).padStart(2, '0')}`;
+      const bar = $('.ch__bar', ch);
+      if (bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; }
+      if (countEl) countEl.innerHTML = final ? '<b>Готово</b>' : `Шаг <b>${String(idx + 1).padStart(2, '0')}</b> / ${String(STEPS).padStart(2, '0')}`;
       if (rail) rail.style.transform = `scaleX(${Math.min(1, (idx + 1) / STEPS).toFixed(4)})`;
       descs.forEach((d, i) => { d.classList.toggle('is-on', i === idx); if (i === idx) d.removeAttribute('aria-hidden'); else d.setAttribute('aria-hidden', 'true'); });
       vids.forEach((v) => v.setAttribute('aria-label', `Кадры из ателье RICCA: ${$('.ch__t', ch).textContent}`));
-      // телефон: ряд фишек прокручивается к активной
-      if (list && mqMobile.matches && list.scrollWidth > list.clientWidth) {
-        const li = ch.parentElement;
-        const x = li.offsetLeft - (parseFloat(getComputedStyle(list).paddingLeft) || 0);
-        list.scrollTo({ left: Math.max(0, x), behavior: reduced ? 'auto' : 'smooth' });
-      }
     };
     const schedule = () => {
       clearTimeout(timer);
       if (!auto || !inView) return;
       const d = chs[active].classList.contains('ch--final') ? CONFIG.reelChapterMs + 1800 : CONFIG.reelChapterMs;
+      reel.style.setProperty('--dur', `${d}ms`);
       timer = setTimeout(() => select((active + 1) % chs.length, false), d);
     };
     const select = (idx, byUser) => {
@@ -273,43 +260,45 @@
       const changed = idx !== active || !started || byUser;
       active = idx;
       setUI(idx);
-      if (byUser && live) live.textContent = chs[idx].dataset.text.replace(/&nbsp;/g, ' ');
+      if (byUser && live) live.textContent = chs[idx].dataset.text.replace(/<[^>]+>/g, '').replace(/ /g, ' ');
       if (changed) {
         started = true;
         clips = chs[idx].dataset.clips.split(' ');
         clipPos = 0;
+        clearTimeout(releaseT);   // скрытый ролик сейчас получит новый источник — отложенное освобождение отменяем
         const back = vids[1 - front];
         const cur = vids[front];
-        const token = ++loadToken;          // актуален только последний запрос
         back.loop = auto && clips.length === 1;
         back.poster = posterOf(clips[0]);
         const swap = () => {
-          if (token !== loadToken) return;  // выбор уже сменился — этот ролик не показываем
           back.classList.add('is-on'); cur.classList.remove('is-on');
           back.removeAttribute('aria-hidden'); cur.setAttribute('aria-hidden', 'true');
           front = 1 - front;
-          // через секунду (после наплыва) у скрытого элемента не остаётся источника — ровно один <video> с src
-          setTimeout(() => { if (cur !== vids[front]) dropSrc(cur); }, 1000);
+          // после перекрёстного затухания скрытый ролик отдаёт источник — декодер держит только видимый
+          clearTimeout(releaseT);
+          releaseT = setTimeout(() => {
+            if (!cur.classList.contains('is-on') && cur.hasAttribute('src')) { cur.removeAttribute('src'); cur.load(); }
+          }, reduced ? 0 : 1100);
         };
-        if (stills) { dropSrc(back); dropSrc(cur); swap(); }
+        // один декодер: текущий ролик останавливаем сразу, он остаётся кадром до появления следующего
+        cur.pause();
+        if (reduced) { back.removeAttribute('src'); swap(); }
         else {
-          cur.pause();                       // уходящий клип останавливается до загрузки следующего
-          dropSrc(back);
           back.defaultPlaybackRate = 0.8;
-          back.onloadeddata = () => {        // одно свойство вместо накопления слушателей
-            back.onloadeddata = null;
+          back.src = clipSrc(clips[0]);
+          back.addEventListener('loadeddata', function once() {
+            back.removeEventListener('loadeddata', once);
             back.playbackRate = 0.8;
             swap();
-            if (token === loadToken && inView && (auto || byUser)) safePlay(back);
-          };
-          back.src = clipSrc(clips[0]);
+            if (inView && (auto || byUser)) safePlay(back);
+          });
           back.load();
         }
       }
       schedule();
     };
     setAuto(auto);
-    if (stills && toggle) toggle.hidden = true;
+    if (reduced && toggle) toggle.hidden = true;
     chs.forEach((c, i) => c.addEventListener('click', () => select(i, true)));
     if (toggle) toggle.addEventListener('click', () => {
       if (auto) {
@@ -325,6 +314,7 @@
         schedule();
       }
     });
+    // Два ролика подряд («Обивка»); в ручном режиме — один проход и остановка
     vids.forEach((v) => v.addEventListener('ended', () => {
       if (!v.classList.contains('is-on') || clips.length < 2) return;
       if (!auto && clipPos === clips.length - 1) return;
@@ -335,9 +325,9 @@
       safePlay(v);
     }));
     reelApi.pause = () => { clearTimeout(timer); vids.forEach((v) => v.pause()); };
-    reelApi.resume = () => { if (auto && inView && !stills && vids[front].src) safePlay(vids[front]); schedule(); };
+    reelApi.resume = () => { if (auto && inView && !reduced && vids[front].src) safePlay(vids[front]); schedule(); };
     if (hasIO) {
-      // постер — заранее, за экран до раздела; ролики — только когда раздел в кадре
+      // постер — заранее, за экран до секции; ролики — только когда секция в кадре
       const prime = new IntersectionObserver((es) => {
         if (es.some((e) => e.isIntersecting)) { vids[0].poster = vids[0].dataset.poster; prime.disconnect(); }
       }, { rootMargin: '100% 0px' });
@@ -347,7 +337,7 @@
           inView = e.isIntersecting;
           if (inView) {
             if (!started) select(active, false);
-            else if (auto && !stills && vids[front].src && !$('#lb').open) safePlay(vids[front]);
+            else if (auto && !reduced && vids[front].src && !$('#lb').open) safePlay(vids[front]);
             schedule();
           } else reelApi.pause();
         });
@@ -357,7 +347,7 @@
     }
   }
 
-  /* ---------- Материалы: образцы (radiogroup) → название, описание, счётчик и сообщение в WhatsApp ---------- */
+  /* ---------- Материалы: образцы (radiogroup) → эскиз и сообщение в WhatsApp ---------- */
   const swWrap = $('[data-swatches]');
   let fabricHref = '';
   if (swWrap) {
@@ -365,19 +355,38 @@
     const names = $$('[data-sample-name]');
     const tones = $$('[data-sample-tone]');
     const descEl = $('[data-sample-desc]');
-    const countEl = $('[data-sample-count]');
     const cta = $('[data-fabric-cta]');
+    const stage = $('[data-fitting-stage]');
+    const colA = $('[data-fabric-color]');
+    const texA = $('[data-fabric-tex]');
+    const colB = $('[data-fabric-color-next]');
+    const texB = $('[data-fabric-tex-next]');
+    const sweep = $('.sofa__fill--next');
+    const texUrl = (t) => `img/nera/tex-${t}.webp`;
+    let sweepTimer = 0;
+    const applyA = (b) => { if (colA) colA.setAttribute('fill', b.dataset.c); if (texA) texA.setAttribute('href', texUrl(b.dataset.t)); };
+    const paint = (b) => {
+      if (stage) stage.classList.toggle('fitting--dark', b.hasAttribute('data-dark'));
+      if (reduced || !sweep || !colB) { applyA(b); return; }
+      clearTimeout(sweepTimer);
+      colB.setAttribute('fill', b.dataset.c);
+      texB.setAttribute('href', texUrl(b.dataset.t));
+      sweep.classList.remove('is-sweeping');
+      void sweep.getBoundingClientRect();
+      sweep.classList.add('is-sweeping');
+      sweepTimer = setTimeout(() => { applyA(b); sweep.classList.remove('is-sweeping'); }, 1150);
+    };
     const pick = (i, focus) => {
       btns.forEach((b, j) => { b.setAttribute('aria-checked', String(j === i)); b.tabIndex = j === i ? 0 : -1; });
       const b = btns[i];
       names.forEach((n) => { n.textContent = b.dataset.name; });
-      tones.forEach((n) => { n.textContent = b.dataset.tone; });
+      tones.forEach((t) => { t.textContent = b.dataset.tone; });
       if (descEl) descEl.textContent = b.dataset.desc;
-      if (countEl) countEl.textContent = `${String(i + 1).padStart(2, '0')} / ${String(btns.length).padStart(2, '0')}`;
       fabricHref = waUrl(CONFIG.msg.fabric(`${b.dataset.name.toLowerCase()}, ${b.dataset.tone.toLowerCase()}`));
       if (cta) cta.href = fabricHref;
+      paint(b);
       if (focus) b.focus();
-      requestAnimationFrame(() => onScroll());
+      requestAnimationFrame(() => onScroll());   // плашка на телефоне сразу несёт выбранную фактуру
     };
     btns.forEach((b, i) => b.addEventListener('click', () => pick(i, false)));
     swWrap.addEventListener('keydown', (e) => {
@@ -390,10 +399,17 @@
       else if (e.key === 'End') n = btns.length - 1;
       if (n >= 0) { e.preventDefault(); pick(n, true); }
     });
-    pick(0, false);
+    // стартовое состояние без анимации
+    const first = btns.findIndex((b) => b.getAttribute('aria-checked') === 'true');
+    const b0 = btns[first < 0 ? 0 : first];
+    btns.forEach((b, j) => { b.tabIndex = b === b0 ? 0 : -1; });
+    applyA(b0);
+    if (stage) stage.classList.toggle('fitting--dark', b0.hasAttribute('data-dark'));
+    fabricHref = waUrl(CONFIG.msg.fabric(`${b0.dataset.name.toLowerCase()}, ${b0.dataset.tone.toLowerCase()}`));
+    if (cta) cta.href = fabricHref;
   }
 
-  /* ---------- Лайтбокс: фото не крупнее исходника; фильм целиком; закрытие по фону, Esc и свайпу вниз ---------- */
+  /* ---------- Лайтбокс: фото в молочном паспарту, фильм на чёрном ---------- */
   const lb = $('#lb');
   const lbMedia = lb ? $('[data-lb-media]', lb) : null;
   const lbCap = lb ? $('[data-lb-cap]', lb) : null;
@@ -405,6 +421,8 @@
   };
   const onLbClose = () => {
     lbMedia.replaceChildren();
+    lbMedia.classList.remove('is-dark');
+    lb.classList.remove('lb--film');
     if (lbPlay) lbPlay.hidden = true;
     document.body.style.overflow = '';
     reelApi.resume();
@@ -415,32 +433,24 @@
   };
   if (lb) {
     lb.addEventListener('close', onLbClose);
-    $$('[data-lb-close]', lb).forEach((b) => b.addEventListener('click', closeLb));
-    lb.addEventListener('click', (e) => { if (e.target === lb || e.target.hasAttribute('data-lb-in') || e.target.classList.contains('lb__fig')) closeLb(); });
-    let ty = null;
-    lb.addEventListener('touchstart', (e) => { ty = e.touches.length === 1 ? e.touches[0].clientY : null; }, { passive: true });
-    lb.addEventListener('touchend', (e) => {
-      if (ty === null) return;
-      const dy = e.changedTouches[0].clientY - ty;
-      ty = null;
-      if (dy > 80) closeLb();
-    }, { passive: true });
+    $('[data-lb-close]', lb).addEventListener('click', closeLb);
+    lb.addEventListener('click', (e) => { if (e.target === lb || e.target.classList.contains('lb__in')) closeLb(); });
     document.addEventListener('click', (e) => {
       const t = e.target.closest('[data-lightbox]');
       if (t) {
         e.preventDefault();
         const src = $('img', t);
         const img = new Image();
-        const mob = mqMobile.matches && t.dataset.fullM;
-        img.src = mob ? t.dataset.fullM : t.dataset.full;
+        img.src = t.dataset.full;
         img.alt = src ? src.alt : '';
-        const w = mob ? t.dataset.wM : t.dataset.w, h = mob ? t.dataset.hM : t.dataset.h;
-        if (w) { img.width = +w; img.height = +h; }
-        // не увеличиваем исходник больше его настоящего размера (гостиная — 513px, кадры видео — 478px)
-        if (t.dataset.max) img.style.maxWidth = `min(${+t.dataset.max}px, calc(100vw - 2 * var(--gutter) - 24px))`;
+        if (t.dataset.w) { img.width = +t.dataset.w; img.height = +t.dataset.h; }
+        // не увеличиваем исходник больше его настоящего размера (фото первого экрана — 513px, кадры видео — 478px)
+        if (t.dataset.max) img.style.maxWidth = `min(${+t.dataset.max}px, calc(100vw - 2 * var(--gutter) - 2 * clamp(10px, 1.6vw, 20px)))`;
         lbMedia.replaceChildren(img);
+        lbMedia.classList.toggle('is-dark', t.hasAttribute('data-dark'));
         lbCap.textContent = t.dataset.caption || '';
-        lb.setAttribute('aria-label', 'Просмотр фотографии');
+        lb.classList.remove('lb--film');
+        lb.setAttribute('aria-label', 'Просмотр работы');
         openLb();
         return;
       }
@@ -450,19 +460,21 @@
         v.muted = true; v.loop = true; v.playsInline = true;
         v.setAttribute('playsinline', '');
         v.setAttribute('aria-label', 'Фильм о производстве RICCA DESIGNS: от 3D-проекта до готового дивана');
-        v.poster = `${CONFIG.poster}production-poster${CONFIG.posterSuffix}`;
+        v.poster = `${CONFIG.video}production-poster.webp`;
         v.width = 478; v.height = 850;
         v.preload = 'auto';
         v.innerHTML = `<source src="${CONFIG.video}production.webm" type="video/webm"><source src="${CONFIG.video}production.mp4" type="video/mp4">`;
-        v.tabIndex = -1;
+        v.tabIndex = -1;   // фокус — на кнопке «Пауза / Смотреть», не на самом видео
         const sync = () => { if (lbPlay) lbPlay.textContent = v.paused ? 'Смотреть' : 'Пауза'; };
-        const toggle = () => { if (v.paused) safePlay(v); else v.pause(); };
-        v.addEventListener('click', toggle);
+        const tog = () => { if (v.paused) safePlay(v); else v.pause(); };
+        v.addEventListener('click', tog);
         v.addEventListener('play', sync);
         v.addEventListener('pause', sync);
-        if (lbPlay) { lbPlay.hidden = false; lbPlay.onclick = toggle; }
+        if (lbPlay) { lbPlay.hidden = false; lbPlay.onclick = tog; }
         lbMedia.replaceChildren(v);
-        lbCap.textContent = 'Фильм из ателье · 20 секунд · без звука.';
+        lbMedia.classList.add('is-dark');
+        lbCap.textContent = 'Фильм из ателье · 20 секунд · без звука.';
+        lb.classList.add('lb--film');
         lb.setAttribute('aria-label', 'Фильм из ателье');
         sync();
         openLb();
@@ -471,30 +483,19 @@
     });
   }
 
-  /* ---------- Шапка, линейка прогресса, плашка ---------- */
-  const themed = $$('[data-theme]').filter((el) => el !== root);
-  const fiche = $('#contacts');
-  const chapters = $$('[data-chapter]');
+  /* ---------- Шапка, лента, активный раздел, мобильная плашка ---------- */
   const navLinks = $$('.hdr__nav a');
-  const ruleFill = $('.rule__fill');
-  const ruleNo = $('[data-rule-no]');
+  const chapters = $$('[data-chapter]');
+  const darks = $$('[data-dark]');
+  const tapeLabel = $('[data-tape-label]');
   const mbar = $('[data-mbar]');
+  const heroCta = $('[data-hero-cta]');
+  const card = $('#contacts');
+  const materials = $('#materials');
   const mbarWa = $('[data-mbar-wa]');
   const mbarWaGeneral = mbarWa ? mbarWa.href : '';
-  const materials = $('#materials');
-  const mbarAvoid = $$('[data-mbar-avoid]');     // альбом и его счётчик, слейт, фишки и описание шага, кнопка фильма, образцы, подпись и кнопки примерочной, кнопки бизнеса, фото шоурума
-  const heroCta = $('[data-hero-cta]');
-  const hero = $('.hero');
   let lastY = window.scrollY;
   let ticking = false;
-
-  function themeAt(y) {
-    // Чёрная карточка визита внутри молочного раздела — тоже тема (для цвета линейки слева)
-    if (fiche) { const r = fiche.getBoundingClientRect(); if (r.top <= y && r.bottom > y) return 'noir'; }
-    for (const el of themed) { const r = el.getBoundingClientRect(); if (r.top <= y && r.bottom > y) return el.dataset.theme; }
-    return root.dataset.theme || 'noir';
-  }
-
   function onScroll() {
     if (ticking) return;
     ticking = true;
@@ -502,41 +503,42 @@
       ticking = false;
       const y = window.scrollY;
       const vh = window.innerHeight;
-      const menuOpen = root.classList.contains('menu-open');
-
-      // Шапка: прозрачная над первым экраном, дальше чёрная. Прячется при прокрутке вниз только там,
-      // где в ней навигация (≥1180); на планшете и телефоне всегда видна — меню и WhatsApp под рукой
-      hdr.classList.toggle('is-solid', y > 24 || menuOpen);
-      if (!menuOpen && mqNav.matches) {
-        if (y > lastY + 6 && y > vh * 0.9) hdr.classList.add('is-hidden');
-        else if (y < lastY - 6 || y < vh * 0.5) hdr.classList.remove('is-hidden');
-      } else hdr.classList.remove('is-hidden');
-      lastY = y;
-
-      // Тема под серединой экрана → цвет линейки прогресса
-      const theme = themeAt(vh / 2);
-      if (root.dataset.theme !== theme) root.dataset.theme = theme;
-
-      // Линейка: доля прокрутки и номер главы
       const max = Math.max(1, root.scrollHeight - vh);
-      if (ruleFill) ruleFill.style.setProperty('--p', clamp(y / max, 0, 1).toFixed(4));
-      let cur = chapters[0];
-      for (const c of chapters) { if (c.getBoundingClientRect().top <= vh * 0.42) cur = c; }
-      if (cur) {
-        if (ruleNo && ruleNo.textContent !== cur.dataset.chapter) ruleNo.textContent = cur.dataset.chapter;
-        const id = cur.id === 'contacts' ? 'showroom' : cur.id;
+
+      hdr.classList.toggle('is-solid', y > 24 || menuOpen);
+      const goingDown = y > lastY + 4;
+      const goingUp = y < lastY - 4;
+      if (!menuOpen) {
+        if (goingDown && y > vh * 0.9) hdr.classList.add('is-hidden');
+        else if (goingUp || y < vh * 0.5) hdr.classList.remove('is-hidden');
+      }
+      lastY = y;
+      // шапка над чёрной секцией — молочная
+      const hb = hdr.offsetHeight / 2;
+      hdr.classList.toggle('is-dark', !menuOpen && darks.some((d) => { const r = d.getBoundingClientRect(); return r.top <= hb && r.bottom >= hb; }));
+
+      // Лента: сколько «отмерено»
+      root.style.setProperty('--tape-p', (y / max).toFixed(4));
+
+      // Текущая глава
+      let current = chapters[0];
+      for (const c of chapters) {
+        if (c.getBoundingClientRect().top <= vh * 0.42) current = c;
+      }
+      if (current) {
+        const name = current.dataset.chapter;
+        if (tapeLabel && tapeLabel.textContent !== name) tapeLabel.textContent = name;
+        const id = current.id;
         navLinks.forEach((a) => a.classList.toggle('is-active', a.getAttribute('href') === `#${id}`));
       }
 
-      // Плашка на телефоне: после кнопок первого экрана и до карточки визита (как только карточка показалась — плашка ушла);
-      // никогда не ложится на зоны [data-mbar-avoid] — ссылки, кнопки и ряды, которые должны оставаться нажимаемыми
-      if (mbar && mqMobile.matches) {
+      // Плашка на телефоне: после кнопок первого экрана, до карточки визита, не поверх ленты каталога
+      if (mbar) {
         const zone = vh - 84;
-        const ctaGone = heroCta ? heroCta.getBoundingClientRect().bottom < 0 : hero.getBoundingClientRect().bottom < 0;
-        const cardReached = fiche ? fiche.getBoundingClientRect().top < vh : false;
-        const over = (el) => { const r = el.getBoundingClientRect(); return r.bottom > zone && r.top < vh && r.height > 0; };
-        const blocked = mbarAvoid.some(over);
-        mbar.classList.toggle('is-on', ctaGone && !cardReached && !menuOpen && !blocked);
+        const ctaGone = heroCta ? heroCta.getBoundingClientRect().bottom < 0 : y > vh;
+        const cardReached = card ? card.getBoundingClientRect().top < vh : false;
+        const over = (el) => { if (!el) return false; const r = el.getBoundingClientRect(); return r.bottom > zone && r.top < vh; };
+        mbar.classList.toggle('is-on', ctaGone && !cardReached && !menuOpen && !over(album));
         if (mbarWa && fabricHref && materials) {
           const m = materials.getBoundingClientRect();
           const href = m.top < vh * 0.5 && m.bottom > vh * 0.5 ? fabricHref : mbarWaGeneral;
@@ -546,8 +548,7 @@
     });
   }
   window.addEventListener('scroll', onScroll, { passive: true });
-  let rz = 0;
-  window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { onScroll(); onAlbumScroll(); }, 120); });
+  window.addEventListener('resize', onScroll);
 
   mqReduce.addEventListener('change', (e) => {
     reduced = e.matches;
@@ -555,5 +556,4 @@
   });
 
   onScroll();
-  onAlbumScroll();
 })();
