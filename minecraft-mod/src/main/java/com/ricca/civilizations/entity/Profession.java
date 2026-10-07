@@ -10,7 +10,8 @@ public enum Profession {
     WARRIOR("warrior", "weaponsmith"),
     GUARD("guard", "armorer"),
     MINER("miner", "toolsmith"),
-    ARCHER("archer", "fletcher");
+    ARCHER("archer", "fletcher"),
+    SHEPHERD("shepherd", "shepherd");
 
     private final String key;
     private final ResourceLocation overlayTexture;

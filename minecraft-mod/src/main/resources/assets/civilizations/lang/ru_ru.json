@@ -65,5 +65,15 @@
   "civilizations.staff.ordered.wall": "Заказана стена: нужно дерева %s, камня %s (на складе: дерева %s, камня %s)",
   "civilizations.townhall.tier": "Уровень королевства %s. Склад %s, стена %s, заказов в очереди: %s",
   "civilizations.tier.up": "Королевство %s достигло уровня %s! Жители получают снаряжение лучше.",
-  "civilizations.raid.looted": "%s ограбило %s: дерева %s, камня %s, еды %s, золота %s"
+  "civilizations.raid.looted": "%s ограбило %s: дерева %s, камня %s, еды %s, золота %s",
+  "entity.civilizations.settler.shepherd": "Пастух",
+  "entity.civilizations.settler.shepherd.named": "Пастух королевства %s",
+  "civilizations.staff.ordered.pen": "Заказан загон: нужно дерева %s, камня %s (на складе: дерева %s, камня %s)",
+  "civilizations.help": "%s шлёт на помощь %2$s воинов: %3$s!",
+  "civilizations.split": "Смута в %s! Часть жителей ушла и основала %s.",
+  "civilizations.gift": "%s принимает ваш дар. Отношения: %s",
+  "civilizations.relation.ally": "%s — ваш союзник (отношения %s)",
+  "civilizations.relation.neutral": "%s относится к вам нейтрально (отношения %s)",
+  "civilizations.relation.cold": "%s вам не доверяет (отношения %s). Помогут дары: изумруд, золото или алмаз во второй руке + Shift+клик",
+  "civilizations.relation.war": "%s ВОЮЕТ с вами (отношения %s)! Их воины нападают на вас"
 }

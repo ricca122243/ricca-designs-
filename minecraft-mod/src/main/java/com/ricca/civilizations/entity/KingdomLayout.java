@@ -11,6 +11,7 @@ public final class KingdomLayout {
     public static final int HOUSE_SIZE = 5;
     public static final int FARM_SIZE = 5;
     public static final int QUARRY_SIZE = 5;
+    public static final int PEN_SIZE = 7;
     /** Стена: прямоугольник от угла wallOrigin шириной WALL_WIDTH (x) и глубиной WALL_DEPTH (z). */
     public static final int WALL_WIDTH = 30;
     public static final int WALL_DEPTH = 34;
@@ -23,6 +24,8 @@ public final class KingdomLayout {
     private static final int[] QUARRY_OFFSET = {8, 12};
     private static final int[] WAREHOUSE_OFFSET = {-9, 12};
     private static final int[] WALL_OFFSET = {-14, -14};
+    /** Загон — снаружи стены, к востоку. */
+    private static final int[] PEN_OFFSET = {18, -3};
 
     private KingdomLayout() {}
 
@@ -41,6 +44,10 @@ public final class KingdomLayout {
 
     public static BlockPos warehouseOrigin(BlockPos hall) {
         return hall.offset(WAREHOUSE_OFFSET[0], 0, WAREHOUSE_OFFSET[1]);
+    }
+
+    public static BlockPos penOrigin(BlockPos hall) {
+        return hall.offset(PEN_OFFSET[0], 0, PEN_OFFSET[1]);
     }
 
     public static BlockPos wallOrigin(BlockPos hall) {
@@ -99,7 +106,7 @@ public final class KingdomLayout {
             return true;
         }
         if (inside(farmOrigin(hall), FARM_SIZE, pos) || inside(quarryOrigin(hall), QUARRY_SIZE, pos)
-                || inside(warehouseOrigin(hall), HOUSE_SIZE, pos)) {
+                || inside(warehouseOrigin(hall), HOUSE_SIZE, pos) || inside(penOrigin(hall), PEN_SIZE, pos)) {
             return true;
         }
         BlockPos w = wallOrigin(hall);

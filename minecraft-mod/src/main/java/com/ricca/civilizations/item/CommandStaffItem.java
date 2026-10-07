@@ -69,6 +69,7 @@ public class CommandStaffItem extends Item {
             else if (off.is(Items.WOODEN_AXE) || off.is(Items.STONE_AXE) || off.is(Items.IRON_AXE)) next = Profession.LUMBERJACK;
             else if (off.is(Items.WOODEN_HOE) || off.is(Items.STONE_HOE) || off.is(Items.IRON_HOE)) next = Profession.FARMER;
             else if (off.is(Items.OAK_PLANKS)) next = Profession.BUILDER;
+            else if (off.is(Items.SHEARS) || off.is(Items.WHEAT)) next = Profession.SHEPHERD;
             settler.setProfession(next);
             settler.setProject(null, -1);
             say(player, Component.translatable("civilizations.staff.profession_changed", settler.getDisplayName()));
@@ -122,7 +123,8 @@ public class CommandStaffItem extends Item {
                     ItemStack off = player.getOffhandItem();
                     Blueprint.Type orderType = off.is(Items.COBBLESTONE) ? Blueprint.Type.WALL
                             : off.is(Items.OAK_PLANKS) ? Blueprint.Type.HOUSE
-                            : off.is(Items.CHEST) ? Blueprint.Type.WAREHOUSE : null;
+                            : off.is(Items.CHEST) ? Blueprint.Type.WAREHOUSE
+                            : off.is(Items.OAK_FENCE) ? Blueprint.Type.PEN : null;
                     if (orderType != null) {
                         Blueprint bp = hall.order(orderType);
                         say(player, Component.translatable("civilizations.staff.ordered." + orderType.name().toLowerCase(),
@@ -135,6 +137,17 @@ public class CommandStaffItem extends Item {
                         say(player, Component.translatable("civilizations.staff.no_gold", HIRE_COST, hall.getGold()).withStyle(ChatFormatting.RED));
                     }
                 } else if (level instanceof ServerLevel serverLevel) {
+                    // Подарок чужому королевству: изумруд или золото во второй руке.
+                    ItemStack off = player.getOffhandItem();
+                    int value = off.is(Items.EMERALD) ? 10 : off.is(Items.GOLD_INGOT) ? 5 : off.is(Items.DIAMOND) ? 20 : 0;
+                    if (value > 0) {
+                        if (!player.getAbilities().instabuild) off.shrink(1);
+                        int rel = hall.receiveGift(serverLevel, mine, value);
+                        String status = rel >= KingdomSavedData.ALLY_THRESHOLD ? "ally" : rel <= KingdomSavedData.WAR_THRESHOLD ? "war" : rel < 0 ? "cold" : "neutral";
+                        say(player, Component.translatable("civilizations.gift", hall.getKingdom(), rel));
+                        say(player, Component.translatable("civilizations.relation." + status, hall.getKingdom(), rel).withStyle(ChatFormatting.LIGHT_PURPLE));
+                        return InteractionResult.CONSUME;
+                    }
                     // Чужая ратуша: захват, если защитников не осталось.
                     int defenders = hall.countDefenders(serverLevel);
                     if (defenders > 0) {

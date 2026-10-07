@@ -18,6 +18,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
+import com.ricca.civilizations.entity.SettlerEntity;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,10 +44,29 @@ public class NpcKingdomSpawner {
         int x;
         int z;
         int attempts;
+        /** Жители, которые переселяются в новое королевство (раскол). */
+        final List<java.util.UUID> movers = new ArrayList<>();
+        @Nullable String parent;
         Pending(String name, int x, int z) { this.name = name; this.x = x; this.z = z; }
     }
 
-    private final List<Pending> pending = new ArrayList<>();
+    private static final List<Pending> pending = new ArrayList<>();
+    private static boolean initialDone = false;
+
+    /** Раскол: часть жителей уходит и основывает новое королевство неподалёку. */
+    public static void scheduleSplit(ServerLevel level, BlockPos from, String parent, String name, List<SettlerEntity> movers) {
+        double angle = level.random.nextDouble() * Math.PI * 2;
+        double dist = 90 + level.random.nextDouble() * 60;
+        Pending p = new Pending(name, from.getX() + (int) (Math.cos(angle) * dist), from.getZ() + (int) (Math.sin(angle) * dist));
+        p.parent = parent;
+        for (SettlerEntity s : movers) {
+            p.movers.add(s.getUUID());
+            s.setKingdom(name);
+            s.setTownHall(null);
+        }
+        pending.add(p);
+        forceChunks(level, p.x, p.z, true);
+    }
     private int tickCounter = 0;
 
     @SubscribeEvent
@@ -58,9 +79,10 @@ public class NpcKingdomSpawner {
             return;
         }
         KingdomSavedData data = KingdomSavedData.get(level);
-        if (data.isNpcSpawned() || !pending.isEmpty()) {
+        if (data.isNpcSpawned() || initialDone) {
             return;
         }
+        initialDone = true;
         BlockPos origin = player.blockPosition();
         double baseAngle = level.random.nextDouble() * Math.PI * 2;
         for (int i = 0; i < NAMES.length; i++) {
@@ -96,10 +118,10 @@ public class NpcKingdomSpawner {
                 forceChunks(level, p.x, p.z, true);
                 continue;
             }
-            foundKingdom(level, pos, p.name);
+            foundKingdom(level, pos, p.name, p.movers, p.parent);
             it.remove();
         }
-        if (pending.isEmpty()) {
+        if (pending.isEmpty() && !KingdomSavedData.get(level).isNpcSpawned()) {
             KingdomSavedData.get(level).setNpcSpawned(true);
             level.getServer().getPlayerList().broadcastSystemMessage(
                     Component.translatable("civilizations.npc.spawned", NAMES[0], NAMES[1], NAMES[2]).withStyle(ChatFormatting.GOLD), false);
@@ -139,16 +161,37 @@ public class NpcKingdomSpawner {
         }
     }
 
-    private static void foundKingdom(ServerLevel level, BlockPos pos, String name) {
+    private static void foundKingdom(ServerLevel level, BlockPos pos, String name, List<java.util.UUID> movers, @Nullable String parent) {
         level.setBlock(pos, Civilizations.TOWN_HALL.get().defaultBlockState(), 3);
         TownHallBlockEntity hall = TownHallBlockEntity.at(level, pos);
         if (hall == null) {
             return;
         }
         hall.setupNpc(name);
-        for (Profession profession : STARTING) {
-            hall.spawnStartingSettler(profession);
+        KingdomSavedData data = KingdomSavedData.get(level);
+        if (movers.isEmpty()) {
+            for (Profession profession : STARTING) {
+                hall.spawnStartingSettler(profession);
+            }
+        } else {
+            // Раскол: переселенцы телепортируются к новой ратуше.
+            int i = 0;
+            for (java.util.UUID id : movers) {
+                if (level.getEntity(id) instanceof SettlerEntity s && s.isAlive()) {
+                    double angle = i++ * 1.3;
+                    s.teleportTo(pos.getX() + 0.5 + Math.cos(angle) * 2, pos.getY(), pos.getZ() + 0.5 + Math.sin(angle) * 2);
+                    s.setTownHall(pos);
+                    s.setKingdom(name);
+                    s.setOrderPos(null);
+                    s.setProject(null, -1);
+                }
+            }
+            if (parent != null) {
+                data.adjustRelation(name, parent, -60 - KingdomSavedData.DEFAULT_RELATION);
+                level.getServer().getPlayerList().broadcastSystemMessage(
+                        Component.translatable("civilizations.split", parent, name).withStyle(ChatFormatting.LIGHT_PURPLE), false);
+            }
         }
-        KingdomSavedData.get(level).add(pos);
+        data.add(pos);
     }
 }

@@ -116,6 +116,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         this.goalSelector.addGoal(3, new ChopTreesGoal(this));
         this.goalSelector.addGoal(3, new FarmGoal(this));
         this.goalSelector.addGoal(3, new MineGoal(this));
+        this.goalSelector.addGoal(3, new ShepherdGoal(this));
         this.goalSelector.addGoal(4, new MoveTowardsRestrictionGoal(this, 0.5));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.4));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0f));
@@ -130,6 +131,9 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         });
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, 10, true, false,
                 target -> isWarrior()));
+        // Воины бьют игроков, с чьим королевством идёт война.
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 20, true, false,
+                target -> isWarrior() && target instanceof Player p && isHostileTo(p)));
         // Воины бьют жителей чужих королевств, которые подошли близко.
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, SettlerEntity.class, 10, true, false,
                 target -> isWarrior() && target instanceof SettlerEntity other && isEnemy(other)));
@@ -204,10 +208,45 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         level().addFreshEntity(arrow);
     }
 
+    /** Враг — житель королевства, с которым у нас плохие отношения (союзников не трогаем). */
     public boolean isEnemy(SettlerEntity other) {
         String mine = getKingdom();
         String theirs = other.getKingdom();
-        return !mine.isEmpty() && !theirs.isEmpty() && !mine.equals(theirs);
+        if (mine.isEmpty() || theirs.isEmpty() || mine.equals(theirs)) {
+            return false;
+        }
+        if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            return com.ricca.civilizations.kingdom.KingdomSavedData.get(serverLevel).relation(mine, theirs) < 0;
+        }
+        return false;
+    }
+
+    public boolean isHostileTo(Player player) {
+        String mine = getKingdom();
+        if (mine.isEmpty() || player.isCreative() || player.isSpectator()) {
+            return false;
+        }
+        if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            return com.ricca.civilizations.kingdom.KingdomSavedData.get(serverLevel).atWar(mine, player.getName().getString());
+        }
+        return false;
+    }
+
+    @Override
+    public void die(DamageSource source) {
+        super.die(source);
+        // Убийство жителя портит отношения с его королевством.
+        if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel && !getKingdom().isEmpty()) {
+            String killer = null;
+            if (source.getEntity() instanceof Player p) {
+                killer = p.getName().getString();
+            } else if (source.getEntity() instanceof SettlerEntity s) {
+                killer = s.getKingdom();
+            }
+            if (killer != null && !killer.isEmpty()) {
+                com.ricca.civilizations.kingdom.KingdomSavedData.get(serverLevel).adjustRelation(getKingdom(), killer, -10);
+            }
+        }
     }
 
     @Nullable
@@ -285,6 +324,11 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
                 setItemSlot(EquipmentSlot.CHEST, tier <= 1 ? dyed(Items.LEATHER_CHESTPLATE, 0x2A3A6A) : new ItemStack(Items.CHAINMAIL_CHESTPLATE));
                 setItemSlot(EquipmentSlot.HEAD, tier <= 1 ? dyed(Items.LEATHER_HELMET, 0x2A3A6A) : new ItemStack(Items.CHAINMAIL_HELMET));
                 setItemSlot(EquipmentSlot.LEGS, tier <= 1 ? dyed(Items.LEATHER_LEGGINGS, 0x2A3A6A) : new ItemStack(Items.CHAINMAIL_LEGGINGS));
+            }
+            case SHEPHERD -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.SHEARS));
+                setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0xEDEDED));
+                setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0xEDEDED));
             }
             case ARCHER -> {
                 setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));

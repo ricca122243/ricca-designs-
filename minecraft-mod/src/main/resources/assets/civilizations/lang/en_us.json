@@ -65,5 +65,15 @@
   "civilizations.staff.ordered.wall": "Wall ordered: needs %s wood, %s stone (storage: %s wood, %s stone)",
   "civilizations.townhall.tier": "Kingdom level %s. Warehouse %s, wall %s, orders queued: %s",
   "civilizations.tier.up": "%s reached level %s! Its people get better gear.",
-  "civilizations.raid.looted": "%s looted %s: %s wood, %s stone, %s food, %s gold"
+  "civilizations.raid.looted": "%s looted %s: %s wood, %s stone, %s food, %s gold",
+  "entity.civilizations.settler.shepherd": "Shepherd",
+  "entity.civilizations.settler.shepherd.named": "Shepherd of %s",
+  "civilizations.staff.ordered.pen": "Animal pen ordered: needs %s wood, %s stone (storage: %s wood, %s stone)",
+  "civilizations.help": "%s sends %3$s warriors to help %2$s!",
+  "civilizations.split": "Unrest in %s! Settlers broke away and founded %s.",
+  "civilizations.gift": "%s accepts your gift. Relation: %s",
+  "civilizations.relation.ally": "%s is your ally (relation %s)",
+  "civilizations.relation.neutral": "%s is neutral to you (relation %s)",
+  "civilizations.relation.cold": "%s distrusts you (relation %s). Gifts help: emerald, gold, diamond in offhand + Shift+click",
+  "civilizations.relation.war": "%s is at WAR with you (relation %s)! Their warriors attack you on sight"
 }

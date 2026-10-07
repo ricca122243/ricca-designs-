@@ -3,6 +3,7 @@ package com.ricca.civilizations.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,7 +23,7 @@ public final class Blueprint {
         }
     }
 
-    public enum Type { HOUSE, WAREHOUSE, WALL }
+    public enum Type { HOUSE, WAREHOUSE, WALL, PEN }
 
     public final Type type;
     public final List<Step> steps;
@@ -41,12 +42,14 @@ public final class Blueprint {
     public static final Blueprint HOUSE = house();
     public static final Blueprint WAREHOUSE = warehouse();
     public static final Blueprint WALL = wall();
+    public static final Blueprint PEN = pen();
 
     public static Blueprint of(Type type) {
         return switch (type) {
             case HOUSE -> HOUSE;
             case WAREHOUSE -> WAREHOUSE;
             case WALL -> WALL;
+            case PEN -> PEN;
         };
     }
 
@@ -56,11 +59,12 @@ public final class Blueprint {
             case HOUSE -> KingdomLayout.houseOrigin(hall, houseIndex);
             case WAREHOUSE -> KingdomLayout.warehouseOrigin(hall);
             case WALL -> KingdomLayout.wallOrigin(hall);
+            case PEN -> KingdomLayout.penOrigin(hall);
         };
     }
 
     public static int woodCost(BlockState s) {
-        if (s.is(Blocks.OAK_PLANKS) || s.is(Blocks.OAK_LOG) || s.is(Blocks.OAK_FENCE)) return 1;
+        if (s.is(Blocks.OAK_PLANKS) || s.is(Blocks.OAK_LOG) || s.is(Blocks.OAK_FENCE) || s.is(Blocks.OAK_FENCE_GATE)) return 1;
         if (s.is(Blocks.CHEST)) return 2;
         if (s.getBlock() instanceof BedBlock) return 2;
         return 0;
@@ -150,6 +154,26 @@ public final class Blueprint {
         for (int x = 0; x < size; x++)
             for (int z = 0; z < size; z++)
                 plan.add(new Step(x, 4, z, Blocks.OAK_PLANKS.defaultBlockState(), false, false));
+    }
+
+    /** Загон 7x7: забор по кругу, калитка на западе, внутри ровная трава. */
+    private static Blueprint pen() {
+        List<Step> plan = new ArrayList<>();
+        int size = KingdomLayout.PEN_SIZE;
+        foundation(plan, size);
+        clear(plan, size, 3);
+        for (int x = 0; x < size; x++) {
+            for (int z = 0; z < size; z++) {
+                boolean edge = x == 0 || z == 0 || x == size - 1 || z == size - 1;
+                if (!edge) continue;
+                if (x == 0 && z == size / 2) {
+                    plan.add(new Step(x, 0, z, Blocks.OAK_FENCE_GATE.defaultBlockState().setValue(FenceGateBlock.FACING, Direction.EAST), false, false));
+                } else {
+                    plan.add(new Step(x, 0, z, Blocks.OAK_FENCE.defaultBlockState(), false, false));
+                }
+            }
+        }
+        return new Blueprint(Type.PEN, plan, 0, 0, size - 1, size - 1);
     }
 
     /**

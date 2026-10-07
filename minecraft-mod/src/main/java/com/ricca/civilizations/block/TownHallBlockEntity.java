@@ -7,6 +7,7 @@ import com.ricca.civilizations.entity.KingdomLayout;
 import com.ricca.civilizations.entity.Profession;
 import com.ricca.civilizations.entity.SettlerEntity;
 import com.ricca.civilizations.kingdom.KingdomSavedData;
+import com.ricca.civilizations.kingdom.NpcKingdomSpawner;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -43,6 +44,11 @@ public class TownHallBlockEntity extends BlockEntity {
     private int nextHouse = 0;
     private boolean warehouseBuilt = false;
     private boolean wallBuilt = false;
+    private boolean penBuilt = false;
+    private int helpTicks = 0;
+    @Nullable
+    private BlockPos helpTarget;
+    private int splitTimer = 0;
     /** Заказы игрока: что строить в первую очередь. */
     private final List<Blueprint.Type> orders = new java.util.ArrayList<>();
     private int tier = 1;
@@ -102,6 +108,7 @@ public class TownHallBlockEntity extends BlockEntity {
     public int getHousesBuilt() { return housesBuilt; }
     public boolean isWarehouseBuilt() { return warehouseBuilt; }
     public boolean isWallBuilt() { return wallBuilt; }
+    public boolean isPenBuilt() { return penBuilt; }
     public int getTier() { return tier; }
 
     /** Проект для строителя. */
@@ -124,6 +131,9 @@ public class TownHallBlockEntity extends BlockEntity {
         if (!warehouseBuilt) {
             return new Project(Blueprint.Type.WAREHOUSE, -1);
         }
+        if (!penBuilt) {
+            return new Project(Blueprint.Type.PEN, -1);
+        }
         if (!wallBuilt) {
             return new Project(Blueprint.Type.WALL, -1);
         }
@@ -140,6 +150,7 @@ public class TownHallBlockEntity extends BlockEntity {
         switch (type) {
             case HOUSE -> housesBuilt++;
             case WAREHOUSE -> warehouseBuilt = true;
+            case PEN -> penBuilt = true;
             case WALL -> {
                 wallBuilt = true;
                 if (level instanceof ServerLevel serverLevel) {
@@ -286,6 +297,11 @@ public class TownHallBlockEntity extends BlockEntity {
 
     /** Показать игроку сводку по королевству. */
     public void sendStats(Player player) {
+        if (level instanceof ServerLevel sl && !kingdom.equals(player.getName().getString())) {
+            int rel = KingdomSavedData.get(sl).relation(kingdom, player.getName().getString());
+            String status = rel >= KingdomSavedData.ALLY_THRESHOLD ? "ally" : rel <= KingdomSavedData.WAR_THRESHOLD ? "war" : rel < 0 ? "cold" : "neutral";
+            player.displayClientMessage(Component.translatable("civilizations.relation." + status, kingdom, rel).withStyle(ChatFormatting.LIGHT_PURPLE), false);
+        }
         int population = 0;
         int warriors = 0;
         if (level instanceof ServerLevel serverLevel) {
@@ -316,6 +332,19 @@ public class TownHallBlockEntity extends BlockEntity {
         }
         if (th.npc) {
             th.npcTick(serverLevel);
+        }
+        if (th.helpTicks > 0 && --th.helpTicks == 0) {
+            for (SettlerEntity s : th.settlers(serverLevel)) {
+                if (th.helpTarget != null && th.helpTarget.equals(s.getOrderPos())) {
+                    s.setOrderPos(null);
+                }
+            }
+            th.helpTarget = null;
+        }
+        if (++th.splitTimer >= 1200) {
+            th.splitTimer = 0;
+            th.maybeSplit(serverLevel);
+            th.driftRelations(serverLevel);
         }
         if (++th.tierTimer >= 600) {
             th.tierTimer = 0;
@@ -372,8 +401,11 @@ public class TownHallBlockEntity extends BlockEntity {
                     case LUMBERJACK -> lumberjacks++;
                     case FARMER -> farmers++;
                     case ARCHER -> archers++;
+                    default -> { }
                 }
             }
+            int shepherds = 0;
+            for (SettlerEntity s : settlers) if (s.getProfession() == Profession.SHEPHERD) shepherds++;
             if (gold >= 50) {
                 Profession want = guards < 2 ? Profession.GUARD
                         : warriors < 2 ? Profession.WARRIOR
@@ -381,6 +413,7 @@ public class TownHallBlockEntity extends BlockEntity {
                         : lumberjacks < 1 ? Profession.LUMBERJACK
                         : farmers < 1 ? Profession.FARMER
                         : miners < 1 ? Profession.MINER
+                        : shepherds < 1 && penBuilt ? Profession.SHEPHERD
                         : archers < 1 && wallBuilt ? Profession.ARCHER
                         : settlers.size() < 6 + housesBuilt * 3 ? Profession.byId(level.random.nextInt(Profession.values().length)) : null;
                 if (want != null) {
@@ -409,8 +442,11 @@ public class TownHallBlockEntity extends BlockEntity {
         BlockPos me = getBlockPos();
         BlockPos target = null;
         double best = (double) RAID_RANGE * RAID_RANGE;
-        for (BlockPos other : KingdomSavedData.get(serverLevel).halls(serverLevel)) {
+        KingdomSavedData data = KingdomSavedData.get(serverLevel);
+        for (BlockPos other : data.halls(serverLevel)) {
             if (other.equals(me)) continue;
+            TownHallBlockEntity otherHall = TownHallBlockEntity.at(level, other);
+            if (otherHall == null || data.relation(kingdom, otherHall.kingdom) >= 0) continue; // друзей не грабим
             double d = other.distSqr(me);
             if (d < best) {
                 best = d;
@@ -436,9 +472,36 @@ public class TownHallBlockEntity extends BlockEntity {
         raidActiveTicks = RAID_DURATION_TICKS;
         TownHallBlockEntity victim = TownHallBlockEntity.at(level, target);
         String victimName = victim != null ? victim.getKingdom() : "?";
+        data.adjustRelation(kingdom, victimName, -20);
         serverLevel.getServer().getPlayerList().broadcastSystemMessage(
                 Component.translatable("civilizations.raid.started", kingdom, victimName, sent).withStyle(ChatFormatting.RED), false);
         setChanged();
+
+        // Союзники жертвы присылают подмогу.
+        for (BlockPos other : data.halls(serverLevel)) {
+            if (other.equals(me) || other.equals(target)) continue;
+            TownHallBlockEntity ally = TownHallBlockEntity.at(level, other);
+            if (ally == null || !data.allied(ally.kingdom, victimName) || other.distSqr(target) > (double) RAID_RANGE * RAID_RANGE) continue;
+            ally.sendHelp(serverLevel, target, victimName);
+        }
+    }
+
+    /** Отправить двух воинов на защиту союзника. */
+    public void sendHelp(ServerLevel serverLevel, BlockPos target, String allyName) {
+        int sent = 0;
+        for (SettlerEntity s : settlers(serverLevel)) {
+            if (sent >= 2) break;
+            if ((s.getProfession() == Profession.WARRIOR || s.getProfession() == Profession.ARCHER) && s.getOrderPos() == null) {
+                s.setOrderPos(target);
+                sent++;
+            }
+        }
+        if (sent > 0) {
+            helpTarget = target;
+            helpTicks = RAID_DURATION_TICKS;
+            serverLevel.getServer().getPlayerList().broadcastSystemMessage(
+                    Component.translatable("civilizations.help", kingdom, allyName, sent).withStyle(ChatFormatting.GREEN), false);
+        }
     }
 
     private void endRaid(ServerLevel serverLevel) {
@@ -498,7 +561,7 @@ public class TownHallBlockEntity extends BlockEntity {
         int count = settlers(serverLevel).size();
         int cap = 6 + housesBuilt * 3;
         int arriving = 3 + level.random.nextInt(3);
-        Profession[] workers = {Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER, Profession.MINER};
+        Profession[] workers = {Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER, Profession.MINER, Profession.SHEPHERD};
         int spawned = 0;
         for (int i = 0; i < arriving && count + i < cap; i++) {
             spawnSettler(workers[level.random.nextInt(workers.length)]);
@@ -530,6 +593,46 @@ public class TownHallBlockEntity extends BlockEntity {
         }
         serverLevel.getServer().getPlayerList().broadcastSystemMessage(
                 Component.translatable("civilizations.bandits", count, kingdom).withStyle(ChatFormatting.DARK_RED), false);
+    }
+
+    /** Голод при большом населении: часть жителей уходит и основывает своё королевство. */
+    private void maybeSplit(ServerLevel serverLevel) {
+        List<SettlerEntity> settlers = settlers(serverLevel);
+        if (settlers.size() < 12 || food >= 5 || level.random.nextFloat() > 0.3f) {
+            return;
+        }
+        List<SettlerEntity> movers = new java.util.ArrayList<>();
+        for (SettlerEntity s : settlers) {
+            if (movers.size() >= 4) break;
+            if (s.getControllingPassenger() == null && s.getFollowPlayer() == null) {
+                movers.add(s);
+            }
+        }
+        if (movers.size() < 4) {
+            return;
+        }
+        String name = "New " + kingdom;
+        NpcKingdomSpawner.scheduleSplit(serverLevel, getBlockPos(), kingdom, name, movers);
+    }
+
+    /** Отношения медленно меняются сами: соседи то сближаются, то ссорятся. */
+    private void driftRelations(ServerLevel serverLevel) {
+        KingdomSavedData data = KingdomSavedData.get(serverLevel);
+        for (BlockPos other : data.halls(serverLevel)) {
+            if (other.equals(getBlockPos())) continue;
+            TownHallBlockEntity hall = TownHallBlockEntity.at(level, other);
+            if (hall == null || hall.kingdom.isEmpty()) continue;
+            if (level.random.nextInt(4) == 0) {
+                data.adjustRelation(kingdom, hall.kingdom, level.random.nextInt(11) - 4); // чуть чаще к миру
+            }
+        }
+    }
+
+    /** Подарок от игрока: улучшает отношения. */
+    public int receiveGift(ServerLevel serverLevel, String from, int value) {
+        gold += value;
+        setChanged();
+        return KingdomSavedData.get(serverLevel).adjustRelation(kingdom, from, value * 3);
     }
 
     /** Подстраховка: рабочие приносят немного ресурсов «между делом», чтобы стройка не вставала навсегда. */
@@ -577,6 +680,7 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putInt("Iron", iron);
         tag.putBoolean("WarehouseBuilt", warehouseBuilt);
         tag.putBoolean("WallBuilt", wallBuilt);
+        tag.putBoolean("PenBuilt", penBuilt);
         tag.putInt("Tier", tier);
         net.minecraft.nbt.ListTag orderList = new net.minecraft.nbt.ListTag();
         for (Blueprint.Type t : orders) orderList.add(net.minecraft.nbt.StringTag.valueOf(t.name()));
@@ -598,6 +702,7 @@ public class TownHallBlockEntity extends BlockEntity {
         iron = tag.getInt("Iron");
         warehouseBuilt = tag.getBoolean("WarehouseBuilt");
         wallBuilt = tag.getBoolean("WallBuilt");
+        penBuilt = tag.getBoolean("PenBuilt");
         tier = tag.contains("Tier") ? tag.getInt("Tier") : 1;
         orders.clear();
         for (net.minecraft.nbt.Tag t : tag.getList("Orders", net.minecraft.nbt.Tag.TAG_STRING)) {
