@@ -115,7 +115,7 @@ public class ChopTreesGoal extends Goal {
 
         if (settler.distanceToSqr(base) > REACH_SQR) {
             if (settler.getNavigation().isDone() || settler.tickCount % 20 == 0) {
-                settler.getNavigation().moveTo(base.x, base.y, base.z, 0.5);
+                settler.getNavigation().moveTo(base.x, base.y, base.z, 0.7);
             }
             if (++stuckTicks > STUCK_LIMIT_TICKS) {
                 tree = null; // не дойти — ищем другое дерево
@@ -152,7 +152,7 @@ public class ChopTreesGoal extends Goal {
         settler.getLookControl().setLookAt(c.x, c.y, c.z);
         if (settler.distanceToSqr(c) > REACH_SQR) {
             if (settler.getNavigation().isDone() || settler.tickCount % 20 == 0) {
-                settler.getNavigation().moveTo(c.x, c.y, c.z, 0.5);
+                settler.getNavigation().moveTo(c.x, c.y, c.z, 0.7);
             }
             if (++stuckTicks > STUCK_LIMIT_TICKS) {
                 sapling = null;

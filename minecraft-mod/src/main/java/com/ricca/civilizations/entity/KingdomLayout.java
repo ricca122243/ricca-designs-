@@ -94,12 +94,11 @@ public final class KingdomLayout {
         int hi = origin.getX() + maxX + 1;
         int loZ = origin.getZ() + minZ - 1;
         int hiZ = origin.getZ() + maxZ + 1;
-        int y = origin.getY();
         BlockPos[] candidates = {
-                new BlockPos(lo, y, target.getZ()),
-                new BlockPos(hi, y, target.getZ()),
-                new BlockPos(target.getX(), y, loZ),
-                new BlockPos(target.getX(), y, hiZ)
+                surface(mob, lo, target.getZ()),
+                surface(mob, hi, target.getZ()),
+                surface(mob, target.getX(), loZ),
+                surface(mob, target.getX(), hiZ)
         };
         BlockPos best = candidates[0];
         double bestDist = Double.MAX_VALUE;
@@ -156,12 +155,11 @@ public final class KingdomLayout {
         int maxX = origin.getX() + size;
         int minZ = origin.getZ() - 1;
         int maxZ = origin.getZ() + size;
-        int y = origin.getY();
         BlockPos[] candidates = {
-                new BlockPos(minX, y, target.getZ()),
-                new BlockPos(maxX, y, target.getZ()),
-                new BlockPos(target.getX(), y, minZ),
-                new BlockPos(target.getX(), y, maxZ)
+                surface(mob, minX, target.getZ()),
+                surface(mob, maxX, target.getZ()),
+                surface(mob, target.getX(), minZ),
+                surface(mob, target.getX(), maxZ)
         };
         BlockPos best = candidates[0];
         double bestDist = Double.MAX_VALUE;
@@ -173,5 +171,11 @@ public final class KingdomLayout {
             }
         }
         return best;
+    }
+
+    /** Точка на поверхности земли в столбце (x, z): туда реально можно дойти. */
+    public static BlockPos surface(PathfinderMob mob, int x, int z) {
+        int y = mob.level().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+        return new BlockPos(x, y, z);
     }
 }

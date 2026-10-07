@@ -80,7 +80,7 @@ public class ShepherdGoal extends Goal {
         if (settler.distanceToSqr(c) > REACH_SQR || KingdomLayout.inside(origin, SIZE, settler.blockPosition())) {
             Vec3 stand = KingdomLayout.standingSpot(settler, origin, SIZE, center).getCenter();
             if (settler.getNavigation().isDone() || settler.tickCount % 20 == 0) {
-                settler.getNavigation().moveTo(stand.x, stand.y, stand.z, 0.5);
+                settler.getNavigation().moveTo(stand.x, stand.y, stand.z, 0.7);
             }
             return;
         }

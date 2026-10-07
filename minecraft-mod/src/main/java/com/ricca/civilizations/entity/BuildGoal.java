@@ -25,7 +25,8 @@ public class BuildGoal extends Goal {
     private static final int PLACE_DELAY_TICKS = 10;
     private static final int NO_RESOURCES_DELAY_TICKS = 60;
     private static final double REACH_SQR = 5.5 * 5.5;
-    private static final int STUCK_LIMIT_TICKS = 160;
+    private static final int STUCK_LIMIT_TICKS = 60;
+    private static final double MAGIC_REACH_SQR = 9.0 * 9.0;
 
     private final SettlerEntity settler;
     @Nullable
@@ -127,17 +128,27 @@ public class BuildGoal extends Goal {
         boolean insideSite = !blueprint.walkInside()
                 && KingdomLayout.insideBox(origin, blueprint.minX, blueprint.minZ, blueprint.maxX, blueprint.maxZ, settler.blockPosition());
         if (tooFar || inTheWay || insideSite) {
-            Vec3 stand = blueprint.walkInside()
-                    ? new Vec3(center.x + (inTheWay ? 1.5 : 0), origin.getY(), center.z)
-                    : KingdomLayout.standingSpotBox(settler, origin, blueprint.minX, blueprint.minZ, blueprint.maxX, blueprint.maxZ, target).getCenter();
-            if (settler.getNavigation().isDone() || settler.tickCount % 20 == 0) {
-                settler.getNavigation().moveTo(stand.x, stand.y, stand.z, 0.5);
+            Vec3 stand;
+            if (blueprint.walkInside()) {
+                BlockPos surf = KingdomLayout.surface(settler, target.getX() + (inTheWay ? 1 : 0), target.getZ());
+                stand = new Vec3(surf.getX() + 0.5, surf.getY(), surf.getZ() + 0.5);
+            } else {
+                stand = KingdomLayout.standingSpotBox(settler, origin, blueprint.minX, blueprint.minZ, blueprint.maxX, blueprint.maxZ, target).getCenter();
             }
-            if (++stuckTicks > STUCK_LIMIT_TICKS) {
+            // Путь не находится, а блок недалеко — работаем с места (строитель тянется, как игрок).
+            boolean pathless = settler.getNavigation().createPath(stand.x, stand.y, stand.z, 0) == null;
+            if (pathless && !inTheWay && settler.distanceToSqr(center) < MAGIC_REACH_SQR) {
                 stuckTicks = 0;
-                index++;
+            } else {
+                if (settler.getNavigation().isDone() || settler.tickCount % 20 == 0) {
+                    settler.getNavigation().moveTo(stand.x, stand.y, stand.z, 0.7);
+                }
+                if (++stuckTicks > STUCK_LIMIT_TICKS) {
+                    stuckTicks = 0;
+                    index++;
+                }
+                return;
             }
-            return;
         }
 
         stuckTicks = 0;

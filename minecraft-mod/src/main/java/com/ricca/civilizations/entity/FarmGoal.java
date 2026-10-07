@@ -85,7 +85,7 @@ public class FarmGoal extends Goal {
         if (settler.distanceToSqr(center) > REACH_SQR || KingdomLayout.inside(origin, SIZE, settler.blockPosition())) {
             Vec3 stand = KingdomLayout.standingSpot(settler, origin, SIZE, crop).getCenter();
             if (settler.getNavigation().isDone() || settler.tickCount % 20 == 0) {
-                settler.getNavigation().moveTo(stand.x, stand.y, stand.z, 0.5);
+                settler.getNavigation().moveTo(stand.x, stand.y, stand.z, 0.7);
             }
             if (++stuckTicks > STUCK_LIMIT_TICKS) {
                 stuckTicks = 0;

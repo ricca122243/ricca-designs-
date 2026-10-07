@@ -102,7 +102,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.32)
+                .add(Attributes.MOVEMENT_SPEED, 0.35)
                 .add(Attributes.FOLLOW_RANGE, 32.0)
                 .add(Attributes.ATTACK_DAMAGE, 2.0)
                 .add(Attributes.STEP_HEIGHT, 1.0);
@@ -608,7 +608,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         }
         AttributeInstance speed = getAttribute(Attributes.MOVEMENT_SPEED);
         if (speed != null) {
-            speed.setBaseValue(hunger < 6 ? 0.22 : 0.32);
+            speed.setBaseValue(hunger < 6 ? 0.24 : 0.35);
         }
     }
 
