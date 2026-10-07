@@ -126,6 +126,7 @@ public class CommandStaffItem extends Item {
                             : off.is(Items.OAK_PLANKS) ? Blueprint.Type.HOUSE
                             : off.is(Items.CHEST) ? Blueprint.Type.WAREHOUSE
                             : off.is(Items.OAK_FENCE) ? Blueprint.Type.PEN
+                            : off.is(Items.OAK_FENCE_GATE) ? Blueprint.Type.PALISADE
                             : off.is(Items.STONE_BRICKS) ? Blueprint.Type.KEEP
                             : off.is(Items.DIRT) ? Blueprint.Type.LEVELING : null;
                     if (orderType != null) {

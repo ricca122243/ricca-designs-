@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 /** Меню управления королевством: кнопки вызывают команды /kingdom. */
 public class KingdomMenuScreen extends Screen {
     private static final String[] HIRE = {"builder", "lumberjack", "farmer", "miner", "shepherd", "warrior", "archer", "guard"};
-    private static final String[] BUILD = {"leveling", "house", "warehouse", "pen", "wall", "keep"};
+    private static final String[] BUILD = {"leveling", "house", "warehouse", "pen", "palisade", "wall", "keep"};
 
     public KingdomMenuScreen() {
         super(Component.translatable("civilizations.menu.title"));

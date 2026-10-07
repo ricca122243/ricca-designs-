@@ -78,7 +78,7 @@
   "civilizations.relation.war": "%s ВОЮЕТ с вами (отношения %s)! Их воины нападают на вас",
   "civilizations.staff.ordered.keep": "Заказан замок: нужно дерева %s, камня %s (на складе: дерева %s, камня %s)",
   "civilizations.staff.ordered.leveling": "Заказано выравнивание земли: бесплатно (на складе: дерева %3$s, камня %4$s)",
-  "civilizations.townhall.buildings": "Земля выровнена %s, загон %s, замок %s, корабль %s",
+  "civilizations.townhall.buildings": "Земля выровнена %s, загон %s, замок %s, корабль %s, частокол %s",
   "civilizations.ship": "%s спустило на воду корабль у своей пристани!",
   "civilizations.trade": "%s отправляет припасы союзнику %s",
   "civilizations.staff.status": "Здоровье %s/%s, сытость %s/20",
@@ -118,5 +118,7 @@
   "civilizations.cmd.kingdom_line": "%s: %s блоков (%s, %s), отношения %s",
   "civilizations.map.extra": "уровень %s, деревень %s %s",
   "civilizations.map.legend": "зелёный союзник, синий нейтрал, оранжевый холод, красный война",
-  "generator.civilizations.medieval": "Средневековые земли"
+  "generator.civilizations.medieval": "Средневековые земли",
+  "civilizations.menu.build.palisade": "Частокол",
+  "civilizations.staff.ordered.palisade": "Заказан частокол: нужно дерева %s, камня %s (на складе: дерева %s, камня %s)"
 }

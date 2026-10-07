@@ -78,7 +78,7 @@
   "civilizations.relation.war": "%s is at WAR with you (relation %s)! Their warriors attack you on sight",
   "civilizations.staff.ordered.keep": "Keep ordered: needs %s wood, %s stone (storage: %s wood, %s stone)",
   "civilizations.staff.ordered.leveling": "Land leveling ordered: free (storage: %3$s wood, %4$s stone)",
-  "civilizations.townhall.buildings": "Leveled %s, pen %s, keep %s, ship %s",
+  "civilizations.townhall.buildings": "Leveled %s, pen %s, keep %s, ship %s, palisade %s",
   "civilizations.ship": "%s has launched a ship at its harbor!",
   "civilizations.trade": "%s sends supplies to its ally %s",
   "civilizations.staff.status": "Health %s/%s, hunger %s/20",
@@ -118,5 +118,7 @@
   "civilizations.cmd.kingdom_line": "%s: %s blocks away (%s, %s), relation %s",
   "civilizations.map.extra": "level %s, villages %s %s",
   "civilizations.map.legend": "green ally, blue neutral, orange cold, red war",
-  "generator.civilizations.medieval": "Medieval Realms"
+  "generator.civilizations.medieval": "Medieval Realms",
+  "civilizations.menu.build.palisade": "Palisade",
+  "civilizations.staff.ordered.palisade": "Palisade ordered: needs %s wood, %s stone (storage: %s wood, %s stone)"
 }

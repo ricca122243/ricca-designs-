@@ -170,6 +170,7 @@ public class NpcKingdomSpawner {
         hall.setupNpc(name);
         KingdomSavedData data = KingdomSavedData.get(level);
         if (movers.isEmpty()) {
+            hall.buildStarterSettlement();
             for (Profession profession : STARTING) {
                 hall.spawnStartingSettler(profession);
             }

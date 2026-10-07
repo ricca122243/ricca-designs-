@@ -45,6 +45,7 @@ public class TownHallBlockEntity extends BlockEntity {
     private boolean warehouseBuilt = false;
     private boolean wallBuilt = false;
     private boolean penBuilt = false;
+    private boolean palisadeBuilt = false;
     private boolean leveled = false;
     private boolean keepBuilt = false;
     private boolean shipBuilt = false;
@@ -155,6 +156,9 @@ public class TownHallBlockEntity extends BlockEntity {
         if (!penBuilt) {
             return new Project(Blueprint.Type.PEN, -1);
         }
+        if (!palisadeBuilt && !wallBuilt) {
+            return new Project(Blueprint.Type.PALISADE, -1);
+        }
         if (!wallBuilt) {
             return new Project(Blueprint.Type.WALL, -1);
         }
@@ -185,6 +189,7 @@ public class TownHallBlockEntity extends BlockEntity {
             case HOUSE -> housesBuilt++;
             case WAREHOUSE -> warehouseBuilt = true;
             case PEN -> penBuilt = true;
+            case PALISADE -> palisadeBuilt = true;
             case LEVELING -> leveled = true;
             case KEEP -> keepBuilt = true;
             case SHIP_EW, SHIP_NS -> {
@@ -278,6 +283,41 @@ public class TownHallBlockEntity extends BlockEntity {
         this.gold = 100;
         this.raidTimer = level != null ? level.random.nextInt(RAID_INTERVAL_TICKS / 2) : 0;
         setChanged();
+    }
+
+    /**
+     * Мгновенно возвести постройку по чертежу (стартовое поселение НПС).
+     * Ресурсы не тратятся, звуков нет.
+     */
+    public void instantBuild(Blueprint.Type type, int houseIndex) {
+        if (level == null) return;
+        Blueprint bp = Blueprint.of(type);
+        BlockPos origin = Blueprint.origin(type, getBlockPos(), houseIndex);
+        for (Blueprint.Step step : bp.steps) {
+            BlockPos pos = origin.offset(step.x(), step.y(), step.z());
+            BlockState current = level.getBlockState(pos);
+            if (current.is(net.minecraft.world.level.block.Blocks.BEDROCK) || pos.equals(getBlockPos())) continue;
+            if (step.fillOnly()) {
+                if (current.canBeReplaced() && !current.liquid()) level.setBlock(pos, step.state(), 2);
+            } else if (step.isAir()) {
+                if (!current.isAir() && !current.canBeReplaced() && !current.liquid()) level.setBlock(pos, step.state(), 2);
+            } else {
+                level.setBlock(pos, step.state(), step.quiet() ? 18 : 2);
+            }
+        }
+        projectFinished(type, houseIndex);
+    }
+
+    /** Стартовое поселение НПС: ровная земля, два дома, склад, загон, частокол. */
+    public void buildStarterSettlement() {
+        instantBuild(Blueprint.Type.LEVELING, -1);
+        for (int i = 0; i < 2; i++) {
+            int idx = claimHouse();
+            if (idx >= 0) instantBuild(Blueprint.Type.HOUSE, idx);
+        }
+        instantBuild(Blueprint.Type.WAREHOUSE, -1);
+        instantBuild(Blueprint.Type.PEN, -1);
+        instantBuild(Blueprint.Type.PALISADE, -1);
     }
 
     /** Призвать жителя с нужной профессией (для создания королевств). */
@@ -397,7 +437,7 @@ public class TownHallBlockEntity extends BlockEntity {
         player.displayClientMessage(Component.translatable("civilizations.townhall.tier", tier,
                 warehouseBuilt ? "✔" : "✘", wallBuilt ? "✔" : "✘", orders.size()).withStyle(ChatFormatting.AQUA), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.buildings",
-                leveled ? "✔" : "✘", penBuilt ? "✔" : "✘", keepBuilt ? "✔" : "✘", shipBuilt ? "✔" : shipSearched && shipOrigin == null ? "—" : "✘").withStyle(ChatFormatting.AQUA), false);
+                leveled ? "✔" : "✘", penBuilt ? "✔" : "✘", keepBuilt ? "✔" : "✘", shipBuilt ? "✔" : shipSearched && shipOrigin == null ? "—" : "✘", palisadeBuilt ? "✔" : "✘").withStyle(ChatFormatting.AQUA), false);
     }
 
     // --- Рост королевства ---
@@ -849,6 +889,7 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putBoolean("WarehouseBuilt", warehouseBuilt);
         tag.putBoolean("WallBuilt", wallBuilt);
         tag.putBoolean("PenBuilt", penBuilt);
+        tag.putBoolean("PalisadeBuilt", palisadeBuilt);
         tag.putBoolean("Leveled", leveled);
         tag.putBoolean("KeepBuilt", keepBuilt);
         tag.putBoolean("ShipBuilt", shipBuilt);
@@ -879,6 +920,7 @@ public class TownHallBlockEntity extends BlockEntity {
         warehouseBuilt = tag.getBoolean("WarehouseBuilt");
         wallBuilt = tag.getBoolean("WallBuilt");
         penBuilt = tag.getBoolean("PenBuilt");
+        palisadeBuilt = tag.getBoolean("PalisadeBuilt");
         leveled = tag.getBoolean("Leveled");
         keepBuilt = tag.getBoolean("KeepBuilt");
         shipBuilt = tag.getBoolean("ShipBuilt");

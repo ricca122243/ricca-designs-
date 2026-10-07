@@ -23,7 +23,7 @@ public final class Blueprint {
         }
     }
 
-    public enum Type { LEVELING, HOUSE, WAREHOUSE, WALL, PEN, KEEP, SHIP_EW, SHIP_NS }
+    public enum Type { LEVELING, HOUSE, WAREHOUSE, PALISADE, WALL, PEN, KEEP, SHIP_EW, SHIP_NS }
 
     public final Type type;
     public final List<Step> steps;
@@ -44,6 +44,7 @@ public final class Blueprint {
     public static final Blueprint WALL = wall();
     public static final Blueprint PEN = pen();
     public static final Blueprint LEVELING = leveling();
+    public static final Blueprint PALISADE = palisade();
     public static final Blueprint KEEP = keep();
     public static final Blueprint SHIP_EW = ship(true);
     public static final Blueprint SHIP_NS = ship(false);
@@ -55,6 +56,7 @@ public final class Blueprint {
             case WALL -> WALL;
             case PEN -> PEN;
             case LEVELING -> LEVELING;
+            case PALISADE -> PALISADE;
             case KEEP -> KEEP;
             case SHIP_EW -> SHIP_EW;
             case SHIP_NS -> SHIP_NS;
@@ -63,7 +65,7 @@ public final class Blueprint {
 
     /** Строитель работает, стоя рядом с блоком (а не с кольца вокруг площадки). */
     public boolean walkInside() {
-        return type == Type.WALL || type == Type.LEVELING || type == Type.SHIP_EW || type == Type.SHIP_NS;
+        return type == Type.WALL || type == Type.PALISADE || type == Type.LEVELING || type == Type.SHIP_EW || type == Type.SHIP_NS;
     }
 
     /** Угол постройки в мире (для корабля угол задаёт ратуша, здесь null). */
@@ -71,7 +73,7 @@ public final class Blueprint {
         return switch (type) {
             case HOUSE -> KingdomLayout.houseOrigin(hall, houseIndex);
             case WAREHOUSE -> KingdomLayout.warehouseOrigin(hall);
-            case WALL -> KingdomLayout.wallOrigin(hall);
+            case WALL, PALISADE -> KingdomLayout.wallOrigin(hall);
             case PEN -> KingdomLayout.penOrigin(hall);
             case LEVELING -> KingdomLayout.levelingOrigin(hall);
             case KEEP -> KingdomLayout.keepOrigin(hall);
@@ -171,6 +173,26 @@ public final class Blueprint {
         for (int x = 0; x < size; x++)
             for (int z = 0; z < size; z++)
                 plan.add(new Step(x, 4, z, Blocks.OAK_PLANKS.defaultBlockState(), false, false));
+    }
+
+    /** Частокол: деревянный забор по линии будущей стены, с проходами-воротами. Позже заменяется каменной стеной. */
+    private static Blueprint palisade() {
+        List<Step> plan = new ArrayList<>();
+        int w = KingdomLayout.WALL_WIDTH;
+        int d = KingdomLayout.WALL_DEPTH;
+        for (int x = 0; x < w; x++) {
+            for (int z = 0; z < d; z++) {
+                boolean edge = x == 0 || z == 0 || x == w - 1 || z == d - 1;
+                if (!edge) continue;
+                boolean gate = (z == 0 || z == d - 1) && Math.abs(x - w / 2) <= 1;
+                if (gate) continue;
+                plan.add(new Step(x, 0, z, Blocks.OAK_FENCE.defaultBlockState(), false, false));
+                if ((x + z) % 8 == 0) {
+                    plan.add(new Step(x, 1, z, Blocks.TORCH.defaultBlockState(), false, false));
+                }
+            }
+        }
+        return new Blueprint(Type.PALISADE, plan, 0, 0, w - 1, d - 1);
     }
 
     /** Выравнивание: всё внутри стены срезается до уровня ратуши, ямы засыпаются землёй. */
