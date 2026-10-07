@@ -193,6 +193,27 @@ public class CommandStaffItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
+        if (player.isShiftKeyDown()) {
+            // Приказ издалека: куда смотрите (до 120 блоков), туда и идёт выбранный житель.
+            if (level instanceof ServerLevel) {
+                net.minecraft.world.phys.HitResult hit = player.pick(120.0, 0.0f, false);
+                if (hit instanceof net.minecraft.world.phys.BlockHitResult bh) {
+                    SettlerEntity settler = findSelected(stack, level);
+                    if (settler == null) {
+                        say(player, Component.translatable("civilizations.staff.none_selected").withStyle(ChatFormatting.GRAY));
+                    } else {
+                        BlockPos target = bh.getBlockPos().relative(bh.getDirection());
+                        settler.setFollowPlayer(null);
+                        settler.setOrderPos(target);
+                        if (settler.getProfession() == Profession.GUARD) settler.setGuardPost(target);
+                        say(player, Component.translatable("civilizations.staff.sent_far", settler.getDisplayName(), target.getX(), target.getY(), target.getZ()));
+                    }
+                } else {
+                    say(player, Component.translatable("civilizations.staff.no_target").withStyle(ChatFormatting.GRAY));
+                }
+            }
+            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+        }
         if (level instanceof ServerLevel serverLevel) {
             RulerBookItem.writeData(stack, serverLevel, player);
         } else {

@@ -239,7 +239,9 @@ public class ChopTreesGoal extends Goal {
         Level level = settler.level();
         BlockPos best = null;
         double bestDist = Double.MAX_VALUE;
-        for (BlockPos pos : BlockPos.betweenClosed(hall.offset(-SEARCH_RADIUS, -4, -SEARCH_RADIUS), hall.offset(SEARCH_RADIUS, 6, SEARCH_RADIUS))) {
+        TownHallBlockEntity hallBe = TownHallBlockEntity.at(level, hall);
+        int radius = hallBe != null && hallBe.quotaOpen("wood") ? 40 : SEARCH_RADIUS;
+        for (BlockPos pos : BlockPos.betweenClosed(hall.offset(-radius, -6, -radius), hall.offset(radius, 8, radius))) {
             if (!level.getBlockState(pos).is(BlockTags.LOGS) || level.getBlockState(pos.below()).is(BlockTags.LOGS)) {
                 continue;
             }

@@ -55,6 +55,9 @@ public class KingdomCharterItem extends Item {
             hall.setKingdom(kingdomName);
         }
         placeBanner(level, pos.above(), kingdomName);
+        if (hall != null) {
+            hall.buildStarterHouses();
+        }
 
         // Призываем поселенцев
         for (int i = 0; i < SETTLER_OFFSETS.length; i++) {

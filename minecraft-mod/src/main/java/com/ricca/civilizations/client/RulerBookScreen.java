@@ -84,6 +84,15 @@ public class RulerBookScreen extends Screen {
                     }
                 }
             }
+            case 4 -> {
+                String[] res = {"wood", "stone", "food", "iron"};
+                for (int i = 0; i < res.length; i++) {
+                    String r = res[i];
+                    addRenderableWidget(Button.builder(Component.translatable("civilizations.book.quota." + r), b -> send("kingdom quota " + r + " 500")).bounds(x0 + i * 86, top + 130, 82, 20).build());
+                }
+                addRenderableWidget(Button.builder(Component.translatable("civilizations.book.view"), b -> send("kingdom view")).bounds(x0, top + 156, 170, 20).build());
+                addRenderableWidget(Button.builder(Component.translatable("civilizations.book.quota_clear"), b -> { send("kingdom quota wood 0"); }).bounds(x0 + 176, top + 156, 170, 20).build());
+            }
             default -> { }
         }
         addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose()).bounds(left + W / 2 - 50, top + H - 26, 100, 20).build());

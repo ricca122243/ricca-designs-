@@ -120,7 +120,7 @@ public class MineGoal extends Goal {
             index++;
         } else {
             // Карьер готов: добываем «вглубь», не ломая мир.
-            cooldown = WORK_DELAY_TICKS;
+            cooldown = hall.quotaOpen("stone") || hall.quotaOpen("iron") ? WORK_DELAY_TICKS / 2 : WORK_DELAY_TICKS;
             hall.addStone(2);
             if (level.random.nextInt(4) == 0) {
                 hall.addIron(1);

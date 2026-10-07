@@ -94,6 +94,9 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     /** Пост стражника. */
     @Nullable
     private BlockPos guardPost;
+    /** Своя кровать (дом), куда житель уходит ночью. */
+    @Nullable
+    private BlockPos homeBed;
 
     public SettlerEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
@@ -133,6 +136,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         });
         this.goalSelector.addGoal(2, new FollowPlayerGoal(this));
         this.goalSelector.addGoal(2, new OrderGoal(this));
+        this.goalSelector.addGoal(3, new RestGoal(this));
         this.goalSelector.addGoal(3, new GuardPostGoal(this));
         this.goalSelector.addGoal(3, new BuildGoal(this));
         this.goalSelector.addGoal(3, new ChopTreesGoal(this));
@@ -346,6 +350,10 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     @Nullable
     public UUID getFollowPlayer() { return followPlayer; }
     public void setFollowPlayer(@Nullable UUID player) { this.followPlayer = player; }
+
+    @Nullable
+    public BlockPos getHomeBed() { return homeBed; }
+    public void setHomeBed(@Nullable BlockPos pos) { this.homeBed = pos; }
 
     @Nullable
     public BlockPos getGuardPost() { return guardPost; }
@@ -755,6 +763,9 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         if (guardPost != null) {
             tag.putLong("GuardPost", guardPost.asLong());
         }
+        if (homeBed != null) {
+            tag.putLong("HomeBed", homeBed.asLong());
+        }
         if (followPlayer != null) {
             tag.putUUID("FollowPlayer", followPlayer);
         }
@@ -787,6 +798,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         }
         orderPos = tag.contains("OrderPos") ? BlockPos.of(tag.getLong("OrderPos")) : null;
         guardPost = tag.contains("GuardPost") ? BlockPos.of(tag.getLong("GuardPost")) : null;
+        homeBed = tag.contains("HomeBed") ? BlockPos.of(tag.getLong("HomeBed")) : null;
         followPlayer = tag.hasUUID("FollowPlayer") ? tag.getUUID("FollowPlayer") : null;
         if (tag.contains("TownHallX")) {
             setTownHall(new BlockPos(tag.getInt("TownHallX"), tag.getInt("TownHallY"), tag.getInt("TownHallZ")));

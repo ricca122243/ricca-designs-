@@ -36,7 +36,9 @@ public class KingdomCommands {
                 .then(Commands.literal("peace").then(Commands.argument("name", StringArgumentType.word()).executes(ctx -> relation(ctx, 0))))
                 .then(Commands.literal("gift").then(Commands.argument("name", StringArgumentType.word()).then(Commands.argument("gold", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 500)).executes(KingdomCommands::gift))))
                 .then(Commands.literal("where").executes(KingdomCommands::where))
-                .then(Commands.literal("summon").executes(KingdomCommands::summon)));
+                .then(Commands.literal("summon").executes(KingdomCommands::summon))
+                .then(Commands.literal("quota").then(Commands.argument("resource", StringArgumentType.word()).then(Commands.argument("amount", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 100000)).executes(KingdomCommands::quota))))
+                .then(Commands.literal("view").executes(KingdomCommands::view)));
     }
 
     @Nullable
@@ -235,6 +237,35 @@ public class KingdomCommands {
             n++;
         }
         player.displayClientMessage(Component.translatable("civilizations.cmd.summon", n), false);
+        return 1;
+    }
+
+    private static int quota(CommandContext<CommandSourceStack> ctx) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        TownHallBlockEntity hall = myHall(player);
+        if (hall == null) return 0;
+        String res = StringArgumentType.getString(ctx, "resource").toLowerCase();
+        int amount = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "amount");
+        hall.setQuota(res, amount);
+        player.displayClientMessage(Component.translatable("civilizations.quota.set", Component.translatable("civilizations.res." + res), amount, hall.quotaText()), false);
+        return 1;
+    }
+
+    /** Вид сверху: включает полёт, чтобы смотреть на королевство как полководец. Повторно — выключает. */
+    private static int view(CommandContext<CommandSourceStack> ctx) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        if (player.isCreative() || player.isSpectator()) {
+            player.displayClientMessage(Component.translatable("civilizations.view.creative"), false);
+            return 1;
+        }
+        boolean on = !player.getAbilities().mayfly;
+        player.getAbilities().mayfly = on;
+        player.getAbilities().flying = on;
+        player.onUpdateAbilities();
+        if (on) {
+            player.teleportTo(player.getX(), player.getY() + 20, player.getZ());
+        }
+        player.displayClientMessage(Component.translatable(on ? "civilizations.view.on" : "civilizations.view.off"), false);
         return 1;
     }
 

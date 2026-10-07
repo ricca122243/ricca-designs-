@@ -54,6 +54,9 @@ public class TownHallBlockEntity extends BlockEntity {
     private int caravanTimer = 0;
     private int architects = 0;
     private int warehouseTimer = 0;
+    private int homesTimer = 0;
+    /** Задания на добычу: собрать до такого количества. */
+    private int quotaWood = 0, quotaStone = 0, quotaFood = 0, quotaIron = 0;
     private int maintenanceTimer = 0;
     private final java.util.Set<Integer> repairedHouses = new java.util.HashSet<>();
     @Nullable
@@ -144,6 +147,78 @@ public class TownHallBlockEntity extends BlockEntity {
     public boolean isTowerBuilt() { return towerBuilt; }
     public int getArms() { return arms; }
     public int getArchitects() { return architects; }
+
+    public void setQuota(String resource, int amount) {
+        switch (resource) {
+            case "wood" -> quotaWood = amount;
+            case "stone" -> quotaStone = amount;
+            case "food" -> quotaFood = amount;
+            case "iron" -> quotaIron = amount;
+            default -> { }
+        }
+        setChanged();
+    }
+
+    /** Есть ли невыполненное задание по этому ресурсу: тогда рабочие уходят дальше и работают усерднее. */
+    public boolean quotaOpen(String resource) {
+        return switch (resource) {
+            case "wood" -> wood < quotaWood;
+            case "stone" -> stone < quotaStone;
+            case "food" -> food < quotaFood;
+            case "iron" -> iron < quotaIron;
+            default -> false;
+        };
+    }
+
+    public String quotaText() {
+        return "W " + wood + "/" + quotaWood + "  S " + stone + "/" + quotaStone + "  F " + food + "/" + quotaFood + "  I " + iron + "/" + quotaIron;
+    }
+
+    private void checkQuotas(ServerLevel serverLevel) {
+        String done = null;
+        if (quotaWood > 0 && wood >= quotaWood) { done = "wood"; quotaWood = 0; }
+        else if (quotaStone > 0 && stone >= quotaStone) { done = "stone"; quotaStone = 0; }
+        else if (quotaFood > 0 && food >= quotaFood) { done = "food"; quotaFood = 0; }
+        else if (quotaIron > 0 && iron >= quotaIron) { done = "iron"; quotaIron = 0; }
+        if (done != null) {
+            setChanged();
+            for (ServerPlayer p : serverLevel.players()) {
+                if (p.getName().getString().equals(kingdom)) {
+                    p.displayClientMessage(Component.translatable("civilizations.quota.done", Component.translatable("civilizations.res." + done)).withStyle(ChatFormatting.GREEN), false);
+                }
+            }
+        }
+    }
+
+    /** Раздать жителям дома: по одной кровати на жителя. */
+    private void assignHomes(ServerLevel serverLevel) {
+        List<SettlerEntity> settlers = settlers(serverLevel);
+        java.util.Set<BlockPos> taken = new java.util.HashSet<>();
+        for (SettlerEntity s : settlers) {
+            if (s.getHomeBed() != null) {
+                if (level.getBlockState(s.getHomeBed()).getBlock() instanceof net.minecraft.world.level.block.BedBlock && taken.add(s.getHomeBed())) continue;
+                s.setHomeBed(null);
+            }
+        }
+        for (SettlerEntity s : settlers) {
+            if (s.getHomeBed() != null) continue;
+            for (int i = 0; i < Math.min(nextHouse, KingdomLayout.houseCount()); i++) {
+                BlockPos bed = KingdomLayout.houseOrigin(getBlockPos(), i).offset(1, 1, 1);
+                if (taken.contains(bed) || !(level.getBlockState(bed).getBlock() instanceof net.minecraft.world.level.block.BedBlock)) continue;
+                taken.add(bed);
+                s.setHomeBed(bed);
+                break;
+            }
+        }
+    }
+
+    /** Стартовые дома для игрока: два дома сразу, чтобы было где жить. */
+    public void buildStarterHouses() {
+        for (int i = 0; i < 2; i++) {
+            int idx = claimHouse();
+            if (idx >= 0) instantBuild(Blueprint.Type.HOUSE, idx);
+        }
+    }
     @Nullable
     public BlockPos getQuarryOrigin() { return quarryOrigin; }
     public void setQuarryOrigin(@Nullable BlockPos pos) { quarryOrigin = pos; setChanged(); }
@@ -581,6 +656,11 @@ public class TownHallBlockEntity extends BlockEntity {
         if (++th.warehouseTimer >= 600) {
             th.warehouseTimer = 0;
             th.syncWarehouse();
+            th.checkQuotas(serverLevel);
+        }
+        if (++th.homesTimer >= 400) {
+            th.homesTimer = 0;
+            th.assignHomes(serverLevel);
         }
         if (++th.maintenanceTimer >= 6000) {
             th.maintenanceTimer = 0;
@@ -1164,6 +1244,10 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putBoolean("TowerBuilt", towerBuilt);
         tag.putInt("Arms", arms);
         tag.putInt("TaxRate", taxRate);
+        tag.putInt("QuotaWood", quotaWood);
+        tag.putInt("QuotaStone", quotaStone);
+        tag.putInt("QuotaFood", quotaFood);
+        tag.putInt("QuotaIron", quotaIron);
         if (quarryOrigin != null) tag.putLong("QuarryOrigin", quarryOrigin.asLong());
         net.minecraft.nbt.ListTag placed = new net.minecraft.nbt.ListTag();
         for (Project p : placedOrders) {
@@ -1208,6 +1292,10 @@ public class TownHallBlockEntity extends BlockEntity {
         towerBuilt = tag.getBoolean("TowerBuilt");
         arms = tag.getInt("Arms");
         taxRate = tag.contains("TaxRate") ? tag.getInt("TaxRate") : 1;
+        quotaWood = tag.getInt("QuotaWood");
+        quotaStone = tag.getInt("QuotaStone");
+        quotaFood = tag.getInt("QuotaFood");
+        quotaIron = tag.getInt("QuotaIron");
         quarryOrigin = tag.contains("QuarryOrigin") ? BlockPos.of(tag.getLong("QuarryOrigin")) : null;
         placedOrders.clear();
         for (net.minecraft.nbt.Tag t : tag.getList("PlacedOrders", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
