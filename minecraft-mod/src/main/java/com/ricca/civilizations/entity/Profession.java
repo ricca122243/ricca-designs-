@@ -16,7 +16,8 @@ public enum Profession {
     BLACKSMITH("blacksmith", "armorer"),
     KNIGHT("knight", "armorer"),
     CROSSBOWMAN("crossbowman", "fletcher"),
-    PIKEMAN("pikeman", "weaponsmith");
+    PIKEMAN("pikeman", "weaponsmith"),
+    ARCHITECT("architect", "cartographer");
 
     private final String key;
     private final ResourceLocation overlayTexture;

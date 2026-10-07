@@ -81,6 +81,7 @@ public class KingdomCharterItem extends Item {
         giveItem(player, new ItemStack(Civilizations.COMMAND_STAFF.get()));
         giveItem(player, new ItemStack(Civilizations.KINGDOM_MAP.get()));
         giveItem(player, new ItemStack(Civilizations.RULER_BOOK.get()));
+        giveItem(player, new ItemStack(Civilizations.BLUEPRINT.get()));
         return InteractionResult.CONSUME;
     }
 

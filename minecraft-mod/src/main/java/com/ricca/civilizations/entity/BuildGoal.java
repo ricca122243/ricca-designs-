@@ -142,7 +142,7 @@ public class BuildGoal extends Goal {
         if (--cooldown > 0) {
             return;
         }
-        cooldown = Math.max(3, PLACE_DELAY_TICKS - (skill - 1) * 2);
+        cooldown = Math.max(2, (PLACE_DELAY_TICKS - (skill - 1) * 2) / (hall.getArchitects() > 0 ? 2 : 1));
 
         BlockState current = level.getBlockState(target);
         if (step.fillOnly() && !current.canBeReplaced()) {

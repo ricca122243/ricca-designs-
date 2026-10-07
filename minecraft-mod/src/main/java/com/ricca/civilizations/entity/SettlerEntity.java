@@ -56,6 +56,11 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     /** Уровень снаряжения королевства: 1 камень, 2 железо, 3 железо+алмазный меч, 4 алмаз. */
     private static final EntityDataAccessor<Integer> TIER =
             SynchedEntityData.defineId(SettlerEntity.class, EntityDataSerializers.INT);
+    /** Раб: житель покорённого королевства. */
+    private static final EntityDataAccessor<Boolean> SLAVE =
+            SynchedEntityData.defineId(SettlerEntity.class, EntityDataSerializers.BOOLEAN);
+    /** Родное королевство, записывается при рождении. */
+    private String homeKingdom = "";
 
     private static final int HOME_RADIUS = 24;
 
@@ -93,7 +98,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.5)
+                .add(Attributes.MOVEMENT_SPEED, 0.32)
                 .add(Attributes.FOLLOW_RANGE, 32.0)
                 .add(Attributes.ATTACK_DAMAGE, 2.0)
                 .add(Attributes.STEP_HEIGHT, 1.0);
@@ -163,6 +168,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         builder.define(KINGDOM, "");
         builder.define(PROFESSION, Profession.BUILDER.ordinal());
         builder.define(TIER, 1);
+        builder.define(SLAVE, false);
     }
 
     // --- Королевство и профессия ---
@@ -173,6 +179,17 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
 
     public void setKingdom(String kingdom) {
         this.entityData.set(KINGDOM, kingdom);
+        if (homeKingdom.isEmpty()) {
+            homeKingdom = kingdom;
+        }
+        updateDisplayName();
+    }
+
+    public String getHomeKingdom() { return homeKingdom; }
+    public boolean isSlave() { return this.entityData.get(SLAVE); }
+
+    public void setSlave(boolean slave) {
+        this.entityData.set(SLAVE, slave);
         updateDisplayName();
     }
 
@@ -405,6 +422,11 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
                 setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.CHAINMAIL_LEGGINGS));
                 setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
             }
+            case ARCHITECT -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.MAP));
+                setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0x5A3A7A));
+                setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0x5A3A7A));
+            }
             case ARCHER -> {
                 setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
                 setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0x2F5A2F));
@@ -481,11 +503,48 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
                 tickHunger();
                 tickClimbing();
             }
+            if (tickCount % 10 == 0) {
+                tickMount();
+            }
         }
     }
 
     public int getHunger() {
         return hunger;
+    }
+
+    /** Всадник: конь идёт туда, куда ведёт путь всадника. */
+    private void tickMount() {
+        if (!(getVehicle() instanceof net.minecraft.world.entity.animal.horse.AbstractHorse horse)) {
+            return;
+        }
+        BlockPos target = getNavigation().getTargetPos();
+        if (getTarget() != null && getTarget().isAlive()) {
+            horse.getNavigation().moveTo(getTarget(), 1.3);
+        } else if (target != null && !getNavigation().isDone()) {
+            horse.getNavigation().moveTo(target.getX() + 0.5, target.getY(), target.getZ() + 0.5, 1.2);
+        } else {
+            horse.getNavigation().stop();
+        }
+    }
+
+    /** Посадить бойца на коня. */
+    public void mountHorse() {
+        if (isPassenger() || !(level() instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
+            return;
+        }
+        net.minecraft.world.entity.animal.horse.Horse horse = net.minecraft.world.entity.EntityType.HORSE.create(serverLevel);
+        if (horse == null) return;
+        horse.moveTo(getX(), getY(), getZ(), getYRot(), 0f);
+        horse.setTamed(true);
+        horse.equipSaddle(new ItemStack(Items.SADDLE), null);
+        horse.setPersistenceRequired();
+        AttributeInstance hs = horse.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (hs != null) hs.setBaseValue(0.2);
+        AttributeInstance hh = horse.getAttribute(Attributes.MAX_HEALTH);
+        if (hh != null) { hh.setBaseValue(30.0); horse.setHealth(30.0f); }
+        serverLevel.addFreshEntity(horse);
+        startRiding(horse, true);
     }
 
     public void addBuildXp(int amount) {
@@ -521,7 +580,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         }
         AttributeInstance speed = getAttribute(Attributes.MOVEMENT_SPEED);
         if (speed != null) {
-            speed.setBaseValue(hunger < 6 ? 0.35 : 0.5);
+            speed.setBaseValue(hunger < 6 ? 0.22 : 0.32);
         }
     }
 
@@ -602,6 +661,8 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         String kingdom = getKingdom();
         if (kingdom.isEmpty()) {
             setCustomName(Component.translatable("entity.civilizations.settler." + getProfession().key()));
+        } else if (isSlave()) {
+            setCustomName(Component.translatable("entity.civilizations.settler.slave", Component.translatable("entity.civilizations.settler." + getProfession().key()), kingdom));
         } else {
             setCustomName(Component.translatable("entity.civilizations.settler." + getProfession().key() + ".named", kingdom));
         }
@@ -640,6 +701,8 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         tag.putInt("HouseIndex", houseIndex);
         tag.putInt("Tier", getTier());
         tag.putInt("Hunger", hunger);
+        tag.putBoolean("Slave", isSlave());
+        tag.putString("HomeKingdom", homeKingdom);
         tag.putInt("BuildXp", buildXp);
         if (projectType != null) {
             tag.putString("Project", projectType.name());
@@ -672,6 +735,8 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         houseIndex = tag.contains("HouseIndex") ? tag.getInt("HouseIndex") : -1;
         this.entityData.set(TIER, tag.contains("Tier") ? tag.getInt("Tier") : 1);
         hunger = tag.contains("Hunger") ? tag.getInt("Hunger") : 20;
+        this.entityData.set(SLAVE, tag.getBoolean("Slave"));
+        homeKingdom = tag.getString("HomeKingdom");
         buildXp = tag.getInt("BuildXp");
         projectType = null;
         projectOrigin = tag.contains("ProjectOrigin") ? BlockPos.of(tag.getLong("ProjectOrigin")) : null;

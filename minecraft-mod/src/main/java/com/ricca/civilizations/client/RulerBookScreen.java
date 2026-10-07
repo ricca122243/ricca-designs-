@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 /** Книга правителя: вкладки Люди / Стройка / Войско / Дипломатия / Сводка. Кнопки шлют команды незаметно для игрока. */
 public class RulerBookScreen extends Screen {
     private static final String[] TABS = {"people", "build", "army", "diplomacy", "report"};
-    private static final String[] WORKERS = {"builder", "lumberjack", "farmer", "miner", "shepherd", "healer", "blacksmith"};
+    private static final String[] WORKERS = {"builder", "architect", "lumberjack", "farmer", "miner", "shepherd", "healer", "blacksmith"};
     private static final String[] SOLDIERS = {"warrior", "archer", "guard", "knight", "crossbowman", "pikeman"};
     private static final String[] BUILD = {"leveling", "house", "warehouse", "pen", "palisade", "tower", "wall", "keep"};
 

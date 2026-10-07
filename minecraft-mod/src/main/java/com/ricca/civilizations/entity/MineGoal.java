@@ -74,7 +74,8 @@ public class MineGoal extends Goal {
             return;
         }
         Level level = settler.level();
-        BlockPos origin = KingdomLayout.quarryOrigin(hallPos);
+        TownHallBlockEntity hallBe = TownHallBlockEntity.at(level, hallPos);
+        BlockPos origin = hallBe != null && hallBe.getQuarryOrigin() != null ? hallBe.getQuarryOrigin() : KingdomLayout.quarryOrigin(hallPos);
         int total = SIZE * SIZE * DEPTH;
 
         // Пропускаем уже выкопанное.

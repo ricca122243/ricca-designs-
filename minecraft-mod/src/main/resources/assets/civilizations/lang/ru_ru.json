@@ -176,5 +176,19 @@
   "civilizations.book.line_pop": "Жителей: %s (бойцов %s), домов %s",
   "civilizations.book.line_food": "Еда %s, золото %s",
   "civilizations.book.line_tier": "Уровень %s (%s), вооружение %s/20",
-  "civilizations.book.line_villages": "Деревень-данников %s, налог %s"
+  "civilizations.book.line_villages": "Деревень-данников %s, налог %s",
+  "item.civilizations.blueprint": "Чертёж",
+  "item.civilizations.blueprint.tooltip": "Правый клик в воздух: сменить тип. Клик по земле: строить здесь",
+  "civilizations.blueprint.type": "Чертёж: %s",
+  "civilizations.blueprint.house": "Дом",
+  "civilizations.blueprint.warehouse": "Склад",
+  "civilizations.blueprint.pen": "Загон",
+  "civilizations.blueprint.tower": "Сторожевая башня",
+  "civilizations.blueprint.keep": "Замок",
+  "civilizations.blueprint.quarry": "Карьер (шахтёры)",
+  "civilizations.blueprint.ordered": "%s заказан на (%s, %s, %s): нужно дерева %s, камня %s",
+  "civilizations.blueprint.quarry_set": "Шахтёры теперь копают на (%s, %s, %s)",
+  "entity.civilizations.settler.architect": "Проектировщик",
+  "entity.civilizations.settler.architect.named": "Проектировщик королевства %s",
+  "entity.civilizations.settler.slave": "%s (раб королевства %s)"
 }

@@ -52,6 +52,11 @@ public class TownHallBlockEntity extends BlockEntity {
     /** Налог: 0 низкий, 1 обычный, 2 высокий. */
     private int taxRate = 1;
     private int caravanTimer = 0;
+    private int architects = 0;
+    @Nullable
+    private BlockPos quarryOrigin;
+    /** Заказы с выбранным местом (чертёж). */
+    private final List<Project> placedOrders = new java.util.ArrayList<>();
     private static final int CARAVAN_INTERVAL_TICKS = 18000;
     private boolean leveled = false;
     private boolean keepBuilt = false;
@@ -135,6 +140,17 @@ public class TownHallBlockEntity extends BlockEntity {
     public boolean isPenBuilt() { return penBuilt; }
     public boolean isTowerBuilt() { return towerBuilt; }
     public int getArms() { return arms; }
+    public int getArchitects() { return architects; }
+    @Nullable
+    public BlockPos getQuarryOrigin() { return quarryOrigin; }
+    public void setQuarryOrigin(@Nullable BlockPos pos) { quarryOrigin = pos; setChanged(); }
+
+    /** Заказ с точным местом от чертежа. */
+    public Blueprint orderAt(Blueprint.Type type, BlockPos origin) {
+        placedOrders.add(new Project(type, type == Blueprint.Type.HOUSE ? 100 + placedOrders.size() : -1, origin));
+        setChanged();
+        return Blueprint.of(type);
+    }
     public int getTaxRate() { return taxRate; }
     public void setTaxRate(int rate) { taxRate = Math.max(0, Math.min(2, rate)); setChanged(); }
 
@@ -173,6 +189,11 @@ public class TownHallBlockEntity extends BlockEntity {
      */
     @Nullable
     public Project claimProject() {
+        if (!placedOrders.isEmpty()) {
+            Project p = placedOrders.remove(0);
+            setChanged();
+            return p;
+        }
         if (!orders.isEmpty()) {
             Blueprint.Type type = orders.remove(0);
             setChanged();
@@ -414,6 +435,9 @@ public class TownHallBlockEntity extends BlockEntity {
         }
         settler.setPersistenceRequired();
         level.addFreshEntity(settler);
+        if (profession == Profession.KNIGHT) {
+            settler.mountHorse();
+        }
         return settler;
     }
 
@@ -521,7 +545,9 @@ public class TownHallBlockEntity extends BlockEntity {
         if (++th.tierTimer >= 600) {
             th.tierTimer = 0;
             th.updateTier(serverLevel);
+            th.architects = 0;
             for (SettlerEntity s : th.settlers(serverLevel)) {
+                if (s.getProfession() == Profession.ARCHITECT) th.architects++;
                 if (s.isWarrior()) {
                     net.minecraft.world.entity.ai.attributes.AttributeInstance a = s.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
                     if (a != null) a.setBaseValue(s.professionDamage() + th.arms / 4.0);
@@ -781,6 +807,14 @@ public class TownHallBlockEntity extends BlockEntity {
         }
         // Выжившие у вражеской ратуши уносят добычу со склада.
         TownHallBlockEntity victim = raidTarget != null ? TownHallBlockEntity.at(level, raidTarget) : null;
+        if (victim != null && survivors >= 3 && victim.countDefenders(serverLevel) == 0 && !victim.kingdom.equals(kingdom)) {
+            // Полный разгром: королевство покорено, жители становятся рабами.
+            victim.capture(serverLevel, kingdom);
+            victim.npc = npc;
+            raidTarget = null;
+            setChanged();
+            return;
+        }
         if (victim != null && survivors > 0 && victim.countDefenders(serverLevel) == 0) {
             int w = Math.min(victim.wood, 15 * survivors);
             int st = Math.min(victim.stone, 15 * survivors);
@@ -811,6 +845,8 @@ public class TownHallBlockEntity extends BlockEntity {
         for (SettlerEntity s : settlers(serverLevel)) {
             s.setOrderPos(null);
             s.setKingdom(newKingdom);
+            // Побеждённые становятся рабами; свои, вернувшиеся домой, — свободны.
+            s.setSlave(!s.getHomeKingdom().equals(newKingdom));
         }
         kingdom = newKingdom;
         npc = false;
@@ -959,8 +995,14 @@ public class TownHallBlockEntity extends BlockEntity {
 
     /** Раз в минуту: налог с каждого жителя и продажа излишков со склада. */
     private void collectTaxes(ServerLevel serverLevel) {
-        int population = settlers(serverLevel).size();
+        int population = 0;
+        int slaves = 0;
+        for (SettlerEntity s : settlers(serverLevel)) {
+            if (s.isSlave()) slaves++; else population++;
+        }
         gold += taxRate == 0 ? population / 2 : taxRate == 2 ? population * 2 : population;
+        wood += slaves * 2;
+        stone += slaves * 2;
         int villages = KingdomSavedData.get(serverLevel).villagesOwnedBy(kingdom);
         gold += villages * 5;
         food += villages * 3;
@@ -993,6 +1035,16 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putBoolean("TowerBuilt", towerBuilt);
         tag.putInt("Arms", arms);
         tag.putInt("TaxRate", taxRate);
+        if (quarryOrigin != null) tag.putLong("QuarryOrigin", quarryOrigin.asLong());
+        net.minecraft.nbt.ListTag placed = new net.minecraft.nbt.ListTag();
+        for (Project p : placedOrders) {
+            CompoundTag t = new CompoundTag();
+            t.putString("Type", p.type().name());
+            t.putInt("House", p.houseIndex());
+            if (p.origin() != null) t.putLong("Origin", p.origin().asLong());
+            placed.add(t);
+        }
+        tag.put("PlacedOrders", placed);
         tag.putBoolean("Leveled", leveled);
         tag.putBoolean("KeepBuilt", keepBuilt);
         tag.putBoolean("ShipBuilt", shipBuilt);
@@ -1027,6 +1079,15 @@ public class TownHallBlockEntity extends BlockEntity {
         towerBuilt = tag.getBoolean("TowerBuilt");
         arms = tag.getInt("Arms");
         taxRate = tag.contains("TaxRate") ? tag.getInt("TaxRate") : 1;
+        quarryOrigin = tag.contains("QuarryOrigin") ? BlockPos.of(tag.getLong("QuarryOrigin")) : null;
+        placedOrders.clear();
+        for (net.minecraft.nbt.Tag t : tag.getList("PlacedOrders", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
+            CompoundTag c = (CompoundTag) t;
+            try {
+                placedOrders.add(new Project(Blueprint.Type.valueOf(c.getString("Type")), c.getInt("House"),
+                        c.contains("Origin") ? BlockPos.of(c.getLong("Origin")) : null));
+            } catch (IllegalArgumentException ignored) { }
+        }
         leveled = tag.getBoolean("Leveled");
         keepBuilt = tag.getBoolean("KeepBuilt");
         shipBuilt = tag.getBoolean("ShipBuilt");

@@ -176,5 +176,19 @@
   "civilizations.book.line_pop": "People: %s (soldiers %s), houses %s",
   "civilizations.book.line_food": "Food %s, gold %s",
   "civilizations.book.line_tier": "Level %s (%s), arms %s/20",
-  "civilizations.book.line_villages": "Tribute villages %s, tax %s"
+  "civilizations.book.line_villages": "Tribute villages %s, tax %s",
+  "item.civilizations.blueprint": "Blueprint",
+  "item.civilizations.blueprint.tooltip": "Right-click in the air: change type. Click the ground: build here",
+  "civilizations.blueprint.type": "Blueprint: %s",
+  "civilizations.blueprint.house": "House",
+  "civilizations.blueprint.warehouse": "Warehouse",
+  "civilizations.blueprint.pen": "Animal pen",
+  "civilizations.blueprint.tower": "Watchtower",
+  "civilizations.blueprint.keep": "Keep",
+  "civilizations.blueprint.quarry": "Quarry (miners)",
+  "civilizations.blueprint.ordered": "%s ordered at (%s, %s, %s): needs %s wood, %s stone",
+  "civilizations.blueprint.quarry_set": "Miners will now dig at (%s, %s, %s)",
+  "entity.civilizations.settler.architect": "Architect",
+  "entity.civilizations.settler.architect.named": "Architect of %s",
+  "entity.civilizations.settler.slave": "%s (slave of %s)"
 }

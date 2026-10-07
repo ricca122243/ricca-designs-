@@ -13,6 +13,7 @@ import com.ricca.civilizations.item.KingdomCharterItem;
 import com.ricca.civilizations.item.KingdomMapItem;
 import com.ricca.civilizations.item.MithrilTier;
 import com.ricca.civilizations.item.RulerBookItem;
+import com.ricca.civilizations.item.BlueprintItem;
 import com.ricca.civilizations.kingdom.KingdomCommands;
 import com.ricca.civilizations.kingdom.NpcKingdomSpawner;
 import com.ricca.civilizations.kingdom.TerritoryHandler;
@@ -159,6 +160,11 @@ public class Civilizations {
             RulerBookItem::new,
             new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
+    /** Чертёж: выбрать место постройки. */
+    public static final DeferredItem<Item> BLUEPRINT = ITEMS.registerItem("blueprint",
+            BlueprintItem::new,
+            new Item.Properties().stacksTo(1));
+
     /** Карта земель: показывает все королевства. */
     public static final DeferredItem<Item> KINGDOM_MAP = ITEMS.registerItem("kingdom_map",
             KingdomMapItem::new,
@@ -203,6 +209,7 @@ public class Civilizations {
                         output.accept(COMMAND_STAFF.get());
                         output.accept(KINGDOM_MAP.get());
                         output.accept(RULER_BOOK.get());
+                        output.accept(BLUEPRINT.get());
                         output.accept(TOWN_HALL_ITEM.get());
                         output.accept(KNIGHT_SWORD.get());
                         output.accept(CATAPULT_ITEM.get());
