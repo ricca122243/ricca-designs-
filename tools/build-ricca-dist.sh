@@ -12,8 +12,10 @@ cp "$SRC/index.html" "$OUT/"
 cp -r "$SRC/css" "$SRC/js" "$OUT/"
 
 # Медиа и шрифты: копируем только файлы, на которые ссылаются html/css/js (включая srcset и data-атрибуты)
-refs=$(grep -ohE '(img|video|fonts)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css)' \
-         "$SRC/index.html" "$SRC/css/"*.css "$SRC/js/"*.js | sed 's#^\.\./##' | sort -u)
+# HTML берём без комментариев: в них лежат отключённые блоки (например, редакционный кадр, которого ещё нет)
+html_nocomments=$(sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$SRC/index.html")
+refs=$( (printf '%s' "$html_nocomments"; cat "$SRC/css/"*.css "$SRC/js/"*.js) \
+         | grep -ohE '(img|video|fonts)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css)' | sed 's#^\.\./##' | sort -u)
 for ref in $refs; do
   [ -f "$SRC/$ref" ] || { echo "нет файла: $ref"; exit 1; }
   mkdir -p "$OUT/$(dirname "$ref")"
@@ -29,7 +31,7 @@ cp tools/dist-extra/robots.txt tools/dist-extra/.htaccess tools/dist-extra/_head
 
 # Проверка: все локальные ссылки существуют
 missing=0
-for ref in $(grep -ohE '(img|video|fonts|css|js)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css|js)' "$OUT"/index.html "$OUT"/css/*.css | sed 's#^\.\./##' | sort -u); do
+for ref in $( (sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$OUT"/index.html; cat "$OUT"/css/*.css) | grep -ohE '(img|video|fonts|css|js)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css|js)' | sed 's#^\.\./##' | sort -u); do
   [ -f "$OUT/$ref" ] || { echo "нет файла: $ref"; missing=1; }
 done
 [ "$missing" -eq 0 ] || exit 1
