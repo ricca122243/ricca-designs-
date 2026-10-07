@@ -8,8 +8,8 @@ import net.minecraft.network.chat.Component;
 
 /** Меню управления королевством: кнопки вызывают команды /kingdom. */
 public class KingdomMenuScreen extends Screen {
-    private static final String[] HIRE = {"builder", "lumberjack", "farmer", "miner", "shepherd", "warrior", "archer", "guard"};
-    private static final String[] BUILD = {"leveling", "house", "warehouse", "pen", "palisade", "wall", "keep"};
+    private static final String[] HIRE = {"builder", "lumberjack", "farmer", "miner", "shepherd", "healer", "blacksmith", "warrior", "archer", "guard"};
+    private static final String[] BUILD = {"leveling", "house", "warehouse", "pen", "palisade", "tower", "wall", "keep"};
 
     public KingdomMenuScreen() {
         super(Component.translatable("civilizations.menu.title"));
@@ -34,7 +34,7 @@ public class KingdomMenuScreen extends Screen {
             addRenderableWidget(Button.builder(Component.translatable("entity.civilizations.settler." + p), b -> send("kingdom hire " + p)).bounds(x, y, w, h).build());
         }
         // Стройка
-        int top2 = top + 14 + 2 * (h + 4) + 18;
+        int top2 = top + 14 + 3 * (h + 4) + 18;
         for (int i = 0; i < BUILD.length; i++) {
             String t = BUILD[i];
             int x = cx - 200 + (i % 4) * (w + 5);
@@ -47,7 +47,13 @@ public class KingdomMenuScreen extends Screen {
         addRenderableWidget(Button.builder(Component.translatable("civilizations.menu.home"), b -> send("kingdom home")).bounds(cx - 100, top3 + 14, w, h).build());
         addRenderableWidget(Button.builder(Component.translatable("civilizations.menu.stats"), b -> send("kingdom stats")).bounds(cx, top3 + 14, w, h).build());
         addRenderableWidget(Button.builder(Component.translatable("civilizations.menu.list"), b -> send("kingdom list")).bounds(cx + 100, top3 + 14, w, h).build());
-        addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose()).bounds(cx - 50, top3 + 14 + h + 10, 100, h).build());
+        int y4 = top3 + 14 + h + 4;
+        addRenderableWidget(Button.builder(Component.translatable("civilizations.menu.summon"), b -> send("kingdom summon")).bounds(cx - 200, y4, w, h).build());
+        addRenderableWidget(Button.builder(Component.translatable("civilizations.menu.where"), b -> send("kingdom where")).bounds(cx - 100, y4, w, h).build());
+        addRenderableWidget(Button.builder(Component.translatable("civilizations.menu.tax_low"), b -> send("kingdom tax low")).bounds(cx, y4, w, h).build());
+        addRenderableWidget(Button.builder(Component.translatable("civilizations.menu.tax_high"), b -> send("kingdom tax high")).bounds(cx + 100, y4, w, h).build());
+        addRenderableWidget(Button.builder(Component.translatable("civilizations.menu.tax_normal"), b -> send("kingdom tax normal")).bounds(cx - 200, y4 + h + 4, w, h).build());
+        addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose()).bounds(cx - 50, y4 + 2 * (h + 4) + 4, 100, h).build());
     }
 
     private void send(String command) {
@@ -64,7 +70,7 @@ public class KingdomMenuScreen extends Screen {
         int cx = this.width / 2;
         g.drawCenteredString(this.font, this.title, cx, 20, 0xFFFFFF);
         g.drawString(this.font, Component.translatable("civilizations.menu.hire_title"), cx - 200, 40, 0xFFD700);
-        int top2 = 40 + 14 + 2 * 24 + 18;
+        int top2 = 40 + 14 + 3 * 24 + 18;
         g.drawString(this.font, Component.translatable("civilizations.menu.build_title"), cx - 200, top2, 0xFFD700);
         int top3 = top2 + 14 + 2 * 24 + 18;
         g.drawString(this.font, Component.translatable("civilizations.menu.army_title"), cx - 200, top3, 0xFFD700);

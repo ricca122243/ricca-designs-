@@ -54,6 +54,7 @@ public class KingdomCharterItem extends Item {
         if (hall != null) {
             hall.setKingdom(kingdomName);
         }
+        placeBanner(level, pos.above(), kingdomName);
 
         // Призываем поселенцев
         for (int i = 0; i < SETTLER_OFFSETS.length; i++) {
@@ -80,6 +81,18 @@ public class KingdomCharterItem extends Item {
         giveItem(player, new ItemStack(Civilizations.COMMAND_STAFF.get()));
         giveItem(player, new ItemStack(Civilizations.KINGDOM_MAP.get()));
         return InteractionResult.CONSUME;
+    }
+
+    /** Знамя королевства над ратушей, цвет по имени. */
+    public static void placeBanner(Level level, BlockPos pos, String name) {
+        net.minecraft.world.level.block.Block[] banners = {
+                net.minecraft.world.level.block.Blocks.RED_BANNER, net.minecraft.world.level.block.Blocks.BLUE_BANNER,
+                net.minecraft.world.level.block.Blocks.GREEN_BANNER, net.minecraft.world.level.block.Blocks.YELLOW_BANNER,
+                net.minecraft.world.level.block.Blocks.PURPLE_BANNER, net.minecraft.world.level.block.Blocks.ORANGE_BANNER,
+                net.minecraft.world.level.block.Blocks.CYAN_BANNER, net.minecraft.world.level.block.Blocks.WHITE_BANNER};
+        if (level.getBlockState(pos).canBeReplaced()) {
+            level.setBlock(pos, banners[Math.floorMod(name.hashCode(), banners.length)].defaultBlockState(), 3);
+        }
     }
 
     private static void giveItem(Player player, ItemStack stack) {

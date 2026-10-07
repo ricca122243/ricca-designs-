@@ -168,6 +168,7 @@ public class NpcKingdomSpawner {
             return;
         }
         hall.setupNpc(name);
+        com.ricca.civilizations.item.KingdomCharterItem.placeBanner(level, pos.above(), name);
         KingdomSavedData data = KingdomSavedData.get(level);
         if (movers.isEmpty()) {
             hall.buildStarterSettlement();

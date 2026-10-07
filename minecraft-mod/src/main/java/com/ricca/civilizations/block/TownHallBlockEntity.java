@@ -46,6 +46,13 @@ public class TownHallBlockEntity extends BlockEntity {
     private boolean wallBuilt = false;
     private boolean penBuilt = false;
     private boolean palisadeBuilt = false;
+    private boolean towerBuilt = false;
+    /** Вооружение от кузнеца: +1 урон бойцам за каждые 4 единицы. */
+    private int arms = 0;
+    /** Налог: 0 низкий, 1 обычный, 2 высокий. */
+    private int taxRate = 1;
+    private int caravanTimer = 0;
+    private static final int CARAVAN_INTERVAL_TICKS = 18000;
     private boolean leveled = false;
     private boolean keepBuilt = false;
     private boolean shipBuilt = false;
@@ -126,6 +133,33 @@ public class TownHallBlockEntity extends BlockEntity {
     public boolean isWarehouseBuilt() { return warehouseBuilt; }
     public boolean isWallBuilt() { return wallBuilt; }
     public boolean isPenBuilt() { return penBuilt; }
+    public boolean isTowerBuilt() { return towerBuilt; }
+    public int getArms() { return arms; }
+    public int getTaxRate() { return taxRate; }
+    public void setTaxRate(int rate) { taxRate = Math.max(0, Math.min(2, rate)); setChanged(); }
+
+    /** Кузнец: 5 железа → +1 вооружение (до 20). */
+    public boolean forgeArms() {
+        if (iron < 5 || arms >= 20) return false;
+        iron -= 5;
+        arms++;
+        setChanged();
+        return true;
+    }
+
+    /** Переименовать королевство вместе с жителями. */
+    public void rename(ServerLevel serverLevel, String newName) {
+        for (SettlerEntity s : settlers(serverLevel)) {
+            s.setKingdom(newName);
+        }
+        kingdom = newName;
+        setChanged();
+    }
+
+    /** Название по уровню: поселение, город, крепость, королевство. */
+    public String titleKey() {
+        return "civilizations.title." + Math.max(1, Math.min(4, tier));
+    }
     public int getTier() { return tier; }
 
     /** Проект для строителя. */
@@ -159,6 +193,9 @@ public class TownHallBlockEntity extends BlockEntity {
         if (!palisadeBuilt && !wallBuilt) {
             return new Project(Blueprint.Type.PALISADE, -1);
         }
+        if (!towerBuilt) {
+            return new Project(Blueprint.Type.TOWER, -1);
+        }
         if (!wallBuilt) {
             return new Project(Blueprint.Type.WALL, -1);
         }
@@ -190,6 +227,16 @@ public class TownHallBlockEntity extends BlockEntity {
             case WAREHOUSE -> warehouseBuilt = true;
             case PEN -> penBuilt = true;
             case PALISADE -> palisadeBuilt = true;
+            case TOWER -> {
+                towerBuilt = true;
+                if (level instanceof ServerLevel serverLevel) {
+                    for (SettlerEntity s : settlers(serverLevel)) {
+                        if (s.getProfession() == Profession.ARCHER) {
+                            s.setGuardPost(KingdomLayout.towerTop(getBlockPos()));
+                        }
+                    }
+                }
+            }
             case LEVELING -> leveled = true;
             case KEEP -> keepBuilt = true;
             case SHIP_EW, SHIP_NS -> {
@@ -362,6 +409,9 @@ public class TownHallBlockEntity extends BlockEntity {
         if (profession == Profession.GUARD && wallBuilt) {
             settler.setGuardPost(KingdomLayout.gatePos(pos));
         }
+        if (profession == Profession.ARCHER && towerBuilt) {
+            settler.setGuardPost(KingdomLayout.towerTop(pos));
+        }
         settler.setPersistenceRequired();
         level.addFreshEntity(settler);
         return settler;
@@ -428,6 +478,8 @@ public class TownHallBlockEntity extends BlockEntity {
             }
         }
         player.displayClientMessage(Component.translatable("civilizations.townhall.title", kingdom).withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD), false);
+        player.displayClientMessage(Component.translatable("civilizations.townhall.rank", Component.translatable(titleKey()), arms,
+                Component.translatable("civilizations.tax." + taxRate)).withStyle(ChatFormatting.GOLD), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.population", population, warriors, housesBuilt), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.resources", wood, stone, food, iron), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.gold", gold, territoryRadius()).withStyle(ChatFormatting.YELLOW), false);
@@ -469,6 +521,16 @@ public class TownHallBlockEntity extends BlockEntity {
         if (++th.tierTimer >= 600) {
             th.tierTimer = 0;
             th.updateTier(serverLevel);
+            for (SettlerEntity s : th.settlers(serverLevel)) {
+                if (s.isWarrior()) {
+                    net.minecraft.world.entity.ai.attributes.AttributeInstance a = s.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+                    if (a != null) a.setBaseValue(2.0 + th.arms / 4.0);
+                }
+            }
+        }
+        if (!th.npc && ++th.caravanTimer >= CARAVAN_INTERVAL_TICKS) {
+            th.caravanTimer = 0;
+            th.spawnCaravan(serverLevel);
         }
         if (++th.tricklesTimer >= 200) {
             th.tricklesTimer = 0;
@@ -506,6 +568,12 @@ public class TownHallBlockEntity extends BlockEntity {
         th.spawnSettler(workers[level.random.nextInt(workers.length)]);
     }
 
+    private static int countOf(List<SettlerEntity> list, Profession p) {
+        int n = 0;
+        for (SettlerEntity s : list) if (s.getProfession() == p) n++;
+        return n;
+    }
+
     /** Мозг компьютерного королевства: нанимает жителей и устраивает набеги. */
     private void npcTick(ServerLevel serverLevel) {
         if (++npcTimer >= NPC_HIRE_INTERVAL_TICKS) {
@@ -536,6 +604,8 @@ public class TownHallBlockEntity extends BlockEntity {
                         : farmers < 1 ? Profession.FARMER
                         : miners < 1 ? Profession.MINER
                         : shepherds < 1 && penBuilt ? Profession.SHEPHERD
+                        : settlers.size() >= 12 && countOf(settlers, Profession.HEALER) < 1 ? Profession.HEALER
+                        : settlers.size() >= 14 && warehouseBuilt && countOf(settlers, Profession.BLACKSMITH) < 1 ? Profession.BLACKSMITH
                         : archers < 1 && wallBuilt ? Profession.ARCHER
                         : settlers.size() < 6 + housesBuilt * 3 ? Profession.byId(level.random.nextInt(Profession.values().length)) : null;
                 if (want != null) {
@@ -752,7 +822,7 @@ public class TownHallBlockEntity extends BlockEntity {
     private void dailyImmigrants(ServerLevel serverLevel) {
         int count = settlers(serverLevel).size();
         int cap = 6 + housesBuilt * 3;
-        int arriving = 3 + level.random.nextInt(3);
+        int arriving = 3 + level.random.nextInt(3) + (taxRate == 0 ? 1 : taxRate == 2 ? -2 : 0);
         Profession[] workers = {Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER, Profession.MINER, Profession.SHEPHERD};
         int builders = 0;
         for (SettlerEntity s : settlers(serverLevel)) if (s.getProfession() == Profession.BUILDER) builders++;
@@ -794,7 +864,8 @@ public class TownHallBlockEntity extends BlockEntity {
     /** Голод при большом населении: часть жителей уходит и основывает своё королевство. */
     private void maybeSplit(ServerLevel serverLevel) {
         List<SettlerEntity> settlers = settlers(serverLevel);
-        if (settlers.size() < 12 || food >= 5 || level.random.nextFloat() > 0.3f) {
+        float splitChance = taxRate == 2 ? 0.6f : 0.3f;
+        if (settlers.size() < 12 || (food >= 5 && taxRate != 2) || level.random.nextFloat() > splitChance) {
             return;
         }
         List<SettlerEntity> movers = new java.util.ArrayList<>();
@@ -837,6 +908,28 @@ public class TownHallBlockEntity extends BlockEntity {
         }
     }
 
+    /** Торговый караван: странствующий торговец с ламами приходит к ратуше игрока. */
+    private void spawnCaravan(ServerLevel serverLevel) {
+        BlockPos pos = getBlockPos();
+        net.minecraft.world.entity.npc.WanderingTrader trader = net.minecraft.world.entity.EntityType.WANDERING_TRADER.create(serverLevel);
+        if (trader == null) return;
+        trader.moveTo(pos.getX() + 3.5, pos.getY(), pos.getZ() + 3.5, 0f, 0f);
+        trader.setDespawnDelay(24000);
+        serverLevel.addFreshEntity(trader);
+        for (int i = 0; i < 2; i++) {
+            net.minecraft.world.entity.animal.horse.TraderLlama llama = net.minecraft.world.entity.EntityType.TRADER_LLAMA.create(serverLevel);
+            if (llama == null) continue;
+            llama.moveTo(pos.getX() + 4.5 + i, pos.getY(), pos.getZ() + 2.5, 0f, 0f);
+            llama.setLeashedTo(trader, true);
+            serverLevel.addFreshEntity(llama);
+        }
+        for (ServerPlayer p : serverLevel.players()) {
+            if (p.blockPosition().distSqr(pos) < 128 * 128) {
+                p.displayClientMessage(Component.translatable("civilizations.caravan", kingdom).withStyle(ChatFormatting.GOLD), false);
+            }
+        }
+    }
+
     /** Подарок от игрока: улучшает отношения. */
     public int receiveGift(ServerLevel serverLevel, String from, int value) {
         gold += value;
@@ -864,7 +957,7 @@ public class TownHallBlockEntity extends BlockEntity {
     /** Раз в минуту: налог с каждого жителя и продажа излишков со склада. */
     private void collectTaxes(ServerLevel serverLevel) {
         int population = settlers(serverLevel).size();
-        gold += population;
+        gold += taxRate == 0 ? population / 2 : taxRate == 2 ? population * 2 : population;
         int villages = KingdomSavedData.get(serverLevel).villagesOwnedBy(kingdom);
         gold += villages * 5;
         food += villages * 3;
@@ -894,6 +987,9 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putBoolean("WallBuilt", wallBuilt);
         tag.putBoolean("PenBuilt", penBuilt);
         tag.putBoolean("PalisadeBuilt", palisadeBuilt);
+        tag.putBoolean("TowerBuilt", towerBuilt);
+        tag.putInt("Arms", arms);
+        tag.putInt("TaxRate", taxRate);
         tag.putBoolean("Leveled", leveled);
         tag.putBoolean("KeepBuilt", keepBuilt);
         tag.putBoolean("ShipBuilt", shipBuilt);
@@ -925,6 +1021,9 @@ public class TownHallBlockEntity extends BlockEntity {
         wallBuilt = tag.getBoolean("WallBuilt");
         penBuilt = tag.getBoolean("PenBuilt");
         palisadeBuilt = tag.getBoolean("PalisadeBuilt");
+        towerBuilt = tag.getBoolean("TowerBuilt");
+        arms = tag.getInt("Arms");
+        taxRate = tag.contains("TaxRate") ? tag.getInt("TaxRate") : 1;
         leveled = tag.getBoolean("Leveled");
         keepBuilt = tag.getBoolean("KeepBuilt");
         shipBuilt = tag.getBoolean("ShipBuilt");

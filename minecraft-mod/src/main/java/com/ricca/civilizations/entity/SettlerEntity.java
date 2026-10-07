@@ -103,10 +103,11 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         // Мирные жители убегают от опасности, воины — нет.
+        // Мирные убегают от опасности; бойцы — только когда здоровья меньше трети (боевой дух).
         this.goalSelector.addGoal(1, new PanicGoal(this, 0.6) {
             @Override
             public boolean canUse() {
-                return !isWarrior() && super.canUse();
+                return (!isWarrior() || getHealth() < getMaxHealth() * 0.3f) && super.canUse();
             }
         });
         this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.0, true) {
@@ -129,6 +130,8 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         this.goalSelector.addGoal(3, new FarmGoal(this));
         this.goalSelector.addGoal(3, new MineGoal(this));
         this.goalSelector.addGoal(3, new ShepherdGoal(this));
+        this.goalSelector.addGoal(2, new HealGoal(this));
+        this.goalSelector.addGoal(3, new BlacksmithGoal(this));
         this.goalSelector.addGoal(4, new MoveTowardsRestrictionGoal(this, 0.5));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.4));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0f));
@@ -351,6 +354,16 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
                 setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.SHEARS));
                 setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0xEDEDED));
                 setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0xEDEDED));
+            }
+            case HEALER -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_APPLE));
+                setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0xF0F0F0));
+                setItemSlot(EquipmentSlot.HEAD, dyed(Items.LEATHER_HELMET, 0xD04060));
+            }
+            case BLACKSMITH -> {
+                setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_INGOT));
+                setItemSlot(EquipmentSlot.CHEST, dyed(Items.LEATHER_CHESTPLATE, 0x3A3A3A));
+                setItemSlot(EquipmentSlot.LEGS, dyed(Items.LEATHER_LEGGINGS, 0x3A3A3A));
             }
             case ARCHER -> {
                 setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));

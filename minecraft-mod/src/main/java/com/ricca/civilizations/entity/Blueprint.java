@@ -23,7 +23,7 @@ public final class Blueprint {
         }
     }
 
-    public enum Type { LEVELING, HOUSE, WAREHOUSE, PALISADE, WALL, PEN, KEEP, SHIP_EW, SHIP_NS }
+    public enum Type { LEVELING, HOUSE, WAREHOUSE, PALISADE, WALL, PEN, TOWER, KEEP, SHIP_EW, SHIP_NS }
 
     public final Type type;
     public final List<Step> steps;
@@ -45,6 +45,7 @@ public final class Blueprint {
     public static final Blueprint PEN = pen();
     public static final Blueprint LEVELING = leveling();
     public static final Blueprint PALISADE = palisade();
+    public static final Blueprint TOWER = tower();
     public static final Blueprint KEEP = keep();
     public static final Blueprint SHIP_EW = ship(true);
     public static final Blueprint SHIP_NS = ship(false);
@@ -57,6 +58,7 @@ public final class Blueprint {
             case PEN -> PEN;
             case LEVELING -> LEVELING;
             case PALISADE -> PALISADE;
+            case TOWER -> TOWER;
             case KEEP -> KEEP;
             case SHIP_EW -> SHIP_EW;
             case SHIP_NS -> SHIP_NS;
@@ -75,6 +77,7 @@ public final class Blueprint {
             case WAREHOUSE -> KingdomLayout.warehouseOrigin(hall);
             case WALL, PALISADE -> KingdomLayout.wallOrigin(hall);
             case PEN -> KingdomLayout.penOrigin(hall);
+            case TOWER -> KingdomLayout.towerOrigin(hall);
             case LEVELING -> KingdomLayout.levelingOrigin(hall);
             case KEEP -> KingdomLayout.keepOrigin(hall);
             case SHIP_EW, SHIP_NS -> hall;
@@ -173,6 +176,36 @@ public final class Blueprint {
         for (int x = 0; x < size; x++)
             for (int z = 0; z < size; z++)
                 plan.add(new Step(x, 4, z, Blocks.OAK_PLANKS.defaultBlockState(), false, false));
+    }
+
+    /** Сторожевая башня 3x3 высотой 7: каменная, с лестницей на южной стороне и площадкой лучника наверху. */
+    private static Blueprint tower() {
+        List<Step> plan = new ArrayList<>();
+        int size = KingdomLayout.TOWER_SIZE;
+        foundation(plan, size);
+        clear(plan, size, 9);
+        for (int y = 0; y <= 5; y++)
+            for (int x = 0; x < size; x++)
+                for (int z = 0; z < size; z++)
+                    plan.add(new Step(x, y, z, Blocks.COBBLESTONE.defaultBlockState(), false, false));
+        // Площадка
+        for (int x = -1; x <= size; x++)
+            for (int z = -1; z <= size; z++)
+                plan.add(new Step(x, 6, z, Blocks.OAK_PLANKS.defaultBlockState(), false, false));
+        for (int x = -1; x <= size; x++)
+            for (int z = -1; z <= size; z++) {
+                boolean edge = x == -1 || z == -1 || x == size || z == size;
+                if (edge && !(x == 1 && z == size)) {
+                    plan.add(new Step(x, 7, z, Blocks.OAK_FENCE.defaultBlockState(), false, false));
+                }
+            }
+        // Лестница по южной стене
+        for (int y = 1; y <= 6; y++) {
+            plan.add(new Step(1, y, size, Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, Direction.SOUTH), false, false));
+        }
+        plan.add(new Step(0, 8, 0, Blocks.TORCH.defaultBlockState(), false, false));
+        plan.add(new Step(size - 1, 8, size - 1, Blocks.TORCH.defaultBlockState(), false, false));
+        return new Blueprint(Type.TOWER, plan, 0, 0, size - 1, size - 1);
     }
 
     /** Частокол: деревянный забор по линии будущей стены, с проходами-воротами. Позже заменяется каменной стеной. */

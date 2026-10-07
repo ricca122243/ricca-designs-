@@ -19,7 +19,8 @@ public class GuardPostGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (settler.getProfession() != Profession.GUARD || settler.level().isClientSide || settler.getTarget() != null) {
+        boolean posted = settler.getProfession() == Profession.GUARD || settler.getProfession() == Profession.ARCHER;
+        if (!posted || settler.level().isClientSide || settler.getTarget() != null || settler.getOrderPos() != null || settler.getFollowPlayer() != null) {
             return false;
         }
         BlockPos post = settler.getGuardPost();
