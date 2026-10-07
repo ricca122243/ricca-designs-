@@ -191,5 +191,17 @@
   "entity.civilizations.settler.architect": "Проектировщик",
   "entity.civilizations.settler.architect.named": "Проектировщик королевства %s",
   "entity.civilizations.settler.slave": "%s (раб королевства %s)",
-  "civilizations.sign.title": "= СКЛАД ="
+  "civilizations.sign.title": "= СКЛАД =",
+  "civilizations.task.idle": "без дела",
+  "civilizations.task.build": "строит",
+  "civilizations.task.chop": "рубит лес",
+  "civilizations.task.farm": "пашет",
+  "civilizations.task.mine": "копает",
+  "civilizations.task.herd": "пасёт",
+  "civilizations.task.order": "по приказу",
+  "civilizations.task.follow": "идёт за вами",
+  "civilizations.task.post": "на посту",
+  "civilizations.task.heal": "лечит",
+  "civilizations.task.forge": "куёт",
+  "civilizations.staff.task": "Сейчас: %s"
 }

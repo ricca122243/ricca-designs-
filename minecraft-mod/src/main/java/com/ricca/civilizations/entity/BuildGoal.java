@@ -68,6 +68,7 @@ public class BuildGoal extends Goal {
 
     @Override
     public void start() {
+        settler.setTask("build");
         Blueprint.Type type = settler.getProjectType();
         blueprint = type == null ? null : Blueprint.of(type);
         origin = type == null ? BlockPos.ZERO
@@ -82,6 +83,7 @@ public class BuildGoal extends Goal {
 
     @Override
     public void stop() {
+        settler.setTask("idle");
         settler.getNavigation().stop();
     }
 

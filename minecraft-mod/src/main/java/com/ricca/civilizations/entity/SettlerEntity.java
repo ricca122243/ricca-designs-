@@ -56,6 +56,10 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     /** Уровень снаряжения королевства: 1 камень, 2 железо, 3 железо+алмазный меч, 4 алмаз. */
     private static final EntityDataAccessor<Integer> TIER =
             SynchedEntityData.defineId(SettlerEntity.class, EntityDataSerializers.INT);
+    /** Чем занят сейчас (ключ перевода), показывается над головой. */
+    private static final EntityDataAccessor<String> TASK =
+            SynchedEntityData.defineId(SettlerEntity.class, EntityDataSerializers.STRING);
+
     /** Раб: житель покорённого королевства. */
     private static final EntityDataAccessor<Boolean> SLAVE =
             SynchedEntityData.defineId(SettlerEntity.class, EntityDataSerializers.BOOLEAN);
@@ -169,6 +173,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         builder.define(PROFESSION, Profession.BUILDER.ordinal());
         builder.define(TIER, 1);
         builder.define(SLAVE, false);
+        builder.define(TASK, "idle");
     }
 
     // --- Королевство и профессия ---
@@ -186,6 +191,29 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     }
 
     public String getHomeKingdom() { return homeKingdom; }
+
+    public String getTask() { return this.entityData.get(TASK); }
+
+    /** Цели ИИ сообщают, чем занят житель. */
+    public void setTask(String task) {
+        if (!task.equals(getTask())) {
+            this.entityData.set(TASK, task);
+            updateDisplayName();
+        }
+    }
+
+    /** Есть ли у работника своё дело; если нет — он идёт помогать дровосекам. */
+    public boolean hasOwnWork() {
+        com.ricca.civilizations.block.TownHallBlockEntity hall = com.ricca.civilizations.block.TownHallBlockEntity.at(level(), townHall);
+        return switch (getProfession()) {
+            case BUILDER -> projectType != null;
+            case LUMBERJACK, FARMER, MINER -> true;
+            case SHEPHERD -> hall != null && hall.isPenBuilt();
+            case BLACKSMITH -> hall != null && hall.isWarehouseBuilt() && hall.getIron() >= 5;
+            case HEALER, ARCHITECT -> false;
+            default -> true;
+        };
+    }
     public boolean isSlave() { return this.entityData.get(SLAVE); }
 
     public void setSlave(boolean slave) {
@@ -668,13 +696,15 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
 
     private void updateDisplayName() {
         String kingdom = getKingdom();
+        Component base;
         if (kingdom.isEmpty()) {
-            setCustomName(Component.translatable("entity.civilizations.settler." + getProfession().key()));
+            base = Component.translatable("entity.civilizations.settler." + getProfession().key());
         } else if (isSlave()) {
-            setCustomName(Component.translatable("entity.civilizations.settler.slave", Component.translatable("entity.civilizations.settler." + getProfession().key()), kingdom));
+            base = Component.translatable("entity.civilizations.settler.slave", Component.translatable("entity.civilizations.settler." + getProfession().key()), kingdom);
         } else {
-            setCustomName(Component.translatable("entity.civilizations.settler." + getProfession().key() + ".named", kingdom));
+            base = Component.translatable("entity.civilizations.settler." + getProfession().key() + ".named", kingdom);
         }
+        setCustomName(Component.empty().append(base).append(" [").append(Component.translatable("civilizations.task." + getTask())).append("]"));
         setCustomNameVisible(true);
     }
 

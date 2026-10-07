@@ -40,7 +40,13 @@ public class HealGoal extends Goal {
     }
 
     @Override
+    public void start() {
+        settler.setTask("heal");
+    }
+
+    @Override
     public void stop() {
+        settler.setTask("idle");
         patient = null;
         settler.getNavigation().stop();
     }

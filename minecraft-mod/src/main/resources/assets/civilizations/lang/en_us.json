@@ -191,5 +191,17 @@
   "entity.civilizations.settler.architect": "Architect",
   "entity.civilizations.settler.architect.named": "Architect of %s",
   "entity.civilizations.settler.slave": "%s (slave of %s)",
-  "civilizations.sign.title": "= STORAGE ="
+  "civilizations.sign.title": "= STORAGE =",
+  "civilizations.task.idle": "idle",
+  "civilizations.task.build": "building",
+  "civilizations.task.chop": "logging",
+  "civilizations.task.farm": "farming",
+  "civilizations.task.mine": "mining",
+  "civilizations.task.herd": "herding",
+  "civilizations.task.order": "on orders",
+  "civilizations.task.follow": "following",
+  "civilizations.task.post": "on post",
+  "civilizations.task.heal": "healing",
+  "civilizations.task.forge": "forging",
+  "civilizations.staff.task": "Now: %s"
 }

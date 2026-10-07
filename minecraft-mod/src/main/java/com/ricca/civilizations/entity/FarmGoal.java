@@ -51,12 +51,14 @@ public class FarmGoal extends Goal {
 
     @Override
     public void start() {
+        settler.setTask("farm");
         cooldown = WORK_DELAY_TICKS;
         stuckTicks = 0;
     }
 
     @Override
     public void stop() {
+        settler.setTask("idle");
         settler.getNavigation().stop();
     }
 

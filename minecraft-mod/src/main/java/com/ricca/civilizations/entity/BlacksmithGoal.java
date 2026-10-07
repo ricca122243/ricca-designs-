@@ -40,7 +40,13 @@ public class BlacksmithGoal extends Goal {
     }
 
     @Override
+    public void start() {
+        settler.setTask("forge");
+    }
+
+    @Override
     public void stop() {
+        settler.setTask("idle");
         settler.getNavigation().stop();
     }
 

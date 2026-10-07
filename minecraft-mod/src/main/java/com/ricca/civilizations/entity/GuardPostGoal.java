@@ -35,6 +35,7 @@ public class GuardPostGoal extends Goal {
 
     @Override
     public void start() {
+        settler.setTask("post");
         BlockPos post = settler.getGuardPost();
         if (post != null) {
             Vec3 c = post.getCenter();

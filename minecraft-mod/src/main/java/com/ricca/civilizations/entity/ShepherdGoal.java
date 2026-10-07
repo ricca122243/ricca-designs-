@@ -55,7 +55,13 @@ public class ShepherdGoal extends Goal {
     }
 
     @Override
+    public void start() {
+        settler.setTask("herd");
+    }
+
+    @Override
     public void stop() {
+        settler.setTask("idle");
         settler.getNavigation().stop();
     }
 

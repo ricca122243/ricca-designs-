@@ -45,7 +45,10 @@ public class ChopTreesGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (settler.getProfession() != Profession.LUMBERJACK || settler.level().isClientSide) {
+        if (settler.level().isClientSide || settler.isWarrior()) {
+            return false;
+        }
+        if (settler.getProfession() != Profession.LUMBERJACK && settler.hasOwnWork()) {
             return false;
         }
         BlockPos hall = settler.getTownHall();
@@ -70,17 +73,19 @@ public class ChopTreesGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return (tree != null || sapling != null) && settler.getProfession() == Profession.LUMBERJACK;
+        return (tree != null || sapling != null) && (settler.getProfession() == Profession.LUMBERJACK || !settler.hasOwnWork());
     }
 
     @Override
     public void start() {
+        settler.setTask("chop");
         cooldown = CHOP_DELAY_TICKS;
         stuckTicks = 0;
     }
 
     @Override
     public void stop() {
+        settler.setTask("idle");
         tree = null;
         sapling = null;
         settler.getNavigation().stop();

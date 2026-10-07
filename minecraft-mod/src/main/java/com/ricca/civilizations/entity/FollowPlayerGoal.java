@@ -51,7 +51,13 @@ public class FollowPlayerGoal extends Goal {
     }
 
     @Override
+    public void start() {
+        settler.setTask("follow");
+    }
+
+    @Override
     public void stop() {
+        settler.setTask("idle");
         player = null;
         settler.getNavigation().stop();
     }

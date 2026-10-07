@@ -52,6 +52,7 @@ public class MineGoal extends Goal {
 
     @Override
     public void start() {
+        settler.setTask("mine");
         index = 0;
         cooldown = DIG_DELAY_TICKS;
         stuckTicks = 0;
@@ -59,6 +60,7 @@ public class MineGoal extends Goal {
 
     @Override
     public void stop() {
+        settler.setTask("idle");
         settler.getNavigation().stop();
     }
 

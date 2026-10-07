@@ -51,7 +51,13 @@ public class OrderGoal extends Goal {
     }
 
     @Override
+    public void start() {
+        settler.setTask("order");
+    }
+
+    @Override
     public void stop() {
+        settler.setTask("idle");
         settler.getNavigation().stop();
     }
 }
