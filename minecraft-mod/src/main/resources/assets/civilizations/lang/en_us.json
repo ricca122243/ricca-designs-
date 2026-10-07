@@ -80,5 +80,11 @@
   "civilizations.staff.ordered.leveling": "Land leveling ordered: free (storage: %3$s wood, %4$s stone)",
   "civilizations.townhall.buildings": "Leveled %s, pen %s, keep %s, ship %s",
   "civilizations.ship": "%s has launched a ship at its harbor!",
-  "civilizations.trade": "%s sends supplies to its ally %s"
+  "civilizations.trade": "%s sends supplies to its ally %s",
+  "civilizations.staff.status": "Health %s/%s, hunger %s/20",
+  "civilizations.village.march": "%s marches on a nearby village to make it pay tribute",
+  "civilizations.village.contest": "%s marches to seize a village from %s!",
+  "civilizations.village.taken": "The village at (%3$s, %4$s) now pays tribute to %1$s",
+  "civilizations.village.retaken": "%s took the village at (%3$s, %4$s) from %2$s",
+  "civilizations.townhall.villages": "Tribute villages: %s (+5 gold, +3 food each per minute)"
 }

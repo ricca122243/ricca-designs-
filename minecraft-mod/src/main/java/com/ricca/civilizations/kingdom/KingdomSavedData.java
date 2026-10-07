@@ -26,6 +26,25 @@ public class KingdomSavedData extends SavedData {
     /** Отношения между королевствами, ключ «A|B» (по алфавиту), от −100 до 100. */
     private final Map<String, Integer> relations = new HashMap<>();
 
+    /** Деревни-данники: позиция деревни → королевство-хозяин. */
+    private final Map<Long, String> villageOwners = new HashMap<>();
+
+    @javax.annotation.Nullable
+    public String villageOwner(BlockPos village) {
+        return villageOwners.get(village.asLong());
+    }
+
+    public void setVillageOwner(BlockPos village, String owner) {
+        villageOwners.put(village.asLong(), owner);
+        setDirty();
+    }
+
+    public int villagesOwnedBy(String kingdom) {
+        int n = 0;
+        for (String o : villageOwners.values()) if (o.equals(kingdom)) n++;
+        return n;
+    }
+
     public static final int DEFAULT_RELATION = -20;
     public static final int ALLY_THRESHOLD = 50;
     public static final int WAR_THRESHOLD = -40;
@@ -76,6 +95,10 @@ public class KingdomSavedData extends SavedData {
         for (String k : rel.getAllKeys()) {
             data.relations.put(k, rel.getInt(k));
         }
+        CompoundTag vil = tag.getCompound("Villages");
+        for (String k : vil.getAllKeys()) {
+            data.villageOwners.put(Long.parseLong(k), vil.getString(k));
+        }
         return data;
     }
 
@@ -101,6 +124,11 @@ public class KingdomSavedData extends SavedData {
             rel.putInt(e.getKey(), e.getValue());
         }
         tag.put("Relations", rel);
+        CompoundTag vil = new CompoundTag();
+        for (Map.Entry<Long, String> e : villageOwners.entrySet()) {
+            vil.putString(Long.toString(e.getKey()), e.getValue());
+        }
+        tag.put("Villages", vil);
         return tag;
     }
 

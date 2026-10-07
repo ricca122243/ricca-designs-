@@ -21,6 +21,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -66,6 +68,12 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
     private Blueprint.Type projectType;
     @Nullable
     private BlockPos projectOrigin;
+    /** Сытость 0..20, как у игрока. */
+    private int hunger = 20;
+    private int hungerTimer = 0;
+    private int healTimer = 0;
+    private int stuckTimer = 0;
+    private double lastX, lastZ;
     /** Приказ игрока: идти сюда и ждать. */
     @Nullable
     private BlockPos orderPos;
@@ -133,6 +141,9 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         });
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, 10, true, false,
                 target -> isWarrior()));
+        // В походе на деревню воины бьют железных големов.
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, net.minecraft.world.entity.animal.IronGolem.class, 10, true, false,
+                target -> isWarrior() && getOrderPos() != null));
         // Воины бьют игроков, с чьим королевством идёт война.
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 20, true, false,
                 target -> isWarrior() && target instanceof Player p && isHostileTo(p)));
@@ -411,6 +422,103 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
                     setTarget(null);
                 }
             }
+            if (tickCount % 20 == 0) {
+                tickHunger();
+                tickClimbing();
+            }
+        }
+    }
+
+    public int getHunger() {
+        return hunger;
+    }
+
+    /** Голод как у игрока: сытость падает, еда берётся со склада, без еды житель слабеет и умирает. */
+    private void tickHunger() {
+        if (++hungerTimer >= 60) { // раз в минуту −1
+            hungerTimer = 0;
+            hunger = Math.max(0, hunger - 1);
+        }
+        if (hunger < 14) {
+            com.ricca.civilizations.block.TownHallBlockEntity hall = com.ricca.civilizations.block.TownHallBlockEntity.at(level(), townHall);
+            if (hall != null && hall.getFood() > 0) {
+                hall.addFood(-1);
+                hunger = Math.min(20, hunger + 6);
+                playSound(SoundEvents.GENERIC_EAT, 0.7f, 1.0f);
+            }
+        }
+        if (++healTimer >= 10) {
+            healTimer = 0;
+            if (hunger == 0) {
+                hurt(damageSources().starve(), 1.0f);
+            } else if (hunger >= 14 && getHealth() < getMaxHealth()) {
+                heal(1.0f);
+            }
+        }
+        AttributeInstance speed = getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed != null) {
+            speed.setBaseValue(hunger < 6 ? 0.35 : 0.5);
+        }
+    }
+
+    /**
+     * Если житель упёрся в стену выше шага, он ставит лестницу и лезет по ней.
+     */
+    private void tickClimbing() {
+        if (getNavigation().isDone() || getNavigation().getTargetPos() == null || isNoAi()) {
+            stuckTimer = 0;
+            lastX = getX();
+            lastZ = getZ();
+            return;
+        }
+        double moved = Math.abs(getX() - lastX) + Math.abs(getZ() - lastZ);
+        lastX = getX();
+        lastZ = getZ();
+        if (moved > 0.6) {
+            stuckTimer = 0;
+            return;
+        }
+        if (++stuckTimer < 2) {
+            return;
+        }
+        stuckTimer = 0;
+        BlockPos target = getNavigation().getTargetPos();
+        int dx = target.getX() - blockPosition().getX();
+        int dz = target.getZ() - blockPosition().getZ();
+        if (dx == 0 && dz == 0) {
+            return;
+        }
+        net.minecraft.core.Direction dir = Math.abs(dx) >= Math.abs(dz)
+                ? (dx > 0 ? net.minecraft.core.Direction.EAST : net.minecraft.core.Direction.WEST)
+                : (dz > 0 ? net.minecraft.core.Direction.SOUTH : net.minecraft.core.Direction.NORTH);
+        BlockPos feet = blockPosition();
+        BlockPos wall = feet.relative(dir);
+        Level level = level();
+        if (!level.getBlockState(wall).isSolid() || !level.getBlockState(wall.above()).isSolid()) {
+            return; // стена ниже двух блоков — перешагнёт сам
+        }
+        // Высота стены
+        int height = 0;
+        while (height < 8 && level.getBlockState(wall.above(height)).isSolid()) {
+            height++;
+        }
+        if (height >= 8) {
+            return;
+        }
+        // Ставим лестницу у стены на своей клетке снизу доверху
+        BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, dir.getOpposite());
+        boolean placed = false;
+        for (int y = 0; y < height; y++) {
+            BlockPos at = feet.above(y);
+            BlockState here = level.getBlockState(at);
+            if ((here.isAir() || here.canBeReplaced()) && level.getBlockState(wall.above(y)).isSolid()) {
+                level.setBlock(at, ladder, 3);
+                placed = true;
+            }
+        }
+        if (placed) {
+            swing(InteractionHand.MAIN_HAND);
+            setDeltaMovement(getDeltaMovement().add(dir.getStepX() * 0.1, 0.3, dir.getStepZ() * 0.1));
         }
     }
 
@@ -467,6 +575,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         tag.putInt("Profession", getProfession().ordinal());
         tag.putInt("HouseIndex", houseIndex);
         tag.putInt("Tier", getTier());
+        tag.putInt("Hunger", hunger);
         if (projectType != null) {
             tag.putString("Project", projectType.name());
         }
@@ -497,6 +606,7 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
         applyProfessionStats(getProfession());
         houseIndex = tag.contains("HouseIndex") ? tag.getInt("HouseIndex") : -1;
         this.entityData.set(TIER, tag.contains("Tier") ? tag.getInt("Tier") : 1);
+        hunger = tag.contains("Hunger") ? tag.getInt("Hunger") : 20;
         projectType = null;
         projectOrigin = tag.contains("ProjectOrigin") ? BlockPos.of(tag.getLong("ProjectOrigin")) : null;
         if (tag.contains("Project")) {

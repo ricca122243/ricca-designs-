@@ -80,5 +80,11 @@
   "civilizations.staff.ordered.leveling": "Заказано выравнивание земли: бесплатно (на складе: дерева %3$s, камня %4$s)",
   "civilizations.townhall.buildings": "Земля выровнена %s, загон %s, замок %s, корабль %s",
   "civilizations.ship": "%s спустило на воду корабль у своей пристани!",
-  "civilizations.trade": "%s отправляет припасы союзнику %s"
+  "civilizations.trade": "%s отправляет припасы союзнику %s",
+  "civilizations.staff.status": "Здоровье %s/%s, сытость %s/20",
+  "civilizations.village.march": "%s идёт походом на соседнюю деревню, чтобы обложить её данью",
+  "civilizations.village.contest": "%s идёт отбирать деревню у %s!",
+  "civilizations.village.taken": "Деревня на (%3$s, %4$s) теперь платит дань королевству %1$s",
+  "civilizations.village.retaken": "%s отбило деревню на (%3$s, %4$s) у %2$s",
+  "civilizations.townhall.villages": "Деревень-данников: %s (каждая +5 золота и +3 еды в минуту)"
 }

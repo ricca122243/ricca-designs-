@@ -52,6 +52,15 @@ public class TownHallBlockEntity extends BlockEntity {
     @Nullable
     private BlockPos shipOrigin;
     private boolean shipEastWest = true;
+
+    private int villageTimer = 0;
+    private int villageActiveTicks = 0;
+    @Nullable
+    private BlockPos villageTarget;
+    @Nullable
+    private BlockPos nearestVillage;
+    private boolean villageSearched = false;
+    private static final int VILLAGE_INTERVAL_TICKS = 8000;
     private int helpTicks = 0;
     @Nullable
     private BlockPos helpTarget;
@@ -382,6 +391,9 @@ public class TownHallBlockEntity extends BlockEntity {
         player.displayClientMessage(Component.translatable("civilizations.townhall.population", population, warriors, housesBuilt), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.resources", wood, stone, food, iron), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.gold", gold, territoryRadius()).withStyle(ChatFormatting.YELLOW), false);
+        if (level instanceof ServerLevel sl2) {
+            player.displayClientMessage(Component.translatable("civilizations.townhall.villages", KingdomSavedData.get(sl2).villagesOwnedBy(kingdom)).withStyle(ChatFormatting.YELLOW), false);
+        }
         player.displayClientMessage(Component.translatable("civilizations.townhall.tier", tier,
                 warehouseBuilt ? "✔" : "✘", wallBuilt ? "✔" : "✘", orders.size()).withStyle(ChatFormatting.AQUA), false);
         player.displayClientMessage(Component.translatable("civilizations.townhall.buildings",
@@ -492,6 +504,13 @@ public class TownHallBlockEntity extends BlockEntity {
             }
         }
 
+        if (villageActiveTicks > 0 && --villageActiveTicks == 0) {
+            endVillageExpedition(serverLevel);
+        }
+        if (++villageTimer >= VILLAGE_INTERVAL_TICKS) {
+            villageTimer = level.random.nextInt(VILLAGE_INTERVAL_TICKS / 4);
+            startVillageExpedition(serverLevel);
+        }
         if (raidActiveTicks > 0) {
             if (--raidActiveTicks == 0) {
                 endRaid(serverLevel);
@@ -554,6 +573,69 @@ public class TownHallBlockEntity extends BlockEntity {
             if (ally == null || !data.allied(ally.kingdom, victimName) || other.distSqr(target) > (double) RAID_RANGE * RAID_RANGE) continue;
             ally.sendHelp(serverLevel, target, victimName);
         }
+    }
+
+    /** Поход на ближайшую деревню: подчинить её и брать дань, или отбить у другого королевства. */
+    private void startVillageExpedition(ServerLevel serverLevel) {
+        if (villageActiveTicks > 0) return;
+        if (!villageSearched) {
+            villageSearched = true;
+            nearestVillage = serverLevel.findNearestMapStructure(net.minecraft.tags.StructureTags.VILLAGE, getBlockPos(), 12, false);
+            setChanged();
+        }
+        if (nearestVillage == null) return;
+        KingdomSavedData data = KingdomSavedData.get(serverLevel);
+        String owner = data.villageOwner(nearestVillage);
+        if (kingdom.equals(owner)) return;
+
+        List<SettlerEntity> soldiers = new java.util.ArrayList<>();
+        for (SettlerEntity s : settlers(serverLevel)) {
+            if ((s.getProfession() == Profession.WARRIOR || s.getProfession() == Profession.ARCHER) && s.getOrderPos() == null) soldiers.add(s);
+        }
+        if (soldiers.size() < 4) return;
+        int sent = 0;
+        for (SettlerEntity s : soldiers) {
+            if (sent >= 4) break;
+            s.setFollowPlayer(null);
+            s.setOrderPos(nearestVillage);
+            sent++;
+        }
+        villageTarget = nearestVillage;
+        villageActiveTicks = RAID_DURATION_TICKS;
+        setChanged();
+        serverLevel.getServer().getPlayerList().broadcastSystemMessage(
+                Component.translatable(owner == null ? "civilizations.village.march" : "civilizations.village.contest", kingdom, owner == null ? "" : owner)
+                        .withStyle(ChatFormatting.YELLOW), false);
+        // Хозяин деревни посылает защиту.
+        if (owner != null) {
+            for (BlockPos other : data.halls(serverLevel)) {
+                TownHallBlockEntity h = TownHallBlockEntity.at(level, other);
+                if (h != null && h.kingdom.equals(owner)) {
+                    h.sendHelp(serverLevel, nearestVillage, owner);
+                    data.adjustRelation(kingdom, owner, -15);
+                }
+            }
+        }
+    }
+
+    private void endVillageExpedition(ServerLevel serverLevel) {
+        int survivors = 0;
+        for (SettlerEntity s : settlers(serverLevel)) {
+            if (villageTarget != null && villageTarget.equals(s.getOrderPos())) {
+                s.setOrderPos(null);
+                if (s.blockPosition().distSqr(villageTarget) < 40 * 40) survivors++;
+            }
+        }
+        if (villageTarget != null && survivors >= 2) {
+            KingdomSavedData data = KingdomSavedData.get(serverLevel);
+            String old = data.villageOwner(villageTarget);
+            data.setVillageOwner(villageTarget, kingdom);
+            serverLevel.getServer().getPlayerList().broadcastSystemMessage(
+                    Component.translatable(old == null ? "civilizations.village.taken" : "civilizations.village.retaken", kingdom, old == null ? "" : old,
+                            villageTarget.getX(), villageTarget.getZ()).withStyle(ChatFormatting.YELLOW), false);
+        }
+        villageTarget = null;
+        setChanged();
     }
 
     /** Отправить двух воинов на защиту союзника. */
@@ -739,6 +821,9 @@ public class TownHallBlockEntity extends BlockEntity {
     private void collectTaxes(ServerLevel serverLevel) {
         int population = settlers(serverLevel).size();
         gold += population;
+        int villages = KingdomSavedData.get(serverLevel).villagesOwnedBy(kingdom);
+        gold += villages * 5;
+        food += villages * 3;
         if (wood > SELL_THRESHOLD) {
             wood -= SELL_BATCH;
             gold += SELL_PRICE;
@@ -769,6 +854,8 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putBoolean("ShipBuilt", shipBuilt);
         tag.putBoolean("ShipSearched", shipSearched);
         tag.putBoolean("ShipEW", shipEastWest);
+        tag.putBoolean("VillageSearched", villageSearched);
+        if (nearestVillage != null) tag.putLong("NearestVillage", nearestVillage.asLong());
         if (shipOrigin != null) tag.putLong("ShipOrigin", shipOrigin.asLong());
         tag.putInt("Tier", tier);
         net.minecraft.nbt.ListTag orderList = new net.minecraft.nbt.ListTag();
@@ -797,6 +884,8 @@ public class TownHallBlockEntity extends BlockEntity {
         shipBuilt = tag.getBoolean("ShipBuilt");
         shipSearched = tag.getBoolean("ShipSearched");
         shipEastWest = !tag.contains("ShipEW") || tag.getBoolean("ShipEW");
+        villageSearched = tag.getBoolean("VillageSearched");
+        nearestVillage = tag.contains("NearestVillage") ? BlockPos.of(tag.getLong("NearestVillage")) : null;
         shipOrigin = tag.contains("ShipOrigin") ? BlockPos.of(tag.getLong("ShipOrigin")) : null;
         tier = tag.contains("Tier") ? tag.getInt("Tier") : 1;
         orders.clear();

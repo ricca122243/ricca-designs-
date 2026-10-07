@@ -80,6 +80,7 @@ public class CommandStaffItem extends Item {
         if (selected == null || !selected.equals(settler.getUUID())) {
             setSelected(stack, settler.getUUID());
             say(player, Component.translatable("civilizations.staff.selected", settler.getDisplayName()));
+            say(player, Component.translatable("civilizations.staff.status", (int) settler.getHealth(), (int) settler.getMaxHealth(), settler.getHunger()).withStyle(ChatFormatting.GRAY));
             return InteractionResult.CONSUME;
         }
 
