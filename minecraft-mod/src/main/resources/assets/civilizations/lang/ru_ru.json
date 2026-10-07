@@ -40,5 +40,7 @@
   "civilizations.townhall.deposited.wood": "+%s дерева на склад",
   "civilizations.townhall.deposited.stone": "+%s камня на склад",
   "civilizations.townhall.deposited.food": "+%s еды на склад",
-  "civilizations.townhall.deposited.gold": "+%s золота в казну"
+  "civilizations.townhall.deposited.gold": "+%s золота в казну",
+  "civilizations.raid.started": "Королевство %s напало на %s: в набег ушло воинов: %s!",
+  "civilizations.npc.spawned": "В этих землях поднялись три королевства: %s, %s и %s. Кликните жезлом в воздух, чтобы узнать, где они."
 }

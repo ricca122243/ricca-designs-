@@ -20,6 +20,7 @@ public class KingdomSavedData extends SavedData {
     private static final String NAME = "civilizations_kingdoms";
 
     private final Set<BlockPos> halls = new LinkedHashSet<>();
+    private boolean npcSpawned = false;
 
     public static KingdomSavedData get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
@@ -36,7 +37,17 @@ public class KingdomSavedData extends SavedData {
                 data.halls.add(BlockPos.of(longTag.getAsLong()));
             }
         }
+        data.npcSpawned = tag.getBoolean("NpcSpawned");
         return data;
+    }
+
+    public boolean isNpcSpawned() {
+        return npcSpawned;
+    }
+
+    public void setNpcSpawned(boolean value) {
+        npcSpawned = value;
+        setDirty();
     }
 
     @Override
@@ -46,6 +57,7 @@ public class KingdomSavedData extends SavedData {
             list.add(LongTag.valueOf(pos.asLong()));
         }
         tag.put("Halls", list);
+        tag.putBoolean("NpcSpawned", npcSpawned);
         return tag;
     }
 

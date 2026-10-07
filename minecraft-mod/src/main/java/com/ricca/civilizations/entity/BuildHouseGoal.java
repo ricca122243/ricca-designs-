@@ -36,7 +36,7 @@ public class BuildHouseGoal extends Goal {
     private static final List<PlanBlock> HOUSE_PLAN = buildHousePlan();
     private static final int SIZE = KingdomLayout.HOUSE_SIZE;
 
-    private static final int PLACE_DELAY_TICKS = 16;
+    private static final int PLACE_DELAY_TICKS = 10;
     private static final int NO_RESOURCES_DELAY_TICKS = 60;
     private static final double REACH_SQR = 5.5 * 5.5;
     private static final int STUCK_LIMIT_TICKS = 160;
@@ -106,6 +106,13 @@ public class BuildHouseGoal extends Goal {
         }
         Level level = settler.level();
         BlockPos origin = houseOrigin();
+        // Пропускаем шаги, где делать нечего, без ожидания.
+        while (index < HOUSE_PLAN.size() && isStepDone(level, origin, HOUSE_PLAN.get(index))) {
+            index++;
+        }
+        if (index >= HOUSE_PLAN.size()) {
+            return;
+        }
         PlanBlock plan = HOUSE_PLAN.get(index);
         BlockPos target = origin.offset(plan.x(), plan.y(), plan.z());
         Vec3 center = target.getCenter();
@@ -201,18 +208,21 @@ public class BuildHouseGoal extends Goal {
         return KingdomLayout.houseOrigin(settler.getTownHall(), settler.getHouseIndex());
     }
 
+    private static boolean isStepDone(Level level, BlockPos origin, PlanBlock plan) {
+        BlockState current = level.getBlockState(origin.offset(plan.x(), plan.y(), plan.z()));
+        if (plan.block() == Blocks.AIR) {
+            return current.isAir() || current.canBeReplaced() || current.liquid() || current.is(Blocks.BEDROCK);
+        }
+        if (plan.fillOnly()) {
+            return !current.canBeReplaced();
+        }
+        return current.is(plan.block());
+    }
+
     private void skipAlreadyBuilt() {
         Level level = settler.level();
         BlockPos origin = houseOrigin();
-        while (index < HOUSE_PLAN.size()) {
-            PlanBlock plan = HOUSE_PLAN.get(index);
-            BlockState current = level.getBlockState(origin.offset(plan.x(), plan.y(), plan.z()));
-            boolean done = plan.block() == Blocks.AIR ? current.canBeReplaced()
-                    : plan.fillOnly() ? !current.canBeReplaced()
-                    : current.is(plan.block());
-            if (!done) {
-                break;
-            }
+        while (index < HOUSE_PLAN.size() && isStepDone(level, origin, HOUSE_PLAN.get(index))) {
             index++;
         }
     }

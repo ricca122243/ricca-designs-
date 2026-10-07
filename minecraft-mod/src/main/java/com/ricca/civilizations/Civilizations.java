@@ -6,6 +6,7 @@ import com.ricca.civilizations.block.TownHallBlockEntity;
 import com.ricca.civilizations.entity.SettlerEntity;
 import com.ricca.civilizations.item.CommandStaffItem;
 import com.ricca.civilizations.item.KingdomCharterItem;
+import com.ricca.civilizations.kingdom.NpcKingdomSpawner;
 import com.ricca.civilizations.kingdom.TerritoryHandler;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -120,6 +121,7 @@ public class Civilizations {
 
         modEventBus.addListener(this::registerAttributes);
         NeoForge.EVENT_BUS.register(new TerritoryHandler());
+        NeoForge.EVENT_BUS.register(new NpcKingdomSpawner());
         LOGGER.info("Civilizations loaded. Long live the kingdom!");
     }
 

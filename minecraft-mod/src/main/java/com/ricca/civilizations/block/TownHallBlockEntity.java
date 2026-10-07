@@ -38,6 +38,19 @@ public class TownHallBlockEntity extends BlockEntity {
     private int growthTimer = 0;
     private int taxTimer = 0;
 
+    /** Королевство под управлением компьютера. */
+    private boolean npc = false;
+    private int npcTimer = 0;
+    private int raidTimer = 0;
+    private int raidActiveTicks = 0;
+    @Nullable
+    private BlockPos raidTarget;
+
+    private static final int NPC_HIRE_INTERVAL_TICKS = 2400;
+    private static final int RAID_INTERVAL_TICKS = 9000;
+    private static final int RAID_DURATION_TICKS = 2400;
+    private static final int RAID_RANGE = 600;
+
     private static final int TAX_INTERVAL_TICKS = 1200;
     private static final int SELL_THRESHOLD = 150;
     private static final int SELL_BATCH = 50;
@@ -71,6 +84,24 @@ public class TownHallBlockEntity extends BlockEntity {
     public int getFood() { return food; }
     public int getHousesBuilt() { return housesBuilt; }
     public int getGold() { return gold; }
+    public boolean isNpc() { return npc; }
+
+    /** Сделать королевство компьютерным и выдать ему стартовые запасы. */
+    public void setupNpc(String name) {
+        this.kingdom = name;
+        this.npc = true;
+        this.wood = 200;
+        this.stone = 200;
+        this.food = 30;
+        this.gold = 100;
+        this.raidTimer = level != null ? level.random.nextInt(RAID_INTERVAL_TICKS / 2) : 0;
+        setChanged();
+    }
+
+    /** Призвать жителя с нужной профессией (для создания королевств). */
+    public void spawnStartingSettler(Profession profession) {
+        spawnSettler(profession);
+    }
     public void addGold(int amount) { gold += amount; setChanged(); }
 
     /** Радиус территории королевства: растёт с числом домов. */
@@ -181,6 +212,9 @@ public class TownHallBlockEntity extends BlockEntity {
             th.taxTimer = 0;
             th.collectTaxes(serverLevel);
         }
+        if (th.npc) {
+            th.npcTick(serverLevel);
+        }
         if (++th.growthTimer < GROWTH_INTERVAL_TICKS) {
             return;
         }
@@ -198,6 +232,85 @@ public class TownHallBlockEntity extends BlockEntity {
         // Новые жители — только рабочие; воинов и стражников нанимает игрок.
         Profession[] workers = {Profession.BUILDER, Profession.LUMBERJACK, Profession.FARMER};
         th.spawnSettler(workers[level.random.nextInt(workers.length)]);
+    }
+
+    /** Мозг компьютерного королевства: нанимает жителей и устраивает набеги. */
+    private void npcTick(ServerLevel serverLevel) {
+        if (++npcTimer >= NPC_HIRE_INTERVAL_TICKS) {
+            npcTimer = 0;
+            List<SettlerEntity> settlers = settlers(serverLevel);
+            int warriors = 0;
+            int builders = 0;
+            for (SettlerEntity s : settlers) {
+                if (s.getProfession() == Profession.WARRIOR) warriors++;
+                if (s.getProfession() == Profession.BUILDER) builders++;
+            }
+            if (gold >= 50 && settlers.size() < 4 + housesBuilt * 2 + 4) {
+                Profession want = warriors < 2 ? Profession.WARRIOR
+                        : builders < 1 ? Profession.BUILDER
+                        : Profession.byId(level.random.nextInt(4));
+                hire(want, 50);
+            }
+        }
+
+        if (raidActiveTicks > 0) {
+            if (--raidActiveTicks == 0) {
+                endRaid(serverLevel);
+            }
+            return;
+        }
+        if (++raidTimer >= RAID_INTERVAL_TICKS) {
+            raidTimer = 0;
+            if (level.random.nextFloat() < 0.6f) {
+                startRaid(serverLevel);
+            }
+        }
+    }
+
+    private void startRaid(ServerLevel serverLevel) {
+        BlockPos me = getBlockPos();
+        BlockPos target = null;
+        double best = (double) RAID_RANGE * RAID_RANGE;
+        for (BlockPos other : KingdomSavedData.get(serverLevel).halls(serverLevel)) {
+            if (other.equals(me)) continue;
+            double d = other.distSqr(me);
+            if (d < best) {
+                best = d;
+                target = other;
+            }
+        }
+        if (target == null) return;
+
+        List<SettlerEntity> warriors = new java.util.ArrayList<>();
+        for (SettlerEntity s : settlers(serverLevel)) {
+            if (s.getProfession() == Profession.WARRIOR) warriors.add(s);
+        }
+        if (warriors.size() < 2) return;
+
+        int sent = 0;
+        for (SettlerEntity w : warriors) {
+            if (sent >= 4) break;
+            w.setFollowPlayer(null);
+            w.setOrderPos(target);
+            sent++;
+        }
+        raidTarget = target;
+        raidActiveTicks = RAID_DURATION_TICKS;
+        TownHallBlockEntity victim = TownHallBlockEntity.at(level, target);
+        String victimName = victim != null ? victim.getKingdom() : "?";
+        serverLevel.getServer().getPlayerList().broadcastSystemMessage(
+                Component.translatable("civilizations.raid.started", kingdom, victimName, sent).withStyle(ChatFormatting.RED), false);
+        setChanged();
+    }
+
+    private void endRaid(ServerLevel serverLevel) {
+        for (SettlerEntity s : settlers(serverLevel)) {
+            if (raidTarget != null && raidTarget.equals(s.getOrderPos())) {
+                s.setOrderPos(null);
+            }
+        }
+        raidTarget = null;
+        setChanged();
     }
 
     /** Раз в минуту: налог с каждого жителя и продажа излишков со склада. */
@@ -225,6 +338,7 @@ public class TownHallBlockEntity extends BlockEntity {
         tag.putInt("Stone", stone);
         tag.putInt("Food", food);
         tag.putInt("Gold", gold);
+        tag.putBoolean("Npc", npc);
         tag.putInt("HousesBuilt", housesBuilt);
         tag.putInt("NextHouse", nextHouse);
     }
@@ -237,6 +351,7 @@ public class TownHallBlockEntity extends BlockEntity {
         stone = tag.getInt("Stone");
         food = tag.getInt("Food");
         gold = tag.getInt("Gold");
+        npc = tag.getBoolean("Npc");
         housesBuilt = tag.getInt("HousesBuilt");
         nextHouse = tag.getInt("NextHouse");
     }

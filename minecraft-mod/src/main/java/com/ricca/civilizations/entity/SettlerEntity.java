@@ -79,7 +79,7 @@ public class SettlerEntity extends PathfinderMob {
                 return !isWarrior() && super.canUse();
             }
         });
-        this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0, true));
+        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.0, true));
         this.goalSelector.addGoal(2, new FollowPlayerGoal(this));
         this.goalSelector.addGoal(2, new OrderGoal(this));
         this.goalSelector.addGoal(3, new GuardPostGoal(this));
@@ -100,6 +100,9 @@ public class SettlerEntity extends PathfinderMob {
         });
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, 10, true, false,
                 target -> isWarrior()));
+        // Воины бьют жителей чужих королевств, которые подошли близко.
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, SettlerEntity.class, 10, true, false,
+                target -> isWarrior() && target instanceof SettlerEntity other && isEnemy(other)));
     }
 
     @Override
@@ -128,6 +131,12 @@ public class SettlerEntity extends PathfinderMob {
     public boolean isWarrior() {
         Profession p = getProfession();
         return p == Profession.WARRIOR || p == Profession.GUARD;
+    }
+
+    public boolean isEnemy(SettlerEntity other) {
+        String mine = getKingdom();
+        String theirs = other.getKingdom();
+        return !mine.isEmpty() && !theirs.isEmpty() && !mine.equals(theirs);
     }
 
     @Nullable

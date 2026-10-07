@@ -54,6 +54,8 @@ public class CommandStaffItem extends Item {
         if (player.level().isClientSide) {
             return InteractionResult.SUCCESS;
         }
+        // В творческом режиме сюда приходит копия жезла, поэтому пишем в настоящий предмет из руки.
+        stack = player.getItemInHand(hand);
 
         if (player.isShiftKeyDown()) {
             Profession next = Profession.byId(settler.getProfession().ordinal() + 1);
