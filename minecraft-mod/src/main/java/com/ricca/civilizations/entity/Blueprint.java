@@ -151,6 +151,8 @@ public final class Blueprint {
         plan.add(new Step(1, 1, 3, Blocks.CHEST.defaultBlockState(), false, false));
         plan.add(new Step(3, 1, 3, Blocks.CHEST.defaultBlockState(), false, false));
         plan.add(new Step(2, 1, 1, Blocks.TORCH.defaultBlockState(), false, false));
+        // Табличка с запасами над входом
+        plan.add(new Step(2, 3, size, Blocks.OAK_WALL_SIGN.defaultBlockState().setValue(net.minecraft.world.level.block.WallSignBlock.FACING, Direction.SOUTH), false, true));
         return new Blueprint(Type.WAREHOUSE, plan, 0, 0, size - 1, size - 1);
     }
 

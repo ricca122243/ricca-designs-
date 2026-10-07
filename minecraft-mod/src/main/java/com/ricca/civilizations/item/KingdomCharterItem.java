@@ -85,15 +85,34 @@ public class KingdomCharterItem extends Item {
         return InteractionResult.CONSUME;
     }
 
-    /** Знамя королевства над ратушей, цвет по имени. */
+    /** Знамя королевства: цвет и два узора по имени — у каждого королевства свой флаг. */
     public static void placeBanner(Level level, BlockPos pos, String name) {
-        net.minecraft.world.level.block.Block[] banners = {
-                net.minecraft.world.level.block.Blocks.RED_BANNER, net.minecraft.world.level.block.Blocks.BLUE_BANNER,
-                net.minecraft.world.level.block.Blocks.GREEN_BANNER, net.minecraft.world.level.block.Blocks.YELLOW_BANNER,
-                net.minecraft.world.level.block.Blocks.PURPLE_BANNER, net.minecraft.world.level.block.Blocks.ORANGE_BANNER,
-                net.minecraft.world.level.block.Blocks.CYAN_BANNER, net.minecraft.world.level.block.Blocks.WHITE_BANNER};
-        if (level.getBlockState(pos).canBeReplaced()) {
-            level.setBlock(pos, banners[Math.floorMod(name.hashCode(), banners.length)].defaultBlockState(), 3);
+        net.minecraft.world.item.DyeColor[] colors = net.minecraft.world.item.DyeColor.values();
+        int h = name.hashCode();
+        net.minecraft.world.item.DyeColor base = colors[Math.floorMod(h, colors.length)];
+        net.minecraft.world.item.DyeColor accent = colors[Math.floorMod(h >> 4, colors.length)];
+        if (accent == base) accent = colors[Math.floorMod(h >> 4 + 1, colors.length)];
+        net.minecraft.world.level.block.Block bannerBlock = net.minecraft.world.level.block.BannerBlock.byColor(base);
+        if (!level.getBlockState(pos).canBeReplaced()) {
+            return;
+        }
+        level.setBlock(pos, bannerBlock.defaultBlockState().setValue(net.minecraft.world.level.block.BannerBlock.ROTATION, Math.floorMod(h >> 8, 16)), 3);
+        if (level.getBlockEntity(pos) instanceof net.minecraft.world.level.block.entity.BannerBlockEntity banner) {
+            net.minecraft.resources.ResourceKey<net.minecraft.world.level.block.entity.BannerPattern>[] keys = new net.minecraft.resources.ResourceKey[]{
+                    net.minecraft.world.level.block.entity.BannerPatterns.STRIPE_CENTER, net.minecraft.world.level.block.entity.BannerPatterns.CROSS,
+                    net.minecraft.world.level.block.entity.BannerPatterns.RHOMBUS_MIDDLE, net.minecraft.world.level.block.entity.BannerPatterns.TRIANGLE_TOP,
+                    net.minecraft.world.level.block.entity.BannerPatterns.STRIPE_DOWNRIGHT, net.minecraft.world.level.block.entity.BannerPatterns.CIRCLE_MIDDLE,
+                    net.minecraft.world.level.block.entity.BannerPatterns.HALF_HORIZONTAL, net.minecraft.world.level.block.entity.BannerPatterns.STRAIGHT_CROSS,
+                    net.minecraft.world.level.block.entity.BannerPatterns.STRIPE_TOP, net.minecraft.world.level.block.entity.BannerPatterns.CREEPER};
+            var registry = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.BANNER_PATTERN);
+            net.minecraft.world.level.block.entity.BannerPatternLayers.Builder layers = new net.minecraft.world.level.block.entity.BannerPatternLayers.Builder();
+            layers.add(registry.getOrThrow(keys[Math.floorMod(h >> 12, keys.length)]), accent);
+            layers.add(registry.getOrThrow(keys[Math.floorMod(h >> 16, keys.length)]), colors[Math.floorMod(h >> 20, colors.length)]);
+            ItemStack flag = new ItemStack(bannerBlock.asItem());
+            flag.set(net.minecraft.core.component.DataComponents.BANNER_PATTERNS, layers.build());
+            banner.fromItem(flag, base);
+            banner.setChanged();
+            level.sendBlockUpdated(pos, level.getBlockState(pos), level.getBlockState(pos), 3);
         }
     }
 

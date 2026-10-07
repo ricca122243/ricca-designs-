@@ -626,6 +626,15 @@ public class SettlerEntity extends PathfinderMob implements net.minecraft.world.
             height++;
         }
         if (height >= 8) {
+            // Гора: делаем подкоп — пробиваем проход в два блока высотой.
+            for (int y = 0; y <= 1; y++) {
+                BlockPos at = wall.above(y);
+                BlockState st = level.getBlockState(at);
+                if (!st.is(Blocks.BEDROCK) && !st.liquid() && !st.isAir()) {
+                    level.destroyBlock(at, false);
+                }
+            }
+            swing(InteractionHand.MAIN_HAND);
             return;
         }
         // Ставим лестницу у стены на своей клетке снизу доверху

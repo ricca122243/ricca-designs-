@@ -53,6 +53,9 @@ public class TownHallBlockEntity extends BlockEntity {
     private int taxRate = 1;
     private int caravanTimer = 0;
     private int architects = 0;
+    private int warehouseTimer = 0;
+    private int maintenanceTimer = 0;
+    private final java.util.Set<Integer> repairedHouses = new java.util.HashSet<>();
     @Nullable
     private BlockPos quarryOrigin;
     /** Заказы с выбранным местом (чертёж). */
@@ -244,7 +247,7 @@ public class TownHallBlockEntity extends BlockEntity {
 
     public void projectFinished(Blueprint.Type type, int houseIndex) {
         switch (type) {
-            case HOUSE -> housesBuilt++;
+            case HOUSE -> { if (!repairedHouses.remove(houseIndex)) housesBuilt++; }
             case WAREHOUSE -> warehouseBuilt = true;
             case PEN -> penBuilt = true;
             case PALISADE -> palisadeBuilt = true;
@@ -259,7 +262,12 @@ public class TownHallBlockEntity extends BlockEntity {
                 }
             }
             case LEVELING -> leveled = true;
-            case KEEP -> keepBuilt = true;
+            case KEEP -> {
+                keepBuilt = true;
+                if (level != null) {
+                    com.ricca.civilizations.item.KingdomCharterItem.placeBanner(level, KingdomLayout.keepOrigin(getBlockPos()).offset(4, 7, 4), kingdom);
+                }
+            }
             case SHIP_EW, SHIP_NS -> {
                 shipBuilt = true;
                 if (level instanceof ServerLevel sl) {
@@ -269,6 +277,11 @@ public class TownHallBlockEntity extends BlockEntity {
             }
             case WALL -> {
                 wallBuilt = true;
+                if (level != null) {
+                    BlockPos gate = KingdomLayout.gatePos(getBlockPos());
+                    com.ricca.civilizations.item.KingdomCharterItem.placeBanner(level, gate.offset(-2, 2, -1), kingdom);
+                    com.ricca.civilizations.item.KingdomCharterItem.placeBanner(level, gate.offset(2, 2, -1), kingdom);
+                }
                 if (level instanceof ServerLevel serverLevel) {
                     for (SettlerEntity s : settlers(serverLevel)) {
                         if (s.getProfession() == Profession.GUARD) {
@@ -311,6 +324,17 @@ public class TownHallBlockEntity extends BlockEntity {
                 }
             }
         }
+    }
+
+    private boolean repairing(Blueprint.Type type) {
+        return switch (type) {
+            case WAREHOUSE -> warehouseBuilt;
+            case PEN -> penBuilt;
+            case TOWER -> towerBuilt;
+            case KEEP -> keepBuilt;
+            case WALL -> wallBuilt;
+            default -> false;
+        };
     }
 
     /** Заказ игрока. Возвращает, сколько ресурсов нужно на постройку. */
@@ -553,6 +577,14 @@ public class TownHallBlockEntity extends BlockEntity {
                     if (a != null) a.setBaseValue(s.professionDamage() + th.arms / 4.0);
                 }
             }
+        }
+        if (++th.warehouseTimer >= 600) {
+            th.warehouseTimer = 0;
+            th.syncWarehouse();
+        }
+        if (++th.maintenanceTimer >= 6000) {
+            th.maintenanceTimer = 0;
+            th.inspectBuildings();
         }
         if (!th.npc && ++th.caravanTimer >= CARAVAN_INTERVAL_TICKS) {
             th.caravanTimer = 0;
@@ -944,6 +976,103 @@ public class TownHallBlockEntity extends BlockEntity {
                             Component.translatable("civilizations.trade", kingdom, hall.kingdom).withStyle(ChatFormatting.GREEN), false);
                 }
             }
+        }
+    }
+
+    /**
+     * Склад по-настоящему: сундуки склада принимают предметы (игрок кладёт — склад растёт),
+     * а излишки сверх запаса выкладываются в сундуки как предметы. Табличка показывает запасы.
+     */
+    private void syncWarehouse() {
+        if (!warehouseBuilt || level == null) return;
+        BlockPos origin = KingdomLayout.warehouseOrigin(getBlockPos());
+        BlockPos[] chests = {origin.offset(1, 1, 1), origin.offset(3, 1, 1), origin.offset(1, 1, 3), origin.offset(3, 1, 3)};
+        for (BlockPos cp : chests) {
+            if (!(level.getBlockEntity(cp) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity chest)) continue;
+            // Забираем всё полезное
+            for (int i = 0; i < chest.getContainerSize(); i++) {
+                net.minecraft.world.item.ItemStack st = chest.getItem(i);
+                if (st.isEmpty()) continue;
+                int n = st.getCount();
+                if (st.is(net.minecraft.tags.ItemTags.LOGS)) { wood += n * 4; }
+                else if (st.is(net.minecraft.tags.ItemTags.PLANKS)) { wood += n; }
+                else if (st.is(net.minecraft.world.item.Items.COBBLESTONE) || st.is(net.minecraft.world.item.Items.STONE)) { stone += n; }
+                else if (st.is(net.minecraft.world.item.Items.BREAD)) { food += n * 3; }
+                else if (st.is(net.minecraft.world.item.Items.WHEAT) || st.is(net.minecraft.world.item.Items.CARROT) || st.is(net.minecraft.world.item.Items.POTATO)) { food += n; }
+                else if (st.is(net.minecraft.world.item.Items.IRON_INGOT)) { iron += n; }
+                else if (st.is(net.minecraft.world.item.Items.GOLD_INGOT)) { gold += n * 5; }
+                else continue;
+                chest.setItem(i, net.minecraft.world.item.ItemStack.EMPTY);
+            }
+        }
+        // Излишки — в сундуки как предметы
+        int[] caps = {300, 300, 100, 40, 300};
+        if (wood > caps[0]) wood -= putItems(chests, net.minecraft.world.item.Items.OAK_LOG, (wood - caps[0]) / 4) * 4;
+        if (stone > caps[1]) stone -= putItems(chests, net.minecraft.world.item.Items.COBBLESTONE, stone - caps[1]);
+        if (food > caps[2]) food -= putItems(chests, net.minecraft.world.item.Items.BREAD, (food - caps[2]) / 3) * 3;
+        if (iron > caps[3]) iron -= putItems(chests, net.minecraft.world.item.Items.IRON_INGOT, iron - caps[3]);
+        if (gold > caps[4]) gold -= putItems(chests, net.minecraft.world.item.Items.GOLD_INGOT, (gold - caps[4]) / 5) * 5;
+        setChanged();
+        // Табличка
+        BlockPos signPos = origin.offset(2, 3, KingdomLayout.HOUSE_SIZE);
+        if (level.getBlockEntity(signPos) instanceof net.minecraft.world.level.block.entity.SignBlockEntity sign) {
+            net.minecraft.world.level.block.entity.SignText text = new net.minecraft.world.level.block.entity.SignText()
+                    .setMessage(0, Component.translatable("civilizations.sign.title"))
+                    .setMessage(1, Component.literal("W " + wood + "  S " + stone))
+                    .setMessage(2, Component.literal("F " + food + "  I " + iron))
+                    .setMessage(3, Component.literal("G " + gold));
+            sign.setText(text, true);
+            sign.setChanged();
+            level.sendBlockUpdated(signPos, level.getBlockState(signPos), level.getBlockState(signPos), 3);
+        }
+    }
+
+    /** Положить предметы в сундуки склада; возвращает, сколько удалось положить. */
+    private int putItems(BlockPos[] chests, net.minecraft.world.item.Item item, int count) {
+        int placed = 0;
+        for (BlockPos cp : chests) {
+            if (count - placed <= 0) break;
+            if (!(level.getBlockEntity(cp) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity chest)) continue;
+            for (int i = 0; i < chest.getContainerSize() && count - placed > 0; i++) {
+                net.minecraft.world.item.ItemStack st = chest.getItem(i);
+                if (st.isEmpty()) {
+                    int n = Math.min(64, count - placed);
+                    chest.setItem(i, new net.minecraft.world.item.ItemStack(item, n));
+                    placed += n;
+                } else if (st.is(item) && st.getCount() < 64) {
+                    int n = Math.min(64 - st.getCount(), count - placed);
+                    st.grow(n);
+                    placed += n;
+                }
+            }
+            chest.setChanged();
+        }
+        return placed;
+    }
+
+    /** Осмотр построек: если в готовом здании не хватает блоков, строители его чинят. */
+    private void inspectBuildings() {
+        if (level == null || placedOrders.size() > 2) return;
+        List<Project> built = new java.util.ArrayList<>();
+        for (int i = 0; i < Math.min(nextHouse, KingdomLayout.houseCount()); i++) built.add(new Project(Blueprint.Type.HOUSE, i, null));
+        if (warehouseBuilt) built.add(new Project(Blueprint.Type.WAREHOUSE, -1, null));
+        if (penBuilt) built.add(new Project(Blueprint.Type.PEN, -1, null));
+        if (towerBuilt) built.add(new Project(Blueprint.Type.TOWER, -1, null));
+        if (keepBuilt) built.add(new Project(Blueprint.Type.KEEP, -1, null));
+        if (wallBuilt) built.add(new Project(Blueprint.Type.WALL, -1, null));
+        if (built.isEmpty()) return;
+        Project p = built.get(level.random.nextInt(built.size()));
+        Blueprint bp = Blueprint.of(p.type());
+        BlockPos origin = Blueprint.origin(p.type(), getBlockPos(), p.houseIndex());
+        int missing = 0;
+        for (Blueprint.Step step : bp.steps) {
+            if (step.isAir() || step.fillOnly()) continue;
+            if (!level.getBlockState(origin.offset(step.x(), step.y(), step.z())).is(step.state().getBlock())) missing++;
+        }
+        if (missing > 0) {
+            placedOrders.add(new Project(p.type(), p.houseIndex(), origin));
+            if (p.type() == Blueprint.Type.HOUSE) repairedHouses.add(p.houseIndex());
+            setChanged();
         }
     }
 

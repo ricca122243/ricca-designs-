@@ -190,5 +190,6 @@
   "civilizations.blueprint.quarry_set": "Шахтёры теперь копают на (%s, %s, %s)",
   "entity.civilizations.settler.architect": "Проектировщик",
   "entity.civilizations.settler.architect.named": "Проектировщик королевства %s",
-  "entity.civilizations.settler.slave": "%s (раб королевства %s)"
+  "entity.civilizations.settler.slave": "%s (раб королевства %s)",
+  "civilizations.sign.title": "= СКЛАД ="
 }

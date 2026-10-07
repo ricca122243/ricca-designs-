@@ -190,5 +190,6 @@
   "civilizations.blueprint.quarry_set": "Miners will now dig at (%s, %s, %s)",
   "entity.civilizations.settler.architect": "Architect",
   "entity.civilizations.settler.architect.named": "Architect of %s",
-  "entity.civilizations.settler.slave": "%s (slave of %s)"
+  "entity.civilizations.settler.slave": "%s (slave of %s)",
+  "civilizations.sign.title": "= STORAGE ="
 }
