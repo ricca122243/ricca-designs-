@@ -220,9 +220,12 @@
     if (!target) return false;
     const dlg = target.closest('dialog');
     if (dlg) { openDialog(dlg); return true; }
-    $$('dialog[open]').forEach((d) => d.close());
-    window.scrollTo({ top: Math.max(0, scrollYFor(target)), behavior: reduceMotion ? 'auto' : 'smooth' });
     if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+    // из диалога: фокус после закрытия уходит к цели, а не к кнопке «Подробнее» далеко выше (close-событие асинхронно)
+    const fromDlg = $$('dialog[open]');
+    fromDlg.forEach((d) => { d._opener = null; d._focusTarget = target; d.close(); });
+    // из диалога — мгновенно: страница была закрыта шторкой, плавность не видна, а возврат по истории мог бы прервать анимацию
+    window.scrollTo({ top: Math.max(0, scrollYFor(target)), behavior: reduceMotion || fromDlg.length ? 'auto' : 'smooth' });
     target.focus({ preventScroll: true });
     return true;
   };
@@ -231,9 +234,12 @@
     if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     const id = a.getAttribute('href').slice(1);
     if (!id || id === 'main') return;
+    const hadDlg = !!$('dialog[open]');
     if (!goTo(id)) return;
     e.preventDefault();
-    history.replaceState(null, '', id === 'top' ? location.pathname : `#${id}`);
+    const url = id === 'top' ? location.pathname : `#${id}`;
+    if (mdlPushed) { if (hadDlg) mdlPending = url; }   // запись диалога снимет его закрытие (history.back) — хэш поставим после popstate
+    else history.replaceState(null, '', url);
   });
 
   /* ---------- Свёртки [data-fold]: на компьютере раскрыты (summary скрыт в CSS), на телефоне закрыты, кроме data-fold="open" ---------- */
@@ -669,19 +675,46 @@
     box.innerHTML = m.layers.map((l) => `<div class="xs__layer xs--${l.kind}"><div class="xs__fill" style="--cm:${l.cm}"></div><div class="xs__text"><b>${esc(l.name)}</b>${l.spec ? `<span class="cm">${esc(l.spec)}</span>` : ''}${l.note ? `<span class="note-s">${esc(l.note)}</span>` : ''}</div></div>`).join('');
   });
 
+  /* Системный «Назад» (жест на телефоне, кнопка браузера) закрывает шторку, а не уходит со страницы: при открытии кладём
+     запись в историю, по popstate закрываем; при закрытии крестиком/Esc/фоном снимаем запись сами — history.back() один раз.
+     Пока запись наша, scrollRestoration = manual: возврат не дёргает страницу (важно для «Подобрать размер» из диалога). */
+  let mdlPushed = null, mdlPending = '';
+  const hasHistory = !!(window.history && history.pushState);
+  const applyPending = () => { if (mdlPending && hasHistory) { try { history.replaceState(null, '', mdlPending); } catch (_) { /* file:// */ } mdlPending = ''; } };
   function openDialog(dlg, opener) {
     if (dlg.open) return;
     dlg._opener = opener || document.activeElement;
+    dlg._focusTarget = null;
     if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
     dlg.scrollTop = 0;
     body.style.overflow = 'hidden';
+    if (hasHistory && !mdlPushed) {
+      // scrollRestoration — свойство ТЕКУЩЕЙ записи, к которой вернёт back(): ставим manual до pushState, иначе возврат откатит прокрутку
+      try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; history.pushState({ mdl: dlg.id }, ''); mdlPushed = dlg; } catch (_) { mdlPushed = null; }
+    }
     if (hasGsap && !reduceMotion) gsap.fromTo(dlg, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .4, ease: 'power3.out', clearProps: 'transform' });
     onScroll();
   }
+  if (hasHistory) window.addEventListener('popstate', () => {
+    const d = mdlPushed;
+    mdlPushed = null;
+    if ('scrollRestoration' in history) history.scrollRestoration = 'auto';
+    if (d && d.open) { d._viaPop = true; d.close(); }
+    applyPending();
+  });
   $$('[data-open]').forEach((b) => b.addEventListener('click', () => { const dlg = document.getElementById(b.dataset.open); if (dlg) openDialog(dlg, b); }));
   $$('dialog.mdl').forEach((dlg) => {
     dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
-    dlg.addEventListener('close', () => { body.style.overflow = ''; const o = dlg._opener; if (o && o.focus) o.focus(); onScroll(); });
+    dlg.addEventListener('close', () => {
+      body.style.overflow = '';
+      const viaPop = dlg._viaPop; dlg._viaPop = false;
+      if (mdlPushed === dlg) { mdlPushed = null; if (!viaPop) history.back(); }
+      else { if ('scrollRestoration' in history && !mdlPushed) history.scrollRestoration = 'auto'; applyPending(); }
+      // фокус: к якорю, если ушли по ссылке из диалога («Подобрать размер» → #eluna-sizes), иначе — назад к «Подробнее»
+      const ft = dlg._focusTarget, o = dlg._opener; dlg._focusTarget = null; dlg._opener = null;
+      if (ft) ft.focus({ preventScroll: true }); else if (o && o.focus) o.focus();
+      onScroll();
+    });
   });
 
   (function lineup() {
@@ -689,6 +722,7 @@
     if (!rail || !track) return;
     const cards = $$('.mcard', track);
     const keys = cards.map((c) => c.dataset.model);
+    const dots = $$('.mrail__dots button');
     let cur = -1;
     function select(i) {
       if (i === cur || !cards[i]) return;
@@ -717,8 +751,16 @@
       let best = -1, bd = 1e9;
       cards.forEach((m, k) => { const d = Math.abs(m.offsetLeft + m.offsetWidth / 2 - mid); if (d < bd) { bd = d; best = k; } });
       cards.forEach((m, k) => m.classList.toggle('is-center', k === best));
+      dots.forEach((d, k) => { if (k === best) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); });
       if (best >= 0) select(best);
     }
+    // пейджер (телефон): тап по точке — прокрутка ленты к карточке
+    dots.forEach((d, i) => d.addEventListener('click', () => {
+      const c = cards[i];
+      if (!c) return;
+      track.scrollTo({ left: c.offsetLeft - (track.clientWidth - c.offsetWidth) / 2, behavior: reduceMotion ? 'instant' : 'smooth' });
+      select(i);
+    }));
     let mcRaf = 0;
     track.addEventListener('scroll', () => { if (!mcRaf) mcRaf = requestAnimationFrame(() => { mcRaf = 0; markCenter(); }); }, { passive: true });
     resizeHooks.push(() => { centerCard(cards[cur < 0 ? 2 : cur]); if (cur >= 0) { const k = cur; cur = -1; select(k); } });
@@ -747,8 +789,9 @@
       return `Здравствуйте! Хочу заказать матрас ELUNA. Модель: ${MODELS[o.model].name}. Размер: ${sizeText()}${o.size === 'custom' ? ' (свой размер, изготовление 21 день)' : ''}. Цена: ${fmtMoney(p.v)} ₸${p.o ? ` (без скидки ${fmtMoney(p.o)} ₸, −${discountPct(o.model)} %)` : ''}.`;
     }
     function renderCfg() {
-      $$('button', models).forEach((b) => { b.setAttribute('aria-checked', String(b.dataset.m === o.model)); });
-      $$('button', sizes).forEach((b) => { b.setAttribute('aria-checked', String(b.dataset.s === o.size)); });
+      // roving tabindex: Tab попадает на выбранную радиокнопку, по группе — стрелками (обработчик ниже)
+      $$('button', models).forEach((b) => { const on = b.dataset.m === o.model; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+      $$('button', sizes).forEach((b) => { const on = b.dataset.s === o.size; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
       custom.hidden = o.size !== 'custom';
       const p = priceOf();
       sumName.textContent = MODELS[o.model].name;
@@ -880,7 +923,8 @@
   let fabricHref = '';
   if (swWrap) {
     const btns = $$('.swatch', swWrap);
-    const nameEl = $('[data-sample-name]'), toneEl = $('[data-sample-tone]'), descEl = $('[data-sample-desc]'), cta = $('[data-fabric-cta]');
+    const nameEl = $('[data-sample-name]'), toneEl = $('[data-sample-tone]'), descEl = $('[data-sample-desc]'), cta = $('[data-fabric-cta]'), ctaLabel = $('[data-fabric-cta-label]');
+    const ctaText = (b) => `Спросить про ${b.dataset.acc || b.dataset.name.toLowerCase()}`;   // винительный падеж: «про рогожку», «про кожу»
     const texA = $('[data-sample-tex]'), texB = $('[data-sample-tex-next]');
     let swapT = 0, frontTex = texA;
     const texUrl = (t) => `img/nera/tex-${t}.webp`;
@@ -902,6 +946,7 @@
       if (descEl) descEl.textContent = b.dataset.desc;
       fabricHref = waUrl(CONFIG.msg.fabric(`${b.dataset.name.toLowerCase()}, ${b.dataset.tone.toLowerCase()}`));
       if (cta) cta.href = fabricHref;
+      if (ctaLabel) ctaLabel.textContent = ctaText(b);
       paint(b);
       if (focus) b.focus();
       requestAnimationFrame(() => onScroll());
@@ -921,11 +966,13 @@
     const b0 = btns[first];
     fabricHref = waUrl(CONFIG.msg.fabric(`${b0.dataset.name.toLowerCase()}, ${b0.dataset.tone.toLowerCase()}`));
     if (cta) cta.href = fabricHref;
+    if (ctaLabel) ctaLabel.textContent = ctaText(b0);
   }
 
   /* ---------- Доставка: карта и города (координаты — % кадра 2080 × 1174, как на сайте ELUNA) ---------- */
   (function delivery() {
     const box = $('#cities'), nameEl = $('#cityName'), termEl = $('#cityTerm'), elunaEl = $('#cityEluna'), waEl = $('#cityWa');
+    const chipsBox = $('#cityChips'), pickEl = $('.delivery__pick');
     if (!box) return;
     const CITIES = [['Астана', 61.0, 31.37], ['Алматы', 73.21, 78.03], ['Шымкент', 56.87, 83.31], ['Караганда', 64.63, 39.39], ['Актобе', 29.26, 36.58], ['Тараз', 60.82, 80.02], ['Павлодар', 73.26, 24.79], ['Усть-Каменогорск', 85.84, 38.55], ['Семей', 80.5, 35.83], ['Атырау', 17.61, 55.34], ['Костанай', 43.63, 19.33], ['Кызылорда', 47.8, 68.53], ['Уральск', 16.38, 31.16], ['Петропавловск', 55.86, 9.61], ['Актау', 16.0, 75.6], ['Талдыкорган', 76.38, 67.57], ['Кокшетау', 56.44, 18.93], ['Туркестан', 53.89, 77.69]];
     const btns = CITIES.map(([c, x, y], i) => {
@@ -935,12 +982,38 @@
       b.setAttribute('aria-pressed', String(c === 'Алматы'));
       b.setAttribute('aria-label', `Доставка в город ${c}`);
       b.innerHTML = `<i aria-hidden="true"></i><span>${c}</span>`;
-      b.addEventListener('click', () => pick(c));
+      b.addEventListener('click', () => pick(c, true));
       box.appendChild(b);
       return b;
     });
-    function pick(c) {
+    // телефон: точки декоративны (pointer-events: none в CSS) — убираем их из табуляции и от читалки; выбор — чипами
+    const dotsMode = () => { const m = isMobile(); box.setAttribute('aria-hidden', String(m)); btns.forEach((b) => { b.tabIndex = m ? -1 : 0; }); };
+    dotsMode();
+    mq.addEventListener('change', dotsMode);
+    // лента-чипы (radiogroup, roving tabindex: Tab → выбранный город, стрелки/Home/End — по ленте, Enter/пробел — выбор)
+    const chips = chipsBox ? CITIES.map(([c]) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', String(c === 'Алматы'));
+      b.tabIndex = c === 'Алматы' ? 0 : -1;
+      b.textContent = c;
+      b.addEventListener('click', () => pick(c, true));
+      chipsBox.appendChild(b);
+      return b;
+    }) : [];
+    const centerChip = (b, smooth) => { if (!chipsBox || !chipsBox.clientWidth) return; chipsBox.scrollTo({ left: b.offsetLeft - (chipsBox.clientWidth - b.offsetWidth) / 2, behavior: smooth && !reduceMotion ? 'smooth' : 'instant' }); };
+    if (chipsBox) chipsBox.addEventListener('keydown', (e) => {
+      const i = chips.indexOf(document.activeElement);
+      if (i < 0) return;
+      let n = -1;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = (i + 1) % chips.length;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = (i - 1 + chips.length) % chips.length;
+      else if (e.key === 'Home') n = 0; else if (e.key === 'End') n = chips.length - 1;
+      if (n >= 0) { e.preventDefault(); pick(CITIES[n][0], true); chips[n].focus({ preventScroll: true }); }
+    });
+    function pick(c, byUser) {
       btns.forEach((b, i) => { const on = CITIES[i][0] === c; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on)); });
+      chips.forEach((b, i) => { const on = CITIES[i][0] === c; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; if (on) centerChip(b, byUser); });
       nameEl.textContent = c;
       if (c === 'Алматы') {
         termEl.innerHTML = '<b>Мы здесь.</b> Матрасы ELUNA привезём и&nbsp;установим сами; мебель&nbsp;— доставка по&nbsp;городу, условия при заказе.';
@@ -950,8 +1023,12 @@
         elunaEl.textContent = 'От 7 дней до двери, подъём включён';
       }
       waEl.href = waUrl(CONFIG.msg.city(c));
+      // панель результата не видна целиком (на телефоне она ниже ленты) — подводим её с запасом 16px; лента/карта остаются в кадре
+      if (byUser && pickEl) { const pb = pickEl.getBoundingClientRect().bottom; if (pb > window.innerHeight - 16) window.scrollBy({ top: Math.ceil(pb - window.innerHeight) + 16, behavior: reduceMotion ? 'auto' : 'smooth' }); }
     }
     waEl.href = waUrl(CONFIG.msg.city('Алматы'));
+    const c0 = chips.find((b) => b.getAttribute('aria-checked') === 'true');
+    if (c0) { centerChip(c0, false); resizeHooks.push(() => centerChip(chips.find((b) => b.getAttribute('aria-checked') === 'true') || c0, false)); }
   })();
 
   /* ---------- Шапка при скролле, активный раздел, липкая плашка (телефон) ---------- */

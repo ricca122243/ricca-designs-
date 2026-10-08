@@ -338,6 +338,7 @@ b, strong { font-weight: 500; }
 .mcard--royal.is-on .mcard__sum, .mcard--royal.is-center .mcard__sum { animation-play-state: running; }
 @keyframes royalShine { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 .mcard .badge { position: absolute; top: -13px; left: clamp(22px, 2.2vw, 32px); z-index: 2; }
+.mrail__dots { display: none; }
 .mcard__kicker { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
 .mcard__name { color: var(--ink); }
 .mcard__tier { display: block; margin-top: 14px; min-height: 26px; }
@@ -417,7 +418,9 @@ b, strong { font-weight: 500; }
 /* диалоги «Подробнее» */
 .mdl { width: min(92vw, 760px); max-height: 88vh; padding: 0; margin: auto; border: 1px solid var(--line); border-radius: 4px; background: #0e1017; color: var(--ink-body); overflow: auto; box-shadow: 0 60px 120px -40px rgba(0, 0, 0, .8); }
 .mdl::backdrop { background: rgba(7, 8, 12, .84); }
-.mdl__close { position: sticky; top: 12px; margin-left: auto; margin-right: 12px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: rgba(255, 255, 255, .06); color: var(--ink); z-index: 2; float: right; }
+/* крестик: липкая — обёртка-форма нулевой высоты (сама кнопка sticky внутри неё места не имела и уезжала со скроллом) */
+.mdl > form:first-child { position: sticky; top: 0; height: 0; z-index: 3; }
+.mdl__close { position: relative; float: right; margin: 12px 12px 0 0; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: rgba(14, 16, 23, .82); border: 1px solid var(--line); color: var(--ink); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 .mdl__close:hover { background: rgba(255, 255, 255, .12); }
 .mdl__close svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.6; fill: none; }
 .mdl__in { padding: clamp(24px, 3vw, 40px); clear: both; }
@@ -447,6 +450,7 @@ b, strong { font-weight: 500; }
 .xs__text .cm { color: var(--ink-3); font-size: 12px; }
 .xs__text .note-s { display: block; color: var(--ink-3); font-size: 12px; }
 .mdl__actions { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+.mdl__closeform { display: inline-flex; margin-left: auto; }
 
 /* ==========================================================================
    КАТАЛОГ
@@ -468,7 +472,7 @@ b, strong { font-weight: 500; }
 .steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; margin-top: clamp(36px, 4vw, 56px); counter-reset: s; }
 .steps li { padding-top: 18px; border-top: 1px solid var(--line); position: relative; }
 .steps .n { font-size: 11px; letter-spacing: .14em; color: var(--ink-3); font-weight: 500; }
-.steps h3 { margin-top: 14px; font-family: var(--display); font-weight: 300; font-size: 18px; line-height: 1.25; color: var(--ink); }
+.steps__title { margin-top: 14px; font-family: var(--display); font-weight: 300; font-size: 18px; line-height: 1.25; color: var(--ink); }
 .steps p { margin-top: 10px; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
 .steps .lead-note { margin-top: 26px; }
 
@@ -573,14 +577,17 @@ dl.spec dd .muted { color: var(--ink-3); }
 .swatch:hover { border-color: var(--line-strong); transform: translateY(-2px); }
 .swatch[aria-checked="true"] { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink) inset; }
 .swatch span { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, .7)); text-align: left; font-weight: 500; }
-.sample { position: relative; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; aspect-ratio: 4 / 3; background: #1a1a1e; }
-.sample__tex { position: absolute; inset: 0; background-size: 256px; opacity: 1; transition: opacity .8s var(--ease-out); }
-.sample__tex::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 70% at 30% 20%, rgba(255, 255, 255, .22), transparent 70%), linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, .55)); }
+/* образец: квадрат ≤ 320px, плитка 256px — ОДНА на кадр (background-size 100%: нет повторов → нет периодичности, апскейл ≤ 1,25×),
+   виньетка и мягкий свет сверху прячут синтетику; имя и описание — рядом, а не поверх */
+.sample-row { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: 24px 32px; align-items: center; }
+.sample { position: relative; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; aspect-ratio: 1; width: 100%; max-width: 320px; background: #1a1a1e; }
+.sample__tex { position: absolute; inset: 0; background-size: 100% 100%; background-position: center; opacity: 1; transition: opacity .8s var(--ease-out); }
+.sample__tex::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 80% at 32% 22%, rgba(255, 255, 255, .2), transparent 68%), radial-gradient(ellipse 95% 95% at 50% 50%, transparent 42%, rgba(6, 6, 9, .62) 100%); }
 .sample__tex.is-out { opacity: 0; }
-.sample__cap { position: absolute; left: 20px; right: 20px; bottom: 18px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, .8); }
-.sample__name { font-family: var(--display); font-weight: 300; font-size: clamp(20px, 1.8vw, 26px); }
-.sample__tone { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255, 255, 255, .8); font-weight: 500; }
-.sample__desc { margin-top: 16px; font-size: 14.5px; line-height: 1.6; color: var(--ink-2); min-height: 2.4em; }
+.sample__cap { display: flex; flex-direction: column; gap: 8px; color: var(--ink); }
+.sample__name { font-family: var(--display); font-weight: 300; font-size: clamp(22px, 2vw, 30px); line-height: 1.1; }
+.sample__tone { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
+.sample__desc { margin-top: 14px; font-size: 14.5px; line-height: 1.6; color: var(--ink-2); min-height: 2.4em; max-width: 360px; }
 .equip { margin-top: 32px; border-top: 1px solid var(--line); }
 .equip li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; color: var(--ink-2); }
 .equip b { font-family: var(--display); font-weight: 300; font-size: 16px; color: var(--ink); }
@@ -615,9 +622,10 @@ dl.spec dd .muted { color: var(--ink-3); }
 /* ==========================================================================
    ШОУРУМ — светлая карточка визита
    ========================================================================== */
-.showroom__grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: clamp(32px, 5vw, 96px); align-items: start; }
+.showroom__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(32px, 5vw, 96px); align-items: start; }
 .hours { margin-top: 28px; }
-.hours__big { font-family: var(--display); font-weight: 300; font-size: clamp(48px, 7vw, 110px); line-height: .95; letter-spacing: -.03em; color: var(--ink); white-space: nowrap; }
+/* размер цифр — от ширины колонки (7/12 контейнера): «10:00–20:00» ≈ 7,3 em, правый край краски ≤ край колонки − 24px на 1280–1920 */
+.hours__big { font-family: var(--display); font-weight: 300; font-size: clamp(44px, 5vw, 92px); line-height: .95; letter-spacing: -.03em; color: var(--ink); }
 .hours__sub { margin-top: 12px; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
 .addr { margin-top: 28px; font-family: var(--display); font-weight: 300; font-size: clamp(20px, 2vw, 28px); line-height: 1.25; color: var(--ink); }
 .addr small { display: block; margin-top: 8px; font-family: var(--sans); font-size: 14px; color: var(--ink-2); }
@@ -628,7 +636,8 @@ dl.spec dd .muted { color: var(--ink-3); }
 .contacts dd a { border-bottom: 1px solid var(--line-strong); transition: border-color .4s; padding-bottom: 1px; }
 .contacts dd a:hover { border-color: var(--ink); }
 .contacts dd small { display: block; font-size: 13px; color: var(--ink-3); margin-top: 2px; }
-.ways { margin-top: 32px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.ways { margin-top: 32px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }   /* 2 колонки: в колонке 5/12 три карточки рвали номера телефонов */
+.ways li:last-child { grid-column: 1 / -1; }
 .ways li { padding: 18px; border: 1px solid var(--line); border-radius: 3px; background: var(--surface); }
 .ways b { display: block; font-family: var(--display); font-weight: 300; font-size: 17px; color: var(--ink); }
 .ways p { margin-top: 8px; font-size: 13.5px; line-height: 1.55; color: var(--ink-2); }
@@ -638,9 +647,12 @@ dl.spec dd .muted { color: var(--ink-3); }
 /* ==========================================================================
    ДОСТАВКА — карта Казахстана
    ========================================================================== */
-.delivery__grid { display: grid; grid-template-columns: minmax(0, .6fr) minmax(0, 1.4fr); gap: clamp(28px, 4vw, 64px); align-items: center; }
+/* компьютер: вступление + панель слева (1fr-строки сверху и снизу центрируют пару относительно карты), карта справа; лента-чипы скрыта */
+.delivery__grid { display: grid; grid-template-columns: minmax(0, .6fr) minmax(0, 1.4fr); grid-template-rows: 1fr auto auto 1fr; grid-template-areas: ". map" "intro map" "pick map" ". map"; gap: 0 clamp(28px, 4vw, 64px); align-items: center; }
+.delivery__intro { grid-area: intro; }
+.delivery__chips { display: none; }
 .delivery .h-section { font-size: clamp(28px, 3vw, 44px); }
-.delivery__pick { margin-top: 28px; padding: 20px; border: 1px solid var(--line); border-radius: 3px; background: var(--surface); }
+.delivery__pick { grid-area: pick; margin-top: 28px; padding: 20px; border: 1px solid var(--line); border-radius: 3px; background: var(--surface); }
 .delivery__pick .caps { color: var(--ink-3); font-size: 11px; letter-spacing: .16em; }
 .delivery__city { margin-top: 8px; font-family: var(--display); font-weight: 300; font-size: 22px; color: var(--ink); }
 .delivery__term { margin-top: 8px; font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
@@ -648,7 +660,7 @@ dl.spec dd .muted { color: var(--ink-3); }
 .delivery__rows { margin-top: 24px; border-top: 1px solid var(--line); font-size: 14px; }
 .delivery__rows li { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.6fr); gap: 8px 16px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--ink-2); }
 .delivery__rows li span:first-child { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; padding-top: 3px; }
-.map { position: relative; width: calc(100% + var(--gutter) * .8); aspect-ratio: 2080 / 1174; }
+.map { grid-area: map; position: relative; width: calc(100% + var(--gutter) * .8); aspect-ratio: 2080 / 1174; }
 .map img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; filter: grayscale(1) sepia(.45) hue-rotate(185deg) saturate(1.6) brightness(.8) contrast(1.14); -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 55%, transparent 100%); mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 55%, transparent 100%); }
 .map svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .map__line { fill: none; stroke: rgba(205, 220, 255, .55); stroke-width: 1; vector-effect: non-scaling-stroke; }
@@ -670,7 +682,7 @@ dl.spec dd .muted { color: var(--ink-3); }
 .footer__grid { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); gap: 32px; }
 .footer__brand { display: flex; flex-direction: column; gap: 16px; }
 .footer__tag { font-size: 14px; color: var(--ink-2); max-width: 300px; line-height: 1.6; }
-.footer h4 { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
+.footer__title { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
 .footer ul { margin-top: 16px; display: grid; gap: 10px; }
 .footer li a, .footer li { color: var(--ink-2); font-size: 14px; line-height: 1.5; }
 .footer li a:hover { color: var(--ink); }
@@ -744,9 +756,14 @@ dl.spec dd .muted { color: var(--ink-3); }
   .tlayers .text { grid-column: 2 / 4; grid-row: 2; font-size: 13px; line-height: 1.5; }   /* описание слоя остаётся и на телефоне — под названием */
   .mcard--royal::before, .mcard--prime::before, .mcard__price--royal .mcard__sum { animation: none !important; }
   .mcard--royal::before { opacity: .8; }
-  .mrail__cards { display: flex; gap: 12px; align-items: stretch; margin: 0 calc(-1 * var(--gutter)); padding: 18px var(--gutter) 20px; overflow-x: auto; overflow-y: visible; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; overscroll-behavior-x: contain; }
+  .mrail__cards { display: flex; gap: 12px; align-items: stretch; margin: 0 calc(-1 * var(--gutter)); padding: 18px var(--gutter) 12px; overflow-x: auto; overflow-y: visible; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); -webkit-overflow-scrolling: touch; scrollbar-width: none; overscroll-behavior-x: contain; }
   .mrail__cards::-webkit-scrollbar { display: none; }
-  .mcard { flex: 0 0 min(80vw, 330px); scroll-snap-align: center; transform: scale(.96); opacity: .72; }
+  /* 76vw (≤ 300px): соседние карточки (scale .96) видны на ~35px с каждой стороны — лента читается как лента */
+  .mcard { flex: 0 0 min(76vw, 300px); scroll-snap-align: center; transform: scale(.96); opacity: .72; }
+  .mrail__dots { display: flex; justify-content: center; gap: 2px; margin-top: 2px; }
+  .mrail__dots button { width: 44px; height: 44px; display: grid; place-items: center; }
+  .mrail__dots i { display: block; width: 6px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .28); transition: width .4s var(--ease-out), background-color .4s; }
+  .mrail__dots button[aria-current="true"] i { width: 22px; background: var(--gold); }
   .mcard.is-dim { opacity: .72; }
   .mcard.is-center, .mcard.is-on { transform: scale(1); opacity: 1; }
   .mcard__title { min-height: 0; }
@@ -758,6 +775,12 @@ dl.spec dd .muted { color: var(--ink-3); }
   .trust { grid-template-columns: 1fr 1fr; gap: 20px 16px; }
   .eluna__cta { grid-template-columns: 1fr; }
   .mdl { width: 100vw; max-width: 100vw; max-height: 100vh; max-height: 100dvh; border: 0; border-radius: 0; }
+  /* крестик всегда на экране: fixed работает внутри диалога верхнего слоя (sticky не работал — форма нулевой высоты) */
+  .mdl__close { position: fixed; top: calc(10px + env(safe-area-inset-top)); right: 10px; float: none; margin: 0; border-color: var(--line-strong); }
+  .mdl__head { padding-right: 52px; }
+  .mdl__actions { gap: 12px 20px; }
+  .mdl__actions .button--primary { flex: 1 1 100%; }
+  .mdl__closeform .button { min-height: 48px; padding: 12px 20px; }
   .xs__layer { grid-template-columns: minmax(96px, .8fr) minmax(0, 1.6fr); gap: 12px; }
 
   .dirs a { grid-template-columns: 36px minmax(0, 1fr) auto; gap: 8px 14px; padding: 18px 0; }
@@ -765,7 +788,7 @@ dl.spec dd .muted { color: var(--ink-3); }
   .dirs .arr { grid-column: 3; grid-row: 1 / 3; }
   .steps { grid-template-columns: 1fr; gap: 18px; }
   .steps li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 4px 12px; }
-  .steps h3 { margin-top: 0; grid-column: 2; }
+  .steps__title { margin-top: 0; grid-column: 2; }
   .steps p { grid-column: 2; margin-top: 6px; }
   .cat { padding: 56px 0; }
   .cat__grid { gap: 28px; padding-top: 36px; }
@@ -791,12 +814,28 @@ dl.spec dd .muted { color: var(--ink-3); }
   .reel__desc { max-width: none; }
   .process__foot { grid-template-columns: 1fr; }
   .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* порядок на телефоне: образцы → превью с подписью → CTA («Спросить про велюр») → оборудование; колонки «растворены» (display: contents) */
+  .materials__grid { gap: 0; }
+  .materials__col { display: contents; }
+  .materials__col--copy > .actions { order: 1; margin-top: 26px; }
+  .materials__col--visual > .equip, .materials__col--visual > .equip__line { order: 2; }
+  .sample-row { grid-template-columns: minmax(0, min(44%, 320px)) minmax(0, 1fr); gap: 16px; align-items: center; margin-top: 20px; }
+  .sample__name { font-size: 22px; }
+  .sample__desc { margin-top: 10px; font-size: 14px; line-height: 1.55; min-height: 0; }
   .services { grid-template-columns: 1fr; }
   .clients ul { gap: 12px 24px; }
   .clients li { font-size: 15px; }
   .hours__big { font-size: clamp(34px, 11.4vw, 64px); }
   .contacts > div { grid-template-columns: 1fr; gap: 4px; }
+  /* доставка: вступление → карта → лента-чипы (основной выбор города) → панель результата; точки на карте — декорация */
+  .delivery__grid { grid-template-rows: auto; grid-template-areas: "intro" "map" "chips" "pick"; gap: 20px; }
+  .delivery__pick { margin-top: 0; }
+  .delivery__chips { display: flex; grid-area: chips; gap: 8px; margin: 0 calc(-1 * var(--gutter)); padding: 2px var(--gutter) 6px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+  .delivery__chips::-webkit-scrollbar { display: none; }
+  .delivery__chips button { flex: none; scroll-snap-align: center; display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 500; color: var(--ink-2); white-space: nowrap; transition: color .4s, border-color .4s, background-color .4s; }
+  .delivery__chips button[aria-checked="true"] { color: var(--ink); border-color: rgba(200, 168, 107, .75); background: rgba(200, 168, 107, .1); }
   .map { width: calc(100% + 2 * var(--gutter) - 8px); margin: 0 calc(-1 * var(--gutter) + 4px); }
+  .city { pointer-events: none; }
   .city i { width: 6px; height: 6px; }
   .city span { display: none; }
   .city.is-on span { display: block; opacity: 1; }
@@ -809,7 +848,7 @@ dl.spec dd .muted { color: var(--ink-3); }
   .contacts dd a { display: inline-block; padding: 10px 0; }
   dl.spec dd .more { min-height: 44px; }
   /* подписи-капители на телефоне — 12px (11px остаётся только у декоративных eyebrow) */
-  dl.spec dt, .types small, .ch__n, .footer h4 { font-size: 12px; letter-spacing: .12em; }
+  dl.spec dt, .types small, .ch__n, .footer__title { font-size: 12px; letter-spacing: .12em; }
   dl.spec dt { color: var(--ink-2); }
   .mbar { display: flex; }
   body.has-mbar .footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
@@ -826,6 +865,7 @@ dl.spec dd .muted { color: var(--ink-3); }
   .terms__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 20px; }
   .perks { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .steps { grid-template-columns: 1fr 1fr; gap: 18px 32px; }
+  .swatches { grid-template-columns: repeat(6, minmax(0, 1fr)); }   /* на планшете три колонки давали плитки по 430px */
 }
 
 @media (max-width: 359px) {
@@ -833,6 +873,19 @@ dl.spec dd .muted { color: var(--ink-3); }
 }
 
 @media (max-width: 599px) {
+  /* карточка модели — в один экран: компактные отступы, два тезиса (полный состав — в «Подробнее»), имя, цена и кнопки видны вместе */
+  .mcard { padding: 20px 18px 18px; min-width: 0; }   /* min-width 0: карточка не растёт за flex-basis из-за длинного ярлыка Royal */
+  .mcard .badge { left: 18px; }
+  .tier { letter-spacing: .12em; gap: 10px; }
+  .mcard__tier { margin-top: 10px; }
+  .mcard__title { margin-top: 12px; font-size: 20px; }
+  .mcard--prime .mcard__title { font-size: 21px; }
+  .mcard__meta { display: none; }   /* строка позиционирования повторяется в диалоге «Подробнее» */
+  .mcard__list { margin-top: 14px; gap: 6px; font-size: 13.5px; }
+  .mcard__list li:nth-child(n+3) { display: none; }
+  .mcard__list + .mcard__price { margin-top: 18px; padding-top: 16px; }
+  .mcard__actions { margin-top: 12px; gap: 6px 12px; }
+  .mcard__actions .more { min-height: 40px; }
   .facts { gap: 24px 16px; }
   .fact__value { font-size: 30px; }
   .size-options { grid-template-columns: 1fr 1fr; }
