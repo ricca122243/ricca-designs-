@@ -381,11 +381,11 @@
 
   /* ---------- Сцена ELUNA: кадры разлёта по скроллу ----------
      Состояние S пишет один render(); стили — только при изменении значения. */
-  const S = { cutO: 1, cutS: 1, cutX: 0, cutY: 0, spread: 0, outY: 0, outS: 1, outExp: 1, dark: 0, shade: 0 };
+  const S = { cutO: 1, cutS: 1, cutX: 0, cutY: 0, spread: 0, outY: 0, outS: 1, outExp: 1, shade: 0 };
   const stageEl = $('#stage');
   const productCut = $('#productCut');
   const seqCanvas = $('#seq');
-  const seqDim = $('#seqDim');
+  const seqPoster = $('.seq-poster', stageEl || document);
   const shadeEl = $('#shade');
   const seqLabels = $('#seqLabels');
   const copyLayers = $('#copyLayers');
@@ -405,36 +405,49 @@
     const SEQ = lowTier ? { count: 24, w: 1280, h: 720, base: 'img/eluna/seq720/' } : { count: 24, w: 1920, h: 1080, base: 'img/eluna/seq/' };
     const seqCtx = seqCanvas.getContext('2d', { alpha: true });
     const frames = new Array(SEQ.count).fill(null);
-    let seqLoaded = 0, seqStarted = false, seqDirty = true, stageOff = false;
+    let seqLoaded = 0, seqDirty = true, stageOff = false;
     const seqLast = { f: -1, w: 0, h: 0, loaded: 0 };
     const frameSrc = (i) => `${SEQ.base}f${String(i + 1).padStart(2, '0')}.webp`;
-    function loadSeq() {
-      if (seqStarted) return;
-      seqStarted = true;
-      const order = [0, SEQ.count - 1, Math.floor(SEQ.count / 2)];
-      for (let i = 0; i < SEQ.count; i++) if (!order.includes(i)) order.push(i);
-      let k = 0;
+    // статичная сцена (reduced motion / без GSAP) показывает один кадр — грузим только его
+    const seqStatic = !(hasGsap && !reduceMotion);
+    const SEQ_KEYS = seqStatic ? [SEQ.count - 1] : [0, SEQ.count - 1, Math.floor(SEQ.count / 2)];
+    // остальные — от крупного шага к мелкому (каждый 6-й, каждый 3-й, прочие): раскрытие уточняется по мере загрузки
+    const SEQ_REST = []; if (!seqStatic) for (let i = 0; i < SEQ.count; i++) if (!SEQ_KEYS.includes(i)) SEQ_REST.push(i);
+    SEQ_REST.sort((a, b) => (a % 6 ? a % 3 ? 2 : 1 : 0) - (b % 6 ? b % 3 ? 2 : 1 : 0) || a - b);
+    const seqQueued = new Array(SEQ.count).fill(false), seqQueue = [];
+    let seqBusy = 0;
+    function loadSeq(list) {
+      list.forEach((i) => { if (!seqQueued[i]) { seqQueued[i] = true; seqQueue.push(i); } });
       const next = () => {
-        if (k >= order.length) return;
-        const i = order[k++];
+        if (seqBusy >= 4 || !seqQueue.length) return;
+        const i = seqQueue.shift();
+        seqBusy++;
         const im = new Image();
         im.decoding = 'async';
-        im.onload = () => { const done = () => { frames[i] = im; seqLoaded++; seqDirty = true; drawSeq(); next(); }; if (im.decode) im.decode().then(done, done); else done(); };
-        im.onerror = () => next();
+        const fin = () => { seqBusy--; next(); };
+        im.onload = () => { const done = () => { frames[i] = im; seqLoaded++; seqDirty = true; drawSeq(); fin(); }; if (im.decode) im.decode().then(done, done); else done(); };
+        im.onerror = fin;
         im.src = frameSrc(i);
-        if (k < 4) next();
+        next();
       };
       next();
+    }
+    // постер = f01 (720p): пока кадры не пришли, холст рисует его же — переключение постер → холст невидимо
+    function seedPoster() {
+      if (frames[0] || !seqPoster || !seqPoster.naturalWidth) return;
+      frames[0] = seqPoster; seqLoaded++; seqDirty = true; drawSeq();
     }
     function nearestFrame(i) {
       for (let d = 0; d < SEQ.count; d++) { if (frames[i - d]) return frames[i - d]; if (frames[i + d]) return frames[i + d]; }
       return null;
     }
     const dprSeq = () => Math.min(1.5, window.devicePixelRatio || 1);
+    // компьютер: сдвиг продукта (vw) и масштаб в раскрытом виде и после ухода; левая грань матраса в кадре — 15.2 % ширины кадра
+    const DESK = { cutX: 5, cutS: 0.94, outX: 16, outS: 0.8 }, INK_L = 0.152;
     // геометрия кадра в device px; холст размером с кадр, не с экран. Телефон: кадр шире экрана, по центру; компьютер: 70 % вписанного
     function seqGeometry() {
       const d = dprSeq(), cw = Math.round(window.innerWidth * d), ch = Math.round(window.innerHeight * d), mob = isMobile();
-      const k = mob ? (cw / SEQ.w) * 1.22 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.72;
+      const k = mob ? (cw / SEQ.w) * 1.12 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.72;
       const dw = SEQ.w * k, dh = SEQ.h * k;
       return { cw, ch, dw, dh, dx: mob ? cw * 0.5 - dw * 0.47 : (cw - dw) * 0.5, dy: (ch - dh) * (mob ? 0.62 : 0.56) };
     }
@@ -443,7 +456,14 @@
       seqCanvas.width = Math.round(g.dw); seqCanvas.height = Math.round(g.dh);
       seqCanvas.style.left = `${(g.dx / d).toFixed(1)}px`; seqCanvas.style.top = `${(g.dy / d).toFixed(1)}px`;
       seqCanvas.style.width = `${(g.dw / d).toFixed(1)}px`; seqCanvas.style.height = `${(g.dh / d).toFixed(1)}px`;
+      // постер (виден до первого кадра) — в той же геометрии, что холст: без прыжка при переключении
+      if (seqPoster) { seqPoster.style.transform = 'none'; seqPoster.style.left = seqCanvas.style.left; seqPoster.style.top = seqCanvas.style.top; seqPoster.style.width = seqCanvas.style.width; seqPoster.style.height = seqCanvas.style.height; }
       placeSeqLabels(g.dx / d, g.dy / d, g.dw / d, g.dh / d);
+      // ширина текстовых колонок (компьютер) — до левой грани матраса: в раскрытом виде для «Семь слоёв», после ухода — для манифеста
+      const vw = window.innerWidth, w = g.dw / d, gutter = clamp(vw * 0.06, 20, 96);
+      const inkL = (x, sc) => vw / 2 + vw * x / 100 - w * sc / 2 + INK_L * w * sc;
+      svar(stageEl, '--stage-copy-w', `${Math.round(clamp(inkL(DESK.cutX, DESK.cutS) - gutter - 24, 240, 560))}px`);
+      svar(stageEl, '--stage-outro-w', `${Math.round(clamp(inkL(DESK.outX, DESK.outS) - gutter - 24, 320, 720))}px`);
       seqDirty = true; drawSeq();
     }
     function markSeq() {
@@ -532,15 +552,15 @@
     function render() {
       if (stageOff) return;
       const vw = window.innerWidth, vh = window.innerHeight;
-      svo(productCut, S.cutO.toFixed(3));
-      svo(seqDim, clamp(1 - S.outExp + S.dark, 0, 1).toFixed(3));
+      // уход: гасим сам продукт (прозрачность), а не чёрной плашкой поверх — у плашки видны края
+      svo(productCut, (S.cutO * clamp(S.outExp, 0, 1)).toFixed(3));
       svo(shadeEl, S.shade.toFixed(3));
       sv(productCut, 'transform', `translate3d(${(S.cutX * vw / 100).toFixed(2)}px, ${((S.cutY + S.outY) * vh / 100).toFixed(2)}px, 0) scale(${(S.cutS * S.outS).toFixed(4)})`);
       markSeq(); drawSeq();
       // слой «в фокусе» — по ходу раскрытия сверху вниз
       const sp = clamp(S.spread, 0, 1);
       setActiveLayer(sp < 0.04 ? -1 : Math.min(6, Math.floor(sp * 7)));
-      svo(seqLabels, (smoothstep(sp, 0.78, 1) * smoothstep(S.outExp, 0.55, 1)).toFixed(3));
+      svo(seqLabels, (smoothstep(sp, 0.78, 1) * smoothstep(S.outExp, 0.8, 1)).toFixed(3));
       const li = sp < 0.8 ? -1 : Math.min(6, Math.floor((sp - 0.8) / 0.2 * 7));
       if (li !== labelsIn) { labelsIn = li; seqLabelEls.forEach((el, k) => el.classList.toggle('is-in', k <= li)); }
       if (!isMobile()) placeLabels(vw, vh);
@@ -550,11 +570,12 @@
     }
     sizeSeq();
     resizeHooks.push(() => { sizeSeq(); render(); });
+    if (seqPoster) { if (seqPoster.complete) seedPoster(); else seqPoster.addEventListener('load', seedPoster, { once: true }); }
 
-    // фазы текста: до 72 % — «Семь слоёв», дальше — манифест
+    // фазы текста: до 64 % — «Семь слоёв»; 64–76 % продукт уходит на чистое поле (без текста); 76–95 % — манифест
     let phase = '';
     function setPhase(p) {
-      const ph = p < 0.7 ? 'layers' : p < 0.9 ? 'outro' : 'none';
+      const ph = p < 0.64 ? 'layers' : p >= 0.76 && p < 0.95 ? 'outro' : 'none';
       if (ph === phase) return;
       phase = ph;
       copyLayers.classList.toggle('is-on', ph === 'layers');
@@ -568,38 +589,43 @@
       const mm = gsap.matchMedia();
       mm.add({ desk: '(min-width: 900px)', mob: '(max-width: 899px)' }, (ctx) => {
         const D = ctx.conditions.desk;
-        S.cutX = D ? 5 : 0;
+        S.cutX = D ? DESK.cutX : 0;
         const tl = gsap.timeline({
           defaults: { ease: 'none' }, onUpdate: render,
-          scrollTrigger: { trigger: stageEl, start: 'top top', end: D ? '+=170%' : '+=140%', pin: true, scrub: D ? 0.6 : 0.4, anticipatePin: 1, invalidateOnRefresh: true, onUpdate: (self) => setPhase(self.progress) }
+          scrollTrigger: { trigger: stageEl, start: 'top top', end: D ? '+=170%' : '+=120%', pin: true, scrub: D ? 0.6 : 0.4, anticipatePin: 1, invalidateOnRefresh: true, onUpdate: (self) => setPhase(self.progress) }
         });
-        tl.to(S, { spread: 1, cutS: D ? 0.94 : 0.97, duration: 62, ease: 'power1.inOut' }, 0)
-          .to(S, { outExp: 0.4, outS: 0.8, outY: D ? -4 : -10, cutX: D ? 16 : 0, shade: D ? 0.85 : 0.55, duration: 16, ease: 'power2.inOut' }, 68)
-          .to(S, { dark: 0.5, outExp: 0, outY: D ? -12 : -18, duration: 12, ease: 'power1.in' }, 86)
+        /* 0–56 раскрытие (выноски заходят в конце), 56–64 пауза с подписями, 64–78 продукт уходит вправо/вверх и гаснет до .4
+           (выноски гаснут первыми), 76–95 манифест на тёмном поле, 84–96 дожим: компьютер → .1, телефон → .3 — матрас остаётся
+           призраком, пока снизу заходит «концепция» (её margin-top отрицательный), чёрной паузы нет */
+        tl.to(S, { spread: 1, cutS: D ? DESK.cutS : 0.97, duration: 56, ease: 'power1.inOut' }, 0)
+          .to(S, { outExp: 0.4, outS: D ? DESK.outS : 0.72, outY: D ? -4 : -18, cutX: D ? DESK.outX : 0, shade: D ? 0.85 : 0.55, duration: 14, ease: 'power2.inOut' }, 64)
+          .to(S, { outExp: D ? 0.1 : 0.3, outY: D ? -12 : -24, duration: 12, ease: 'power1.in' }, 84)
           .to(S, { shade: 0, duration: 8 }, 90);
-        return () => { S.spread = 0; S.cutS = 1; S.outExp = 1; S.outS = 1; S.outY = 0; S.dark = 0; S.shade = 0; S.cutX = 0; render(); setPhase(0); };
+        return () => { S.spread = 0; S.cutS = 1; S.outExp = 1; S.outS = 1; S.outY = 0; S.shade = 0; S.cutX = 0; render(); setPhase(0); };
       });
     } else {
       // без GSAP или с reduced motion: статичный разложенный матрас, все выноски на месте
-      S.spread = 1; S.cutS = isMobile() ? 0.97 : 0.94; S.cutX = isMobile() ? 0 : 5;
+      S.spread = 1; S.cutS = isMobile() ? 0.97 : DESK.cutS; S.cutX = isMobile() ? 0 : DESK.cutX;
+      stageEl.classList.add('is-static');
       render();
       stagePct.textContent = '';
     }
 
-    // кадры — лениво: за полтора экрана до секции и не раньше полной загрузки страницы
-    // кадры — лениво: после полной загрузки страницы и паузы в работе браузера, когда сцена в пределах экрана-полутора
+    // кадры — лениво: после полной загрузки страницы и паузы в работе браузера; опорные (f01/f12/f24) — за ¾ экрана до сцены,
+    // остальные — за полэкрана (на телефоне сцена начинается через ~2 экрана: в покое наверху страницы кадры не грузятся). Статичная сцена грузит один кадр.
     const whenLoaded = new Promise((r) => { if (document.readyState === 'complete') r(); else window.addEventListener('load', r, { once: true }); });
     const whenIdle = () => new Promise((r) => { if ('requestIdleCallback' in window) requestIdleCallback(() => r(), { timeout: 1500 }); else setTimeout(r, 600); });
-    const startSeq = () => whenLoaded.then(whenIdle).then(() => { loadSeq(); });
+    const startSeq = (list) => whenLoaded.then(whenIdle).then(() => { loadSeq(list); });
     if (hasIO) {
-      const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); startSeq(); } }, { rootMargin: '120% 0px' });
-      io.observe(stageEl);
+      const near = (margin, list) => { const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); startSeq(list); } }, { rootMargin: margin }); io.observe(stageEl); };
+      near('75% 0px', SEQ_KEYS);
+      if (SEQ_REST.length) near('50% 0px', SEQ_KEYS.concat(SEQ_REST));
       new IntersectionObserver((es) => {
         const on = es[es.length - 1].isIntersecting;   // пин переподвешивает сцену — записи приходят пачкой, важна последняя
         stageOff = !on;
         if (on) render();
       }, { threshold: 0 }).observe(stageEl);
-    } else startSeq();
+    } else startSeq(SEQ_KEYS.concat(SEQ_REST));
     document.fonts && document.fonts.ready && document.fonts.ready.then(() => { measureLabels(); render(); });
     window.__ricca_render = render;
   }
