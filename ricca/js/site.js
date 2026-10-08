@@ -689,7 +689,6 @@
     const dims = () => (o.size === 'custom' ? [o.w, o.h] : o.size.split('x').map(Number));
     function priceOf() {
       const [w, h] = dims();
-      if (o.model === 'royal') return o.size === '1600x2000' ? { v: PRICES.royal, o: null } : { v: null, o: null };
       const base = PRICES[o.model], old = OLD_PRICES[o.model];
       const v = Math.round((base + ((w * h) / 1e6 - 3.2) * PER_M2) / 1000) * 1000;
       return { v, o: old ? Math.round(v * old / base / 1000) * 1000 : null };
@@ -697,7 +696,7 @@
     const sizeText = () => { const [w, h] = dims(); return `${w} × ${h} мм`; };
     function message() {
       const p = priceOf();
-      if (o.model === 'royal' && p.v == null) return `Здравствуйте! Хочу обсудить матрас ELUNA Royal. Размер: ${sizeText()}. Цену прошу уточнить.`;
+      if (o.model === 'royal') return `Здравствуйте! Хочу обсудить матрас ELUNA Royal под проект. Размер: ${sizeText()}. Ориентир по цене: ${fmtMoney(p.v)} ₸.`;
       return `Здравствуйте! Хочу заказать матрас ELUNA. Модель: ${MODELS[o.model].name}. Размер: ${sizeText()}${o.size === 'custom' ? ' (свой размер, изготовление 21 день)' : ''}. Цена: ${fmtMoney(p.v)} ₸${p.o ? ` (без скидки ${fmtMoney(p.o)} ₸, −${discountPct(o.model)} %)` : ''}.`;
     }
     function renderCfg() {
@@ -709,7 +708,7 @@
       sumDim.textContent = sizeText().replace(/ /g, ' ');
       if (p.v == null) sumPrice.innerHTML = `<span style="font-size:.6em">по запросу</span>`;
       else sumPrice.innerHTML = p.o ? `<s class="price-old">${fmtMoney(p.o)} ₸</s><span class="price-new">${fmtMoney(p.v)} ₸</span><span class="save">−${discountPct(o.model)} %</span>` : `${fmtMoney(p.v)} ₸`;
-      sumMeta.textContent = MODELS[o.model].meta + (o.size === 'custom' ? ' Свой размер — изготовление 21 день.' : o.model === 'royal' && o.size !== '1600x2000' ? ' Цена для этого размера — по запросу.' : '');
+      sumMeta.textContent = MODELS[o.model].meta + (o.size === 'custom' ? ' Свой размер — изготовление 21 день.' : '');
       const href = waUrl(message());
       $$('[data-wa="eluna-size"]').forEach((a) => { a.href = href; });
     }
