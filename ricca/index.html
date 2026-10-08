@@ -101,6 +101,7 @@
       <div class="hero__cta" data-hero-cta>
         <a class="button button--primary" href="#showroom">Посетить шоурум</a>
         <a class="button button--ghost button--wa" href="https://wa.me/77084802047" data-wa="general"><svg aria-hidden="true"><use href="#wa"/></svg>Написать в&nbsp;WhatsApp</a>
+        <a class="more more--down hero__more" href="#catalog">Каталог мебели</a>
       </div>
       <p class="hero__addr"><b>Навои, 208/2</b><span class="dot"></span><span>ЖК&nbsp;«Шахристан»</span><span class="dot"></span><span>ежедневно 10:00–20:00</span></p>
     </div>
@@ -178,15 +179,23 @@
         <p class="lead reveal">Разрез ELUNA сверху вниз: от&nbsp;стёганого чехла, который вы чувствуете первым, до&nbsp;армированного основания, которое держит форму годами. Каждый слой отвечает за&nbsp;одно&nbsp;— и&nbsp;не&nbsp;мешает соседям. Разрез показывает принцип; точный состав и&nbsp;высота каждой модели&nbsp;— в&nbsp;её карточке ниже.</p>
         <div class="actions reveal"><a class="more" href="#eluna-models">Выбрать модель</a></div>
       </div>
-      <ol class="tlayers reveal">
+      <div class="tlayers-wrap reveal">
+      <ol class="tlayers">
         <li><span class="n">01</span><span class="name">Стёганый чехол<span class="role">Микроклимат</span></span><span class="text">Органический хлопок с&nbsp;терморегулирующей нитью. Первый слой, который вы чувствуете&nbsp;— и&nbsp;единственный, который видите.</span><span class="spec"><b>15&nbsp;мм</b>320&nbsp;г/м²</span></li>
         <li><span class="n">02</span><span class="name">Натуральный латекс<span class="role">Комфорт</span></span><span class="text">Сок гевеи, вспененный по&nbsp;Dunlop. Перфорация в&nbsp;семи зонах пропускает воздух и&nbsp;мягко принимает плечи и&nbsp;бёдра.</span><span class="spec"><b>30&nbsp;мм</b>65&nbsp;кг/м³</span></li>
         <li><span class="n">03</span><span class="name">Memory-пена с&nbsp;гелем<span class="role">Контур тела</span></span><span class="text">Запоминает контур тела за&nbsp;4–6&nbsp;секунд. Гелевые микрокапсулы отводят тепло к&nbsp;перфорированному латексу выше.</span><span class="spec"><b>40&nbsp;мм</b>50&nbsp;кг/м³</span></li>
+      </ol>
+      <!-- на телефоне слои 04–07 свёрнуты за «Все 7 слоёв» (data-fold закрывает JS), на компьютере список сплошной -->
+      <details class="fold fold--layers" data-fold open>
+        <summary>Все 7 слоёв</summary>
+      <ol class="tlayers tlayers--rest" start="4">
         <li><span class="n">04</span><span class="name">Кокосовая койра<span class="role">Опора</span></span><span class="text">Волокно, пропитанное латексом. Ортопедическая опора без ощущения доски&nbsp;— держит спину ровно, пока латекс держит плечи.</span><span class="spec"><b>30&nbsp;мм</b>110&nbsp;кг/м³</span></li>
         <li><span class="n">05</span><span class="name">Пена HR<span class="role">Распределение</span></span><span class="text">Высокоэластичная пена распределяет нагрузку между койрой и&nbsp;пружинами, чтобы ни&nbsp;одна точка не&nbsp;продавливалась первой.</span><span class="spec"><b>40&nbsp;мм</b>40&nbsp;кг/м³</span></li>
         <li><span class="n">06</span><span class="name">Независимые пружины<span class="role">Независимость</span></span><span class="text">1&#8239;200 пружин в&nbsp;индивидуальных карманах, семь зон жёсткости. Каждая работает сама по&nbsp;себе&nbsp;— партнёр не&nbsp;почувствует, как вы повернулись. Металл не&nbsp;касается металла, матрас не&nbsp;скрипит.</span><span class="spec"><b>120&nbsp;мм</b>500&nbsp;шт/м²</span></li>
         <li><span class="n">07</span><span class="name">Армированное основание<span class="role">Геометрия</span></span><span class="text">Плотная пена с&nbsp;усиленным периметром. Матрас не&nbsp;«сползает» к&nbsp;краям и&nbsp;держит форму весь срок службы.</span><span class="spec"><b>25&nbsp;мм</b>35&nbsp;кг/м³</span></li>
       </ol>
+      </details>
+      </div>
     </div>
     <div class="container tech__foot reveal"><span>Итого 300&nbsp;мм · 1&#8239;200 пружин на&nbsp;1600&nbsp;×&nbsp;2000&nbsp;мм</span><span>Гарантия 5&nbsp;лет · срок службы 15&nbsp;лет и&nbsp;больше</span></div>
   </div>
@@ -291,6 +300,8 @@
             <p class="size-summary__meta" id="sumMeta">Выбор Eluna. Самый натуральный матрас линейки: чехол из&nbsp;100&nbsp;% хлопка, латекс и&nbsp;кокос по&nbsp;20&nbsp;мм, армированные пружины.</p>
             <a class="button button--primary button--wa" id="sumWa" href="https://wa.me/77084802047" data-wa="eluna-size"><svg aria-hidden="true"><use href="#wa"/></svg>Заказать в&nbsp;WhatsApp</a>
           </div>
+          <details class="fold fold--sizes" data-fold open>
+            <summary>Все цены по размерам</summary>
           <ol class="size-table" aria-label="Цены по размерам">
             <li class="head"><span>Модель</span><span>1600&nbsp;×&nbsp;2000</span><span>1800&nbsp;×&nbsp;2000</span><span>Свой размер</span></li>
             <li><span class="m">Eluna Air</span><b>125&#8239;000&nbsp;₸</b><b>141&#8239;000&nbsp;₸</b><span>по&nbsp;площади · 21&nbsp;день</span></li>
@@ -298,6 +309,7 @@
             <li><span class="m">Eluna Prime</span><b><s><span class="vh">старая цена </span>350&#8239;000</s>280&#8239;000&nbsp;₸</b><b><s><span class="vh">старая цена </span>370&#8239;000</s>296&#8239;000&nbsp;₸</b><span>по&nbsp;площади · 21&nbsp;день</span></li>
             <li><span class="m">Eluna Royal</span><b>1&#8239;250&#8239;000&nbsp;₸</b><b>1&#8239;266&#8239;000&nbsp;₸</b><span>по&nbsp;площади · под проект · 21&nbsp;день</span></li>
           </ol>
+          </details>
           <!-- TODO (заказчик): Royal для 1800 × 2000 и своих размеров считается как на сайте ELUNA (+40 000 ₸/м²) — подтвердить; срок изготовления стандартных размеров; действуют ли рассрочка 0 % и вынос старого матраса с сайта ELUNA -->
         </div>
       </div>
@@ -352,10 +364,32 @@
         <li><span class="n">05</span><h3>Доставка</h3><p>Доставляем по&nbsp;Казахстану. Срок изготовления зависит от&nbsp;модели, размера и&nbsp;ткани&nbsp;— называем его после утверждения проекта.</p></li>
       </ol>
       <!-- TODO (заказчик): выезд на замер и для каких изделий; сборка и установка у частных клиентов; типовые сроки по категориям -->
+      <!-- Общие условия — один блок на весь каталог (раньше те же четыре строки повторялись в каждом паспорте) -->
+      <div class="terms reveal" id="terms">
+        <p class="terms__title">Общие условия заказа</p>
+        <dl class="terms__grid">
+          <div><dt>Срок</dt><dd>Зависит от&nbsp;модели, размера и&nbsp;ткани&nbsp;— называем после утверждения проекта. Матрас ELUNA своего размера и&nbsp;Royal&nbsp;— 21&nbsp;день.</dd></div>
+          <div><dt>Гарантия</dt><dd><b>3&nbsp;года</b> на&nbsp;мягкую мебель RICCA · <b>5&nbsp;лет</b> на&nbsp;матрасы ELUNA.</dd></div>
+          <div><dt>Доставка</dt><dd>По&nbsp;всему Казахстану. Матрасы ELUNA&nbsp;— от&nbsp;7&nbsp;дней до&nbsp;двери; условия доставки мебели называем при заказе.</dd></div>
+          <div><dt>Цена</dt><dd>Зависит от&nbsp;размера, ткани и&nbsp;отделки&nbsp;— рассчитаем в&nbsp;WhatsApp или в&nbsp;шоуруме. Матрасы ELUNA&nbsp;— фиксированные цены, от&nbsp;<b>125&#8239;000&nbsp;₸</b>.</dd></div>
+        </dl>
+      </div>
       <div class="actions reveal"><a class="button button--primary button--wa" href="https://wa.me/77084802047" data-wa="general"><svg aria-hidden="true"><use href="#wa"/></svg>Начать с&nbsp;разговора</a><a class="more" href="#showroom">Или приходите в&nbsp;шоурум</a></div>
     </div>
   </div>
 </section>
+
+<!-- Направления каталога одной строкой: на телефоне липкая лента-чипы (внутри .catwrap — прилипает, только пока листаем каталог),
+     активный раздел подсвечивает IntersectionObserver (js/site.js). На компьютере скрыта: там .dirs и липкие заголовки категорий. -->
+<div class="catwrap">
+<nav class="chips" aria-label="Разделы каталога" data-chips>
+  <a href="#sofas">Диваны</a>
+  <a href="#beds">Кровати</a>
+  <a href="#armchairs">Кресла</a>
+  <a href="#tables">Столы и&nbsp;консоли</a>
+  <a href="#collections-2026">Коллекции 2026</a>
+  <a href="#eluna">ELUNA</a>
+</nav>
 
 <!-- 01 Диваны -->
 <section class="section cat late" id="sofas" aria-labelledby="sofas-title">
@@ -376,19 +410,17 @@
         <li><h3>Угловые</h3><p>Сторона угла&nbsp;— под планировку комнаты.</p><small>Большая гостиная · зона у&nbsp;окна</small></li>
         <li><h3>Модульные</h3><p>Секции, которые собираются в&nbsp;нужную форму и&nbsp;переставляются, когда меняется комната.</p><small>Открытые планировки · лобби · лаунжи</small></li>
       </ul>
-      <dl class="spec reveal">
+      <details class="fold reveal" data-fold="open" open>
+        <summary>Паспорт изделия</summary>
+      <dl class="spec">
         <div><dt>Что входит</dt><dd>3D-проект и&nbsp;согласование размеров · изготовление в&nbsp;собственном ателье · <b>гарантия 3&nbsp;года</b> · доставка по&nbsp;Казахстану.</dd></div>
         <div><dt>Варианты</dt><dd>Прямой · угловой · модульный. С&nbsp;механизмом раскладывания или без.<div class="spec__tags"><span>Прямой</span><span>Угловой</span><span>Модульный</span><span>С механизмом</span><span>Без механизма</span></div></dd></div>
-        <div><dt>Размеры</dt><dd>По&nbsp;вашей комнате: длина, глубина посадки, высота спинки и&nbsp;подлокотников&nbsp;— согласуем на&nbsp;проекте.</dd></div>
+        <div><dt>Размеры и&nbsp;посадка</dt><dd>По&nbsp;вашей комнате: длина, глубина посадки, высота спинки и&nbsp;подлокотников&nbsp;— согласуем на&nbsp;проекте. Наполнение подбираем под желаемую посадку&nbsp;— мягче или плотнее.</dd></div>
         <div><dt>Ткань и&nbsp;кожа</dt><dd>Из&nbsp;палитры в&nbsp;шоуруме: образцы можно потрогать и&nbsp;сравнить рядом. <a class="more" href="#materials">Материалы</a></dd></div>
-        <div><dt>Наполнение</dt><dd>Подбираем под желаемую посадку&nbsp;— мягче или плотнее.</dd></div>
-        <div><dt>Механизм</dt><dd>Диван может быть с&nbsp;механизмом раскладывания или без&nbsp;— обсудим на&nbsp;проекте.</dd></div>
         <div><dt>Опоры и&nbsp;цоколь</dt><dd>Деревянные детали шлифуем и&nbsp;покрываем лаком в&nbsp;своём ателье; варианты опор подбираем под интерьер.</dd></div>
-        <div><dt>Срок</dt><dd>Называем после утверждения проекта и&nbsp;выбора ткани.</dd></div>
-        <div><dt>Гарантия</dt><dd><b>3&nbsp;года.</b></dd></div>
-        <div><dt>Доставка</dt><dd>По&nbsp;Казахстану.</dd></div>
-        <div><dt>Цена</dt><dd>Зависит от&nbsp;размера, ткани и&nbsp;отделки. Рассчитаем в&nbsp;WhatsApp или в&nbsp;шоуруме.</dd></div>
       </dl>
+      </details>
+      <!-- Срок, гарантия, доставка и цена — в блоке «Общие условия заказа» (#terms) -->
       <!-- TODO (заказчик): механизмы раскладывания (типы), состав наполнения, варианты опор (дерево / цоколь / металл), съёмные чехлы, декоративные подушки в комплекте, ограничения по размерам, типовой срок -->
     </div>
   </div>
@@ -410,17 +442,16 @@
         <li><h3>Основание</h3><p>Подбираем под матрас и&nbsp;задачу&nbsp;— обсудим на&nbsp;проекте.</p><small>Под матрас</small></li>
         <li><h3>Размер</h3><p>Стандарт ELUNA&nbsp;— 1600&nbsp;×&nbsp;2000 и&nbsp;1800&nbsp;×&nbsp;2000&nbsp;мм; свой размер&nbsp;— ширина 1400–2200, длина 1900–2200&nbsp;мм.</p><small>Шаг 10&nbsp;мм</small></li>
       </ul>
-      <dl class="spec reveal">
+      <details class="fold reveal" data-fold open>
+        <summary>Паспорт изделия</summary>
+      <dl class="spec">
         <div><dt>Что входит</dt><dd>3D-проект · изголовье и&nbsp;каркас · изготовление в&nbsp;собственном ателье · <b>гарантия 3&nbsp;года</b> · доставка по&nbsp;Казахстану. Матрас&nbsp;— отдельно, из&nbsp;линейки ELUNA.</dd></div>
-        <div><dt>Варианты</dt><dd>Изголовье: высота и&nbsp;форма под вас · основание под матрас · размер под спальню.</dd></div>
         <div><dt>Размеры</dt><dd>Под матрас 1600&nbsp;×&nbsp;2000, 1800&nbsp;×&nbsp;2000&nbsp;мм или свой размер в&nbsp;диапазоне 1400–2200&nbsp;×&nbsp;1900–2200&nbsp;мм.</dd></div>
-        <div><dt>Матрас</dt><dd>Любая модель ELUNA: Air, Balance, Prime или Royal под ваш размер. <a class="more more--up" href="#eluna-models">Модели и&nbsp;цены</a></dd></div>
+        <div><dt>Матрас ELUNA</dt><dd>Любая модель: Air, Balance, Prime или Royal под ваш размер. Фиксированная цена&nbsp;— от&nbsp;<b>125&#8239;000&nbsp;₸</b>, свой размер&nbsp;— 21&nbsp;день, гарантия <b>5&nbsp;лет</b>. <a class="more more--up" href="#eluna-models">Модели и&nbsp;цены</a></dd></div>
         <div><dt>Ткань и&nbsp;кожа</dt><dd>Из&nbsp;палитры в&nbsp;шоуруме.</dd></div>
-        <div><dt>Срок</dt><dd>Называем после утверждения проекта. Матрас ELUNA своего размера&nbsp;— 21&nbsp;день.</dd></div>
-        <div><dt>Гарантия</dt><dd><b>3&nbsp;года</b> на&nbsp;кровать · <b>5&nbsp;лет</b> на&nbsp;матрас ELUNA.</dd></div>
-        <div><dt>Доставка</dt><dd>По&nbsp;Казахстану.</dd></div>
-        <div><dt>Цена</dt><dd>Кровать&nbsp;— зависит от&nbsp;размера, ткани и&nbsp;отделки. Матрас ELUNA&nbsp;— фиксированная цена, от&nbsp;125&#8239;000&nbsp;₸.</dd></div>
       </dl>
+      </details>
+      <!-- Срок, гарантия, доставка и цена — в блоке «Общие условия заказа» (#terms) -->
       <!-- TODO (заказчик): формы и отделка изголовий; основания (ортопедическое, подъёмный механизм, ящики) и входят ли в базу; опоры; комплектная цена «кровать + матрас»; типовой срок -->
     </div>
   </div>
@@ -436,17 +467,16 @@
       <div class="cat__cta reveal"><a class="button button--primary button--wa" href="https://wa.me/77084802047" data-wa="armchairs"><svg aria-hidden="true"><use href="#wa"/></svg>Запросить подборку</a><a class="more" href="#showroom">Попробовать в&nbsp;шоуруме</a></div>
     </header>
     <div class="cat__body">
-      <dl class="spec reveal" style="margin-top:0">
+      <details class="fold fold--first reveal" data-fold open>
+        <summary>Паспорт изделия</summary>
+      <dl class="spec">
         <div><dt>Что входит</dt><dd>Проект · изготовление в&nbsp;собственном ателье · <b>гарантия 3&nbsp;года</b> · доставка по&nbsp;Казахстану.</dd></div>
         <div><dt>Варианты</dt><dd>Кресла для отдыха под ваш интерьер.</dd></div>
-        <div><dt>Размеры</dt><dd>Под человека и&nbsp;комнату: глубина и&nbsp;высота посадки, ширина&nbsp;— согласуем на&nbsp;проекте.</dd></div>
         <div><dt>Ткань и&nbsp;кожа</dt><dd>Из&nbsp;палитры в&nbsp;шоуруме.</dd></div>
-        <div><dt>Наполнение</dt><dd>Под желаемую посадку.</dd></div>
-        <div><dt>Срок</dt><dd>Называем после утверждения проекта.</dd></div>
-        <div><dt>Гарантия</dt><dd><b>3&nbsp;года.</b></dd></div>
-        <div><dt>Доставка</dt><dd>По&nbsp;Казахстану.</dd></div>
-        <div><dt>Цена</dt><dd>Зависит от&nbsp;размера, ткани и&nbsp;отделки.</dd></div>
+        <div><dt>На проекте</dt><dd>Размеры и&nbsp;посадка, наполнение, срок и&nbsp;цена&nbsp;— согласуем после примерки в&nbsp;шоуруме или по&nbsp;фото комнаты.</dd></div>
       </dl>
+      </details>
+      <!-- Гарантия и доставка — в блоке «Общие условия заказа» (#terms) -->
       <p class="empty reveal" style="margin-top:20px">Фотографии этого направления появятся позже. Пока&nbsp;— вживую в&nbsp;шоуруме: Навои, 208/2, ежедневно 10:00–20:00.</p>
       <!-- TODO (заказчик): типы кресел (высокая/низкая спинка, с пуфом, вращающиеся, обеденные), состав наполнения, опоры -->
     </div>
@@ -463,15 +493,16 @@
       <div class="cat__cta reveal"><a class="button button--primary button--wa" href="https://wa.me/77084802047" data-wa="tables"><svg aria-hidden="true"><use href="#wa"/></svg>Подобрать стол к&nbsp;дивану</a></div>
     </header>
     <div class="cat__body">
-      <dl class="spec reveal" style="margin-top:0">
+      <details class="fold fold--first reveal" data-fold open>
+        <summary>Паспорт изделия</summary>
+      <dl class="spec">
         <div><dt>Что входит</dt><dd>Подбор под ваш диван или кровать · доставка по&nbsp;Казахстану.</dd></div>
         <div><dt>Варианты</dt><dd>Журнальные столы, консоли, приставные столики.</dd></div>
         <div><dt>Размеры</dt><dd>Под диван и&nbsp;комнату.</dd></div>
         <div><dt>Отделка</dt><dd>В&nbsp;тон опорам мягкой мебели.</dd></div>
-        <div><dt>Срок</dt><dd>Называем после подбора.</dd></div>
-        <div><dt>Доставка</dt><dd>По&nbsp;Казахстану.</dd></div>
-        <div><dt>Цена</dt><dd>По&nbsp;запросу&nbsp;— зависит от&nbsp;размера и&nbsp;отделки.</dd></div>
+        <div><dt>На проекте</dt><dd>Размеры, срок и&nbsp;цена&nbsp;— после подбора к&nbsp;вашему дивану или кровати.</dd></div>
       </dl>
+      </details>
       <!-- TODO (заказчик): столы и консоли — собственное производство или партнёры; типы; материалы столешниц и отделки; распространяется ли гарантия 3 года -->
     </div>
   </div>
@@ -498,6 +529,7 @@
     </div>
   </div>
 </section>
+</div><!-- /.catwrap -->
 
 <!-- ═══════════════ АТЕЛЬЕ — фильм по главам ═══════════════ -->
 <section class="section late" id="atelier" aria-labelledby="atelier-title">

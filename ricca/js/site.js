@@ -203,13 +203,16 @@
     mq.addEventListener('change', (e) => { if (!e.matches && menuOpen) setMenu(false); });
   }
 
+  const chipsBar = $('[data-chips]');
+  // липкая лента чипов каталога (телефон) тоже закрывает верх раздела — учитываем её высоту для целей внутри .catwrap
+  const chipsH = (target) => (chipsBar && target.closest('.catwrap') && getComputedStyle(chipsBar).display !== 'none' ? chipsBar.offsetHeight : 0);
   const scrollYFor = (target) => {
     const r = target.getBoundingClientRect();
     // цель могла ещё не «появиться» (reveal сдвигает на 26px) — считаем по итоговому месту
     const tf = getComputedStyle(target).transform;
     const shift = tf && tf !== 'none' ? new DOMMatrixReadOnly(tf).m42 : 0;
     const gap = target.id === 'stage' ? 0 : isMobile() ? 16 : 24;
-    return r.top - shift + window.scrollY - navH() - gap;
+    return r.top - shift + window.scrollY - navH() - chipsH(target) - gap;
   };
   const goTo = (id) => {
     if (id === 'top') { window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); return true; }
@@ -232,6 +235,24 @@
     e.preventDefault();
     history.replaceState(null, '', id === 'top' ? location.pathname : `#${id}`);
   });
+
+  /* ---------- Свёртки [data-fold]: на компьютере раскрыты (summary скрыт в CSS), на телефоне закрыты, кроме data-fold="open" ---------- */
+  const folds = $$('details[data-fold]');
+  const setFolds = (m) => folds.forEach((d) => { d.open = !m || d.dataset.fold === 'open'; });
+  setFolds(isMobile());
+  mq.addEventListener('change', (e) => setFolds(e.matches));
+
+  /* ---------- Чипы направлений каталога (телефон): активный раздел — тот, что пересекает линию 40 % высоты экрана ---------- */
+  if (chipsBar && hasIO) {
+    const chipLinks = $$('a', chipsBar);
+    const setChip = (id) => {
+      let active = null;
+      chipLinks.forEach((a) => { const on = a.getAttribute('href') === `#${id}`; a.classList.toggle('is-active', on); if (on) active = a; });
+      if (active) chipsBar.scrollTo({ left: active.offsetLeft - (chipsBar.clientWidth - active.offsetWidth) / 2, behavior: reduceMotion ? 'auto' : 'smooth' });
+    };
+    const chipIO = new IntersectionObserver((es) => { es.forEach((e) => { if (e.isIntersecting) setChip(e.target.id); }); }, { rootMargin: '-40% 0px -59% 0px', threshold: 0 });
+    chipLinks.forEach((a) => { const s = document.getElementById(a.getAttribute('href').slice(1)); if (s && s.classList.contains('cat')) chipIO.observe(s); });
+  }
 
   /* ---------- Первый экран ---------- */
   const fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();

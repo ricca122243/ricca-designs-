@@ -58,7 +58,7 @@
 html { scroll-behavior: auto; -webkit-text-size-adjust: 100%; background: var(--bg); }
 body {
   margin: 0; background: var(--bg); color: var(--ink-body);
-  font-family: var(--sans); font-weight: 300; font-size: 16px; line-height: 1.6;
+  font-family: var(--sans); font-weight: 400; font-size: 16px; line-height: 1.6;   /* 400, не 300: тонкий Inter на тёмном теряет контраст («чуть белее», Apple-grade); 300 — только для Unbounded */
   -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden; overflow-x: clip;
 }
@@ -89,6 +89,12 @@ b, strong { font-weight: 500; }
 /* ---------- Типографика --------------------------------------------------------- */
 .eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
 .eyebrow .dot, .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--accent); display: inline-block; flex: none; }
+/* точка-разделитель рисуется перед следующим словом (::before), а не отдельным флекс-элементом — при переносе строки она не повисает в конце */
+.eyebrow > .dot, .hero__addr > .dot, .mcard__kicker > .dot { display: none; }
+.eyebrow > .dot + span::before, .hero__addr > .dot + span::before, .mcard__kicker > .dot + span::before { content: ""; display: inline-block; width: 3px; height: 3px; margin-right: 14px; border-radius: 50%; background: var(--accent); vertical-align: middle; transform: translateY(-1px); }
+.mcard__kicker > .dot + span::before { margin-right: 12px; }
+.eyebrow > .dot + .badge::before { content: none; }
+.eyebrow > .dot:has(+ .badge) { display: inline-block; }
 .eyebrow .num { color: var(--ink); }
 .h-section { font-family: var(--display); font-weight: 500; font-size: clamp(30px, 3.6vw, 52px); line-height: 1.1; letter-spacing: -.015em; margin-top: 22px; color: var(--ink); text-wrap: balance; }
 .h-section em, .h-display em { color: var(--ink-3); }
@@ -126,6 +132,8 @@ b, strong { font-weight: 500; }
 .more:hover { color: var(--ink); border-color: var(--accent); }
 .more::after { content: ""; display: inline-block; width: 6px; height: 6px; margin-left: 10px; border: solid currentColor; border-width: 1px 1px 0 0; transform: translateY(-1px) rotate(45deg); }
 .more--up::after { transform: translateY(2px) rotate(-45deg); }
+.more--down::after { transform: translateY(-3px) rotate(135deg); }
+.hero__more { margin-left: 10px; }
 .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 24px; margin-top: 30px; }
 
 .badge { display: inline-flex; align-items: center; padding: 7px 11px; border-radius: 2px; border: 1px solid var(--line-strong); background: var(--surface-2); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; color: var(--ink); line-height: 1.2; }
@@ -149,7 +157,7 @@ b, strong { font-weight: 500; }
 .brand__mono { width: 34px; height: auto; flex: none; }
 .brand__wm { display: flex; flex-direction: column; gap: 3px; line-height: 1; }
 .brand__main { font-family: var(--display); font-weight: 500; font-size: 14px; letter-spacing: .32em; }
-.brand__sub { font-size: 8px; letter-spacing: .34em; color: var(--ink-3); }
+.brand__sub { font-size: 10px; letter-spacing: .26em; text-transform: uppercase; white-space: nowrap; color: var(--ink-3); }
 .nav__links { display: flex; gap: 30px; }
 .nav__links a { position: relative; padding: 10px 0; transition: color .4s; }
 .nav__links a::after { content: ""; position: absolute; left: 0; right: 100%; bottom: 4px; height: 1px; background: var(--accent); transition: right .5s var(--ease-out); }
@@ -293,6 +301,7 @@ b, strong { font-weight: 500; }
 .tlayers .text { font-size: 14px; line-height: 1.6; color: var(--ink-2); }
 .tlayers .spec { white-space: nowrap; text-align: right; display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink-3); }
 .tlayers .spec b { font-family: var(--display); font-weight: 300; font-size: 15px; color: var(--ink); }
+.tlayers--rest { border-top: 0; }
 .tech__foot { margin-top: 28px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-size: 13px; color: var(--ink-3); }
 
 /* модели */
@@ -480,14 +489,42 @@ b, strong { font-weight: 500; }
 .types h3 { font-family: var(--display); font-weight: 300; font-size: 18px; line-height: 1.2; color: var(--ink); }
 .types p { margin-top: 10px; font-size: 14px; line-height: 1.55; color: var(--ink-2); }
 .types small { display: block; margin-top: 12px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
-.spec { margin-top: 28px; border-top: 1px solid var(--line); }
-.spec > div { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 2.2fr); gap: 8px 24px; padding: 16px 0; border-bottom: 1px solid var(--line); }
-.spec dt { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; padding-top: 4px; }
-.spec dd { font-size: 15px; line-height: 1.6; color: var(--ink-body); }
-.spec dd b { color: var(--ink); }
-.spec dd .muted { color: var(--ink-3); }
+/* паспорт изделия — только dl.spec: короткие значения «15 мм» в сцене (.layer-active .spec, .seq-label__text .spec) и в .tlayers .spec
+   тоже называются .spec и не должны получать линию и отступ паспорта */
+dl.spec { margin-top: 28px; border-top: 1px solid var(--line); }
+dl.spec > div { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 2.2fr); gap: 8px 24px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+dl.spec dt { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; padding-top: 4px; }
+dl.spec dd { font-size: 15px; line-height: 1.6; color: var(--ink-body); }
+dl.spec dd b { color: var(--ink); }
+dl.spec dd .muted { color: var(--ink-3); }
 .spec__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .spec__tags span { padding: 6px 10px; border: 1px solid var(--line); border-radius: 2px; font-size: 12px; letter-spacing: .04em; color: var(--ink-2); }
+/* свёртка паспорта: на компьютере всегда раскрыта (summary скрыт, open ставит JS), на телефоне закрыта, кроме [data-fold="open"] */
+.fold { margin-top: 28px; }
+.fold--first { margin-top: 0; }
+.fold > summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; padding: 16px 0; border-top: 1px solid var(--line); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500; color: var(--ink); }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary::after { content: ""; width: 7px; height: 7px; border: solid var(--ink-3); border-width: 0 1px 1px 0; transform: rotate(45deg); transition: transform .4s var(--ease-out); flex: none; }
+.fold[open] > summary::after { transform: rotate(-135deg); }
+.fold > dl.spec { margin-top: 0; }
+.fold--layers { margin-top: 0; }            /* слои 04–07 в светлом блоке ELUNA */
+.fold--layers > summary { border-top: 0; }
+.fold--sizes { margin-top: 28px; }          /* таблица цен по размерам */
+.fold--sizes > .size-table { margin-top: 0; }
+@media (min-width: 900px) { .fold > summary { display: none; } }
+/* общие условия заказа — один блок под шагами вместо четырёх строк в каждом паспорте */
+.terms { margin-top: clamp(40px, 5vw, 64px); padding-top: 26px; border-top: 1px solid var(--line); }
+.terms__title { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); font-weight: 500; }
+.terms__grid { margin-top: 20px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 32px; }
+.terms__grid dt { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); font-weight: 500; }
+.terms__grid dd { margin-top: 8px; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+.terms__grid dd b { color: var(--ink); }
+/* чипы направлений — липкая лента на телефоне (внутри .catwrap); на компьютере не нужна */
+.chips { display: none; position: sticky; top: var(--nav-h); z-index: 60; gap: 8px; padding: 8px var(--gutter); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; background: rgba(7, 8, 12, .86); -webkit-backdrop-filter: blur(16px) saturate(1.2); backdrop-filter: blur(16px) saturate(1.2); border-bottom: 1px solid var(--line); }
+.chips::-webkit-scrollbar { display: none; }
+.chips a { flex: none; scroll-snap-align: start; display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 500; color: var(--ink-2); white-space: nowrap; transition: color .4s, border-color .4s, background-color .4s; }
+.chips a.is-active { color: var(--ink); border-color: var(--ink); background: rgba(255, 255, 255, .06); }
+.chips a[href="#eluna"] { color: var(--gold); border-color: rgba(200, 168, 107, .45); }
 .cat__cta { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; }
 .empty { padding: clamp(28px, 4vw, 48px); border: 1px dashed var(--line-strong); border-radius: 3px; text-align: center; color: var(--ink-2); font-size: 15px; line-height: 1.65; }
 .empty b { display: block; font-family: var(--display); font-weight: 300; font-size: 20px; color: var(--ink); margin-bottom: 10px; }
@@ -667,6 +704,7 @@ b, strong { font-weight: 500; }
   .grain { display: none; }
   .nav__links, .nav__cta-t { display: none; }
   .nav__menu { display: inline-flex; }
+  .nav { gap: 12px; }
   .nav__cta { padding: 0 12px; min-width: 44px; }
   .brand__mono { width: 30px; }
   .section { padding: clamp(56px, 12vw, 80px) 0; }
@@ -680,6 +718,7 @@ b, strong { font-weight: 500; }
   .hero__sub { font-size: 16px; margin-top: 20px; }
   .hero__cta { margin-top: 26px; }
   .hero__cta .button { flex: 1 1 100%; }
+  .hero__more { flex-basis: 100%; margin-left: 0; }
   .hero__visual { justify-self: stretch; width: 100%; }
   .hero__visual .frame img { aspect-ratio: 3 / 2; }
   .hero__cue { display: none; }
@@ -702,7 +741,7 @@ b, strong { font-weight: 500; }
   .tech__grid, .sizes__grid, .cat__grid, .process__grid, .materials__grid, .business__grid, .faq__grid, .showroom__grid, .delivery__grid, .hero__grid, .concept__grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .tech__side, .cat__head { position: static; }
   .tlayers li { grid-template-columns: 30px minmax(0, 1fr) auto; gap: 8px 14px; padding: 14px 0; }
-  .tlayers .text { display: none; }
+  .tlayers .text { grid-column: 2 / 4; grid-row: 2; font-size: 13px; line-height: 1.5; }   /* описание слоя остаётся и на телефоне — под названием */
   .mcard--royal::before, .mcard--prime::before, .mcard__price--royal .mcard__sum { animation: none !important; }
   .mcard--royal::before { opacity: .8; }
   .mrail__cards { display: flex; gap: 12px; align-items: stretch; margin: 0 calc(-1 * var(--gutter)); padding: 18px var(--gutter) 20px; overflow-x: auto; overflow-y: visible; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; overscroll-behavior-x: contain; }
@@ -711,7 +750,8 @@ b, strong { font-weight: 500; }
   .mcard.is-dim { opacity: .72; }
   .mcard.is-center, .mcard.is-on { transform: scale(1); opacity: 1; }
   .mcard__title { min-height: 0; }
-  .perks { grid-template-columns: 1fr; gap: 16px; }
+  .perks { grid-template-columns: 1fr 1fr; gap: 14px 16px; padding-top: 22px; }
+  .perks li { font-size: 13.5px; line-height: 1.5; }
   .cfg__models { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .size-table li { grid-template-columns: minmax(0, 1.1fr) repeat(3, minmax(0, 1fr)); gap: 8px; font-size: 13px; }
   .size-table b { font-size: 13px; }
@@ -729,8 +769,23 @@ b, strong { font-weight: 500; }
   .steps p { grid-column: 2; margin-top: 6px; }
   .cat { padding: 56px 0; }
   .cat__grid { gap: 28px; padding-top: 36px; }
-  .spec > div { grid-template-columns: 1fr; gap: 6px; padding: 14px 0; }
-  .spec dd { font-size: 15px; }
+  /* паспорт: подпись над значением, плотные строки — на 390px две колонки дают узкий столбец в 5–6 строк и выше, чем стопка */
+  dl.spec > div { grid-template-columns: 1fr; gap: 4px; padding: 12px 0; }
+  dl.spec dt { padding-top: 0; }
+  dl.spec dd { font-size: 14.5px; line-height: 1.55; }
+  /* типы — лента с привязкой, как карточки моделей ELUNA: три карточки занимают высоту одной */
+  .types { display: flex; gap: 10px; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter) 4px; scroll-padding: 0 var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+  .types::-webkit-scrollbar { display: none; }
+  .types li { flex: 0 0 min(78vw, 320px); scroll-snap-align: start; padding: 16px 18px; }
+  .types h3 { font-size: 17px; }
+  .types p { font-size: 13.5px; margin-top: 8px; }
+  .dirs a { padding: 14px 0; }
+  .dirs .d { font-size: 13.5px; line-height: 1.5; }
+  .steps { gap: 14px; }
+  .steps p { font-size: 13.5px; line-height: 1.55; }
+  .terms__grid { grid-template-columns: 1fr 1fr; gap: 16px 14px; }
+  .terms__grid dd { font-size: 13.5px; line-height: 1.55; }
+  .chips { display: flex; }
   .cat__photos { max-width: none; }
   .reel__screen { margin: 0 auto; }
   .reel__desc { max-width: none; }
@@ -752,9 +807,29 @@ b, strong { font-weight: 500; }
   .footer li { padding: 4px 0; }
   .footer li:has(a) { padding: 0; }
   .contacts dd a { display: inline-block; padding: 10px 0; }
-  .spec dd .more { min-height: 44px; }
+  dl.spec dd .more { min-height: 44px; }
+  /* подписи-капители на телефоне — 12px (11px остаётся только у декоративных eyebrow) */
+  dl.spec dt, .types small, .ch__n, .footer h4 { font-size: 12px; letter-spacing: .12em; }
+  dl.spec dt { color: var(--ink-2); }
   .mbar { display: flex; }
   body.has-mbar .footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+}
+
+/* планшет 600–899: две колонки паспорта, три типа в ряд, фото не крупнее исходника */
+@media (min-width: 600px) and (max-width: 899px) {
+  .hero__visual { max-width: 513px; }
+  dl.spec > div { grid-template-columns: minmax(0, .8fr) minmax(0, 2.2fr); gap: 8px 24px; padding: 14px 0; }
+  dl.spec dt { padding-top: 3px; }
+  .types { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; overflow: visible; }
+  .types li { flex: none; padding: 20px; }
+  .cat__photos { max-width: 360px; }
+  .terms__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 20px; }
+  .perks { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .steps { grid-template-columns: 1fr 1fr; gap: 18px 32px; }
+}
+
+@media (max-width: 359px) {
+  .nav .brand__sub { display: none; }   /* на 320px подпись не помещается рядом с WhatsApp и меню — остаётся в подвале */
 }
 
 @media (max-width: 599px) {
