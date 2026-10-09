@@ -1,12 +1,11 @@
-/* RICCA DESIGNS — сайт «Chapitres». Ванильный JS; GSAP + ScrollTrigger (vendor/, defer) — только для сцены ELUNA.
-   Порядок: CONFIG (контакты и тексты WhatsApp) → шапка, меню, якоря → свёртки, чипы, появления → ELUNA (звёзды, сцена
-   кадров, линейка, сравнение, конфигуратор) → фильм по главам → образцы → доставка → проекты и лайтбокс → «Подборка» →
-   липкая плашка. Единственный владелец ссылок [data-wa] / [data-tel] — этот файл. */
+/* RICCA DESIGNS — сайт «Chapitres». Ванильный JS без библиотек.
+   Порядок: CONFIG (контакты и тексты WhatsApp) → шапка, меню, якоря → свёртки, чипы, появления → диалоги → фильм по главам
+   → образцы → доставка → проекты и лайтбокс → «Подборка» → липкая плашка. Единственный владелец ссылок [data-wa] / [data-tel] —
+   этот файл. ELUNA на сайте RICCA — только карточка-новость и внешние ссылки на сайт бренда (решение заказчика 9 октября). */
 (() => {
   'use strict';
 
-  /* ---------- CONFIG: номера и готовые тексты WhatsApp (CONTENT-V3 §27) — менять здесь ----------
-     TODO (заказчик): заказы ELUNA с сайта RICCA — на основной 708 480-20-47 (как здесь) или на отдел заказов 707 955-08-08? */
+  /* ---------- CONFIG: номера и готовые тексты WhatsApp (CONTENT-V3 §27) — менять здесь ---------- */
   const CONFIG = {
     wa: '77084802047',
     tel: { main: { href: '+77084802047' }, orders: { href: '+77079550808' } },
@@ -22,11 +21,6 @@
       projects: 'Здравствуйте! Хочу обсудить мебель для своей комнаты: гостиная / спальня / столовая / кабинет / другое. Размеры и фото пришлю следующим сообщением.',
       business: 'Здравствуйте! Хочу обсудить проект для бизнеса: отель / ресторан / апарт-комплекс / жилой проект / офис.',
       master: 'Здравствуйте! У меня вопрос к мастеру RICCA.',
-      eluna: 'Здравствуйте! Интересуют матрасы ELUNA.',
-      'eluna:air': 'Здравствуйте! Хочу заказать матрас ELUNA. Модель: Eluna Air. Размер: 1600 × 2000 мм. Цена: 125 000 ₸.',
-      'eluna:balance': 'Здравствуйте! Хочу заказать матрас ELUNA. Модель: Eluna Balance. Размер: 1600 × 2000 мм. Цена: 220 000 ₸.',
-      'eluna:prime': 'Здравствуйте! Хочу заказать матрас ELUNA. Модель: Eluna Prime. Размер: 1600 × 2000 мм. Цена: 280 000 ₸ (без скидки 350 000 ₸, −20 %).',
-      'eluna:royal': 'Здравствуйте! Хочу обсудить матрас Eluna Royal под свой размер и проект.',
       'project:living': 'Здравствуйте! Хочу так же: гостиная — диван в светлом букле с мягкими округлыми формами. Расскажите, пожалуйста, с чего начать и от чего зависит цена.',
       'project:bedroom': 'Здравствуйте! Хочу так же: спальня — кровать с высоким мягким изголовьем в велюре и обитым основанием. Расскажите, пожалуйста, с чего начать и от чего зависит цена.',
       'project:dining': 'Здравствуйте! Хочу так же: столовая — мягкие полукресла в букле и стол. Расскажите, пожалуйста, с чего начать и от чего зависит цена.',
@@ -46,20 +40,9 @@
   const body = document.body;
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
-  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hasIO = 'IntersectionObserver' in window;
-  /* GSAP + ScrollTrigger грузятся лениво — когда сцена ELUNA в полутора экранах (первая загрузка легче на ~115 КБ).
-     Место под пин резервируется заранее (margin-bottom сцены = длина пина), поэтому подключение ничего не сдвигает. */
-  const loadScript = (src) => new Promise((res, rej) => { const el = document.createElement('script'); el.src = src; el.onload = res; el.onerror = rej; document.head.appendChild(el); });
-  let gsapP = null;
-  const loadGsap = () => gsapP || (gsapP = (window.gsap && window.ScrollTrigger ? Promise.resolve() : loadScript('vendor/gsap.min.js').then(() => loadScript('vendor/ScrollTrigger.min.js'))).then(() => {
-    gsap.registerPlugin(ScrollTrigger); ScrollTrigger.config({ ignoreMobileResize: true });
-    ScrollTrigger.addEventListener('refresh', () => reissueGo());
-  }));
-  const stRefresh = () => { if (window.ScrollTrigger) ScrollTrigger.refresh(); };
   let barRaf = 0, slReady = false;
-  let scenePin = null, scenePinned = false;   // пин сцены ELUNA создаётся лениво; goTo() умеет создать его до прыжка
   const hasHistory = !!(window.history && history.pushState);
   const store = {
     get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } },
@@ -87,64 +70,10 @@
   window.addEventListener('resize', () => onResize(false));
   mq.addEventListener('change', (e) => { mobile = e.matches; onResize(true); });
 
-  /* ---------- Деньги: узкий неразрывный пробел U+202F — «280 000 ₸» никогда не ломается ---------- */
-  const NB = ' ';
-  const fmt = (n) => Math.round(n).toLocaleString('ru-RU').replace(/[\s  ]/g, NB);
-  const money = (n) => `${fmt(n)} ₸`;
-  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-
-  /* ---------- Данные ELUNA (сайт ELUNA, js/main.js) ---------- */
-  const PRICES = { air: 125000, balance: 220000, prime: 280000, royal: 1250000 };   // ₸ за 1600 × 2000 мм
-  const OLD_PRICES = { prime: 350000 };
-  const discountPct = (k) => (OLD_PRICES[k] ? Math.round((1 - PRICES[k] / OLD_PRICES[k]) * 100) : 0);
-  const MODELS = {
-    air: { name: 'Eluna Air', short: 'Air', meta: 'Базовая модель: армированные пружины, натуральный кокос 10 мм, двусторонний — зима / лето.', layers: [
-      { kind: 'knit', cm: 0.6, name: 'Вискозный трикотаж' },
-      { kind: 'foam', cm: 2, name: 'Ортопена', spec: '20 мм' },
-      { kind: 'felt', cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
-      { kind: 'springs', cm: 14, name: 'Армированные пружины', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
-      { kind: 'felt', cm: 0.6, name: 'Термовойлок' },
-      { kind: 'coir', cm: 1, name: 'Натуральный кокос', spec: '10 мм' },
-      { kind: 'knit', cm: 0.6, name: 'Вискозный трикотаж' }
-    ] },
-    balance: { name: 'Eluna Balance', short: 'Balance', meta: 'Для сна каждую ночь: усиленный боковой каркас, два слоя натурального кокоса 10 и 20 мм, армированные пружины.', layers: [
-      { kind: 'knit', cm: 0.6, name: 'Плотный вискозный трикотаж' },
-      { kind: 'foam', cm: 2, name: 'Ортопена', spec: '20 мм' },
-      { kind: 'felt', cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
-      { kind: 'coir', cm: 2, name: 'Натуральный кокос', spec: '20 мм' },
-      { kind: 'springs', cm: 14, name: 'Армированные пружины', spec: 'усиленный боковой каркас', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
-      { kind: 'felt', cm: 0.6, name: 'Термовойлок' },
-      { kind: 'coir', cm: 1, name: 'Натуральный кокос', spec: '10 мм' },
-      { kind: 'foam', cm: 1.5, name: 'Ортопена', spec: '15 мм' },
-      { kind: 'knit', cm: 0.6, name: 'Плотный вискозный трикотаж' }
-    ] },
-    prime: { name: 'Eluna Prime', short: 'Prime', meta: 'Выбор ELUNA. Самый натуральный матрас линейки: чехол из 100 % хлопка, латекс и кокос по 20 мм, армированные пружины.', layers: [
-      { kind: 'cotton', cm: 1, name: 'Чехол из 100 % хлопка', spec: 'ручная работа' },
-      { kind: 'latex', cm: 2, name: 'Натуральный латекс', spec: '20 мм', note: 'Микромассажный эффект — тело расслабляется' },
-      { kind: 'felt', cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
-      { kind: 'coir', cm: 2, name: 'Натуральный кокос', spec: '20 мм — отвечает за жёсткость' },
-      { kind: 'springs', cm: 16, name: 'Армированные пружины', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
-      { kind: 'coir', cm: 2, name: 'Натуральный кокос', spec: '20 мм' },
-      { kind: 'felt', cm: 0.6, name: 'Термовойлок' },
-      { kind: 'latex', cm: 2, name: 'Натуральный латекс', spec: '20 мм' },
-      { kind: 'cotton', cm: 1, name: 'Чехол из 100 % хлопка' }
-    ] },
-    royal: { name: 'Eluna Royal', short: 'Royal', meta: 'Флагман линейки: размер, состав и жёсткость подбираются под ваш проект. Срок изготовления — 21 день.', layers: null }
-  };
-  const LAYERS = [
-    { num: '01', name: 'Стёганый чехол', short: 'Чехол', mm: 15 },
-    { num: '02', name: 'Натуральный латекс', short: 'Латекс', mm: 30 },
-    { num: '03', name: 'Memory-пена с гелем', short: 'Гель', mm: 40 },
-    { num: '04', name: 'Кокосовая койра', short: 'Койра', mm: 30 },
-    { num: '05', name: 'Пена HR', short: 'Пена HR', mm: 40 },
-    { num: '06', name: 'Независимые пружины', short: 'Пружины', mm: 120 },
-    { num: '07', name: 'Армированное основание', short: 'Основание', mm: 25 }
-  ];
-
   /* ---------- Телефоны и WhatsApp из CONFIG ---------- */
   const waUrl = (text) => `https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(text)}`;
   $$('[data-tel]').forEach((a) => { const t = CONFIG.tel[a.dataset.tel]; if (t) a.href = `tel:${t.href}`; });
-  const DYNAMIC_WA = ['fabric', 'eluna-size', 'delivery'];
+  const DYNAMIC_WA = ['fabric', 'delivery'];
   $$('[data-wa]').forEach((a) => {
     const key = a.dataset.wa;
     if (!DYNAMIC_WA.includes(key)) a.href = waUrl(typeof CONFIG.msg[key] === 'string' ? CONFIG.msg[key] : CONFIG.msg.general);
@@ -184,7 +113,6 @@
       menuPushed = false;
       if (!viaPop) { try { history.back(); } catch (_) { /* */ } }
     }
-    if (open && !reduceMotion && !scenePinned) loadGsap().catch(() => {});   // скорее всего следом будет переход по разделу
     updateBar();
   }
   const runMenuGo = () => { clearTimeout(menuGoT); const f = menuGo; menuGo = null; if (f) f(); };
@@ -212,58 +140,26 @@
     const r = target.getBoundingClientRect();
     const tf = getComputedStyle(target).transform;
     const shift = tf && tf !== 'none' ? new DOMMatrixReadOnly(tf).m42 : 0;
-    if (target.id === 'eluna-stage') return r.top - shift + window.scrollY;
     return r.top - shift + window.scrollY - nav.offsetHeight - chipsH(target) - (isMobile() ? 12 : 24);
   }
-  /* Прыжок по якорю мимо сцены ELUNA: пин (pin-spacer + ScrollTrigger.refresh) создаётся лениво и, появившись посреди
-     плавной прокрутки, обрывает её — посетитель застревал на карточках моделей. Поэтому: (1) если путь проходит рядом со
-     сценой, а пина ещё нет — сначала создаём пин, потом прокручиваем; (2) страховка: ~2,5 с после прыжка каждый refresh
-     ScrollTrigger довозит до той же цели. Любое касание/колесо/клавиша посетителя отменяет довоз. */
-  let pendingGo = null;
-  const needsPin = (y) => {
-    const st = document.getElementById('eluna-stage');
-    if (!scenePin || scenePinned || !st || reduceMotion) return false;
-    const vh = window.innerHeight, top = st.getBoundingClientRect().top + window.scrollY, bottom = top + st.offsetHeight;
-    const lo = Math.min(window.scrollY, y), hi = Math.max(window.scrollY, y);
-    return hi + vh * 2.6 > top && lo - vh * 1.6 < bottom;
-  };
-  function reissueGo() {
-    const g = pendingGo;
-    if (!g || Date.now() - g.t > 2500) return;
-    requestAnimationFrame(() => {
-      const t = document.getElementById(g.id);
-      if (!t || pendingGo !== g) return;
-      const y = Math.max(0, scrollYFor(t));
-      if (Math.abs(window.scrollY - y) < 3) return;
-      programmatic = Date.now();
-      window.scrollTo({ top: y, behavior: g.smooth ? 'smooth' : 'auto' });
-    });
-  }
-  ['wheel', 'touchstart', 'keydown'].forEach((ev) => window.addEventListener(ev, () => { pendingGo = null; }, { passive: true, capture: true }));
   function goTo(id, smooth = true) {
     const beh = reduceMotion || !smooth ? 'auto' : 'smooth';
-    if (id === 'top') { programmatic = Date.now(); pendingGo = null; window.scrollTo({ top: 0, behavior: beh }); return true; }
+    if (id === 'top') { programmatic = Date.now(); window.scrollTo({ top: 0, behavior: beh }); return true; }
     const target = document.getElementById(id);
     if (!target) return false;
     if (target.tagName === 'DETAILS') target.open = true;
     if (!target.hasAttribute('tabindex') && !/^(A|BUTTON|INPUT|DETAILS)$/.test(target.tagName)) target.setAttribute('tabindex', '-1');
     programmatic = Date.now();
     nav.classList.remove('is-hidden'); root.classList.remove('nav-hidden');
-    const g = pendingGo = { id, t: Date.now(), smooth: beh === 'smooth' };
-    const run = () => { if (pendingGo !== g) return; g.t = Date.now(); programmatic = Date.now(); window.scrollTo({ top: Math.max(0, scrollYFor(target)), behavior: beh }); };
-    if (needsPin(Math.max(0, scrollYFor(target)))) scenePin().then(() => requestAnimationFrame(run), () => requestAnimationFrame(run));
-    else run();
+    window.scrollTo({ top: Math.max(0, scrollYFor(target)), behavior: beh });
     target.focus({ preventScroll: true });
     return true;
   }
-  // GSAP — заранее, как только палец лёг на ссылку-якорь (до click ~100 мс)
-  document.addEventListener('pointerdown', (e) => { if (!reduceMotion && !scenePinned && e.target.closest && e.target.closest('a[href^="#"]')) loadGsap().catch(() => {}); }, { passive: true, capture: true });
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     const id = a.getAttribute('href').slice(1);
     if (!id || id === 'main') return;
-    if (a.dataset.pick) setCfgModel(a.dataset.pick);
     const dlg = $('dialog[open]');
     e.preventDefault();
     const go = () => { if (goTo(id)) { try { history.replaceState(history.state, '', id === 'top' ? location.pathname : `#${id}`); } catch (_) { /* file:// */ } } };
@@ -333,348 +229,6 @@
       }
     }, true);
   }
-  (function countUp() {
-    const els = $$('[data-count]');
-    if (!els.length || reduceMotion || !hasIO) return;
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((en) => {
-        if (!en.isIntersecting) return;
-        io.unobserve(en.target);
-        const el = en.target, to = +el.dataset.count, t0 = performance.now(), D = 1800;
-        const step = (now) => { const k = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - k, 3); el.textContent = fmt(to * e); if (k < 1) requestAnimationFrame(step); };
-        requestAnimationFrame(step);
-      });
-    }, { threshold: 0.6 });
-    els.forEach((el) => io.observe(el));
-  })();
-
-
-  /* ---------- ELUNA: слабое звёздное поле — один раз в плитку фона секции (без холста на всю высоту) ---------- */
-  const eluna = $('#eluna');
-  if (eluna) {
-    const paintStars = () => {
-      const w = Math.min(1600, window.innerWidth), h = 1100, dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const c = document.createElement('canvas'); c.width = w * dpr; c.height = h * dpr;
-      const ctx = c.getContext('2d'); ctx.scale(dpr, dpr);
-      const n = Math.floor((w * h) / (isMobile() ? 14000 : 9000));
-      let seed = 7;
-      const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
-      for (let i = 0; i < n; i++) {
-        const x = rnd() * w, y = rnd() * h, r = 0.3 + rnd() * 1.1, a = 0.18 + rnd() * 0.42;
-        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = `rgba(247,245,240,${a.toFixed(2)})`; ctx.fill();
-      }
-      c.toBlob((b) => { if (!b) return; const u = URL.createObjectURL(b); eluna.style.backgroundImage = `url(${u})`; eluna.style.backgroundSize = `${w}px ${h}px`; });
-    };
-    if (hasIO) new IntersectionObserver((en, o) => { if (en[0].isIntersecting) { o.disconnect(); paintStars(); } }, { rootMargin: '100% 0px' }).observe(eluna);
-    else paintStars();
-  }
-
-  /* ---------- Сцена ELUNA: кадры разлёта по скроллу (механика n4) ----------
-     Состояние S пишет один render(); стили — только при изменении значения. */
-  const S = { cutO: 1, cutS: 1, cutX: 0, cutY: 0, spread: 0, outY: 0, outS: 1, outExp: 1, shade: 0 };
-  const stageEl = $('#eluna-stage');
-  const productCut = $('#productCut'), seqCanvas = $('#seq'), seqPoster = stageEl ? $('.seq-poster', stageEl) : null;
-  const shadeEl = $('#shade'), seqLabels = $('#seqLabels'), copyLayers = $('#copyLayers'), copyOutro = $('#copyOutro');
-  const layerActiveEl = $('#layerActive'), stageProgress = $('#stageProgress'), stagePct = $('#stagePct');
-  const sv = (el, p, v) => { const c = el.__sv || (el.__sv = {}); if (c[p] !== v) { c[p] = v; el.style[p] = v; } };
-  const svar = (el, n, v) => { const c = el.__sv || (el.__sv = {}); if (c[n] !== v) { c[n] = v; el.style.setProperty(n, v); } };
-  const svo = (el, v) => { sv(el, 'opacity', v); sv(el, 'visibility', +v > 0.004 ? 'visible' : 'hidden'); };
-  const smoothstep = (v, a, b) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
-
-  if (stageEl && seqCanvas) {
-    // уровень: телефон, экономия трафика или мало памяти — 1280×720; иначе 1920×1080
-    const save = navigator.connection && navigator.connection.saveData;
-    const lowTier = isMobile() || save || (navigator.deviceMemory && navigator.deviceMemory < 4);
-    const SEQ = lowTier ? { count: 24, w: 1280, h: 720, base: 'img/eluna/seq720/' } : { count: 24, w: 1920, h: 1080, base: 'img/eluna/seq/' };
-    const seqCtx = seqCanvas.getContext('2d', { alpha: true });
-    const frames = new Array(SEQ.count).fill(null);
-    let seqLoaded = 0, seqDirty = true, stageOff = false;
-    const seqLast = { f: -1, w: 0, h: 0, loaded: 0 };
-    const frameSrc = (i) => `${SEQ.base}f${String(i + 1).padStart(2, '0')}.webp`;
-    // статичная сцена (reduced motion / без GSAP) показывает один, последний кадр — грузим только его
-    const seqStatic = reduceMotion;
-    const SEQ_KEYS = seqStatic ? [SEQ.count - 1] : [0, SEQ.count - 1, Math.floor(SEQ.count / 2)];
-    const SEQ_REST = []; if (!seqStatic) for (let i = 0; i < SEQ.count; i++) if (!SEQ_KEYS.includes(i)) SEQ_REST.push(i);
-    SEQ_REST.sort((a, b) => (a % 6 ? a % 3 ? 2 : 1 : 0) - (b % 6 ? b % 3 ? 2 : 1 : 0) || a - b);
-    const seqQueued = new Array(SEQ.count).fill(false), seqQueue = [];
-    let seqBusy = 0;
-    function loadSeq(list) {
-      list.forEach((i) => { if (!seqQueued[i]) { seqQueued[i] = true; seqQueue.push(i); } });
-      const next = () => {
-        if (seqBusy >= 4 || !seqQueue.length) return;
-        const i = seqQueue.shift();
-        seqBusy++;
-        const im = new Image();
-        im.decoding = 'async';
-        const fin = () => { seqBusy--; next(); };
-        im.onload = () => { const done = () => { frames[i] = im; seqLoaded++; seqDirty = true; drawSeq(); fin(); }; if (im.decode) im.decode().then(done, done); else done(); };
-        im.onerror = fin;
-        im.src = frameSrc(i);
-        next();
-      };
-      next();
-    }
-    // постер = f01 (720p): пока кадры не пришли, холст рисует его же — переключение постер → холст невидимо
-    // статичная сцена: постер сразу указывает на последний кадр своего уровня и сам становится этим кадром —
-    // f01 не качаем, f24 не дублируем; пока постер не пришёл, ничего лишнего не грузится (он lazy)
-    function seedPoster() {
-      const i = seqStatic ? SEQ.count - 1 : 0;
-      if (frames[i] || !seqPoster || !seqPoster.naturalWidth) return;
-      frames[i] = seqPoster; seqLoaded++; seqDirty = true; drawSeq();
-    }
-    if (seqStatic && seqPoster) {
-      seqQueued[SEQ.count - 1] = true;
-      seqPoster.addEventListener('error', () => { seqQueued[SEQ.count - 1] = false; loadSeq([SEQ.count - 1]); }, { once: true });
-      seqPoster.src = frameSrc(SEQ.count - 1);
-    }
-    function nearestFrame(i) {
-      for (let d = 0; d < SEQ.count; d++) { if (frames[i - d]) return frames[i - d]; if (frames[i + d]) return frames[i + d]; }
-      return null;
-    }
-    const dprSeq = () => Math.min(1.5, window.devicePixelRatio || 1);
-    // компьютер: сдвиг продукта (vw) и масштаб в раскрытом виде и после ухода; левая грань матраса в кадре — 15.2 % ширины кадра
-    const DESK0 = { cutX: 8, cutS: 0.94 }, DESK = { cutX: 8, cutS: 0.94, outX: 16, outS: 0.8 }, INK_L = 0.152;
-    function seqGeometry() {
-      const d = dprSeq(), cw = Math.round(window.innerWidth * d), ch = Math.round(window.innerHeight * d), mob = isMobile();
-      const k = mob ? (cw / SEQ.w) * 1.12 : Math.min(cw / SEQ.w, ch / SEQ.h) * 0.72;
-      const dw = SEQ.w * k, dh = SEQ.h * k;
-      return { cw, ch, dw, dh, dx: mob ? cw * 0.5 - dw * 0.47 : (cw - dw) * 0.5, dy: (ch - dh) * (mob ? 0.62 : 0.56) };
-    }
-    function sizeSeq() {
-      const d = dprSeq(), g = seqGeometry();
-      seqCanvas.width = Math.round(g.dw); seqCanvas.height = Math.round(g.dh);
-      seqCanvas.style.left = `${(g.dx / d).toFixed(1)}px`; seqCanvas.style.top = `${(g.dy / d).toFixed(1)}px`;
-      seqCanvas.style.width = `${(g.dw / d).toFixed(1)}px`; seqCanvas.style.height = `${(g.dh / d).toFixed(1)}px`;
-      if (seqPoster) { seqPoster.style.transform = 'none'; seqPoster.style.left = seqCanvas.style.left; seqPoster.style.top = seqCanvas.style.top; seqPoster.style.width = seqCanvas.style.width; seqPoster.style.height = seqCanvas.style.height; }
-      placeSeqLabels(g.dx / d, g.dy / d, g.dw / d, g.dh / d);
-      fitDesk();
-      const vw = window.innerWidth, w = g.dw / d, gutter = clamp(vw * 0.05, 20, 72);
-      const inkL = (x, sc) => vw / 2 + vw * x / 100 - w * sc / 2 + INK_L * w * sc;
-      svar(stageEl, '--stage-copy-w', `${Math.round(clamp(inkL(DESK.cutX, DESK.cutS) - gutter - 24, 240, 560))}px`);
-      svar(stageEl, '--stage-outro-w', `${Math.round(clamp(inkL(DESK.outX, DESK.outS) - gutter - 24, 320, 720))}px`);
-      seqDirty = true; drawSeq();
-    }
-    function markSeq() {
-      const f = clamp(S.spread, 0, 1) * (SEQ.count - 1);
-      if (Math.abs(f - seqLast.f) > 0.015 || seqCanvas.width !== seqLast.w || seqCanvas.height !== seqLast.h || seqLoaded !== seqLast.loaded) {
-        seqLast.f = f; seqLast.w = seqCanvas.width; seqLast.h = seqCanvas.height; seqLast.loaded = seqLoaded; seqDirty = true;
-      }
-    }
-    let vigCache = { w: 0, h: 0, g: null };
-    function seqVignette(w, h) {
-      if (vigCache.w === w && vigCache.h === h && vigCache.g) return vigCache.g;
-      const mob = isMobile();
-      const rx = w * (mob ? 0.66 : 0.62), ry = h * (mob ? 0.66 : 0.64);
-      const c = document.createElement('canvas'); c.width = w; c.height = h;
-      const x = c.getContext('2d');
-      x.translate(w / 2, h / 2); x.scale(rx, ry);
-      const g = x.createRadialGradient(0, 0, 0, 0, 0, 1);
-      g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.5 : 0.4, 'rgba(0,0,0,1)'); g.addColorStop(mob ? 0.76 : 0.7, 'rgba(0,0,0,.5)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-      x.fillStyle = g; x.fillRect(-w / rx, -h / ry, 2 * w / rx, 2 * h / ry);
-      vigCache = { w, h, g: seqCtx.createPattern(c, 'no-repeat') };
-      return vigCache.g;
-    }
-    function drawSeq() {
-      if (!seqDirty || seqLoaded === 0) return;
-      const cw = seqCanvas.width, ch = seqCanvas.height;
-      const f = clamp(S.spread, 0, 1) * (SEQ.count - 1), i0 = Math.floor(f), t = f - i0;
-      const a = nearestFrame(i0), b = frames[Math.min(SEQ.count - 1, i0 + 1)];
-      seqCtx.globalCompositeOperation = 'source-over'; seqCtx.globalAlpha = 1;
-      seqCtx.clearRect(0, 0, cw, ch);
-      if (a) seqCtx.drawImage(a, 0, 0, cw, ch);
-      if (b && b !== a && t > 0.02) { seqCtx.globalAlpha = t; seqCtx.drawImage(b, 0, 0, cw, ch); seqCtx.globalAlpha = 1; }
-      // чёрный фон кадра → цвет главы (#08090d), виньетка краёв — в сам холст
-      seqCtx.globalCompositeOperation = 'lighten'; seqCtx.fillStyle = '#08090d'; seqCtx.fillRect(0, 0, cw, ch);
-      seqCtx.globalCompositeOperation = 'destination-in'; seqCtx.fillStyle = seqVignette(cw, ch); seqCtx.fillRect(0, 0, cw, ch);
-      seqCtx.globalCompositeOperation = 'source-over';
-      seqDirty = false;
-      if (!stageEl.classList.contains('is-canvas')) stageEl.classList.add('is-canvas');
-    }
-
-    /* выноски: якоря на правой грани слоёв в % кадра f24 */
-    const SEQ_LABEL_Y = [6.5, 17.6, 24.6, 30.8, 40.6, 55.5, 71.0];
-    const SEQ_LABEL_X = [84.0, 84.0, 84.0, 84.0, 84.0, 81.3, 78.1];
-    const seqLabelEls = LAYERS.map((l, i) => {
-      const el = document.createElement('span');
-      el.className = 'seq-label'; el.style.setProperty('--i', i);
-      el.innerHTML = `<i class="seq-label__dot seq-label__dot--a"></i><i class="seq-label__dot seq-label__dot--b"></i><span class="seq-label__text"><span class="num">${l.num}</span><span class="name">${l.name}</span><span class="spec">${l.mm} мм</span></span>`;
-      seqLabels.appendChild(el);
-      return el;
-    });
-    let seqGeo = { dx: 0, dy: 0, dw: 1, dh: 1 };
-    const labelW = [], labelWS = [], labelLast = [];
-    let callouts = 'full';   // 'full' | 'short' (без «мм») | 'off' — решает fitDesk()
-    // ширина подписи полностью и без «мм» (имя кончается — дальше только миллиметры)
-    function measureLabels() {
-      seqLabels.classList.remove('is-short', 'is-off');
-      seqLabelEls.forEach((el, i) => {
-        const t = el.querySelector('.seq-label__text'), n = t.querySelector('.name');
-        labelW[i] = t.offsetWidth || 300; labelWS[i] = n.offsetWidth ? n.offsetLeft + n.offsetWidth : 250;
-      });
-      seqLabels.classList.toggle('is-short', callouts === 'short'); seqLabels.classList.toggle('is-off', callouts === 'off');
-      labelLast.length = 0;
-    }
-    function placeSeqLabels(x, y, w, h) { seqGeo = { dx: x, dy: y, dw: w, dh: h }; measureLabels(); }
-    /* компьютер: место под выноски резервируется заранее — продукт сдвигается влево (а при нужде чуть уменьшается),
-       чтобы правая подпись + поле ≤ ширины экрана, а слева оставалось ≥ 240 px под «Семь слоёв». Не помещается и без «мм» —
-       выноски скрываем, слой называет строка #layerActive. Текст никогда не съезжает на свои и чужие линии. */
-    function fitDesk() {
-      const prev = `${DESK.cutX}|${DESK.cutS}|${callouts}`;
-      if (isMobile()) { DESK.cutX = DESK0.cutX; DESK.cutS = DESK0.cutS; callouts = 'off'; }
-      else {
-        const vw = window.innerWidth, cx = vw / 2, gutter = clamp(vw * 0.05, 20, 72), rm = clamp(gutter * 0.5, 20, 40), lead = 32 + 10;
-        const right = (sc, short) => Math.max(...SEQ_LABEL_X.map((x, i) => cx + (seqGeo.dx + x / 100 * seqGeo.dw - cx) * sc + lead + (short ? labelWS[i] : labelW[i])));
-        const inkLeft = (sc, px) => cx + (seqGeo.dx + INK_L * seqGeo.dw - cx) * sc + px;
-        const def = DESK0.cutX * vw / 100;
-        let fit = null;
-        for (let k = 0; k <= 8 && !fit; k++) {
-          const sc = DESK0.cutS - k * 0.01;
-          for (const short of [false, true]) {
-            const px = Math.min(def, vw - rm - right(sc, short));
-            if (inkLeft(sc, px) - gutter - 24 >= 240) { fit = { sc, px, short }; break; }
-          }
-        }
-        if (fit) { DESK.cutS = +fit.sc.toFixed(3); DESK.cutX = +(fit.px / vw * 100).toFixed(3); callouts = fit.short ? 'short' : 'full'; }
-        else { DESK.cutX = DESK0.cutX; DESK.cutS = DESK0.cutS; callouts = 'off'; }
-      }
-      seqLabels.classList.toggle('is-short', callouts === 'short'); seqLabels.classList.toggle('is-off', callouts === 'off');
-      if (stageEl.classList.contains('is-static')) { S.cutX = isMobile() ? 0 : DESK.cutX; S.cutS = isMobile() ? 0.97 : DESK.cutS; }
-      return prev !== `${DESK.cutX}|${DESK.cutS}|${callouts}`;
-    }
-    function labelAnchor(i, vw, vh) {
-      const ax = seqGeo.dx + SEQ_LABEL_X[i] / 100 * seqGeo.dw, ay = seqGeo.dy + SEQ_LABEL_Y[i] / 100 * seqGeo.dh;
-      const cx = vw / 2, cy = vh / 2, sc = S.cutS * S.outS;
-      return { x: cx + (ax - cx) * sc + S.cutX * vw / 100, y: cy + (ay - cy) * sc + (S.cutY + S.outY) * vh / 100 };
-    }
-    function placeLabels(vw, vh) {
-      for (let i = 0; i < seqLabelEls.length; i++) {
-        const a = labelAnchor(i, vw, vh), el = seqLabelEls[i];
-        const key = `${a.x.toFixed(1)}|${a.y.toFixed(1)}`;
-        if (labelLast[i] === key) continue;
-        labelLast[i] = key;
-        svar(el, '--ax', `${a.x.toFixed(1)}px`); svar(el, '--ay', `${a.y.toFixed(1)}px`);
-        svar(el, '--vis', a.y < 48 || a.y > vh - 24 ? '0' : '1');
-      }
-    }
-    let activeLayer = -2;
-    function setActiveLayer(i) {
-      if (i === activeLayer) return;
-      activeLayer = i;
-      const l = LAYERS[i];
-      layerActiveEl.classList.toggle('is-on', !!l);
-      if (l) {
-        layerActiveEl.querySelector('.num').textContent = l.num;
-        layerActiveEl.querySelector('.name').textContent = l.name;
-        layerActiveEl.querySelector('.spec').textContent = `${l.mm} мм`;
-      }
-      seqLabelEls.forEach((el, k) => el.classList.toggle('is-active', k === i));
-    }
-    let labelsIn = -1;
-    function render() {
-      if (stageOff) return;
-      const vw = window.innerWidth, vh = window.innerHeight;
-      // уход: гасим сам продукт (прозрачность), а не чёрной плашкой поверх — у плашки видны края
-      svo(productCut, (S.cutO * clamp(S.outExp, 0, 1)).toFixed(3));
-      svo(shadeEl, S.shade.toFixed(3));
-      sv(productCut, 'transform', `translate3d(${(S.cutX * vw / 100).toFixed(2)}px, ${((S.cutY + S.outY) * vh / 100).toFixed(2)}px, 0) scale(${(S.cutS * S.outS).toFixed(4)})`);
-      markSeq(); drawSeq();
-      const sp = clamp(S.spread, 0, 1);
-      setActiveLayer(sp < 0.04 ? -1 : Math.min(6, Math.floor(sp * 7)));
-      // выноски появляются в конце раскрытия и гаснут раньше, чем начинается манифест
-      svo(seqLabels, (smoothstep(sp, 0.78, 1) * smoothstep(S.outExp, 0.8, 1)).toFixed(3));
-      const li = sp < 0.8 ? -1 : Math.min(6, Math.floor((sp - 0.8) / 0.2 * 7));
-      if (li !== labelsIn) { labelsIn = li; seqLabelEls.forEach((el, k) => el.classList.toggle('is-in', k <= li)); }
-      if (callouts !== 'off') placeLabels(vw, vh);
-      svar(stageProgress, '--p', sp.toFixed(3));
-      const pct = `${Math.round(sp * 100)} %`;
-      if (stagePct.__t !== pct) { stagePct.__t = pct; stagePct.textContent = pct; }
-    }
-    sizeSeq();
-    resizeHooks.push(() => { sizeSeq(); render(); });
-    if (seqPoster) { if (seqPoster.complete) seedPoster(); else seqPoster.addEventListener('load', seedPoster, { once: true }); }
-
-    // фазы текста: до 64 % — «Семь слоёв»; 64–76 % продукт уходит на чистое поле (без текста); 76–95 % — манифест
-    let phase = '';
-    function setPhase(p) {
-      const ph = p < 0.64 ? 'layers' : p >= 0.76 && p < 0.95 ? 'outro' : 'none';
-      if (ph === phase) return;
-      phase = ph;
-      copyLayers.classList.toggle('is-on', ph === 'layers');
-      copyOutro.classList.toggle('is-on', ph === 'outro');
-      sv(stageProgress, 'opacity', ph !== 'layers' ? '0' : '1');
-    }
-    setPhase(0);
-
-    const goStatic = () => {
-      // reduced motion или GSAP не загрузился: статичный разложенный матрас (последний кадр), выноски на месте, без пина
-      stageEl.style.height = ''; scenePinned = true;   // сцена «устоялась»: goTo() больше не ждёт пина
-      S.spread = 1; S.cutS = isMobile() ? 0.97 : DESK.cutS; S.cutX = isMobile() ? 0 : DESK.cutX; S.outExp = 1; S.outS = 1; S.outY = 0; S.shade = 0;
-      stageEl.classList.add('is-static');
-      if (eluna) eluna.classList.add('is-static-scene');
-      setPhase(0); render();
-      stagePct.textContent = '';
-      // reduced motion: кадр f24 придёт лениво (постер / наблюдатель «за ¾ экрана»); сюда попадаем сразу — только если GSAP не загрузился у самой сцены
-      if (!reduceMotion && !frames[SEQ.count - 1]) loadSeq([SEQ.count - 1]);
-    };
-    if (reduceMotion) goStatic();
-    else {
-      let pinned = false;
-      // до подключения GSAP сцена сама держит длину будущего пина (высота = экран + пин), экран сцены — вверху
-      const reserve = () => { if (!pinned) stageEl.style.height = `calc(100svh + ${Math.round(window.innerHeight * (isMobile() ? 1.2 : 1.7))}px)`; };
-      reserve();
-      resizeHooks.push(reserve);
-      const pin = () => loadGsap().then(() => {
-        if (pinned) return;
-        pinned = true; scenePinned = true;
-        stageEl.style.height = '';
-        const mmx = gsap.matchMedia();
-        mmx.add({ desk: '(min-width: 900px)', mob: '(max-width: 899px)' }, (ctx) => {
-          const D = ctx.conditions.desk;
-          // закрытый матрас стоит, как задумано (8vw); раскрываясь, отъезжает на решённое fitDesk() место — освобождает поле выноскам
-          const cutXa = () => (D ? DESK0.cutX : 0), cutX0 = () => (D ? DESK.cutX : 0);
-          S.cutX = cutXa();
-          const tl = gsap.timeline({
-            defaults: { ease: 'none' }, onUpdate: render,
-            scrollTrigger: { trigger: stageEl, start: 'top top', end: D ? '+=170%' : '+=120%', pin: true, scrub: D ? 0.6 : 0.4, anticipatePin: 1, invalidateOnRefresh: true, onUpdate: (self) => setPhase(self.progress) }
-          });
-          /* 0–56 раскрытие (выноски заходят в конце), 56–64 пауза с подписями, 64–78 продукт уходит и гаснет до .4 (выноски
-             гаснут первыми), 76–95 манифест, 84–96 дожим: компьютер → .1, телефон → .3 — матрас остаётся призраком, пока снизу
-             заходит «концепция» (её margin-top отрицательный), чёрной паузы нет */
-          tl.fromTo(S, { spread: 0, cutS: 1, cutX: cutXa }, { spread: 1, cutS: () => (D ? DESK.cutS : 0.97), cutX: cutX0, duration: 56, ease: 'power1.inOut', immediateRender: false }, 0)
-            .to(S, { outExp: 0.4, outS: D ? DESK.outS : 0.72, outY: D ? -4 : -18, cutX: () => (D ? DESK.outX : 0), shade: D ? 0.85 : 0.55, duration: 14, ease: 'power2.inOut' }, 64)
-            .to(S, { outExp: D ? 0.1 : 0.3, outY: D ? -12 : -24, duration: 12, ease: 'power1.in' }, 84)
-            .to(S, { shade: 0, duration: 8 }, 90);
-          return () => { S.spread = 0; S.cutS = 1; S.outExp = 1; S.outS = 1; S.outY = 0; S.shade = 0; S.cutX = 0; render(); setPhase(0); };
-        });
-        fontsReady.then(stRefresh);
-        if (document.readyState !== 'complete') window.addEventListener('load', stRefresh, { once: true });
-      }).catch(goStatic);
-      if (hasIO) new IntersectionObserver((es, o) => { if (es.some((e) => e.isIntersecting)) { o.disconnect(); pin(); } }, { rootMargin: '150% 0px' }).observe(stageEl);
-      else pin();
-      window.__ricca_pin = pin;
-      scenePin = pin;
-    }
-
-    // кадры — лениво: после загрузки страницы и паузы браузера; опорные (f01/f24/f12) — за ¾ экрана до сцены, остальные — за полэкрана
-    const whenLoaded = new Promise((r) => { if (document.readyState === 'complete') r(); else window.addEventListener('load', r, { once: true }); });
-    const whenIdle = () => new Promise((r) => { if ('requestIdleCallback' in window) requestIdleCallback(() => r(), { timeout: 1500 }); else setTimeout(r, 600); });
-    const startSeq = (list) => whenLoaded.then(whenIdle).then(() => { loadSeq(list); });
-    if (hasIO) {
-      const near = (margin, list) => { const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); startSeq(list); } }, { rootMargin: margin }); io.observe(stageEl); };
-      near('75% 0px', SEQ_KEYS);
-      if (SEQ_REST.length) near('50% 0px', SEQ_KEYS.concat(SEQ_REST));
-      new IntersectionObserver((es) => {
-        const on = es[es.length - 1].isIntersecting;   // пин переподвешивает сцену — записи приходят пачкой, важна последняя
-        stageOff = !on;
-        if (on) render();
-      }, { threshold: 0 }).observe(stageEl);
-    } else startSeq(SEQ_KEYS.concat(SEQ_REST));
-    fontsReady.then(() => { const before = `${DESK.cutX}|${DESK.cutS}`; sizeSeq(); if (before !== `${DESK.cutX}|${DESK.cutS}` && window.ScrollTrigger && !stageEl.classList.contains('is-static')) stRefresh(); render(); });
-  }
-  if (eluna && document.fonts && hasIO) {
-    new IntersectionObserver((en, o) => { if (en[0].isIntersecting) { document.fonts.load('500 1em Unbounded'); document.fonts.load('300 1em Unbounded'); o.disconnect(); } }, { rootMargin: '75% 0px' }).observe(eluna);
-  }
-
   /* ---------- Диалоги: фиксированный ✕, «Закрыть», Esc, подложка и системный «Назад» ----------
      При открытии кладём запись в историю; popstate закрывает диалог; закрытие кнопкой снимает запись (history.back()). */
   const Modal = (() => {
@@ -726,157 +280,6 @@
     return { open, close };
   })();
   $$('[data-open]').forEach((b) => b.addEventListener('click', () => { const d = document.getElementById(b.dataset.open); if (d) Modal.open(d, b); }));
-  // составы моделей (MODELS) — в диалогах
-  $$('.xs[data-xs]').forEach((box) => {
-    const m = MODELS[box.dataset.xs];
-    if (!m || !m.layers) return;
-    box.innerHTML = m.layers.map((l) => `<div class="xs__layer xs--${l.kind}"><div class="xs__fill" style="--cm:${l.cm}"></div><div class="xs__text"><b>${esc(l.name)}</b>${l.spec ? `<span class="cm">${esc(l.spec)}</span>` : ''}${l.note ? `<span class="note-s">${esc(l.note)}</span>` : ''}</div></div>`).join('');
-  });
-
-  /* ---------- Белый лист: «Все 7 слоёв» на телефоне ---------- */
-  const strip = $('.strip'), stripBtn = $('[data-strip-toggle]');
-  if (strip && stripBtn) stripBtn.addEventListener('click', () => {
-    const on = !strip.classList.contains('is-open');
-    strip.classList.toggle('is-open', on); stripBtn.setAttribute('aria-expanded', String(on));
-    stripBtn.firstChild.textContent = on ? 'Свернуть ' : 'Все 7 слоёв ';
-  });
-  /* «Общее для всех моделей» на телефоне: четыре пункта, остальные — по «Ещё 5» */
-  const perksList = $('#perksList'), perksBtn = $('[data-perks-toggle]');
-  if (perksList && perksBtn) perksBtn.addEventListener('click', () => {
-    const on = !perksList.classList.contains('is-open');
-    perksList.classList.toggle('is-open', on); perksBtn.setAttribute('aria-expanded', String(on));
-    perksBtn.firstChild.textContent = on ? 'Свернуть ' : 'Ещё 5 ';
-    stRefresh();
-  });
-
-  /* ---------- Линейка: на телефоне лента Air · Balance · Prime (старт на Prime), Royal — панелью ниже ---------- */
-  (function lineup() {
-    const lane = $('#mcards'), dots = $('#mdots');
-    if (!lane) return;
-    const royal = $('.mcard--royal', lane.parentElement);
-    const placeRoyal = () => {
-      const phone = mqPhone.matches;
-      if (phone && royal.parentElement === lane) dots.after(royal);
-      else if (!phone && royal.parentElement !== lane) lane.append(royal);
-    };
-    placeRoyal();
-    mqPhone.addEventListener('change', () => { placeRoyal(); center(true); });
-    const cards = () => $$('.mcard', lane);
-    const dotBtns = $$('button', dots);
-    const center = (instant) => {
-      if (!mqPhone.matches) return;
-      const p = $('.mcard--prime', lane);
-      lane.scrollTo({ left: p.offsetLeft - (lane.clientWidth - p.offsetWidth) / 2, behavior: instant || reduceMotion ? 'instant' : 'smooth' });
-    };
-    const mark = () => {
-      const mid = lane.scrollLeft + lane.clientWidth / 2;
-      let best = 0, bd = 1e9;
-      cards().forEach((c, k) => { const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid); if (d < bd) { bd = d; best = k; } });
-      dotBtns.forEach((d, k) => { if (k === best) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); });
-    };
-    dotBtns.forEach((d, i) => d.addEventListener('click', () => { const c = cards()[i]; if (c) lane.scrollTo({ left: c.offsetLeft - (lane.clientWidth - c.offsetWidth) / 2, behavior: reduceMotion ? 'instant' : 'smooth' }); }));
-    let raf = 0;
-    lane.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; mark(); }); }, { passive: true });
-    if (hasIO) new IntersectionObserver((en, o) => { if (en[0].isIntersecting) { center(true); mark(); o.disconnect(); } }, { rootMargin: '50% 0px' }).observe(lane);
-    resizeHooks.push(() => center(true));
-  })();
-
-  /* ---------- Сравнение: на телефоне колонка Prime — первой; «Все параметры» ---------- */
-  (function compare() {
-    const table = $('#cmpTable'), wrap = $('.cmp'), btn = $('[data-cmp-toggle]');
-    if (!table) return;
-    const rows = $$('tr', table);
-    let primeFirst = false;
-    const order = () => {
-      const want = isMobile();
-      if (want === primeFirst) return;
-      rows.forEach((tr) => { const c = tr.children; if (c.length < 5) return; if (want) tr.insertBefore(c[3], c[1]); else tr.insertBefore(c[1], c[4]); });
-      primeFirst = want;
-    };
-    order();
-    mq.addEventListener('change', order);
-    if (btn) btn.addEventListener('click', () => {
-      const on = !wrap.classList.contains('is-open');
-      wrap.classList.toggle('is-open', on); btn.setAttribute('aria-expanded', String(on));
-      btn.firstChild.textContent = on ? 'Свернуть ' : 'Все параметры ';
-      stRefresh();
-    });
-  })();
-
-  /* ---------- Размер и цена: модель × размер → цена, старая цена → WhatsApp ----------
-     Правило сайта ELUNA: база 1600 × 2000 (3,2 м²), ±40 000 ₸ за м² (Royal тоже), округление до 1 000 ₸. */
-  let deliveryCity = '';
-  let setCfgModel = () => {};
-  const cfgState = Object.assign({ model: 'prime', size: '1600x2000', w: 1700, h: 2000 }, store.get('ricca-eluna-v1', {}));
-  if (!PRICES[cfgState.model]) cfgState.model = 'prime';
-  const PER_M2 = 40000;
-  const cfgDims = () => (cfgState.size === 'custom' ? [cfgState.w, cfgState.h] : cfgState.size.split('x').map(Number));
-  function priceOf() {
-    const [w, h] = cfgDims();
-    const base = PRICES[cfgState.model], old = OLD_PRICES[cfgState.model];
-    const v = Math.round((base + ((w * h) / 1e6 - 3.2) * PER_M2) / 1000) * 1000;
-    return { v, o: old ? Math.round(v * old / base / 1000) * 1000 : null };
-  }
-  const sizeText = () => { const [w, h] = cfgDims(); return `${w} × ${h} мм`; };
-  function cfgMessage() {
-    const p = priceOf(), m = MODELS[cfgState.model];
-    const custom = cfgState.size === 'custom' ? ' (свой размер, изготовление 21 день)' : '';
-    const dl = deliveryCity ? (deliveryCity === 'Алматы' ? 'Алматы — привезём и установим сами' : `${deliveryCity} — от 7 дней до двери`) : 'город не выбран';
-    if (cfgState.model === 'royal') return `Здравствуйте! Хочу обсудить матрас Eluna Royal под проект.\nРазмер: ${sizeText()}${custom}\nОриентир по цене: ${fmt(p.v).replace(/ /g, ' ')} ₸\nДоставка: ${dl}`;
-    return `Здравствуйте! Хочу заказать матрас ELUNA.\nМодель: ${m.name}\nРазмер: ${sizeText()}${custom}\nЦена: ${fmt(p.v).replace(/ /g, ' ')} ₸${p.o ? ` (без скидки ${fmt(p.o).replace(/ /g, ' ')} ₸, −${discountPct(cfgState.model)} %)` : ''}\nДоставка: ${dl}`;
-  }
-  let cfgHref = waUrl(CONFIG.msg.eluna);
-  const cfgItem = () => { const p = priceOf(); return { id: 'eluna-cfg', title: MODELS[cfgState.model].name, meta: `${sizeText()} · ${cfgState.model === 'royal' ? 'от ' : ''}${fmt(p.v).replace(/ /g, ' ')} ₸` }; };
-  (function configurator() {
-    const models = $('#cfgModels'), sizes = $('#cfgSizes'), custom = $('#cfgCustom'), wIn = $('#cfgW'), hIn = $('#cfgH');
-    if (!models || !sizes) return;
-    const sumName = $('#sumName'), sumDim = $('#sumDim'), sumPrice = $('#sumPrice'), sumMeta = $('#sumMeta'), sumWaText = $('#sumWaText');
-    const rect = $('#cfgRect'), dimW = $('#cfgDimW'), dimH = $('#cfgDimH'), tW = $('#cfgTextW'), tH = $('#cfgTextH');
-    wIn.value = cfgState.w; hIn.value = cfgState.h;
-    function renderCfg() {
-      $$('button', models).forEach((b) => { const on = b.dataset.m === cfgState.model; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
-      $$('button', sizes).forEach((b) => { const on = b.dataset.s === cfgState.size; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
-      custom.hidden = cfgState.size !== 'custom';
-      const p = priceOf(), m = MODELS[cfgState.model], [w, h] = cfgDims();
-      sumName.textContent = m.name;
-      sumDim.textContent = sizeText().replace(/ /g, ' ');
-      sumPrice.innerHTML = p.o
-        ? `<s class="price-old"><span class="sr-only">Старая цена: </span>${money(p.o)}</s><span class="price price--gold">${money(p.v)}</span><span class="badge badge--save">−${discountPct(cfgState.model)} %</span>`
-        : `${cfgState.model === 'royal' ? '<small class="price-from">от</small>' : ''}<span class="price">${money(p.v)}</span>`;
-      sumMeta.innerHTML = m.meta.replace(/ELUNA/g, '<span class="e-font e-inline">ELUNA</span>') + (cfgState.size === 'custom' ? ' Свой размер&nbsp;— изготовление 21&nbsp;день.' : '');   // строки — константы MODELS, не ввод
-      sumWaText.textContent = `${cfgState.model === 'royal' ? 'Обсудить' : 'Заказать'} ${m.short} · ${w} × ${h}`;
-      // контур: 2000 мм = 200 px; ширина в пропорции
-      const rh = h / 10, rw = w / 10, x = 130 - rw / 2, y = 20 + (220 - rh) / 2;
-      rect.setAttribute('x', x.toFixed(1)); rect.setAttribute('width', rw.toFixed(1)); rect.setAttribute('y', y.toFixed(1)); rect.setAttribute('height', rh.toFixed(1));
-      dimW.setAttribute('x1', x.toFixed(1)); dimW.setAttribute('x2', (x + rw).toFixed(1));
-      dimH.setAttribute('y1', y.toFixed(1)); dimH.setAttribute('y2', (y + rh).toFixed(1));
-      dimH.setAttribute('x1', (x + rw + 18).toFixed(1)); dimH.setAttribute('x2', (x + rw + 18).toFixed(1));
-      tW.textContent = `${w} мм`; tH.textContent = `${h} мм`;
-      tH.setAttribute('x', (x + rw + 32).toFixed(1)); tH.setAttribute('transform', `rotate(90 ${(x + rw + 32).toFixed(1)} 120)`);
-      cfgHref = waUrl(cfgMessage());
-      $$('[data-wa="eluna-size"]').forEach((a) => { a.href = cfgHref; });
-      store.set('ricca-eluna-v1', cfgState);
-      if (slReady) syncShortlist();
-      updateBar();
-    }
-    setCfgModel = (k) => { if (PRICES[k]) { cfgState.model = k; renderCfg(); } };
-    models.addEventListener('click', (e) => { const b = e.target.closest('button[data-m]'); if (!b) return; cfgState.model = b.dataset.m; renderCfg(); });
-    sizes.addEventListener('click', (e) => { const b = e.target.closest('button[data-s]'); if (!b) return; cfgState.size = b.dataset.s; renderCfg(); if (cfgState.size === 'custom') wIn.focus({ preventScroll: true }); });
-    const onNum = () => { cfgState.w = clamp(Math.round((+wIn.value || 1600) / 10) * 10, 1400, 2200); cfgState.h = clamp(Math.round((+hIn.value || 2000) / 10) * 10, 1900, 2200); renderCfg(); };
-    [wIn, hIn].forEach((inp) => { inp.addEventListener('input', onNum); inp.addEventListener('change', () => { onNum(); wIn.value = cfgState.w; hIn.value = cfgState.h; }); });
-    [models, sizes].forEach((grp) => grp.addEventListener('keydown', (e) => {
-      const btns = $$('button', grp), i = btns.indexOf(document.activeElement);
-      if (i < 0) return;
-      let n = -1;
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = (i + 1) % btns.length;
-      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = (i - 1 + btns.length) % btns.length;
-      else if (e.key === 'Home') n = 0; else if (e.key === 'End') n = btns.length - 1;
-      if (n >= 0) { e.preventDefault(); btns[n].click(); btns[n].focus(); }
-    }));
-    window.__cfgRender = renderCfg;
-    renderCfg();
-  })();
-
   /* ---------- Производство: фильм по главам. Одновременно декодируется ОДИН ролик (механика n4) ---------- */
   const safePlay = (v) => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
   const canWebm = (() => { const v = document.createElement('video'); return !!v.canPlayType && v.canPlayType('video/webm; codecs="vp9"') !== ''; })();
@@ -1013,9 +416,9 @@
     if (cta) cta.href = fabricHref;
   }
 
-  /* ---------- Доставка: карта и города (координаты — % кадра 2080 × 1174, как на сайте ELUNA) ---------- */
+  /* ---------- Доставка: карта и города (координаты — % кадра 2080 × 1174) ---------- */
   (function delivery() {
-    const box = $('#cities'), nameEl = $('#cityName'), elunaEl = $('#cityEluna'), waEl = $('#cityWa'), waName = $('#cityWaName'), chipsBox = $('#cityChips');
+    const box = $('#cities'), nameEl = $('#cityName'), termsEl = $('#cityTerms'), waEl = $('#cityWa'), waName = $('#cityWaName'), chipsBox = $('#cityChips');
     if (!box) return;
     const CITIES = [['Алматы', 73.21, 78.03], ['Астана', 61.0, 31.37], ['Шымкент', 56.87, 83.31], ['Караганда', 64.63, 39.39], ['Актобе', 29.26, 36.58], ['Тараз', 60.82, 80.02], ['Павлодар', 73.26, 24.79], ['Усть-Каменогорск', 85.84, 38.55], ['Семей', 80.5, 35.83], ['Атырау', 17.61, 55.34], ['Костанай', 43.63, 19.33], ['Кызылорда', 47.8, 68.53], ['Уральск', 16.38, 31.16], ['Петропавловск', 55.86, 9.61], ['Актау', 16.0, 75.6], ['Талдыкорган', 76.38, 67.57], ['Кокшетау', 56.44, 18.93], ['Туркестан', 53.89, 77.69]];
     const dots = CITIES.map(([c, x, y]) => {
@@ -1058,9 +461,9 @@
       dotsMode();
       chips.forEach((b, i) => { const on = CITIES[i][0] === c; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; if (on) centerChip(b, byUser); });
       nameEl.textContent = c; waName.textContent = c;
-      elunaEl.innerHTML = c === 'Алматы' ? 'Мы здесь: привезём и&nbsp;установим сами' : 'От&nbsp;7&nbsp;дней до&nbsp;двери, подъём включён';
+      // TODO (заказчик): сроки и стоимость доставки мебели по городам — до ответа только честное «называем при заказе»
+      if (termsEl) termsEl.innerHTML = c === 'Алматы' ? 'Привозим и&nbsp;устанавливаем сами' : 'Условия называем при заказе';
       waEl.href = waUrl(CONFIG.msg.city(c));
-      if (byUser) { deliveryCity = c; if (window.__cfgRender) window.__cfgRender(); }
     }
     pick('Алматы', false);
     resizeHooks.push(() => centerChip(chips.find((b) => b.getAttribute('aria-checked') === 'true') || chips[0], false));
@@ -1118,7 +521,7 @@
     const bc = $('.bizcovers');
     if (bc) { const n = $$('.bizcover', bc).filter((x) => !x.hidden).length; bc.hidden = !n; bc.classList.toggle('is-single', n === 1); }
   }
-  const coversChanged = () => { if (!coverRaf) coverRaf = requestAnimationFrame(() => { coverRaf = 0; layoutCovers(); stRefresh(); }); };
+  const coversChanged = () => { if (!coverRaf) coverRaf = requestAnimationFrame(() => { coverRaf = 0; layoutCovers(); }); };
   function dropFig(fig) {
     if (fig.hidden) return;
     fig.hidden = true;
@@ -1134,6 +537,7 @@
     probe(img.getAttribute('src')).then((ok) => { if (ok === false) dropFig(fig); });
   });
   layoutCovers();
+  renumberChapters();
   // телефон: «Ваша комната — следующая» стоит под лентой обложек, а не последней карточкой в ней
   const placeCta = () => {
     if (!coversCta || !coversBox) return;
@@ -1186,7 +590,7 @@
     const old = store.get('ricca-shortlist-v1', []);
     items = Array.isArray(old) ? old.filter((t) => typeof t === 'string').map((t, i) => ({ id: `old-${i}`, title: t, meta: '' })) : [];
   }
-  items = items.filter((x) => x && x.id && x.title).slice(0, 12);
+  items = items.filter((x) => x && x.id && x.title && !/^eluna/i.test(x.id) && !/^Eluna /.test(x.title)).slice(0, 12);
   const dlgSL = $('#shortlist'), slList = $('#shortlist-list'), slEmpty = $('#shortlist-empty'), slCount = $('#shortlist-count'), slN = $('#shortlist-n');
   const heartNav = $('#shortlist-open'), slSend = $('#shortlist-send'), slFoot = $('#shortlist-foot'), slConfirm = $('#shortlist-confirm');
   const toast = $('#toast'), toastText = $('#toast-text');
@@ -1204,8 +608,6 @@
       const lbl = b.querySelector('span:not(.sr-only)');
       if (lbl && b.classList.contains('heart-btn')) { lbl.textContent = on ? 'В подборке' : 'В подборку'; b.setAttribute('aria-label', `${lbl.textContent}: ${b.dataset.slTitle}`); }
     });
-    const cfgBtn = $('#cfgShortlist');
-    if (cfgBtn) { const it = cfgItem(), on = items.some((x) => x.id === it.id && x.meta === it.meta && x.title === it.title), t = on ? 'В подборке' : 'В подборку'; cfgBtn.setAttribute('aria-pressed', String(on)); cfgBtn.querySelector('span').textContent = t; cfgBtn.setAttribute('aria-label', `${t}: ${it.title}${it.meta ? `, ${it.meta}` : ''}`); }
   }
   function renderSL() {
     const n = items.length;
@@ -1223,8 +625,7 @@
     slEmpty.hidden = n > 0;
     slFoot.hidden = n === 0;
     slConfirm.hidden = true;
-    const onlyEluna = n > 0 && items.every((x) => /^Eluna /.test(x.title));
-    const head = onlyEluna ? 'Здравствуйте! Хочу заказать матрас ELUNA. Моя подборка:' : 'Здравствуйте! Моя подборка на сайте RICCA DESIGNS:';
+    const head = 'Здравствуйте! Моя подборка на сайте RICCA DESIGNS:';
     slSend.href = waUrl(`${head}\n${items.map((x, i) => `${i + 1}. ${x.title}${x.meta ? ` · ${x.meta}` : ''}`).join('\n')}\nРасскажите, пожалуйста, подробнее и помогите с выбором.`);
     syncShortlist();
   }
@@ -1244,12 +645,7 @@
   }
   document.addEventListener('click', (e) => {
     const b = e.target.closest('[data-sl-id]');
-    if (b) { toggleItem({ id: b.dataset.slId, title: b.dataset.slTitle, meta: b.dataset.slMeta || '' }); return; }
-    if (e.target.closest('#cfgShortlist')) {
-      const it = cfgItem(), same = items.find((x) => x.id === it.id);
-      if (same && same.meta === it.meta && same.title === it.title) { remove(it.id); showToast('Убрано из подборки', false); }
-      else { items = items.filter((x) => x.id !== it.id); if (items.length >= 12) { showToast('В подборке не больше 12 позиций', true); return; } items.push(it); store.set(SL_KEY, items); renderSL(); showToast('Добавлено в подборку', true); }
-    }
+    if (b) toggleItem({ id: b.dataset.slId, title: b.dataset.slTitle, meta: b.dataset.slMeta || '' });
   });
   heartNav.addEventListener('click', () => Modal.open(dlgSL, heartNav));
   $('#toast-open').addEventListener('click', () => { toast.hidden = true; Modal.open(dlgSL, heartNav); });
@@ -1260,6 +656,7 @@
   window.addEventListener('storage', (e) => { if (e.key === SL_KEY) { items = store.get(SL_KEY, []); renderSL(); } });
   slReady = true;
   renderSL();
+  try { localStorage.removeItem('ricca-eluna-v1'); } catch (_) { /* приватный режим */ }
 
   /* ---------- Шапка при скролле, активный раздел, липкая плашка (телефон) ---------- */
   const navLinks = $$('.nav__menu a');
@@ -1282,20 +679,17 @@
       const vh = window.innerHeight;
       const ctaGone = heroCta ? heroCta.getBoundingClientRect().bottom < 0 : window.scrollY > vh;
       const endSeen = endCh ? endCh.getBoundingClientRect().top < vh * 0.92 : false;
-      const st = stageEl ? stageEl.getBoundingClientRect() : null;
-      const overStage = st ? st.top < vh * 0.5 && st.bottom > vh * 0.5 : false;
       const dlgOpen = !!$('dialog[open]');
-      const on = isMobile() && ctaGone && !endSeen && !overStage && !menuOpen && !dlgOpen && fills.size === 0;
+      const on = isMobile() && ctaGone && !endSeen && !menuOpen && !dlgOpen && fills.size === 0;
       bar.classList.toggle('is-on', on);
       bar.setAttribute('aria-hidden', String(!on));
       $$('a', bar).forEach((a) => { a.tabIndex = on ? 0 : -1; });
-      // текст и ссылка первой кнопки — по контексту: ELUNA → текущий выбор конфигуратора, материалы → образец
-      let href = barGeneral, label = 'WhatsApp';
+      // ссылка первой кнопки — по контексту: в «Материалах» — вопрос про выбранный образец
+      let href = barGeneral;
       const mid = vh * 0.5;
-      if (eluna) { const r = eluna.getBoundingClientRect(); if (r.top < mid && r.bottom > mid) { href = cfgHref; label = 'Заказать <span class="e-font e-inline">ELUNA</span>'; } }
       if (materials) { const r = materials.getBoundingClientRect(); if (r.top < mid && r.bottom > mid) href = fabricHref; }
       if (barWa.href !== href) barWa.href = href;
-      if (barLabel.dataset.label !== label) { barLabel.dataset.label = label; barLabel.innerHTML = label; }   // ELUNA — шрифтом Unbounded
+      if (barLabel.textContent !== 'WhatsApp') barLabel.textContent = 'WhatsApp';
     });
   }
   let navRaf = 0;
@@ -1321,11 +715,7 @@
   resizeHooks.push(() => onScroll());
   onScroll();
 
-  /* ---------- Пересчёт пинов после шрифтов и полной загрузки; поздний viewport; хэш при загрузке ---------- */
-  // раскрытые и свёрнутые блоки выше сцены меняют её место — пересчитываем пин
-  let tgT = 0;
-  document.addEventListener('toggle', () => { clearTimeout(tgT); tgT = setTimeout(stRefresh, 60); }, true);
-  window.addEventListener('load', stRefresh);
+  /* ---------- Поздний viewport; хэш при загрузке ---------- */
   requestAnimationFrame(() => { if (window.innerWidth !== lastW || window.innerHeight !== lastH) onResize(true); });
   if (location.hash.length > 1) window.addEventListener('load', () => { const id = decodeURIComponent(location.hash.slice(1)); if (document.getElementById(id)) setTimeout(() => goTo(id, false), 60); });
 })();
