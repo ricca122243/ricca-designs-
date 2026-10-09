@@ -1,6 +1,5 @@
-{"W":720,"H":1280,"fps":25,"fade":0.6,"shots":[
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/13-sofa-wave-boucle-pouf.jpg","L":7.5,"a":[0.55,0.5,0.703],"b":[0.555,0.51,0.675]},
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/27-bed-boucle-rounded.jpg","L":6,"a":[0.5,0.5,0.683],"b":[0.5,0.51,0.66]},
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-palinuro-room-a.jpg","L":6,"a":[0.5,0.5,0.753],"b":[0.49,0.51,0.725]},
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/26-armchair-round-cream-ball.jpg","L":6,"a":[0.5,0.5,0.75],"b":[0.49,0.52,0.72]}
+{"W":720,"H":1280,"fps":25,"fade":0.8,"shots":[
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-dimaro-top.jpg","L":8.5,"a":[0.568,0.5,0.753],"b":[0.568,0.505,0.74]},
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-palinuro-room-a.jpg","L":7.5,"a":[0.5,0.5,0.753],"b":[0.5,0.51,0.725]},
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-palinuro-room-b.jpg","L":7.5,"a":[0.5,0.5,0.753],"b":[0.49,0.51,0.725]}
 ]}

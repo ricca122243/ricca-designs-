@@ -1,45 +1,32 @@
-# Обложки предметного ряда (стулья, столы, хранение, ELUNA) с 10 октября делает covers-studio.py; ниже — прежние вызовы для фото-обложек.
+# Фото-обложки плиток каталога: Диваны · Кровати · Кресла и пуфы · Ткани (1200 × 1500 + -600, без фильтров и перекраски).
+# Предметный ряд (Стулья · Столы · Матрасы ELUNA) делает covers-studio.py.
+# 10 октября (вечер): чужие фото сняты с сайта — обложки только из оставленных кадров (MANIFEST.md, «Снято с сайта 10 октября»):
+#   Диваны — № 52 (партнёр, вид сверху), Кресла — № 37 (живое фото), Кровати — № 40 (партнёр), Ткани — № 39 (живое фото).
+# Запуск: python3 tools/media-v3/covers.py <outDir> [имя …]   (по умолчанию ricca/img/catalog и все четыре обложки)
 import sys, os
-from PIL import Image, ImageChops
-import numpy as np
-R='/home/user/ricca-designs-/ricca'
-C=R+'/content/client-photos'
-OUT=sys.argv[1]
-os.makedirs(OUT,exist_ok=True)
-W,H=1200,1500
+from PIL import Image
+R = '/home/user/ricca-designs-/ricca'
+C = R + '/content/client-photos'
+OUT = sys.argv[1] if len(sys.argv) > 1 else R + '/img/catalog'
+ONLY = set(sys.argv[2:])
+os.makedirs(OUT, exist_ok=True)
+W, H = 1200, 1500
 
-def save(im,name):
-    im=im.convert('RGB')
-    assert im.size==(W,H)
-    im.save(f'{OUT}/{name}.webp',quality=82,method=6)
-    im.resize((600,750),Image.LANCZOS).save(f'{OUT}/{name}-600.webp',quality=80,method=6)
+def save(im, name):
+    im = im.convert('RGB')
+    assert im.size == (W, H)
+    im.save(f'{OUT}/{name}.webp', quality=82, method=6)
+    im.resize((600, 750), Image.LANCZOS).save(f'{OUT}/{name}-600.webp', quality=80, method=6)
 
-def photo(src,box,name):
-    im=Image.open(src).convert('RGB').crop(box)
-    assert abs(im.size[0]/im.size[1]-0.8)<0.002, im.size
-    save(im.resize((W,H),Image.LANCZOS),name)
+def photo(src, box, name):
+    if ONLY and name not in ONLY:
+        return
+    im = Image.open(src).convert('RGB').crop(box)
+    assert abs(im.size[0] / im.size[1] - 0.8) < 0.002, im.size
+    print(name, os.path.basename(src), box, 'scale %.2f' % (W / im.size[0]))
+    save(im.resize((W, H), Image.LANCZOS), name)
 
-def render(src,obj_h=None,obj_w=None,cy=0.52,name=None,bg=None,thr=8):
-    im=Image.open(src).convert('RGB')
-    bgc=bg or im.getpixel((im.size[0]-4,im.size[1]-4))
-    a=np.asarray(im).astype(int); d=np.abs(a-np.array(bgc)).max(axis=2)
-    ys,xs=np.where(d>thr); x0,x1,y0,y1=xs.min(),xs.max()+1,ys.min(),ys.max()+1
-    ow,oh=x1-x0,y1-y0
-    s = (obj_h*H/oh) if obj_h else (obj_w*W/ow)
-    im2=im.resize((round(im.size[0]*s),round(im.size[1]*s)),Image.LANCZOS)
-    cxo=(x0+x1)/2*s; cyo=(y0+y1)/2*s
-    canvas=Image.new('RGB',(W,H),tuple(bgc))
-    canvas.paste(im2,(round(W/2-cxo),round(H*cy-cyo)))
-    print(name,'obj',ow,oh,'scale %.2f'%s,'-> obj %dx%d (%.0f%% w, %.0f%% h)'%(ow*s,oh*s,100*ow*s/W,100*oh*s/H))
-    save(canvas,name)
-
-photo(C+'/05-sofa-boucle-chaise-white.jpg',(0,40,960,1240),'cover-sofas')
-photo(C+'/partner/LIKELY-barolo-bedroom-b.jpg',(0,0,2048,2560),'cover-beds')
-photo(C+'/26-armchair-round-cream-ball.jpg',(0,80,960,1280),'cover-armchairs')
-photo(C+'/39-fabrics-swatch-books.jpg',(0,80,1920,2480),'cover-fabrics')
-render(R+'/img/catalog/p-chair-08.webp',obj_h=0.46,name='cover-chairs')
-render(R+'/img/catalog/p-table-01.webp',obj_w=0.80,name='cover-tables')
-render(R+'/img/catalog/p-table-03.webp',obj_w=0.62,name='cover-tables-meda')
-render(R+'/img/catalog/p-storage-01.webp',obj_w=0.70,name='cover-storage')
-render(R+'/img/eluna/seq/f24.webp',obj_w=0.80,cy=0.5,name='cover-mattresses',bg=(0,0,0),thr=12)
-render(R+'/img/eluna/seq/f01.webp',obj_w=0.84,cy=0.5,name='cover-mattresses-closed',bg=(0,0,0),thr=12)
+photo(C + '/partner/LIKELY-sarnico-top.jpg', (0, 43, 955, 1237), 'cover-sofas')             # вид сверху, ×1,26 (№ 42 — первый план видео входа, не повторяем)
+photo(C + '/partner/LIKELY-barolo-bedroom-b.jpg', (0, 0, 2048, 2560), 'cover-beds')
+photo(C + '/37-armchairs-round-pair-light.jpg', (0, 40, 960, 1240), 'cover-armchairs')     # ×1,25
+photo(C + '/39-fabrics-swatch-books.jpg', (0, 80, 1920, 2480), 'cover-fabrics')

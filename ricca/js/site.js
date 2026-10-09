@@ -16,10 +16,9 @@
       showroom: 'Здравствуйте! Хочу записаться на визит в шоурум RICCA на Навои, 208/2.',
       sofas: 'Здравствуйте! Интересует диван на заказ. Пришлите, пожалуйста, подборку и расскажите, что нужно для расчёта.',
       beds: 'Здравствуйте! Интересует кровать на заказ. Размер матраса: 1600 × 2000 / 1800 × 2000 / свой. Пришлите, пожалуйста, подборку.',
-      armchairs: 'Здравствуйте! Интересует кресло или пуф. Пришлите, пожалуйста, подборку.',
+      armchairs: 'Здравствуйте! Интересует кресло. Пришлите, пожалуйста, подборку.',
       chairs: 'Здравствуйте! Подберите, пожалуйста, стулья или обеденную группу. Комната и число мест: …',
       tables: 'Здравствуйте! Хочу подобрать стол к мягкой мебели. Пришлите, пожалуйста, варианты.',
-      storage: 'Здравствуйте! Интересует стеллаж, комод или тумба в пару к мебели. Пришлите, пожалуйста, варианты.',
       fabrics: 'Здравствуйте! Хочу подобрать ткань. Пришлите, пожалуйста, подборку образцов.',
       projects: 'Здравствуйте! Хочу обсудить мебель для своей комнаты: гостиная / спальня / столовая / кабинет / другое. Размеры и фото пришлю следующим сообщением.',
       business: 'Здравствуйте! Хочу обсудить проект для бизнеса: отель / ресторан / апарт-комплекс / жилой проект / офис.',
@@ -53,8 +52,10 @@
   const ITEM = new Map(ITEMS.map((x) => [x.id, x]));
   const FABRICS = Array.isArray(window.RICCA_FABRICS) ? window.RICCA_FABRICS : [];
   const FABRIC_PHOTOS = Array.isArray(window.RICCA_FABRIC_PHOTOS) ? window.RICCA_FABRIC_PHOTOS : [];
-  // название собирает js/catalog-data.js: name — «Диван № 07» (или «Диван <своё название RICCA>»), short — «№ 07» для сетки
+  // название собирает js/catalog-data.js: name — «Диван Svira» (без названия — «Диван № 15»), short — «Svira» / «№ 15» для сетки
   const labelOf = (it) => it.name;
+  // в тексте WhatsApp — название и один раз чтение кириллицей: «Диван Svira (Свира)», чтобы менеджер прочёл верно
+  const waLabelOf = (it) => `${it.name}${it.reading ? ` (${it.reading})` : ''}`;
   const shortOf = (it) => it.short || it.name;
   const catLabel = (c) => (CATS[c] && CATS[c].label) || c;
   const srcsetOf = (p) => (p.src600 ? `${p.src600} ${p.w600 || 600}w, ${p.src} ${p.w || 1200}w` : '');
@@ -68,7 +69,7 @@
   const itemUrl = (it) => (/^https?:$/.test(location.protocol) ? `${location.origin}${location.pathname}#item-${it.id}` : '');
   const itemWa = (it) => {
     const u = itemUrl(it);
-    return waUrl(`Здравствуйте! Интересует ${lcFirst(labelOf(it))}${it.subtitle ? ` (${lcFirst(it.subtitle)})` : ''}. Подскажите, пожалуйста, цену и что нужно для расчёта.${u ? `\n${u}` : ''}`);
+    return waUrl(`Здравствуйте! Интересует ${lcFirst(waLabelOf(it))}${it.subtitle ? ` — ${lcFirst(it.subtitle)}` : ''}. Подскажите, пожалуйста, цену и что нужно для расчёта.${u ? `\n${u}` : ''}`);
   };
   const slOf = (it) => ({ id: `item-${it.id}`, title: labelOf(it), meta: it.subtitle || catLabel(it.category) });
 
@@ -458,7 +459,7 @@
       sub.innerHTML = it.subtitle ? typo(it.subtitle) : ''; sub.hidden = !it.subtitle;
       desc.innerHTML = typo(it.description || ''); desc.hidden = !it.description;
       chips.innerHTML = (it.options || []).map((o) => `<li>${typo(o)}</li>`).join(''); chips.hidden = !(it.options || []).length;
-      const wood = it.category === 'tables' || it.category === 'storage';
+      const wood = it.category === 'tables';
       const rows = [['Размеры', it.sizes], [wood ? 'Материал' : 'Ткань и&nbsp;кожа', it.materials], ['Наполнение', it.filling], ['Механизм', it.mechanism], ['Срок', it.lead], ['Гарантия', it.warranty], ['Доставка', it.delivery]].filter((r) => r[1]);
       passport.innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${typo(v)}</dd></div>`).join('');
       passport.hidden = !rows.length;
@@ -561,8 +562,9 @@
     const openBtn = $('#sl-open'), countEl = $('#sl-count'), menuBtn = $('[data-open-sl]'), menuN = $('[data-sl-n]');
     const toast = $('#toast'), toastText = $('#toast-text'), toastOpen = $('#toast-open');
     let items = store.get(KEY, []);
-    // только изделия, которые есть в каталоге сейчас
-    items = (Array.isArray(items) ? items : []).filter((x) => x && /^item-/.test(x.id) && ITEM.has(x.id.slice(5))).slice(0, 12);
+    // только изделия, которые есть в каталоге сейчас; название и строка — по текущим данным (после переименования моделей)
+    items = (Array.isArray(items) ? items : []).filter((x) => x && /^item-/.test(x.id) && ITEM.has(x.id.slice(5))).slice(0, 12)
+      .map((x) => slOf(ITEM.get(x.id.slice(5))));
     const has = (id) => items.some((x) => x.id === id);
     function sync() {
       const n = items.length;
@@ -607,7 +609,7 @@
       }));
       empty.hidden = items.length > 0;
       foot.hidden = items.length === 0;
-      send.href = waUrl(`Здравствуйте! Моя подборка на сайте RICCA DESIGNS:\n${items.map((x, i) => `${i + 1}. ${x.title}${x.meta ? ` · ${x.meta}` : ''}`).join('\n')}\nРасскажите, пожалуйста, подробнее и помогите с выбором.`);
+      send.href = waUrl(`Здравствуйте! Моя подборка на сайте RICCA DESIGNS:\n${items.map((x, i) => { const it = ITEM.get(x.id.slice(5)); return `${i + 1}. ${it ? waLabelOf(it) : x.title}${x.meta ? ` · ${x.meta}` : ''}`; }).join('\n')}\nРасскажите, пожалуйста, подробнее и помогите с выбором.`);
       sync();
     }
     let toastT = 0;

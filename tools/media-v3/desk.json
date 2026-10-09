@@ -1,6 +1,4 @@
-{"W":1920,"H":1080,"fps":25,"fade":0.6,"shots":[
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/21-sofa-boucle-cream-round-a.jpg","L":8,"a":[0.5,0.6,1.0],"b":[0.5,0.605,0.965]},
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-barolo-bedroom-b.jpg","L":6.5,"a":[0.5,0.675,1.0],"b":[0.5,0.672,0.965]},
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/20-sofa-velvet-olive-chaise.jpg","L":6.5,"a":[0.51,0.56,0.97],"b":[0.495,0.56,0.97]},
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-dimaro-kitchen.jpg","L":6.5,"a":[0.5,0.6,1.0],"b":[0.497,0.598,0.965]}
+{"W":1600,"H":900,"fps":25,"fade":1.0,"shots":[
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-dimaro-kitchen.jpg","L":10,"a":[0.5,0.585,1.0],"b":[0.485,0.59,0.965]},
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-barolo-bedroom-b.jpg","L":10,"a":[0.5,0.69,1.0],"b":[0.5,0.67,1.0]}
 ]}
