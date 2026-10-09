@@ -1,44 +1,43 @@
-/* RICCA DESIGNS — данные каталога. Одна карточка = одно изделие. Сайт (js/site.js) строит из этого файла сетку каталога,
-   фильтры, окно «Подробнее», «Подборку» и тексты WhatsApp — HTML трогать не нужно.
+/* RICCA DESIGNS — данные единого каталога. Сайт (js/site.js) строит из этого файла плитки категорий, экран категории
+   (все модели сразу, по одному фото на модель), окно изделия со всеми фото, «Подборку», «Наши работы» и тексты WhatsApp.
+   HTML трогать не нужно: добавили изделие сюда — оно появилось в своей категории, счётчик на плитке обновился сам.
 
    КАК ДОБАВИТЬ ИЗДЕЛИЕ
-   1. Фото: положите файлы прямо в img/catalog/ (без подпапок), плоские имена с номером и смыслом:
-        NN-тип-ткань-цвет.webp (фото) или p-<категория>-<модель>[-2…].webp (предметный рендер на светлом фоне),
-        и рядом малый для карточки — то же имя с -600 (600 px по ширине). Большой файл: фото — до 1600 px по длинной стороне
-        (4:3, 3:4 или 4:5), рендеры — 1200 × 900 (4:3) или 1200 × 1500 (4:5). Список файлов и правила показа — img/catalog/MANIFEST.md.
-      Первое фото — обложка карточки, второе — показывается в карточке при наведении; все по порядку — галерея окна «Подробнее».
+   1. Фото: положите файлы прямо в img/catalog/ (без подпапок): NN-тип-ткань-цвет.webp (фото) или p-<категория>-<модель>[-2…].webp
+      (предметный кадр на светлом фоне) и рядом малый для сетки — то же имя с -600 (600 px по ширине). Большой файл: фото — до 1600 px
+      по длинной стороне, рендеры — 1200 × 900 или 1200 × 1500. Список файлов — img/catalog/MANIFEST.md.
+      ПЕРВОЕ фото — единственное, что видно в сетке категории; все фото по порядку — галерея окна изделия.
    2. Скопируйте блок любого изделия ниже (от { до },) и вставьте в нужную категорию.
-   3. Заполните поля:
-        id          — латиница и дефисы, уникальный: 'sofa-milano'. По нему работает ссылка #item-sofa-milano.
-        category    — 'sofas' | 'beds' | 'armchairs' | 'chairs' | 'tables' | 'storage' | 'collections-2026'
-        tags        — подфильтры: диваны — 'straight' (прямые), 'corner' (с оттоманкой и угловые), 'modular', 'foldout'
-                      (раскладные); кровати — 'lift' (с подъёмным механизмом), 'nolift' (без механизма). Можно несколько.
-        name        — как называем изделие: 'Диван Milano'. Подзаголовок — subtitle: 'Угловой · раскладной'.
-                      Нет названия модели — name описательный ('Диван с шезлонгом'), subtitle — ткань ('Голубой велюр'):
-                      в карточке они идут одной строкой «Диван с шезлонгом · голубой велюр», чтобы в сетке не было одинаковых заголовков.
-        photos      — [{ src, src600, alt }]: alt — что на фото, одной фразой (для незрячих и поиска).
-                      studio: true — предметный снимок на светлом фоне (показываем целиком, без обрезки);
-                      box: [ширина, высота] — доля предмета в кадре (0–1), по ней карточка масштабирует рендер; можно не указывать;
-                      pos: '60% 50%' — какую часть горизонтального фото оставить в карточке 4:5; zoom — приблизить кадр.
-        description — 1–2 предложения: только то, что видно, и факты, которые вы подтвердили.
-        options     — короткие ярлыки: 'Размер под комнату', 'Ткань из палитры', 'Ткань или кожа', 'Раскладной механизм'…
-                      Показываются в окне «Подробнее» (в карточке — нет: там название, подзаголовок и кнопки).
-        sizes, materials, filling, mechanism, lead, warranty, delivery — строки паспорта в окне «Подробнее»
-                      (пустая строка или отсутствующее поле — строка не показывается).
-        wa          — готовый текст сообщения в WhatsApp для кнопки «Узнать цену».
-        badge       — необязательная пометка под названием (например, 'Новинка'); на фото подписей не ставим.
-   Названия и тексты меняются здесь — сообщения WhatsApp, окно и «Подборка» обновятся сами.
-   Нет ни одного изделия в категории — её фильтр не показывается. */
+   3. Поля:
+        id          — латиница и дефисы, уникальный: 'sofa-milano'. Ссылка на окно изделия — #item-sofa-milano.
+        category    — ключ из RICCA_CATALOG_CATEGORIES: 'sofas' | 'beds' | 'armchairs' | 'chairs' | 'tables' | 'storage'
+        tags        — подфильтры (только у диванов): 'straight' (прямые), 'corner' (угловые и с шезлонгом), 'modular', 'foldout'
+                      (раскладные). У кроватей 'lift' / 'nolift' — пока не показываются (фильтр не нужен), но пусть остаются.
+        name        — 'Диван Milano'. В сетке категории показывается только название модели латиницей («Milano»);
+                      нет латинского названия — показывается name и subtitle одной строкой («Диван с шезлонгом · голубой велюр»).
+        subtitle    — одна короткая строка под названием в окне изделия.
+        photos      — [{ src, src600, alt, w, h }]; studio: true — предметный кадр на светлом фоне (показываем целиком);
+                      box: [ширина, высота] — доля предмета в кадре (0–1), по ней сетка выравнивает «вес» рендеров;
+                      pos: '60% 50%' — какую часть фото оставить в кадре 4 : 5.
+        description, options, sizes, materials, filling, mechanism, lead, warranty, delivery — в окне изделия, свёрнуто в «Подробнее».
+        wa          — готовый текст WhatsApp для «Узнать цену в WhatsApp».
+   Названия моделей с итальянскими топонимами — TODO (заказчик): подтвердить. */
 
+/* Категории — в порядке плиток. cover — обложка плитки (1200 × 1500 + -600). href — плитка ведёт на внешний сайт (ELUNA).
+   view: 'fabrics' — плитка открывает экран тканей (данные ниже, RICCA_FABRICS). tags — подфильтры экрана категории. */
 window.RICCA_CATALOG_CATEGORIES = {
-  sofas: { label: 'Диваны', chip: 'Диваны', how: 'диваны', tags: { straight: 'Прямые', corner: 'С оттоманкой и угловые', modular: 'Модульные', foldout: 'Раскладные' } },
-  beds: { label: 'Кровати', chip: 'Кровати', how: 'кровати', tags: { lift: 'С подъёмным механизмом', nolift: 'Без механизма' } },
-  armchairs: { label: 'Кресла и пуфы', chip: 'Кресла и пуфы', how: 'кресла и пуфы' },
-  chairs: { label: 'Стулья', chip: 'Стулья', how: 'стулья' },
-  tables: { label: 'Столы', chip: 'Столы', how: 'столы' },
-  storage: { label: 'Хранение и тумбы', chip: 'Хранение', how: 'стеллажи и комоды' },
-  'collections-2026': { label: 'Коллекции 2026', chip: 'Коллекции 2026', how: 'коллекции 2026' }
+  sofas: { label: 'Диваны', cover: 'img/catalog/cover-sofas', coverAlt: 'Диван с шезлонгом в белом букле в гостиной с пейзажной фреской',
+    tags: { straight: 'Прямые', corner: 'Угловые', modular: 'Модульные', foldout: 'Раскладные' } },
+  beds: { label: 'Кровати', cover: 'img/catalog/cover-beds', coverAlt: 'Кровать Barolo в светлом букле в спальне с нишей и подсветкой' },
+  armchairs: { label: 'Кресла и пуфы', cover: 'img/catalog/cover-armchairs', coverAlt: 'Округлое кресло в молочной ткани у окна' },
+  chairs: { label: 'Стулья', cover: 'img/catalog/cover-chairs', coverAlt: 'Стул Arre с мягкой спинкой на металлическом каркасе' },
+  tables: { label: 'Столы', cover: 'img/catalog/cover-tables', coverAlt: 'Круглый деревянный стол Meda на опоре-тумбе' },
+  storage: { label: 'Хранение', cover: 'img/catalog/cover-storage', coverAlt: 'Открытый деревянный стеллаж Aquino' },
+  mattresses: { label: 'Матрасы ELUNA', cover: 'img/catalog/cover-mattresses', coverAlt: 'Матрас ELUNA: слои раскрыты над пружинным блоком',
+    href: 'https://ricca-designs.netlify.app' },
+  fabrics: { label: 'Ткани', cover: 'img/catalog/cover-fabrics', coverAlt: 'Стопки образцов тканей разных цветов', view: 'fabrics' }
 };
+window.RICCA_CATALOG_ORDER = ['sofas', 'beds', 'armchairs', 'chairs', 'tables', 'storage', 'mattresses', 'fabrics'];
 
 window.RICCA_CATALOG = [
 
@@ -1688,11 +1687,49 @@ window.RICCA_CATALOG = [
   }
 ];
 
-/* Палитра тканей для раздела «Материалы»: 16 образцов (квадрат 600 px, в цвете, без подписей на фото), по семьям цвета.
-   Названия — описание того, что видно на образце. TODO (заказчик): настоящие названия и составы тканей. */
+/* Ткани — экран «Ткани» (плитка каталога). Образцы по семьям цвета (квадрат 600 px, в цвете, без подписей на фото).
+   Названия — описание того, что видно на образце. TODO (заказчик): настоящие названия и составы тканей.
+   TODO (заказчик): заказчик пришлёт папку тканей — добавить её образцы сюда: файлы в img/catalog/ (tex-<цвет>-N.webp, 600 × 600),
+   по одному объекту { src, name, alt, w, h } в нужную семью цвета или новой семьёй { id, label, items: [...] }. HTML не трогать. */
+window.RICCA_FABRIC_PHOTOS = [
+  { src: 'img/catalog/39-fabrics-swatch-books.webp', src600: 'img/catalog/39-fabrics-swatch-books-900.webp', w600: 900, w: 1200, h: 1600, alt: 'Стопки книг-образцов тканей: светлые, серые, синие и терракотовые оттенки' },
+  { src: 'img/catalog/34-fabrics-palette-grid.webp', src600: 'img/catalog/34-fabrics-palette-grid-600.webp', w: 1024, h: 1280, alt: 'Шестнадцать образцов тканей сеткой: красные, серо-белые, синие и зелёные' }
+];
 window.RICCA_FABRICS = [
   {"id": "red", "label": "Красные и терракота", "items": [{"src": "img/catalog/tex-red-1.webp", "name": "Красно-белый меланж", "alt": "Образец ткани: красно-белый меланж", "w": 600, "h": 600}, {"src": "img/catalog/tex-red-2.webp", "name": "Коралловое плетение", "alt": "Образец ткани: коралловое плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-red-3.webp", "name": "Терракотовое букле", "alt": "Образец ткани: терракотовое букле", "w": 600, "h": 600}, {"src": "img/catalog/tex-red-4.webp", "name": "Терракота с орнаментом", "alt": "Образец ткани: терракота с орнаментом", "w": 600, "h": 600}]},
   {"id": "grey", "label": "Серо-белые", "items": [{"src": "img/catalog/tex-grey-1.webp", "name": "Серо-белый твид", "alt": "Образец ткани: серо-белый твид", "w": 600, "h": 600}, {"src": "img/catalog/tex-grey-2.webp", "name": "Чёрно-белое плетение", "alt": "Образец ткани: чёрно-белое плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-grey-3.webp", "name": "Белое фактурное плетение", "alt": "Образец ткани: белое фактурное плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-grey-4.webp", "name": "Молочная ткань с рисунком", "alt": "Образец ткани: молочная ткань с рисунком", "w": 600, "h": 600}]},
   {"id": "blue", "label": "Синие", "items": [{"src": "img/catalog/tex-blue-1.webp", "name": "Синий рисунок на белом", "alt": "Образец ткани: синий рисунок на белом", "w": 600, "h": 600}, {"src": "img/catalog/tex-blue-2.webp", "name": "Голубое гладкое плетение", "alt": "Образец ткани: голубое гладкое плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-blue-3.webp", "name": "Синее рельефное плетение", "alt": "Образец ткани: синее рельефное плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-blue-4.webp", "name": "Тёмно-синий меланж", "alt": "Образец ткани: тёмно-синий меланж", "w": 600, "h": 600}]},
   {"id": "green", "label": "Зелёные", "items": [{"src": "img/catalog/tex-green-1.webp", "name": "Зелёно-чёрный меланж", "alt": "Образец ткани: зелёно-чёрный меланж", "w": 600, "h": 600}, {"src": "img/catalog/tex-green-2.webp", "name": "Мятное плетение", "alt": "Образец ткани: мятное плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-green-3.webp", "name": "Зелёное гладкое плетение", "alt": "Образец ткани: зелёное гладкое плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-green-4.webp", "name": "Тёмно-зелёный меланж", "alt": "Образец ткани: тёмно-зелёный меланж", "w": 600, "h": 600}]}
+];
+
+/* «Наши работы» — интерьеры с нашей мебелью. Подпись на сайте — только room (мелко); piece и item — в лайтбоксе
+   («Смотреть модель» открывает окно изделия item). credit — авторство интерьера (знак студии на фото не трогаем).
+   В «Все работы» после этих кадров автоматически идут остальные интерьерные фото изделий каталога (не предметные кадры).
+   Первые три — большие кадры раздела на главной (порядок задаёт data-work в index.html). */
+window.RICCA_WORKS = [
+  { room: "Кухня-гостиная", piece: "диван Dimaro", item: "sofa-dimaro", src: "img/catalog/42-sofa-modular-sage-kitchen.webp", src600: "img/catalog/42-sofa-modular-sage-kitchen-600.webp", w: 1195, h: 1600, alt: "Модульный диван Dimaro в шалфейной ткани, собранный углом, в светлой кухне-гостиной с большими окнами" },
+  { room: "Гостиная", piece: "диван с валиками в «гусиной лапке»", item: "sofa-houndstooth", src: "img/catalog/15-sofa-houndstooth-bolsters.webp", src600: "img/catalog/15-sofa-houndstooth-bolsters-600.webp", w: 1024, h: 1280, alt: "Изогнутый диван с валиками в ткани «гусиная лапка» под большой картиной" },
+  { room: "Спальня в терракоте", piece: "кровать Palinuro", item: "bed-palinuro", src: "img/catalog/47-bed-green-boucle-terracotta.webp", src600: "img/catalog/47-bed-green-boucle-terracotta-600.webp", w: 896, h: 1200, alt: "Кровать Palinuro в зелёном букле на подиуме в спальне с терракотовыми стенами" },
+  { room: "Спальня", piece: "кровать Barolo", item: "bed-barolo", src: "img/catalog/40-bed-piped-boucle-bedroom.webp", src600: "img/catalog/40-bed-piped-boucle-bedroom-600.webp", w: 1280, h: 1600, alt: "Кровать Barolo в светлом букле с «парящим» основанием в нише с подсветкой" },
+  { room: "Кухня-гостиная", piece: "полукруглый диван с валиками", item: "sofa-curve-cream", src: "img/catalog/03-sofa-curve-cream-b.webp", src600: "img/catalog/03-sofa-curve-cream-b-600.webp", w: 1024, h: 1280, alt: "Полукруглый диван с валиками и подушками-шарами в молочной ткани в кухне-гостиной" },
+  { room: "Гостиная, вид сверху", piece: "диван Dimaro", item: "sofa-dimaro", src: "img/catalog/43-sofa-modular-sage-top.webp", src600: "img/catalog/43-sofa-modular-sage-top-600.webp", w: 1195, h: 1600, alt: "Диван Dimaro сверху: секции собраны углом вокруг ковра и низкого деревянного стола" },
+  { room: "Гостиная в терракоте", piece: "диван-волна в оливковом шенилле", item: "sofa-wave-olive", src: "img/catalog/07-sofa-curve-olive.webp", src600: "img/catalog/07-sofa-curve-olive-600.webp", w: 1046, h: 1280, alt: "Изогнутый диван с валиками в оливковом шенилле в гостиной с терракотовыми стенами" },
+  { room: "Гостиная, вид сверху", piece: "диван Sarnico", item: "sofa-sarnico", src: "img/catalog/52-sofa-chaise-boucle-top.webp", src600: "img/catalog/52-sofa-chaise-boucle-top-600.webp", w: 955, h: 1280, alt: "Диван Sarnico с шезлонгом в светлой ткани, вид сверху; рядом круглый столик" },
+  { room: "Гостиная", piece: "модульный диван в голубом велюре", item: "sofa-modular-sky", src: "img/catalog/09-sofa-modular-sky.webp", src600: "img/catalog/09-sofa-modular-sky-600.webp", w: 1024, h: 1280, alt: "Модульный диван с полукруглыми секциями в голубом велюре в светлой гостиной с лепниной" },
+  { room: "Гостиная с камином", piece: "диван Monopoli", item: "sofa-monopoli", src: "img/catalog/32-sofa-sage-piping-balls.webp", src600: "img/catalog/32-sofa-sage-piping-balls-600.webp", w: 1280, h: 1280, alt: "Диван Monopoli в шалфейной ткани у камина, рядом два округлых кресла" },
+  { room: "Спальня с видом на город", piece: "кровать Palinuro", item: "bed-palinuro", src: "img/catalog/48-bed-green-boucle-city.webp", src600: "img/catalog/48-bed-green-boucle-city-600.webp", w: 896, h: 1200, alt: "Кровать Palinuro у панорамного окна с видом на город" },
+  { room: "Гостиная", piece: "диван с шезлонгом в голубом велюре", item: "sofa-velvet-blue-chaise", src: "img/catalog/01-sofa-velvet-blue-chaise.webp", src600: "img/catalog/01-sofa-velvet-blue-chaise-600.webp", w: 1020, h: 1280, alt: "Диван с шезлонгом в голубом велюре на тонких чёрных ножках у стены с ореховыми панелями" },
+  { room: "Гостиная", piece: "диван Sarnico", item: "sofa-sarnico", src: "img/catalog/18-sofa-tweed-leather-sides.webp", src600: "img/catalog/18-sofa-tweed-leather-sides-600.webp", w: 1280, h: 1280, alt: "Диван Sarnico в светлом твиде с тёмными кожаными боковинами и валиками у стены с полками" },
+  { room: "Светлая гостиная", piece: "диван-волна в букле", item: "sofa-wave-boucle", src: "img/catalog/13-sofa-wave-boucle-pouf.webp", src600: "img/catalog/13-sofa-wave-boucle-pouf-600.webp", w: 1024, h: 1280, alt: "Изогнутый диван с валиками и большой пуф в белом букле в светлой гостиной" },
+  { room: "Классическая гостиная", piece: "угловой диван в оливковом велюре", item: "sofa-corner-olive-velvet", src: "img/catalog/20-sofa-velvet-olive-chaise.webp", src600: "img/catalog/20-sofa-velvet-olive-chaise-600.webp", w: 1280, h: 853, alt: "Угловой диван с шезлонгом в оливковом велюре в классической гостиной" },
+  { room: "Спальня с рабочим местом", piece: "кровать Barolo", item: "bed-barolo", src: "img/catalog/41-bed-piped-boucle-desk.webp", src600: "img/catalog/41-bed-piped-boucle-desk-600.webp", w: 1280, h: 1600, alt: "Кровать Barolo и рабочее место у окна" },
+  { room: "Столовая-гостиная", piece: "угловой диван в рельефном шенилле", item: "sofa-corner-steel-chenille", src: "img/catalog/10-sofa-curve-steel-chenille.webp", src600: "img/catalog/10-sofa-curve-steel-chenille-600.webp", w: 960, h: 1280, alt: "Угловой диван со скруглённым краем в сине-сером рельефном шенилле" },
+  { room: "Спальня", piece: "кровать Vittoria", item: "bed-vittoria", src: "img/catalog/28-bed-tweed-wing.webp", src600: "img/catalog/28-bed-tweed-wing-600.webp", w: 960, h: 1280, alt: "Кровать Vittoria: изголовье с загнутыми «крыльями» в тёплой ткани" },
+  { room: "Спальня", piece: "кровать Barolo", item: "bed-barolo", src: "img/catalog/17-bed-boucle-taupe-piping.webp", src600: "img/catalog/17-bed-boucle-taupe-piping-600.webp", w: 853, h: 1280, alt: "Кровать Barolo в тауповом букле с тонким кантом в нише с линейной подсветкой" },
+  { room: "Спальня", piece: "кровать с изголовьем в ткани с принтом", item: "bed-dalmatian", src: "img/catalog/12-bed-dalmatian.webp", src600: "img/catalog/12-bed-dalmatian-600.webp", w: 960, h: 1280, alt: "Кровать с мягким изголовьем и основанием в ткани с «далматинским» принтом" },
+  { room: "Спальня", piece: "кровать с округлым изголовьем", item: "bed-rounded-boucle", src: "img/catalog/27-bed-boucle-rounded.webp", src600: "img/catalog/27-bed-boucle-rounded-600.webp", w: 1054, h: 1280, alt: "Кровать с округлыми изголовьем и основанием в светлом букле" },
+  { room: "Спальня у окна", piece: "кровать Palinuro", item: "bed-palinuro", src: "img/catalog/51-bed-green-boucle-forest.webp", src600: "img/catalog/51-bed-green-boucle-forest-600.webp", w: 928, h: 1160, alt: "Кровать Palinuro в зелёном букле у окна с видом на лес" },
+  { room: "Кухня-гостиная", piece: "округлый диван в букле", item: "sofa-round-boucle", src: "img/catalog/21-sofa-boucle-cream-round-a.webp", src600: "img/catalog/21-sofa-boucle-cream-round-a-600.webp", w: 1280, h: 989, alt: "Округлый диван в молочном букле в кухне-гостиной" },
+  { room: "Гостиная с фреской", piece: "диван с шезлонгом в букле", item: "sofa-boucle-chaise-white", src: "img/catalog/05-sofa-boucle-chaise-white.webp", src600: "img/catalog/05-sofa-boucle-chaise-white-600.webp", w: 960, h: 1280, alt: "Диван с шезлонгом в белом букле под пейзажной фреской" },
+  { room: "Гостиная с видом в спальню", piece: "диван с валиками в «гусиной лапке»", item: "sofa-houndstooth", src: "img/catalog/04-sofa-houndstooth-av.webp", src600: "img/catalog/04-sofa-houndstooth-av-600.webp", w: 1023, h: 1280, alt: "Изогнутый диван с валиками в ткани «гусиная лапка» в светлой гостиной, за распахнутыми дверями — спальня; в правом верхнем углу знак студии AV Interiors", credit: "Интерьер: AV Interiors" }
 ];
