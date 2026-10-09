@@ -6,8 +6,8 @@
                    экране refs/06). Вариативный, ось wght 300–700, прямой + курсив.
      Montserrat  — вордмарк «RICCA / DESIGNS • ALMATY», меню, подписи, текст.
                    Вариативный, ось wght 100–900, прямой + курсив.
-     Unbounded   — подбренд ELUNA внутри сайта (заголовки, цены, цифры ELUNA).
-                   Статические 300 и 500 (других начертаний нет).
+     (Unbounded — шрифт подбренда ELUNA — с сайта RICCA убран 9 октября: глава ELUNA
+      заменена карточкой-новостью, которая говорит шрифтами RICCA.)
 
    Файлы (проверены, все существуют, размеры в байтах):
      ../fonts/cormorant/cormorant-cyrillic-var-normal.woff2   22 048   wght 300–700
@@ -18,10 +18,8 @@
      ../fonts/montserrat/montserrat-latin-var-normal.woff2    37 956   wght 100–900
      ../fonts/montserrat/montserrat-cyrillic-var-italic.woff2 24 536   wght 100–900, ital −11.3°
      ../fonts/montserrat/montserrat-latin-var-italic.woff2    39 632   wght 100–900, ital −11.3°
-     ../fonts/eluna/Unbounded-300-normal.woff2                37 488   статический 300, лат+кир
-     ../fonts/eluna/Unbounded-500-normal.woff2                38 400   статический 500, лат+кир
-   Лицензии: все три семейства — SIL Open Font License 1.1 (OFL.txt в папках cormorant/
-   и montserrat/; Unbounded — OFL 1.1, файлы 1:1 с сайта ELUNA).
+   Лицензии: оба семейства — SIL Open Font License 1.1 (OFL.txt в папках cormorant/
+   и montserrat/).
 
    Пути в этом файле относительные к ricca/css/. Подключение из ricca/index.html:
      <link rel="stylesheet" href="css/fonts-v3.css">
@@ -33,7 +31,7 @@
    даже для своего домена, иначе браузер скачает шрифт дважды. Предзагружаем только
    то, что видно на первом экране (заголовок-антиква, вордмарк и меню); курсив
    Cormorant — если в заголовке первого экрана есть курсивная строка (как «по мерке»
-   на refs/06). Unbounded не предзагружаем: ELUNA появляется ниже по странице.
+   на refs/06).
 
      <link rel="preload" as="font" type="font/woff2" href="fonts/cormorant/cormorant-cyrillic-var-normal.woff2" crossorigin>
      <link rel="preload" as="font" type="font/woff2" href="fonts/cormorant/cormorant-cyrillic-var-italic.woff2" crossorigin>
@@ -42,19 +40,15 @@
 
    --------------------------------------------------------------------------
    Важно знать:
-   - ₸ (U+20B8) есть ТОЛЬКО в Unbounded. В Cormorant и Montserrat его нет, и он не
-     входит в unicode-range латиницы (U+2000-206F заканчивается до U+20B8), поэтому
-     в тексте Montserrat тенге отрисуется системным запасным шрифтом. Цены ELUNA
-     ставьте в Unbounded (var(--font-eluna)); в остальных местах оборачивайте знак:
-     <span class="tenge">₸</span> с font-family: var(--font-eluna) (правило ниже).
+   - ₸ (U+20B8) в Cormorant и Montserrat нет, и он не входит в unicode-range латиницы
+     (U+2000-206F заканчивается до U+20B8): тенге отрисуется системным запасным шрифтом.
+     Цен на сайте RICCA сейчас нет; если появятся — подобрать знак отдельно.
    - Знак № (U+2116) есть в кириллических подмножествах обоих семейств; «ёлочки»,
      длинное тире, средняя точка «•» (U+2022) и ü (Dürkopp) — в латинских.
    - У Cormorant цифры по умолчанию старостильные: для телефона, адреса и цен
      ставьте font-variant-numeric: lining-nums (правило ниже, .num).
-   - Unbounded только 300 и 500. font-weight: 400 браузер отдаст как 500 (по правилам
-     подбора для 400 сначала ищется 500) — пишите 300 или 500 явно, 400/600/700 нет.
    - font-synthesis: none на :root — чтобы браузер не рисовал псевдожирный/псевдо-
-     курсив, если запросить вес вне оси (например Cormorant 800) или курсив Unbounded.
+     курсив, если запросить вес вне оси (например Cormorant 800).
    - Вариативные оси: запрашивайте любой вес внутри диапазона (Cormorant 300–700,
      Montserrat 100–900) — один файл на подмножество, без дополнительных загрузок.
    ========================================================================== */
@@ -127,32 +121,13 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* ---------- Unbounded — подбренд ELUNA (латиница + кириллица в одном файле) ---------- */
-@font-face {
-  font-family: 'Unbounded';
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: url("../fonts/eluna/Unbounded-300-normal.woff2") format("woff2");
-}
-@font-face {
-  font-family: 'Unbounded';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("../fonts/eluna/Unbounded-500-normal.woff2") format("woff2");
-}
-
 /* ---------- Токены семейств (подключать в :root сайта) ---------- */
 :root {
   --font-serif: 'Cormorant', 'Cormorant Garamond', 'Garamond', 'Georgia', 'Times New Roman', serif;      /* заголовки RICCA */
   --font-sans:  'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* вордмарк, меню, текст */
-  --font-eluna: 'Unbounded', 'Montserrat', Arial, sans-serif;                                              /* заголовки и цены ELUNA */
   font-synthesis: none;
 }
 
 /* Лининговые (ровные) цифры для телефона, адреса, цен в антикве */
 .num { font-variant-numeric: lining-nums tabular-nums; }
 
-/* Знак тенге вне блоков ELUNA — всегда из Unbounded (в Cormorant/Montserrat его нет) */
-.tenge { font-family: var(--font-eluna); font-weight: 300; }
