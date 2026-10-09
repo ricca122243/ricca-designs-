@@ -295,3 +295,10 @@ sofa-01 1,039/1,084/1,209 · +0,008; sofa-02 1,064/1,104/1,218 · +0,000; sofa-0
 | `ricca/vendor/gsap.min.js`, `ricca/vendor/ScrollTrigger.min.js` | 73 + 45 КБ | GSAP 3.15.0 и ScrollTrigger 3.15.0 (GreenSock Standard License) — те же сборки, что на ELUNA. |
 
 Итого добавлено ≈ 3,8 МБ, из них кадры — 3,1 МБ (на одной странице грузится только один набор: 1,75 или 1,33 МБ).
+
+## Обновление 10 октября, вечер (F2)
+- `video/production.webm|mp4` (478 × 850, 17,8 с) и `video/production-phone.webm|mp4` (432 × 768, 24 к/с) — петля ателье из
+  `src/production-story.mp4`: начинается с пошива (кадр стола дизайнера с лампой вырезан), конец бесшовно перетекает в начало
+  (наплыв 0,5 с). `video/production-poster.webp` — готовый серый диван в шоуруме (кадр 17,0 с).
+- `img/catalog/cover-chairs|tables|storage|mattresses(-600).webp` — предметный ряд плиток: предмет на тоне --studio, ширина ≈ 78 %,
+  общий «пол»; ELUNA — слои матраса, вырезанные из рендера на светлый тон. Скрипт — tools/media-v3/covers-studio.py.

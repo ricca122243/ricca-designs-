@@ -43,10 +43,25 @@ done
 # MANIFEST*.md и README.md там же — внутренние заметки: в архив не идут
 mkdir -p "$OUT/img/catalog" && cp -r "$SRC/img/catalog/." "$OUT/img/catalog/" && find "$OUT/img/catalog" -name '*.md' -delete
 [ -f "$OUT/js/catalog-data.js" ] || { echo "нет js/catalog-data.js — каталог будет пустым"; exit 1; }
-# Ролики производства подставляются скриптом по имени шага: берём всю папку video
-mkdir -p "$OUT/video" && cp "$SRC"/video/*.mp4 "$SRC"/video/*.webm "$SRC"/video/*.webp "$OUT/video/" 2>/dev/null || true
-# Постеры шагов — тоже по имени
-mkdir -p "$OUT/img/process" && cp "$SRC"/img/process/*.webp "$OUT/img/process/"
+# Ролики (вход hero-*, ELUNA eluna-loop*, ателье production*) js/site.js подставляет по имени: берём папку video целиком.
+# Ролики шагов производства (step-NN-*) и их постеры (img/process) — только если сайт на них ещё ссылается: после 10 октября
+# ленты шагов нет, и ~3,2 МБ в архив не идут
+uses_steps=0
+if site_code | grep -E 'step-[0-9]|img/process' >/dev/null; then uses_steps=1; fi
+mkdir -p "$OUT/video"
+for f in "$SRC"/video/*.mp4 "$SRC"/video/*.webm "$SRC"/video/*.webp; do
+  [ -f "$f" ] || continue
+  case "$(basename "$f")" in step-[0-9]*) [ "$uses_steps" -eq 1 ] || continue ;; esac
+  cp "$f" "$OUT/video/"
+done
+for need in hero-desktop hero-mobile eluna-loop; do
+  ls "$OUT/video/$need".* >/dev/null 2>&1 || { echo "нет ролика: video/$need.*"; exit 1; }
+done
+if [ "$uses_steps" -eq 1 ]; then
+  mkdir -p "$OUT/img/process" && cp "$SRC"/img/process/*.webp "$OUT/img/process/"
+else
+  echo "ролики шагов (video/step-*) и img/process сайтом не используются — в архив не идут"
+fi
 # Кадры прежней сцены ELUNA (24 кадра × 2 размера) скрипт подставлял по номеру — берём папки, только если на них есть ссылка
 if site_code | grep 'img/eluna/seq' >/dev/null; then
   for d in img/eluna/seq img/eluna/seq720; do

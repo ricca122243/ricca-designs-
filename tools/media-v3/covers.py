@@ -1,3 +1,4 @@
+# Обложки предметного ряда (стулья, столы, хранение, ELUNA) с 10 октября делает covers-studio.py; ниже — прежние вызовы для фото-обложек.
 import sys, os
 from PIL import Image, ImageChops
 import numpy as np
@@ -33,12 +34,12 @@ def render(src,obj_h=None,obj_w=None,cy=0.52,name=None,bg=None,thr=8):
     save(canvas,name)
 
 photo(C+'/05-sofa-boucle-chaise-white.jpg',(0,40,960,1240),'cover-sofas')
-photo(C+'/partner/LIKELY-comocasa-barolo-bedroom-b.jpg',(0,0,2048,2560),'cover-beds')
+photo(C+'/partner/LIKELY-barolo-bedroom-b.jpg',(0,0,2048,2560),'cover-beds')
 photo(C+'/26-armchair-round-cream-ball.jpg',(0,80,960,1280),'cover-armchairs')
 photo(C+'/39-fabrics-swatch-books.jpg',(0,80,1920,2480),'cover-fabrics')
-render(R+'/img/catalog/p-chair-arre.webp',obj_h=0.46,name='cover-chairs')
-render(R+'/img/catalog/p-table-albino.webp',obj_w=0.80,name='cover-tables')
-render(R+'/img/catalog/p-table-meda.webp',obj_w=0.62,name='cover-tables-meda')
-render(R+'/img/catalog/p-storage-aquino.webp',obj_w=0.70,name='cover-storage')
+render(R+'/img/catalog/p-chair-08.webp',obj_h=0.46,name='cover-chairs')
+render(R+'/img/catalog/p-table-01.webp',obj_w=0.80,name='cover-tables')
+render(R+'/img/catalog/p-table-03.webp',obj_w=0.62,name='cover-tables-meda')
+render(R+'/img/catalog/p-storage-01.webp',obj_w=0.70,name='cover-storage')
 render(R+'/img/eluna/seq/f24.webp',obj_w=0.80,cy=0.5,name='cover-mattresses',bg=(0,0,0),thr=12)
 render(R+'/img/eluna/seq/f01.webp',obj_w=0.84,cy=0.5,name='cover-mattresses-closed',bg=(0,0,0),thr=12)

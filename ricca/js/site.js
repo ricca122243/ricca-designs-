@@ -25,7 +25,7 @@
       business: 'Здравствуйте! Хочу обсудить проект для бизнеса: отель / ресторан / апарт-комплекс / жилой проект / офис.',
       master: 'Здравствуйте! У меня вопрос к мастеру RICCA.'
     },
-    introMs: 1420     // длительность входа-занавеса (CSS: .intro …) — после неё класс снимается
+    introMs: 1620     // длительность входа-занавеса (CSS: .intro …; занавес 850–1500 мс) — после неё класс снимается
   };
 
   const root = document.documentElement;
@@ -53,9 +53,9 @@
   const ITEM = new Map(ITEMS.map((x) => [x.id, x]));
   const FABRICS = Array.isArray(window.RICCA_FABRICS) ? window.RICCA_FABRICS : [];
   const FABRIC_PHOTOS = Array.isArray(window.RICCA_FABRIC_PHOTOS) ? window.RICCA_FABRIC_PHOTOS : [];
-  const isNamed = (it) => /[A-Z]/.test(it.name);
-  const labelOf = (it) => (it.subtitle && !isNamed(it) ? `${it.name} · ${lcFirst(it.subtitle)}` : it.name);
-  const shortOf = (it) => (isNamed(it) ? it.name.replace(/^[^A-Z]*/, '') : labelOf(it));   // в сетке категории: «Dimaro»
+  // название собирает js/catalog-data.js: name — «Диван № 07» (или «Диван <своё название RICCA>»), short — «№ 07» для сетки
+  const labelOf = (it) => it.name;
+  const shortOf = (it) => it.short || it.name;
   const catLabel = (c) => (CATS[c] && CATS[c].label) || c;
   const srcsetOf = (p) => (p.src600 ? `${p.src600} ${p.w600 || 600}w, ${p.src} ${p.w || 1200}w` : '');
   // предметный рендер: масштаб по доле предмета в кадре (box), чтобы модели в сетке были одного «веса»
@@ -64,18 +64,28 @@
     const ar = p.w / p.h, iw = Math.min(1, ar / frameAR), ih = Math.min(1, frameAR / ar);
     return Math.max(1, Math.min(fill / (p.box[0] * iw), Math.min(0.8, fill + 0.04) / (p.box[1] * ih), 2.2));
   };
-  const itemWa = (it) => waUrl(it.wa || `Здравствуйте! Интересует ${lcFirst(labelOf(it))}. Подскажите, пожалуйста, цену и что нужно для расчёта.`);
-  const slOf = (it) => ({ id: `item-${it.id}`, title: labelOf(it), meta: catLabel(it.category) });
+  // «Узнать цену»: модель, её строка и ссылка на окно изделия — менеджер сразу видит, о чём речь
+  const itemUrl = (it) => (/^https?:$/.test(location.protocol) ? `${location.origin}${location.pathname}#item-${it.id}` : '');
+  const itemWa = (it) => {
+    const u = itemUrl(it);
+    return waUrl(`Здравствуйте! Интересует ${lcFirst(labelOf(it))}${it.subtitle ? ` (${lcFirst(it.subtitle)})` : ''}. Подскажите, пожалуйста, цену и что нужно для расчёта.${u ? `\n${u}` : ''}`);
+  };
+  const slOf = (it) => ({ id: `item-${it.id}`, title: labelOf(it), meta: it.subtitle || catLabel(it.category) });
 
-  // «Все работы»: кадры RICCA_WORKS, затем остальные интерьерные фото изделий (без предметных кадров и крупных планов)
-  const WORKS = (Array.isArray(window.RICCA_WORKS) ? window.RICCA_WORKS : []).map((w) => Object.assign({}, w));
+  /* ---------- «Наши работы»: только подтверждённые фото работ RICCA (RICCA_WORKS). Пусто — раздела и пунктов меню нет.
+     Первые три кадра — большие рамки на главной, «Все работы» — когда кадров больше трёх ---------- */
+  const WORKS = (Array.isArray(window.RICCA_WORKS) ? window.RICCA_WORKS : []).filter((w) => w && w.src && w.w && w.h).map((w) => Object.assign({}, w));
   (() => {
-    const used = new Set(WORKS.map((w) => w.src));
-    ITEMS.forEach((it) => it.photos.forEach((p) => {
-      if (p.studio || used.has(p.src) || /-detail|studio|\/p-/.test(p.src) || /крупн|студийн/i.test(p.alt || '')) return;
-      used.add(p.src);
-      WORKS.push({ room: labelOf(it), piece: '', item: it.id, src: p.src, src600: p.src600, w: p.w, h: p.h, alt: p.alt });
-    }));
+    const sec = $('#works');
+    if (!sec) return;
+    if (!WORKS.length) { sec.remove(); $$('[data-works-link]').forEach((a) => a.remove()); return; }
+    const SLOT = [['a', '(min-width: 900px) 44vw, 80vw'], ['b', '(min-width: 900px) 32vw, 80vw'], ['c', '(min-width: 900px) 44vw, 80vw']];
+    $('[data-works-row]', sec).innerHTML = WORKS.slice(0, 3).map((w, i) => `<figure class="frame frame--${SLOT[i][0]} rv"><button class="frame__open" type="button" data-work="${i}" aria-label="Открыть фото: ${esc(lcFirst(w.room))}">`
+      + `<img src="${esc(w.src600 || w.src)}"${w.src600 ? ` srcset="${esc(`${w.src600} 600w, ${w.src} ${w.w}w`)}" sizes="${SLOT[i][1]}"` : ''} width="${w.w}" height="${w.h}" alt="${esc(w.alt || w.room)}" loading="lazy" decoding="async">`
+      + `<span class="mark" aria-hidden="true">RICCA DESIGNS</span></button><figcaption class="frame__cap">${typo(w.room)}</figcaption></figure>`).join('');
+    $('.works__all', sec).hidden = WORKS.length <= 3;
+    sec.hidden = false;
+    $$('[data-works-link]').forEach((a) => { a.hidden = false; });
   })();
 
   /* ---------- Телефоны и WhatsApp из CONFIG ---------- */
@@ -86,24 +96,20 @@
     if (!a.querySelector('.sr-only')) a.insertAdjacentHTML('beforeend', '<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span>');
   });
 
-  /* ---------- Счётчики на плитках каталога (из данных) ---------- */
-  $$('[data-count]').forEach((el) => {
-    const c = el.dataset.count;
-    const n = c === 'fabrics' ? FABRICS.reduce((s, g) => s + ((g && g.items) || []).length, 0) : ITEMS.filter((i) => i.category === c).length;
-    if (!n) return;
-    el.textContent = n;
-    const sr = el.nextElementSibling;
-    if (sr && sr.classList.contains('sr-only')) sr.textContent = ` ${c === 'fabrics' ? plural3(n, ['образец', 'образца', 'образцов']) : plural3(n, ['модель', 'модели', 'моделей'])}`;
-  });
-
-  /* ---------- Вход-занавес: снять класс после анимации; любое касание — сразу финал ---------- */
+  /* ---------- Вход-занавес: снять класс после анимации; любое касание — сразу финал.
+     introDone — ролик входа стартует после занавеса, чтобы первый кадр был виден целиком ---------- */
+  const introWait = [];
+  let introOn = root.classList.contains('intro');
+  const introDone = (fn) => { if (introOn) introWait.push(fn); else fn(); };
   (() => {
-    if (!root.classList.contains('intro')) return;
+    if (!introOn) return;
     const SKIP = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
     const end = () => {
+      if (!introOn) return;
       clearTimeout(window.__introSafety); clearTimeout(t);
-      root.classList.remove('intro');
+      root.classList.remove('intro'); introOn = false;
       SKIP.forEach((e) => window.removeEventListener(e, end, true));
+      introWait.splice(0).forEach((fn) => fn());
     };
     const t = setTimeout(end, CONFIG.introMs);
     SKIP.forEach((e) => window.addEventListener(e, end, { capture: true, passive: true }));
@@ -111,7 +117,6 @@
 
   /* ---------- Видео: источник webm/mp4, автоплей только в кадре, кнопка «пауза» (WCAG 2.2.2) ---------- */
   const canWebm = (() => { const v = document.createElement('video'); return !!v.canPlayType && v.canPlayType('video/webm; codecs="vp9"') !== ''; })();
-  const safePlay = (v) => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
   function setSources(v, base) {
     v.replaceChildren();
     if (canWebm) { const s = document.createElement('source'); s.src = `${base}.webm`; s.type = 'video/webm; codecs="vp9"'; v.append(s); }
@@ -128,11 +133,20 @@
       toggle.setAttribute('aria-label', `${userPaused ? 'Включить' : 'Остановить'} ${label}`);
     };
     const load = () => { const b = baseOf(); if (b && b !== base) { base = b; setSources(v, b); } };
-    let ready = !opts.afterLoad || document.readyState === 'complete';   // ролик входа — после загрузки страницы, чтобы не спорить с постером (LCP)
-    if (!ready) window.addEventListener('load', () => { ready = true; sync(); }, { once: true });
-    const sync = () => {
-      if (inView && !userPaused && !document.hidden && ready) { load(); safePlay(v); } else if (!v.paused) v.pause();
+    let ready = !opts.afterLoad;
+    // браузер запретил автоплей (iOS «Энергосбережение», экономия трафика): показать ▶ — одно касание запустит ролик
+    const play = () => {
+      const pr = v.play();
+      if (pr && pr.catch) pr.catch((e) => { if (e && e.name === 'NotAllowedError') { userPaused = true; setUI(); } });
     };
+    const sync = () => {
+      if (inView && !userPaused && !document.hidden && ready) { load(); play(); } else if (!v.paused) v.pause();
+    };
+    // ролик входа — после загрузки страницы (не спорит с постером-LCP) и после занавеса
+    if (!ready) {
+      const loaded = () => introDone(() => { ready = true; sync(); });
+      if (document.readyState === 'complete') loaded(); else window.addEventListener('load', loaded, { once: true });
+    }
     v.addEventListener('playing', () => v.classList.add('is-on'));
     if (toggle) {
       toggle.hidden = false; setUI();
@@ -143,18 +157,30 @@
     document.addEventListener('visibilitychange', sync);
     return { reload() { if (base) { base = ''; sync(); } } };
   }
+  // постеры роликов ниже входа — только на подходе к экрану: первый кадр входа (LCP) грузится без соперников.
   // reduced motion — только постеры (у ELUNA — раскрытые слои), ролики не грузим и кнопки не показываем
+  const posterOf = (v) => (reduceMotion && v.dataset.still) || v.dataset.poster;
+  const setPoster = (v) => { const p = posterOf(v); if (p && v.getAttribute('poster') !== p) v.poster = p; };
+  const lazyPosters = $$('video[data-poster]');
+  const watchPosters = () => {
+    if (!hasIO) { lazyPosters.forEach(setPoster); return; }
+    const pio = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { pio.unobserve(e.target); setPoster(e.target); } }), { rootMargin: '50% 0px' });
+    lazyPosters.forEach((v) => pio.observe(v));
+  };
+  if (document.readyState === 'complete') watchPosters(); else window.addEventListener('load', watchPosters, { once: true });
   if (!reduceMotion) {
     const heroMQ = window.matchMedia('(min-width: 900px) and (min-aspect-ratio: 4/5)');
     const heroV = autoVideo($('.hero__video'), $('.hero__toggle'), () => `video/hero-${heroMQ.matches ? 'desktop' : 'mobile'}`, { target: $('.hero'), threshold: 0.05, afterLoad: true });
     if (heroV) heroMQ.addEventListener('change', () => { $('.hero__video').classList.remove('is-on'); heroV.reload(); });
-    $$('[data-autovideo]').forEach((box) => { const v = $('video', box); autoVideo(v, $('[data-vtoggle]', box), () => v.dataset.src, { target: box }); });
-  } else {
-    $$('video[data-still]').forEach((v) => { v.poster = v.dataset.still; });
+    // телефон — свои лёгкие версии роликов (data-src-phone), тот же порог, что у шапки и плашки
+    $$('[data-autovideo]').forEach((box) => {
+      const v = $('video', box);
+      const ctl = autoVideo(v, $('[data-vtoggle]', box), () => (mqPhone.matches && v.dataset.srcPhone) || v.dataset.src, { target: box });
+      if (ctl && v.dataset.srcPhone) mqPhone.addEventListener('change', () => ctl.reload());
+    });
   }
 
-  /* ---------- Появления при прокрутке (не на первом экране); «Новинка» — после того как слово напишется ---------- */
-  const novParts = $$('.nov .rv');
+  /* ---------- Появления при прокрутке (не на первом экране) ---------- */
   const pre = (el) => el.classList.add('is-pre');
   const show = (el, delay = 0) => { el.style.transitionDelay = delay ? `${delay}ms` : ''; el.classList.remove('is-pre'); };
   if (hasIO && !reduceMotion) {
@@ -162,36 +188,42 @@
     const io = new IntersectionObserver((es) => {
       es.filter((e) => e.isIntersecting).forEach((e, i) => { io.unobserve(e.target); show(e.target, i * 90); });
     }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
-    $$('.rv').forEach((el) => {
-      if (novParts.includes(el)) { pre(el); return; }
-      if (el.getBoundingClientRect().top > vh) { pre(el); io.observe(el); }
-    });
+    $$('.rv').forEach((el) => { if (el.getBoundingClientRect().top > vh) { pre(el); io.observe(el); } });
   }
 
-  /* ---------- «Новинка»: слово пишется по буквам, потом — ELUNA, ролик, строка, ссылка ---------- */
+  /* ---------- «Новинка»: слово пишется по буквам, когда панель поднялась до середины экрана (≈ 0,7 с; панель
+     в это время держится — css .nov). ELUNA, ролик, строка и ссылка появляются сами, не ждут курсора.
+     Ушло слово с экрана раньше — дописываем сразу. ---------- */
   (() => {
-    const live = $('.type__live'), wordEl = $('.nov__word');
-    if (!live || !wordEl) return;
+    const live = $('.type__live'), wordEl = $('.nov__word'), sec = $('.nov');
+    if (!live || !wordEl || !sec) return;
     const WORD = 'Новинка';
-    const rest = () => novParts.forEach((el, i) => show(el, [0, 180, 420, 520][i] || i * 150));
-    if (reduceMotion || !hasIO) { live.textContent = WORD; novParts.forEach((el) => show(el)); return; }
-    let started = false;
+    if (reduceMotion || !hasIO) { live.textContent = WORD; return; }
+    let started = false, done = false, timer = 0, caret = null;
+    const finish = () => {
+      if (done) return; done = true; clearTimeout(timer);
+      live.textContent = WORD;
+      if (caret) { live.append(caret); caret.classList.add('is-done'); }
+    };
     const type = () => {
       if (started) return; started = true;
-      const caret = document.createElement('span'); caret.className = 'type__caret';
+      caret = document.createElement('span'); caret.className = 'type__caret';
       live.append(caret);
       let i = 0;
       const step = () => {
+        if (done) return;
         if (i < WORD.length) {
           const s = document.createElement('span'); s.textContent = WORD[i++];
           live.insertBefore(s, caret);
-          setTimeout(step, 120);
-        } else { caret.classList.add('is-done'); setTimeout(rest, 160); }
+          timer = setTimeout(step, 75);
+        } else { done = true; caret.classList.add('is-done'); }
       };
-      setTimeout(step, 260);
+      timer = setTimeout(step, 180);
     };
-    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); type(); } }, { threshold: 1, rootMargin: '0px 0px -18% 0px' });
-    io.observe(wordEl);
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); type(); } }, { threshold: 0, rootMargin: '0px 0px -45% 0px' });
+    io.observe(sec);
+    const out = new IntersectionObserver((es) => { if (started && !es[es.length - 1].isIntersecting) { out.disconnect(); finish(); } });
+    out.observe(wordEl);
   })();
 
   /* ---------- Окна: показ/скрытие с анимацией, блокировка прокрутки, возврат фокуса ---------- */
@@ -262,7 +294,8 @@
         const c = CATS[r.cat];
         if (!c || c.href) { R.replace('#catalog'); View.close(false); }
         else View.open(c.view === 'fabrics' ? { type: 'fabrics' } : { type: 'cat', cat: r.cat, sub: r.sub });
-      } else if (r.works) View.open({ type: 'works' });
+      } else if (r.works && WORKS.length) View.open({ type: 'works' });
+      else if (r.works) { R.replace('#catalog'); View.close(false); }
       else if (r.item && initial && ITEM.has(r.item)) {
         // вход по ссылке на изделие: под окном — его категория, чтобы «Закрыть» вело к остальным моделям
         const it = ITEM.get(r.item);
@@ -285,17 +318,23 @@
     const back = $('[data-view-back]'), wa = $('[data-view-wa]'), waLabel = $('[data-view-wa-label]');
     let key = null, spec = null;
     const mark = '<span class="mark" aria-hidden="true">RICCA DESIGNS</span>';
-    function modelHTML(it) {
-      const p = it.photos[0], z = fitZoom(p, 0.8, 0.72), st = [];
+    // широкий предметный кадр (диван, кровать, стол на 4 : 3) — в сетке широкой рамки 5 : 4, а не узкой 4 : 5 с крошечным предметом
+    const isWide = (it) => { const p = it.photos[0]; return !!p.studio && (p.w || 0) > (p.h || 0); };
+    // увеличенный кадр (--z) просит файл крупнее: sizes умножаем на масштаб, иначе 600 px растянутся и поплывут
+    const sizesFor = ([d, t, m], z) => `(min-width: 1200px) ${Math.round(d * z)}vw, (min-width: 768px) ${Math.round(t * z)}vw, ${Math.round(m * z)}vw`;
+    function modelHTML(it, wide) {
+      const p = it.photos[0], z = wide ? fitZoom(p, 1.25, 0.88) : fitZoom(p, 0.8, 0.72), st = [];
       if (z !== 1) st.push(`--z:${z.toFixed(3)}`);
-      if (p.pos) st.push(`object-position:${p.pos}`);
+      if (p.pos) st.push(`object-position:${p.pos}`, `transform-origin:${p.pos}`);   // увеличение — к предмету, а не к центру фото
       const set = srcsetOf(p);
-      return `<li data-tags="${esc((it.tags || []).join(' '))}"><button class="model" type="button" data-item="${esc(it.id)}" aria-haspopup="dialog">`
-        + `<span class="model__img${p.studio ? ' is-studio' : ''}"><img src="${esc(p.src600 || p.src)}"${set ? ` srcset="${esc(set)}" sizes="(min-width: 1200px) 22vw, (min-width: 768px) 30vw, 46vw"` : ''} width="${p.w || 1200}" height="${p.h || 1500}" alt="" loading="lazy" decoding="async"${st.length ? ` style="${st.join(';')}"` : ''}>${mark}</span>`
-        + `<span class="model__name">${typo(shortOf(it))}</span></button></li>`;
+      return `<li data-tags="${esc((it.tags || []).join(' '))}"><button class="model" type="button" data-item="${esc(it.id)}" aria-haspopup="dialog" aria-label="${esc(`${labelOf(it)}${it.subtitle ? `, ${lcFirst(it.subtitle).replace(/ · /g, ', ')}` : ''}`)}">`
+        + `<span class="model__img${p.studio ? ' is-studio' : ''}"><img src="${esc(p.src600 || p.src)}"${set ? ` srcset="${esc(set)}" sizes="${sizesFor(wide ? [30, 30, 46] : [22, 30, 46], z)}"` : ''} width="${p.w || 1200}" height="${p.h || 1500}" alt="" loading="lazy" decoding="async"${st.length ? ` style="${st.join(';')}"` : ''}>${mark}</span>`
+        + `<span class="model__name" aria-hidden="true">${typo(shortOf(it))}</span></button></li>`;
     }
     function renderCat(cat) {
       const list = ITEMS.filter((i) => i.category === cat);
+      const tall = list.filter((i) => !isWide(i)), wide = list.filter(isWide);
+      const w4 = wide.length % 3 !== 0 && wide.length % 4 === 0;   // 8 или 4 широких — ровно по 4 в ряд, иначе по 3
       title.textContent = catLabel(cat);
       nEl.textContent = `${list.length} ${plural3(list.length, ['модель', 'модели', 'моделей'])}`;
       back.textContent = 'Каталог';
@@ -303,7 +342,8 @@
       const keys = tg ? Object.keys(tg).filter((k) => list.some((i) => (i.tags || []).includes(k))) : [];
       tabs.innerHTML = keys.length > 1 ? [['all', 'Все']].concat(keys.map((k) => [k, tg[k]])).map(([k, l]) => `<button type="button" data-sub="${esc(k)}" aria-pressed="false">${esc(l)}</button>`).join('') : '';
       tabs.hidden = keys.length < 2;
-      content.innerHTML = `<ul class="models" role="list">${list.map(modelHTML).join('')}</ul>`;
+      content.innerHTML = (tall.length ? `<ul class="models" role="list">${tall.map((it) => modelHTML(it, false)).join('')}</ul>` : '')
+        + (wide.length ? `<ul class="models models--wide${w4 ? ' models--w4' : ''}" role="list">${wide.map((it) => modelHTML(it, true)).join('')}</ul>` : '');
       wa.href = waUrl(CONFIG.msg[cat] || CONFIG.msg.general);
       waLabel.innerHTML = 'Обсудить в&nbsp;WhatsApp';
     }
@@ -334,6 +374,7 @@
       else if (!btns.some((b) => b.dataset.sub === sub)) sub = 'all';
       btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.sub === sub)));
       $$('.models > li', content).forEach((li) => { li.classList.toggle('is-out', sub !== 'all' && !li.dataset.tags.split(' ').includes(sub)); });
+      $$('.models', content).forEach((ul) => { ul.hidden = !ul.querySelector('li:not(.is-out)'); });
       if (spec) spec.sub = sub;
       return sub;
     }
@@ -368,7 +409,7 @@
   /* ---------- Окно изделия: все фото (свайп, стрелки, миниатюры, ←/→), одна строка, WhatsApp, «В подборку» ---------- */
   const PD = (() => {
     const dlg = $('#product');
-    const stage = $('[data-pd-stage]', dlg), frame = $('[data-pd-frame]', dlg), img = $('[data-pd-img]', dlg);
+    const stage = $('[data-pd-stage]', dlg), frame = $('[data-pd-frame]', dlg), img = $('[data-pd-img]', dlg), gallery = $('.pd__gallery', dlg);
     const prev = $('[data-pd-prev]', dlg), next = $('[data-pd-next]', dlg), count = $('[data-pd-count]', dlg), thumbsBox = $('[data-pd-thumbs]', dlg);
     const catEl = $('[data-pd-cat]', dlg), title = $('[data-pd-title]', dlg), sub = $('[data-pd-sub]', dlg);
     const desc = $('[data-pd-desc]', dlg), chips = $('[data-pd-chips]', dlg), passport = $('[data-pd-passport]', dlg), more = $('[data-pd-more]', dlg);
@@ -385,6 +426,7 @@
       frame.style.width = `${Math.round((p.w || 1200) * k)}px`;
       frame.style.height = `${Math.round((p.h || 1500) * k)}px`;
       frame.classList.toggle('is-studio', !!p.studio);
+      gallery.classList.toggle('is-studio', !!p.studio);   // предметный кадр — на одном тоне с панелью, без «коробки в коробке»
       if (p.studio) img.style.setProperty('--z', fitZoom(p, p.w / p.h, 0.86).toFixed(3)); else img.style.removeProperty('--z');
     }
     function show(i) {
@@ -411,8 +453,7 @@
     }
     function fill(it) {
       cur = it;
-      const tg = CATS[it.category] && CATS[it.category].tags ? (it.tags || []).map((k) => CATS[it.category].tags[k]).filter(Boolean) : [];
-      catEl.textContent = [catLabel(it.category)].concat(tg.slice(0, 1)).join(' · ');
+      catEl.textContent = catLabel(it.category);   // тип (прямой, угловой…) — в строке под названием, не дублируем
       title.innerHTML = typo(it.name);
       sub.innerHTML = it.subtitle ? typo(it.subtitle) : ''; sub.hidden = !it.subtitle;
       desc.innerHTML = typo(it.description || ''); desc.hidden = !it.description;
@@ -581,7 +622,7 @@
     function remove(id) { items = items.filter((x) => x.id !== id); store.set(KEY, items); render(); }
     function toggle(x) {
       if (has(x.id)) { remove(x.id); say('Убрано из подборки', false); return; }
-      if (items.length >= 12) { say('В подборке не больше 12 позиций', true); return; }
+      if (items.length >= 12) { say('Максимум 12 моделей', true); return; }
       items.push(x); store.set(KEY, items); render();
       say('Добавлено в подборку', true);
     }
@@ -644,6 +685,7 @@
 
   /* ---------- Шапка: прозрачная над видео, прячется при прокрутке вниз; липкая плашка (телефон) ---------- */
   const hdr = $('#hdr'), hero = $('.hero'), bar = $('#mbar'), showroom = $('#showroom');
+  const darkZones = $$('.nov, .foot');
   let lastY = window.scrollY, raf = 0;
   function updateBar() {
     if (!bar) return;
@@ -662,6 +704,10 @@
       const y = window.scrollY, heroH = hero.offsetHeight;
       const over = y < heroH - hdr.offsetHeight;
       hdr.classList.toggle('is-over', over);
+      // над чёрной «Новинкой» и подвалом шапка тоже чёрная — без белой полосы поперёк панели: чёрная, как только панель
+      // зашла под шапку (а не с середины шапки — иначе на 30 px прокрутки белая полоса висит над чёрным)
+      const hh = hdr.offsetHeight, mid = hh / 2;
+      hdr.classList.toggle('is-dark', !over && darkZones.some((el) => { const r = el.getBoundingClientRect(); return r.top <= hh && r.bottom > mid; }));
       if (over || y < lastY - 6) hdr.classList.remove('is-hidden');
       else if (y > lastY + 6 && y > heroH && !hdr.contains(document.activeElement)) hdr.classList.add('is-hidden');
       lastY = y;

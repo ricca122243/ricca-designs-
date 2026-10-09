@@ -30,9 +30,9 @@
 <link rel="stylesheet" href="css/fonts-v3.css">
 <link rel="stylesheet" href="css/site.css">
 <script>
-/* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,4 с). Не играем: повторный визит в этой сессии,
+/* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,6 с). Не играем: повторный визит в этой сессии,
    prefers-reduced-motion, вход по ссылке с #якорем (Instagram → #catalog/sofas), недоступный sessionStorage.
-   Страховка — снять класс через 2,4 с, даже если скрипт сайта не загрузился. */
+   Страховка — снять класс через 2,6 с, даже если скрипт сайта не загрузился. */
 (function (d) {
   var h = d.documentElement, play = false;
   h.classList.replace('no-js', 'js');
@@ -45,7 +45,7 @@
   } catch (e) { play = false; }
   if (play) {
     h.classList.add('intro');
-    window.__introSafety = setTimeout(function () { h.classList.remove('intro'); }, 2400);
+    window.__introSafety = setTimeout(function () { h.classList.remove('intro'); }, 2600);
   }
 })(document);
 </script>
@@ -74,8 +74,11 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z"/></symbol>
 </svg>
 
-<!-- Вход: белый «занавес» с тонким словом RICCA поднимается и открывает видео (только с классом .intro, один раз за сессию) -->
-<div class="curtain" aria-hidden="true"><span class="curtain__word">RICCA</span></div>
+<!-- Вход: белый «занавес» — монограмма RD | RICCA проявляется и уходит вверх вместе с ним, открывая видео (только с классом .intro, один раз за сессию) -->
+<div class="curtain" aria-hidden="true"><span class="curtain__lock">
+  <svg class="logo__mono" viewBox="0 0 521.1 256.9"><use href="#rd-mono"/></svg><span class="logo__rule"></span>
+  <span class="logo__text"><span class="logo__name">RICCA</span><span class="logo__sub">DESIGNS&nbsp;•&nbsp;ALMATY</span></span>
+</span></div>
 
 <!-- ═════════ Шапка: прозрачная над видео, белая после него. Ссылки [data-wa] и [data-tel] переписывает js/site.js (CONFIG). ═════════ -->
 <header class="hdr is-over" id="hdr">
@@ -87,7 +90,7 @@
     </a>
     <nav class="hdr__nav" aria-label="Разделы">
       <a href="#catalog">Каталог</a>
-      <a href="#works">Работы</a>
+      <a href="#works" data-works-link hidden>Работы</a>
       <a href="#showroom">Шоурум</a>
       <a href="https://wa.me/77084802047" data-wa="general">WhatsApp</a>
     </nav>
@@ -109,14 +112,14 @@
 <section class="hero" id="top">
   <div class="hero__media" aria-hidden="true">
     <picture>
-      <source media="(min-width: 900px) and (min-aspect-ratio: 4/5)" srcset="video/hero-desktop-poster.webp" width="1600" height="900">
+      <source media="(min-width: 900px) and (min-aspect-ratio: 4/5)" srcset="video/hero-desktop-poster.webp" width="1920" height="1080">
       <img class="hero__poster" src="video/hero-mobile-poster.webp" width="720" height="1280" alt="" fetchpriority="high" decoding="async">
     </picture>
     <video class="hero__video" muted playsinline loop preload="none" disablepictureinpicture tabindex="-1"></video>
   </div>
   <div class="hero__shade" aria-hidden="true"></div>
   <div class="wrap hero__foot">
-    <h1 class="hero__line"><span class="sr-only">RICCA DESIGNS&nbsp;— </span>Мебель на&nbsp;заказ <span aria-hidden="true">·</span><span class="sr-only">,</span> Алматы</h1>
+    <h1 class="hero__line"><span class="sr-only">RICCA DESIGNS&nbsp;— </span>Мебель на&nbsp;заказ&nbsp;<span aria-hidden="true">·</span><span class="sr-only">,</span> Алматы</h1>
     <a class="hero__cue" href="#novinka"><span class="hero__cue-line" aria-hidden="true"></span><span class="sr-only">Листать дальше</span></a>
     <button class="vbtn hero__toggle" type="button" data-vtoggle aria-pressed="false" aria-label="Остановить видео" hidden>
       <svg class="ico ico--pause" aria-hidden="true"><use href="#i-pause"/></svg><svg class="ico ico--play" aria-hidden="true"><use href="#i-play"/></svg>
@@ -124,26 +127,28 @@
   </div>
 </section>
 
-<!-- ═════════ 2. НОВИНКА: матрас ELUNA как новость. Слово «Новинка» пишется по буквам, когда панель входит в экран. ═════════ -->
+<!-- ═════════ 2. НОВИНКА: матрас ELUNA как новость. Панель — один экран; она держится полэкрана прокрутки, пока слово
+     «Новинка» пишется по буквам. Пауза ролика — в правом нижнем углу панели, как у входа. ═════════ -->
 <section class="nov" id="novinka" aria-labelledby="nov-title">
-  <div class="wrap nov__in">
+  <div class="wrap nov__in" data-autovideo>
     <h2 class="nov__word" id="nov-title"><span class="sr-only">Новинка</span><span class="type" aria-hidden="true"><span class="type__ghost">Новинка</span><span class="type__live"></span></span></h2>
     <p class="nov__brand rv">Матрасы ELUNA</p>
-    <div class="nov__media rv" data-autovideo>
+    <div class="nov__media rv">
       <a class="nov__link" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
-        <video class="nov__video" muted playsinline loop preload="none" poster="video/eluna-poster.webp" width="1280" height="720" data-src="video/eluna-loop" data-still="video/eluna-poster-open.webp" disablepictureinpicture></video>
+        <video class="nov__video" muted playsinline loop preload="none" data-poster="video/eluna-poster.webp" width="1280" height="720" data-src="video/eluna-loop" data-src-phone="video/eluna-loop-phone" data-still="video/eluna-poster-open.webp" disablepictureinpicture></video>
       </a>
-      <button class="vbtn vbtn--corner" type="button" data-vtoggle aria-pressed="false" aria-label="Остановить видео ELUNA" hidden>
-        <svg class="ico ico--pause" aria-hidden="true"><use href="#i-pause"/></svg><svg class="ico ico--play" aria-hidden="true"><use href="#i-play"/></svg>
-      </button>
     </div>
     <p class="nov__line rv">Собраны слой за&nbsp;слоем.</p>
     <a class="caps-link nov__go rv" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">Смотреть<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> сайт ELUNA (откроется в&nbsp;новой вкладке)</span></a>
+    <button class="vbtn nov__toggle" type="button" data-vtoggle aria-pressed="false" aria-label="Остановить видео ELUNA" hidden>
+      <svg class="ico ico--pause" aria-hidden="true"><use href="#i-pause"/></svg><svg class="ico ico--play" aria-hidden="true"><use href="#i-play"/></svg>
+    </button>
   </div>
 </section>
 
 <!-- ═════════ 3. КАТАЛОГ: только плитки категорий — по одному фото. Нажали плитку — экран категории (#catalog/sofas):
-     все модели сразу, по одному фото; нажали модель — окно изделия со всеми фото. Числа на плитках пересчитывает js/site.js. ═════════ -->
+     все модели сразу, по одному фото; нажали модель — окно изделия со всеми фото. Ряд 1 — фото в интерьере, ряд 2 — предметы
+     на светлом фоне (одна подача в ряду; на телефоне — пары). Без чисел на плитках. ═════════ -->
 <section class="sec cat" id="catalog" aria-labelledby="cat-title">
   <div class="wrap">
     <header class="shead rv">
@@ -153,84 +158,62 @@
     <ul class="tiles" role="list">
       <li class="rv"><a class="tile" href="#catalog/sofas" data-cat="sofas">
         <span class="tile__img"><img src="img/catalog/cover-sofas-600.webp" srcset="img/catalog/cover-sofas-600.webp 600w, img/catalog/cover-sofas.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Диваны</span><span class="tile__n"><span data-count="sofas">23</span><span class="sr-only"> моделей</span></span></span>
+        <span class="tile__cap"><span class="tile__name">Диваны</span></span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/beds" data-cat="beds">
         <span class="tile__img"><img src="img/catalog/cover-beds-600.webp" srcset="img/catalog/cover-beds-600.webp 600w, img/catalog/cover-beds.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Кровати</span><span class="tile__n"><span data-count="beds">23</span><span class="sr-only"> модели</span></span></span>
+        <span class="tile__cap"><span class="tile__name">Кровати</span></span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/armchairs" data-cat="armchairs">
         <span class="tile__img"><img src="img/catalog/cover-armchairs-600.webp" srcset="img/catalog/cover-armchairs-600.webp 600w, img/catalog/cover-armchairs.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Кресла и&nbsp;пуфы</span><span class="tile__n"><span data-count="armchairs">11</span><span class="sr-only"> моделей</span></span></span>
-      </a></li>
-      <li class="rv"><a class="tile" href="#catalog/chairs" data-cat="chairs">
-        <span class="tile__img is-studio"><img src="img/catalog/cover-chairs-600.webp" srcset="img/catalog/cover-chairs-600.webp 600w, img/catalog/cover-chairs.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Стулья</span><span class="tile__n"><span data-count="chairs">8</span><span class="sr-only"> моделей</span></span></span>
-      </a></li>
-      <li class="rv"><a class="tile" href="#catalog/tables" data-cat="tables">
-        <span class="tile__img is-studio"><img src="img/catalog/cover-tables-600.webp" srcset="img/catalog/cover-tables-600.webp 600w, img/catalog/cover-tables.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Столы</span><span class="tile__n"><span data-count="tables">4</span><span class="sr-only"> модели</span></span></span>
-      </a></li>
-      <li class="rv"><a class="tile" href="#catalog/storage" data-cat="storage">
-        <span class="tile__img is-studio"><img src="img/catalog/cover-storage-600.webp" srcset="img/catalog/cover-storage-600.webp 600w, img/catalog/cover-storage.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Хранение</span><span class="tile__n"><span data-count="storage">3</span><span class="sr-only"> модели</span></span></span>
-      </a></li>
-      <li class="rv"><a class="tile tile--ext" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">
-        <span class="tile__img is-noir"><img src="img/catalog/cover-mattresses-600.webp" srcset="img/catalog/cover-mattresses-600.webp 600w, img/catalog/cover-mattresses.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"></span>
-        <span class="tile__cap"><span class="tile__name">Матрасы ELUNA</span><span class="tile__n"><svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — сайт ELUNA, откроется в&nbsp;новой вкладке</span></span></span>
+        <span class="tile__cap"><span class="tile__name">Кресла и&nbsp;пуфы</span></span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/fabrics" data-cat="fabrics">
         <span class="tile__img"><img src="img/catalog/cover-fabrics-600.webp" srcset="img/catalog/cover-fabrics-600.webp 600w, img/catalog/cover-fabrics.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Ткани</span><span class="tile__n"><span data-count="fabrics">16</span><span class="sr-only"> образцов</span></span></span>
+        <span class="tile__cap"><span class="tile__name">Ткани</span></span>
+      </a></li>
+      <li class="rv"><a class="tile" href="#catalog/chairs" data-cat="chairs">
+        <span class="tile__img is-studio"><img src="img/catalog/cover-chairs-600.webp" srcset="img/catalog/cover-chairs-600.webp 600w, img/catalog/cover-chairs.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
+        <span class="tile__cap"><span class="tile__name">Стулья</span></span>
+      </a></li>
+      <li class="rv"><a class="tile" href="#catalog/tables" data-cat="tables">
+        <span class="tile__img is-studio"><img src="img/catalog/cover-tables-600.webp" srcset="img/catalog/cover-tables-600.webp 600w, img/catalog/cover-tables.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
+        <span class="tile__cap"><span class="tile__name">Столы</span></span>
+      </a></li>
+      <li class="rv"><a class="tile" href="#catalog/storage" data-cat="storage">
+        <span class="tile__img is-studio"><img src="img/catalog/cover-storage-600.webp" srcset="img/catalog/cover-storage-600.webp 600w, img/catalog/cover-storage.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
+        <span class="tile__cap"><span class="tile__name">Хранение</span></span>
+      </a></li>
+      <li class="rv"><a class="tile tile--ext" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">
+        <span class="tile__img is-studio"><img src="img/catalog/cover-mattresses-600.webp" srcset="img/catalog/cover-mattresses-600.webp 600w, img/catalog/cover-mattresses.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"></span>
+        <span class="tile__cap"><span class="tile__name">Матрасы ELUNA</span><svg class="ico tile__ext" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — сайт ELUNA, откроется в&nbsp;новой вкладке</span></span>
       </a></li>
     </ul>
   </div>
 </section>
 
-<!-- ═════════ 4. НАШИ РАБОТЫ: три больших кадра с воздухом (телефон — свайп), «Все работы» — полноэкранная галерея (#works/all).
-     data-work — номер кадра в RICCA_WORKS (js/catalog-data.js), с нуля. ═════════ -->
-<section class="sec works" id="works" aria-labelledby="works-title">
+<!-- ═════════ 4. НАШИ РАБОТЫ: только настоящие фото работ RICCA (RICCA_WORKS в js/catalog-data.js). Пока заказчик их не подтвердил,
+     список пуст — js/site.js убирает раздел и пункты меню. Есть кадры — три большие рамки (телефон — свайп) и «Все работы» (#works/all). ═════════ -->
+<section class="sec works" id="works" aria-labelledby="works-title" hidden>
   <div class="wrap">
     <header class="shead rv">
       <h2 class="title" id="works-title">Наши работы</h2>
     </header>
-    <div class="works__row">
-      <figure class="frame frame--a rv">
-        <button class="frame__open" type="button" data-work="8" aria-label="Открыть фото: гостиная">
-          <img src="img/catalog/09-sofa-modular-sky-600.webp" srcset="img/catalog/09-sofa-modular-sky-600.webp 600w, img/catalog/09-sofa-modular-sky.webp 1024w" sizes="(min-width: 900px) 44vw, 80vw" width="1024" height="1280" alt="Модульный диван с полукруглыми секциями в голубом велюре в светлой гостиной с лепниной" loading="lazy" decoding="async">
-          <span class="mark" aria-hidden="true">RICCA DESIGNS</span>
-        </button>
-        <figcaption class="frame__cap">Гостиная</figcaption>
-      </figure>
-      <figure class="frame frame--b rv">
-        <button class="frame__open" type="button" data-work="2" aria-label="Открыть фото: спальня в терракоте">
-          <img src="img/catalog/47-bed-green-boucle-terracotta-600.webp" srcset="img/catalog/47-bed-green-boucle-terracotta-600.webp 600w, img/catalog/47-bed-green-boucle-terracotta.webp 896w" sizes="(min-width: 900px) 32vw, 80vw" width="896" height="1200" alt="Кровать Palinuro в зелёном букле на подиуме в спальне с терракотовыми стенами" loading="lazy" decoding="async">
-          <span class="mark" aria-hidden="true">RICCA DESIGNS</span>
-        </button>
-        <figcaption class="frame__cap">Спальня в&nbsp;терракоте</figcaption>
-      </figure>
-      <figure class="frame frame--c rv">
-        <button class="frame__open" type="button" data-work="1" aria-label="Открыть фото: гостиная с картиной">
-          <img src="img/catalog/15-sofa-houndstooth-bolsters-600.webp" srcset="img/catalog/15-sofa-houndstooth-bolsters-600.webp 600w, img/catalog/15-sofa-houndstooth-bolsters.webp 1024w" sizes="(min-width: 900px) 36vw, 80vw" width="1024" height="1280" alt="Изогнутый диван с валиками в ткани «гусиная лапка» под большой картиной" loading="lazy" decoding="async">
-          <span class="mark" aria-hidden="true">RICCA DESIGNS</span>
-        </button>
-        <figcaption class="frame__cap">Гостиная с&nbsp;картиной</figcaption>
-      </figure>
-    </div>
-    <p class="works__all rv"><a class="caps-link" href="#works/all">Все работы<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+    <div class="works__row" data-works-row></div>
+    <p class="works__all rv" hidden><a class="caps-link" href="#works/all">Все работы<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
   </div>
 </section>
 
-<!-- ═════════ 5. АТЕЛЬЕ: одна строка + небольшое видео производства в рамке (ролик 478 × 850 — только малым форматом) ═════════ -->
+<!-- ═════════ 5. АТЕЛЬЕ: одна строка + небольшое видео производства в рамке (ролик 478 × 850 — только малым форматом).
+     Петля начинается с пошива и бесшовно замыкается (кадр стола дизайнера вырезан), постер — готовый диван в шоуруме. ═════════ -->
 <section class="sec atelier" id="atelier" aria-labelledby="atelier-title">
   <div class="wrap atelier__in">
     <div class="atelier__text rv">
       <h2 class="title" id="atelier-title">Ателье</h2>
-      <p class="shead__line">Шьём и&nbsp;собираем сами&nbsp;— в&nbsp;Алматы.</p>
-      <p class="atelier__note">Станки SCM и&nbsp;Dürkopp Adler</p>
+      <p class="shead__line">Шьём сами&nbsp;— на&nbsp;станках SCM и&nbsp;Dürkopp&nbsp;Adler.</p>
     </div>
     <figure class="atelier__film rv" data-autovideo>
-      <video muted playsinline loop preload="none" poster="video/production-poster.webp" width="478" height="850" data-src="video/production" disablepictureinpicture aria-label="Видео: как мы делаем мебель — проект, раскрой, пошив, обивка и сборка"></video>
+      <video muted playsinline loop preload="none" data-poster="video/production-poster.webp" width="478" height="850" data-src="video/production" data-src-phone="video/production-phone" disablepictureinpicture aria-label="Видео: как мы делаем мебель — проект, раскрой, пошив, обивка и сборка"></video>
       <button class="vbtn vbtn--corner" type="button" data-vtoggle aria-pressed="false" aria-label="Остановить видео ателье" hidden>
         <svg class="ico ico--pause" aria-hidden="true"><use href="#i-pause"/></svg><svg class="ico ico--play" aria-hidden="true"><use href="#i-play"/></svg>
       </button>
@@ -238,17 +221,13 @@
   </div>
 </section>
 
-<!-- ═════════ 6. ШОУРУМ: одна строка, адрес, график, телефоны, WhatsApp, 2ГИС ═════════ -->
+<!-- ═════════ 6. ШОУРУМ: одна строка, адрес, график, WhatsApp и 2ГИС (телефоны — в подвале) ═════════ -->
 <section class="sec showroom" id="showroom" aria-labelledby="show-title">
   <div class="wrap showroom__in">
     <h2 class="title rv" id="show-title">Приходите в&nbsp;шоурум</h2>
     <div class="showroom__info rv">
-      <p class="showroom__addr"><a href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">г.&nbsp;Алматы, ул.&nbsp;Алишера Навои, 208/2<br>ЖК&nbsp;«Шахристан»<span class="sr-only"> (2ГИС, откроется в&nbsp;новой вкладке)</span></a></p>
+      <p class="showroom__addr"><a href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">г.&nbsp;Алматы, ул.&nbsp;Алишера Навои,&nbsp;208/2<br>ЖК&nbsp;«Шахристан»<span class="sr-only"> (2ГИС, откроется в&nbsp;новой вкладке)</span></a></p>
       <p class="showroom__hours">Пн–Вс <span class="nowrap">10:00–20:00</span></p>
-      <ul class="showroom__tel" role="list">
-        <li><a href="tel:+77084802047" data-tel="main">+7&nbsp;(708)&nbsp;480-20-47</a> <span>WhatsApp</span></li>
-        <li><a href="tel:+77079550808" data-tel="orders">+7&nbsp;(707)&nbsp;955-08-08</a> <span>Отдел заказов</span></li>
-      </ul>
       <div class="actions">
         <a class="btn btn--fill" href="https://wa.me/77084802047" data-wa="showroom"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Написать в&nbsp;WhatsApp</a>
         <a class="btn btn--line" href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">Маршрут в&nbsp;2ГИС<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a>
@@ -259,7 +238,8 @@
 
 </main>
 
-<!-- ═════════ 7. ПОДВАЛ: чёрный, по макету заказчика (refs/03–04), короче: «Для бизнеса», колонки, контакты ═════════ -->
+<!-- ═════════ 7. ПОДВАЛ: чёрный, по макету заказчика (refs/03–04), коротко: логотип, «Для бизнеса», контакты (основной — золотом),
+     одна тихая строка условий, © и иконки. Каталог и шоурум уже есть выше — колонок ссылок нет. ═════════ -->
 <footer class="foot" id="contacts">
   <div class="wrap">
     <div class="foot__top">
@@ -268,38 +248,16 @@
         <span class="logo__rule" aria-hidden="true"></span>
         <span class="logo__text" aria-hidden="true"><span class="logo__name">RICCA</span><span class="logo__sub">DESIGNS&nbsp;•&nbsp;ALMATY</span></span>
       </a>
-      <p class="foot__biz" id="business"><span class="foot__h foot__h--inline">Для бизнеса</span> Отели, рестораны, жилые проекты&nbsp;— <a href="https://wa.me/77084802047" data-wa="business">обсудить проект</a></p>
+      <p class="foot__biz" id="business"><span class="foot__h foot__h--inline">Для бизнеса</span> <a href="https://wa.me/77084802047" data-wa="business">Обсудить проект</a></p>
     </div>
-    <div class="foot__cols">
-      <nav class="foot__col" aria-labelledby="f-cat">
-        <h2 class="foot__h" id="f-cat">Каталог</h2>
-        <ul role="list">
-          <li><a href="#catalog/sofas">Мягкая мебель</a></li>
-          <li><a href="#catalog/beds">Дизайнерские кровати</a></li>
-          <li><a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">Ортопедические <span class="nowrap">матрасы<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg></span><span class="sr-only"> — сайт ELUNA, откроется в&nbsp;новой вкладке</span></a></li>
-          <li><a href="#catalog/tables">Столы и&nbsp;консоли</a></li>
-          <li><a href="#catalog/armchairs">Кресла для отдыха</a></li>
-          <li><a href="#catalog/fabrics">Палитра тканей</a></li>
-        </ul>
-      </nav>
-      <nav class="foot__col" aria-labelledby="f-buy">
-        <h2 class="foot__h" id="f-buy">Покупателям</h2>
-        <ul role="list">
-          <li><a href="#showroom">Шоурум в&nbsp;Алматы</a></li>
-          <li>Доставка по&nbsp;РК</li>
-          <li>Гарантия 3&nbsp;года</li>
-          <li><a href="https://wa.me/77084802047" data-wa="master">Написать мастеру</a></li>
-          <li><a href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">Отзывы <span class="nowrap">2ГИС<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg></span><span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
-        </ul>
-      </nav>
-      <div class="foot__col foot__contacts">
-        <h2 class="foot__h">Контакты</h2>
-        <dl>
-          <dt>Основной / WhatsApp</dt><dd class="foot__gold"><a href="tel:+77084802047" data-tel="main">+7&nbsp;(708)&nbsp;480-20-47</a></dd>
-          <dt>Отдел заказов</dt><dd><a href="tel:+77079550808" data-tel="orders">+7&nbsp;(707)&nbsp;955-08-08</a></dd>
-          <dt>Email</dt><dd><a href="mailto:hello@ricca-designs.kz">hello@ricca-designs.kz</a></dd>
-        </dl>
-      </div>
+    <div class="foot__contacts">
+      <h2 class="sr-only">Контакты</h2>
+      <dl>
+        <div><dt>Основной / WhatsApp</dt><dd class="foot__gold"><a href="tel:+77084802047" data-tel="main">+7&nbsp;(708)&nbsp;480-20-47</a></dd></div>
+        <div><dt>Отдел заказов</dt><dd><a href="tel:+77079550808" data-tel="orders">+7&nbsp;(707)&nbsp;955-08-08</a></dd></div>
+        <div><dt>Email</dt><dd><a href="mailto:hello@ricca-designs.kz">hello@ricca-designs.kz</a></dd></div>
+      </dl>
+      <p class="foot__note">Гарантия 3&nbsp;года · Доставка по&nbsp;Казахстану</p>
     </div>
     <div class="foot__bottom">
       <p class="foot__copy">© 2026 RICCA&nbsp;DESIGNS · Алматы</p>
@@ -329,7 +287,7 @@
   </div>
   <nav class="menu__list wrap" aria-label="Разделы">
     <a href="#catalog">Каталог</a>
-    <a href="#works">Наши работы</a>
+    <a href="#works" data-works-link hidden>Наши работы</a>
     <a href="#atelier">Ателье</a>
     <a href="#showroom">Шоурум</a>
     <a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">ELUNA<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — сайт матрасов, откроется в&nbsp;новой вкладке</span></a>
@@ -381,7 +339,7 @@
       <h2 class="pd__title" id="pd-title" data-pd-title tabindex="-1" autofocus></h2>
       <p class="pd__sub" data-pd-sub></p>
       <div class="pd__actions">
-        <a class="btn btn--fill" data-pd-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Узнать цену в&nbsp;WhatsApp</a>
+        <a class="btn btn--fill" data-pd-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span>Узнать цену<span class="pd__wa-tail"> в&nbsp;WhatsApp</span></span></a>
         <button class="btn btn--line" type="button" data-pd-sl aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg><span>В&nbsp;подборку</span></button>
       </div>
       <details class="pd__more" data-pd-more>
