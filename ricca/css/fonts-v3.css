@@ -25,7 +25,7 @@
 
    Пути в этом файле относительные к ricca/css/. Подключение из ricca/index.html:
      <link rel="stylesheet" href="css/fonts-v3.css">
-   (или @import url("fonts-v3.css") первой строкой в css/site-v3.css — пути те же).
+   (или @import url("fonts-v3.css") первой строкой в основной стилевой файл — пути те же).
 
    --------------------------------------------------------------------------
    ПРЕДЗАГРУЗКА — вставить в <head> ДО тега <link rel="stylesheet">.

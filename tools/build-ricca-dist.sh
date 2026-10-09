@@ -18,7 +18,11 @@ html_nocomments=$(sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$SRC/index.html")
 refs=$( (printf '%s' "$html_nocomments"; cat "$SRC/css/"*.css "$SRC/js/"*.js) \
          | grep -ohE '(img|video|fonts)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css)' | sed 's#^\.\./##' | sort -u)
 for ref in $refs; do
-  [ -f "$SRC/$ref" ] || { echo "нет файла: $ref"; exit 1; }
+  if [ ! -f "$SRC/$ref" ]; then
+    # Обложки проектов необязательны: скрипт сайта проверяет каждую и прячет отсутствующую целиком
+    case "$ref" in img/projects/*) echo "предупреждение: обложки пока нет, на сайте скрыта: $ref"; continue;; esac
+    echo "нет файла: $ref"; exit 1
+  fi
   mkdir -p "$OUT/$(dirname "$ref")"
   cp "$SRC/$ref" "$OUT/$ref"
 done
@@ -40,7 +44,7 @@ cp tools/dist-extra/robots.txt tools/dist-extra/.htaccess tools/dist-extra/_head
 # Проверка: все локальные ссылки существуют
 missing=0
 for ref in $( (sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$OUT"/index.html; cat "$OUT"/css/*.css) | grep -ohE '(img|video|fonts|css|js|vendor)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css|js)' | sed 's#^\.\./##' | sort -u); do
-  [ -f "$OUT/$ref" ] || { echo "нет файла: $ref"; missing=1; }
+  [ -f "$OUT/$ref" ] || case "$ref" in img/projects/*) ;; *) echo "нет файла: $ref"; missing=1;; esac
 done
 [ "$missing" -eq 0 ] || exit 1
 
