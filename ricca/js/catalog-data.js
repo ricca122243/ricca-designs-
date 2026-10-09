@@ -58,7 +58,14 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-sofa-dimaro-a.webp", "src600": "img/catalog/p-sofa-dimaro-a-600.webp", "alt": "Диван Dimaro, прямая сборка секций — на светлом фоне", "studio": true, "box": [0.743, 0.222], "w": 1200, "h": 900},
       {"src": "img/catalog/p-sofa-dimaro-c.webp", "src600": "img/catalog/p-sofa-dimaro-c-600.webp", "alt": "Диван Dimaro, длинная сборка секций — на светлом фоне", "studio": true, "box": [0.791, 0.193], "w": 1200, "h": 900},
       {"src": "img/catalog/p-sofa-dimaro-g.webp", "src600": "img/catalog/p-sofa-dimaro-g-600.webp", "alt": "Диван Dimaro с открытым краем — на светлом фоне", "studio": true, "box": [0.752, 0.203], "w": 1200, "h": 900},
-      {"src": "img/catalog/p-sofa-dimaro-d.webp", "src600": "img/catalog/p-sofa-dimaro-d-600.webp", "alt": "Диван Dimaro с шезлонгом — на светлом фоне", "studio": true, "box": [0.758, 0.187], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-sofa-dimaro-d.webp", "src600": "img/catalog/p-sofa-dimaro-d-600.webp", "alt": "Диван Dimaro с шезлонгом — на светлом фоне", "studio": true, "box": [0.758, 0.187], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-dimaro-a-2.webp", "src600": "img/catalog/p-sofa-dimaro-a-2-600.webp", "alt": "Диван Dimaro в фактурном букле, вид сбоку — на светлом фоне", "studio": true, "box": [0.397, 0.153], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-dimaro-b.webp", "src600": "img/catalog/p-sofa-dimaro-b-600.webp", "alt": "Диван Dimaro из трёх секций в терракотовой ткани — на светлом фоне", "studio": true, "box": [0.775, 0.179], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-dimaro-f.webp", "src600": "img/catalog/p-sofa-dimaro-f-600.webp", "alt": "Диван Dimaro: спинки по краям и низкая секция в центре — на светлом фоне", "studio": true, "box": [0.643, 0.163], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-dimaro-k.webp", "src600": "img/catalog/p-sofa-dimaro-k-600.webp", "alt": "Длинный диван Dimaro в бежевой ткани — на светлом фоне", "studio": true, "box": [0.705, 0.189], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-dimaro-m.webp", "src600": "img/catalog/p-sofa-dimaro-m-600.webp", "alt": "Диван Dimaro в пудрово-розовой ткани с низкой секцией между спинками — на светлом фоне", "studio": true, "box": [0.797, 0.161], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-dimaro-q.webp", "src600": "img/catalog/p-sofa-dimaro-q-600.webp", "alt": "Прямой диван Dimaro с низкими подлокотниками — на светлом фоне", "studio": true, "box": [0.652, 0.206], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-dimaro-r.webp", "src600": "img/catalog/p-sofa-dimaro-r-600.webp", "alt": "Диван Dimaro с открытым краем в шалфейной ткани — на светлом фоне", "studio": true, "box": [0.712, 0.214], "w": 1200, "h": 900}
     ],
     description: "Модульный диван из мягких секций: собирается прямым, угловым или с открытым краем — под вашу комнату.",
     options: ["Модульный", "Размер под комнату", "Ткань или кожа"],
@@ -84,7 +91,8 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/53-sofa-leather-sides-showroom.webp", "src600": "img/catalog/53-sofa-leather-sides-showroom-600.webp", "alt": "Диван Sarnico в светлой ткани с контрастными боковинами — живое фото", "w": 960, "h": 1280},
       {"src": "img/catalog/p-sofa-sarnico.webp", "src600": "img/catalog/p-sofa-sarnico-600.webp", "alt": "Диван Sarnico с контрастными боковинами — на светлом фоне", "studio": true, "box": [0.799, 0.292], "w": 1200, "h": 900},
       {"src": "img/catalog/p-sofa-sarnico-2.webp", "src600": "img/catalog/p-sofa-sarnico-2-600.webp", "alt": "Диван Sarnico с шезлонгом — на светлом фоне", "studio": true, "box": [0.753, 0.329], "w": 1200, "h": 900},
-      {"src": "img/catalog/p-sofa-sarnico-3.webp", "src600": "img/catalog/p-sofa-sarnico-3-600.webp", "alt": "Прямой диван Sarnico — на светлом фоне", "studio": true, "box": [0.658, 0.241], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-sofa-sarnico-3.webp", "src600": "img/catalog/p-sofa-sarnico-3-600.webp", "alt": "Прямой диван Sarnico — на светлом фоне", "studio": true, "box": [0.658, 0.241], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-sarnico-detail.webp", "src600": "img/catalog/p-sofa-sarnico-detail-600.webp", "alt": "Диван Sarnico крупным планом: глубокое сиденье, валик и контрастная боковина", "w": 760, "h": 950}
     ],
     description: "Глубокие округлые сиденья на деревянном цоколе, валики и боковины в контрастной обивке.",
     options: ["С шезлонгом или прямой", "Размер под комнату", "Ткань или кожа"],
@@ -135,7 +143,9 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/54-sofa-chaise-grey-showroom.webp", "src600": "img/catalog/54-sofa-chaise-grey-showroom-600.webp", "alt": "Диван Lana с шезлонгом в серой ткани на тонких опорах — живое фото", "w": 960, "h": 1280},
       {"src": "img/catalog/p-sofa-lana-2.webp", "src600": "img/catalog/p-sofa-lana-2-600.webp", "alt": "Диван Lana в разложенном виде — на светлом фоне", "studio": true, "box": [0.764, 0.659], "w": 1200, "h": 900},
       {"src": "img/catalog/p-sofa-lana-3.webp", "src600": "img/catalog/p-sofa-lana-3-600.webp", "alt": "Диван Lana с шезлонгом в оливковой ткани — на светлом фоне", "studio": true, "box": [0.791, 0.267], "w": 1200, "h": 900},
-      {"src": "img/catalog/p-sofa-lana-4.webp", "src600": "img/catalog/p-sofa-lana-4-600.webp", "alt": "Диван Lana с шезлонгом в разложенном виде — на светлом фоне", "studio": true, "box": [0.797, 0.483], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-sofa-lana-4.webp", "src600": "img/catalog/p-sofa-lana-4-600.webp", "alt": "Диван Lana с шезлонгом в разложенном виде — на светлом фоне", "studio": true, "box": [0.797, 0.483], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-lana-5.webp", "src600": "img/catalog/p-sofa-lana-5-600.webp", "alt": "Диван Lana с шезлонгом в светло-серой ткани — на светлом фоне", "studio": true, "box": [0.634, 0.234], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-lana-6.webp", "src600": "img/catalog/p-sofa-lana-6-600.webp", "alt": "Диван Lana в серой ткани, вид сбоку — на светлом фоне", "studio": true, "box": [0.353, 0.174], "w": 1200, "h": 900}
     ],
     description: "Строгие линии, широкие подлокотники, тонкие опоры — и спальное место внутри.",
     options: ["Раскладной механизм", "С шезлонгом или прямой", "Ткань или кожа"],
@@ -328,7 +338,8 @@ window.RICCA_CATALOG = [
     subtitle: "«Гусиная лапка»",
     photos: [
       {"src": "img/catalog/15-sofa-houndstooth-bolsters.webp", "src600": "img/catalog/15-sofa-houndstooth-bolsters-600.webp", "alt": "Изогнутый диван с валиками в ткани «гусиная лапка» под большой картиной", "w": 1024, "h": 1280},
-      {"src": "img/catalog/14-sofa-houndstooth-lounge.webp", "src600": "img/catalog/14-sofa-houndstooth-lounge-600.webp", "alt": "Диван в ткани «гусиная лапка» и кресло для отдыха у окна", "w": 853, "h": 1280}
+      {"src": "img/catalog/14-sofa-houndstooth-lounge.webp", "src600": "img/catalog/14-sofa-houndstooth-lounge-600.webp", "alt": "Диван в ткани «гусиная лапка» и кресло для отдыха у окна", "w": 853, "h": 1280},
+      {"src": "img/catalog/04-sofa-houndstooth-av.webp", "src600": "img/catalog/04-sofa-houndstooth-av-600.webp", "alt": "Изогнутый диван с валиками в ткани «гусиная лапка» в светлой гостиной, рядом красный табурет; в правом верхнем углу — знак студии AV Interiors", "w": 1023, "h": 1280, "credit": "Интерьер: AV Interiors"}
     ],
     description: "Изогнутый диван с валиками в ткани «гусиная лапка».",
     options: ["Изогнутый", "Размер под комнату", "Ткань из палитры"],
@@ -349,7 +360,7 @@ window.RICCA_CATALOG = [
     name: "Угловой диван с шезлонгом",
     subtitle: "Оливковый велюр",
     photos: [
-      {"src": "img/catalog/20-sofa-velvet-olive-chaise.webp", "src600": "img/catalog/20-sofa-velvet-olive-chaise-600.webp", "alt": "Угловой диван с шезлонгом в оливковом велюре в классической гостиной", "w": 1280, "h": 853, "pos": "60% 50%"}
+      {"src": "img/catalog/20-sofa-velvet-olive-chaise.webp", "src600": "img/catalog/20-sofa-velvet-olive-chaise-600.webp", "alt": "Угловой диван с шезлонгом в оливковом велюре в классической гостиной", "w": 1280, "h": 853, "pos": "68% 50%"}
     ],
     description: "Угловой диван с шезлонгом в оливковом велюре.",
     options: ["Угловой", "Размер под комнату", "Ткань из палитры"],
@@ -415,7 +426,8 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-sofa-bormio.webp", "src600": "img/catalog/p-sofa-bormio-600.webp", "alt": "Диван Bormio в тёмной ткани со светлыми боковинами — на светлом фоне", "studio": true, "box": [0.56, 0.263], "w": 1200, "h": 900},
       {"src": "img/catalog/p-sofa-bormio-2.webp", "src600": "img/catalog/p-sofa-bormio-2-600.webp", "alt": "Диван Bormio в разложенном виде — на светлом фоне", "studio": true, "box": [0.802, 0.649], "w": 1200, "h": 900},
-      {"src": "img/catalog/p-sofa-bormio-3.webp", "src600": "img/catalog/p-sofa-bormio-3-600.webp", "alt": "Диван Bormio: механизм раскладывания — на светлом фоне", "studio": true, "box": [0.729, 0.31], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-sofa-bormio-3.webp", "src600": "img/catalog/p-sofa-bormio-3-600.webp", "alt": "Диван Bormio: механизм раскладывания — на светлом фоне", "studio": true, "box": [0.729, 0.31], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-bormio-detail.webp", "src600": "img/catalog/p-sofa-bormio-detail-600.webp", "alt": "Диван Bormio крупным планом: боковина-«лепесток» и сиденье в фактурной ткани", "w": 760, "h": 950}
     ],
     description: "Округлые боковины-«лепестки» и мягкая спинка; можно сочетать две ткани.",
     options: ["Раскладной механизм", "Две ткани", "Размер под комнату"],
@@ -439,7 +451,8 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-sofa-abruzzo.webp", "src600": "img/catalog/p-sofa-abruzzo-600.webp", "alt": "Диван Abruzzo в светлой фактурной ткани — на светлом фоне", "studio": true, "box": [0.8, 0.298], "w": 1200, "h": 900},
       {"src": "img/catalog/p-sofa-abruzzo-2.webp", "src600": "img/catalog/p-sofa-abruzzo-2-600.webp", "alt": "Диван Abruzzo в молочной ткани — на светлом фоне", "studio": true, "box": [0.628, 0.291], "w": 1200, "h": 900},
-      {"src": "img/catalog/p-sofa-abruzzo-3.webp", "src600": "img/catalog/p-sofa-abruzzo-3-600.webp", "alt": "Диван Abruzzo в тёмно-синей ткани — на светлом фоне", "studio": true, "box": [0.72, 0.269], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-sofa-abruzzo-3.webp", "src600": "img/catalog/p-sofa-abruzzo-3-600.webp", "alt": "Диван Abruzzo в тёмно-синей ткани — на светлом фоне", "studio": true, "box": [0.72, 0.269], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-abruzzo-detail.webp", "src600": "img/catalog/p-sofa-abruzzo-detail-600.webp", "alt": "Диван Abruzzo крупным планом: подлокотник с кантом в тёмно-синей ткани", "w": 760, "h": 950}
     ],
     description: "Мягкий цельный силуэт с кантом по подлокотникам; два размера.",
     options: ["Два размера", "Ткань из палитры", "Ткань или кожа"],
@@ -486,7 +499,8 @@ window.RICCA_CATALOG = [
     subtitle: "С шезлонгом или прямой",
     photos: [
       {"src": "img/catalog/p-sofa-opera.webp", "src600": "img/catalog/p-sofa-opera-600.webp", "alt": "Диван Opera с шезлонгом в оливковом велюре — на светлом фоне", "studio": true, "box": [0.644, 0.257], "w": 1200, "h": 900},
-      {"src": "img/catalog/p-sofa-opera-2.webp", "src600": "img/catalog/p-sofa-opera-2-600.webp", "alt": "Прямой диван Opera в бордовой ткани — на светлом фоне", "studio": true, "box": [0.553, 0.308], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-sofa-opera-2.webp", "src600": "img/catalog/p-sofa-opera-2-600.webp", "alt": "Прямой диван Opera в бордовой ткани — на светлом фоне", "studio": true, "box": [0.553, 0.308], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-opera-3.webp", "src600": "img/catalog/p-sofa-opera-3-600.webp", "alt": "Диван Opera с шезлонгом в оливковом велюре, вид сбоку — на светлом фоне", "studio": true, "box": [0.369, 0.151], "w": 1200, "h": 900}
     ],
     description: "Прямые подлокотники, высокие подушки спинки, тонкие металлические ножки.",
     options: ["С шезлонгом или прямой", "Размер под комнату", "Ткань или кожа"],
@@ -577,7 +591,9 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/41-bed-piped-boucle-desk.webp", "src600": "img/catalog/41-bed-piped-boucle-desk-600.webp", "alt": "Кровать Barolo и рабочее место у окна", "w": 1280, "h": 1600},
       {"src": "img/catalog/17-bed-boucle-taupe-piping.webp", "src600": "img/catalog/17-bed-boucle-taupe-piping-600.webp", "alt": "Кровать Barolo в тауповом букле с тонким кантом в нише с линейной подсветкой", "w": 853, "h": 1280},
       {"src": "img/catalog/p-bed-barolo.webp", "src600": "img/catalog/p-bed-barolo-600.webp", "alt": "Кровать Barolo в белой ткани с тёмным кантом, на «парящем» основании — на светлом фоне", "studio": true, "box": [0.511, 0.276], "w": 1200, "h": 900},
-      {"src": "img/catalog/p-bed-barolo-2.webp", "src600": "img/catalog/p-bed-barolo-2-600.webp", "alt": "Кровать Barolo в молочной ткани с тёмным кантом, основание до пола — на светлом фоне", "studio": true, "box": [0.542, 0.304], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-bed-barolo-2.webp", "src600": "img/catalog/p-bed-barolo-2-600.webp", "alt": "Кровать Barolo в молочной ткани с тёмным кантом, основание до пола — на светлом фоне", "studio": true, "box": [0.542, 0.304], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-bed-barolo-3.webp", "src600": "img/catalog/p-bed-barolo-3-600.webp", "alt": "Кровать Barolo в молочной ткани, вид спереди — на светлом фоне", "studio": true, "box": [0.435, 0.336], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-bed-barolo-4.webp", "src600": "img/catalog/p-bed-barolo-4-600.webp", "alt": "Кровать Barolo на «парящем» основании, вид спереди — на светлом фоне", "studio": true, "box": [0.378, 0.266], "w": 1200, "h": 900}
     ],
     description: "«Парящее» основание и изголовье с тонким контрастным кантом.",
     options: ["С механизмом или без", "Размер под матрас", "Ткань или кожа"],
@@ -604,7 +620,8 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/49-bed-green-boucle-morning.webp", "src600": "img/catalog/49-bed-green-boucle-morning-600.webp", "alt": "Женщина сидит на кровати Palinuro у окна утром", "w": 1195, "h": 1600},
       {"src": "img/catalog/51-bed-green-boucle-forest.webp", "src600": "img/catalog/51-bed-green-boucle-forest-600.webp", "alt": "Кровать Palinuro в зелёном букле у окна с видом на лес", "w": 928, "h": 1160},
       {"src": "img/catalog/50-bed-green-boucle-detail.webp", "src600": "img/catalog/50-bed-green-boucle-detail-600.webp", "alt": "Изголовье и основание-валик кровати Palinuro в зелёном букле — крупный план", "w": 696, "h": 999},
-      {"src": "img/catalog/p-bed-palinuro.webp", "src600": "img/catalog/p-bed-palinuro-600.webp", "alt": "Кровать Palinuro в зелёном букле: округлое изголовье и основание-валик — на светлом фоне", "studio": true, "box": [0.698, 0.374], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-bed-palinuro.webp", "src600": "img/catalog/p-bed-palinuro-600.webp", "alt": "Кровать Palinuro в зелёном букле: округлое изголовье и основание-валик — на светлом фоне", "studio": true, "box": [0.698, 0.374], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-bed-palinuro-detail.webp", "src600": "img/catalog/p-bed-palinuro-detail-600.webp", "alt": "Кровать Palinuro крупным планом: изголовье и основание-валик в зелёном букле", "w": 760, "h": 950}
     ],
     description: "Округлое мягкое изголовье и основание-валик в букле.",
     options: ["Подъёмный механизм", "Размер под матрас", "Ткань или кожа"],
@@ -628,7 +645,8 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/28-bed-tweed-wing.webp", "src600": "img/catalog/28-bed-tweed-wing-600.webp", "alt": "Кровать Vittoria: изголовье с загнутыми «крыльями» в тёплой ткани", "w": 960, "h": 1280},
       {"src": "img/catalog/p-bed-vittoria.webp", "src600": "img/catalog/p-bed-vittoria-600.webp", "alt": "Кровать Vittoria на опорах, без подъёмного механизма, в серо-бежевой ткани — на светлом фоне", "studio": true, "box": [0.683, 0.37], "w": 1200, "h": 900},
-      {"src": "img/catalog/p-bed-vittoria-2.webp", "src600": "img/catalog/p-bed-vittoria-2-600.webp", "alt": "Кровать Vittoria на цоколе с подъёмным механизмом, в тёмно-серой меланжевой ткани — на светлом фоне", "studio": true, "box": [0.573, 0.341], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-bed-vittoria-2.webp", "src600": "img/catalog/p-bed-vittoria-2-600.webp", "alt": "Кровать Vittoria на цоколе с подъёмным механизмом, в тёмно-серой меланжевой ткани — на светлом фоне", "studio": true, "box": [0.573, 0.341], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-bed-vittoria-detail.webp", "src600": "img/catalog/p-bed-vittoria-detail-600.webp", "alt": "Кровать Vittoria крупным планом: изголовье, основание и металлическая опора", "w": 760, "h": 950}
     ],
     description: "Изголовье с загнутыми «крыльями».",
     options: ["С механизмом или без", "Размер под матрас", "Ткань или кожа"],
@@ -675,7 +693,8 @@ window.RICCA_CATALOG = [
     subtitle: "Высокое мягкое изголовье",
     photos: [
       {"src": "img/catalog/36-bed-boucle-brown.webp", "src600": "img/catalog/36-bed-boucle-brown-600.webp", "alt": "Кровать Manarola: высокое мягкое изголовье со строчкой в коричневом букле", "w": 955, "h": 1280},
-      {"src": "img/catalog/p-bed-manarola.webp", "src600": "img/catalog/p-bed-manarola-600.webp", "alt": "Кровать Manarola в коричневой ткани: высокое изголовье со строчкой и широкое округлое основание — на светлом фоне", "studio": true, "box": [0.718, 0.381], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-bed-manarola.webp", "src600": "img/catalog/p-bed-manarola-600.webp", "alt": "Кровать Manarola в коричневой ткани: высокое изголовье со строчкой и широкое округлое основание — на светлом фоне", "studio": true, "box": [0.718, 0.381], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-bed-manarola-detail.webp", "src600": "img/catalog/p-bed-manarola-detail-600.webp", "alt": "Кровать Manarola крупным планом: изголовье со строчкой и округлое основание", "w": 760, "h": 950}
     ],
     description: "Высокое мягкое изголовье со строчкой и широкое округлое основание.",
     options: ["Размер под матрас", "Ткань из палитры", "Ткань или кожа"],
@@ -718,7 +737,7 @@ window.RICCA_CATALOG = [
     name: "Кровать с мягким основанием",
     subtitle: "Рогожка",
     photos: [
-      {"src": "img/catalog/19-bed-taupe-side.webp", "src600": "img/catalog/19-bed-taupe-side-600.webp", "alt": "Кровать с мягким основанием в тауповой рогожке у окна", "w": 1280, "h": 960, "pos": "56% 50%"}
+      {"src": "img/catalog/19-bed-taupe-side.webp", "src600": "img/catalog/19-bed-taupe-side-600.webp", "alt": "Кровать с мягким основанием в тауповой рогожке у окна", "w": 1280, "h": 960, "pos": "65% 50%"}
     ],
     description: "Тауповая рогожка и мягкое основание.",
     options: ["Размер под матрас", "Ткань из палитры", "Ткань или кожа"],
@@ -761,7 +780,10 @@ window.RICCA_CATALOG = [
     subtitle: "На круглых опорах или с механизмом",
     photos: [
       {"src": "img/catalog/p-bed-bari.webp", "src600": "img/catalog/p-bed-bari-600.webp", "alt": "Кровать Bari в жёлтой ткани на круглых опорах, без подъёмного механизма — на светлом фоне", "studio": true, "box": [0.601, 0.266], "w": 1200, "h": 900},
-      {"src": "img/catalog/p-bed-bari-2.webp", "src600": "img/catalog/p-bed-bari-2-600.webp", "alt": "Кровать Bari в шалфейной ткани с подъёмным механизмом, основание до пола — на светлом фоне", "studio": true, "box": [0.595, 0.26], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-bed-bari-2.webp", "src600": "img/catalog/p-bed-bari-2-600.webp", "alt": "Кровать Bari в шалфейной ткани с подъёмным механизмом, основание до пола — на светлом фоне", "studio": true, "box": [0.595, 0.26], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-bed-bari-3.webp", "src600": "img/catalog/p-bed-bari-3-600.webp", "alt": "Кровать Bari в шалфейной ткани, вид спереди — на светлом фоне", "studio": true, "box": [0.36, 0.243], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-bed-bari-4.webp", "src600": "img/catalog/p-bed-bari-4-600.webp", "alt": "Кровать Bari в шалфейной ткани на круглых опорах, вид спереди — на светлом фоне", "studio": true, "box": [0.388, 0.231], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-bed-bari-5.webp", "src600": "img/catalog/p-bed-bari-5-600.webp", "alt": "Кровать Bari в шалфейной ткани на круглых опорах — на светлом фоне", "studio": true, "box": [0.456, 0.207], "w": 1200, "h": 900}
     ],
     description: "Изголовье-«капсула» шире кровати.",
     options: ["С механизмом или без", "Размер под матрас", "Ткань или кожа"],
@@ -1053,7 +1075,8 @@ window.RICCA_CATALOG = [
     name: "Кровать Forli",
     subtitle: "С подъёмным механизмом",
     photos: [
-      {"src": "img/catalog/p-bed-forli.webp", "src600": "img/catalog/p-bed-forli-600.webp", "alt": "Кровать Forli — на светлом фоне", "studio": true, "box": [0.55, 0.333], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-bed-forli.webp", "src600": "img/catalog/p-bed-forli-600.webp", "alt": "Кровать Forli — на светлом фоне", "studio": true, "box": [0.55, 0.333], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-bed-forli-2.webp", "src600": "img/catalog/p-bed-forli-2-600.webp", "alt": "Кровать Forli с волнистым изголовьем, вид спереди — на светлом фоне", "studio": true, "box": [0.34, 0.284], "w": 1200, "h": 900}
     ],
     description: "Высокое изголовье с волнистым верхом и кантом.",
     options: ["Подъёмный механизм", "Размер под матрас", "Ткань или кожа"],
@@ -1090,7 +1113,7 @@ window.RICCA_CATALOG = [
     badge: ""
   },
 
-  /* ═════════ КРЕСЛА И ПУФЫ (8) ═════════ */
+  /* ═════════ КРЕСЛА И ПУФЫ (11) ═════════ */
   // TODO (заказчик): подтвердить название модели
   {
     id: "armchair-fenis",
@@ -1250,7 +1273,9 @@ window.RICCA_CATALOG = [
     name: "Кресло Brescia",
     subtitle: "На низком цоколе",
     photos: [
-      {"src": "img/catalog/p-armchair-brescia.webp", "src600": "img/catalog/p-armchair-brescia-600.webp", "alt": "Кресло Brescia в розовом букле — на светлом фоне", "studio": true, "box": [0.512, 0.286], "w": 1200, "h": 1500}
+      {"src": "img/catalog/p-armchair-brescia.webp", "src600": "img/catalog/p-armchair-brescia-600.webp", "alt": "Кресло Brescia в розовом букле — на светлом фоне", "studio": true, "box": [0.512, 0.286], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-armchair-brescia-2.webp", "src600": "img/catalog/p-armchair-brescia-2-600.webp", "alt": "Кресло Brescia в оливковой ткани — на светлом фоне", "studio": true, "box": [0.359, 0.203], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-armchair-brescia-3.webp", "src600": "img/catalog/p-armchair-brescia-3-600.webp", "alt": "Кресло Brescia в оливковой ткани, вид спереди — на светлом фоне", "studio": true, "box": [0.307, 0.194], "w": 1200, "h": 1500}
     ],
     description: "Кресло из мягких объёмов на низком цоколе.",
     options: ["Размер под человека", "Ткань из палитры", "Ткань или кожа"],
@@ -1263,9 +1288,252 @@ window.RICCA_CATALOG = [
     wa: "Здравствуйте! Интересует кресло Brescia. Подскажите, пожалуйста, цену и что нужно для расчёта.",
     badge: ""
   },
+  // TODO (заказчик): подтвердить название модели
+  {
+    id: "armchair-leno",
+    category: "armchairs",
+    tags: [],
+    name: "Кресло Leno",
+    subtitle: "Округлое",
+    photos: [
+      {"src": "img/catalog/p-armchair-leno.webp", "src600": "img/catalog/p-armchair-leno-600.webp", "alt": "Кресло Leno в зелёной ткани в мелкую клетку — на светлом фоне", "studio": true, "box": [0.318, 0.207], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-armchair-leno-2.webp", "src600": "img/catalog/p-armchair-leno-2-600.webp", "alt": "Кресло Leno, вид спереди — на светлом фоне", "studio": true, "box": [0.305, 0.233], "w": 1200, "h": 1500}
+    ],
+    description: "Глубокое округлое кресло: спинка плавно переходит в подлокотники.",
+    options: ["Размер под человека", "Ткань из палитры", "Ткань или кожа"],
+    sizes: "Под человека и комнату: глубину и высоту посадки согласуем на проекте.",
+    materials: "Из палитры тканей и кож в шоуруме: образцы можно потрогать и сравнить рядом.",
+    filling: "Подбираем под желаемую посадку — мягче или плотнее.",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует кресло Leno. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
+  // TODO (заказчик): подтвердить название модели
+  {
+    id: "armchair-atrani",
+    category: "armchairs",
+    tags: [],
+    name: "Кресло Atrani",
+    subtitle: "Подлокотники-валики",
+    photos: [
+      {"src": "img/catalog/p-armchair-atrani.webp", "src600": "img/catalog/p-armchair-atrani-600.webp", "alt": "Кресло Atrani в бордовом велюре с подлокотниками-валиками — на светлом фоне", "studio": true, "box": [0.32, 0.188], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-armchair-atrani-2.webp", "src600": "img/catalog/p-armchair-atrani-2-600.webp", "alt": "Кресло Atrani, вид спереди — на светлом фоне", "studio": true, "box": [0.322, 0.197], "w": 1200, "h": 1500}
+    ],
+    description: "Мягкое основание-цилиндр и подлокотники-валики в бордовом велюре.",
+    options: ["Размер под человека", "Ткань из палитры", "Ткань или кожа"],
+    sizes: "Под человека и комнату: глубину и высоту посадки согласуем на проекте.",
+    materials: "Из палитры тканей и кож в шоуруме: образцы можно потрогать и сравнить рядом.",
+    filling: "Подбираем под желаемую посадку — мягче или плотнее.",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует кресло Atrani. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
+  // TODO (заказчик): подтвердить название модели
+  {
+    id: "armchair-marsala",
+    category: "armchairs",
+    tags: [],
+    name: "Кресло Marsala",
+    subtitle: "На массивных ножках",
+    photos: [
+      {"src": "img/catalog/p-armchair-marsala.webp", "src600": "img/catalog/p-armchair-marsala-600.webp", "alt": "Кресло Marsala: сиденье-подушка и круглая спинка в ткани с плетёным узором на массивных ножках — на светлом фоне", "studio": true, "box": [0.488, 0.334], "w": 1200, "h": 1500}
+    ],
+    description: "Сиденье-подушка и круглая спинка в ткани с плетёным узором на четырёх массивных ножках.",
+    options: ["Размер под человека", "Ткань из палитры", "Ткань или кожа"],
+    sizes: "Под человека и комнату: глубину и высоту посадки согласуем на проекте.",
+    materials: "Из палитры тканей и кож в шоуруме: образцы можно потрогать и сравнить рядом.",
+    filling: "Подбираем под желаемую посадку — мягче или плотнее.",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует кресло Marsala. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
 
-  /* ═════════ СТОЛЫ (2) ═════════ */
-  /* СТУЛЬЯ (0): крупных фото пока нет — фильтр «Стулья» скрыт. TODO (заказчик): прислать фото — добавим карточки сюда. */
+  /* ═════════ СТУЛЬЯ (8) ═════════ */
+  // TODO (заказчик): подтвердить название модели, варианты обивки и гарантию на стулья
+  {
+    id: "chair-teramo",
+    category: "chairs",
+    tags: [],
+    name: "Стул Teramo",
+    subtitle: "Опоры-панели",
+    photos: [
+      {"src": "img/catalog/p-chair-teramo.webp", "src600": "img/catalog/p-chair-teramo-600.webp", "alt": "Стул Teramo: мягкие сиденье и спинка в светлой ткани на каркасе с широкими опорами — на светлом фоне", "studio": true, "box": [0.321, 0.351], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-chair-teramo-2.webp", "src600": "img/catalog/p-chair-teramo-2-600.webp", "alt": "Стул Teramo, вид спереди — на светлом фоне", "studio": true, "box": [0.266, 0.333], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-chair-teramo-3.webp", "src600": "img/catalog/p-chair-teramo-3-600.webp", "alt": "Стул Teramo, вид сбоку — на светлом фоне", "studio": true, "box": [0.294, 0.348], "w": 1200, "h": 1500}
+    ],
+    description: "Мягкие сиденье и спинка в светлой ткани на каркасе с широкими плоскими опорами.",
+    options: ["Обеденный", "В пару к столу"],
+    sizes: "Согласуем при заказе.",
+    materials: "Обивку и отделку каркаса уточним при заказе.",
+    filling: "",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует стул Teramo. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
+  // TODO (заказчик): подтвердить название модели, варианты обивки и гарантию на стулья
+  {
+    id: "chair-palermo",
+    category: "chairs",
+    tags: [],
+    name: "Стул Palermo",
+    subtitle: "С подлокотниками",
+    photos: [
+      {"src": "img/catalog/p-chair-palermo.webp", "src600": "img/catalog/p-chair-palermo-600.webp", "alt": "Стул Palermo: сиденье и спинка-валик в рыжей ткани между боковинами-панелями — на светлом фоне", "studio": true, "box": [0.359, 0.299], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-chair-palermo-2.webp", "src600": "img/catalog/p-chair-palermo-2-600.webp", "alt": "Стул Palermo, вид спереди — на светлом фоне", "studio": true, "box": [0.296, 0.277], "w": 1200, "h": 1500}
+    ],
+    description: "Мягкие сиденье и спинка-валик в рыжей ткани между боковинами-панелями.",
+    options: ["Обеденный", "В пару к столу"],
+    sizes: "Согласуем при заказе.",
+    materials: "Обивку и отделку каркаса уточним при заказе.",
+    filling: "",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует стул Palermo. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
+  // TODO (заказчик): подтвердить название модели, варианты обивки и гарантию на стулья
+  {
+    id: "chair-agordo",
+    category: "chairs",
+    tags: [],
+    name: "Стул Agordo",
+    subtitle: "С подлокотниками",
+    photos: [
+      {"src": "img/catalog/p-chair-agordo.webp", "src600": "img/catalog/p-chair-agordo-600.webp", "alt": "Стул Agordo: серые подушки на тонком металлическом каркасе, боковины коньячного цвета — на светлом фоне", "studio": true, "box": [0.368, 0.339], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-chair-agordo-2.webp", "src600": "img/catalog/p-chair-agordo-2-600.webp", "alt": "Стул Agordo, вид спереди — на светлом фоне", "studio": true, "box": [0.268, 0.302], "w": 1200, "h": 1500}
+    ],
+    description: "Мягкие подушки в серой ткани на тонком металлическом каркасе, боковины коньячного цвета.",
+    options: ["Обеденный", "В пару к столу"],
+    sizes: "Согласуем при заказе.",
+    materials: "Обивку и отделку каркаса уточним при заказе.",
+    filling: "",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует стул Agordo. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
+  // TODO (заказчик): подтвердить название модели, варианты обивки и гарантию на стулья
+  {
+    id: "chair-ortona",
+    category: "chairs",
+    tags: [],
+    name: "Стул Ortona",
+    subtitle: "На чёрном каркасе",
+    photos: [
+      {"src": "img/catalog/p-chair-ortona.webp", "src600": "img/catalog/p-chair-ortona-600.webp", "alt": "Стул Ortona: светлые мягкие сиденье и спинка на чёрном каркасе — на светлом фоне", "studio": true, "box": [0.34, 0.343], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-chair-ortona-2.webp", "src600": "img/catalog/p-chair-ortona-2-600.webp", "alt": "Стул Ortona, вид спереди — на светлом фоне", "studio": true, "box": [0.302, 0.32], "w": 1200, "h": 1500}
+    ],
+    description: "Мягкие сиденье и спинка в светлой ткани на чёрном каркасе, подлокотники с металлическими накладками.",
+    options: ["Обеденный", "В пару к столу"],
+    sizes: "Согласуем при заказе.",
+    materials: "Обивку и отделку каркаса уточним при заказе.",
+    filling: "",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует стул Ortona. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
+  // TODO (заказчик): подтвердить название модели, варианты обивки и гарантию на стулья
+  {
+    id: "chair-pineto",
+    category: "chairs",
+    tags: [],
+    name: "Стул Pineto",
+    subtitle: "Строгие линии",
+    photos: [
+      {"src": "img/catalog/p-chair-pineto.webp", "src600": "img/catalog/p-chair-pineto-600.webp", "alt": "Стул Pineto: серые сиденье и спинка на чёрном каркасе с тонкими подлокотниками — на светлом фоне", "studio": true, "box": [0.332, 0.346], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-chair-pineto-2.webp", "src600": "img/catalog/p-chair-pineto-2-600.webp", "alt": "Стул Pineto, вид спереди — на светлом фоне", "studio": true, "box": [0.257, 0.309], "w": 1200, "h": 1500}
+    ],
+    description: "Сиденье и спинка в серой гладкой обивке на чёрном каркасе, тонкие металлические подлокотники.",
+    options: ["Обеденный", "В пару к столу"],
+    sizes: "Согласуем при заказе.",
+    materials: "Обивку и отделку каркаса уточним при заказе.",
+    filling: "",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует стул Pineto. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
+  // TODO (заказчик): подтвердить название модели, варианты обивки и гарантию на стулья
+  {
+    id: "chair-volla",
+    category: "chairs",
+    tags: [],
+    name: "Стул Volla",
+    subtitle: "Без подлокотников",
+    photos: [
+      {"src": "img/catalog/p-chair-volla.webp", "src600": "img/catalog/p-chair-volla-600.webp", "alt": "Стул Volla в серой гладкой обивке на тонких ножках — на светлом фоне", "studio": true, "box": [0.327, 0.34], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-chair-volla-2.webp", "src600": "img/catalog/p-chair-volla-2-600.webp", "alt": "Стул Volla, вид спереди — на светлом фоне", "studio": true, "box": [0.303, 0.379], "w": 1200, "h": 1500}
+    ],
+    description: "Лаконичный стул: цельные сиденье и спинка в серой гладкой обивке на тонких ножках.",
+    options: ["Обеденный", "В пару к столу"],
+    sizes: "Согласуем при заказе.",
+    materials: "Обивку и отделку каркаса уточним при заказе.",
+    filling: "",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует стул Volla. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
+  // TODO (заказчик): подтвердить название модели, варианты обивки и гарантию на стулья
+  {
+    id: "chair-matera",
+    category: "chairs",
+    tags: [],
+    name: "Стул Matera",
+    subtitle: "На крестовой опоре",
+    photos: [
+      {"src": "img/catalog/p-chair-matera.webp", "src600": "img/catalog/p-chair-matera-600.webp", "alt": "Стул Matera: серая чаша с подлокотниками на металлической крестовой опоре — на светлом фоне", "studio": true, "box": [0.333, 0.341], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-chair-matera-2.webp", "src600": "img/catalog/p-chair-matera-2-600.webp", "alt": "Стул Matera, вид спереди — на светлом фоне", "studio": true, "box": [0.346, 0.354], "w": 1200, "h": 1500}
+    ],
+    description: "Чаша с подлокотниками в серой гладкой обивке, мягкая подушка сиденья, металлическая крестовая опора.",
+    options: ["Обеденный", "В пару к столу"],
+    sizes: "Согласуем при заказе.",
+    materials: "Обивку и отделку каркаса уточним при заказе.",
+    filling: "",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует стул Matera. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
+  // TODO (заказчик): подтвердить название модели, варианты обивки и гарантию на стулья
+  {
+    id: "chair-arre",
+    category: "chairs",
+    tags: [],
+    name: "Стул Arre",
+    subtitle: "Широкая посадка",
+    photos: [
+      {"src": "img/catalog/p-chair-arre.webp", "src600": "img/catalog/p-chair-arre-600.webp", "alt": "Стул Arre: серые сиденье и спинка в окантовке коньячного цвета на тонком каркасе — на светлом фоне", "studio": true, "box": [0.372, 0.326], "w": 1200, "h": 1500},
+      {"src": "img/catalog/p-chair-arre-2.webp", "src600": "img/catalog/p-chair-arre-2-600.webp", "alt": "Стул Arre, вид спереди — на светлом фоне", "studio": true, "box": [0.342, 0.329], "w": 1200, "h": 1500}
+    ],
+    description: "Мягкие сиденье и спинка в серой ткани в окантовке коньячного цвета, тонкий металлический каркас.",
+    options: ["Обеденный", "В пару к столу"],
+    sizes: "Согласуем при заказе.",
+    materials: "Обивку и отделку каркаса уточним при заказе.",
+    filling: "",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует стул Arre. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
+
+  /* ═════════ СТОЛЫ (4) ═════════ */
   // TODO (заказчик): подтвердить название модели; гарантия на столы — подтвердить
   {
     id: "table-albino",
@@ -1274,7 +1542,8 @@ window.RICCA_CATALOG = [
     name: "Стол Albino",
     subtitle: "Обеденный стол",
     photos: [
-      {"src": "img/catalog/p-table-albino.webp", "src600": "img/catalog/p-table-albino-600.webp", "alt": "Обеденный стол Albino с деревянной столешницей — на светлом фоне", "studio": true, "box": [0.718, 0.44], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-table-albino.webp", "src600": "img/catalog/p-table-albino-600.webp", "alt": "Обеденный стол Albino с деревянной столешницей — на светлом фоне", "studio": true, "box": [0.718, 0.44], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-table-albino-2.webp", "src600": "img/catalog/p-table-albino-2-600.webp", "alt": "Стол Albino, вид спереди — на светлом фоне", "studio": true, "box": [0.427, 0.221], "w": 1200, "h": 900}
     ],
     description: "Обеденный стол: деревянная столешница на двух светлых опорах.",
     options: ["Обеденный", "В пару к мебели"],
@@ -1308,8 +1577,52 @@ window.RICCA_CATALOG = [
     wa: "Здравствуйте! Интересует стол Sanluri. Подскажите, пожалуйста, цену и что нужно для расчёта.",
     badge: ""
   },
+  // TODO (заказчик): подтвердить название модели; размеры; гарантия на столы — подтвердить
+  {
+    id: "table-meda",
+    category: "tables",
+    tags: [],
+    name: "Стол Meda",
+    subtitle: "Круглый, на опоре-тумбе",
+    photos: [
+      {"src": "img/catalog/p-table-meda.webp", "src600": "img/catalog/p-table-meda-600.webp", "alt": "Круглый деревянный стол Meda на широкой опоре — на светлом фоне", "studio": true, "box": [0.427, 0.428], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-table-meda-2.webp", "src600": "img/catalog/p-table-meda-2-600.webp", "alt": "Стол Meda, вид спереди — на светлом фоне", "studio": true, "box": [0.426, 0.359], "w": 1200, "h": 900}
+    ],
+    description: "Круглая деревянная столешница на широкой опоре-«бочонке».",
+    options: ["Обеденный", "В пару к мебели"],
+    sizes: "Под комнату и число мест — согласуем при заказе.",
+    materials: "Дерево; отделку подбираем в пару к мягкой мебели.",
+    filling: "",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует стол Meda. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
+  // TODO (заказчик): подтвердить название модели; размеры; гарантия на столы — подтвердить
+  {
+    id: "table-cardito",
+    category: "tables",
+    tags: [],
+    name: "Стол Cardito",
+    subtitle: "Прямоугольный, чёрный",
+    photos: [
+      {"src": "img/catalog/p-table-cardito.webp", "src600": "img/catalog/p-table-cardito-600.webp", "alt": "Чёрный прямоугольный стол Cardito на цилиндрических ножках — на светлом фоне", "studio": true, "box": [0.405, 0.407], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-table-cardito-2.webp", "src600": "img/catalog/p-table-cardito-2-600.webp", "alt": "Стол Cardito, вид спереди — на светлом фоне", "studio": true, "box": [0.418, 0.336], "w": 1200, "h": 900}
+    ],
+    description: "Чёрная столешница со скруглёнными углами на четырёх цилиндрических ножках.",
+    options: ["Обеденный", "В пару к мебели"],
+    sizes: "Под комнату и число мест — согласуем при заказе.",
+    materials: "Отделку подбираем в пару к мягкой мебели.",
+    filling: "",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует стол Cardito. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
+  },
 
-  /* ═════════ ХРАНЕНИЕ И ТУМБЫ (2) ═════════ */
+  /* ═════════ ХРАНЕНИЕ И ТУМБЫ (3) ═════════ */
   // TODO (заказчик): подтвердить название модели; гарантия на корпусную мебель — подтвердить
   {
     id: "storage-aquino",
@@ -1351,5 +1664,35 @@ window.RICCA_CATALOG = [
     delivery: "По Казахстану",
     wa: "Здравствуйте! Интересует комод Pesaro. Подскажите, пожалуйста, цену и что нужно для расчёта.",
     badge: ""
+  },
+  // TODO (заказчик): подтвердить название модели; гарантия на корпусную мебель — подтвердить
+  {
+    id: "storage-lodi",
+    category: "storage",
+    tags: [],
+    name: "Тумба Lodi",
+    subtitle: "Прикроватная тумба",
+    photos: [
+      {"src": "img/catalog/p-storage-lodi.webp", "src600": "img/catalog/p-storage-lodi-600.webp", "alt": "Прикроватная тумба Lodi: цилиндрический корпус, открытая ниша и ящик в деревянной отделке — на светлом фоне", "studio": true, "box": [0.439, 0.636], "w": 1200, "h": 900}
+    ],
+    description: "Цилиндрический корпус с открытой нишей и выдвижным ящиком в деревянной отделке.",
+    options: ["Прикроватная", "В пару к кровати"],
+    sizes: "Согласуем при заказе.",
+    materials: "Дерево; отделку подбираем в пару к мягкой мебели.",
+    filling: "",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "3 года",
+    delivery: "По Казахстану",
+    wa: "Здравствуйте! Интересует тумба Lodi. Подскажите, пожалуйста, цену и что нужно для расчёта.",
+    badge: ""
   }
+];
+
+/* Палитра тканей для раздела «Материалы»: 16 образцов (квадрат 600 px, в цвете, без подписей на фото), по семьям цвета.
+   Названия — описание того, что видно на образце. TODO (заказчик): настоящие названия и составы тканей. */
+window.RICCA_FABRICS = [
+  {"id": "red", "label": "Красные и терракота", "items": [{"src": "img/catalog/tex-red-1.webp", "name": "Красно-белый меланж", "alt": "Образец ткани: красно-белый меланж", "w": 600, "h": 600}, {"src": "img/catalog/tex-red-2.webp", "name": "Коралловое плетение", "alt": "Образец ткани: коралловое плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-red-3.webp", "name": "Терракотовое букле", "alt": "Образец ткани: терракотовое букле", "w": 600, "h": 600}, {"src": "img/catalog/tex-red-4.webp", "name": "Терракота с орнаментом", "alt": "Образец ткани: терракота с орнаментом", "w": 600, "h": 600}]},
+  {"id": "grey", "label": "Серо-белые", "items": [{"src": "img/catalog/tex-grey-1.webp", "name": "Серо-белый твид", "alt": "Образец ткани: серо-белый твид", "w": 600, "h": 600}, {"src": "img/catalog/tex-grey-2.webp", "name": "Чёрно-белое плетение", "alt": "Образец ткани: чёрно-белое плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-grey-3.webp", "name": "Белое фактурное плетение", "alt": "Образец ткани: белое фактурное плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-grey-4.webp", "name": "Молочная ткань с рисунком", "alt": "Образец ткани: молочная ткань с рисунком", "w": 600, "h": 600}]},
+  {"id": "blue", "label": "Синие", "items": [{"src": "img/catalog/tex-blue-1.webp", "name": "Синий рисунок на белом", "alt": "Образец ткани: синий рисунок на белом", "w": 600, "h": 600}, {"src": "img/catalog/tex-blue-2.webp", "name": "Голубое гладкое плетение", "alt": "Образец ткани: голубое гладкое плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-blue-3.webp", "name": "Синее рельефное плетение", "alt": "Образец ткани: синее рельефное плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-blue-4.webp", "name": "Тёмно-синий меланж", "alt": "Образец ткани: тёмно-синий меланж", "w": 600, "h": 600}]},
+  {"id": "green", "label": "Зелёные", "items": [{"src": "img/catalog/tex-green-1.webp", "name": "Зелёно-чёрный меланж", "alt": "Образец ткани: зелёно-чёрный меланж", "w": 600, "h": 600}, {"src": "img/catalog/tex-green-2.webp", "name": "Мятное плетение", "alt": "Образец ткани: мятное плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-green-3.webp", "name": "Зелёное гладкое плетение", "alt": "Образец ткани: зелёное гладкое плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-green-4.webp", "name": "Тёмно-зелёный меланж", "alt": "Образец ткани: тёмно-зелёный меланж", "w": 600, "h": 600}]}
 ];

@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="ru" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RICCA DESIGNS — интро «Буквы» (прототип)</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F7F5F0">
+<!-- Прототип I-b «Буквы»: белый экран → R I C C A по одной букве с широкой разрядкой → слово сжимается в логотип шапки →
+     кадр первого экрана раскрывается из тонкой горизонтальной щели (clip-path). ≤ 1,6 с, ease-out, один раз за сессию,
+     пропускается при prefers-reduced-motion и по любому касанию/клавише. Без JS первый экран виден сразу и целиком. -->
+<link rel="preload" as="image" href="../../img/catalog/09-sofa-modular-sky.webp" imagesrcset="../../img/catalog/09-sofa-modular-sky-600.webp 600w, ../../img/catalog/09-sofa-modular-sky.webp 1024w" imagesizes="(min-width: 900px) 460px, calc(100vw - 48px)" fetchpriority="high">
+<link rel="preload" as="font" type="font/woff2" href="../../fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="../../fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="../../fonts/cormorant/cormorant-cyrillic-var-normal.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="../../fonts/cormorant/cormorant-cyrillic-var-italic.woff2" crossorigin>
+<link rel="stylesheet" href="../../css/fonts-v3.css">
+<script>
+/* Решение до первой отрисовки: играть интро или нет. Класс .intro прячет шапку и текст первого экрана и закрывает кадр щелью.
+   Не играем: повторный визит в той же сессии, prefers-reduced-motion, недоступный sessionStorage. Страховка — снять класс через 3 с. */
+(function (d) {
+  var h = d.documentElement, play = false;
+  h.classList.replace('no-js', 'js');
+  try {
+    var debug = /[?&]introdebug\b/.test(location.search);
+    var seen = !debug && sessionStorage.getItem('ricca:intro') === '1';
+    var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    play = !seen && !still;
+  } catch (e) { play = false; }
+  if (play) {
+    h.classList.add('intro');
+    window.__introSafety = setTimeout(function () { h.classList.remove('intro'); }, 3000);
+  }
+})(document);
+</script>
+<style>
+:root {
+  --paper: #F7F5F0; --paper-2: #EEEAE3;
+  --ink: #111111; --ink-2: rgba(17,17,17,.78); --ink-3: rgba(17,17,17,.70);
+  --line: rgba(17,17,17,.12); --line-2: rgba(17,17,17,.30);
+  --serif: 'Cormorant', 'Garamond', Georgia, serif;
+  --sans: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --gutter: clamp(24px, 6.5vw, 104px);
+  --nav-h: 84px;
+  --ease-out: cubic-bezier(.16,1,.3,1);
+}
+@media (max-width: 899px) { :root { --nav-h: 64px; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--paper); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; min-height: 100svh; background: var(--paper); color: var(--ink-2); font: 400 15px/1.65 var(--sans); -webkit-font-smoothing: antialiased; font-synthesis: none; overflow-x: clip; }
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+h1, p, figure { margin: 0; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+::selection { background: var(--ink); color: var(--paper); }
+.nowrap { white-space: nowrap; }
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.skip-link { position: fixed; top: 8px; left: 8px; z-index: 100; padding: 12px 16px; background: var(--ink); color: var(--paper); transform: translateY(-200%); }
+.skip-link:focus { transform: none; }
+.wrap { width: min(100% - 2 * var(--gutter), 1280px); margin-inline: auto; }
+
+/* ---------- шапка: тонкая, мелкая; логотип — та же точка, куда приземляется слово интро ---------- */
+.nav { position: relative; z-index: 10; }
+.nav__row { height: var(--nav-h); display: flex; align-items: center; gap: 40px; }
+.lockup { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink); }
+.lockup__mono { width: auto; height: 19px; color: var(--ink); }
+.lockup__rule { width: 1px; height: 22px; background: var(--line-2); margin: 0 16px; }
+.lockup__text { display: flex; flex-direction: column; align-items: flex-start; }
+/* буквы — отдельными строчными блоками с промежутком gap (не letter-spacing): у каждой рамка = глиф, по ней считается FLIP */
+.lockup__name { display: flex; gap: .78em; font: 400 15px/1 var(--sans); color: var(--ink); }
+.lockup__name > span { display: block; }
+.lockup__sub { margin-top: 7px; font: 500 8px/1 var(--sans); letter-spacing: .36em; color: var(--ink-3); white-space: nowrap; }
+.nav__menu { margin-left: auto; display: flex; gap: clamp(20px, 2.6vw, 40px); }
+.nav__menu a, .nav__wa { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: 500 11px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); transition: color .3s; }
+.nav__menu a:hover { color: var(--ink); }
+.nav__menu .ico { width: 12px; height: 12px; }
+.nav__wa { padding: 0 18px; min-height: 40px; border: 1px solid var(--line-2); color: var(--ink); transition: border-color .3s; }
+.nav__wa:hover { border-color: var(--ink); }
+.nav__wa .ico { width: 16px; height: 16px; }
+@media (max-width: 1099px) { .nav__menu { display: none; } .nav__wa { margin-left: auto; } }
+@media (max-width: 899px) {
+  .lockup__mono, .lockup__rule { display: none; }
+  .lockup__name { font-size: 14px; gap: .74em; }
+  .lockup__sub { font-size: 7.5px; margin-top: 6px; }
+  .nav__wa { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .nav__wa span { display: none; }
+  .nav__wa .ico { width: 20px; height: 20px; }
+}
+
+/* ---------- первый экран: заголовок + одна строка + две кнопки, одно фото целиком, много воздуха ---------- */
+.hero { min-height: calc(100svh - var(--nav-h)); display: flex; align-items: center; padding-block: clamp(32px, 6vh, 80px) clamp(48px, 9vh, 112px); }
+.hero__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: center; }
+.hero__text { grid-column: 1 / span 5; }
+.hero__h1 { font: 400 clamp(40px, 4.2vw, 62px)/1.04 var(--serif); letter-spacing: -.005em; color: var(--ink); }
+.hero__h1 em { font-style: italic; }
+.hero__line { display: block; }
+.hero__sub { margin-top: 22px; max-width: 30em; font-size: 15px; line-height: 1.65; color: var(--ink-2); }
+.hero__actions { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 26px; border: 1px solid var(--ink); font: 600 11px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; white-space: nowrap; transition: background-color .3s, border-color .3s, color .3s; touch-action: manipulation; }
+.btn--fill { background: var(--ink); color: var(--paper); }
+.btn--fill:hover { background: #2B2B2B; border-color: #2B2B2B; }
+.btn--line { color: var(--ink); border-color: var(--line-2); }
+.btn--line:hover { border-color: var(--ink); }
+.hero__fig { grid-column: 7 / -1; justify-self: end; width: min(100%, (100svh - var(--nav-h) - 200px) * .8, 460px); }
+.hero__photo { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--paper-2); container-type: inline-size; }
+.hero__photo img { width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+/* одна метка RICCA DESIGNS на фото — как на сайте (Montserrat 600, белая плашка, правый нижний угол) */
+.mark { position: absolute; right: 12px; bottom: 12px; z-index: 2; padding: 6px 6px 6px 9px; background: rgba(255,255,255,.88); color: #111; font: 600 10px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; white-space: nowrap; pointer-events: none; user-select: none; -webkit-user-select: none; }
+@container (max-width: 259px) { .mark { right: 8px; bottom: 8px; padding: 5px 4px 5px 6px; font-size: 8px; letter-spacing: .24em; } }
+
+@media (max-width: 899px) {
+  .hero { align-items: flex-start; min-height: 0; padding-block: 20px 48px; }   /* кадр не прилипает к шапке */
+  .hero__grid { display: flex; flex-direction: column; align-items: stretch; gap: 32px; }
+  .hero__fig { order: -1; justify-self: auto; width: min(100%, (100svh - 400px) * .8); }   /* на 390×664 кадр уже, но целиком, кнопки в первом экране */
+  .hero__h1 { font-size: clamp(34px, 9.4vw, 44px); line-height: 1.06; }
+  .hero__sub { margin-top: 14px; }
+  .hero__actions { margin-top: 28px; gap: 8px; }
+  .hero__actions .btn { flex: 1 0 auto; padding: 0 14px; gap: 8px; letter-spacing: .12em; }   /* в ряд от 336 px, уже — «Каталог» переносится на всю ширину */
+}
+
+/* ---------- интро «Буквы» ---------- */
+.intro-word { display: none; }
+html.intro .intro-word { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; gap: 1.1em; font: 400 30px/1 var(--sans); color: var(--ink); pointer-events: none; }
+html.intro .intro-word > span { display: block; opacity: 0; }
+@media (max-width: 899px) { html.intro .intro-word { font-size: 22px; gap: 1em; } }
+/* исходное состояние, пока ждём шрифт (≤ 350 мс): белый экран; кадр закрыт щелью нулевой высоты */
+html.intro .lockup__mono, html.intro .lockup__rule, html.intro .lockup__name, html.intro .lockup__sub,
+html.intro .nav__menu, html.intro .nav__wa, html.intro .hero__line, html.intro .hero__sub, html.intro .hero__actions, html.intro .mark { opacity: 0; }
+html.intro .hero__photo { clip-path: inset(50% 50% 50% 50%); }
+@media (prefers-reduced-motion: reduce) {
+  html.intro .intro-word { display: none; }
+  html.intro .lockup__mono, html.intro .lockup__rule, html.intro .lockup__name, html.intro .lockup__sub,
+  html.intro .nav__menu, html.intro .nav__wa, html.intro .hero__line, html.intro .hero__sub, html.intro .hero__actions, html.intro .mark { opacity: 1; }
+  html.intro .hero__photo { clip-path: none; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Перейти к&nbsp;содержанию</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="rd-mono" viewBox="0 0 521.1 256.9"><path fill="currentColor" d="M336.85 0.13C331.04 0.18,323.9 0.31,320.98 0.42C318.05 0.53,312.65 0.68,308.98 0.75C301.81 0.88,295.31 1.13,290.98 1.44C286.7 1.74,280.5 2,274.29 2.13C258.11 2.46,255.92 2.85,255.04 5.49C254.43 7.34,254.87 8.3,257.66 11.06C259.44 12.84,262.78 16.57,265.98 20.38C267.62 22.33,271.88 28.57,272.79 30.38C273.15 31.07,274.56 34.5,275.24 36.31C276.22 38.91,277.27 44.86,277.6 49.69C277.77 52.16,277.77 208.68,277.6 211.2C277.36 214.77,275.79 222.14,274.88 223.97C273.76 226.24,271.53 228.95,269.79 230.18C267.67 231.67,266.65 231.47,262.64 228.77C258.43 225.93,256.23 223.72,249.39 215.38C247.42 212.98,245.02 209.61,241.04 203.69C239.22 200.97,237.73 198.84,236.54 197.25C235.29 195.58,233.37 192.73,232.25 190.88C231.02 188.84,226.88 182.48,223.9 178.06C222.61 176.14,220.43 172.88,219.07 170.83C217.71 168.78,216.26 166.66,215.86 166.13C215.45 165.6,214.19 163.77,213.06 162.05C211.92 160.34,210.5 158.32,209.88 157.56C209.27 156.81,207.55 154.61,206.07 152.69C201.5 146.77,201.45 146.71,197.21 141.76C195.61 139.9,193.92 138.22,191.01 135.59C188.8 133.59,188.47 133.2,188.38 132.46C188.27 131.5,188.88 131.01,191.18 130.21C191.87 129.97,193.19 129.46,194.11 129.09C195.03 128.72,196.21 128.25,196.72 128.06C199.96 126.85,208.41 122.17,211.84 119.68C217.11 115.87,217.68 115.38,221.86 111.17L225.18 107.81L227.73 104.01C231.01 99.13,231.32 98.59,232.11 96.46C232.46 95.48,233.01 94.13,233.31 93.46C234.1 91.7,234.44 90.61,235 88.06C235.27 86.83,235.71 85.05,235.97 84.13C236.84 81.04,237.05 79.74,237.23 76.13C237.64 67.81,237.46 63.54,236.54 59.88C236.31 58.95,235.78 56.67,235.36 54.81C233.67 47.27,231.34 41.94,226.59 34.81C222.5 28.66,219.7 25.72,212.48 20.03C206.81 15.55,198.8 11.26,191.91 9.01C190.81 8.65,189.04 8.02,187.98 7.6C186.03 6.85,183.51 6.09,181.66 5.69C181.11 5.58,179.71 5.26,178.54 5C172.38 3.6,161.51 2.62,148.1 2.25C145.59 2.18,142.89 2.1,142.1 2.07C138.84 1.93,2.67 2.22,2.09 2.37C1.3 2.57,0.67 3.12,0.41 3.84C0 5.02,-0.15 20.34,0.24 21.74C0.44 22.47,1.14 23.16,1.86 23.34C2.16 23.42,4.58 23.55,7.22 23.62C16.83 23.9,20.85 24.61,25.41 26.81C29.86 28.95,33.08 33.95,34.28 40.54C34.68 42.73,35.15 46.17,35.44 49.13C35.73 52.12,35.79 205.67,35.5 209.55C35.26 212.77,34.21 218.77,33.4 221.59C32.24 225.58,28.98 229.57,25.41 231.34C21.08 233.51,15.89 234.4,6.41 234.61C-0.15 234.76,0.22 234.24,0.04 243.69C-0.04 248.04,0.11 253,0.34 253.78C0.62 254.68,1.45 255.36,2.51 255.55C3.68 255.76,134.63 255.67,135.36 255.46C137.29 254.89,137.39 254.26,137.25 243.5L137.16 236.56L136.85 236C136.23 234.9,135.16 234.63,131.41 234.63C126.5 234.62,119.69 233.87,117.08 233.05C115.03 232.41,111.8 230.86,110.47 229.89C105.53 226.28,102.7 218.94,102.23 208.56C102.01 203.67,102.12 146.44,102.35 145.82C102.93 144.27,103.31 144.19,109.85 144.29C114.93 144.37,116.98 144.49,122.04 145C131.05 145.92,134.78 148.13,141.57 156.58C144.06 159.68,147.66 165.16,149.16 168.13C149.35 168.5,150.13 169.85,150.88 171.13C151.64 172.4,152.91 174.53,153.7 175.88C154.49 177.22,155.63 179.13,156.23 180.13C156.82 181.12,157.53 182.33,157.79 182.81C158.05 183.29,158.83 184.67,159.53 185.88C160.23 187.08,161.1 188.6,161.47 189.25C163.57 193.04,164.61 194.85,165.44 196.19C165.95 197.01,167.11 198.98,168 200.56C168.9 202.14,170.37 204.73,171.26 206.31C172.16 207.89,173.38 209.98,173.98 210.95C175.3 213.08,177.51 216.94,178.21 218.34C178.49 218.9,178.97 219.77,179.27 220.27C179.98 221.46,184.65 229.07,186.01 231.25C186.59 232.18,187.61 233.86,188.28 234.99C189.73 237.44,193.33 242.94,194.89 245.12C195.51 245.98,196.47 247.39,197.01 248.25C200.05 253.01,201.07 254.38,202.02 254.93C203.2 255.63,202.33 255.6,223.68 255.68C235.27 255.73,243.63 255.81,243.94 255.88C244.24 255.95,244.97 256.15,245.57 256.33C247.38 256.87,251.19 256.9,305.16 256.82C362.59 256.72,368.67 256.66,381.98 255.94C385.69 255.74,389.54 255.57,395.04 255.37C406.13 254.97,414.85 254.03,422.98 252.39C423.97 252.19,425.35 251.93,426.04 251.81C428.05 251.47,432.52 250.52,433.64 250.18C434.2 250.01,435.73 249.56,437.04 249.18C438.34 248.8,440.09 248.2,440.91 247.85C441.74 247.5,443.3 246.91,444.39 246.54C445.48 246.17,447 245.59,447.77 245.24C448.53 244.89,450.09 244.23,451.23 243.76C452.36 243.29,453.6 242.76,453.98 242.6C455.44 241.94,459.36 239.81,460.7 238.92C462 238.07,466.39 235.4,468.57 234.14C469.71 233.48,475.79 228.94,478.78 226.51C483.51 222.68,490.97 215.05,494.43 210.5C495.34 209.3,496.6 207.67,497.23 206.88C498.93 204.72,501.69 200.42,503.41 197.25C503.84 196.46,504.64 195.13,505.18 194.3C506.91 191.66,507.99 189.48,511.47 181.69C512.1 180.27,513.65 176.2,514.56 173.56C514.73 173.08,515.12 171.73,515.43 170.56C515.73 169.39,516.32 167.31,516.73 165.93C517.92 161.9,518.31 159.97,519.15 154.13C519.33 152.92,519.61 151.05,519.78 149.97C521.6 138.42,521.51 123.28,519.54 111.25C519.31 109.84,518.94 107.42,518.73 105.88C518.22 102.23,517.87 100.44,517.1 97.69C516.76 96.45,516.14 94.17,515.72 92.63C515.3 91.08,514.64 89,514.26 88C513.88 87,513.18 85.05,512.72 83.67C511.08 78.77,507.9 71.91,505.05 67.08C504.73 66.54,504.13 65.42,503.71 64.6C502.13 61.45,501.34 60.26,495.16 51.88C494.28 50.67,493.19 49.15,492.74 48.5C491.39 46.54,482.04 37.1,479.06 34.69C474.27 30.82,469.02 26.84,466.75 25.38C465.43 24.52,463.49 23.26,462.44 22.58C459.11 20.41,453.22 17.13,452.67 17.13C452.64 17.13,452 16.79,451.26 16.38C449.23 15.27,443.37 12.71,439.29 11.16C435.31 9.65,434.87 9.5,431.85 8.75C430.72 8.47,428.92 7.96,427.85 7.61C421.41 5.55,413.25 3.9,405.91 3.19C404.81 3.08,401.75 2.77,399.1 2.5C385.88 1.16,382.76 0.9,377.16 0.69C374.48 0.58,371.22 0.44,369.91 0.37C367.57 0.24,351.83 -0.01,348.91 0.03C348.09 0.04,342.66 0.09,336.85 0.13ZM346.39 23.76C348.03 23.43,361.55 23.87,367.84 24.45C370.16 24.66,380.94 26.44,383.41 27.01C385.38 27.47,386.71 27.84,388.82 28.51C389.7 28.79,391.23 29.24,392.23 29.52C395.05 30.29,395.68 30.54,399.36 32.31C407.46 36.2,411.49 38.98,417.4 44.75C419.44 46.74,422.35 49.96,423.62 51.63C424.06 52.21,424.79 53.17,425.24 53.75C426.88 55.91,431.33 63.3,432.95 66.56C434.39 69.46,434.93 70.67,435.54 72.38C435.79 73.1,436.47 74.93,437.05 76.45C437.62 77.97,438.34 80.11,438.65 81.2C438.96 82.29,439.5 84.03,439.85 85.06C440.59 87.25,441.36 90.29,441.73 92.5C441.87 93.36,442.18 95.05,442.41 96.25C443.4 101.41,444.12 107.14,444.48 112.88C444.62 115.18,444.79 117.74,444.86 118.56C445.07 121.06,445.14 132.42,444.99 139.06C444.7 152.29,444.22 157.88,442.71 166.13C442.29 168.36,441.82 171.09,441.66 172.19C441.18 175.34,440.77 177.13,439.92 179.69C439.48 180.99,438.84 183.18,438.48 184.55C437.87 186.9,436.84 190.02,435.7 193C434.97 194.9,431.91 201.15,430.25 204.13C424.02 215.29,414.36 224.22,404.01 228.36C402.99 228.77,401.5 229.39,400.7 229.73C398.53 230.66,393.89 231.95,389.66 232.8C382.17 234.3,368.14 234.27,362.41 232.75C354.49 230.65,348.69 226.68,346.87 222.12C345.52 218.76,344.66 213.35,344.35 206.38C344.08 200.26,344.23 25.95,344.51 25.26C344.87 24.35,345.36 23.96,346.39 23.76ZM104.27 25.75C104.99 25.59,121.22 25.7,122.91 25.86C134.54 27.02,136.89 27.44,143.54 29.53C153.01 32.51,160.35 38.7,163.52 46.39C166.14 52.72,166.98 55.95,167.6 62.04C167.74 63.36,167.91 64.92,167.99 65.5C168.83 72.21,167.67 86.69,165.82 92.5C163.47 99.89,160.39 105.28,155.85 109.92C153.23 112.6,151.27 113.97,146.85 116.17C143.42 117.88,140.37 118.71,133.22 119.87C128.28 120.68,117.17 121.22,107.97 121.1C103.24 121.04,102.8 120.9,102.32 119.34C102.1 118.6,102.1 28.21,102.33 27.42C102.6 26.48,103.18 25.98,104.27 25.75Z"/></symbol>
+  <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3Z"/><path d="M9.3 8.6c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4l.7 1.7c.1.2 0 .4-.1.5l-.5.6c-.1.1-.2.3 0 .5a6 6 0 0 0 2.8 2.6c.2.1.4.1.5 0l.7-.8c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3 0 .3 0 .9-.3 1.3-.3.4-1.1.9-1.6.9-.6 0-1.6-.1-3.5-1.3a9 9 0 0 1-3.2-3.6c-.6-1-.6-1.8-.6-2.1 0-.5.3-1 .5-1.3Z"/></symbol>
+  <symbol id="i-arrow-ne" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+</svg>
+
+<header class="nav">
+  <div class="wrap nav__row">
+    <a class="lockup" href="../../index.html" aria-label="RICCA DESIGNS — на главную">
+      <svg class="lockup__mono" viewBox="0 0 521.1 256.9" aria-hidden="true"><use href="#rd-mono"/></svg>
+      <span class="lockup__rule" aria-hidden="true"></span>
+      <span class="lockup__text" aria-hidden="true">
+        <span class="lockup__name"><span>R</span><span>I</span><span>C</span><span>C</span><span>A</span></span>
+        <span class="lockup__sub">DESIGNS&nbsp;•&nbsp;ALMATY</span>
+      </span>
+    </a>
+    <nav class="nav__menu" aria-label="Разделы сайта">
+      <a href="../../index.html#catalog">Каталог</a>
+      <a href="../../index.html#works">Наши работы</a>
+      <a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener" aria-label="ELUNA — сайт матрасов (откроется в новой вкладке)">ELUNA<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg></a>
+      <a href="../../index.html#business">Для бизнеса</a>
+      <a href="../../index.html#showroom">Шоурум</a>
+    </nav>
+    <a class="nav__wa" href="https://wa.me/77084802047?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D0%BE%20%D0%BC%D0%B5%D0%B1%D0%B5%D0%BB%D0%B8%20RICCA%20%D0%BD%D0%B0%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7." aria-label="Написать в WhatsApp"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span aria-hidden="true">WhatsApp</span></a>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap hero__grid">
+      <div class="hero__text">
+        <h1 class="hero__h1" id="hero-title"><span class="hero__line">Мебель <em>по&nbsp;мерке</em></span> <span class="hero__line">вашего дома</span></h1>
+        <p class="hero__sub">Диваны, кровати и&nbsp;кресла на&nbsp;заказ. <span class="nowrap">Ателье в&nbsp;Алматы.</span></p>
+        <div class="hero__actions">
+          <a class="btn btn--fill" href="https://wa.me/77084802047?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D0%BE%20%D0%BC%D0%B5%D0%B1%D0%B5%D0%BB%D0%B8%20RICCA%20%D0%BD%D0%B0%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7."><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Написать в&nbsp;WhatsApp</a>
+          <a class="btn btn--line" href="../../index.html#catalog">Каталог</a>
+        </div>
+      </div>
+      <figure class="hero__fig">
+        <div class="hero__photo">
+          <img src="../../img/catalog/09-sofa-modular-sky-600.webp" srcset="../../img/catalog/09-sofa-modular-sky-600.webp 600w, ../../img/catalog/09-sofa-modular-sky.webp 1024w" sizes="(min-width: 900px) 460px, calc(100vw - 48px)" width="1024" height="1280" alt="Модульный диван с полукруглыми секциями в голубом велюре в светлой гостиной с лепниной" fetchpriority="high" decoding="async">
+          <span class="mark" aria-hidden="true">RICCA DESIGNS</span>
+        </div>
+      </figure>
+    </div>
+  </section>
+</main>
+
+<!-- слово интро: вне потока, только для глаз (без JS и при reduced-motion — display: none) -->
+<div class="intro-word" aria-hidden="true"><span>R</span><span>I</span><span>C</span><span>C</span><span>A</span></div>
+
+<script>
+/* Интро «Буквы». Хронометраж (мс от старта):
+   80–560    R I C C A проявляются по одной (шаг 50, 280 мс, подъём .18em); пауза — слово читается целиком
+   700–1220  слово сжимается в логотип шапки: FLIP каждой буквы к её месту в .lockup__name, все буквы разом —
+             слово остаётся ровной строкой, разрядка стягивается (ease-out)
+   680–860   в центре кадра прочерчивается щель в 1 px (из центра к краям)
+   860–1400  щель раскрывается до полного кадра; фото внутри — 1,06 → 1
+   1040–1580 заголовок, строка, кнопки; 1200–1560 остальная шапка; 1340–1580 метка RICCA DESIGNS
+   Итог 1580 мс (+ уборка в следующем кадре) ≤ 1600 мс. Любое касание / колесо / клавиша — мгновенно к финалу. */
+(function () {
+  var html = document.documentElement;
+  if (!html.classList.contains('intro')) return;
+  var DEBUG = /[?&]introdebug\b/.test(location.search);
+  var word = document.querySelector('.intro-word');
+  var anims = [], over = false;
+  var SKIP = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
+
+  function end() {
+    if (over) return; over = true;
+    clearTimeout(window.__introSafety);
+    SKIP.forEach(function (e) { removeEventListener(e, end, true); });
+    html.classList.remove('intro');            /* финальное состояние = обычные стили страницы */
+    anims.forEach(function (a) { a.cancel(); });
+    if (word) word.remove();
+  }
+  if (!word || !Element.prototype.animate || window.scrollY > 4) return end();
+  try { if (!DEBUG) sessionStorage.setItem('ricca:intro', '1'); } catch (e) {}
+  SKIP.forEach(function (e) { addEventListener(e, end, { capture: true, passive: true }); });
+
+  var fonts = document.fonts && document.fonts.load
+    ? Promise.all([document.fonts.load('400 30px Montserrat', 'RICCA'), document.fonts.load('400 60px Cormorant', 'Мебель')])
+    : Promise.resolve();
+  var late = new Promise(function (r) { setTimeout(r, 350, 'late'); });
+  Promise.race([fonts, late]).then(function (res) {
+    if (over) return;
+    if (res === 'late') return end();           /* шрифт не успел — без интро, чтобы не было подмены гарнитуры на глазах */
+    requestAnimationFrame(run);
+  }, end);
+
+  function run() {
+    if (over) return;
+    var OUT = 'cubic-bezier(.22,1,.36,1)', SOFT = 'cubic-bezier(.33,1,.68,1)', EXPO = 'cubic-bezier(.16,1,.3,1)';
+    function A(el, kf, o) {
+      if (!el) return;
+      o.fill = 'both'; if (!o.easing) o.easing = OUT;
+      var a = el.animate(kf, o); anims.push(a); return a;
+    }
+    var src = [].slice.call(word.children);
+    var dst = [].slice.call(document.querySelectorAll('.lockup__name > span'));
+    var photo = document.querySelector('.hero__photo');
+
+    /* все замеры — до создания анимаций (заливка «назад» сдвинула бы рамки) */
+    var fly = src.map(function (s, i) {
+      var a = s.getBoundingClientRect(), b = dst[i].getBoundingClientRect();
+      return { dx: (b.left + b.width / 2) - (a.left + a.width / 2), dy: (b.top + b.height / 2) - (a.top + a.height / 2), k: b.height / a.height };
+    });
+    var pr = photo.getBoundingClientRect(), h2 = pr.height / 2, w2 = pr.width / 2;
+
+    /* 1. буквы по одной: opacity + свойство translate (отдельно от transform полёта — анимации не спорят) */
+    src.forEach(function (s, i) {
+      A(s, [{ opacity: 0, translate: '0 .18em' }, { opacity: 1, translate: '0 0' }], { duration: 280, delay: 80 + i * 50, easing: SOFT });
+    });
+    /* 2. слово сжимается в логотип: каждая буква летит к своей букве в шапке, все разом (без шага — иначе слово рассыпается «лесенкой») */
+    var FLY = 700, FLY_DUR = 520, flyEnd = FLY + FLY_DUR;
+    src.forEach(function (s, i) {
+      var f = fly[i];
+      A(s, [{ transform: 'none' }, { transform: 'translate(' + f.dx + 'px,' + f.dy + 'px) scale(' + f.k + ')' }], { duration: FLY_DUR, delay: FLY });
+    });
+    /* передача: настоящий логотип включается под приземлившимися буквами, слово интро гаснет поверх — без провала яркости */
+    A(document.querySelector('.lockup__name'), [{ opacity: 0 }, { opacity: 1 }], { duration: 1, delay: flyEnd - 1, easing: 'linear' });
+    A(word, [{ opacity: 1 }, { opacity: 0 }], { duration: 120, delay: flyEnd, easing: 'linear' });
+
+    /* 3. щель → полный кадр (clip-path в px: интерполяция без calc) */
+    A(photo, [
+      { clipPath: 'inset(' + h2 + 'px ' + w2 + 'px ' + h2 + 'px ' + w2 + 'px)', easing: SOFT },
+      { clipPath: 'inset(' + (h2 - .5) + 'px 0px ' + (h2 - .5) + 'px 0px)', offset: .25, easing: EXPO },
+      { clipPath: 'inset(0px 0px 0px 0px)' }
+    ], { duration: 720, delay: 680, easing: 'linear' });
+    A(photo.querySelector('img'), [{ transform: 'scale(1.06)' }, { transform: 'none' }], { duration: 900, delay: 680, easing: EXPO });
+    A(photo.querySelector('.mark'), [{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: 1340, easing: 'linear' });
+
+    /* 4. текст первого экрана и остальная шапка */
+    var up = [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }];
+    [].forEach.call(document.querySelectorAll('.hero__line'), function (el, i) { A(el, up, { duration: 480, delay: 1040 + i * 50 }); });
+    A(document.querySelector('.hero__sub'), up, { duration: 440, delay: 1120 });
+    A(document.querySelector('.hero__actions'), up, { duration: 420, delay: 1160 });
+    ['.lockup__mono', '.lockup__rule', '.lockup__sub', '.nav__menu', '.nav__wa'].forEach(function (sel) {
+      A(document.querySelector(sel), [{ opacity: 0 }, { opacity: 1 }], { duration: 360, delay: 1200, easing: SOFT });
+    });
+
+    if (DEBUG) {   /* ?introdebug — для раскадровки: стоп на t = 0, перемотка window.__intro.seek(ms) */
+      anims.forEach(function (a) { a.pause(); a.currentTime = 0; });
+      window.__intro = { seek: function (t) { anims.forEach(function (a) { a.currentTime = t; }); }, end: end, total: 1580 };
+      return;
+    }
+    Promise.all(anims.map(function (a) { return a.finished; })).then(end, function () {});
+  }
+})();
+</script>
+</body>
+</html>

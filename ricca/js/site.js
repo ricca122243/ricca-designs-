@@ -1,6 +1,6 @@
-/* RICCA DESIGNS — сайт «Chapitres». Ванильный JS без библиотек.
-   Порядок: CONFIG (контакты и тексты WhatsApp) → шапка, меню, якоря → появления → диалоги → фильм по главам → образцы
-   → доставка → «Наши работы» и лайтбокс → каталог (данные — js/catalog-data.js) и окно изделия → «Подборка» → липкая плашка.
+/* RICCA DESIGNS — сайт «галерея». Ванильный JS без библиотек. Вход «Буквы» — отдельный скрипт в конце index.html.
+   Порядок: CONFIG (контакты и тексты WhatsApp) → шапка, меню, якоря → появления → диалоги → фильм по главам
+   → «Наши работы» и лайтбокс → каталог (данные — js/catalog-data.js) и окно изделия → «Подборка» → липкая плашка.
    Единственный владелец ссылок [data-wa] / [data-tel] — этот файл. ELUNA на сайте RICCA — только карточка-коллаборация и внешние
    ссылки на сайт ELUNA (решение заказчика 9 октября). */
 (() => {
@@ -23,6 +23,7 @@
       master: 'Здравствуйте! У меня вопрос к мастеру RICCA.',
       chairs: 'Здравствуйте! Подберите, пожалуйста, стулья или обеденную группу. Комната и число мест: …',
       storage: 'Здравствуйте! Интересует стеллаж или комод в пару к мебели. Пришлите, пожалуйста, варианты.',
+      fabrics: 'Здравствуйте! Хочу подобрать ткань. Пришлите, пожалуйста, подборку образцов.',
       fabric: (name) => `Здравствуйте! Хочу подобрать ткань в шоуруме. На сайте понравилась фактура «${name}».`,
       city: (city) => `Здравствуйте! Уточните, пожалуйста, условия доставки в город ${city}.`
     },
@@ -171,9 +172,6 @@
     go();
   });
 
-  /* пять шагов на телефоне — горизонтальная лента: доступна с клавиатуры как один именованный стоп (на компьютере — обычный список) */
-  const howSteps = $('.how__steps');
-  if (howSteps) { const setSteps = () => { if (mqPhone.matches) howSteps.tabIndex = 0; else howSteps.removeAttribute('tabindex'); }; setSteps(); mqPhone.addEventListener('change', setSteps); }
 
   /* ---------- Первый экран и появления: контент виден по умолчанию; прячем только то, что ниже экрана ---------- */
   const fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
@@ -357,121 +355,27 @@
     document.addEventListener('visibilitychange', () => { if (document.hidden) { clearTimeout(timer); vids.forEach((v) => v.pause()); } else if (inView && auto && vids[front].src) { safePlay(vids[front]); schedule(); } });
   }
 
-  /* ---------- Материалы: образцы (radiogroup, roving tabindex) → большой образец, WhatsApp, «В подборку» ---------- */
-  const TEXES = ['boucle', 'chenille', 'velour', 'matting', 'tweed', 'plain', 'pattern'];   // img/catalog/tex-*.webp — кадры живых тканей из фото № 34 и 39
-  const swWrap = $('[data-swatches]');
-  let fabricHref = waUrl(CONFIG.msg.fabric('букле'));
-  if (swWrap) {
-    const btns = $$('.swatch', swWrap);
-    const nameEl = $('[data-sample-name]'), toneEl = $('[data-sample-tone]'), descEl = $('[data-sample-desc]'), tex = $('[data-sample-tex]');
-    const cta = $('[data-fabric-cta]'), ctaLabel = $('[data-fabric-cta-label]'), heart = $('[data-fabric-heart]');
-    const pick = (i, focus) => {
-      btns.forEach((b, j) => { b.setAttribute('aria-checked', String(j === i)); b.tabIndex = j === i ? 0 : -1; });
-      const b = btns[i];
-      nameEl.textContent = b.dataset.name; toneEl.textContent = b.dataset.tone; descEl.textContent = b.dataset.desc;
-      tex.style.backgroundImage = `url(img/catalog/tex-${b.dataset.tex}.webp)`;
-      fabricHref = waUrl(CONFIG.msg.fabric(b.dataset.name.toLowerCase()));
-      if (cta) cta.href = fabricHref;
-      if (ctaLabel) ctaLabel.textContent = `Спросить про ${b.dataset.acc}`;
-      if (heart) {
-        heart.dataset.slId = `fabric-${b.dataset.tex}`; heart.dataset.slTitle = `Ткань · ${b.dataset.name}`;
-        heart.setAttribute('aria-label', `В подборку: ткань ${b.dataset.name.toLowerCase()}`);
-        if (slReady) syncShortlist();
-      }
-      if (focus) b.focus();
-    };
-    // 7 образцов (~340 КБ) не спорят с первым экраном: класс .tex-on (CSS подставляет фоны) — когда «Материалы» в экране от нас
-    const texHost = swWrap.closest('section') || document.body;
-    const texOn = () => texHost.classList.add('tex-on');
-    if (hasIO) { const tio = new IntersectionObserver((en) => { if (en.some((x) => x.isIntersecting)) { texOn(); tio.disconnect(); } }, { rootMargin: '0px 0px 100% 0px' }); tio.observe(texHost); }
-    else texOn();
-    btns.forEach((b, i) => b.addEventListener('click', () => pick(i, false)));
-    swWrap.addEventListener('keydown', (e) => {
-      const i = btns.indexOf(document.activeElement);
-      if (i < 0) return;
-      let n = -1;
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = (i + 1) % btns.length;
-      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = (i - 1 + btns.length) % btns.length;
-      else if (e.key === 'Home') n = 0; else if (e.key === 'End') n = btns.length - 1;
-      if (n >= 0) { e.preventDefault(); pick(n, true); }
-    });
-    if (cta) cta.href = fabricHref;
-  }
+  /* ---------- Материалы: вопрос про ткани (липкая плашка в «Материалах» ведёт сюда) ---------- */
+  const TEXES = ['boucle', 'chenille', 'velour', 'matting', 'tweed', 'plain', 'pattern'];   // образцы прошлой версии — для старых позиций «Подборки»
+  const fabricHref = waUrl(CONFIG.msg.fabrics);
 
-  /* ---------- Доставка: карта и города (координаты — % кадра 2080 × 1174) ---------- */
-  (function delivery() {
-    const box = $('#cities'), nameEl = $('#cityName'), termsEl = $('#cityTerms'), waEl = $('#cityWa'), waName = $('#cityWaName'), chipsBox = $('#cityChips');
-    if (!box) return;
-    const CITIES = [['Алматы', 73.21, 78.03], ['Астана', 61.0, 31.37], ['Шымкент', 56.87, 83.31], ['Караганда', 64.63, 39.39], ['Актобе', 29.26, 36.58], ['Тараз', 60.82, 80.02], ['Павлодар', 73.26, 24.79], ['Усть-Каменогорск', 85.84, 38.55], ['Семей', 80.5, 35.83], ['Атырау', 17.61, 55.34], ['Костанай', 43.63, 19.33], ['Кызылорда', 47.8, 68.53], ['Уральск', 16.38, 31.16], ['Петропавловск', 55.86, 9.61], ['Актау', 16.0, 75.6], ['Талдыкорган', 76.38, 67.57], ['Кокшетау', 56.44, 18.93], ['Туркестан', 53.89, 77.69]];
-    const dots = CITIES.map(([c, x, y]) => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.className = 'city' + (x > 70 ? ' city--home' : '');
-      b.style.setProperty('--x', `${x}%`); b.style.setProperty('--y', `${y}%`);
-      b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', 'false');
-      b.setAttribute('aria-label', c);
-      b.innerHTML = `<i aria-hidden="true"></i><span aria-hidden="true">${c}</span>`;
-      b.addEventListener('click', () => pick(c, true));
-      box.appendChild(b);
-      return b;
-    });
-    // карта на десктопе — одна группа радиокнопок (одна остановка Tab, стрелки/Home/End), как чипы на телефоне
-    box.setAttribute('role', 'radiogroup'); box.setAttribute('aria-label', 'Город доставки на карте');
-    const dotsMode = () => { const m = isMobile(); box.setAttribute('aria-hidden', String(m)); dots.forEach((b) => { b.tabIndex = !m && b.getAttribute('aria-checked') === 'true' ? 0 : -1; }); };
-    mq.addEventListener('change', dotsMode);
-    const chips = CITIES.map(([c]) => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', 'false'); b.tabIndex = -1;
-      b.textContent = c;
-      b.addEventListener('click', () => pick(c, true));
-      chipsBox.appendChild(b);
-      return b;
-    });
-    const centerChip = (b, smooth) => { if (!chipsBox.clientWidth) return; chipsBox.scrollTo({ left: b.offsetLeft - (chipsBox.clientWidth - b.offsetWidth) / 2, behavior: smooth && !reduceMotion ? 'smooth' : 'instant' }); };
-    const rove = (list) => (e) => {
-      const i = list.indexOf(document.activeElement);
-      if (i < 0) return;
-      let n = -1;
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = (i + 1) % list.length;
-      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = (i - 1 + list.length) % list.length;
-      else if (e.key === 'Home') n = 0; else if (e.key === 'End') n = list.length - 1;
-      if (n >= 0) { e.preventDefault(); pick(CITIES[n][0], true); list[n].focus({ preventScroll: true }); }
-    };
-    chipsBox.addEventListener('keydown', rove(chips));
-    box.addEventListener('keydown', rove(dots));
-    function pick(c, byUser) {
-      dots.forEach((b, i) => { const on = CITIES[i][0] === c; b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); });
-      dotsMode();
-      chips.forEach((b, i) => { const on = CITIES[i][0] === c; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; if (on) centerChip(b, byUser); });
-      nameEl.textContent = c; waName.textContent = c;
-      // TODO (заказчик): сроки, стоимость, доставка и установка мебели по городам (и в Алматы) — до ответа одинаково честное «называем при заказе»
-      if (termsEl) termsEl.textContent = 'Условия называем при заказе';
-      waEl.href = waUrl(CONFIG.msg.city(c));
-    }
-    pick('Алматы', false);
-    resizeHooks.push(() => centerChip(chips.find((b) => b.getAttribute('aria-checked') === 'true') || chips[0], false));
-  })();
-
-  /* ---------- Номера глав: подряд по видимым главам; меню повторяет номера ---------- */
   const pad2 = (n) => String(n).padStart(2, '0');
   const plural3 = (n, f) => f[n % 10 === 1 && n % 100 !== 11 ? 0 : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2)];
-  function renumberChapters() {
-    let n = 0;
-    $$('.folio > b').forEach((b) => { if (!b.closest('[hidden]')) b.textContent = pad2(++n); });
-    $$('#menu .menu__list a').forEach((a) => { const t = document.getElementById(a.getAttribute('href').slice(1)), f = t && $('.folio > b', t), sm = $('small', a); if (f && sm) sm.textContent = f.textContent; });
-  }
-  renumberChapters();
 
-  /* ---------- «Наши работы»: 7 работ сразу (телефон — 3), остальные по кнопке; лайтбокс — фото целиком ---------- */
+  /* ---------- «Наши работы»: 9 работ сразу (телефон — 6), остальные по кнопке; лайтбокс — фото целиком ----------
+     На странице у работы только фото и комната; изделие, описание и текст WhatsApp лежат в data-атрибутах <figure> и видны в лайтбоксе. */
   const worksSec = $('#works'), worksMore = $('[data-works-more]');
+  const plain = (t) => String(t || '').replace(/\u00a0/g, ' ');
   const WORKS = $$('.work[data-work]').map((f, i) => {
-    const img = $('img', f), wa = $('a[data-wa-text]', f), h = $('.heart', f), go = $('[data-item]', f);
+    const img = $('img', f), d = f.dataset;
     const set = img ? (img.getAttribute('srcset') || '').split(',').pop().trim().split(' ')[0] : '';
+    const n = pad2(i + 1), label = d.piece ? `${plain(d.room)} · ${plain(d.piece)}` : plain(d.room);
     return {
-      el: f, n: pad2(i + 1), title: $('.work__title', f).innerHTML, what: $('.work__what', f).innerHTML,
+      el: f, n, room: d.room || '', piece: d.piece || '', what: d.what || '',
       alt: img ? img.alt : '', src: set || (img ? img.getAttribute('src') : ''), small: img ? img.getAttribute('src') : '',
       w: img ? +img.getAttribute('width') || 1200 : 1200, h: img ? +img.getAttribute('height') || 1500 : 1500,
-      wa: wa ? wa.href : waUrl(CONFIG.msg.projects), item: go ? go.dataset.item : '',
-      sl: h ? { id: h.dataset.slId, title: h.dataset.slTitle, meta: h.dataset.slMeta } : null
+      wa: d.waHref || waUrl(CONFIG.msg.projects), item: d.go || '',
+      sl: { id: `work-${n}`, title: label, meta: 'Наши работы' }
     };
   });
   if (worksSec && worksMore) {
@@ -505,7 +409,10 @@
     img.onerror = () => { if (p.small && img.getAttribute('src') !== p.small) img.src = p.small; else img.hidden = true; };
     img.alt = p.alt; img.width = p.w; img.height = p.h;
     img.src = p.src;
-    $('#lb-n').textContent = p.n; $('#lb-title').innerHTML = p.title; $('#lb-what').innerHTML = p.what;
+    const piece = document.createElement('span'); piece.textContent = p.piece;
+    const sep = document.createElement('i'); sep.className = 'sr-only'; sep.textContent = ' · ';
+    $('#lb-title').replaceChildren(document.createTextNode(p.room), ...(p.piece ? [sep, piece] : []));
+    $('#lb-what').textContent = p.what;
     $('#lb-wa').href = p.wa;
     const go = $('#lb-item'); go.dataset.item = p.item; go.hidden = !p.item;
     const hb = $('#lb-heart');
@@ -548,45 +455,40 @@
   const fitZoom = (p, frameAR, fill = 0.78) => {
     if (!p || !p.studio || !Array.isArray(p.box) || !p.w || !p.h) return p && p.zoom ? p.zoom : 1;
     const ar = p.w / p.h, iw = Math.min(1, ar / frameAR), ih = Math.min(1, frameAR / ar);
-    return Math.max(1, Math.min(fill / (p.box[0] * iw), 0.8 / (p.box[1] * ih), 2.2));
+    return Math.max(1, Math.min(fill / (p.box[0] * iw), Math.min(0.8, fill + 0.04) / (p.box[1] * ih), 2.2));
   };
   const itemWa = (it) => waUrl(it.wa || `Здравствуйте! Интересует ${lcFirst(labelOf(it))}. Подскажите, пожалуйста, цену и что нужно для расчёта.`);
   const slOf = (it) => ({ id: `item-${it.id}`, title: labelOf(it), meta: catLabel(it.category) });
   const isPhotoCover = (it) => !it.photos[0].studio;
 
-  // карточка: фото, категория, название, подзаголовок, «Подробнее» и «Узнать цену»; варианты (options) — только в окне «Подробнее»,
-  // в карточке они повторяли подзаголовок и три общие фразы
+  // карточка — минимум текста: фото, название (кнопка окна изделия, растянута на всю карточку), одна строка и значок WhatsApp;
+  // категория, варианты, характеристики и «Узнать цену» словами — в окне изделия
   function cardEl(it) {
     const art = document.createElement('article');
     art.className = 'pcard';
     art.dataset.id = it.id;
-    const p1 = it.photos[0], p2 = it.photos[1], lbl = labelOf(it), sl = slOf(it), named = isNamed(it);
-    // без названия модели ткань идёт в строку названия курсивом — в сетке нет двух одинаковых заголовков
-    const nameHTML = !named && it.subtitle ? `${typo(it.name)}<span class="pcard__fab"> · <em>${typo(lcFirst(it.subtitle))}</em></span>` : typo(it.name);
-    const sizes = (z) => `(min-width: 1360px) ${Math.round(310 * z)}px, (min-width: 900px) ${Math.round(30 * z)}vw, ${Math.round(50 * z)}vw`;
+    const p1 = it.photos[0], p2 = it.photos[1], lbl = labelOf(it), sl = slOf(it);
+    const sizes = (z) => `(min-width: 1200px) ${Math.round(280 * z)}px, (min-width: 900px) ${Math.round(30 * z)}vw, ${Math.round(46 * z)}vw`;
     const img = (p, extra, later) => {
-      const z = fitZoom(p, 0.8), st = [];
+      const z = fitZoom(p, 0.8, 0.7), st = [];
       if (z !== 1) st.push(`--z:${z.toFixed(3)}`);
       if (p.pos) st.push(`object-position:${p.pos}`, `--zo:${p.pos}`);
       const a = later ? 'data-' : '';
       const set = p.src600 ? ` ${a}srcset="${esc(p.src600)} 600w, ${esc(p.src)} ${p.w || 1200}w" sizes="${sizes(z)}"` : '';
       return `<img class="pcard__img${p.studio ? ' is-studio' : ''}${extra}" ${a}src="${esc(p.src600 || p.src)}"${set} alt="${later ? '' : esc(p.alt || lbl)}"${later ? ' aria-hidden="true"' : ''} width="${p.w || 1200}" height="${p.h || 1500}" loading="lazy" decoding="async"${st.length ? ` style="${st.join(';')}"` : ''}>`;
     };
-    const notes = it.badge || '';
     art.innerHTML = `<div class="pcard__media${p1.studio ? '' : ' is-photo'}${p2 ? ' has-2' : ''}" data-item="${esc(it.id)}">`
       + img(p1, '', false)
       + (p2 ? img(p2, ` pcard__img--2${p2.studio ? '' : ' is-photo-2'}`, true) : '')
       + `<span class="mark" aria-hidden="true">RICCA DESIGNS</span>`
       + `<button class="heart pcard__heart" type="button" data-sl-id="${esc(sl.id)}" data-sl-title="${esc(sl.title)}" data-sl-meta="${esc(sl.meta)}" aria-pressed="false" aria-label="В подборку: ${esc(lbl)}"><svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg></button></div>`
-      + `<div class="pcard__body"><p class="pcard__eb">${esc(catLabel(it.category))}</p><h3 class="pcard__name" data-item="${esc(it.id)}">${nameHTML}</h3>`
-      + (it.subtitle && named ? `<p class="pcard__sub" data-item="${esc(it.id)}">${typo(it.subtitle)}</p>` : '')
-      + (notes ? `<p class="pcard__note">${esc(notes)}</p>` : '')
-      + `<div class="pcard__actions"><button class="button button--outline button--sm pcard__more" type="button" data-item="${esc(it.id)}" aria-label="Подробнее: ${esc(lbl)}">Подробнее</button>`
-      + `<a class="pcard__price" href="${esc(itemWa(it))}" target="_blank" rel="noopener" aria-label="Узнать цену в WhatsApp: ${esc(lbl)}"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Узнать цену</a></div></div>`;
+      + `<div class="pcard__body"><h3 class="pcard__name"><button class="pcard__more" type="button" data-item="${esc(it.id)}" aria-haspopup="dialog">${typo(it.name)}</button></h3>`
+      + (it.subtitle ? `<p class="pcard__sub">${typo(it.subtitle)}</p>` : '')
+      + `<a class="pcard__wa" href="${esc(itemWa(it))}" target="_blank" rel="noopener" aria-label="Узнать цену в WhatsApp: ${esc(lbl)}"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg></a></div>`;
     // второе фото — только по наведению мышью (на телефоне не грузим лишнего), плавная смена после загрузки
     const im2 = $('.pcard__img--2', art);
     if (im2) {
-      $('.pcard__media', art).addEventListener('pointerenter', (e) => {
+      art.addEventListener('pointerenter', (e) => {
         if (e.pointerType !== 'mouse' || !im2.dataset.src) return;
         im2.addEventListener('load', () => im2.classList.add('is-loaded'), { once: true });
         if (im2.dataset.srcset) { im2.sizes = im2.getAttribute('sizes'); im2.srcset = im2.dataset.srcset; }
@@ -768,6 +670,7 @@
     const prev = $('[data-pd-prev]', dlg), next = $('[data-pd-next]', dlg), count = $('[data-pd-count]', dlg), thumbsBox = $('[data-pd-thumbs]', dlg);
     const eb = $('[data-pd-eb]', dlg), title = $('[data-pd-title]', dlg), sub = $('[data-pd-sub]', dlg), badge = $('[data-pd-badge]', dlg);
     const desc = $('[data-pd-desc]', dlg), chips = $('[data-pd-chips]', dlg), passport = $('[data-pd-passport]', dlg), wa = $('[data-pd-wa]', dlg), heart = $('[data-pd-heart]', dlg);
+    const more = $('[data-pd-more]', dlg);   // варианты и характеристики — свёрнуты
     let cur = null, idx = 0, thumbs = [];
     function layout() {
       const p = cur && cur.photos[idx];
@@ -807,7 +710,7 @@
       if (!it) return false;
       cur = it;
       const tags = CATS[it.category] && CATS[it.category].tags ? (it.tags || []).map((k) => CATS[it.category].tags[k]).filter(Boolean) : [];
-      eb.innerHTML = [catLabel(it.category)].concat(tags.slice(0, 1)).map((t) => `<span>${esc(t)}</span>`).join('');
+      eb.textContent = [catLabel(it.category)].concat(tags.slice(0, 1)).join(' · ');
       title.innerHTML = typo(it.name);
       sub.innerHTML = it.subtitle ? typo(it.subtitle) : ''; sub.hidden = !it.subtitle;
       const notes = it.badge || '';
@@ -817,6 +720,8 @@
       const wood = it.category === 'tables' || it.category === 'storage';
       const rows = [['Размеры', it.sizes], [wood ? 'Материал' : 'Ткань и&nbsp;кожа', it.materials], ['Наполнение', it.filling], ['Механизм', it.mechanism], ['Срок', it.lead], ['Гарантия', it.warranty], ['Доставка', it.delivery]].filter((r) => r[1]);
       passport.innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${typo(v)}</dd></div>`).join('');
+      passport.hidden = !rows.length;
+      if (more) { more.open = false; more.hidden = !rows.length && !(it.options || []).length; }
       wa.href = itemWa(it);
       const sl = slOf(it);
       heart.dataset.slId = sl.id; heart.dataset.slTitle = sl.title; heart.dataset.slMeta = sl.meta;
