@@ -661,9 +661,9 @@ dl.spec { display: grid; margin-top: var(--sp-6); border-top: 1px solid var(--li
 .reel__v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .9s var(--ease-out); filter: grayscale(1) contrast(1.04); background: #0C0C0E; }
 .reel__v.is-on { opacity: 1; }
 .reel__hud { position: absolute; left: 0; right: 0; top: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 10px 0 14px; z-index: 2; color: #F7F5F0; background: linear-gradient(rgba(12,12,14,.5), rgba(12,12,14,0)); }
-.reel__count { font: 500 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+.reel__count { font: 500 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; padding: 8px 10px; background: rgba(12,12,14,.62); }   /* своя подложка: на светлом кадре ≥ 4.5:1 и без градиента */
 .reel__count b { font-weight: 600; }
-.reel__toggle { min-height: 44px; min-width: 44px; padding: 0 12px; font: 600 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: #F7F5F0; border: 1px solid rgba(247,245,240,.4); background: rgba(12,12,14,.35); }
+.reel__toggle { min-height: 44px; min-width: 44px; padding: 0 12px; font: 600 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: #F7F5F0; border: 1px solid rgba(247,245,240,.4); background: rgba(12,12,14,.62); }
 .reel__rail { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: rgba(247,245,240,.2); z-index: 2; }
 .reel__rail-i { position: absolute; inset: 0; background: #F7F5F0; transform-origin: 0 50%; transform: scaleX(.1); transition: transform .6s var(--ease-out); }
 .reel__desc { position: relative; min-height: 3.2em; margin-top: 16px; font: italic 500 18px/1.4 var(--serif); color: var(--ink); }
@@ -718,6 +718,15 @@ dl.spec { display: grid; margin-top: var(--sp-6); border-top: 1px solid var(--li
 .care li::before { content: ""; position: absolute; left: 0; top: .78em; width: 10px; height: 1px; background: var(--ink); }
 .mat__try { display: grid; gap: var(--sp-3); align-content: start; }
 .sample { display: grid; grid-template-columns: minmax(150px, 240px) 1fr; gap: var(--sp-3); align-items: end; }
+/* фактуры грузятся, когда «Материалы» в экране от нас (JS ставит .tex-on); без JS — сразу */
+.no-js .sample__tex, .tex-on .sample__tex { background-image: url(../img/mono/tex-boucle-g.webp); }
+.no-js .swatch[data-tex="boucle-g"], .tex-on .swatch[data-tex="boucle-g"] { background-image: url(../img/mono/tex-boucle-g.webp); }
+.no-js .swatch[data-tex="chenille-g"], .tex-on .swatch[data-tex="chenille-g"] { background-image: url(../img/mono/tex-chenille-g.webp); }
+.no-js .swatch[data-tex="velour-g"], .tex-on .swatch[data-tex="velour-g"] { background-image: url(../img/mono/tex-velour-g.webp); }
+.no-js .swatch[data-tex="matting-g"], .tex-on .swatch[data-tex="matting-g"] { background-image: url(../img/mono/tex-matting-g.webp); }
+.no-js .swatch[data-tex="linen-g"], .tex-on .swatch[data-tex="linen-g"] { background-image: url(../img/mono/tex-linen-g.webp); }
+.no-js .swatch[data-tex="matting-s"], .tex-on .swatch[data-tex="matting-s"] { background-image: url(../img/mono/tex-matting-s.webp); }
+.no-js .swatch[data-tex="leather-g"], .tex-on .swatch[data-tex="leather-g"] { background-image: url(../img/mono/tex-leather-g.webp); }
 .sample__tex { aspect-ratio: 1; background-color: var(--paper-2); background-size: 256px; background-repeat: repeat; background-blend-mode: multiply; border: 1px solid var(--line-2); transition: background-image .3s; }
 .sample__cap { display: grid; gap: 4px; }
 .sample__cap b { font: 400 clamp(30px, 3vw, 44px)/1.05 var(--serif); color: var(--ink); }
@@ -813,6 +822,7 @@ dl.spec { display: grid; margin-top: var(--sp-6); border-top: 1px solid var(--li
 .contacts__showroom { display: grid; gap: var(--sp-3); justify-items: start; }
 .contacts__showroom .h2 { font-variation-settings: 'wght' 450; font-weight: 450; }
 .contacts__showroom .frame { max-width: 360px; width: 100%; }
+@media (min-width: 900px) { .contacts__showroom .frame { max-width: 400px; } .contacts__showroom .frame img { aspect-ratio: 3 / 2; } }   /* фото ниже — колонки кончаются вровень */
 .contacts__list { display: grid; gap: 4px; padding-top: 28px; }
 .contacts__list dt { font: 500 12px/1.5 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin-top: 18px; }
 .contacts__list dt:first-child { margin-top: 0; }
@@ -823,10 +833,11 @@ dl.spec { display: grid; margin-top: var(--sp-6); border-top: 1px solid var(--li
 .contacts__mail a { color: var(--ink); }
 .contacts__hours { margin: 18px 0 28px; font-size: 17px; color: var(--ink-2); }
 .contacts__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 36px; padding-top: 32px; }
+.contacts__visit { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; flex-basis: 100%; padding-bottom: 8px; }
 .social { display: flex; align-items: center; gap: 24px; }
 .social a { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; color: var(--ink-2); transition: color var(--dur-fast); }
 .social a:hover { color: var(--ink); }
-@media (max-width: 599px) { .button--ask { width: 100%; } .contacts__showroom .frame { max-width: 100%; padding: 8px; } .contacts__showroom .frame img { aspect-ratio: 3 / 2; } .contacts__grid { gap: var(--sp-5); } }
+@media (max-width: 599px) { .button--ask { width: 100%; } .contacts__visit .button--fill { width: 100%; } .contacts__showroom .frame { max-width: 100%; padding: 8px; } .contacts__showroom .frame img { aspect-ratio: 3 / 2; } .contacts__grid { gap: var(--sp-5); } }
 .footer { padding-block: var(--section-tight) var(--sp-5); border-top: 1px solid var(--line); }
 .footer__grid { display: grid; gap: var(--sp-5) var(--col-gap); padding-bottom: var(--sp-5); }
 @media (min-width: 900px) { .footer__grid { grid-template-columns: 4fr 1fr 2fr 2fr 2fr; } .footer__col--cat { grid-column: 3; } }
@@ -925,6 +936,7 @@ dialog::backdrop { background: rgba(17,17,17,.4); }
 /* ---------- появление: контент виден по умолчанию; эффект — только у того, что ниже экрана при загрузке ---------- */
 .js .reveal.is-pre { opacity: 0; transform: translateY(20px); }
 .reveal { transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out); }
+.js .reveal.is-pre:focus-within { opacity: 1; transform: none; transition: none; }   /* Tab не попадает в невидимое */
 .no-js .hero__line > span, .no-js .hero__fig img { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

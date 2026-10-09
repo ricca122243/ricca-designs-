@@ -321,6 +321,17 @@
     let sweepRaf = 0;
     const sweep = () => { sweepRaf = 0; const lim = window.innerHeight; $$('.reveal.is-pre').forEach((el) => { if (el.getBoundingClientRect().top < lim) { io.unobserve(el); el.style.transitionDelay = ''; show(el); } }); };
     window.addEventListener('scroll', () => { if (!sweepRaf) sweepRaf = requestAnimationFrame(sweep); }, { passive: true });
+    // фокус с клавиатуры не ждёт появления: блок с фокусом сразу виден целиком (и тот, что ещё проявляется)
+    document.addEventListener('focusin', (e) => {
+      let el = e.target.closest && e.target.closest('.reveal');
+      while (el) {
+        if (el.classList.contains('is-pre') || el.style.transitionDelay || getComputedStyle(el).opacity !== '1') {
+          io.unobserve(el); el.style.transition = 'none'; el.style.transitionDelay = ''; show(el);
+          const r = el; requestAnimationFrame(() => requestAnimationFrame(() => { r.style.transition = ''; }));
+        }
+        el = el.parentElement && el.parentElement.closest('.reveal');
+      }
+    }, true);
   }
   (function countUp() {
     const els = $$('[data-count]');
@@ -984,6 +995,11 @@
       }
       if (focus) b.focus();
     };
+    // 7 фактур (~35 КБ) не спорят с первым экраном: класс .tex-on (CSS подставляет фоны) — когда «Материалы» в экране от нас
+    const texHost = swWrap.closest('section') || document.body;
+    const texOn = () => texHost.classList.add('tex-on');
+    if (hasIO) { const tio = new IntersectionObserver((en) => { if (en.some((x) => x.isIntersecting)) { texOn(); tio.disconnect(); } }, { rootMargin: '0px 0px 100% 0px' }); tio.observe(texHost); }
+    else texOn();
     btns.forEach((b, i) => b.addEventListener('click', () => pick(i, false)));
     swWrap.addEventListener('keydown', (e) => {
       const i = btns.indexOf(document.activeElement);
@@ -1006,15 +1022,17 @@
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'city' + (x > 70 ? ' city--home' : '');
       b.style.setProperty('--x', `${x}%`); b.style.setProperty('--y', `${y}%`);
-      b.setAttribute('aria-pressed', 'false');
-      b.setAttribute('aria-label', `Доставка в город ${c}`);
+      b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', 'false');
+      b.setAttribute('aria-label', c);
       b.innerHTML = `<i aria-hidden="true"></i><span aria-hidden="true">${c}</span>`;
       b.addEventListener('click', () => pick(c, true));
       box.appendChild(b);
       return b;
     });
-    const dotsMode = () => { const m = isMobile(); box.setAttribute('aria-hidden', String(m)); dots.forEach((b) => { b.tabIndex = m ? -1 : 0; }); };
-    dotsMode(); mq.addEventListener('change', dotsMode);
+    // карта на десктопе — одна группа радиокнопок (одна остановка Tab, стрелки/Home/End), как чипы на телефоне
+    box.setAttribute('role', 'radiogroup'); box.setAttribute('aria-label', 'Город доставки на карте');
+    const dotsMode = () => { const m = isMobile(); box.setAttribute('aria-hidden', String(m)); dots.forEach((b) => { b.tabIndex = !m && b.getAttribute('aria-checked') === 'true' ? 0 : -1; }); };
+    mq.addEventListener('change', dotsMode);
     const chips = CITIES.map(([c]) => {
       const b = document.createElement('button');
       b.type = 'button'; b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', 'false'); b.tabIndex = -1;
@@ -1024,17 +1042,20 @@
       return b;
     });
     const centerChip = (b, smooth) => { if (!chipsBox.clientWidth) return; chipsBox.scrollTo({ left: b.offsetLeft - (chipsBox.clientWidth - b.offsetWidth) / 2, behavior: smooth && !reduceMotion ? 'smooth' : 'instant' }); };
-    chipsBox.addEventListener('keydown', (e) => {
-      const i = chips.indexOf(document.activeElement);
+    const rove = (list) => (e) => {
+      const i = list.indexOf(document.activeElement);
       if (i < 0) return;
       let n = -1;
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = (i + 1) % chips.length;
-      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = (i - 1 + chips.length) % chips.length;
-      else if (e.key === 'Home') n = 0; else if (e.key === 'End') n = chips.length - 1;
-      if (n >= 0) { e.preventDefault(); pick(CITIES[n][0], true); chips[n].focus({ preventScroll: true }); }
-    });
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = (i + 1) % list.length;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = (i - 1 + list.length) % list.length;
+      else if (e.key === 'Home') n = 0; else if (e.key === 'End') n = list.length - 1;
+      if (n >= 0) { e.preventDefault(); pick(CITIES[n][0], true); list[n].focus({ preventScroll: true }); }
+    };
+    chipsBox.addEventListener('keydown', rove(chips));
+    box.addEventListener('keydown', rove(dots));
     function pick(c, byUser) {
-      dots.forEach((b, i) => { const on = CITIES[i][0] === c; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on)); });
+      dots.forEach((b, i) => { const on = CITIES[i][0] === c; b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); });
+      dotsMode();
       chips.forEach((b, i) => { const on = CITIES[i][0] === c; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; if (on) centerChip(b, byUser); });
       nameEl.textContent = c; waName.textContent = c;
       elunaEl.innerHTML = c === 'Алматы' ? 'Мы здесь: привезём и&nbsp;установим сами' : 'От&nbsp;7&nbsp;дней до&nbsp;двери, подъём включён';
