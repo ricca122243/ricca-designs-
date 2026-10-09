@@ -1,0 +1,11 @@
+# panel-a «Maison Blanche» — progress log
+- [x] 1st run (superseded): black-base build per 7 Oct brief
+- [x] 2nd run (8 Oct evening brief): read BRIEF «УТОЧНЕНИЕ ЗАКАЗЧИКА», DESIGN-V3 §0–5/§8, PANEL-BRIEF, CONTENT-V3 §1–8/13–14/24–27, refs 01–08
+- [x] style.css rewritten for milk-white base (+ .chapter--noir for ELUNA, contacts+footer)
+- [x] index.html rebuilt: nav per mock, hero on white, clients, NEW «Проекты» (TOC + placeholders), catalog, 01 Диваны + 02–05, ELUNA (static poster + marked pin placeholder), contacts (refs/04), footer (refs/03), sticky, menu, shortlist
+- [x] script.js: wa.project.*, wa.projects, wa.business; phone nav hide/show
+- [x] round 1 (1440/390): fixes — TOC covers small/right, folio numerals, clients wrap, card 05 badge
+- [x] round 2 (+768, menu/shortlist/sticky states): fixes — eyebrow duplicates, 44px text links, caption size
+- [x] round 3: QA (contrast, targets, sticky logic, first-screen weight, forbidden words) — all pass; final shots in shots/
+- [x] NOTES.md rewritten; server 9051 stopped at the end — DONE
+- [x] fix: gold main phone selector specificity (contacts) — reshot

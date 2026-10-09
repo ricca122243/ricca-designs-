@@ -1,0 +1,12 @@
+CONTENT-V3.md — progress log
+[1] started: sources read (BRIEF, copy.md, catalog.md, ELUNA index.html/main.js, refs 01-08, MANIFEST)
+[2] writing chunk A (rules, page map, header, hero, clients, atelier)
+[3] chunk B written (catalog 5-11)
+[4] chunk C written (ELUNA 12-16)
+[5] chunk D written (17-22: production, materials, business, delivery, showroom, order+faq)
+[6] chunk E written (23-30). next: fix cross-refs + page map numbering, NBSP post-process, verify
+[7] cross-refs fixed, page map renumbered, NBSP applied (2051), JSON-LD valid, wa.* keys consistent
+[8] DONE — CONTENT-V3.md final (30 sections, 47-item checklist). No servers started.
+[9] style flipped to white base, section 5 «Проекты» inserted, sections 5-30 renumbered to 6-31, nav/wa/shortlist/alt/checklist updated, meta description ≤160
+[10] verified: 31 sections, cross-refs consistent, forbidden words only in rule lines, checklist 50 items. DONE
+[11] re-verified after restart (8 Oct): 31 sections, projects/ELUNA/production/materials/delivery/shortlist/SEO/checklist present; per-night math checked; no changes needed. DONE
