@@ -48,10 +48,10 @@
 | bed-bari | bed-09 | Usnel | Уснель | на сайте |
 | bed-todi | bed-10 | Nisel | Нисель | на сайте |
 | bed-fiuggi | bed-11 | Ozrel | Озрель | на сайте |
-| bed-fasano | bed-12 | Ombel | Омбель | на сайте |
+| bed-fasano | bed-12 | Avsel | Авсель | на сайте |
 | bed-arezzo | bed-13 | Tumel | Тумель | на сайте |
 | bed-rovigo | bed-14 | Unsal | Унсаль | на сайте |
-| bed-maglie | bed-15 | Doval | Доваль | на сайте |
+| bed-maglie | bed-15 | Remal | Ремаль | на сайте |
 | bed-crone | bed-16 | Isval | Исваль | на сайте |
 | bed-rome | bed-17 | Anvel | Анвель | на сайте |
 | bed-sava | bed-18 | Mival | Миваль | на сайте |
@@ -72,7 +72,7 @@
 | armchair-atrani | armchair-10 | Nimso | Нимсо | на сайте |
 | armchair-marsala | armchair-11 | Novro | Новро | на сайте |
 | chair-teramo | chair-01 | Senvi | Сенви | на сайте |
-| chair-palermo | chair-02 | Avli | Авли | на сайте |
+| chair-palermo | chair-02 | Sulmi | Сульми | на сайте |
 | chair-agordo | chair-03 | Tanvi | Танви | на сайте |
 | chair-ortona | chair-04 | Nelsi | Нельси | на сайте |
 | chair-pineto | chair-05 | Kosvi | Косви | на сайте |
@@ -86,3 +86,7 @@
 | storage-aquino | storage-01 | Zoren | Зорен | снято |
 | storage-pesaro | storage-02 | Dolen | Долен | снято |
 | storage-lodi | storage-03 | Ulmen | Ульмен | снято |
+
+Замены после проверки поиском (10 октября, ночь): bed-12 Ombel → Avsel (Ombel близко к стулу «Omel»), bed-15 Doval → Remal
+(Doval близко к мебельной марке Dovelle Home), chair-02 Avli → Sulmi (Avli близко к креслу AVL). Avsel, Remal, Sulmi проверены
+поиском латиницей и кириллицей — совпадений с мебельными моделями и марками не найдено; правила fm.py — без замечаний.

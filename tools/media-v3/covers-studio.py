@@ -1,4 +1,4 @@
-# Обложки плиток «предметного» ряда каталога (F2, 10 октября): Стулья · Столы · Матрасы ELUNA.
+# Обложки плиток «предметного» ряда каталога (F2, 10 октября): Кресла · Стулья · Столы · Матрасы ELUNA.
 # (Хранение снято с сайта 10 октября вечером вместе с кадрами корпусной мебели — обложки нет.)
 # Одна подача: предмет на тоне --studio (#F7F6F0), ширина ≈ 78 % плитки (высота не больше 66 %), общий «пол» — низ предмета
 # на 78 % высоты плитки. ELUNA — слои матраса из рендера на чёрном, вырезанные на светлый тон (без чёрного блока).
@@ -64,6 +64,7 @@ def eluna(src, name, **kw):
     al = Image.fromarray((keep * 255).astype('uint8')).filter(ImageFilter.GaussianBlur(1.1))
     ys, xs = np.where(keep); x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
     place(im.crop((x0, y0, x1, y1)), al.crop((x0, y0, x1, y1)), name, shadow=True, **kw)
+studio(R + '/img/catalog/p-armchair-01.webp', 'cover-armchairs')   # кресло Velso, ×1,38
 studio(R + '/img/catalog/p-chair-08.webp', 'cover-chairs')
 studio(R + '/img/catalog/p-table-03.webp', 'cover-tables')
 eluna(R + '/img/eluna/seq/f24.webp', 'cover-mattresses', tw=0.80)

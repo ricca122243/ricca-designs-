@@ -147,8 +147,8 @@
 </section>
 
 <!-- ═════════ 3. КАТАЛОГ: только плитки категорий — по одному фото. Нажали плитку — экран категории (#catalog/sofas):
-     все модели сразу, по одному фото; нажали модель — окно изделия со всеми фото. Ряд 1 — фото в интерьере, ряд 2 — предметы
-     на светлом фоне (одна подача в ряду; на телефоне — пары). Без чисел на плитках. ═════════ -->
+     все модели сразу, по одному фото; нажали модель — окно изделия со всеми фото. Ряд 1 — фото в интерьере (3), ряд 2 — предметы
+     на светлом фоне (4; одна подача в ряду; на телефоне — первая плитка во всю ширину, затем пары). Без чисел на плитках. ═════════ -->
 <section class="sec cat" id="catalog" aria-labelledby="cat-title">
   <div class="wrap">
     <header class="shead rv">
@@ -157,20 +157,20 @@
     </header>
     <ul class="tiles" role="list">
       <li class="rv"><a class="tile" href="#catalog/sofas" data-cat="sofas">
-        <span class="tile__img"><img src="img/catalog/cover-sofas-600.webp" srcset="img/catalog/cover-sofas-600.webp 600w, img/catalog/cover-sofas.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
+        <span class="tile__img"><img src="img/catalog/cover-sofas-600.webp" srcset="img/catalog/cover-sofas-600.webp 600w, img/catalog/cover-sofas.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 100vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
         <span class="tile__cap"><span class="tile__name">Диваны</span></span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/beds" data-cat="beds">
         <span class="tile__img"><img src="img/catalog/cover-beds-600.webp" srcset="img/catalog/cover-beds-600.webp 600w, img/catalog/cover-beds.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
         <span class="tile__cap"><span class="tile__name">Кровати</span></span>
       </a></li>
-      <li class="rv"><a class="tile" href="#catalog/armchairs" data-cat="armchairs">
-        <span class="tile__img"><img src="img/catalog/cover-armchairs-600.webp" srcset="img/catalog/cover-armchairs-600.webp 600w, img/catalog/cover-armchairs.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Кресла</span></span>
-      </a></li>
       <li class="rv"><a class="tile" href="#catalog/fabrics" data-cat="fabrics">
         <span class="tile__img"><img src="img/catalog/cover-fabrics-600.webp" srcset="img/catalog/cover-fabrics-600.webp 600w, img/catalog/cover-fabrics.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
         <span class="tile__cap"><span class="tile__name">Ткани</span></span>
+      </a></li>
+      <li class="rv"><a class="tile" href="#catalog/armchairs" data-cat="armchairs">
+        <span class="tile__img is-studio"><img src="img/catalog/cover-armchairs-600.webp" srcset="img/catalog/cover-armchairs-600.webp 600w, img/catalog/cover-armchairs.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
+        <span class="tile__cap"><span class="tile__name">Кресла</span></span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/chairs" data-cat="chairs">
         <span class="tile__img is-studio"><img src="img/catalog/cover-chairs-600.webp" srcset="img/catalog/cover-chairs-600.webp 600w, img/catalog/cover-chairs.webp 1200w" sizes="(min-width: 1200px) 300px, (min-width: 900px) 22vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
@@ -188,7 +188,7 @@
   </div>
 </section>
 
-<!-- ═════════ 4. НАШИ РАБОТЫ: только настоящие фото работ RICCA (RICCA_WORKS в js/catalog-data.js). Пока заказчик их не подтвердил,
+<!-- ═════════ 4. НАШИ РАБОТЫ: только подтверждённые фото работ RICCA (RICCA_WORKS в js/catalog-data.js). Пока заказчик их не подтвердил,
      список пуст — js/site.js убирает раздел и пункты меню. Есть кадры — три большие рамки (телефон — свайп) и «Все работы» (#works/all). ═════════ -->
 <section class="sec works" id="works" aria-labelledby="works-title" hidden>
   <div class="wrap">

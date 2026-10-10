@@ -276,6 +276,12 @@
       R.apply();
     },
     replace(hash) { try { history.replaceState({ rd: R.depth() }, '', hash); } catch (_) { /* file:// */ } },
+    // на плитки каталога: адрес #catalog, окна закрыты, раздел — в начале экрана
+    toCatalog() {
+      R.replace('#catalog'); PD.close(false); LB.close(false); View.close(false);
+      const el = document.getElementById('catalog');
+      if (el) requestAnimationFrame(() => el.scrollIntoView({ block: 'start' }));
+    },
     closeTo(fallback) {
       if (R.depth() > 0) { history.back(); return; }
       R.replace(fallback); R.apply();
@@ -285,18 +291,26 @@
     apply(initial) {
       const r = R.parse(location.hash);
       if (initial && r.anchor) {
-        // старые ссылки (Instagram, прошлые версии): #catalog-sofas → #catalog/sofas, #materials → ткани
+        // старые ссылки (Instagram, прошлые версии): #catalog-sofas → #catalog/sofas, #materials → ткани; неизвестная категория → каталог
         const legacy = /^catalog-([a-z]+)/.exec(r.anchor);
-        const to = legacy && CATS[legacy[1]] ? `#catalog/${legacy[1]}` : (r.anchor === 'materials' ? '#catalog/fabrics' : (r.anchor === 'news' ? '#novinka' : ''));
+        const to = legacy ? (CATS[legacy[1]] && !CATS[legacy[1]].href ? `#catalog/${legacy[1]}` : '#catalog')
+          : (r.anchor === 'materials' ? '#catalog/fabrics' : (r.anchor === 'news' ? '#novinka' : ''));
+        if (to === '#catalog') { R.toCatalog(); return; }
         if (to) { R.replace(to); return R.apply(false); }
+      }
+      // изделия с таким id нет (ссылка из прошлых версий): экран его категории по началу id, иначе — каталог
+      if (r.item && !ITEM.has(r.item)) {
+        const cat = { sofa: 'sofas', bed: 'beds', armchair: 'armchairs', chair: 'chairs', table: 'tables' }[r.item.split('-')[0]];
+        if (cat && CATS[cat] && !CATS[cat].href) { R.replace(`#catalog/${cat}`); return R.apply(false); }
+        R.toCatalog(); return;
       }
       // уровень 1: категория / ткани / все работы
       if (r.cat) {
         const c = CATS[r.cat];
-        if (!c || c.href) { R.replace('#catalog'); View.close(false); }
+        if (!c || c.href) R.toCatalog();
         else View.open(c.view === 'fabrics' ? { type: 'fabrics' } : { type: 'cat', cat: r.cat, sub: r.sub });
       } else if (r.works && WORKS.length) View.open({ type: 'works' });
-      else if (r.works) { R.replace('#catalog'); View.close(false); }
+      else if (r.works) R.toCatalog();
       else if (r.item && initial && ITEM.has(r.item)) {
         // вход по ссылке на изделие: под окном — его категория, чтобы «Закрыть» вело к остальным моделям
         const it = ITEM.get(r.item);
@@ -561,10 +575,10 @@
     const dlg = $('#shortlist'), list = $('#sl-list'), empty = $('#sl-empty'), foot = $('#sl-foot'), send = $('#sl-send'), nEl = $('#sl-n');
     const openBtn = $('#sl-open'), countEl = $('#sl-count'), menuBtn = $('[data-open-sl]'), menuN = $('[data-sl-n]');
     const toast = $('#toast'), toastText = $('#toast-text'), toastOpen = $('#toast-open');
-    let items = store.get(KEY, []);
-    // только изделия, которые есть в каталоге сейчас; название и строка — по текущим данным (после переименования моделей)
-    items = (Array.isArray(items) ? items : []).filter((x) => x && /^item-/.test(x.id) && ITEM.has(x.id.slice(5))).slice(0, 12)
+    // только изделия, которые есть в каталоге сейчас; название и строка — по текущим данным (и при загрузке, и из другой вкладки)
+    const load = (raw) => (Array.isArray(raw) ? raw : []).filter((x) => x && /^item-/.test(x.id) && ITEM.has(x.id.slice(5))).slice(0, 12)
       .map((x) => slOf(ITEM.get(x.id.slice(5))));
+    let items = load(store.get(KEY, []));
     const has = (id) => items.some((x) => x.id === id);
     function sync() {
       const n = items.length;
@@ -609,7 +623,7 @@
       }));
       empty.hidden = items.length > 0;
       foot.hidden = items.length === 0;
-      send.href = waUrl(`Здравствуйте! Моя подборка на сайте RICCA DESIGNS:\n${items.map((x, i) => { const it = ITEM.get(x.id.slice(5)); return `${i + 1}. ${it ? waLabelOf(it) : x.title}${x.meta ? ` · ${x.meta}` : ''}`; }).join('\n')}\nРасскажите, пожалуйста, подробнее и помогите с выбором.`);
+      send.href = waUrl(`Здравствуйте! Моя подборка на сайте RICCA DESIGNS:\n${items.map((x) => ITEM.get(x.id.slice(5))).filter(Boolean).map((it, i) => { const x = slOf(it); return `${i + 1}. ${waLabelOf(it)}${x.meta ? ` · ${x.meta}` : ''}`; }).join('\n')}\nРасскажите, пожалуйста, подробнее и помогите с выбором.`);
       sync();
     }
     let toastT = 0;
@@ -637,7 +651,7 @@
     toastOpen.addEventListener('click', () => openSL(document.activeElement));
     if (menuBtn) menuBtn.addEventListener('click', () => { hideDlg($('#menu'), false); openSL(openBtn); });
     $('#sl-clear').addEventListener('click', () => { items = []; store.set(KEY, items); render(); $('[data-close]', dlg).focus(); });
-    window.addEventListener('storage', (e) => { if (e.key === KEY) { items = store.get(KEY, []); render(); } });
+    window.addEventListener('storage', (e) => { if (e.key === KEY) { items = load(store.get(KEY, [])); render(); } });
     render();
     return { sync, close: () => hideDlg(dlg) };
   })();
@@ -692,6 +706,9 @@
   function updateBar() {
     if (!bar) return;
     const vh = window.innerHeight;
+    // над чёрной «Новинкой» и подвалом плашка тоже чёрная (как шапка) — без белой полосы поперёк панели
+    const by = vh - bar.offsetHeight / 2;
+    bar.classList.toggle('is-dark', darkZones.some((el) => { const r = el.getBoundingClientRect(); return r.top < by && r.bottom > by; }));
     const on = mqPhone.matches && window.scrollY > hero.offsetHeight * 0.85 && !$('dialog[open]') && showroom.getBoundingClientRect().top > vh * 0.92;
     if (on !== bar.classList.contains('is-on')) {
       bar.classList.toggle('is-on', on);
