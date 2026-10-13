@@ -173,7 +173,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   function orthoHalf(v) {
     const ext = v === 'front' ? [size.x, size.y] : v === 'side' ? [size.z, size.y] : [size.x, size.z];
     const aspect = W / H;
-    return Math.max(ext[1] / 2, ext[0] / 2 / aspect) * 1.18 + 0.03;
+    const m = dimList ? 1.34 : 1.18; // место под размерные ряды
+    return Math.max(ext[1] / 2, ext[0] / 2 / aspect) * m + 0.03;
   }
   function viewTarget(v) { return v === 'top' ? new THREE.Vector3(center.x, 0, center.z) : center.clone(); }
   function fitOrtho(half) {
@@ -225,7 +226,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     contact.fit(box); contact.dirty = true;
     renderer.shadowMap.needsUpdate = true;
     const r = radius();
-    if (!lastRadius || Math.abs(r - lastRadius) / lastRadius > 0.1) { lastRadius = r; frame({ animate: !!lastRadius && !reduced() }); }
+    if (!lastRadius || Math.abs(r - lastRadius) / lastRadius > 0.1) { const first = !lastRadius; lastRadius = r; frame({ animate: !first && !reduced() }); }
     else if (view !== '3d') fitOrtho();
     requestRender();
   }
@@ -272,6 +273,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       const startDir = persp.position.clone().sub(controls.target).normalize();
       const startHalf = Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)) * persp.position.distanceTo(controls.target);
       controls.enableRotate = false; controls.enablePan = true;
+      controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI; // иначе update() наклонит камеру на 2–10°
       const finish = () => {
         fitOrtho(half); ortho.zoom = 1;
         ortho.position.copy(T).add(endDir.clone().multiplyScalar(50)); ortho.up.set(0, 1, 0); ortho.lookAt(T);
@@ -284,6 +286,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       enterPerspFromOrtho();
       floor.visible = true;
       controls.enableRotate = true; controls.enablePan = !phone;
+      controls.minPolarAngle = THREE.MathUtils.degToRad(10); controls.maxPolarAngle = THREE.MathUtils.degToRad(88);
       const endDir = dir3q(), dist = framingDist(endDir);
       const startDir = persp.position.clone().sub(controls.target).normalize();
       const startHalf = Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)) * persp.position.distanceTo(controls.target);
@@ -340,7 +343,13 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   }
 
   /* ---------- размеры (SVG) ---------- */
-  function setDims(list) { dimList = list && list.length ? list : null; if (!dimList) overlay.replaceChildren(); requestRender(); }
+  function setDims(list) {
+    const had = !!dimList;
+    dimList = list && list.length ? list : null;
+    if (!dimList) overlay.replaceChildren();
+    if (view !== '3d' && camera === ortho && had !== !!dimList) { fitOrtho(); ortho.updateProjectionMatrix(); }
+    requestRender();
+  }
   const fmt = (m) => { const v = Math.round(m * 1000) / 10; return (Number.isInteger(v) ? String(v) : String(v).replace('.', ',')); };
   function toScreen(p) {
     const v = new THREE.Vector3(p[0], p[1], p[2]).project(camera);
