@@ -341,14 +341,18 @@ function shellGeometry(it, quality) {
     let tx = am * cs, tz = -bm * sn; const tl = Math.hypot(tx, tz); tx /= tl; tz /= tl;
     const phi = rg.cap * Math.PI / 2, sc = Math.cos(phi), ext = (t / 2) * Math.sin(phi) * (rg.dir || 0);
     const cy = yTop - rt;
+    /* UV в метрах: v — длина дуги по профилю (без «схлопывания» на скруглённом верху), u — длина дуги по эллипсу на своём радиусе */
+    let v = 0, px = 0, py = 0, pz = 0;
     for (let j = 0; j < L; j++) {
       let [rho, y, top] = pts[j];
       rho = t / 2 + (rho - t / 2) * sc;
       if (top) y = cy + (y - cy) * sc + 0 * (1 - sc);
       else if (y > cy) y = cy + (y - cy) * sc;
       const x = (A - rho) * sn + tx * ext, z = (B - rho) * cs + tz * ext;
+      if (j > 0) v += Math.hypot(x - px, y - py, z - pz);
+      px = x; py = y; pz = z;
       positions.push(x, y, z);
-      uvs.push(th * (A + B) / 2 + ext, y + rho);
+      uvs.push(th * ((A - rho) + (B - rho)) / 2 + ext, v);
     }
   });
   for (let r = 0; r < rings.length - 1; r++) for (let j = 0; j < L - 1; j++) {

@@ -7,17 +7,19 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { onMaterialUpdate } from './materials.js';
+import { onMaterialUpdate, setEnvMap } from './materials.js';
 
 const BG = '#F3F2EE';
 const FOV = 30;
-const AZ = THREE.MathUtils.degToRad(35), EL = THREE.MathUtils.degToRad(18);
+const AZ = THREE.MathUtils.degToRad(35), EL = THREE.MathUtils.degToRad(18), EL_PLAN = THREE.MathUtils.degToRad(25);
+/* шов 1,6 мм рисуем только когда он не тоньше 1,2 px (иначе — «пунктир» из-за алиасинга) */
+const SEAM_D = 0.0032, SEAM_MIN_PX = 1.2;
 const DIRS = {
   front: new THREE.Vector3(0, 0, 1),
   side: new THREE.Vector3(-1, 0, 0),
   top: new THREE.Vector3(0, 1, 0.0001).normalize(),
 };
-const dir3q = () => new THREE.Vector3(Math.sin(AZ) * Math.cos(EL), Math.sin(EL), Math.cos(AZ) * Math.cos(EL));
+const dirAt = (az, el) => new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 /* фон через EffectComposer проходит тон-маппинг (OutputPass) — подбираем такой линейный цвет, чтобы на экране
    получился ровно BG (бесшовно с рамкой страницы). Neutral tone mapping three.js, повторённый на JS. */
@@ -68,18 +70,22 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   scene.environment = envRT.texture;
   scene.environmentIntensity = 0.55;
   pmrem.dispose();
+  setEnvMap(envRT.texture);                 // металлу — своя сила отражений (materials.js)
 
   const hemi = new THREE.HemisphereLight(0xfffaf2, 0xe8e4dc, 0.25);
   scene.add(hemi);
   const key = new THREE.DirectionalLight(0xffffff, 1.1);
   key.castShadow = true;
   key.shadow.mapSize.set(phone ? 1024 : 2048, phone ? 1024 : 2048);
-  key.shadow.radius = 6; key.shadow.blurSamples = 16; key.shadow.bias = -0.0005; key.shadow.normalBias = 0.01;
+  key.shadow.radius = 12; key.shadow.blurSamples = 24; key.shadow.bias = -0.0005; key.shadow.normalBias = 0.01;
   scene.add(key); scene.add(key.target);
+  /* мягкий заполняющий свет со стороны камеры (без тени): бок, повёрнутый к зрителю, не проваливается в плоскую тень */
+  const fill = new THREE.DirectionalLight(0xffffff, 0.22);
+  scene.add(fill); scene.add(fill.target);
 
   /* студия: пол того же цвета, что фон (тень — ShadowMaterial), контактная тень */
   const studio = new THREE.Group(); studio.name = 'studio';
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ color: 0x3a342c, opacity: 0.16, depthWrite: false }));
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ color: 0x3a342c, opacity: 0.11, depthWrite: false }));
   floor.receiveShadow = true; floor.renderOrder = 1; studio.add(floor);
   scene.add(studio);
   const contact = makeContactShadow(renderer);
@@ -109,9 +115,10 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     composer.addPass(renderPass);
     gtao = new GTAOPass(scene, camera, size.x * pr, size.y * pr);
     gtao.output = GTAOPass.OUTPUT.Default;
-    gtao.blendIntensity = 1.0;
-    gtao.updateGtaoMaterial({ radius: 0.25, distanceExponent: 1, thickness: 1, scale: 1, samples: phone ? 8 : 16, distanceFallOff: 1 });
-    gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: phone ? 8 : 16 });
+    /* мягкое AO: малый радиус и сильнее шумоподавление — без «дымки» под ножками и шума в щели спинка/сиденье */
+    gtao.blendIntensity = 0.85;
+    gtao.updateGtaoMaterial({ radius: 0.15, distanceExponent: 2, thickness: 0.6, scale: 0.9, samples: phone ? 12 : 24, distanceFallOff: 0.6 });
+    gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 10, rings: 4, samples: phone ? 12 : 24 });
     composer.addPass(gtao);
     composer.addPass(new OutputPass());
     return composer;
@@ -154,6 +161,10 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   if (ro) ro.observe(container); else window.addEventListener('resize', resize);
 
   const radius = () => Math.max(0.3, size.length() / 2);
+  /* угловые, П-образные и с шезлонгом (глубина > 1,4 м) — камера выше, чтобы читался план; длинные — плотнее в кадре */
+  const dir3q = () => dirAt(AZ, size.z > 1.4 ? EL_PLAN : EL);
+  const fillFor = () => (size.x / Math.max(0.01, size.y) > 2.2 ? 0.84 : 0.74);
+  const aimOf = () => center.clone().add(new THREE.Vector3(0, size.y * 0.06, 0));
   /* расстояние, при котором габарит занимает fill кадра по ширине и высоте */
   function fitDistance(dir, fov, aspect, fill = 0.74) {
     const f = dir.clone().normalize();
@@ -168,7 +179,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     }
     return dist;
   }
-  const framingDist = (dir) => fitDistance(dir || dir3q(), FOV, W / H);
+  const framingDist = (dir) => fitDistance(dir || dir3q(), FOV, W / H, fillFor());
   /* полувысота кадра для оси вида */
   function orthoHalf(v) {
     const ext = v === 'front' ? [size.x, size.y] : v === 'side' ? [size.z, size.y] : [size.x, size.z];
@@ -197,8 +208,19 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     renderFrame(more);
     if (more) requestRender();
   }
+  /* швы — по уровню детализации: видны, только когда их толщина на экране ≥ 1,2 px */
+  function seamPx(cam, hpx, target) {
+    if (cam.isOrthographicCamera) return (SEAM_D * hpx * cam.zoom) / Math.max(1e-6, cam.top - cam.bottom);
+    const dist = Math.max(0.05, cam.position.distanceTo(target || controls.target));
+    return (SEAM_D * hpx) / (2 * dist * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)));
+  }
+  function applySeamLOD(cam, hpx, target) {
+    const on = seamPx(cam, hpx, target) >= SEAM_MIN_PX;
+    root.traverse((o) => { if (o.isMesh && o.userData && o.userData.detail === 'seam') o.visible = on; });
+  }
   function renderFrame(moving) {
     emit('beforeRender');
+    applySeamLOD(camera, H);
     if (studioOn && contact.dirty) contact.update(scene, root);
     const useAO = aoMode === 'always' || (aoMode === 'idle' && !moving && !interacting);
     if (useAO && ensureComposer()) {
@@ -234,9 +256,11 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   }
   function fitLight() {
     const r = Math.max(1, radius() * 1.4);
-    /* ключевой свет: спереди-слева-сверху */
-    key.position.set(center.x - r * 0.7, r * 2.6, center.z + r * 1.3);
+    /* ключевой свет: высоко, спереди-слева — короткая мягкая тень под изделием, без «плиты» сбоку */
+    key.position.set(center.x - r * 0.45, r * 3.6, center.z + r * 0.9);
     key.target.position.copy(center);
+    fill.position.copy(center).add(dirAt(AZ + THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(25)).multiplyScalar(r * 3));
+    fill.target.position.copy(center);
     const cam = key.shadow.camera;
     cam.left = -r; cam.right = r; cam.top = r; cam.bottom = -r; cam.near = 0.1; cam.far = r * 6;
     cam.updateProjectionMatrix();
@@ -248,7 +272,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       const dir = camera === persp && !reset ? persp.position.clone().sub(controls.target).normalize() : dir3q();
       if (!isFinite(dir.x) || dir.lengthSq() < 0.5) dir.copy(dir3q());
       const fd = framingDist(dir);
-      const to = { pos: center.clone().add(dir.multiplyScalar(fd)), target: center.clone(), fov: FOV };
+      const aim = aimOf();
+      const to = { pos: aim.clone().add(dir.multiplyScalar(fd)), target: aim, fov: FOV };
       const fromOk = [persp.position.x, persp.position.y, persp.position.z, controls.target.x].every(Number.isFinite);
       if (animate && fromOk && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, to.pos, to.target, FOV, 500, null);
       else { persp.position.copy(to.pos); controls.target.copy(to.target); persp.fov = FOV; persp.updateProjectionMatrix(); controls.update(); }
@@ -295,8 +320,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       const startHalf = Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)) * persp.position.distanceTo(controls.target);
       const endHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * dist;
       const finish = () => { emit('view', v); requestRender(); };
-      if (instant) { persp.fov = FOV; persp.updateProjectionMatrix(); persp.position.copy(center).add(endDir.multiplyScalar(dist)); controls.target.copy(center); controls.update(); finish(); return; }
-      anim = { start: performance.now(), dur: 650, kind: 'toPersp', startDir, endDir, startHalf, endHalf, t0: controls.target.clone(), t1: center.clone(), f0: persp.fov, f1: FOV, done: finish, cancelable: false };
+      const aim = aimOf();
+      if (instant) { persp.fov = FOV; persp.updateProjectionMatrix(); persp.position.copy(aim).add(endDir.multiplyScalar(dist)); controls.target.copy(aim); controls.update(); finish(); return; }
+      anim = { start: performance.now(), dur: 650, kind: 'toPersp', startDir, endDir, startHalf, endHalf, t0: controls.target.clone(), t1: aim, f0: persp.fov, f1: FOV, done: finish, cancelable: false };
       requestRender();
     }
   }
@@ -439,6 +465,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       const t = viewTarget(sv); cam.position.copy(t).add(DIRS[sv].clone().multiplyScalar(50)); cam.lookAt(t);
     }
     const prevBg = scene.background;
+    applySeamLOD(cam, RH, sv === '3q' || sv === '3d' ? center : null);
     const useComp = aoMode !== 'off';
     scene.background = useComp ? preToneMapped(background, renderer.toneMappingExposure) : new THREE.Color(background);
     const prevMap = key.shadow.mapSize.clone();
@@ -460,7 +487,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       key.shadow.mapSize.copy(prevMap); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; }
       renderer.shadowMap.needsUpdate = true;
       renderer.setPixelRatio(prevPR); renderer.setSize(prevSize.x, prevSize.y, false);
-      if (composer) { composer.setPixelRatio(prevPR); composer.setSize(prevSize.x, prevSize.y); gtao.updateGtaoMaterial({ samples: phone ? 8 : 16 }); setPassCamera(camera); }
+      if (composer) { composer.setPixelRatio(prevPR); composer.setSize(prevSize.x, prevSize.y); gtao.updateGtaoMaterial({ samples: phone ? 12 : 24 }); setPassCamera(camera); }
+      applySeamLOD(camera, H);
       requestRender();
     }
     if (watermark) {
@@ -485,6 +513,18 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     supportsPhotoreal: false,
     setObject, setView, frame, setDims, setStudio, requestRender, snapshot, resize,
     cancelAnim() { anim = null; },
+    /* крупный план точки (например, подушки сиденья — видна фактура ткани) с того же направления */
+    closeUp(target, dist = 0.9, { animate = true } = {}) {
+      if (view !== '3d') setView('3d', { animate: false });
+      const t = new THREE.Vector3(...target);
+      let dir = persp.position.clone().sub(controls.target).normalize();
+      if (!isFinite(dir.x) || dir.y < 0.15) dir = dir3q();
+      const pos = t.clone().add(dir.multiplyScalar(dist));
+      controls.minDistance = Math.min(controls.minDistance, dist * 0.6);
+      if (animate && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, pos, t, FOV, 700, null);
+      else { persp.position.copy(pos); controls.target.copy(t); controls.update(); }
+      requestRender();
+    },
     get animating() { return !!anim; },
     /* после комнаты: запомнить текущий габарит как «последний», чтобы модель не перекадрировалась сама */
     resetFraming() { lastRadius = 0; },
@@ -507,7 +547,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
 
 /* ---------- контактная тень: глубина снизу → размытие → плоскость на полу ---------- */
 function makeContactShadow(renderer) {
-  const RES = 512, HEIGHT = 0.3, DARK = 1.8, OPACITY = 0.6;
+  const RES = 512, HEIGHT = 0.3, DARK = 1.8, OPACITY = 0.7;
   const rt = new THREE.WebGLRenderTarget(RES, RES); rt.texture.generateMipmaps = false;
   const rtB = new THREE.WebGLRenderTarget(RES, RES); rtB.texture.generateMipmaps = false;
   const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ map: rt.texture, transparent: true, opacity: OPACITY, depthWrite: false, toneMapped: false }));

@@ -20,11 +20,9 @@
       sofas: 'Здравствуйте! Интересует диван на заказ. Пришлите, пожалуйста, подборку и расскажите, что нужно для расчёта.',
       beds: 'Здравствуйте! Интересует кровать на заказ. Размер матраса: 1600 × 2000 / 1800 × 2000 / свой. Пришлите, пожалуйста, подборку.',
       armchairs: 'Здравствуйте! Интересует кресло. Пришлите, пожалуйста, подборку.',
-      chairs: 'Здравствуйте! Подберите, пожалуйста, стулья или обеденную группу. Комната и число мест: …',
-      tables: 'Здравствуйте! Хочу подобрать стол к мягкой мебели. Пришлите, пожалуйста, варианты.',
       fabrics: 'Здравствуйте! Помогите подобрать ткань.',
       photo: 'Здравствуйте! Хочу заказать мебель по фото.',
-      projects: 'Здравствуйте! Хочу обсудить мебель для своей комнаты: гостиная / спальня / столовая / кабинет / другое. Размеры и фото пришлю следующим сообщением.',
+      projects: 'Здравствуйте! Хочу обсудить мягкую мебель для своей комнаты: гостиная / спальня / кабинет / другое. Размеры и фото пришлю следующим сообщением.',
       business: 'Здравствуйте! Хочу обсудить проект для бизнеса: отель / ресторан / апарт-комплекс / жилой проект / офис.',
       master: 'Здравствуйте! У меня вопрос к мастеру RICCA.',
       abroad: 'Здравствуйте! Я из ___. Хочу заказать мебель с доставкой.',
@@ -53,7 +51,10 @@
   const mqPhone = window.matchMedia('(max-width: 899px)');
 
   /* ---------- Данные каталога ---------- */
-  const CATS = window.RICCA_CATALOG_CATEGORIES || {};
+  /* Только мягкая мебель (владелец, 13 октября: «мы столы и стулья не делаем»): категории chairs и tables на сайт не идут, даже если
+     они остались в js/catalog-data.js; старые ссылки #catalog/chairs и #catalog/tables ведут в каталог (R.apply: неизвестная категория) */
+  const OFF_CATS = new Set(['chairs', 'tables']);
+  const CATS = Object.fromEntries(Object.entries(window.RICCA_CATALOG_CATEGORIES || {}).filter(([k]) => !OFF_CATS.has(k)));
   /* Модели фабрики на сайте не показываем (отзыв клиента 13 октября: «у нас совсем другой стиль, мы такие изделия не делаем»).
      js/catalog-data.js остаётся на диске как запас, но сетки моделей и окна изделия не строятся: ITEMS пуст. Старые ссылки
      #item-sofa-01 ведут на экран категории (R.apply — по началу id). Вернуть модели — снова читать RICCA_CATALOG здесь */
@@ -122,13 +123,11 @@
      Виды мебели (KINDS): экран категории — рисунок, абзац «Шьём … на заказ», что шьём, три действия:
      «Собрать в 3D» (configurator.html#cfg=v1~t.<тип> — конструктор открывается с этим типом), «Отправить фото в WhatsApp»
      («Здравствуйте! Хочу заказать <диван> по фото.»), «В корзину — заявка» (строка корзины 'custom' «<Диван> по вашему проекту»).
-     Стулья и столы — «по вашему проекту»: моделей с картинок фабрики клиент не делает (отзыв 13 октября) */
+     Только мягкая мебель: диваны, кровати, кресла (с пуфами и банкетками). Столов и стульев нет (владелец, 13 октября) */
   const KINDS = {
     sofas: { verb: 'Шьём диваны', what: ['Прямые', 'Угловые и\u00a0П-образные', 'Модульные', 'Раскладные'], cfg: 'sofa', wa: 'диван', title: 'Диван' },
     beds: { verb: 'Шьём кровати', what: ['С\u00a0подъёмным механизмом', 'Без механизма', 'На\u00a0ножках или на\u00a0цоколе', 'Под размер вашего матраса'], cfg: 'bed', wa: 'кровать', title: 'Кровать' },
     armchairs: { verb: 'Шьём кресла', what: ['Кресла для\u00a0отдыха', 'Округлые, на\u00a0ножках или на\u00a0цоколе', 'Пуфы и\u00a0банкетки'], cfg: 'armchair', wa: 'кресло', title: 'Кресло' },
-    chairs: { verb: 'Шьём стулья', what: ['Мягкие стулья\u00a0— по\u00a0вашему проекту', 'С\u00a0подлокотниками и\u00a0без', 'Обивка\u00a0— из\u00a0палитры тканей'], cfg: 'chair', wa: 'стулья', title: 'Стулья' },
-    tables: { verb: 'Делаем столы', what: ['Столы и\u00a0консоли\u00a0— по\u00a0вашему проекту', 'Обеденные: круглые и\u00a0прямоугольные', 'В\u00a0пару к\u00a0мягкой мебели'], cfg: 'table', wa: 'стол', title: 'Стол' }
   };
   const kindCartId = (cat) => `kind-${cat}`;
 
@@ -153,13 +152,10 @@
       an.onfinish = () => done(el); an.oncancel = () => done(el);
     });
   };
+  // рисуем один раз — когда плитка впервые входит в экран; при наведении не перерисовываем (мигание читалось как трюк):
+  // наведение показывают рамка плитки и подчёркнутое название (css/site.css)
   (() => {
     const tiles = $$('.tile[data-cat]').filter((a) => $('.draw', a));
-    tiles.forEach((a) => {
-      const svg = $('.draw', a);
-      a.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') drawOn(svg); });
-      a.addEventListener('focus', () => drawOn(svg));
-    });
     if (!hasIO || reduceMotion) return;
     const io = new IntersectionObserver((es) => es.forEach((en) => {
       if (!en.isIntersecting) return;
@@ -170,6 +166,20 @@
   })();
   // строка под «Каталогом» — в HTML: модели каталога — примеры, шьём и любую другую (BRIEF, правки 13 октября); общего
   // числа моделей не пишем, чтобы каталог не выглядел пределом
+
+  /* Плитка «Ткани»: подпись — типы из js/fabrics-data.js («Велюр, букле, шенилл»), веер — настоящие цвета коллекций
+     (от светлого к тёмному: шесть цветов, взятых равномерно по светлоте из всех цветов библиотеки). Данные сменились — плитка тоже */
+  (() => {
+    const sub = $('[data-fab-types]');
+    if (sub && FLIB.length) sub.textContent = FLIB.map((t, i) => (i ? t.title.toLowerCase() : t.title)).join(', ');
+    const sw = $$('.tile[data-cat="fabrics"] .draw__sw');
+    const lum = (h) => { const n = parseInt(h.slice(1), 16); return 0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255); };
+    const hexes = [];
+    FLIB.forEach((t) => t.collections.forEach((c) => c.colours.forEach((k) => { if (/^#[0-9a-f]{6}$/i.test(k.hex || '')) hexes.push(k.hex); })));
+    if (!sw.length || hexes.length < sw.length) return;
+    hexes.sort((a, b) => lum(b) - lum(a));
+    sw.forEach((r, i) => { r.style.fill = hexes[Math.round((i + 0.5) / sw.length * (hexes.length - 1))]; });
+  })();
 
   /* ---------- «Наши работы»: только подтверждённые фото работ RICCA (RICCA_WORKS). Пусто — раздела и пунктов меню нет.
      Первые три кадра — большие рамки на главной, «Все работы» — когда кадров больше трёх ---------- */
@@ -268,8 +278,9 @@
   };
   if (document.readyState === 'complete') watchPosters(); else window.addEventListener('load', watchPosters, { once: true });
   if (!reduceMotion) {
+    // вход — свой ролик ателье (video/production*); телефон — лёгкая версия. Прежний ролик из рендеров фабрики снят 13 октября
     const heroMQ = window.matchMedia('(min-width: 900px) and (min-aspect-ratio: 4/5)');
-    const heroV = autoVideo($('.hero__video'), $('.hero__toggle'), () => `video/hero-${heroMQ.matches ? 'desktop' : 'mobile'}`, { target: $('.hero'), threshold: 0.05, afterLoad: true });
+    const heroV = autoVideo($('.hero__video'), $('.hero__toggle'), () => `video/production${heroMQ.matches ? '' : '-phone'}`, { target: $('.hero'), threshold: 0.05, afterLoad: true });
     if (heroV) heroMQ.addEventListener('change', () => { $('.hero__video').classList.remove('is-on'); heroV.reload(); });
   }
   // ролик ателье: телефон — своя лёгкая версия (data-src-phone). Reduced motion — не играет сам: постер и ▶, ролик — по нажатию
@@ -387,7 +398,7 @@
       }
       // изделия с таким id нет (ссылка из прошлых версий): экран его категории по началу id, иначе — каталог
       if (r.item && !ITEM.has(r.item)) {
-        const cat = { sofa: 'sofas', bed: 'beds', armchair: 'armchairs', chair: 'chairs', table: 'tables' }[r.item.split('-')[0]];
+        const cat = { sofa: 'sofas', bed: 'beds', armchair: 'armchairs' }[r.item.split('-')[0]];
         if (cat && CATS[cat] && !CATS[cat].href) { R.replace(`#catalog/${cat}`); return R.apply(false); }
         R.toCatalog(); return;
       }
@@ -428,7 +439,7 @@
       const src = document.querySelector(`.tile[data-cat="${cat}"] .draw`);
       if (!src) return '';
       const svg = src.cloneNode(true);
-      svg.setAttribute('viewBox', '10 128 380 304');   // крупнее: без пустого поля над предметом (5 : 4)
+      svg.setAttribute('viewBox', '20 140 360 288');   // крупнее: предмет почти во всю рамку, пол — в нижней пятой части (5 : 4)
       return svg.outerHTML;
     }
     function renderCat(cat) {
@@ -504,6 +515,11 @@
     fcLive.className = 'sr-only'; fcLive.setAttribute('aria-live', 'polite');
     const isHex = (h) => /^#[0-9a-f]{3,8}$/i.test(h || '');
     const fcSrc = (k) => k.src900 || k.src450;
+    // телефон берёт 700 px (src450), компьютер — 1400 px (src900): размеры рамки — как в css/site.css (.fc)
+    const FC_SIZES = '(min-width: 1100px) 580px, (min-width: 768px) 46vw, calc(100vw - 40px)';
+    const fcSet = (k) => (k.src450 && k.src900 ? `${k.src450} 700w, ${k.src900} 1400w` : '');
+    // предзагрузка того же файла, что выберет браузер для рамки (тот же srcset и sizes)
+    const fcPre = (k, src) => { const im = new Image(); const set = src === fcSrc(k) ? fcSet(k) : ''; if (set) { im.sizes = FC_SIZES; im.srcset = set; } im.src = src; return im; };
     // по умолчанию — первый цвет с фото 900 px (у PIQUE первые цвета есть только в 450), иначе первый
     const fcDefault = (c) => Math.max(0, c.colours.findIndex((k) => k.src900));
     // code — необязательный код цвета поставщика («12», «Milk 02»): виден рядом с названием, идёт в WhatsApp и корзину
@@ -515,7 +531,9 @@
       const u = /^https?:$/.test(location.protocol) ? `\n${location.origin}${location.pathname}#fabric-${c.id}-${n + 1}` : '';
       return waUrl(`Здравствуйте! Интересует ткань ${fabWaName(c, k)}, цвет ${fcColour(k)}.${u}`);
     };
-    const fcCnHtml = (k) => `${typo(fcName(k))}${k.code ? `<small class="fc__code">${esc(k.code)}</small>` : ''}`;
+    // на экране — «Цвет 01» строкой-капителью под названием коллекции (номер «№ 01» крупной антиквой читался как незаполненный
+    // шаблон); в WhatsApp, корзине и для чтения с экрана — прежний «№ 01»
+    const fcCnHtml = (k) => `${typo(`Цвет ${fcName(k).replace(/^№\s*/, '')}`)}${k.code ? `<small class="fc__code">${esc(k.code)}</small>` : ''}`;
     const fcInCart = (id) => !!(RC && RC.list().some((x) => x.kind === 'fabric' && x.id === id));
     function renderLibrary() {
       title.textContent = 'Ткани';
@@ -534,15 +552,16 @@
           const k = c.colours[n], many = c.colours.length > 1, eager = order++ < 2;
           return `<article class="fc" id="fab-${esc(c.id)}" data-fc="${esc(c.id)}" aria-labelledby="fc-n-${esc(c.id)}">`
             + `<div class="fc__fig"><div class="fc__frame" data-fc-frame${isHex(k.hex) ? ` style="--c:${k.hex}"` : ''}>`
-            + `<img data-fc-img src="${esc(fcSrc(k))}" width="900" height="900" alt="${esc(fcAlt(c, k))}" loading="${eager ? 'eager' : 'lazy'}" decoding="async">`
+            + `<img data-fc-img src="${esc(fcSrc(k))}"${fcSet(k) ? ` srcset="${esc(fcSet(k))}" sizes="${FC_SIZES}"` : ''} width="900" height="900" alt="${esc(fcAlt(c, k))}" loading="${eager ? 'eager' : 'lazy'}" decoding="async">`
             + (many ? '<span class="fc__steps">'
               + '<button class="fc__step" type="button" data-fc-step="-1" aria-label="Предыдущий цвет"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg></button>'
               + `<span class="fc__count" data-fc-count aria-hidden="true">${pad2(n + 1)} / ${pad2(c.colours.length)}</span>`
               + '<button class="fc__step" type="button" data-fc-step="1" aria-label="Следующий цвет"><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button></span>' : '')
             + '</div></div><div class="fc__side">'
-            + `<h4 class="fc__head" id="fc-n-${esc(c.id)}"><span class="caps fc__name">${esc(c.title)}</span><span class="fc__cn" data-fc-cn>${fcCnHtml(k)}</span></h4>`
+            + `<h4 class="fc__head" id="fc-n-${esc(c.id)}"><span class="fc__name">${esc(c.title)}</span><span class="fc__cn" data-fc-cn>${fcCnHtml(k)}</span></h4>`
             + `<p class="fc__kind">${kindLine(c)}</p>`
-            + ((c.facts || []).length ? `<p class="fc__facts">${numNb(typo(c.facts.slice(0, 3).map((f) => lcFirst(f)).join(' · ').replace(/^./, (ch) => ch.toUpperCase())))}</p>` : '')
+            // факты — каждый целиком (без переноса внутри), точка — в конце строки, а не в начале переноса
+            + ((c.facts || []).length ? `<p class="fc__facts">${c.facts.slice(0, 3).map((f, i) => `<span class="fc__f">${numNb(typo(i ? lcFirst(f) : f.replace(/^./, (ch) => ch.toUpperCase())))}</span>`).join(' ')}</p>` : '')
             + `<div class="fc__sw" role="radiogroup" aria-label="${esc(`Цвет ткани ${c.title}`)}">${c.colours.map((x, j) => `<button class="fc__dot" type="button" role="radio" data-fc-k="${j}" aria-checked="${j === n}" tabindex="${j === n ? 0 : -1}" aria-label="${esc(fcName(x) + fcCode(x))}" title="${esc(fcName(x) + fcCode(x))}"${isHex(x.hex) ? ` style="--c:${x.hex}"` : ''}></button>`).join('')}</div>`
             + '<div class="fc__acts">'
             + `<a class="btn btn--fill" data-fc-wa href="${esc(fcWa(c, k, n))}" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Хочу эту ткань<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a>`
@@ -578,14 +597,15 @@
       const put = (src) => {
         if (art._tok !== tok) return;
         clearTimeout(art._slow);
+        const set = src === fcSrc(k) ? fcSet(k) : '';
+        if (set) { img.sizes = FC_SIZES; img.srcset = set; } else img.removeAttribute('srcset');
         img.src = src; img.alt = fcAlt(c, k);
         frame.classList.remove('is-loading');
       };
       const load = (src) => {
-        const pre = new Image();
+        const pre = fcPre(k, src);
         pre.onload = () => put(src);
         pre.onerror = () => { if (k.src450 && src !== k.src450) load(k.src450); else put(src); };
-        pre.src = src;
         if (pre.complete && pre.naturalWidth) put(src);
       };
       clearTimeout(art._slow);
@@ -650,7 +670,7 @@
       const dot = e.pointerType === 'mouse' && e.target.closest('[data-fc-k]');
       if (!dot || dot._pre) return;
       const x = FCOL.get(dot.closest('.fc').dataset.fc), k = x && x.c.colours[+dot.dataset.fcK];
-      if (k) { dot._pre = 1; const pre = new Image(); pre.src = fcSrc(k); }
+      if (k) { dot._pre = 1; fcPre(k, fcSrc(k)); }
     });
     // свайп по фото (палец, перо): влево — следующий цвет, вправо — предыдущий
     let fsx = null, fsy = 0, fsArt = null;
@@ -910,7 +930,6 @@
       desc.innerHTML = typo(it.description || ''); desc.hidden = !it.description;
       chips.innerHTML = (it.options || []).map((o) => `<li>${typo(o)}</li>`).join(''); chips.hidden = !(it.options || []).length;
       // сверху — только факты из данных: габариты (если в данных есть цифры), механизм, гарантия, доставка; остальное — в «Подробнее»
-      const wood = it.category === 'tables';
       const clean = (v) => String(v || '').trim().replace(/\.$/, '');
       const hasDims = /\d/.test(it.sizes || '');
       const top = [['Размеры', hasDims ? it.sizes : ''], ['Механизм', it.mechanism], ['Гарантия', it.warranty], ['Доставка', it.delivery]].filter((r) => r[1]);
@@ -925,7 +944,7 @@
       sizes = dm ? dm[1].split(/\s+и\s+|;\s*/).map((v) => v.trim()).filter((v) => /\d/.test(v)).map((v) => (/мм$/.test(v) ? v : `${v} мм`)) : [];
       sizeSel.innerHTML = sizes.length > 1 ? sizes.map((v) => `<option value="${esc(v)}">${esc(v)}</option>`).join('') + `<option value="${OWN}">Свой размер</option>` : '';
       facts.hidden = !top.length;
-      const rows = [['Размеры', hasDims ? '' : it.sizes], [wood ? 'Материал' : 'Ткань и&nbsp;кожа', it.materials], ['Наполнение', it.filling], ['Срок', it.lead]].filter((r) => r[1]);
+      const rows = [['Размеры', hasDims ? '' : it.sizes], ['Ткань и&nbsp;кожа', it.materials], ['Наполнение', it.filling], ['Срок', it.lead]].filter((r) => r[1]);
       passport.innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${typo(v)}</dd></div>`).join('');
       passport.hidden = !rows.length;
       more.open = false; more.hidden = !rows.length && !it.description && !(it.options || []).length;

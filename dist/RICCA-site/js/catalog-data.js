@@ -136,12 +136,12 @@ window.RICCA_CATALOG_CATEGORIES = {
     desc: 'Обеденные: круглые, прямоугольные' },
   fabrics: { label: 'Ткани', cover: 'img/catalog/cover-fabrics', view: 'fabrics',
     coverAlt: 'Книга образцов тканей: от светло-серого до графитового',
-    desc: 'Велюр, букле, шенилл, замша, экокожа' },   /* число коллекций сайт считает по js/fabrics-data.js */
+    desc: 'Велюр, букле, шенилл' },   /* число коллекций сайт считает по js/fabrics-data.js */
   mattresses: { label: 'Матрасы ELUNA', cover: 'img/catalog/cover-mattresses', href: 'https://ricca-designs.netlify.app',
     coverAlt: 'Постер ELUNA «Мы убирали всё лишнее — пока не осталась тишина»: матрас на звёздном небе',
     desc: 'Ортопедические, на своём сайте' }
 };
-window.RICCA_CATALOG_ORDER = ['sofas', 'beds', 'armchairs', 'chairs', 'tables', 'fabrics', 'mattresses'];
+window.RICCA_CATALOG_ORDER = ['sofas', 'beds', 'armchairs', 'fabrics', 'mattresses'];   /* столов и стульев нет — только мягкая мебель (владелец, 13 октября) */
 
 window.RICCA_CATALOG = [
 

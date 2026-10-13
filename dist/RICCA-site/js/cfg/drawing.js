@@ -223,6 +223,54 @@ function segHitsBox(s, b, pad = PAD) {
   return clip(-dx, s[0] - x0) && clip(dx, x1 - s[0]) && clip(-dy, s[1] - y0) && clip(dy, y1 - s[1]) && t0 <= t1;
 }
 
+/* ---------- текст размера: короткое имя у неочевидных размеров + число (цепочки — без расхождения в 1 мм) ---------- */
+const ABBR = {
+  backT: 'спинка', seatD: 'сид.', seatH: 'сид.', armH: 'подл.', railH: 'царга', 'railH-side': 'царга', mTop: 'матрас', hbT: 'изг.', wingT: 'ушки',
+  'frameT-foot': 'царга', 'frameT-l': 'бок.', 'frameT-r': 'бок.', cornerD: 'угол', opening: 'проём', chaiseW: 'шезл.', 'shellW-l': 'бок.', 'shellW-r': 'бок.',
+};
+export function dimText(d) {
+  const num = d.txt || fmtLen(d.value);
+  if (d.label === 'Ø') return 'Ø ' + num;
+  let a = ABBR[d.id];
+  if (d.id === 'legH') a = /цоколь/i.test(d.label) ? 'цоколь' : 'ножки';
+  if (d.id === 'inner') a = /проём/i.test(d.label) ? 'проём' : 'сид.';
+  return a ? `${a} ${num}` : num;
+}
+/* цепочки размеров одного ряда (соседние отрезки одного яруса и вида) округляем так, чтобы сумма = округлённому итогу:
+   остаток (±1 мм) — самой большой секции; d.txt — текст числа */
+function chainTexts(dims) {
+  const mm = (v) => Math.round(v * 1000);
+  const groups = new Map();
+  for (const d of dims) {
+    if (!(d.tier >= 1)) continue;
+    const k = `${d.view}|${d.axis}|${d.tier}`;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(d);
+  }
+  const ax = { x: 0, y: 1, z: 2 };
+  for (const arr of groups.values()) {
+    const seg = arr.map((d) => { const i = ax[d.axis]; return { d, a: Math.min(d.a[i], d.b[i]), b: Math.max(d.a[i], d.b[i]) }; }).sort((p, q) => p.a - q.a);
+    let run = [];
+    const flush = () => {
+      if (run.length >= 2) {
+        const target = mm(run[run.length - 1].b - run[0].a);
+        const r = run.map((x) => mm(x.d.value)); const sum = r.reduce((p, q) => p + q, 0);
+        if (sum !== target) {
+          const pool = run.map((x, i) => i).filter((i) => /^sec|^module/.test(run[i].d.id));
+          const cand = pool.length ? pool : run.map((x, i) => i);
+          const j = cand.reduce((m, i) => (run[i].d.value > run[m].d.value ? i : m), cand[0]);
+          r[j] += target - sum;
+        }
+        run.forEach((x, i) => { x.d.txt = String(r[i] / 10).replace('.', ','); });
+      }
+      run = [];
+    };
+    for (const x of seg) { if (run.length && Math.abs(x.a - run[run.length - 1].b) > 1e-6) flush(); run.push(x); }
+    flush();
+  }
+  return dims;
+}
+
 /* ---------- раскладка одного вида при масштабе 1:den ---------- */
 const AX = { front: { x: 'h', y: 'v' }, side: { z: 'h', y: 'v' }, top: { x: 'h', z: 'v' } };
 
@@ -261,8 +309,7 @@ function layoutView(view, pr, den, bump = {}) {
     const a = P(d.a), b = P(d.b);
     const c1 = orient === 'h' ? Math.min(a[0], b[0]) * k : Math.min(a[1], b[1]) * k;
     const c2 = orient === 'h' ? Math.max(a[0], b[0]) * k : Math.max(a[1], b[1]) * k;
-    const pre = d.label === 'Ø' ? 'Ø ' : '';
-    sides[side].push({ d, side, orient, c1, c2, text: pre + fmtLen(d.value) });
+    sides[side].push({ d, side, orient, c1, c2, text: dimText(d) });
   }
   const tw = (t) => textWidth(t, FS, 500) * 1.03;
   const rowLine = (side, row) => (side === 'bottom' ? Hv + OFF0 + STEP * row : side === 'right' ? Wv + OFF0 + STEP * row : -(OFF0 + STEP * row));
@@ -384,7 +431,8 @@ export function layoutSheet(cfg, partsResult, opts = {}) {
   const params = normalize(type, cfg.params || {});
   const src = partsResult || partsOf(type, params);
   /* копия с габаритом каждой детали в мире (исходник не меняем) */
-  const pr = { ...src, items: src.items.map((it) => ({ ...it, _bb: itemBounds(it) })) };
+  /* одеяло и подушки кровати (decor) и утопленные опоры (support) — не на чертеже */
+  const pr = { ...src, items: src.items.filter((it) => !it.decor && !it.support).map((it) => ({ ...it, _bb: itemBounds(it) })), dims: chainTexts(src.dims.map((d) => ({ ...d }))) };
   const all = boundsOf(pr.items.flatMap((it) => [it._bb.min, it._bb.max]));
   pr._bounds = all;
 
@@ -564,7 +612,7 @@ text{font-family:${FONT};fill:${INK}}
     const vwt = ri === 0 ? 600 : 400;
     const isFab = r.label === 'Ткань' && cfg.fabric && cfg.fabric.typeId;
     const vw = VAL_W - (isFab && opts.swatchDataUrl ? 9.5 : 0);
-    const maxL = r.label === 'Пожелание' ? 2 : 3;
+    const maxL = r.label === 'Пожелание' ? 6 : 3;
     const ls = clampLines(wrap(r.value, vw, fs, vwt), maxL, vw, fs, vwt);
     const ll = wrap(r.label.toUpperCase(), LBL_W - 1, 1.75, 600);
     const h = Math.max(ls.length * fs * 1.28, ll.length * 2.3, isFab && opts.swatchDataUrl ? 8.4 : 0) + 1.7;

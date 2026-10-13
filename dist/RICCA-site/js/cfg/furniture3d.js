@@ -462,8 +462,9 @@ function tubeAlong(points, radius, quality, closed = true, dense = 1) {
 const NEUTRAL = {};
 function neutral(key) {
   if (NEUTRAL[key]) return NEUTRAL[key];
-  const c = { fabric: '#E6E1D8', legs: '#2B2B2B', top: '#C8A57A', mattress: '#F2F1EC' }[key] || '#cccccc';
-  NEUTRAL[key] = new THREE.MeshPhysicalMaterial({ color: c, roughness: key === 'legs' ? 0.4 : 0.85, metalness: key === 'legs' ? 0.8 : 0 });
+  const c = { fabric: '#E6E1D8', legs: '#2B2B2B', top: '#C8A57A', mattress: '#F2F1EC', decor: '#EDEBE6', support: '#1A1A1A' }[key] || '#cccccc';
+  NEUTRAL[key] = new THREE.MeshPhysicalMaterial({ color: c, roughness: key === 'legs' ? 0.4 : key === 'support' ? 0.6 : key === 'decor' ? 0.95 : 0.85, metalness: key === 'legs' ? 0.8 : 0 });
+  if (key === 'decor') { NEUTRAL[key].sheen = 0.4; NEUTRAL[key].sheenRoughness = 0.8; NEUTRAL[key].sheenColor = new THREE.Color('#FFFFFF'); }
   return NEUTRAL[key];
 }
 
@@ -499,6 +500,8 @@ function itemGeometry(it, quality, type, dense = 1) {
   if (it.role === 'mattress') { o.rx = o.rz = 0.05; o.rTop = 0.035; o.rBottom = 0.035; o.crown = it.crown || 0.008; o.bulge = 0.004; }
   if (it.role === 'seat' && it.tufting) { o.tufting = it.tufting; o.tuftFace = 'y'; }
   if (it.role === 'top') { o.rx = o.rz = it.rPlan || 0.012; o.rTop = it.r; o.rBottom = it.r * 0.6; }
+  if (it.role === 'decor') { o.crown = it.crown || 0.02; o.rx = o.rz = it.r; o.rTop = it.r; o.rBottom = 0.01; o.bulge = it.decorKind === 'pillow' ? 0.012 : 0.004; }
+  if (cushion === false && it.softBack) { o.rTop = 0.07; o.rx = 0.05; o.rz = Math.min(0.06, it.sz * 0.4); o.crown = it.crown || 0.02; o.crownFace = 'z'; o.bulge = 0.005; }
   if (it.role === 'plinth') { o.rx = o.rz = 0.01; o.rTop = 0.004; o.rBottom = 0.004; }
   if (it.role === 'frame' || it.role === 'rail') { o.rTop = Math.min(it.r ?? 0.02, it.sy * 0.4); o.rBottom = 0.01; }
   return softBox(it.sx, it.sy, it.sz, o);
@@ -541,6 +544,7 @@ export function build(type, params, materials = {}, opts = {}) {
   const M = {
     fabric: materials.fabric || neutral('fabric'), legs: materials.legs || neutral('legs'),
     top: materials.top || neutral('top'), mattress: materials.mattress || neutral('mattress'),
+    decor: materials.decor || neutral('decor'), support: neutral('support'),
   };
   const seamM = seamMaterial(M.fabric) || M.fabric;
   const meshes = [];
@@ -565,7 +569,7 @@ export function build(type, params, materials = {}, opts = {}) {
     const geo = itemGeometry(it, quality, type, dense);
     if (prof) prof.geo += performance.now() - _t;
     if (it.tiltX) fitTilted(geo, it);
-    addMesh(geo, it.mat === 'legs' ? 'legs' : it.mat === 'top' ? 'top' : it.mat === 'mattress' ? 'mattress' : 'fabric', it);
+    addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'support'].includes(it.mat) ? it.mat : 'fabric', it, it.decor ? { decor: true } : null);
     /* кант и швы */
     const pipeMat = it.mat === 'mattress' ? 'mattress' : 'fabric';
     if (geo.userData.edgeLoop && (it.piping || it.seam) && quality !== 'low') {
@@ -609,19 +613,20 @@ export function build(type, params, materials = {}, opts = {}) {
       m.updateMatrix();
       const g = m.geometry.index ? m.geometry : m.geometry;
       const gg = g.clone().applyMatrix4(m.matrix);
-      const k = m.userData.matKey;
+      const k = m.userData.matKey + '|' + (m.userData.detail === 'seam' ? 'seam' : '');
       if (!byMat.has(k)) byMat.set(k, { geos: [], ids: [] });
       const e = byMat.get(k); e.geos.push(gg); e.ids.push(m.userData.partId);
       m.geometry.dispose();
     }
-    for (const [k, e] of byMat) {
+    for (const [kk, e] of byMat) {
+      const [k, det] = kk.split('|');
       const attrs = ['position', 'normal', 'uv'];
       e.geos.forEach((g) => { for (const n of Object.keys(g.attributes)) if (!attrs.includes(n)) g.deleteAttribute(n); if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]); });
       const merged = mergeGeometries(e.geos, false);
       e.geos.forEach((g) => g.dispose());
       const mesh = new THREE.Mesh(merged, k === 'seam' ? seamM : M[k] || M.fabric);
       mesh.castShadow = mesh.receiveShadow = true;
-      mesh.userData = { partId: 'merged-' + k, partIds: [...new Set(e.ids)], matKey: k, merged: true };
+      mesh.userData = { partId: 'merged-' + kk, partIds: [...new Set(e.ids)], matKey: k, merged: true, ...(det ? { detail: det } : {}) };
       group.add(mesh);
     }
   } else meshes.forEach((m) => group.add(m));

@@ -4,7 +4,7 @@
    (автоисправление + короткая заметка) → «нестандартный размер» для значений вне диапазона интерфейса.
    Единицы: метры. Заметки — по-русски, в сантиметрах. */
 
-import { normalize, RANGES, DEFAULTS, rangeOf, dims as dimsOf, ARMW_BY_STYLE, HIDDEN_LEG_H } from './params.js';
+import { normalize, RANGES, DEFAULTS, rangeOf, dims as dimsOf, armDef, HIDDEN_LEG_H, LEGH_BY_KIND } from './params.js';
 
 export const MSG_HARD = 'Такой размер не подходит для одного изделия — напишите нам, обсудим.';
 export const MSG_NONSTD = 'Нестандартный размер — уточним с мастером';
@@ -24,8 +24,17 @@ const NAMES = {
   w: 'Ширина', d: 'Глубина', l: 'Длина второй стороны', h: 'Высота', seatH: 'Высота сиденья', seatD: 'Глубина сиденья',
   armW: 'Ширина подлокотника', armH: 'Высота подлокотника', legH: 'Высота ножек', chaiseW: 'Ширина шезлонга', chaiseL: 'Глубина шезлонга',
   moduleW: 'Ширина модуля', mw: 'Ширина матраса', ml: 'Длина матраса', hbH: 'Высота изголовья', hbOver: 'Выступ изголовья',
-  frameT: 'Боковина', railH: 'Высота царги', topT: 'Толщина столешницы', legW: 'Сечение ножки', legInset: 'Отступ ножки',
+  frameT: 'Боковина', railH: 'Высота царги',
 };
+/* подписи, зависящие от типа и выбора: «Длина» у банкетки, «Диаметр» у круглого пуфа, «Высота цоколя» */
+function nameOf(type, k, p) {
+  if (k === 'legH' && (p.legs === 'plinth' || (type === 'bed' && p.base === 'plinth'))) return 'Высота цоколя';
+  if (type === 'pouf' && k === 'w') return p.form === 'round' ? 'Диаметр' : p.form === 'bench' ? 'Длина' : 'Сторона';
+  if (type === 'corner' && k === 'w') return 'Длина вдоль спинки';
+  if (type === 'corner' && k === 'l') return p.form === 'chaise' ? 'Длина шезлонга' : 'Вторая сторона';
+  if (type === 'ushape' && k === 'l') return 'Боковые стороны';
+  return NAMES[k] || 'Размер';
+}
 
 /* допустимые значения опций по типам (неизвестное → значение по умолчанию) */
 const ARM = ['none', 'thin', 'wide', 'round'];
@@ -38,14 +47,12 @@ const ENUMS = {
   modular: { armStyle: ARM, backCushions: ['fixed', 'loose'], legs: LEGS4, chaise: ['none', 'left', 'right'] },
   bed: { hbStyle: ['plain', 'channels', 'capitone', 'wings'], base: ['legs', 'plinth'] },
   armchair: { form: ['classic', 'round'], armStyle: ARM, backCushions: ['fixed', 'loose'], legs: LEGS4 },
-  chair: { arms: ['none', 'thin'], backShape: ['straight', 'rounded'], legs: ['wood', 'metal'] },
-  table: { shape: ['rect', 'round', 'oval'], top: ['wood', 'stone'], base: ['four', 'pedestal'], legs: ['wood', 'metal'] },
   pouf: { form: ['round', 'square', 'bench'], top: ['smooth', 'capitone'], legs: LEGS4 },
 };
-const METAL = ['black', 'gold'], WOOD = ['oak', 'walnut', 'blackwood'], STONE = ['light', 'grey', 'dark'];
+const METAL = ['black', 'gold'], WOOD = ['oak', 'walnut', 'blackwood'];
 
 /* производные ключи (их пересчитывает normalize) */
-const DERIVED = { bed: ['w', 'd', 'h', 'hbT'], modular: ['w'], chair: ['seatD', 'armH'], table: ['d'], pouf: ['d'] };
+const DERIVED = { bed: ['w', 'd', 'h', 'hbT'], modular: ['w'], pouf: ['d'] };
 
 /* толщина подушки сиденья (как params.js) */
 function seatCushionT(type, p) {
@@ -56,7 +63,8 @@ function seatCushionT(type, p) {
 function armWidth(p) { return p.armStyle === 'none' ? 0 : (p.armW || 0); }
 
 export function validate(type, params = {}) {
-  if (!DEFAULTS[type]) type = 'sofa';
+  /* столы и стулья ателье не делает: неизвестный тип (старые ссылки) → диван по умолчанию */
+  if (!DEFAULTS[type]) { type = 'sofa'; params = {}; }
   const raw = params || {};
   const p = normalize(type, raw);
   const D = DEFAULTS[type];
@@ -72,14 +80,13 @@ export function validate(type, params = {}) {
     const pool = type === 'bed' ? WOOD : p.legs === 'metal' ? METAL : p.legs === 'wood' ? WOOD : null;
     if (pool && !pool.includes(p.legFinish)) p.legFinish = pool[0];
   }
-  if (type === 'table') { const pool = p.top === 'stone' ? STONE : WOOD; if (!pool.includes(p.topTone)) p.topTone = pool[0]; }
   if (SOFA_FAMILY.has(type) && p.sections !== 'auto') {
     const n = Math.round(+p.sections);
     p.sections = Number.isFinite(n) && n >= 1 ? n : 'auto';
   }
   if ('armStyle' in p) {
     if (p.armStyle === 'none') p.armW = 0;
-    else if (!(p.armW > 0) || (raw.armStyle && raw.armW === undefined)) p.armW = ARMW_BY_STYLE[p.armStyle].def;   // смена стиля → ширина по стилю
+    else if (!(p.armW > 0) || (raw.armStyle && raw.armW === undefined)) p.armW = armDef(type, p.armStyle);   // смена стиля → ширина по стилю
   }
   p.qty = Math.min(999, Math.max(1, Math.round(+p.qty || 1)));
 
@@ -88,7 +95,6 @@ export function validate(type, params = {}) {
     if (typeof D[k] !== 'number' || COUNT.has(k)) return false;
     if (type === 'modular' && k === 'w') return false;                  // выводится
     if (type === 'bed' && (k === 'w' || k === 'd' || k === 'h')) return false;
-    if (type === 'chair' && (k === 'seatD' || k === 'armH')) return false;
     if (k === 'armW' && p.armStyle === 'none') return false;
     if (k === 'legH' && p.legs === 'hidden' && type !== 'bed') return false;
     if (typeof v !== 'number' || !Number.isFinite(v) || v < 0) return true;
@@ -106,11 +112,15 @@ export function validate(type, params = {}) {
     p.w = r3(p.modules * p.moduleW + 2 * armWidth(p));
   }
 
+  /* видимые ножки не ниже 4 см (иначе это «скрытые»): например, модульный с металлом из старой ссылки */
+  if ('legs' in p && p.legs !== 'hidden' && type !== 'bed' && LEGH_BY_KIND[p.legs] && p.legH < 0.04 - EPS) {
+    const rg = rangeOf(type, 'legH', p); set('legH', rg && rg.def >= 0.04 ? rg.def : LEGH_BY_KIND[p.legs].def);
+    note('legH', `${p.legs === 'plinth' ? 'Цоколь' : 'Ножки'} ${cmTxt(p.legH)} — для видимых ${p.legs === 'plinth' ? 'цоколей' : 'ножек'}`);
+  }
+
   /* ---------- 2. согласование ---------- */
   if (SOFA_FAMILY.has(type) || type === 'armchair') sofaRules(type, p, raw, note, fail, set);
   if (type === 'bed') bedRules(p, raw, note, fail, set);
-  if (type === 'chair') chairRules(p, note, set);
-  if (type === 'table') tableRules(p, raw, note, fail, set);
   if (type === 'pouf') poufRules(p, note, set);
 
   /* производные — пересчитываем после исправлений */
@@ -135,7 +145,7 @@ export function validate(type, params = {}) {
     if (!rg || typeof rg.min !== 'number') continue;
     if (v < rg.min - EPS || v > rg.max + EPS) {
       fieldNotes[k] = MSG_NONSTD;
-      const t = `${NAMES[k] || 'Размер'} ${cmTxt(v)}: нестандартный размер — уточним с мастером`;
+      const t = `${nameOf(type, k, p)} ${cmTxt(v)}: нестандартный размер — уточним с мастером`;
       if (!notes.includes(t)) notes.push(t);
     }
   }
@@ -148,10 +158,9 @@ export function validate(type, params = {}) {
 function skipRange(type, k, p) {
   if (k === 'armW' || k === 'armH') return p.armStyle === 'none';
   if (k === 'legH') return type !== 'bed' && p.legs === 'hidden';
-  if (k === 'legW' || k === 'legInset') return p.base !== 'four';
   if (k === 'chaiseW') return p.form !== 'chaise';
   if (k === 'chaiseL') return p.chaise === 'none';
-  if (k === 'd') return (type === 'table' && p.shape === 'round') || (type === 'pouf' && p.form !== 'bench');
+  if (k === 'd') return type === 'pouf' && p.form !== 'bench';
   if (k === 'w') return type === 'modular';
   return false;
 }
@@ -225,7 +234,7 @@ function sofaRules(type, p, raw, note, fail, set) {
     if (p.l < needL - EPS) { set('l', needL); note('l', `Длина сторон увеличена до ${cmTxt(p.l)} — иначе не поместится сиденье`); }
   }
   if (type === 'sofa' || type === 'armchair') {
-    const minInner = type === 'sofa' ? 0.60 : 0.36;   // кресло: §7.3 даёт 45, но умолчания A (82 − 2·22 = 38) — берём 36
+    const minInner = type === 'sofa' ? 0.60 : 0.50;   // кресло: сиденье между подлокотниками не уже 50 см
     const roundShell = type === 'armchair' && p.form === 'round';
     const a = roundShell ? Math.max(0.10, arm()) : arm();
     if (p.w - 2 * a < minInner - EPS) {
@@ -235,6 +244,12 @@ function sofaRules(type, p, raw, note, fail, set) {
       else if (arm() === 0 && p.w >= minInner - EPS) { /* без подлокотников помещается */ }
       else fail('w', `При ширине ${cmTxt(p.w)} не помещаются ${arm() > 0 ? 'подлокотники и ' : ''}сиденье — нужно не меньше ${cmTxt(minInner + (arm() > 0 ? 2 * minA : 0))}.`);
     }
+  }
+
+  /* округлое кресло: подушка сиденья помещается в оболочку (глубина сиденья ≤ глубина − оболочка − 2 см) */
+  if (type === 'armchair' && p.form === 'round') {
+    const t = Math.max(0.10, arm() || 0.15), mx = p.d - t - 0.02;
+    if (p.seatD > mx + EPS) { set('seatD', mx); note('seatD', `Глубина сиденья уменьшена до ${cmTxt(p.seatD)} — подушка внутри оболочки`); }
   }
 
   /* секции сиденья: каждая не уже 45 см */
@@ -258,41 +273,6 @@ function bedRules(p, raw, note, fail, set) {
   /* изголовье выше матраса хотя бы на 30 см (верх матраса = царга + 12 см) */
   const minHb = p.railH + 0.12 + 0.30;
   if (p.hbH < minHb - EPS) { set('hbH', minHb); note('hbH', `Высота изголовья увеличена до ${cmTxt(p.hbH)} — выше матраса на 30 см`); }
-}
-
-/* ---------- стул ---------- */
-function chairRules(p, note, set) {
-  if (p.seatH < 0.30 - EPS) { set('seatH', 0.30); note('seatH', `Высота сиденья увеличена до ${cmTxt(p.seatH)}`); }
-  if (p.arms === 'thin' && p.seatH > 0.54 + EPS) { set('seatH', 0.54); note('seatH', `Высота сиденья уменьшена до ${cmTxt(p.seatH)} — подлокотники полукресла на высоте 64 см`); }
-  const minH = Math.max(p.seatH + 0.30, p.arms === 'thin' ? 0.70 : 0);
-  if (p.h < minH - EPS) { set('h', minH); note('h', `Высота увеличена до ${cmTxt(p.h)} — спинка выше сиденья хотя бы на 30 см`); }
-}
-
-/* ---------- стол ---------- */
-function tableRules(p, raw, note, fail, set) {
-  if (p.shape === 'round') p.d = p.w;
-  if (p.shape === 'oval' && !(p.d < p.w - EPS)) {
-    if (p.d > p.w + EPS) { const t = p.w; p.w = p.d; p.d = t; note('d', `Для овального стола ширина больше глубины — поменяли местами: ${fmt(p.w)} × ${fmt(p.d)} см`); }
-    else { set('d', p.w - 0.10); note('d', `Овал с равными сторонами — это круг: глубина уменьшена до ${cmTxt(p.d)}`); }
-  }
-  if (p.h - p.topT < 0.30 - EPS) { set('h', p.topT + 0.30); note('h', `Высота стола увеличена до ${cmTxt(p.h)} — под столешницей нужно не меньше 30 см`); }
-  if (p.base === 'four') {
-    const minIns = r3(p.legW / 2 + 0.02);
-    if (p.legInset < minIns - EPS) { set('legInset', minIns); note('legInset', `Отступ ножек увеличен до ${cmTxt(p.legInset)}`); }
-    /* ножки под столешницей, между ними не меньше 10 см */
-    let maxIns;
-    if (p.shape === 'rect') maxIns = (Math.min(p.w, p.d) - 2 * p.legW - 0.10) / 2;
-    else {
-      /* ножки на вписанном квадрате: центр на радиусе r − отступ − ножка/2; зазор между ними ≥ 10 см */
-      const rMin = Math.min(p.w, p.d) / 2;
-      maxIns = rMin - p.legW / 2 - (0.10 + p.legW) / (2 * Math.SQRT1_2);
-    }
-    maxIns = Math.floor(maxIns * 1000) / 1000;
-    if (p.legInset > maxIns + EPS) {
-      if (maxIns < minIns - EPS) fail('legInset', 'Для такой столешницы ножки не помещаются — выберите опору или увеличьте размер.');
-      else { set('legInset', maxIns); note('legInset', `Отступ ножек уменьшен до ${cmTxt(p.legInset)} — ножки должны стоять под столешницей`); }
-    }
-  }
 }
 
 /* ---------- пуф / банкетка ---------- */
