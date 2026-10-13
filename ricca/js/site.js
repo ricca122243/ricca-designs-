@@ -1,8 +1,9 @@
 /* RICCA DESIGNS — v4 «в меру» (10 октября, ночь). Ванильный JS без библиотек.
    Порядок: CONFIG → данные (js/catalog-data.js) → плитки каталога (число моделей, подписи, alt — из данных) → ссылки
    WhatsApp/телефон → вход (занавес, видео) → видео по экрану → появления → окна и адреса (#catalog/<категория>, #works/all,
-   #item-<id>, #work-NN, #fabric-<коллекция>-<N>) → экран категории / тканей (библиотека js/fabrics-data.js) → окно изделия
-   → лайтбокс работ → ткань крупно → корзина (данные — js/cart.js, RICCA_CART) → меню → шапка и липкая плашка.
+   #item-<id>, #work-NN, #fabric-<коллекция>-<N>) → экран категории / тканей (библиотека js/fabrics-data.js: у коллекции одно
+   большое фото и цвета кнопками; #fabric-… открывает «Ткани» на этой коллекции с этим цветом) → окно изделия
+   → лайтбокс работ → корзина (данные — js/cart.js, RICCA_CART) → меню → шапка и липкая плашка.
    Новость ELUNA — карточка с луной на чистом CSS (css/site.css, .news), скрипт ей не нужен.
    Единственный владелец ссылок [data-wa] / [data-tel] — этот файл. */
 (() => {
@@ -340,7 +341,7 @@
     replace(hash) { try { history.replaceState({ rd: R.depth() }, '', hash); } catch (_) { /* file:// */ } },
     // на плитки каталога: адрес #catalog, окна закрыты, раздел — в начале экрана
     toCatalog() {
-      R.replace('#catalog'); PD.close(false); LB.close(false); FZ.close(false); View.close(false);
+      R.replace('#catalog'); PD.close(false); LB.close(false); View.close(false);
       const el = document.getElementById('catalog');
       if (el) requestAnimationFrame(() => el.scrollIntoView({ block: 'start' }));
     },
@@ -375,12 +376,13 @@
       }
       // ткани такой нет (коллекцию убрали из js/fabrics-data.js) — экран «Ткани»
       if (r.fab != null && !(FCOL.has(r.fab) && FCOL.get(r.fab).c.colours[r.fabN])) { R.replace('#catalog/fabrics'); return R.apply(false); }
-      // уровень 1: категория / ткани / все работы
+      // уровень 1: категория / ткани / все работы; #fabric-<коллекция>-<N> — экран «Ткани» на этой коллекции с цветом N
       if (r.cat) {
         const c = CATS[r.cat];
         if (!c || c.href) R.toCatalog();
         else View.open(c.view === 'fabrics' ? { type: 'fabrics', sub: r.sub } : { type: 'cat', cat: r.cat, sub: r.sub });
-      } else if (r.works && WORKS.length) View.open({ type: 'works' });
+      } else if (r.fab != null) View.open({ type: 'fabrics', sub: 'all', fab: r.fab, fabN: r.fabN });
+      else if (r.works && WORKS.length) View.open({ type: 'works' });
       else if (r.works) R.toCatalog();
       else if (r.item && initial && ITEM.has(r.item)) {
         // вход по ссылке на изделие: под окном — его категория, чтобы «Закрыть» вело к остальным моделям
@@ -388,17 +390,11 @@
         R.replace(`#catalog/${it.category}`);
         try { history.pushState({ rd: 1 }, '', `#item-${it.id}`); } catch (_) { /* */ }
         View.open({ type: 'cat', cat: it.category, sub: 'all' });
-      } else if (r.fab != null && initial) {
-        // вход по ссылке на ткань: под окном — экран «Ткани»
-        R.replace('#catalog/fabrics');
-        try { history.pushState({ rd: 1 }, '', `#fabric-${r.fab}-${r.fabN + 1}`); } catch (_) { /* */ }
-        View.open({ type: 'fabrics', sub: 'all' });
-      } else if (!r.item && r.work == null && r.fab == null) View.close(false);
-      // уровень 2: изделие / фото работы / ткань крупно
-      if (r.item && ITEM.has(r.item)) { LB.close(false); FZ.close(false); PD.open(r.item); }
-      else if (r.work != null && WORKS[r.work]) { PD.close(false); FZ.close(false); LB.open(r.work); }
-      else if (r.fab != null) { PD.close(false); LB.close(false); FZ.open(r.fab, r.fabN); }
-      else { PD.close(); LB.close(); FZ.close(); }
+      } else if (!r.item && r.work == null) View.close(false);
+      // уровень 2: изделие / фото работы
+      if (r.item && ITEM.has(r.item)) { LB.close(false); PD.open(r.item); }
+      else if (r.work != null && WORKS[r.work]) { PD.close(false); LB.open(r.work); }
+      else { PD.close(); LB.close(); }
       R.opener = null;
     }
   };
