@@ -11,8 +11,8 @@ import { seamMaterial } from './materials.js';
 export { TYPES, OPTIONS, RANGES, DEFAULTS, PRESETS, normalize, parts, dims, labelOf, rangeOf, itemBounds } from './params.js';
 
 const Q = {
-  high: { sp: 0.045, flat: 0.3, nq: 6, tuft: 0.012, ang: 0.035, radial: 24, tube: 8 },
-  mid: { sp: 0.07, flat: 0.4, nq: 4, tuft: 0.02, ang: 0.06, radial: 16, tube: 6 },
+  high: { sp: 0.045, flat: 0.3, nq: 6, tuft: 0.012, ang: 0.035, radial: 24, tube: 6 },
+  mid: { sp: 0.07, flat: 0.4, nq: 4, tuft: 0.02, ang: 0.06, radial: 16, tube: 5 },
   low: { sp: 0.12, flat: 0.6, nq: 2, tuft: 0.035, ang: 0.1, radial: 10, tube: 4 },
 };
 const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -89,7 +89,7 @@ function softBox(sx, sy, sz, o = {}) {
   const tuft = o.tufting;
   /* плотность стяжки: не мельче q.tuft и не больше ~30 тыс. вершин на две большие грани */
   const tArea = tuft ? (o.tuftFace === 'y' ? sx * sz : sx * sy) : 0;
-  const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 6000 : o.quality === 'mid' ? 14000 : 30000))) : q.sp;
+  const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 6000 : o.quality === 'mid' ? 12000 : 24000))) : q.sp;
   const deformed = crown || bulge || tuft || o.sag || (o.taper && o.taper !== 1);
   const sp = (deformed ? q.sp : q.flat) * (o.dense || 1);
   const tf = o.tuftFace || 'z';

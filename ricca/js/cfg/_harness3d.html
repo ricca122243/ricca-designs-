@@ -76,5 +76,13 @@ window.patch = async (c) => {
   let r = 0, gg = 0, b = 0; for (let i = 0; i < d.length; i += 4) { r += d[i]; gg += d[i + 1]; b += d[i + 2]; }
   const n = d.length / 4; return [r / n, gg / n, b / n];
 };
+window.badNormals = (c) => {
+  const out = {};
+  for (const quality of ['high', 'low']) {
+    const g = build(c.type, c.params || {}, {}, { quality });
+    g.traverse((m) => { if (!m.isMesh) return; const n = m.geometry.attributes.normal; let bad = 0; for (let i = 0; i < n.count; i++) { const l = Math.hypot(n.getX(i), n.getY(i), n.getZ(i)); if (Math.abs(l - 1) > 0.0005) bad++; } if (bad) out[quality + ':' + m.userData.partId + ':' + (m.userData.detail || '') + ':' + m.geometry.type] = bad; });
+  }
+  return out;
+};
 window.ready = true;
 </script></body></html>
