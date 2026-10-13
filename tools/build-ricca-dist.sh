@@ -47,7 +47,12 @@ fi
 # Медиа и шрифты: копируем только файлы, на которые ссылаются html/css/js (включая srcset и data-атрибуты)
 # HTML берём без комментариев: в них лежат отключённые блоки (например, редакционный кадр, которого ещё нет)
 html_nocomments=$(sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$SRC/index.html")
-refs=$( (printf '%s' "$html_nocomments"; cat "$OUT/css/"*.css "$OUT/js/"*.js) \
+# js/catalog-data.js: модели фабрики сайт больше не показывает (отзыв клиента 13 октября) — их фото в архив не идут;
+# из этого файла берём ссылки только раздела RICCA_WORKS (подтверждённые фото работ, когда появятся)
+js_code() { for f in "$OUT"/js/*.js; do
+  if [ "$(basename "$f")" = catalog-data.js ]; then sed -n '/^window\.RICCA_WORKS/,$p' "$f"; else cat "$f"; fi
+done; }
+refs=$( (printf '%s' "$html_nocomments"; cat "$OUT/css/"*.css; js_code) \
          | grep -ohE '(img|video|fonts)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css)' | sed 's#^\.\./##' | sort -u)
 for ref in $refs; do
   if [ ! -f "$SRC/$ref" ]; then
@@ -76,10 +81,8 @@ for ref in $refs; do
       cp "$SRC/$small" "$OUT/$small" ;;
   esac
 done
-# Фото каталога: карточки, галереи и окно «Подробнее» собирает js/site.js из js/catalog-data.js — пути строятся в JS,
-# поэтому копируем всю папку img/catalog целиком, со всеми подпапками (img/catalog/sofas/… для новых фото заказчика).
-# MANIFEST*.md и README.md там же — внутренние заметки: в архив не идут
-mkdir -p "$OUT/img/catalog" && cp -r "$SRC/img/catalog/." "$OUT/img/catalog/" && find "$OUT/img/catalog" -name '*.md' -delete
+# Фото каталога: сеток моделей и окна изделия больше нет (отзыв клиента 13 октября) — из img/catalog копируются только
+# файлы, на которые есть ссылки выше (постер ELUNA на плитке; прежние ИИ-обложки и рендеры фабрики в архив не идут)
 [ -f "$OUT/js/catalog-data.js" ] || { echo "нет js/catalog-data.js — каталог будет пустым"; exit 1; }
 # Ролики (вход hero-*, ателье production*) js/site.js подставляет по имени: берём папку video целиком.
 # Ролики шагов производства (step-NN-*) и их постеры (img/process) — только если сайт на них ещё ссылается: после 10 октября

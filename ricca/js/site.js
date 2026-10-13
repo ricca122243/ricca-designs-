@@ -147,7 +147,7 @@
       if (!len) { done(el); return; }
       el.style.strokeDasharray = `${len}px ${len}px`;
       const an = el.animate([{ strokeDashoffset: `${len}px` }, { strokeDashoffset: '0px' }],
-        { duration: slow ? 1400 : 950, delay: i * (slow ? 70 : 45), easing: 'cubic-bezier(.45, 0, .2, 1)', fill: 'backwards' });
+        { duration: slow ? 1100 : 900, delay: i * (slow ? 45 : 35), easing: 'cubic-bezier(.45, 0, .2, 1)', fill: 'backwards' });
       an.onfinish = () => done(el); an.oncancel = () => done(el);
     });
   };
