@@ -1,3 +1,5 @@
+# v4 (10 октября, ночь): обложки сайта теперь делает covers-v4.py. Этот скрипт — только ЗАПАСНЫЕ обложки на случай, если
+# заказчик не примет ИИ-обложки Диванов/Кроватей (SPEC v4 §4): пишет cover-sofas-52 и cover-beds-40, обложки v4 не трогает.
 # Фото-обложки плиток каталога: Диваны · Кровати · Ткани (1200 × 1500 + -600, без фильтров и перекраски).
 # Предметный ряд (Кресла · Стулья · Столы · Матрасы ELUNA) делает covers-studio.py.
 # 10 октября (вечер): чужие фото сняты с сайта — обложки только из оставленных кадров (MANIFEST.md, «Снято с сайта 10 октября»):
@@ -26,6 +28,6 @@ def photo(src, box, name):
     print(name, os.path.basename(src), box, 'scale %.2f' % (W / im.size[0]))
     save(im.resize((W, H), Image.LANCZOS), name)
 
-photo(C + '/partner/LIKELY-sarnico-top.jpg', (0, 43, 955, 1237), 'cover-sofas')             # вид сверху, ×1,26 (№ 42 — первый план видео входа, не повторяем)
-photo(C + '/partner/LIKELY-barolo-bedroom-b.jpg', (0, 0, 2048, 2560), 'cover-beds')
-photo(C + '/39-fabrics-swatch-books.jpg', (0, 80, 1920, 2480), 'cover-fabrics')
+photo(C + '/partner/LIKELY-sarnico-top.jpg', (0, 43, 955, 1237), 'cover-sofas-52')          # вид сверху, ×1,26 (№ 42 — первый план видео входа, не повторяем)
+photo(C + '/partner/LIKELY-barolo-bedroom-b.jpg', (0, 0, 2048, 2560), 'cover-beds-40')
+# Ткани (№ 39) — теперь в covers-v4.py (тот же кадр, легче файл)

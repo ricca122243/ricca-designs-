@@ -2,6 +2,8 @@
 # Видео входа: мастер (kb.py, CRF 6) → mp4 (H.264 CRF 26, preset veryslow — вдвое меньше файла при той же CRF, +faststart) + webm (VP9, 2 прохода) + постеры (кадр 0: webp + jpg).
 # Запуск: bash tools/media-v3/hero-encode.sh desktop|mobile [workDir]   (REUSE_MASTER=1 — не пересчитывать мастер; VP9CRF=N)
 # 10 октября (вечер): только оставленные кадры (MANIFEST.md, «Снято с сайта 10 октября»); конфиги — desk.json / mob.json.
+# v4 (10 октября, ночь): desk.json — № 42 → ИИ p03 → № 40; mob.json — № 43 → ИИ p02 → ИИ p04 → ИИ p03; петля = целое число кадров,
+#   точка петли в середине первого плана ("t0" в kb.py), постер = кадр 0 (MANIFEST.md, раздел v4).
 set -euo pipefail
 cd "$(dirname "$0")"
 kind=$1; work=${2:-/tmp/ricca-hero}; mkdir -p "$work"

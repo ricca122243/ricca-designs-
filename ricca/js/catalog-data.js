@@ -112,20 +112,36 @@ window.RICCA_MODEL_READINGS = {
   Gulis: 'Гулис', Ruzis: 'Рузис', Tivis: 'Тивис'
 };
 
-/* Категории — в порядке плиток. cover — обложка плитки (1200 × 1500 + -600). href — плитка ведёт на внешний сайт (ELUNA).
-   view: 'fabrics' — плитка открывает экран тканей (данные ниже, RICCA_FABRICS). tags — подфильтры экрана категории. */
+/* Категории — в порядке плиток (RICCA_CATALOG_ORDER). cover — обложка плитки (1200 × 1500 + -600). href — плитка ведёт на внешний
+   сайт (ELUNA). view: 'fabrics' — плитка открывает экран тканей (данные ниже, RICCA_FABRICS). tags — подфильтры экрана категории.
+   desc — вторая строка подписи плитки и строка под заголовком экрана категории; число моделей перед ней сайт считает сам.
+   viz: true — обложка — наша ИИ-визуализация (img/projects, Higgsfield): подпись «визуализация», alt начинается с «Визуализация:».
+   Обложки 1–5 — визуализации, а не выполненные проекты; настоящие модели — внутри категорий. Источники — img/catalog/MANIFEST.md (v4). */
 window.RICCA_CATALOG_CATEGORIES = {
-  sofas: { label: 'Диваны', cover: 'img/catalog/cover-sofas', coverAlt: 'Диван с шезлонгом в светлой ткани, вид сверху; рядом круглый столик',
+  sofas: { label: 'Диваны', cover: 'img/catalog/cover-sofas', viz: true,
+    coverAlt: 'Визуализация: модульный диван в светлой ткани и низкий чёрный стол в вечерней гостиной',
+    desc: 'Прямые, угловые, модульные, раскладные',
     tags: { straight: 'Прямые', corner: 'Угловые', modular: 'Модульные', foldout: 'Раскладные' } },
-  beds: { label: 'Кровати', cover: 'img/catalog/cover-beds', coverAlt: 'Кровать в светлом букле в спальне с нишей и подсветкой' },
-  armchairs: { label: 'Кресла', cover: 'img/catalog/cover-armchairs', coverAlt: 'Округлое кресло в светлом букле — на светлом фоне' },
-  chairs: { label: 'Стулья', cover: 'img/catalog/cover-chairs', coverAlt: 'Стул с мягкой спинкой на металлическом каркасе' },
-  tables: { label: 'Столы', cover: 'img/catalog/cover-tables', coverAlt: 'Круглый деревянный стол на опоре-тумбе' },
-  mattresses: { label: 'Матрасы ELUNA', cover: 'img/catalog/cover-mattresses', coverAlt: 'Матрас ELUNA: слои раскрыты над пружинным блоком',
-    href: 'https://ricca-designs.netlify.app' },
-  fabrics: { label: 'Ткани', cover: 'img/catalog/cover-fabrics', coverAlt: 'Стопки образцов тканей разных цветов', view: 'fabrics' }
+  beds: { label: 'Кровати', cover: 'img/catalog/cover-beds', viz: true,
+    coverAlt: 'Визуализация: кровать с высоким стёганым изголовьем в светлой спальне',
+    desc: 'С подъёмным механизмом и без' },
+  armchairs: { label: 'Кресла', cover: 'img/catalog/cover-armchairs', viz: true,
+    coverAlt: 'Визуализация: кресло в молочной обивке на чёрной раме у окна',
+    desc: 'Для отдыха: округлые, на цоколе' },
+  chairs: { label: 'Стулья', cover: 'img/catalog/cover-chairs', viz: true,
+    coverAlt: 'Визуализация: полукресла в светлом букле у чёрного обеденного стола',
+    desc: 'С подлокотниками и без' },
+  tables: { label: 'Столы', cover: 'img/catalog/cover-tables', viz: true,
+    coverAlt: 'Визуализация: чёрный обеденный стол, ветка в стеклянной вазе, подвесной светильник',
+    desc: 'Обеденные: круглые, прямоугольные' },
+  fabrics: { label: 'Ткани', cover: 'img/catalog/cover-fabrics', view: 'fabrics',
+    coverAlt: 'Образцы тканей разных цветов в книгах-подборках',
+    desc: 'Букле, твид, меланж — по цветам' },
+  mattresses: { label: 'Матрасы ELUNA', cover: 'img/catalog/cover-mattresses', href: 'https://ricca-designs.netlify.app',
+    coverAlt: 'Матрас ELUNA в разрезе: слои над пружинным блоком',
+    desc: 'Ортопедические, на своём сайте' }
 };
-window.RICCA_CATALOG_ORDER = ['sofas', 'beds', 'fabrics', 'armchairs', 'chairs', 'tables', 'mattresses'];
+window.RICCA_CATALOG_ORDER = ['sofas', 'beds', 'armchairs', 'chairs', 'tables', 'fabrics', 'mattresses'];
 
 window.RICCA_CATALOG = [
 

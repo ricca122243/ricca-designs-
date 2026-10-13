@@ -1,7 +1,8 @@
-/* RICCA DESIGNS — сайт по схеме заказчика (10 октября). Ванильный JS без библиотек.
-   Порядок: CONFIG → данные (js/catalog-data.js) → ссылки WhatsApp/телефон → шапка → вход (занавес, видео) → «Новинка»
-   (слово пишется по буквам) → видео по экрану → появления → окна и адреса (#catalog/<категория>, #works/all, #item-<id>,
-   #work-NN) → экран категории → окно изделия → лайтбокс работ → «Подборка» → меню → липкая плашка.
+/* RICCA DESIGNS — v4 «в меру» (10 октября, ночь). Ванильный JS без библиотек.
+   Порядок: CONFIG → данные (js/catalog-data.js) → плитки каталога (число моделей, подписи, alt — из данных) → ссылки
+   WhatsApp/телефон → вход (занавес, видео) → видео по экрану → появления → окна и адреса (#catalog/<категория>, #works/all,
+   #item-<id>, #work-NN) → экран категории → окно изделия → лайтбокс работ → «Подборка» → меню → шапка и липкая плашка.
+   Новость ELUNA — карточка с луной на чистом CSS (css/site.css, .news), скрипт ей не нужен.
    Единственный владелец ссылок [data-wa] / [data-tel] — этот файл. */
 (() => {
   'use strict';
@@ -72,6 +73,28 @@
     return waUrl(`Здравствуйте! Интересует ${lcFirst(waLabelOf(it))}${it.subtitle ? ` — ${lcFirst(it.subtitle)}` : ''}. Подскажите, пожалуйста, цену и что нужно для расчёта.${u ? `\n${u}` : ''}`);
   };
   const slOf = (it) => ({ id: `item-${it.id}`, title: labelOf(it), meta: it.subtitle || catLabel(it.category) });
+
+  /* ---------- Плитки каталога: число моделей (или образцов) и вторая строка подписи — из данных; так же строка под заголовком
+     «Каталог». Числа не пишем руками: добавили модель в js/catalog-data.js — плитка и строка обновились сами ---------- */
+  const countOf = (cat) => {
+    const c = CATS[cat];
+    if (!c || c.href) return '';
+    if (c.view === 'fabrics') { const n = FABRICS.reduce((s, g) => s + ((g && g.items) || []).length, 0); return n ? `${n} ${plural3(n, ['образец', 'образца', 'образцов'])}` : ''; }
+    const n = ITEMS.filter((i) => i.category === cat).length;
+    return n ? `${n} ${plural3(n, ['модель', 'модели', 'моделей'])}` : '';
+  };
+  const subOf = (cat) => { const c = CATS[cat] || {}; return [countOf(cat), c.desc || ''].filter(Boolean).map(typo).join(' · '); };
+  $$('.tile[data-cat]').forEach((a) => {
+    const cat = a.dataset.cat, c = CATS[cat];
+    if (!c) return;
+    const sub = $('[data-tile-sub]', a), img = $('.tile__img img', a);
+    if (sub) sub.innerHTML = subOf(cat);
+    if (img && c.coverAlt) img.alt = c.coverAlt;
+  });
+  (() => {
+    const line = $('[data-cat-line]');
+    if (line && ITEMS.length) line.innerHTML = `${ITEMS.length} ${plural3(ITEMS.length, ['модель', 'модели', 'моделей'])}&nbsp;— выберите категорию, внутри все модели и&nbsp;фото.`;
+  })();
 
   /* ---------- «Наши работы»: только подтверждённые фото работ RICCA (RICCA_WORKS). Пусто — раздела и пунктов меню нет.
      Первые три кадра — большие рамки на главной, «Все работы» — когда кадров больше трёх ---------- */
@@ -159,7 +182,7 @@
     return { reload() { if (base) { base = ''; sync(); } } };
   }
   // постеры роликов ниже входа — только на подходе к экрану: первый кадр входа (LCP) грузится без соперников.
-  // reduced motion — только постеры (у ELUNA — раскрытые слои), ролики не грузим и кнопки не показываем
+  // reduced motion — только постеры, ролики не грузим и кнопки не показываем
   const posterOf = (v) => (reduceMotion && v.dataset.still) || v.dataset.poster;
   const setPoster = (v) => { const p = posterOf(v); if (p && v.getAttribute('poster') !== p) v.poster = p; };
   const lazyPosters = $$('video[data-poster]');
@@ -191,41 +214,6 @@
     }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
     $$('.rv').forEach((el) => { if (el.getBoundingClientRect().top > vh) { pre(el); io.observe(el); } });
   }
-
-  /* ---------- «Новинка»: слово пишется по буквам, когда панель поднялась до середины экрана (≈ 0,7 с; панель
-     в это время держится — css .nov). ELUNA, ролик, строка и ссылка появляются сами, не ждут курсора.
-     Ушло слово с экрана раньше — дописываем сразу. ---------- */
-  (() => {
-    const live = $('.type__live'), wordEl = $('.nov__word'), sec = $('.nov');
-    if (!live || !wordEl || !sec) return;
-    const WORD = 'Новинка';
-    if (reduceMotion || !hasIO) { live.textContent = WORD; return; }
-    let started = false, done = false, timer = 0, caret = null;
-    const finish = () => {
-      if (done) return; done = true; clearTimeout(timer);
-      live.textContent = WORD;
-      if (caret) { live.append(caret); caret.classList.add('is-done'); }
-    };
-    const type = () => {
-      if (started) return; started = true;
-      caret = document.createElement('span'); caret.className = 'type__caret';
-      live.append(caret);
-      let i = 0;
-      const step = () => {
-        if (done) return;
-        if (i < WORD.length) {
-          const s = document.createElement('span'); s.textContent = WORD[i++];
-          live.insertBefore(s, caret);
-          timer = setTimeout(step, 75);
-        } else { done = true; caret.classList.add('is-done'); }
-      };
-      timer = setTimeout(step, 180);
-    };
-    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); type(); } }, { threshold: 0, rootMargin: '0px 0px -45% 0px' });
-    io.observe(sec);
-    const out = new IntersectionObserver((es) => { if (started && !es[es.length - 1].isIntersecting) { out.disconnect(); finish(); } });
-    out.observe(wordEl);
-  })();
 
   /* ---------- Окна: показ/скрытие с анимацией, блокировка прокрутки, возврат фокуса ---------- */
   const updateBarSoon = () => requestAnimationFrame(() => updateBar());
@@ -291,10 +279,17 @@
     apply(initial) {
       const r = R.parse(location.hash);
       if (initial && r.anchor) {
-        // старые ссылки (Instagram, прошлые версии): #catalog-sofas → #catalog/sofas, #materials → ткани; неизвестная категория → каталог
+        // старые ссылки (Instagram, прошлые версии): #catalog-sofas → #catalog/sofas, #materials → ткани, #novinka → новости;
+        // неизвестная категория → каталог
+        if (r.anchor === 'novinka') {
+          R.replace('#news');
+          const el = document.getElementById('news');
+          if (el) requestAnimationFrame(() => el.scrollIntoView({ block: 'start' }));
+          return;
+        }
         const legacy = /^catalog-([a-z]+)/.exec(r.anchor);
         const to = legacy ? (CATS[legacy[1]] && !CATS[legacy[1]].href ? `#catalog/${legacy[1]}` : '#catalog')
-          : (r.anchor === 'materials' ? '#catalog/fabrics' : (r.anchor === 'news' ? '#novinka' : ''));
+          : (r.anchor === 'materials' ? '#catalog/fabrics' : '');
         if (to === '#catalog') { R.toCatalog(); return; }
         if (to) { R.replace(to); return R.apply(false); }
       }
@@ -351,7 +346,7 @@
       const tall = list.filter((i) => !isWide(i)), wide = list.filter(isWide);
       const w4 = wide.length % 3 !== 0 && wide.length % 4 === 0;   // 8 или 4 широких — ровно по 4 в ряд, иначе по 3
       title.textContent = catLabel(cat);
-      nEl.textContent = `${list.length} ${plural3(list.length, ['модель', 'модели', 'моделей'])}`;
+      nEl.innerHTML = subOf(cat);   // «12 моделей · Прямые, угловые, модульные, раскладные» — как на плитке
       back.textContent = 'Каталог';
       const tg = CATS[cat] && CATS[cat].tags;
       const keys = tg ? Object.keys(tg).filter((k) => list.some((i) => (i.tags || []).includes(k))) : [];
@@ -365,7 +360,7 @@
     function renderFabrics() {
       const n = FABRICS.reduce((s, g) => s + ((g && g.items) || []).length, 0);
       title.textContent = 'Ткани';
-      nEl.innerHTML = 'Образцы&nbsp;— в&nbsp;шоуруме';
+      nEl.innerHTML = `${subOf('fabrics')}. Образцы&nbsp;— в&nbsp;шоуруме`;
       back.textContent = 'Каталог';
       tabs.hidden = true; tabs.innerHTML = '';
       // TODO (заказчик): папка тканей заказчика — добавляется в RICCA_FABRICS (js/catalog-data.js), экран обновится сам
@@ -428,6 +423,7 @@
     const prev = $('[data-pd-prev]', dlg), next = $('[data-pd-next]', dlg), count = $('[data-pd-count]', dlg), thumbsBox = $('[data-pd-thumbs]', dlg);
     const catEl = $('[data-pd-cat]', dlg), title = $('[data-pd-title]', dlg), sub = $('[data-pd-sub]', dlg);
     const desc = $('[data-pd-desc]', dlg), chips = $('[data-pd-chips]', dlg), passport = $('[data-pd-passport]', dlg), more = $('[data-pd-more]', dlg);
+    const facts = $('[data-pd-facts]', dlg);
     const wa = $('[data-pd-wa]', dlg), slBtn = $('[data-pd-sl]', dlg);
     let cur = null, idx = 0, thumbs = [];
     function layout() {
@@ -473,8 +469,19 @@
       sub.innerHTML = it.subtitle ? typo(it.subtitle) : ''; sub.hidden = !it.subtitle;
       desc.innerHTML = typo(it.description || ''); desc.hidden = !it.description;
       chips.innerHTML = (it.options || []).map((o) => `<li>${typo(o)}</li>`).join(''); chips.hidden = !(it.options || []).length;
+      // сверху — только факты из данных: габариты (если в данных есть цифры), механизм, гарантия, доставка; остальное — в «Подробнее»
       const wood = it.category === 'tables';
-      const rows = [['Размеры', it.sizes], [wood ? 'Материал' : 'Ткань и&nbsp;кожа', it.materials], ['Наполнение', it.filling], ['Механизм', it.mechanism], ['Срок', it.lead], ['Гарантия', it.warranty], ['Доставка', it.delivery]].filter((r) => r[1]);
+      const clean = (v) => String(v || '').trim().replace(/\.$/, '');
+      const hasDims = /\d/.test(it.sizes || '');
+      const top = [['Размеры', hasDims ? it.sizes : ''], ['Механизм', it.mechanism], ['Гарантия', it.warranty], ['Доставка', it.delivery]].filter((r) => r[1]);
+      // «Ш × Г × В: 2740 × 1090 × 760 мм …» → цифры строкой, расшифровка порядка — мелко под ними
+      const fact = (k, v) => {
+        const m = k === 'Размеры' && /^Ш × Г × В:\s*(.+)$/.exec(clean(v));
+        return m ? `${typo(m[1])}<small>ширина × глубина × высота</small>` : typo(clean(v));
+      };
+      facts.innerHTML = top.map(([k, v]) => `<div><dt>${k}</dt><dd>${fact(k, v)}</dd></div>`).join('');
+      facts.hidden = !top.length;
+      const rows = [['Размеры', hasDims ? '' : it.sizes], [wood ? 'Материал' : 'Ткань и&nbsp;кожа', it.materials], ['Наполнение', it.filling], ['Срок', it.lead]].filter((r) => r[1]);
       passport.innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${typo(v)}</dd></div>`).join('');
       passport.hidden = !rows.length;
       more.open = false; more.hidden = !rows.length && !it.description && !(it.options || []).length;
@@ -701,12 +708,12 @@
 
   /* ---------- Шапка: прозрачная над видео, прячется при прокрутке вниз; липкая плашка (телефон) ---------- */
   const hdr = $('#hdr'), hero = $('.hero'), bar = $('#mbar'), showroom = $('#showroom');
-  const darkZones = $$('.nov, .foot');
+  const darkZones = $$('.biz, .foot');
   let lastY = window.scrollY, raf = 0;
   function updateBar() {
     if (!bar) return;
     const vh = window.innerHeight;
-    // над чёрной «Новинкой» и подвалом плашка тоже чёрная (как шапка) — без белой полосы поперёк панели
+    // над чёрной полосой «Для бизнеса» плашка тоже чёрная (как шапка) — без белой полосы поперёк
     const by = vh - bar.offsetHeight / 2;
     bar.classList.toggle('is-dark', darkZones.some((el) => { const r = el.getBoundingClientRect(); return r.top < by && r.bottom > by; }));
     const on = mqPhone.matches && window.scrollY > hero.offsetHeight * 0.85 && !$('dialog[open]') && showroom.getBoundingClientRect().top > vh * 0.92;
@@ -723,7 +730,7 @@
       const y = window.scrollY, heroH = hero.offsetHeight;
       const over = y < heroH - hdr.offsetHeight;
       hdr.classList.toggle('is-over', over);
-      // над чёрной «Новинкой» и подвалом шапка тоже чёрная — без белой полосы поперёк панели: чёрная, как только панель
+      // над чёрной полосой «Для бизнеса» и подвалом шапка тоже чёрная — без белой полосы поперёк: чёрная, как только полоса
       // зашла под шапку (а не с середины шапки — иначе на 30 px прокрутки белая полоса висит над чёрным)
       const hh = hdr.offsetHeight, mid = hh / 2;
       hdr.classList.toggle('is-dark', !over && darkZones.some((el) => { const r = el.getBoundingClientRect(); return r.top <= hh && r.bottom > mid; }));

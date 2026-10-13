@@ -8,6 +8,9 @@ config: {"W":1600,"H":900,"fps":25,"fade":1.0,
                   {"type":"frames","dir":..., "L":2.6}]}
 Timeline: shot k visible L_k seconds, consecutive shots overlap by `fade`;
 last shot fades into the first; frame 0 = shot 0 fully visible (after its fade-in).
+Optional "t0" (seconds, default = fade): local time of shot 0 at frame 0. A value inside the solo part of shot 0 puts the
+loop point mid-shot, so the file never ends on dissolve frames (H.264 codes those worse than the I-frame that follows,
+which shows as a slight "snap" at the loop). Frame 0 is also the poster. Keep T * fps whole (sum(L) - N * fade).
 """
 import json, sys, os, subprocess, math, glob
 from PIL import Image
@@ -18,6 +21,7 @@ preview = None
 if len(sys.argv) > 3 and sys.argv[3] == '--preview':
     preview = sys.argv[4]
 W, H, fps, F = cfg['W'], cfg['H'], cfg['fps'], cfg.get('fade', 1.0)
+T0 = cfg.get('t0', F)
 AR = W / H
 shots = cfg['shots']
 N = len(shots)
@@ -61,7 +65,9 @@ for s in shots:
     t += s['L'] - F
 T = t  # loop length
 nframes = round(T * fps)
-sys.stderr.write('loop T=%.3fs frames=%d\n' % (T, nframes))
+sys.stderr.write('loop T=%.3fs frames=%d t0=%.2f\n' % (T, nframes, T0))
+assert abs(T * fps - nframes) < 1e-6, 'T * fps must be whole for a seamless loop'
+assert F <= T0 <= shots[0]['L'] - F, 't0 must lie in the solo part of shot 0'
 for s in shots:
     if s['type'] == 'photo':
         sys.stderr.write('  %s L=%.2f max upscale vs source %.2fx\n' % (os.path.basename(s['src']), s['L'], s['_upscale']))
@@ -86,7 +92,7 @@ def render_shot(s, lt):
         return im
 
 def frame_at(g):
-    tau = g + F  # frame 0 = shot 0 just after its fade-in
+    tau = g + T0  # frame 0 = shot 0 at local time T0 (default: just after its fade-in)
     layers = []  # (start, shot, local)
     for k, s in enumerate(shots):
         for off in (0.0, T):

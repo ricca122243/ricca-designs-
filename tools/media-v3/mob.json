@@ -1,4 +1,6 @@
-{"W":720,"H":1280,"fps":25,"fade":1.0,"shots":[
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-dimaro-top.jpg","L":9.5,"a":[0.568,0.5,0.753],"b":[0.568,0.505,0.74]},
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-palinuro-room-a.jpg","L":9.5,"a":[0.5,0.5,0.753],"b":[0.5,0.51,0.725]}
+{"W":720,"H":1280,"fps":25,"fade":1.0,"t0":2.0,"shots":[
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-dimaro-top.jpg","L":6.25,"a":[0.52,0.5,0.7533],"b":[0.525,0.5,0.725]},
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/img/projects/p02-bedroom.webp","L":6.25,"a":[0.36,0.5,0.703],"b":[0.32,0.475,0.63]},
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/img/projects/p04-study.webp","L":6.25,"a":[0.34,0.515,0.68],"b":[0.34,0.485,0.68]},
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/img/projects/p03-dining.webp","L":6.25,"a":[0.6,0.5,0.703],"b":[0.62,0.55,0.6]}
 ]}
