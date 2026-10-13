@@ -234,6 +234,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Молочный",
               "src240": "img/fabrics/velur/kiton/07-molochnyy-240.webp",
               "src450": "img/fabrics/velur/kiton/07-molochnyy-450.webp",
+              "src900": "img/fabrics/velur/kiton/07-molochnyy.webp",
               "strip": "img/fabrics/velur/kiton/07-molochnyy-strip.webp",
               "hex": "#ebe5db"
             },
@@ -241,6 +242,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Кремовый",
               "src240": "img/fabrics/velur/kiton/08-kremovyy-240.webp",
               "src450": "img/fabrics/velur/kiton/08-kremovyy-450.webp",
+              "src900": "img/fabrics/velur/kiton/08-kremovyy.webp",
               "strip": "img/fabrics/velur/kiton/08-kremovyy-strip.webp",
               "hex": "#eddac2"
             },
@@ -248,6 +250,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Слоновая кость",
               "src240": "img/fabrics/velur/kiton/19-slonovaya-kost-240.webp",
               "src450": "img/fabrics/velur/kiton/19-slonovaya-kost-450.webp",
+              "src900": "img/fabrics/velur/kiton/19-slonovaya-kost.webp",
               "strip": "img/fabrics/velur/kiton/19-slonovaya-kost-strip.webp",
               "hex": "#ddd5c3"
             },
@@ -255,6 +258,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Светло-серый",
               "src240": "img/fabrics/velur/kiton/03-svetlo-seryy-240.webp",
               "src450": "img/fabrics/velur/kiton/03-svetlo-seryy-450.webp",
+              "src900": "img/fabrics/velur/kiton/03-svetlo-seryy.webp",
               "strip": "img/fabrics/velur/kiton/03-svetlo-seryy-strip.webp",
               "hex": "#b2b4b7"
             },
@@ -262,6 +266,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Светло-бежевый",
               "src240": "img/fabrics/velur/kiton/23-svetlo-bezhevyy-240.webp",
               "src450": "img/fabrics/velur/kiton/23-svetlo-bezhevyy-450.webp",
+              "src900": "img/fabrics/velur/kiton/23-svetlo-bezhevyy.webp",
               "strip": "img/fabrics/velur/kiton/23-svetlo-bezhevyy-strip.webp",
               "hex": "#caaf98"
             },
@@ -269,6 +274,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серо-песочный",
               "src240": "img/fabrics/velur/kiton/20-sero-pesochnyy-240.webp",
               "src450": "img/fabrics/velur/kiton/20-sero-pesochnyy-450.webp",
+              "src900": "img/fabrics/velur/kiton/20-sero-pesochnyy.webp",
               "strip": "img/fabrics/velur/kiton/20-sero-pesochnyy-strip.webp",
               "hex": "#b8ad97"
             },
@@ -276,6 +282,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Пепельный",
               "src240": "img/fabrics/velur/kiton/09-pepelnyy-240.webp",
               "src450": "img/fabrics/velur/kiton/09-pepelnyy-450.webp",
+              "src900": "img/fabrics/velur/kiton/09-pepelnyy.webp",
               "strip": "img/fabrics/velur/kiton/09-pepelnyy-strip.webp",
               "hex": "#b5a9a7"
             },
@@ -283,6 +290,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Бежевый",
               "src240": "img/fabrics/velur/kiton/22-bezhevyy-240.webp",
               "src450": "img/fabrics/velur/kiton/22-bezhevyy-450.webp",
+              "src900": "img/fabrics/velur/kiton/22-bezhevyy.webp",
               "strip": "img/fabrics/velur/kiton/22-bezhevyy-strip.webp",
               "hex": "#b69675"
             },
@@ -290,6 +298,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Капучино",
               "src240": "img/fabrics/velur/kiton/24-kapuchino-240.webp",
               "src450": "img/fabrics/velur/kiton/24-kapuchino-450.webp",
+              "src900": "img/fabrics/velur/kiton/24-kapuchino.webp",
               "strip": "img/fabrics/velur/kiton/24-kapuchino-strip.webp",
               "hex": "#a58d77"
             },
@@ -297,6 +306,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серо-коричневый",
               "src240": "img/fabrics/velur/kiton/10-sero-korichnevyy-240.webp",
               "src450": "img/fabrics/velur/kiton/10-sero-korichnevyy-450.webp",
+              "src900": "img/fabrics/velur/kiton/10-sero-korichnevyy.webp",
               "strip": "img/fabrics/velur/kiton/10-sero-korichnevyy-strip.webp",
               "hex": "#8e837c"
             },
@@ -304,6 +314,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серый",
               "src240": "img/fabrics/velur/kiton/11-seryy-240.webp",
               "src450": "img/fabrics/velur/kiton/11-seryy-450.webp",
+              "src900": "img/fabrics/velur/kiton/11-seryy.webp",
               "strip": "img/fabrics/velur/kiton/11-seryy-strip.webp",
               "hex": "#5a5958"
             },
@@ -318,6 +329,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Мокко",
               "src240": "img/fabrics/velur/kiton/25-mokko-240.webp",
               "src450": "img/fabrics/velur/kiton/25-mokko-450.webp",
+              "src900": "img/fabrics/velur/kiton/25-mokko.webp",
               "strip": "img/fabrics/velur/kiton/25-mokko-strip.webp",
               "hex": "#4b3e32"
             },
@@ -374,6 +386,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серо-голубой",
               "src240": "img/fabrics/velur/kiton/04-sero-goluboy-240.webp",
               "src450": "img/fabrics/velur/kiton/04-sero-goluboy-450.webp",
+              "src900": "img/fabrics/velur/kiton/04-sero-goluboy.webp",
               "strip": "img/fabrics/velur/kiton/04-sero-goluboy-strip.webp",
               "hex": "#7f8490"
             },
@@ -388,6 +401,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Петроль",
               "src240": "img/fabrics/velur/kiton/02-petrol-240.webp",
               "src450": "img/fabrics/velur/kiton/02-petrol-450.webp",
+              "src900": "img/fabrics/velur/kiton/02-petrol.webp",
               "strip": "img/fabrics/velur/kiton/02-petrol-strip.webp",
               "hex": "#264b5b"
             },
@@ -470,6 +484,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Кофейный",
               "src240": "img/fabrics/velur/torrens-plain/05-kofeynyy-240.webp",
               "src450": "img/fabrics/velur/torrens-plain/05-kofeynyy-450.webp",
+              "src900": "img/fabrics/velur/torrens-plain/05-kofeynyy.webp",
               "strip": "img/fabrics/velur/torrens-plain/05-kofeynyy-strip.webp",
               "hex": "#846d58"
             },
@@ -514,6 +529,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серо-голубой",
               "src240": "img/fabrics/velur/torrens-plain/14-sero-goluboy-240.webp",
               "src450": "img/fabrics/velur/torrens-plain/14-sero-goluboy-450.webp",
+              "src900": "img/fabrics/velur/torrens-plain/14-sero-goluboy.webp",
               "strip": "img/fabrics/velur/torrens-plain/14-sero-goluboy-strip.webp",
               "hex": "#8e97a7"
             }
@@ -534,6 +550,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Молочный",
               "src240": "img/fabrics/velur/beauty/15-molochnyy-240.webp",
               "src450": "img/fabrics/velur/beauty/15-molochnyy-450.webp",
+              "src900": "img/fabrics/velur/beauty/15-molochnyy.webp",
               "strip": "img/fabrics/velur/beauty/15-molochnyy-strip.webp",
               "hex": "#e3dac4"
             },
@@ -548,6 +565,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серебристый",
               "src240": "img/fabrics/velur/beauty/08-serebristyy-240.webp",
               "src450": "img/fabrics/velur/beauty/08-serebristyy-450.webp",
+              "src900": "img/fabrics/velur/beauty/08-serebristyy.webp",
               "strip": "img/fabrics/velur/beauty/08-serebristyy-strip.webp",
               "hex": "#d0cdc9"
             },
@@ -555,6 +573,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Кремовый",
               "src240": "img/fabrics/velur/beauty/11-kremovyy-240.webp",
               "src450": "img/fabrics/velur/beauty/11-kremovyy-450.webp",
+              "src900": "img/fabrics/velur/beauty/11-kremovyy.webp",
               "strip": "img/fabrics/velur/beauty/11-kremovyy-strip.webp",
               "hex": "#d0c3a3"
             },
@@ -562,6 +581,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серо-бежевый",
               "src240": "img/fabrics/velur/beauty/13-sero-bezhevyy-240.webp",
               "src450": "img/fabrics/velur/beauty/13-sero-bezhevyy-450.webp",
+              "src900": "img/fabrics/velur/beauty/13-sero-bezhevyy.webp",
               "strip": "img/fabrics/velur/beauty/13-sero-bezhevyy-strip.webp",
               "hex": "#baaa92"
             },
@@ -569,6 +589,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Светло-серый",
               "src240": "img/fabrics/velur/beauty/04-svetlo-seryy-240.webp",
               "src450": "img/fabrics/velur/beauty/04-svetlo-seryy-450.webp",
+              "src900": "img/fabrics/velur/beauty/04-svetlo-seryy.webp",
               "strip": "img/fabrics/velur/beauty/04-svetlo-seryy-strip.webp",
               "hex": "#949186"
             },
@@ -576,6 +597,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серый",
               "src240": "img/fabrics/velur/beauty/03-seryy-240.webp",
               "src450": "img/fabrics/velur/beauty/03-seryy-450.webp",
+              "src900": "img/fabrics/velur/beauty/03-seryy.webp",
               "strip": "img/fabrics/velur/beauty/03-seryy-strip.webp",
               "hex": "#89837b"
             },
@@ -583,6 +605,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Светлый серо-зелёный",
               "src240": "img/fabrics/velur/beauty/07-svetlyy-sero-zelenyy-240.webp",
               "src450": "img/fabrics/velur/beauty/07-svetlyy-sero-zelenyy-450.webp",
+              "src900": "img/fabrics/velur/beauty/07-svetlyy-sero-zelenyy.webp",
               "strip": "img/fabrics/velur/beauty/07-svetlyy-sero-zelenyy-strip.webp",
               "hex": "#b4b3a6"
             },
@@ -590,6 +613,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серо-зелёный",
               "src240": "img/fabrics/velur/beauty/06-sero-zelenyy-240.webp",
               "src450": "img/fabrics/velur/beauty/06-sero-zelenyy-450.webp",
+              "src900": "img/fabrics/velur/beauty/06-sero-zelenyy.webp",
               "strip": "img/fabrics/velur/beauty/06-sero-zelenyy-strip.webp",
               "hex": "#888c7b"
             },
@@ -597,6 +621,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-зелёный",
               "src240": "img/fabrics/velur/beauty/05-temno-zelenyy-240.webp",
               "src450": "img/fabrics/velur/beauty/05-temno-zelenyy-450.webp",
+              "src900": "img/fabrics/velur/beauty/05-temno-zelenyy.webp",
               "strip": "img/fabrics/velur/beauty/05-temno-zelenyy-strip.webp",
               "hex": "#26342c"
             },
@@ -611,6 +636,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Синий",
               "src240": "img/fabrics/velur/beauty/09-siniy-240.webp",
               "src450": "img/fabrics/velur/beauty/09-siniy-450.webp",
+              "src900": "img/fabrics/velur/beauty/09-siniy.webp",
               "strip": "img/fabrics/velur/beauty/09-siniy-strip.webp",
               "hex": "#2f3957"
             }
@@ -724,11 +750,11 @@ window.RICCA_FABRIC_LIBRARY = {
               "hex": "#656152"
             },
             {
-              "name": "Марсала",
-              "src240": "img/fabrics/velur/torrens/06-marsala-240.webp",
-              "src450": "img/fabrics/velur/torrens/06-marsala-450.webp",
-              "src900": "img/fabrics/velur/torrens/06-marsala.webp",
-              "strip": "img/fabrics/velur/torrens/06-marsala-strip.webp",
+              "name": "Винный",
+              "src240": "img/fabrics/velur/torrens/06-vinnyy-240.webp",
+              "src450": "img/fabrics/velur/torrens/06-vinnyy-450.webp",
+              "src900": "img/fabrics/velur/torrens/06-vinnyy.webp",
+              "strip": "img/fabrics/velur/torrens/06-vinnyy-strip.webp",
               "hex": "#694c47"
             },
             {
@@ -756,6 +782,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Молочный",
               "src240": "img/fabrics/velur/river/01-molochnyy-240.webp",
               "src450": "img/fabrics/velur/river/01-molochnyy-450.webp",
+              "src900": "img/fabrics/velur/river/01-molochnyy.webp",
               "strip": "img/fabrics/velur/river/01-molochnyy-strip.webp",
               "hex": "#ebe6db"
             },
@@ -763,6 +790,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Бежевый",
               "src240": "img/fabrics/velur/river/02-bezhevyy-240.webp",
               "src450": "img/fabrics/velur/river/02-bezhevyy-450.webp",
+              "src900": "img/fabrics/velur/river/02-bezhevyy.webp",
               "strip": "img/fabrics/velur/river/02-bezhevyy-strip.webp",
               "hex": "#bead9f"
             },
@@ -770,6 +798,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Светло-серый",
               "src240": "img/fabrics/velur/river/11-svetlo-seryy-240.webp",
               "src450": "img/fabrics/velur/river/11-svetlo-seryy-450.webp",
+              "src900": "img/fabrics/velur/river/11-svetlo-seryy.webp",
               "strip": "img/fabrics/velur/river/11-svetlo-seryy-strip.webp",
               "hex": "#aeadb1"
             },
@@ -777,6 +806,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серо-бежевый",
               "src240": "img/fabrics/velur/river/03-sero-bezhevyy-240.webp",
               "src450": "img/fabrics/velur/river/03-sero-bezhevyy-450.webp",
+              "src900": "img/fabrics/velur/river/03-sero-bezhevyy.webp",
               "strip": "img/fabrics/velur/river/03-sero-bezhevyy-strip.webp",
               "hex": "#b8a79c"
             },
@@ -784,6 +814,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серый",
               "src240": "img/fabrics/velur/river/12-seryy-240.webp",
               "src450": "img/fabrics/velur/river/12-seryy-450.webp",
+              "src900": "img/fabrics/velur/river/12-seryy.webp",
               "strip": "img/fabrics/velur/river/12-seryy-strip.webp",
               "hex": "#7c7c7e"
             },
@@ -791,6 +822,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-серый",
               "src240": "img/fabrics/velur/river/13-temno-seryy-240.webp",
               "src450": "img/fabrics/velur/river/13-temno-seryy-450.webp",
+              "src900": "img/fabrics/velur/river/13-temno-seryy.webp",
               "strip": "img/fabrics/velur/river/13-temno-seryy-strip.webp",
               "hex": "#454343"
             },
@@ -798,6 +830,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Шоколадный",
               "src240": "img/fabrics/velur/river/04-shokoladnyy-240.webp",
               "src450": "img/fabrics/velur/river/04-shokoladnyy-450.webp",
+              "src900": "img/fabrics/velur/river/04-shokoladnyy.webp",
               "strip": "img/fabrics/velur/river/04-shokoladnyy-strip.webp",
               "hex": "#4a392f"
             },
@@ -805,6 +838,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Графит",
               "src240": "img/fabrics/velur/river/14-grafit-240.webp",
               "src450": "img/fabrics/velur/river/14-grafit-450.webp",
+              "src900": "img/fabrics/velur/river/14-grafit.webp",
               "strip": "img/fabrics/velur/river/14-grafit-strip.webp",
               "hex": "#19191e"
             },
@@ -819,6 +853,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Оливково-горчичный",
               "src240": "img/fabrics/velur/river/08-olivkovo-gorchichnyy-240.webp",
               "src450": "img/fabrics/velur/river/08-olivkovo-gorchichnyy-450.webp",
+              "src900": "img/fabrics/velur/river/08-olivkovo-gorchichnyy.webp",
               "strip": "img/fabrics/velur/river/08-olivkovo-gorchichnyy-strip.webp",
               "hex": "#8b6c2e"
             },
@@ -826,6 +861,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-оливковый",
               "src240": "img/fabrics/velur/river/09-temno-olivkovyy-240.webp",
               "src450": "img/fabrics/velur/river/09-temno-olivkovyy-450.webp",
+              "src900": "img/fabrics/velur/river/09-temno-olivkovyy.webp",
               "strip": "img/fabrics/velur/river/09-temno-olivkovyy-strip.webp",
               "hex": "#37351e"
             },
@@ -833,6 +869,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Терракотовый",
               "src240": "img/fabrics/velur/river/06-terrakotovyy-240.webp",
               "src450": "img/fabrics/velur/river/06-terrakotovyy-450.webp",
+              "src900": "img/fabrics/velur/river/06-terrakotovyy.webp",
               "strip": "img/fabrics/velur/river/06-terrakotovyy-strip.webp",
               "hex": "#a15326"
             },
@@ -840,6 +877,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Пыльно-розовый",
               "src240": "img/fabrics/velur/river/05-pylno-rozovyy-240.webp",
               "src450": "img/fabrics/velur/river/05-pylno-rozovyy-450.webp",
+              "src900": "img/fabrics/velur/river/05-pylno-rozovyy.webp",
               "strip": "img/fabrics/velur/river/05-pylno-rozovyy-strip.webp",
               "hex": "#ac7c6f"
             },
@@ -847,6 +885,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-синий",
               "src240": "img/fabrics/velur/river/10-temno-siniy-240.webp",
               "src450": "img/fabrics/velur/river/10-temno-siniy-450.webp",
+              "src900": "img/fabrics/velur/river/10-temno-siniy.webp",
               "strip": "img/fabrics/velur/river/10-temno-siniy-strip.webp",
               "hex": "#172135"
             }
@@ -1028,6 +1067,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Светло-серо-бежевый",
               "src240": "img/fabrics/bukle/pique/10-svetlo-sero-bezhevyy-240.webp",
               "src450": "img/fabrics/bukle/pique/10-svetlo-sero-bezhevyy-450.webp",
+              "src900": "img/fabrics/bukle/pique/10-svetlo-sero-bezhevyy.webp",
               "strip": "img/fabrics/bukle/pique/10-svetlo-sero-bezhevyy-strip.webp",
               "hex": "#bdbaaa"
             },
@@ -1049,6 +1089,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серый",
               "src240": "img/fabrics/bukle/pique/11-seryy-240.webp",
               "src450": "img/fabrics/bukle/pique/11-seryy-450.webp",
+              "src900": "img/fabrics/bukle/pique/11-seryy.webp",
               "strip": "img/fabrics/bukle/pique/11-seryy-strip.webp",
               "hex": "#94928a"
             },
@@ -1056,6 +1097,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-бежевый",
               "src240": "img/fabrics/bukle/pique/06-temno-bezhevyy-240.webp",
               "src450": "img/fabrics/bukle/pique/06-temno-bezhevyy-450.webp",
+              "src900": "img/fabrics/bukle/pique/06-temno-bezhevyy.webp",
               "strip": "img/fabrics/bukle/pique/06-temno-bezhevyy-strip.webp",
               "hex": "#9b8b74"
             },
@@ -1063,6 +1105,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-серый",
               "src240": "img/fabrics/bukle/pique/12-temno-seryy-240.webp",
               "src450": "img/fabrics/bukle/pique/12-temno-seryy-450.webp",
+              "src900": "img/fabrics/bukle/pique/12-temno-seryy.webp",
               "strip": "img/fabrics/bukle/pique/12-temno-seryy-strip.webp",
               "hex": "#736f6a"
             },
@@ -1070,6 +1113,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серо-коричневый",
               "src240": "img/fabrics/bukle/pique/05-sero-korichnevyy-240.webp",
               "src450": "img/fabrics/bukle/pique/05-sero-korichnevyy-450.webp",
+              "src900": "img/fabrics/bukle/pique/05-sero-korichnevyy.webp",
               "strip": "img/fabrics/bukle/pique/05-sero-korichnevyy-strip.webp",
               "hex": "#6c6659"
             },
@@ -1077,6 +1121,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Графитовый",
               "src240": "img/fabrics/bukle/pique/13-grafitovyy-240.webp",
               "src450": "img/fabrics/bukle/pique/13-grafitovyy-450.webp",
+              "src900": "img/fabrics/bukle/pique/13-grafitovyy.webp",
               "strip": "img/fabrics/bukle/pique/13-grafitovyy-strip.webp",
               "hex": "#656663"
             },
@@ -1084,6 +1129,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Антрацит",
               "src240": "img/fabrics/bukle/pique/14-antratsit-240.webp",
               "src450": "img/fabrics/bukle/pique/14-antratsit-450.webp",
+              "src900": "img/fabrics/bukle/pique/14-antratsit.webp",
               "strip": "img/fabrics/bukle/pique/14-antratsit-strip.webp",
               "hex": "#464644"
             },
@@ -1098,6 +1144,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Бутылочно-зелёный",
               "src240": "img/fabrics/bukle/pique/08-butylochno-zelenyy-240.webp",
               "src450": "img/fabrics/bukle/pique/08-butylochno-zelenyy-450.webp",
+              "src900": "img/fabrics/bukle/pique/08-butylochno-zelenyy.webp",
               "strip": "img/fabrics/bukle/pique/08-butylochno-zelenyy-strip.webp",
               "hex": "#455250"
             },
@@ -1105,6 +1152,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Синий",
               "src240": "img/fabrics/bukle/pique/09-siniy-240.webp",
               "src450": "img/fabrics/bukle/pique/09-siniy-450.webp",
+              "src900": "img/fabrics/bukle/pique/09-siniy.webp",
               "strip": "img/fabrics/bukle/pique/09-siniy-strip.webp",
               "hex": "#38455b"
             }
@@ -1224,6 +1272,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Молочный",
               "src240": "img/fabrics/shenill/lucky/01-molochnyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/01-molochnyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/01-molochnyy.webp",
               "strip": "img/fabrics/shenill/lucky/01-molochnyy-strip.webp",
               "hex": "#f7eed6"
             },
@@ -1231,6 +1280,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Кремовый",
               "src240": "img/fabrics/shenill/lucky/02-kremovyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/02-kremovyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/02-kremovyy.webp",
               "strip": "img/fabrics/shenill/lucky/02-kremovyy-strip.webp",
               "hex": "#d6c9b3"
             },
@@ -1238,6 +1288,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Светло-песочный",
               "src240": "img/fabrics/shenill/lucky/03-svetlo-pesochnyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/03-svetlo-pesochnyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/03-svetlo-pesochnyy.webp",
               "strip": "img/fabrics/shenill/lucky/03-svetlo-pesochnyy-strip.webp",
               "hex": "#c4b399"
             },
@@ -1245,6 +1296,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Песочный",
               "src240": "img/fabrics/shenill/lucky/04-pesochnyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/04-pesochnyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/04-pesochnyy.webp",
               "strip": "img/fabrics/shenill/lucky/04-pesochnyy-strip.webp",
               "hex": "#b19c7e"
             },
@@ -1252,6 +1304,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серо-бежевый",
               "src240": "img/fabrics/shenill/lucky/06-sero-bezhevyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/06-sero-bezhevyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/06-sero-bezhevyy.webp",
               "strip": "img/fabrics/shenill/lucky/06-sero-bezhevyy-strip.webp",
               "hex": "#968979"
             },
@@ -1259,6 +1312,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-бежевый",
               "src240": "img/fabrics/shenill/lucky/05-temno-bezhevyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/05-temno-bezhevyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/05-temno-bezhevyy.webp",
               "strip": "img/fabrics/shenill/lucky/05-temno-bezhevyy-strip.webp",
               "hex": "#8e7c66"
             },
@@ -1266,6 +1320,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серый",
               "src240": "img/fabrics/shenill/lucky/19-svetlo-seryy-240.webp",
               "src450": "img/fabrics/shenill/lucky/19-svetlo-seryy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/19-svetlo-seryy.webp",
               "strip": "img/fabrics/shenill/lucky/19-svetlo-seryy-strip.webp",
               "hex": "#787672"
             },
@@ -1273,6 +1328,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Стальной",
               "src240": "img/fabrics/shenill/lucky/15-stalnoy-240.webp",
               "src450": "img/fabrics/shenill/lucky/15-stalnoy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/15-stalnoy.webp",
               "strip": "img/fabrics/shenill/lucky/15-stalnoy-strip.webp",
               "hex": "#494a4a"
             },
@@ -1280,6 +1336,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Коричневый",
               "src240": "img/fabrics/shenill/lucky/07-korichnevyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/07-korichnevyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/07-korichnevyy.webp",
               "strip": "img/fabrics/shenill/lucky/07-korichnevyy-strip.webp",
               "hex": "#3a2c20"
             },
@@ -1287,6 +1344,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Графит",
               "src240": "img/fabrics/shenill/lucky/21-temno-seryy-240.webp",
               "src450": "img/fabrics/shenill/lucky/21-temno-seryy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/21-temno-seryy.webp",
               "strip": "img/fabrics/shenill/lucky/21-temno-seryy-strip.webp",
               "hex": "#272725"
             },
@@ -1294,6 +1352,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Пудровый",
               "src240": "img/fabrics/shenill/lucky/18-pudrovyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/18-pudrovyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/18-pudrovyy.webp",
               "strip": "img/fabrics/shenill/lucky/18-pudrovyy-strip.webp",
               "hex": "#bc9d8f"
             },
@@ -1301,6 +1360,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Рыжий",
               "src240": "img/fabrics/shenill/lucky/12-ryzhiy-240.webp",
               "src450": "img/fabrics/shenill/lucky/12-ryzhiy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/12-ryzhiy.webp",
               "strip": "img/fabrics/shenill/lucky/12-ryzhiy-strip.webp",
               "hex": "#814e1e"
             },
@@ -1308,6 +1368,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Кирпичный",
               "src240": "img/fabrics/shenill/lucky/13-kirpichnyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/13-kirpichnyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/13-kirpichnyy.webp",
               "strip": "img/fabrics/shenill/lucky/13-kirpichnyy-strip.webp",
               "hex": "#53221d"
             },
@@ -1315,6 +1376,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Шалфейный",
               "src240": "img/fabrics/shenill/lucky/09-shalfeynyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/09-shalfeynyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/09-shalfeynyy.webp",
               "strip": "img/fabrics/shenill/lucky/09-shalfeynyy-strip.webp",
               "hex": "#9c9b86"
             },
@@ -1322,6 +1384,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Оливковый",
               "src240": "img/fabrics/shenill/lucky/11-olivkovyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/11-olivkovyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/11-olivkovyy.webp",
               "strip": "img/fabrics/shenill/lucky/11-olivkovyy-strip.webp",
               "hex": "#323224"
             },
@@ -1329,6 +1392,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-зелёный",
               "src240": "img/fabrics/shenill/lucky/10-temno-zelenyy-240.webp",
               "src450": "img/fabrics/shenill/lucky/10-temno-zelenyy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/10-temno-zelenyy.webp",
               "strip": "img/fabrics/shenill/lucky/10-temno-zelenyy-strip.webp",
               "hex": "#20241d"
             },
@@ -1336,6 +1400,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Морская волна",
               "src240": "img/fabrics/shenill/lucky/14-morskaya-volna-240.webp",
               "src450": "img/fabrics/shenill/lucky/14-morskaya-volna-450.webp",
+              "src900": "img/fabrics/shenill/lucky/14-morskaya-volna.webp",
               "strip": "img/fabrics/shenill/lucky/14-morskaya-volna-strip.webp",
               "hex": "#1c313c"
             },
@@ -1343,6 +1408,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-синий",
               "src240": "img/fabrics/shenill/lucky/17-temno-siniy-240.webp",
               "src450": "img/fabrics/shenill/lucky/17-temno-siniy-450.webp",
+              "src900": "img/fabrics/shenill/lucky/17-temno-siniy.webp",
               "strip": "img/fabrics/shenill/lucky/17-temno-siniy-strip.webp",
               "hex": "#252a31"
             }
@@ -1363,6 +1429,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Молочный",
               "src240": "img/fabrics/shenill/molly/02-molochnyy-240.webp",
               "src450": "img/fabrics/shenill/molly/02-molochnyy-450.webp",
+              "src900": "img/fabrics/shenill/molly/02-molochnyy.webp",
               "strip": "img/fabrics/shenill/molly/02-molochnyy-strip.webp",
               "hex": "#ddd6bf"
             },
@@ -1370,6 +1437,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Кремовый",
               "src240": "img/fabrics/shenill/molly/03-kremovyy-240.webp",
               "src450": "img/fabrics/shenill/molly/03-kremovyy-450.webp",
+              "src900": "img/fabrics/shenill/molly/03-kremovyy.webp",
               "strip": "img/fabrics/shenill/molly/03-kremovyy-strip.webp",
               "hex": "#cdbfa6"
             },
@@ -1377,6 +1445,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Светло-серый",
               "src240": "img/fabrics/shenill/molly/17-svetlo-seryy-240.webp",
               "src450": "img/fabrics/shenill/molly/17-svetlo-seryy-450.webp",
+              "src900": "img/fabrics/shenill/molly/17-svetlo-seryy.webp",
               "strip": "img/fabrics/shenill/molly/17-svetlo-seryy-strip.webp",
               "hex": "#c1bdb9"
             },
@@ -1384,6 +1453,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Песочный",
               "src240": "img/fabrics/shenill/molly/04-pesochnyy-240.webp",
               "src450": "img/fabrics/shenill/molly/04-pesochnyy-450.webp",
+              "src900": "img/fabrics/shenill/molly/04-pesochnyy.webp",
               "strip": "img/fabrics/shenill/molly/04-pesochnyy-strip.webp",
               "hex": "#b9ab96"
             },
@@ -1391,6 +1461,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серо-бежевый",
               "src240": "img/fabrics/shenill/molly/18-sero-bezhevyy-240.webp",
               "src450": "img/fabrics/shenill/molly/18-sero-bezhevyy-450.webp",
+              "src900": "img/fabrics/shenill/molly/18-sero-bezhevyy.webp",
               "strip": "img/fabrics/shenill/molly/18-sero-bezhevyy-strip.webp",
               "hex": "#b1aaa5"
             },
@@ -1398,6 +1469,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серый",
               "src240": "img/fabrics/shenill/molly/16-seryy-240.webp",
               "src450": "img/fabrics/shenill/molly/16-seryy-450.webp",
+              "src900": "img/fabrics/shenill/molly/16-seryy.webp",
               "strip": "img/fabrics/shenill/molly/16-seryy-strip.webp",
               "hex": "#9a9893"
             },
@@ -1405,6 +1477,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Хаки",
               "src240": "img/fabrics/shenill/molly/05-khaki-240.webp",
               "src450": "img/fabrics/shenill/molly/05-khaki-450.webp",
+              "src900": "img/fabrics/shenill/molly/05-khaki.webp",
               "strip": "img/fabrics/shenill/molly/05-khaki-strip.webp",
               "hex": "#92836b"
             },
@@ -1412,6 +1485,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-серый",
               "src240": "img/fabrics/shenill/molly/20-temno-seryy-240.webp",
               "src450": "img/fabrics/shenill/molly/20-temno-seryy-450.webp",
+              "src900": "img/fabrics/shenill/molly/20-temno-seryy.webp",
               "strip": "img/fabrics/shenill/molly/20-temno-seryy-strip.webp",
               "hex": "#736f6c"
             },
@@ -1419,6 +1493,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Серо-оливковый",
               "src240": "img/fabrics/shenill/molly/06-sero-olivkovyy-240.webp",
               "src450": "img/fabrics/shenill/molly/06-sero-olivkovyy-450.webp",
+              "src900": "img/fabrics/shenill/molly/06-sero-olivkovyy.webp",
               "strip": "img/fabrics/shenill/molly/06-sero-olivkovyy-strip.webp",
               "hex": "#726759"
             },
@@ -1426,6 +1501,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Графит",
               "src240": "img/fabrics/shenill/molly/21-grafit-240.webp",
               "src450": "img/fabrics/shenill/molly/21-grafit-450.webp",
+              "src900": "img/fabrics/shenill/molly/21-grafit.webp",
               "strip": "img/fabrics/shenill/molly/21-grafit-strip.webp",
               "hex": "#605c59"
             },
@@ -1440,6 +1516,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Рыже-коричневый",
               "src240": "img/fabrics/shenill/molly/07-ryzhe-korichnevyy-240.webp",
               "src450": "img/fabrics/shenill/molly/07-ryzhe-korichnevyy-450.webp",
+              "src900": "img/fabrics/shenill/molly/07-ryzhe-korichnevyy.webp",
               "strip": "img/fabrics/shenill/molly/07-ryzhe-korichnevyy-strip.webp",
               "hex": "#754932"
             },
@@ -1447,6 +1524,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Терракотовый",
               "src240": "img/fabrics/shenill/molly/09-terrakotovyy-240.webp",
               "src450": "img/fabrics/shenill/molly/09-terrakotovyy-450.webp",
+              "src900": "img/fabrics/shenill/molly/09-terrakotovyy.webp",
               "strip": "img/fabrics/shenill/molly/09-terrakotovyy-strip.webp",
               "hex": "#89402e"
             },
@@ -1454,6 +1532,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Пыльно-розовый",
               "src240": "img/fabrics/shenill/molly/10-pylno-rozovyy-240.webp",
               "src450": "img/fabrics/shenill/molly/10-pylno-rozovyy-450.webp",
+              "src900": "img/fabrics/shenill/molly/10-pylno-rozovyy.webp",
               "strip": "img/fabrics/shenill/molly/10-pylno-rozovyy-strip.webp",
               "hex": "#a9796d"
             },
@@ -1461,6 +1540,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-оливковый",
               "src240": "img/fabrics/shenill/molly/13-temno-olivkovyy-240.webp",
               "src450": "img/fabrics/shenill/molly/13-temno-olivkovyy-450.webp",
+              "src900": "img/fabrics/shenill/molly/13-temno-olivkovyy.webp",
               "strip": "img/fabrics/shenill/molly/13-temno-olivkovyy-strip.webp",
               "hex": "#383428"
             },
@@ -1468,6 +1548,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-зелёный",
               "src240": "img/fabrics/shenill/molly/14-temno-zelenyy-240.webp",
               "src450": "img/fabrics/shenill/molly/14-temno-zelenyy-450.webp",
+              "src900": "img/fabrics/shenill/molly/14-temno-zelenyy.webp",
               "strip": "img/fabrics/shenill/molly/14-temno-zelenyy-strip.webp",
               "hex": "#36403d"
             },
@@ -1475,6 +1556,7 @@ window.RICCA_FABRIC_LIBRARY = {
               "name": "Тёмно-синий",
               "src240": "img/fabrics/shenill/molly/12-temno-siniy-240.webp",
               "src450": "img/fabrics/shenill/molly/12-temno-siniy-450.webp",
+              "src900": "img/fabrics/shenill/molly/12-temno-siniy.webp",
               "strip": "img/fabrics/shenill/molly/12-temno-siniy-strip.webp",
               "hex": "#1e202f"
             }
