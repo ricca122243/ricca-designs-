@@ -3,7 +3,7 @@
    Параметры — в метрах (params.js), на экране — сантиметры. Цен нет: «Рассчитаем стоимость в WhatsApp». */
 
 /* 3D-движок. Строка 1 — заглушка для разработки (js/cfg/_stub3d.js); при сборке заменить её строкой ENGINE (без «//»). */
-import * as F from './_stub3d.js'; import * as M from './_stub3d.js'; import { createStage } from './_stub3d.js'; import { validate } from './_stub3d.js';
+import * as F from './furniture3d.js'; import * as M from './materials.js'; import { createStage } from './stage.js'; import { validate } from './_stub3d.js';
 // ENGINE: import * as F from './furniture3d.js'; import * as M from './materials.js'; import { createStage } from './stage.js'; import { validate } from './validate.js';
 
 import * as P from './params.js';
@@ -475,8 +475,8 @@ function rebuild(q = quality()) {
 function applyFabric() {
   if (!stage || !piece || !mats) return;
   try {
-    const nf = M.fabricMaterial({ hex: state.fabric.hex, kind: state.fabric.kind, src450: state.fabric.src450, quality: quality() });
-    if (typeof F.setFabric === 'function') F.setFabric(piece, nf);
+    const nf = M.fabricMaterial({ hex: state.fabric.hex, kind: state.fabric.kind, src450: state.fabric.src450, collectionId: state.fabric.collectionId, quality: quality() });
+    if (typeof F.setMaterials === 'function') F.setMaterials(piece, { fabric: nf });           // furniture3d.js: ткань + швы по userData.matKey
     else {
       const old = mats.fabric;
       piece.traverse((o) => {
@@ -519,7 +519,7 @@ async function initStage() {
   stage.on('render', () => { if (!shown) { shown = true; $('#vp-ph').classList.add('is-gone'); } });
   stage.on('view', (v) => { if (typeof v === 'string' && v !== state.view) { state.view = v; $$('.vp__views [data-view]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.view === v))); } updateDims(); });
   const real = $('#t-real');
-  real.hidden = !(typeof stage.photoreal === 'function' && stage.photorealSupported !== false);
+  real.hidden = !(typeof stage.photoreal === 'function' && (stage.supportsPhotoreal === true || stage.photorealSupported === true));
   rebuild(quality());
   if (stage.frame) stage.frame({ animate: false });
 }
@@ -546,7 +546,7 @@ async function savePhoto() {
   const btn = $('#t-photo'); btn.disabled = true;
   try {
     const phone = mqPhone.matches;
-    const blob = await stage.snapshot({ width: phone ? 1600 : 2400, height: 1600, view: state.view === '3d' ? '3q' : state.view, watermark: true });
+    const blob = await stage.snapshot({ width: phone ? 1600 : 2400, height: 1600, view: 'current', watermark: true });
     if (blob) { const r = await shareOrDownload(blob, `ricca-${id()}.png`, { title: 'RICCA DESIGNS' }); if (r === 'downloaded') toast('Фото сохранено'); }
   } catch (e) { console.error(e); toast('Не получилось сохранить фото'); }
   btn.disabled = false;
