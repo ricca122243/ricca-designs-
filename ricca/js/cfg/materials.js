@@ -180,6 +180,48 @@ const PHOTO_TILE = { boucle: 0.22, chenille: 0.2, matting: 0.18, corduroy: 0.18,
    у букле, шенилла, рогожки крупные петли и плетение — часть ткани, их оставляем */
 const PHOTO_FLAT = { boucle: 1 / 10, chenille: 1 / 12, matting: 1 / 12, corduroy: 1 / 16, velour: 1 / 32, suede: 1 / 32, leather: 1 / 32 };
 const albedoCache = new Map();
+/* расчёт плитки по пикселям (d — RGBA N×N) → RGBA N×N. Чистая функция: выполняется в фоновом потоке (Worker), чтобы выбор ткани
+   не «замораживал» страницу (на телефоне это было 0,5–2 с на каждое нажатие) */
+function albedoPixels(d, N, flat) {
+  const L = new Float32Array(N * N);
+  let Lm = 0; for (let i = 0; i < N * N; i++) { L[i] = 0.2126 * d[i * 4] + 0.7152 * d[i * 4 + 1] + 0.0722 * d[i * 4 + 2] + 1; Lm += L[i]; }
+  Lm /= N * N;
+  const rf = (i) => (i < 0 ? -i - 1 : i >= N ? 2 * N - i - 1 : i);
+  const blur = (a, r) => { const tmp = new Float32Array(N * N), out = new Float32Array(N * N), k = 1 / (2 * r + 1); for (let y = 0; y < N; y++) { let s = 0; for (let j = -r; j <= r; j++) s += a[y * N + rf(j)]; for (let x = 0; x < N; x++) { tmp[y * N + x] = s * k; s += a[y * N + rf(x + r + 1)] - a[y * N + rf(x - r)]; } } for (let x = 0; x < N; x++) { let s = 0; for (let j = -r; j <= r; j++) s += tmp[rf(j) * N + x]; for (let y = 0; y < N; y++) { out[y * N + x] = s * k; s += tmp[rf(y + r + 1) * N + x] - tmp[rf(y - r) * N + x]; } } return out; };
+  const r = Math.max(2, Math.round(N * flat)), B = blur(blur(L, r), r);   // свет и складки (низкие частоты)
+  const F = new Float32Array(N * N * 3);
+  /* гладкие ткани (велюр, замша, кожа): в складках у них меняется и оттенок (ворс ложится по-разному) — цвет берём средний
+     по всему фото, с фото — только фактура поверхности (яркость мелкого масштаба) */
+  const smooth = flat < 1 / 24, M = [0, 0, 0];
+  if (smooth) { for (let i = 0; i < N * N; i++) { M[0] += d[i * 4]; M[1] += d[i * 4 + 1]; M[2] += d[i * 4 + 2]; } M[0] /= N * N; M[1] /= N * N; M[2] /= N * N; }
+  for (let i = 0; i < N * N; i++) {
+    if (smooth) { const t = Math.max(0.7, Math.min(1.3, L[i] / B[i])); F[i * 3] = M[0] * t; F[i * 3 + 1] = M[1] * t; F[i * 3 + 2] = M[2] * t; continue; }
+    const k = Math.max(0.5, Math.min(2, Lm / B[i])); F[i * 3] = d[i * 4] * k; F[i * 3 + 1] = d[i * 4 + 1] * k; F[i * 3 + 2] = d[i * 4 + 2] * k;
+  }
+  const tent = (i) => 1 - Math.abs((2 * (i + 0.5)) / N - 1);
+  const out = new Uint8Array(N * N * 4);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const i = y * N + x, w = Math.min(1, Math.min(tent(x), tent(y)) * 2.2), j = ((y + N / 2) % N) * N + ((x + N / 2) % N);
+    for (let ch = 0; ch < 3; ch++) out[i * 4 + ch] = Math.max(0, Math.min(255, Math.round(w * F[i * 3 + ch] + (1 - w) * F[j * 3 + ch])));
+    out[i * 4 + 3] = 255;
+  }
+  return out;
+}
+let albWorker = null, albSeq = 0;
+const albJobs = new Map();
+function albedoAsync(d, N, flat) {
+  if (!albWorker && typeof Worker !== 'undefined' && typeof Blob !== 'undefined') {
+    try {
+      const code = `${albedoPixels.toString()}\nonmessage = (e) => { const { id, buf, N, flat } = e.data; const out = albedoPixels(new Uint8ClampedArray(buf), N, flat); postMessage({ id, buf: out.buffer }, [out.buffer]); };`;
+      albWorker = new Worker(URL.createObjectURL(new Blob([code], { type: 'text/javascript' })));
+      albWorker.onmessage = (e) => { const j = albJobs.get(e.data.id); albJobs.delete(e.data.id); if (j) j(new Uint8Array(e.data.buf)); };
+      albWorker.onerror = () => { albWorker = false; albJobs.forEach((j) => j(null)); albJobs.clear(); };
+    } catch (e) { albWorker = false; }
+  }
+  if (!albWorker) return Promise.resolve(albedoPixels(d, N, flat));   // без Worker — как раньше, в основном потоке
+  return new Promise((res) => { const id = ++albSeq; albJobs.set(id, res); const buf = d.buffer.slice(0); albWorker.postMessage({ id, buf, N, flat }, [buf]); })
+    .then((out) => out || albedoPixels(d, N, flat));
+}
 function swatchAlbedo(src, tile = 0.16, N = 384, flat = 1 / 10) {
   const ck = `${src}|${tile}|${N}|${flat}`;
   if (albedoCache.has(ck)) return albedoCache.get(ck);
@@ -194,30 +236,10 @@ function swatchAlbedo(src, tile = 0.16, N = 384, flat = 1 / 10) {
         const cw = img.naturalWidth || img.width, chh = img.naturalHeight || img.height, cs = Math.min(cw, chh) * 0.7;   // центр 70 %: без краёв кадра
         g.drawImage(img, (cw - cs) / 2, (chh - cs) / 2, cs, cs, 0, 0, N, N);
         const d = g.getImageData(0, 0, N, N).data;
-        const L = new Float32Array(N * N);
-        let Lm = 0; for (let i = 0; i < N * N; i++) { L[i] = 0.2126 * d[i * 4] + 0.7152 * d[i * 4 + 1] + 0.0722 * d[i * 4 + 2] + 1; Lm += L[i]; }
-        Lm /= N * N;
-        const rf = (i) => (i < 0 ? -i - 1 : i >= N ? 2 * N - i - 1 : i);
-        const blur = (a, r) => { const tmp = new Float32Array(N * N), out = new Float32Array(N * N), k = 1 / (2 * r + 1); for (let y = 0; y < N; y++) { let s = 0; for (let j = -r; j <= r; j++) s += a[y * N + rf(j)]; for (let x = 0; x < N; x++) { tmp[y * N + x] = s * k; s += a[y * N + rf(x + r + 1)] - a[y * N + rf(x - r)]; } } for (let x = 0; x < N; x++) { let s = 0; for (let j = -r; j <= r; j++) s += tmp[rf(j) * N + x]; for (let y = 0; y < N; y++) { out[y * N + x] = s * k; s += tmp[rf(y + r + 1) * N + x] - tmp[rf(y - r) * N + x]; } } return out; };
-        const r = Math.max(2, Math.round(N * flat)), B = blur(blur(L, r), r);   // свет и складки (низкие частоты)
-        const F = new Float32Array(N * N * 3);
-        /* гладкие ткани (велюр, замша, кожа): в складках у них меняется и оттенок (ворс ложится по-разному) — цвет берём средний
-           по всему фото, с фото — только фактура поверхности (яркость мелкого масштаба) */
-        const smooth = flat < 1 / 24, M = [0, 0, 0];
-        if (smooth) { for (let i = 0; i < N * N; i++) { M[0] += d[i * 4]; M[1] += d[i * 4 + 1]; M[2] += d[i * 4 + 2]; } M[0] /= N * N; M[1] /= N * N; M[2] /= N * N; }
-        for (let i = 0; i < N * N; i++) {
-          if (smooth) { const t = Math.max(0.7, Math.min(1.3, L[i] / B[i])); F[i * 3] = M[0] * t; F[i * 3 + 1] = M[1] * t; F[i * 3 + 2] = M[2] * t; continue; }
-          const k = Math.max(0.5, Math.min(2, Lm / B[i])); F[i * 3] = d[i * 4] * k; F[i * 3 + 1] = d[i * 4 + 1] * k; F[i * 3 + 2] = d[i * 4 + 2] * k;
-        }
-        const tent = (i) => 1 - Math.abs((2 * (i + 0.5)) / N - 1);
-        const out = new Uint8Array(N * N * 4);
-        for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-          const i = y * N + x, w = Math.min(1, Math.min(tent(x), tent(y)) * 2.2), j = ((y + N / 2) % N) * N + ((x + N / 2) % N);
-          for (let ch = 0; ch < 3; ch++) out[i * 4 + ch] = Math.max(0, Math.min(255, Math.round(w * F[i * 3 + ch] + (1 - w) * F[j * 3 + ch])));
-          out[i * 4 + 3] = 255;
-        }
-        const t = dataTex(out, N, true); t.repeat.set(1 / tile, 1 / tile);
-        resolve({ tex: t });
+        albedoAsync(d, N, flat).then((out) => {
+          const t = dataTex(out, N, true); t.repeat.set(1 / tile, 1 / tile);
+          resolve({ tex: t });
+        }).catch(() => resolve(null));
       } catch (e) { resolve(null); }
     };
     img.onerror = () => resolve(null);
@@ -246,7 +268,7 @@ const LEATHER_FINISH = {
 export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null, src900 = null, quality, collectionId = '', finish = '' } = {}) {
   if (!KINDS.includes(kind)) kind = 'velour';
   const q = quality || defaultQuality;
-  const N = q === 'high' ? 512 : 256;
+  const N = q === 'high' ? 256 : 128;   // процедурный рельеф: подробность даёт фото ткани; 512 строился ~0,6 с и «замораживал» страницу
   const fin = kind === 'leather' ? (LEATHER_FINISH[String(finish).toLowerCase()] ? String(finish).toLowerCase() : (collectionId === 'vintazh' ? 'винтаж' : '')) : '';
   /* фото ткани: компьютер — 1400 px (src900) в плитку 1024, телефон — 700 px (src450) в 512, «Моя комната» на телефоне — 256 */
   const photo = q === 'high' ? src900 || src450 : src450 || src900, PN = q === 'high' ? 1024 : q === 'mid' ? 512 : 256;

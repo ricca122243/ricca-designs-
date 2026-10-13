@@ -150,6 +150,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   let view = '3d';
   let object = null, box = new THREE.Box3(), size = new THREE.Vector3(1, 1, 1), center = new THREE.Vector3(), lastRadius = 0;
   let anim = null, raf = 0, idleT = 0, interacting = false, disposed = false, studioOn = true;
+  let shadowDirty = true;   // тени пересчитываем только когда изменилась сама сцена (не камера и не ткань)
   let W = 1, H = 1;
 
   function resize() {
@@ -228,7 +229,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     if (studioOn && contact.dirty) contact.update(scene, root);
     const still = !moving && !interacting;
     const useAO = aoMode === 'always' || (aoMode === 'idle' && still);
-    if (still) renderer.shadowMap.needsUpdate = true;
+    if (still && shadowDirty) { renderer.shadowMap.needsUpdate = true; shadowDirty = false; }
     const pr = still || useAO ? dprFull : dprMove;
     if (renderer.getPixelRatio() !== pr) renderer.setPixelRatio(pr);
     if (useAO && ensureComposer()) {
@@ -255,7 +256,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     box.getSize(size); box.getCenter(center);
     fitLight();
     contact.fit(box); contact.dirty = true;
-    renderer.shadowMap.needsUpdate = true;
+    shadowDirty = true;
     const r = radius();
     if (!reframe) { /* комната: камерой управляет room.js */ }
     else if (!lastRadius || Math.abs(r - lastRadius) / lastRadius > 0.1) { const first = !lastRadius; lastRadius = r; frame({ animate: !first && !reduced() }); }
@@ -519,7 +520,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     get view() { return view; },
     get box() { return box.clone(); },
     supportsPhotoreal: false,
-    setObject, setView, frame, setDims, setStudio, requestRender, snapshot, resize,
+    setObject, setView, frame, setDims, setStudio, snapshot, resize,
+    /* снаружи (комната двигает мебель): сцена могла измениться — тени пересчитать; markShadows=false — только перерисовать */
+    requestRender: (markShadows = true) => { if (markShadows) shadowDirty = true; requestRender(); },
     cancelAnim() { anim = null; },
     /* крупный план точки (например, подушки сиденья — видна фактура ткани) с того же направления */
     closeUp(target, dist = 0.9, { animate = true } = {}) {
