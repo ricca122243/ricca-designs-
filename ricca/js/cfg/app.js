@@ -44,15 +44,16 @@ const ROWS = {
   look: () => row('backLook', 'Спинка', () => ['low', 'high'], { get: (p, t) => (backLook(t, p) === 'низкая' ? 'low' : 'high') }),
   backC: () => row('backCushions', 'Подушки спинки', () => ['fixed', 'loose']),
   seatC: () => row('seatCushions', 'Сиденье', () => ['single', 'sections']),
-  sect: () => row('sections', 'Секций', () => ['auto', 2, 3, 4, 5], { when: (p) => p.seatCushions === 'sections' }),
+  /* только те количества секций, что помещаются (validate: секция не уже 45 см) — иначе щелчок ничего бы не менял */
+  sect: (t) => row('sections', 'Секций', (p) => ['auto', ...[2, 3, 4, 5].filter((n) => { try { return validate(t, { ...p, sections: n }).params.sections === n; } catch (e) { return true; } })], { when: (p) => p.seatCushions === 'sections' }),
   legs: (vals = ['hidden', 'metal', 'wood', 'plinth']) => row('legs', 'Ножки', () => vals),
   fin: () => row('legFinish', 'Отделка ножек', (p) => (p.legs === 'metal' ? METAL : WOOD), { when: (p) => p.legs === 'metal' || p.legs === 'wood' }),
   pipe: () => row('piping', 'Кант', () => [false, true]),
 };
 const FORM = {
-  sofa: [ROWS.arm('sofa'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect(), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
-  corner: [row('side', 'Угол', () => ['left', 'right']), row('form', 'Форма', () => ['L', 'chaise']), ROWS.arm('corner'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect(), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
-  ushape: [ROWS.arm('ushape'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect(), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
+  sofa: [ROWS.arm('sofa'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect('sofa'), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
+  corner: [row('side', 'Угол', () => ['left', 'right']), row('form', 'Форма', () => ['L', 'chaise']), ROWS.arm('corner'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect('corner'), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
+  ushape: [ROWS.arm('ushape'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect('ushape'), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
   modular: [row('modules', 'Модулей', null, { count: [2, 6] }), row('chaise', 'Шезлонг', () => ['none', 'left', 'right']), ROWS.arm('modular'), ROWS.backC(), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
   bed: [row('hbStyle', 'Изголовье', () => ['plain', 'channels', 'capitone', 'wings']), row('base', 'Основание', () => ['plinth', 'legs']),
     row('legFinish', 'Отделка ножек', () => [...WOOD, ...METAL], { when: (p) => p.base === 'legs' }), row('lift', 'Подъёмный механизм', () => [false, true]), ROWS.pipe()],
@@ -182,7 +183,7 @@ function writeHash() {
 function setState(patch = {}, { rebuild = 'auto', drag = false, structural = false } = {}) {
   Object.assign(state, patch);
   renderHeads(); renderSummary(); renderViewportSize();
-  if (structural) { renderForm(); renderSize(); renderFabricVisibility(); } else syncSize();
+  if (structural) { renderForm(); renderSize(); renderFabricVisibility(); } else { syncSize(); if (formKey() !== lastFormKey) renderForm(); }
   if (rebuild) scheduleRebuild(drag);
   writeHash(); save();
 }
@@ -211,7 +212,14 @@ function setType(type) {
 }
 
 /* ═════════ шаг 2 — форма ═════════ */
+/* набор вариантов в «Форме» зависит от размера (например, сколько секций помещается) — перерисовать, когда он меняется */
+let lastFormKey = '';
+function formKey() {
+  const p = state.params, t = state.type;
+  return t + '|' + (FORM[t] || []).filter((r) => !r.when || r.when(p)).map((r) => r.key + ':' + (r.values ? r.values(p).join(',') : '')).join(';');
+}
 function renderForm() {
+  lastFormKey = formKey();
   const p = state.params, t = state.type;
   const html = (FORM[t] || []).filter((r) => !r.when || r.when(p)).map((r) => {
     if (r.count) {
