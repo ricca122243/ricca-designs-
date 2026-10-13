@@ -406,6 +406,7 @@ function renderFabric() {
   $('#fab-cols').innerHTML = t.collections.map((c) => `<button class="fab__col" type="button" role="radio" aria-checked="${c.id === col.id}" data-fcol="${esc(c.id)}">
       <span class="fab__col-t">${esc(c.title)}</span><span class="fab__col-n">${c.colours.length} ${plural(c.colours.length, ['цвет', 'цвета', 'цветов'])}</span>
       ${c.kindTitle || c.facts ? `<span class="fab__col-f">${esc([cap(c.kindTitle), c.facts].filter(Boolean).join(' · '))}</span>` : ''}</button>`).join('');
+  const ff = $('#fab-facts'); if (ff) ff.textContent = [cap(col.kindTitle), col.facts].filter(Boolean).join(' · ');
   $('#fab-sw').innerHTML = col.colours.map((c) => {
     const on = f && f.typeId === t.id && f.collectionId === col.id && f.slug === c.slug;
     const nm = c.finish ? `${c.name}, ${c.finish}` : c.name;

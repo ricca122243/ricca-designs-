@@ -1,6 +1,6 @@
 /* RICCA · конструктор — QR-код ссылки на вариант (для «Посмотреть у себя дома» на компьютере).
    qrcode-generator 2.0.4 (MIT, vendor/qrcode). Возвращает SVG-текст: тёмные модули одним path, белое поле 4 модуля. */
-import qrcode from '../../vendor/qrcode/qrcode.mjs';
+import qrcode from '../../vendor/qrcode/qrcode.js';   // .js, не .mjs: часть хостингов отдаёт .mjs не как скрипт — тогда не стартует весь 3D
 
 export function qrSvg(text, { size = 200, ecl = 'M', margin = 4, color = '#111111' } = {}) {
   const qr = qrcode(0, ecl);
