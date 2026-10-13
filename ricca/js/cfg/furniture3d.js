@@ -557,7 +557,7 @@ export function build(type, params, materials = {}, opts = {}) {
     meshes.push(mesh);
     return mesh;
   };
-  const dense = pr.items.length > 40 ? 2 : pr.items.length > 24 ? 1.6 : 1;
+  const dense = pr.items.length > 40 ? 2.2 : pr.items.length > 24 ? 1.6 : 1;
   const prof = opts.profile ? { geo: 0, tube: 0, merge: 0 } : null;
   let _t = 0;
   for (const it of pr.items) {

@@ -41,6 +41,16 @@ for ref in $refs; do
   mkdir -p "$OUT/$(dirname "$ref")"
   cp "$SRC/$ref" "$OUT/$ref"
 done
+# Ткани (js/fabrics-data.js): образцы скопированы по ссылкам выше. Малую фактуру texture-160.webp js/site.js строит из
+# texture-600.webp заменой имени — в коде её пути нет, поэтому копируем её рядом с каждой texture-600 (иначе 404 на сайте)
+for ref in $refs; do
+  case "$ref" in
+    img/fabrics/*/texture-600.webp)
+      small="${ref%texture-600.webp}texture-160.webp"
+      [ -f "$SRC/$small" ] || { echo "нет файла: $small"; exit 1; }
+      cp "$SRC/$small" "$OUT/$small" ;;
+  esac
+done
 # Фото каталога: карточки, галереи и окно «Подробнее» собирает js/site.js из js/catalog-data.js — пути строятся в JS,
 # поэтому копируем всю папку img/catalog целиком, со всеми подпапками (img/catalog/sofas/… для новых фото заказчика).
 # MANIFEST*.md и README.md там же — внутренние заметки: в архив не идут

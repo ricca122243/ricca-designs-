@@ -479,6 +479,21 @@ text{font-family:${FONT};fill:${INK}}
     for (const s of V.shapes) {
       W(`<path class="o" d="${s.d}"/>`);
       const it = s.it;
+      /* каретная стяжка на сиденье пуфа / банкетки — пуговицы на виде сверху */
+      if (V.view === 'top' && it.tufting === 'capitone' && it.role === 'seat') {
+        const P = projector('top', pr._bounds), kk = 1000 / den;
+        const a = P([it.x - it.sx / 2, 0, it.z - it.sz / 2]), b = P([it.x + it.sx / 2, 0, it.z + it.sz / 2]);
+        const u0 = a[0] * kk, v0 = a[1] * kk, u1 = b[0] * kk, v1 = b[1] * kk, round = it.shape === 'cyl';
+        const sx = 0.14 * kk, sy = 0.12 * kk, cu = (u0 + u1) / 2, cv = (v0 + v1) / 2, ru = (u1 - u0) / 2 - sx * 0.45, rv = (v1 - v0) / 2 - sy * 0.45;
+        const nu = Math.max(1, Math.floor((u1 - u0) / sx)), nv = Math.max(1, Math.floor((v1 - v0) / sy));
+        for (let j = 0; j < nv; j++) for (let i = 0; i < nu - (j % 2); i++) {
+          const u = cu + (i - (nu - 1 - (j % 2)) / 2) * sx, v = cv + (j - (nv - 1) / 2) * sy;
+          if (round ? ((u - cu) / ru) ** 2 + ((v - cv) / rv) ** 2 > 1 : Math.abs(u - cu) > ru || Math.abs(v - cv) > rv) continue;
+          /* не ставим пуговицу на отметку ножки */
+          if (V.hidden.some((h) => { const c = P([h.it.x, 0, h.it.z]); return Math.hypot(c[0] * kk - u, c[1] * kk - v) < (h.it.sx / 2) * kk + 1.2; })) continue;
+          W(`<circle cx="${n2(u)}" cy="${n2(v)}" r=".3" fill="${INK}"/>`);
+        }
+      }
       if (V.view !== 'front' || !it.tufting || it.role !== 'headboard') continue;
       const P = projector('front', pr._bounds), kk = 1000 / den;
       const a = P([it.x - it.sx / 2, it.y + it.sy / 2, 0]), b = P([it.x + it.sx / 2, it.y - it.sy / 2, 0]);
@@ -545,11 +560,12 @@ text{font-family:${FONT};fill:${INK}}
   /* таблица: подготовка строк */
   const rows = [{ label: 'Изделие', value: title }, ...lines];
   const LBL_W = 21, VAL_X = cx0 + 2 + LBL_W, VAL_W = cx1 - 4 - VAL_X;
-  const layoutTable = (fs) => rows.map((r) => {
+  const layoutTable = (fs) => rows.map((r, ri) => {
+    const vwt = ri === 0 ? 600 : 400;
     const isFab = r.label === 'Ткань' && cfg.fabric && cfg.fabric.typeId;
     const vw = VAL_W - (isFab && opts.swatchDataUrl ? 9.5 : 0);
     const maxL = r.label === 'Пожелание' ? 2 : 3;
-    const ls = clampLines(wrap(r.value, vw, fs, 400), maxL, vw, fs, 400);
+    const ls = clampLines(wrap(r.value, vw, fs, vwt), maxL, vw, fs, vwt);
     const ll = wrap(r.label.toUpperCase(), LBL_W - 1, 1.75, 600);
     const h = Math.max(ls.length * fs * 1.28, ll.length * 2.3, isFab && opts.swatchDataUrl ? 8.4 : 0) + 1.7;
     return { ...r, ls, ll, h, isFab };

@@ -496,7 +496,8 @@ function partsModular(p) {
     add(box('arm-r', 'arm', 'fabric', W - armW + g, W, legH, p.armH, 0, chaiseIdx === n - 1 ? Lc : d, { r: core.armR, armStyle: p.armStyle }));
   }
   for (let i = 0; i < n; i++) {
-    const x0 = armW + i * mW + g, x1 = armW + (i + 1) * mW - g;
+    /* зазор 4 мм только между телами; без подлокотников крайние модули — заподлицо с габаритом */
+    const x0 = armW + i * mW + (i === 0 && !arms ? 0 : g), x1 = armW + (i + 1) * mW - (i === n - 1 && !arms ? 0 : g);
     const depth = i === chaiseIdx ? Lc : d;
     add(box(`module-${i + 1}`, 'frame', 'fabric', x0, x1, legH, yF + 0.01, 0.005, depth - 0.005, { r: 0.025 }));
     add(box(`seat-${i + 1}`, 'seat', 'fabric', x0 + 0.002, x1 - 0.002, yF, p.seatH, backT, depth, { r: 0.04, crown, cushion: true, piping: !!p.piping, seam: true }));
