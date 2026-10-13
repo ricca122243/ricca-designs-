@@ -89,7 +89,7 @@ function fabricHeight(kind, N) {
     const cords = 24; // 2,5 мм на 6 см
     for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
       const u = x / N, v = y / N;
-      const c = Math.pow(Math.abs(Math.sin(Math.PI * (v * cords + 0.15 * tnoise(u * 12, v * 12, 12, 7)))), 0.8);
+      const c = Math.pow(Math.abs(Math.sin(Math.PI * (v * cords + 0.25 * tnoise(u * 12, v * 12, 12, 7)))), 1.4);
       const w = 0.25 * Math.pow(Math.abs(Math.sin(Math.PI * u * cords * 1.5)), 2);
       H[y * N + x] = c * (0.75 + 0.25 * fbm(u * 48, v * 48, 48, 8, 3)) - w * 0.4 + 0.25 * fbm(u * 96, v * 96, 96, 11, 2);
     }
@@ -147,7 +147,7 @@ function fabricMaps(kind, N) {
   if (texCache.has(key)) return texCache.get(key);
   const H = fabricHeight(kind, N);
   const rv = { boucle: 0.18, corduroy: 0.12, chenille: 0.14, matting: 0.1, leather: 0.18, velour: 0.08, suede: 0.06 }[kind] || 0.1;
-  const { nrm, rgh } = heightToTextures(H, N, { boucle: 5, corduroy: 3.5, chenille: 3, matting: 3, leather: 2.2, velour: 1.6, suede: 1.2 }[kind] || 2, 1, rv);
+  const { nrm, rgh } = heightToTextures(H, N, { boucle: 5, corduroy: 3.5, chenille: 1.8, matting: 2.6, leather: 2.2, velour: 1.6, suede: 1.2 }[kind] || 2, 1, rv);
   /* лёгкая альбедо-вариация (для ткани без фото образца): 0,94…1,0 вокруг среднего */
   const alb = new Uint8Array(N * N * 4);
   let mn = Infinity, mx = -Infinity; for (let i = 0; i < H.length; i++) { mn = Math.min(mn, H[i]); mx = Math.max(mx, H[i]); }

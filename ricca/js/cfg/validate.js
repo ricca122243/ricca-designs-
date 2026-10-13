@@ -79,25 +79,27 @@ export function validate(type, params = {}) {
   }
   if ('armStyle' in p) {
     if (p.armStyle === 'none') p.armW = 0;
-    else if (!(p.armW > 0)) p.armW = ARMW_BY_STYLE[p.armStyle].def;
+    else if (!(p.armW > 0) || (raw.armStyle && raw.armW === undefined)) p.armW = ARMW_BY_STYLE[p.armStyle].def;   // смена стиля → ширина по стилю
   }
   p.qty = Math.min(999, Math.max(1, Math.round(+p.qty || 1)));
 
   /* ---------- 1. жёсткие пределы: ошибка, значение не применяется (берём значение по умолчанию) ---------- */
+  const hardBad = (k, v) => {
+    if (typeof D[k] !== 'number' || COUNT.has(k)) return false;
+    if (type === 'modular' && k === 'w') return false;                  // выводится
+    if (type === 'bed' && (k === 'w' || k === 'd' || k === 'h')) return false;
+    if (type === 'chair' && (k === 'seatD' || k === 'armH')) return false;
+    if (k === 'armW' && p.armStyle === 'none') return false;
+    if (k === 'legH' && p.legs === 'hidden' && type !== 'bed') return false;
+    if (typeof v !== 'number' || !Number.isFinite(v) || v < 0) return true;
+    if (!ZERO_OK.has(k) && v < 0.02 - EPS) return true;
+    if (OVERALL.has(k) && (v < 0.30 - EPS || v > 6.00 + EPS)) return true;
+    if (v > 2.50 + EPS && !(OVERALL.has(k) && k !== 'h' && k !== 'hbH')) return true;
+    return false;
+  };
   for (const k of Object.keys(p)) {
-    const v = p[k], def = D[k];
-    if (typeof def !== 'number' || COUNT.has(k)) continue;
-    if (type === 'modular' && k === 'w') continue;                  // выводится
-    if (type === 'bed' && (k === 'w' || k === 'd' || k === 'h')) continue;
-    if (type === 'chair' && (k === 'seatD' || k === 'armH')) continue;
-    if (k === 'armW' && p.armStyle === 'none') continue;
     if (k === 'legH' && p.legs === 'hidden' && type !== 'bed') { p.legH = HIDDEN_LEG_H; continue; }
-    let bad = typeof v !== 'number' || !Number.isFinite(v) || v < 0;
-    if (!bad && !ZERO_OK.has(k) && v < 0.02 - EPS) bad = true;
-    if (!bad && OVERALL.has(k) && (v < 0.30 - EPS || v > 6.00 + EPS)) bad = true;
-    if (!bad && (k === 'h' || k === 'hbH') && v > 2.50 + EPS) bad = true;
-    if (!bad && !OVERALL.has(k) && v > 2.50 + EPS) bad = true;
-    if (bad) { fail(k); p[k] = def; }
+    if (hardBad(k, p[k])) { fail(k); p[k] = D[k]; }
   }
   if (type === 'modular') {
     if (!(p.modules >= 1) || p.modules > 12) { fail('modules'); p.modules = D.modules; }
@@ -115,7 +117,8 @@ export function validate(type, params = {}) {
   const pn = normalize(type, p);
   for (const k of DERIVED[type] || []) p[k] = typeof pn[k] === 'number' ? r3(pn[k]) : pn[k];
 
-  /* ---------- 3. общий габарит ---------- */
+  /* ---------- 3. исправленные значения — снова в пределах; общий габарит ---------- */
+  for (const k of Object.keys(p)) if (hardBad(k, p[k])) fail(k);
   if (!errors.length) {
     let g = null;
     try { g = dimsOf(type, p); } catch (e) { g = null; }
@@ -143,7 +146,7 @@ export function validate(type, params = {}) {
 
 /* ключи, которые сейчас не действуют (не проверяем диапазон) */
 function skipRange(type, k, p) {
-  if (k === 'armW') return p.armStyle === 'none';
+  if (k === 'armW' || k === 'armH') return p.armStyle === 'none';
   if (k === 'legH') return type !== 'bed' && p.legs === 'hidden';
   if (k === 'legW' || k === 'legInset') return p.base !== 'four';
   if (k === 'chaiseW') return p.form !== 'chaise';

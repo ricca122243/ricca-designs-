@@ -506,12 +506,21 @@ function partsModular(p) {
       const tc = tiltedCushion(p.seatH - BSINK, p.h, fr - 0.04, backT + 0.015, 0.12);
       add({ ...box(`backc-${i + 1}`, 'back', 'fabric', x0 + 0.002, x1 - 0.002, 0, tc.sy, 0, tc.t, { r: 0.065, crown: 0.035, cushion: true, piping: !!p.piping, seam: true }), y: (p.seatH - BSINK + p.h) / 2, z: (fr - 0.04 + backT + 0.015) / 2, tiltX: tc.a });
     } else add(box(`back-${i + 1}`, 'back', 'fabric', x0, x1, yF, p.h, 0, backT, { r: 0.045, crown: 0.012 }));
-    if (p.legs !== 'hidden' && p.legs !== 'plinth') legsFor(p, legH, [{ x0, x1, z0: 0, z1: depth }], (it) => add({ ...it, id: `leg-${i + 1}-${it.id.split('-')[1]}` }));
   }
-  if (p.legs === 'hidden' || p.legs === 'plinth') {
+  {
     const rects = [{ x0: 0, x1: W, z0: 0, z1: d }];
     if (chaiseIdx >= 0) rects.push(chaiseIdx === 0 ? { x0: 0, x1: armW + mW, z0: d - 0.12, z1: Lc } : { x0: W - armW - mW, x1: W, z0: d - 0.12, z1: Lc });
     legsFor(p, legH, rects, add, { centre: 1.6 });
+    /* ножки на стыках модулей (видимые опоры не «висят» между крайними) */
+    if (p.legs === 'metal' || p.legs === 'wood') {
+      const dia = p.legs === 'metal' ? 0.025 : 0.045, taper = p.legs === 'wood' ? 0.032 / 0.045 : 1;
+      let k = 0;
+      for (let i = 1; i < n; i++) {
+        const x = armW + i * mW;
+        if (W > 1.6 && Math.abs(x - W / 2) < 0.15) continue; // центральную пару уже поставил legsFor
+        for (const z of [0.06 + dia / 2, d - 0.06 - dia / 2]) add(cyl(`leg-j${++k}`, 'leg', 'legs', x, z, dia, dia, 0, legH, { taper, legKind: p.legs }));
+      }
+    }
   }
   const dims = [];
   dims.push(D('w', 'Ширина', 'front', 'x', [0, 0, Lc], [W, 0, Lc], 0, 'bottom'));

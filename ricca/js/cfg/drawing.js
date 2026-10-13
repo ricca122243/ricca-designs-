@@ -193,6 +193,11 @@ function itemShapes(view, it, P, k) {
       radii = pts2.map((p) => (Math.abs(p[1] - vmin) < 1e-6 ? w : Math.min(r, 0.02 * k)));
     } else radii = Math.min(r, 0.035 * k);
   }
+  /* округлая спинка стула: верхние углы мягче (вид спереди) */
+  if (it.backShape === 'rounded' && view === 'front' && pts2.length === 4) {
+    const vs = pts2.map((p) => p[1]); const vmin = Math.min(...vs);
+    radii = pts2.map((p) => (Math.abs(p[1] - vmin) < 1e-6 ? Math.min(it.sx / 4, 0.09) * k : r));
+  }
   if (Array.isArray(radii)) return [{ d: roundedPath(pts2, radii), depth: depthKey(view, bb), bb }];
   return [{ d: roundedPath(pts2, Math.min(radii, 6)), depth: depthKey(view, bb), bb }];
 }
@@ -242,7 +247,8 @@ function layoutView(view, pr, den, bump = {}) {
   const sil = silhouette(rects, Wv, Hv);
 
   /* размеры этого вида */
-  const list = pr.dims.filter((d) => d.view === view && AX[view][d.axis]);
+  /* проём П-образного дивана на виде сверху — между сторонами у фронта, а не у спинки */
+  const list = pr.dims.filter((d) => d.view === view && AX[view][d.axis]).map((d) => (d.id === 'opening-top' ? { ...d, place: 'bottom', tier: 1 } : d));
   const placed = [];          // { dim, side, row, segs, box, text, tx, ty, rot }
   const labelBoxes = [];
   const segsAll = [];
@@ -469,11 +475,11 @@ text{font-family:${FONT};fill:${INK}}
     labels.push({ view: V.view, id: '_title', text: vt, box: { x0: X, x1: X + textWidth(vt, 2.05, 600, 0.32), y0: Y + vtY - 1.6, y1: Y + vtY + 0.4 } });
     /* пол */
     if (V.view !== 'top') W(`<line class="fl" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
-    /* детали: дальние → ближние */
-    for (const s of V.shapes) W(`<path class="o" d="${s.d}"/>`);
-    /* детали отделки: простёжка изголовья (вид спереди) */
-    if (V.view === 'front') for (const s of V.shapes) {
-      const it = s.it; if (!it.tufting || it.role !== 'headboard') continue;
+    /* детали: дальние → ближние; простёжка изголовья — сразу после него (ближние детали её закрывают) */
+    for (const s of V.shapes) {
+      W(`<path class="o" d="${s.d}"/>`);
+      const it = s.it;
+      if (V.view !== 'front' || !it.tufting || it.role !== 'headboard') continue;
       const P = projector('front', pr._bounds), kk = 1000 / den;
       const a = P([it.x - it.sx / 2, it.y + it.sy / 2, 0]), b = P([it.x + it.sx / 2, it.y - it.sy / 2, 0]);
       const u0 = a[0] * kk, v0 = a[1] * kk, u1 = b[0] * kk, v1 = b[1] * kk;
@@ -482,13 +488,16 @@ text{font-family:${FONT};fill:${INK}}
         for (let i = 1; i < n; i++) { const u = u0 + ((u1 - u0) * i) / n; W(`<line class="dt" x1="${n2(u)}" y1="${n2(v0 + 1.2)}" x2="${n2(u)}" y2="${n2(v1 - 1.2)}"/>`); }
       } else if (it.tufting === 'capitone') {
         const sx = 0.14 * kk, sy = 0.12 * kk; let row = 0;
-        for (let v = v0 + sy; v < v1 - sy * 0.6; v += sy, row++) for (let u = u0 + sx * (row % 2 ? 1 : 0.5); u < u1 - sx * 0.4; u += sx) W(`<circle cx="${n2(u)}" cy="${n2(v)}" r=".35" fill="${INK}"/>`);
+        for (let v = v0 + sy * 0.8; v < v1 - sy * 0.5; v += sy, row++) for (let u = u0 + sx * (row % 2 ? 1 : 0.5); u < u1 - sx * 0.4; u += sx) W(`<circle cx="${n2(u)}" cy="${n2(v)}" r=".3" fill="${INK}"/>`);
       }
     }
     /* невидимые (под корпусом) — штрихом: ножки и опоры на виде сверху */
     for (const h of V.hidden) {
       const bb = h.it._bb, sz = Math.min(bb.max[0] - bb.min[0], bb.max[2] - bb.min[2]) * 1000 / den;
-      W(`<path class="hd" d="${h.d}"${sz < 3 ? ' style="stroke-dasharray:.45 .35"' : ''}/>`);
+      if (sz >= 2) { W(`<path class="hd" d="${h.d}"${sz < 7 ? ' style="stroke-dasharray:.7 .45"' : ''}/>`); continue; }
+      /* тонкая ножка под корпусом — отметка положения (крест) */
+      const P = projector('top', pr._bounds), kk = 1000 / den, c = P([h.it.x, 0, h.it.z]), cu = c[0] * kk, cv = c[1] * kk;
+      W(`<path class="dt" d="M${n2(cu - 0.9)} ${n2(cv)}H${n2(cu + 0.9)}M${n2(cu)} ${n2(cv - 0.9)}V${n2(cv + 0.9)}"/>`);
     }
     /* матрас на виде сверху — подпись внутри */
     if (V.view === 'top' && type === 'bed') {
@@ -507,7 +516,9 @@ text{font-family:${FONT};fill:${INK}}
     for (const p of V.placed) {
       W(`<path class="dl" d="M${n2(p.dl[0])} ${n2(p.dl[1])}L${n2(p.dl[2])} ${n2(p.dl[3])}${p.ext.map((s) => `M${n2(s[0])} ${n2(s[1])}L${n2(s[2])} ${n2(s[3])}`).join('')}"/>`);
       const ticks = p.e.orient === 'h' ? [[p.e.c1, p.line], [p.e.c2, p.line]] : [[p.line, p.e.c1], [p.line, p.e.c2]];
-      W(`<path class="tk" d="${ticks.map(([x, y]) => `M${n2(x - TICK)} ${n2(y + TICK)}L${n2(x + TICK)} ${n2(y - TICK)}`).join('')}"/>`);
+      /* засечки 45°; на очень коротких размерах (< 2,4 мм) — точки, чтобы засечки не слипались */
+      if (p.e.c2 - p.e.c1 < 2.4) W(ticks.map(([x, y]) => `<circle cx="${n2(x)}" cy="${n2(y)}" r=".32" fill="${INK}"/>`).join(''));
+      else W(`<path class="tk" d="${ticks.map(([x, y]) => `M${n2(x - TICK)} ${n2(y + TICK)}L${n2(x + TICK)} ${n2(y - TICK)}`).join('')}"/>`);
       if (p.rot) W(`<text class="dim" text-anchor="middle" transform="translate(${n2(p.tx)} ${n2(p.ty)}) rotate(-90)">${esc(p.e.text)}</text>`);
       else W(`<text class="dim" text-anchor="middle" x="${n2(p.tx)}" y="${n2(p.ty)}">${esc(p.e.text)}</text>`);
       labels.push({ view: V.view, id: p.e.d.id, text: p.e.text, value: p.e.d.value, label: p.e.d.label, tier: p.e.d.tier, side: p.e.side, row: p.row, conflict: !!p.conflict,
@@ -533,7 +544,7 @@ text{font-family:${FONT};fill:${INK}}
   const tbY = FRAME.y1 - TB_H;
   /* таблица: подготовка строк */
   const rows = [{ label: 'Изделие', value: title }, ...lines];
-  const LBL_W = 21, VAL_X = cx0 + 2 + LBL_W, VAL_W = cx1 - 2 - VAL_X;
+  const LBL_W = 21, VAL_X = cx0 + 2 + LBL_W, VAL_W = cx1 - 4 - VAL_X;
   const layoutTable = (fs) => rows.map((r) => {
     const isFab = r.label === 'Ткань' && cfg.fabric && cfg.fabric.typeId;
     const vw = VAL_W - (isFab && opts.swatchDataUrl ? 9.5 : 0);

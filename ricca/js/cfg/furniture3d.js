@@ -51,7 +51,8 @@ function smoothNormalsByPosition(geo) {
   const n = pos.count, acc = new Float32Array(n * 3);
   const key = new Map(), group = new Int32Array(n);
   for (let i = 0; i < n; i++) {
-    const k = `${Math.round(pos.getX(i) * 2e4)},${Math.round(pos.getY(i) * 2e4)},${Math.round(pos.getZ(i) * 2e4)}`;
+    /* числовой ключ: сетка 0,1 мм, по 17 бит на ось (±6,5 м) */
+    const k = ((Math.round(pos.getX(i) * 1e4) + 65536) * 131072 + (Math.round(pos.getY(i) * 1e4) + 65536)) * 131072 + (Math.round(pos.getZ(i) * 1e4) + 65536);
     let g = key.get(k); if (g === undefined) { g = i; key.set(k, i); } group[i] = g;
   }
   const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), ab = new THREE.Vector3(), ac = new THREE.Vector3();
@@ -392,19 +393,68 @@ function legGeometry(it, quality) {
   return geo;
 }
 
-/* ---------- кант/шов: трубка по замкнутой линии ---------- */
+/* ---------- кант/шов: трубка по ломаной (точки уже плотные; рамки — параллельный перенос) ---------- */
 function tubeAlong(points, radius, quality, closed = true, dense = 1) {
   if (!points || points.length < 3) return null;
   const q = Q[quality] || Q.high;
-  /* прореживание дубликатов */
+  const step = (quality === 'low' ? 0.04 : quality === 'mid' ? 0.022 : 0.015) * dense;
+  /* прореживание дубликатов и ресэмплинг до шага step */
+  const src = [];
+  for (const p of points) if (!src.length || src[src.length - 1].distanceToSquared(p) > 1e-8) src.push(p);
+  if (closed && src.length > 2 && src[0].distanceToSquared(src[src.length - 1]) < 1e-8) src.pop();
+  if (src.length < 3) return null;
   const pts = [];
-  for (const p of points) if (!pts.length || pts[pts.length - 1].distanceToSquared(p) > 1e-8) pts.push(p);
-  if (closed && pts.length > 2 && pts[0].distanceToSquared(pts[pts.length - 1]) < 1e-8) pts.pop();
-  const curve = new THREE.CatmullRomCurve3(pts, closed, 'centripetal');
-  const len = curve.getLength();
-  const seg = Math.max(16, Math.min(1200, Math.round(len / (quality === 'low' ? 0.04 : quality === 'mid' ? 0.022 : 0.015) / dense)));
-  const g = new THREE.TubeGeometry(curve, seg, radius, q.tube, closed);
-  const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * len, uv.getY(i) * radius * 6.28);
+  const n0 = src.length, segs = closed ? n0 : n0 - 1;
+  let carry = 0;
+  pts.push(src[0].clone());
+  for (let i = 0; i < segs; i++) {
+    const a = src[i], b = src[(i + 1) % n0], L = a.distanceTo(b);
+    let t = step - carry;
+    while (t < L) { pts.push(a.clone().lerp(b, t / L)); t += step; }
+    carry = L - (t - step);
+  }
+  if (closed && pts.length > 2 && pts[pts.length - 1].distanceTo(pts[0]) < step * 0.4) pts.pop();
+  if (!closed && pts[pts.length - 1].distanceToSquared(src[n0 - 1]) > 1e-8) pts.push(src[n0 - 1].clone());
+  const N = pts.length, R = q.tube;
+  const pos = new Float32Array(N * (R + 1) * 3), nrm = new Float32Array(N * (R + 1) * 3), uv = new Float32Array(N * (R + 1) * 2);
+  const T = new THREE.Vector3(), Nv = new THREE.Vector3(), B = new THREE.Vector3(), prevT = new THREE.Vector3();
+  const tan = (i) => {
+    const a = pts[closed ? (i - 1 + N) % N : Math.max(0, i - 1)], b = pts[closed ? (i + 1) % N : Math.min(N - 1, i + 1)];
+    return T.subVectors(b, a).normalize();
+  };
+  tan(0);
+  Nv.set(0, 1, 0); if (Math.abs(T.y) > 0.9) Nv.set(1, 0, 0);
+  Nv.sub(T.clone().multiplyScalar(Nv.dot(T))).normalize();
+  let s = 0;
+  for (let i = 0; i < N; i++) {
+    prevT.copy(T); tan(i);
+    /* параллельный перенос нормали */
+    Nv.sub(T.clone().multiplyScalar(Nv.dot(T))).normalize();
+    B.crossVectors(T, Nv);
+    if (i > 0) s += pts[i].distanceTo(pts[i - 1]);
+    for (let j = 0; j <= R; j++) {
+      const ang = (j / R) * Math.PI * 2, c = Math.cos(ang), sn = Math.sin(ang);
+      const nx = c * Nv.x + sn * B.x, ny = c * Nv.y + sn * B.y, nz = c * Nv.z + sn * B.z;
+      const k = (i * (R + 1) + j);
+      pos[k * 3] = pts[i].x + radius * nx; pos[k * 3 + 1] = pts[i].y + radius * ny; pos[k * 3 + 2] = pts[i].z + radius * nz;
+      nrm[k * 3] = nx; nrm[k * 3 + 1] = ny; nrm[k * 3 + 2] = nz;
+      uv[k * 2] = s; uv[k * 2 + 1] = (j / R) * radius * 6.283;
+    }
+  }
+  const idx = [];
+  const rows = closed ? N : N - 1;
+  for (let i = 0; i < rows; i++) {
+    const i2 = (i + 1) % N;
+    for (let j = 0; j < R; j++) {
+      const a = i * (R + 1) + j, b = i2 * (R + 1) + j, c = i2 * (R + 1) + j + 1, d = i * (R + 1) + j + 1;
+      idx.push(a, b, d, b, c, d);
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  g.setIndex(idx);
   return g;
 }
 
