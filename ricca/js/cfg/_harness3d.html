@@ -14,6 +14,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const q = new URLSearchParams(location.search);
 const stage = createStage(document.getElementById('v'), { quality: 'high', ao: q.get('ao') !== '0' });
 window.stage = stage;
+if (q.get('exp')) stage.renderer.toneMappingExposure = +q.get('exp');
+if (q.get('key')) stage.scene.traverse((o) => { if (o.isDirectionalLight) o.intensity = +q.get('key'); });
+if (q.get('env')) stage.scene.environmentIntensity = +q.get('env');
 let cur = null;
 window.show = async (c) => {
   if (cur) disposePiece(cur);

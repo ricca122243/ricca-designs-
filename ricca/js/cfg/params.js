@@ -143,6 +143,7 @@ export const PRESETS = {
   pouf: [{ label: 'Ø 45', params: { form: 'round', w: 0.45, d: 0.45 } }, { label: 'Ø 55', params: { form: 'round', w: 0.55, d: 0.55 } }, { label: 'Банкетка 140', params: { form: 'bench', w: 1.40, d: 0.45 } }],
 };
 
+const BSINK = 0.03; // подушки спинки утоплены в сиденье на 3 см
 const SOFA_FAMILY = new Set(['sofa', 'corner', 'ushape', 'modular']);
 const bool = (v) => v === true || v === 'true' || v === 1 || v === '1';
 
@@ -178,6 +179,7 @@ export function normalize(type, params = {}) {
     if (!params || !params.legs) p.legs = p.form === 'bench' ? 'wood' : 'hidden';
     if (!params || params.piping === undefined) p.piping = p.form === 'round';
     if (p.legs === 'hidden') p.legH = HIDDEN_LEG_H;
+    else if (!(p.legH >= 0.04)) p.legH = 0.12;
   }
   if (type === 'armchair' && p.legs === 'hidden') p.legH = HIDDEN_LEG_H;
   p.qty = Math.max(1, Math.round(+p.qty || 1));
@@ -261,11 +263,11 @@ function sofaRun(p, core, o) {
     if (p.backCushions === 'loose') {
       const fr = Math.min(0.10, backT * 0.45);
       out.push(box('back' + idp, 'back', 'fabric', xi0, xi1, yF, p.h - 0.08, 0, fr, { r: 0.03 }));
-      const tc = tiltedCushion(p.seatH, p.h, fr - 0.04, backT + 0.015, 0.12);
+      const tc = tiltedCushion(p.seatH - BSINK, p.h, fr - 0.04, backT + 0.015, 0.12);
       for (let i = 0; i < n; i++) {
         const a = xi0 + i * sw + 0.002, b = xi0 + (i + 1) * sw - 0.002;
-        out.push({ ...box(`backc${idp}-${i + 1}`, 'back', 'fabric', a, b, 0, tc.sy, 0, tc.t, { r: 0.045, crown: 0.02, cushion: true, piping: !!p.piping, seam: true }),
-          y: (p.seatH + p.h) / 2, z: (fr - 0.04 + backT + 0.015) / 2, tiltX: tc.a });
+        out.push({ ...box(`backc${idp}-${i + 1}`, 'back', 'fabric', a, b, 0, tc.sy, 0, tc.t, { r: 0.06, crown: 0.035, cushion: true, piping: !!p.piping, seam: true }),
+          y: (p.seatH - BSINK + p.h) / 2, z: (fr - 0.04 + backT + 0.015) / 2, tiltX: tc.a });
       }
     } else {
       out.push(box('back' + idp, 'back', 'fabric', xi0, xi1, yF, p.h, 0, backT, { r: 0.04, crown: 0.012, piping: !!p.piping }));
@@ -283,12 +285,12 @@ function cornerBlock(p, core, idp) {
     const fr = Math.min(0.10, backT * 0.45);
     out.push(box(`back-c${idp}`, 'back', 'fabric', 0, d, yF, p.h - 0.08, 0, fr, { r: 0.03 }));
     out.push(box(`back-c2${idp}`, 'back', 'fabric', 0, fr, yF, p.h - 0.08, fr, d, { r: 0.03 }));
-    const tc = tiltedCushion(p.seatH, p.h, fr - 0.04, backT + 0.015, 0.12);
+    const tc = tiltedCushion(p.seatH - BSINK, p.h, fr - 0.04, backT + 0.015, 0.12);
     const zc = (fr - 0.04 + backT + 0.015) / 2;
-    out.push({ ...box(`backc-c${idp}`, 'back', 'fabric', fr - 0.02, d - 0.002, 0, tc.sy, 0, tc.t, { r: 0.045, crown: 0.02, cushion: true, piping: !!p.piping, seam: true }), y: (p.seatH + p.h) / 2, z: zc, tiltX: tc.a });
+    out.push({ ...box(`backc-c${idp}`, 'back', 'fabric', fr - 0.02, d - 0.002, 0, tc.sy, 0, tc.t, { r: 0.06, crown: 0.035, cushion: true, piping: !!p.piping, seam: true }), y: (p.seatH - BSINK + p.h) / 2, z: zc, tiltX: tc.a });
     /* вторая подушка (по боковой спинке) — повернута на +90°: её «фронт» смотрит в +X */
-    const c2 = box(`backc-c2${idp}`, 'back', 'fabric', 0, d - backT - 0.004, 0, tc.sy, 0, tc.t, { r: 0.045, crown: 0.02, cushion: true, piping: !!p.piping, seam: true });
-    out.push({ ...c2, x: zc, y: (p.seatH + p.h) / 2, z: backT + (d - backT - 0.004) / 2 + 0.002, rotY: Math.PI / 2, tiltX: tc.a, sx: d - backT - 0.004 });
+    const c2 = box(`backc-c2${idp}`, 'back', 'fabric', 0, d - backT - 0.004, 0, tc.sy, 0, tc.t, { r: 0.06, crown: 0.035, cushion: true, piping: !!p.piping, seam: true });
+    out.push({ ...c2, x: zc, y: (p.seatH - BSINK + p.h) / 2, z: backT + (d - backT - 0.004) / 2 + 0.002, rotY: Math.PI / 2, tiltX: tc.a, sx: d - backT - 0.004 });
   } else {
     out.push(box(`back-c${idp}`, 'back', 'fabric', 0, d, yF, p.h, 0, backT, { r: 0.04, crown: 0.012 }));
     out.push(box(`back-c2${idp}`, 'back', 'fabric', 0, backT, yF, p.h, backT, d, { r: 0.04, crown: 0.012 }));
@@ -386,8 +388,8 @@ function partsCorner(p) {
     if (p.backCushions === 'loose') {
       const fr = Math.min(0.10, core.backT * 0.45);
       add(box('back-ch', 'back', 'fabric', ix0, ix1, core.yF, p.h - 0.08, 0, fr, { r: 0.03 }));
-      const tc = tiltedCushion(p.seatH, p.h, fr - 0.04, core.backT + 0.015, 0.12);
-      add({ ...box('backc-ch', 'back', 'fabric', ix0 + 0.002, ix1 - 0.002, 0, tc.sy, 0, tc.t, { r: 0.045, crown: 0.02, cushion: true, piping: !!p.piping, seam: true }), y: (p.seatH + p.h) / 2, z: (fr - 0.04 + core.backT + 0.015) / 2, tiltX: tc.a });
+      const tc = tiltedCushion(p.seatH - BSINK, p.h, fr - 0.04, core.backT + 0.015, 0.12);
+      add({ ...box('backc-ch', 'back', 'fabric', ix0 + 0.002, ix1 - 0.002, 0, tc.sy, 0, tc.t, { r: 0.06, crown: 0.035, cushion: true, piping: !!p.piping, seam: true }), y: (p.seatH - BSINK + p.h) / 2, z: (fr - 0.04 + core.backT + 0.015) / 2, tiltX: tc.a });
     } else add(box('back-ch', 'back', 'fabric', ix0, ix1, core.yF, p.h, 0, core.backT, { r: 0.04, crown: 0.012 }));
     footprints = [{ x0: mainX0, x1: mainX1, z0: 0, z1: d }, { x0: cx0, x1: cx1, z0: 0, z1: L }];
     legsFor(p, core.legH, footprints, add, { centre: 2.0 });
@@ -501,8 +503,8 @@ function partsModular(p) {
     if (p.backCushions === 'loose') {
       const fr = Math.min(0.10, backT * 0.45);
       add(box(`back-${i + 1}`, 'back', 'fabric', x0, x1, yF, p.h - 0.08, 0, fr, { r: 0.03 }));
-      const tc = tiltedCushion(p.seatH, p.h, fr - 0.04, backT + 0.015, 0.12);
-      add({ ...box(`backc-${i + 1}`, 'back', 'fabric', x0 + 0.002, x1 - 0.002, 0, tc.sy, 0, tc.t, { r: 0.05, crown: 0.022, cushion: true, piping: !!p.piping, seam: true }), y: (p.seatH + p.h) / 2, z: (fr - 0.04 + backT + 0.015) / 2, tiltX: tc.a });
+      const tc = tiltedCushion(p.seatH - BSINK, p.h, fr - 0.04, backT + 0.015, 0.12);
+      add({ ...box(`backc-${i + 1}`, 'back', 'fabric', x0 + 0.002, x1 - 0.002, 0, tc.sy, 0, tc.t, { r: 0.065, crown: 0.035, cushion: true, piping: !!p.piping, seam: true }), y: (p.seatH - BSINK + p.h) / 2, z: (fr - 0.04 + backT + 0.015) / 2, tiltX: tc.a });
     } else add(box(`back-${i + 1}`, 'back', 'fabric', x0, x1, yF, p.h, 0, backT, { r: 0.045, crown: 0.012 }));
     if (p.legs !== 'hidden' && p.legs !== 'plinth') legsFor(p, legH, [{ x0, x1, z0: 0, z1: depth }], (it) => add({ ...it, id: `leg-${i + 1}-${it.id.split('-')[1]}` }));
   }
@@ -595,7 +597,8 @@ function partsArmchair(p) {
     const t = Math.max(0.10, armW || 0.18);
     const B = d / 2 * 0.94, zc = B; // эллипс оболочки: задний край на z=0
     const open = Math.PI / 2;
-    add(cyl('frame', 'frame', 'fabric', W / 2, zc + 0.01, W - 0.04, 2 * B - 0.04, legH, yF + 0.01, { r: 0.02 }));
+    /* основание утоплено: спереди его не видно из-под подушки (−7 см от фронта) */
+    add(cyl('frame', 'frame', 'fabric', W / 2, (0.03 + d - 0.07) / 2, W - 2 * t + 0.06, d - 0.10, legH, yF + 0.01, { r: 0.02 }));
     add({ id: 'shell', role: 'shell', mat: 'fabric', shape: 'shell', x: W / 2, y: (legH + p.h) / 2, z: zc, sx: W, sy: p.h - legH, sz: 2 * B, t, open, topFront: p.armH, r: t / 2, rotY: 0, piping: !!p.piping });
     const sx = W - 2 * t + 0.03, seatZ0 = zc - (B - t) * 0.75;
     add(cyl('seat-1', 'seat', 'fabric', W / 2, (seatZ0 + d) / 2, sx, d - seatZ0, yF, p.seatH, { r: 0.04, crown: 0.012, cushion: true, piping: !!p.piping, seam: true, frontFlat: false }));

@@ -176,7 +176,9 @@ function swatchDetail(src) {
         const L = new Float32Array(N * N);
         for (let i = 0; i < N * N; i++) L[i] = 0.2126 * d[i * 4] + 0.7152 * d[i * 4 + 1] + 0.0722 * d[i * 4 + 2];
         /* размытие (box 2 прохода, радиус 10) → high-pass */
-        const blur = (src, r) => { const out = new Float32Array(N * N), tmp = new Float32Array(N * N); for (let y = 0; y < N; y++) { let s = 0; for (let x = -r; x <= r; x++) s += src[y * N + ((x + N) % N)]; for (let x = 0; x < N; x++) { tmp[y * N + x] = s / (2 * r + 1); s += src[y * N + ((x + r + 1) % N)] - src[y * N + ((x - r + N) % N)]; } } for (let x = 0; x < N; x++) { let s = 0; for (let y = -r; y <= r; y++) s += tmp[((y + N) % N) * N + x]; for (let y = 0; y < N; y++) { out[y * N + x] = s / (2 * r + 1); s += tmp[((y + r + 1) % N) * N + x] - tmp[((y - r + N) % N) * N + x]; } } return out; };
+        /* размытие с зеркальными краями (плитка повторяется зеркально — швов нет) */
+        const rf = (i) => (i < 0 ? -i - 1 : i >= N ? 2 * N - i - 1 : i);
+        const blur = (src, r) => { const tmp = new Float32Array(N * N), out = new Float32Array(N * N), k = 1 / (2 * r + 1); for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let j = -r; j <= r; j++) s += src[y * N + rf(x + j)]; tmp[y * N + x] = s * k; } for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let j = -r; j <= r; j++) s += tmp[rf(y + j) * N + x]; out[y * N + x] = s * k; } return out; };
         const B = blur(blur(L, 10), 10);
         let sd = 0; for (let i = 0; i < N * N; i++) { const h = L[i] - B[i]; sd += h * h; } sd = Math.sqrt(sd / (N * N)) || 1;
         const amp = 0.06, base = 1 - amp; // значения 0,88…1,0, среднее 0,94

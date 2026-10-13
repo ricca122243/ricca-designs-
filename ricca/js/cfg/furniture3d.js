@@ -64,7 +64,8 @@ function smoothNormalsByPosition(geo) {
   }
   const nrm = new Float32Array(n * 3);
   for (let i = 0; i < n; i++) {
-    const g = group[i] * 3; let x = acc[g], y = acc[g + 1], z = acc[g + 2]; const l = Math.hypot(x, y, z) || 1;
+    const g = group[i] * 3; let x = acc[g], y = acc[g + 1], z = acc[g + 2]; const l = Math.hypot(x, y, z);
+    if (l < 1e-12) { nrm[i * 3 + 1] = 1; continue; }
     nrm[i * 3] = x / l; nrm[i * 3 + 1] = y / l; nrm[i * 3 + 2] = z / l;
   }
   geo.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
@@ -86,9 +87,11 @@ function softBox(sx, sy, sz, o = {}) {
   const R = { x: [rx, rx], y: [rB, rT], z: [rz, rz] };
   const proj = makeProjector(Hx, Hy, Hz, R);
   const tuft = o.tufting;
-  const spTuft = tuft ? q.tuft : q.sp;
+  /* плотность стяжки: не мельче q.tuft и не больше ~30 тыс. вершин на две большие грани */
+  const tArea = tuft ? (o.tuftFace === 'y' ? sx * sz : sx * sy) : 0;
+  const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 6000 : o.quality === 'mid' ? 14000 : 30000))) : q.sp;
   const deformed = crown || bulge || tuft || o.sag || (o.taper && o.taper !== 1);
-  const sp = deformed ? q.sp : q.flat;
+  const sp = (deformed ? q.sp : q.flat) * (o.dense || 1);
   const tf = o.tuftFace || 'z';
   const X = axisSamples(Hx, rx, rx, tuft ? spTuft : sp, q.nq);
   const Y = axisSamples(Hy, rB, rT, tuft && tf === 'z' ? spTuft : sp, q.nq);
@@ -154,8 +157,8 @@ function makeDisplacer(s) {
   let tuftFn = null;
   if (tuft === 'channels') {
     const n = Math.max(5, Math.min(9, Math.round(sx / 0.24)));
-    const depth = 0.008;
-    tuftFn = (u, v) => { const f = Math.pow(Math.abs(Math.sin(Math.PI * n * (u * 0.5 + 0.5))), 0.35); return depth * (f - 1); };
+    const depth = 0.016;
+    tuftFn = (u, v) => { const f = Math.pow(Math.abs(Math.sin(Math.PI * n * (u * 0.5 + 0.5))), 0.3); return depth * (f - 1); };
   } else if (tuft === 'capitone') {
     const a = 0.14, b = 0.12, dD = 0.010, dP = 0.003;
     /* решётка ромбом: пуговицы в (s,t) целых с s+t чётным, где s = x/(a/2), t = y/b */
@@ -388,7 +391,7 @@ function legGeometry(it, quality) {
 }
 
 /* ---------- кант/шов: трубка по замкнутой линии ---------- */
-function tubeAlong(points, radius, quality, closed = true) {
+function tubeAlong(points, radius, quality, closed = true, dense = 1) {
   if (!points || points.length < 3) return null;
   const q = Q[quality] || Q.high;
   /* прореживание дубликатов */
@@ -397,7 +400,7 @@ function tubeAlong(points, radius, quality, closed = true) {
   if (closed && pts.length > 2 && pts[0].distanceToSquared(pts[pts.length - 1]) < 1e-8) pts.pop();
   const curve = new THREE.CatmullRomCurve3(pts, closed, 'centripetal');
   const len = curve.getLength();
-  const seg = Math.max(16, Math.min(1200, Math.round(len / (quality === 'low' ? 0.04 : quality === 'mid' ? 0.02 : 0.01))));
+  const seg = Math.max(16, Math.min(1200, Math.round(len / (quality === 'low' ? 0.04 : quality === 'mid' ? 0.022 : 0.015) / dense)));
   const g = new THREE.TubeGeometry(curve, seg, radius, q.tube, closed);
   const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * len, uv.getY(i) * radius * 6.28);
   return g;
@@ -412,7 +415,7 @@ function neutral(key) {
   return NEUTRAL[key];
 }
 
-function itemGeometry(it, quality, type) {
+function itemGeometry(it, quality, type, dense = 1) {
   const cushion = !!it.cushion;
   if (it.shape === 'shell') return shellGeometry(it, quality);
   if (it.role === 'leg' || (it.role === 'pedestal' && it.id.startsWith('pedestal'))) return legGeometry(it, quality);
@@ -425,7 +428,7 @@ function itemGeometry(it, quality, type) {
   }
   /* roundbox */
   const r = it.r ?? 0.02;
-  const o = { quality, rx: r, rz: r, rTop: r, rBottom: Math.min(r, 0.02) };
+  const o = { quality, rx: r, rz: r, rTop: r, rBottom: Math.min(r, 0.02), dense };
   if (it.role === 'arm') {
     if (it.armStyle === 'round') { o.rx = it.sx / 2; o.rTop = it.sx / 2; o.rz = 0.045; o.rBottom = 0.02; }
     else if (it.armStyle === 'wide') { o.rx = 0.035; o.rz = 0.035; o.rTop = 0.05; }
@@ -447,6 +450,32 @@ function itemGeometry(it, quality, type) {
   if (it.role === 'plinth') { o.rx = o.rz = 0.01; o.rTop = 0.004; o.rBottom = 0.004; }
   if (it.role === 'frame' || it.role === 'rail') { o.rTop = Math.min(it.r ?? 0.02, it.sy * 0.4); o.rBottom = 0.01; }
   return softBox(it.sx, it.sy, it.sz, o);
+}
+
+/* наклонная подушка: скругления и «купол» делают её наклонный габарит чуть меньше расчётного — подгоняем масштабом,
+   чтобы Box3 модели совпадал с dims() (до долей миллиметра) */
+function fitTilted(geo, it) {
+  const a = -(it.tiltX || 0), c = Math.cos(a), s = Math.sin(a);
+  const pos = geo.attributes.position;
+  const ext = () => { let y0 = Infinity, y1 = -Infinity, z0 = Infinity, z1 = -Infinity; for (let i = 0; i < pos.count; i++) { const y = pos.getY(i), z = pos.getZ(i); const yy = y * c - z * s, zz = y * s + z * c; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy; if (zz < z0) z0 = zz; if (zz > z1) z1 = zz; } return [y0, y1, z0, z1]; };
+  const sy = it.sy * c + it.sz * Math.abs(s), sz = it.sz * c + it.sy * Math.abs(s);
+  const M = new THREE.Matrix4();
+  for (let k = 0; k < 2; k++) {
+    const [y0, y1, z0, z1] = ext();
+    /* масштаб в повёрнутой системе ≈ в локальной (угол ≤ 0,15 рад) */
+    const S = new THREE.Matrix4().makeScale(1, sy / (y1 - y0), sz / (z1 - z0));
+    geo.applyMatrix4(S); M.premultiply(S);
+  }
+  const [y0, y1, z0, z1] = ext();
+  /* центр наклонного габарита → центр детали */
+  const dy = -(y0 + y1) / 2, dz = -(z0 + z1) / 2;
+  const T = new THREE.Matrix4().makeTranslation(0, dy * c + dz * s, -dy * s + dz * c);
+  geo.applyMatrix4(T); M.premultiply(T);
+  /* наклон «запекается» в геометрию: локальный габарит меша = точный (Box3.setFromObject без precise) */
+  const Rx = new THREE.Matrix4().makeRotationX(a);
+  geo.applyMatrix4(Rx); M.premultiply(Rx);
+  geo.userData.fitMatrix = M;
+  geo.computeBoundingBox(); geo.computeBoundingSphere();
 }
 
 const tmpM = new THREE.Matrix4();
@@ -472,12 +501,14 @@ export function build(type, params, materials = {}, opts = {}) {
     mesh.rotation.order = 'YXZ';
     mesh.rotation.y = it.rotY || 0;
     /* наклон назад: верх уходит в −Z (локально) */
-    mesh.rotation.x = -(it.tiltX || 0);
+    mesh.rotation.x = 0; // наклон уже в геометрии (fitTilted)
     meshes.push(mesh);
     return mesh;
   };
+  const dense = pr.items.length > 40 ? 2 : pr.items.length > 24 ? 1.6 : 1;
   for (const it of pr.items) {
-    const geo = itemGeometry(it, quality, type);
+    const geo = itemGeometry(it, quality, type, dense);
+    if (it.tiltX) fitTilted(geo, it);
     addMesh(geo, it.mat === 'legs' ? 'legs' : it.mat === 'top' ? 'top' : it.mat === 'mattress' ? 'mattress' : 'fabric', it);
     /* кант и швы */
     const pipeMat = it.mat === 'mattress' ? 'mattress' : 'fabric';
@@ -486,11 +517,13 @@ export function build(type, params, materials = {}, opts = {}) {
       const pr2 = it.piping ? 0.004 : 0.0016;
       const loops = it.role === 'headboard' ? [1] : [1, -1];
       for (const sgn of loops) {
-        const tg = tubeAlong(geo.userData.edgeLoop(axis, sgn), pr2, quality, true);
+        const tg = tubeAlong(geo.userData.edgeLoop(axis, sgn), pr2, quality, true, dense);
+        if (tg && geo.userData.fitMatrix) tg.applyMatrix4(geo.userData.fitMatrix);
         if (tg) addMesh(tg, it.piping ? pipeMat : 'seam', it, { detail: it.piping ? 'piping' : 'seam' });
       }
     } else if (geo.userData.edgeLoop && it.piping && quality === 'low') {
       const tg = tubeAlong(geo.userData.edgeLoop(it.role === 'back' && it.cushion ? 'z' : 'y', 1), 0.004, quality, true);
+      if (tg && geo.userData.fitMatrix) tg.applyMatrix4(geo.userData.fitMatrix);
       if (tg) addMesh(tg, pipeMat, it, { detail: 'piping' });
     }
     if (it.shape === 'shell' && it.piping && geo.userData.topLine) {
@@ -499,7 +532,7 @@ export function build(type, params, materials = {}, opts = {}) {
     }
     /* пуговицы стяжки */
     if (it.tufting === 'capitone' && geo.userData.buttons && geo.userData.buttons.length) {
-      const bg = new THREE.SphereGeometry(0.009, quality === 'low' ? 6 : 10, quality === 'low' ? 4 : 8);
+      const bg = new THREE.SphereGeometry(0.009, quality === 'low' ? 6 : 8, quality === 'low' ? 4 : 6);
       bg.scale(1, 1, 0.55);
       const list = [];
       for (const [bx, by] of geo.userData.buttons) {

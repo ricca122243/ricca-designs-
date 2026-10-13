@@ -3,7 +3,7 @@
    Параметры — в метрах (params.js), на экране — сантиметры. Цен нет: «Рассчитаем стоимость в WhatsApp». */
 
 /* 3D-движок. Строка 1 — заглушка для разработки (js/cfg/_stub3d.js); при сборке заменить её строкой ENGINE (без «//»). */
-import * as F from './furniture3d.js'; import * as M from './materials.js'; import { createStage } from './stage.js'; import { validate } from './_stub3d.js';
+import * as F from './_stub3d.js'; import * as M from './_stub3d.js'; import { createStage } from './_stub3d.js'; import { validate } from './_stub3d.js';
 // ENGINE: import * as F from './furniture3d.js'; import * as M from './materials.js'; import { createStage } from './stage.js'; import { validate } from './validate.js';
 
 import * as P from './params.js';

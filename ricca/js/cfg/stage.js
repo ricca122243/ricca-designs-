@@ -34,7 +34,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
-  renderer.toneMappingExposure = 1.0;
+  renderer.toneMappingExposure = 0.9; // подобрано по ΔE2000 образцов (§8.3): среднее 0,7
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.VSMShadowMap;
   renderer.shadowMap.autoUpdate = false;
@@ -47,12 +47,12 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   const pmrem = new THREE.PMREMGenerator(renderer);
   const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
   scene.environment = envRT.texture;
-  scene.environmentIntensity = 0.85;
+  scene.environmentIntensity = 0.55;
   pmrem.dispose();
 
   const hemi = new THREE.HemisphereLight(0xfffaf2, 0xe8e4dc, 0.25);
   scene.add(hemi);
-  const key = new THREE.DirectionalLight(0xffffff, 1.6);
+  const key = new THREE.DirectionalLight(0xffffff, 1.1);
   key.castShadow = true;
   key.shadow.mapSize.set(phone ? 1024 : 2048, phone ? 1024 : 2048);
   key.shadow.radius = 6; key.shadow.blurSamples = 16; key.shadow.bias = -0.0005; key.shadow.normalBias = 0.01;
@@ -135,7 +135,21 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   if (ro) ro.observe(container); else window.addEventListener('resize', resize);
 
   const radius = () => Math.max(0.3, size.length() / 2);
-  const framingDist = () => (radius() * 1.25) / Math.sin(THREE.MathUtils.degToRad(FOV / 2)) * Math.max(1, 1 / Math.max(0.6, persp.aspect) * 0.9);
+  /* расстояние, при котором габарит занимает fill кадра по ширине и высоте */
+  function fitDistance(dir, fov, aspect, fill = 0.74) {
+    const f = dir.clone().normalize();
+    const up = Math.abs(f.y) > 0.99 ? new THREE.Vector3(0, 0, -1) : new THREE.Vector3(0, 1, 0);
+    const r = new THREE.Vector3().crossVectors(up, f).normalize(), u = new THREE.Vector3().crossVectors(f, r);
+    const ty = Math.tan(THREE.MathUtils.degToRad(fov / 2)) * fill, tx = ty * aspect;
+    let dist = 0.5;
+    for (let i = 0; i < 8; i++) {
+      const c = new THREE.Vector3(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).sub(center);
+      const cz = c.dot(f);
+      dist = Math.max(dist, Math.abs(c.dot(r)) / tx + cz, Math.abs(c.dot(u)) / ty + cz);
+    }
+    return dist;
+  }
+  const framingDist = (dir) => fitDistance(dir || dir3q(), FOV, W / H);
   /* полувысота кадра для оси вида */
   function orthoHalf(v) {
     const ext = v === 'front' ? [size.x, size.y] : v === 'side' ? [size.z, size.y] : [size.x, size.z];
@@ -197,7 +211,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   function fitLight() {
     const r = Math.max(1, radius() * 1.4);
     /* ключевой свет: спереди-слева-сверху */
-    key.position.set(center.x - r * 1.1, r * 2.2, center.z + r * 1.6);
+    key.position.set(center.x - r * 0.7, r * 2.6, center.z + r * 1.3);
     key.target.position.copy(center);
     const cam = key.shadow.camera;
     cam.left = -r; cam.right = r; cam.top = r; cam.bottom = -r; cam.near = 0.1; cam.far = r * 6;
@@ -209,10 +223,11 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     if (view === '3d') {
       const dir = camera === persp ? persp.position.clone().sub(controls.target).normalize() : dir3q();
       if (!isFinite(dir.x) || dir.lengthSq() < 0.5) dir.copy(dir3q());
-      const to = { pos: center.clone().add(dir.multiplyScalar(framingDist())), target: center.clone(), fov: FOV };
+      const fd = framingDist(dir);
+      const to = { pos: center.clone().add(dir.multiplyScalar(fd)), target: center.clone(), fov: FOV };
       if (animate && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, to.pos, to.target, FOV, 500, null);
       else { persp.position.copy(to.pos); controls.target.copy(to.target); persp.fov = FOV; persp.updateProjectionMatrix(); controls.update(); }
-      controls.minDistance = framingDist() * 0.6; controls.maxDistance = framingDist() * 2.5;
+      controls.minDistance = fd * 0.6; controls.maxDistance = fd * 2.5;
     } else {
       const t = viewTarget(view);
       ortho.zoom = 1; fitOrtho();
@@ -247,7 +262,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     } else {
       enterPerspFromOrtho();
       controls.enableRotate = true; controls.enablePan = !phone;
-      const endDir = dir3q(), dist = framingDist();
+      const endDir = dir3q(), dist = framingDist(endDir);
       const startDir = persp.position.clone().sub(controls.target).normalize();
       const startHalf = Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)) * persp.position.distanceTo(controls.target);
       const endHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * dist;
@@ -347,8 +362,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     let cam;
     if (sv === '3q' || sv === '3d') {
       cam = new THREE.PerspectiveCamera(FOV, RW / RH, 0.05, 200);
-      const r = radius();
-      const dist = (r * 1.12) / Math.sin(THREE.MathUtils.degToRad(FOV / 2)) * Math.max(1, (1 / (RW / RH)) * 1.2);
+      const dist = fitDistance(dir3q(), FOV, RW / RH, 0.8);
       cam.position.copy(center).add(dir3q().multiplyScalar(dist)); cam.lookAt(center);
     } else if (sv === 'current') {
       cam = camera.clone(); if (cam.isPerspectiveCamera) { cam.aspect = RW / RH; } else { const h = (camera.top - camera.bottom) / 2 / camera.zoom; cam.left = -h * RW / RH; cam.right = h * RW / RH; cam.top = h; cam.bottom = -h; cam.zoom = 1; }
@@ -421,7 +435,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
 
 /* ---------- контактная тень: глубина снизу → размытие → плоскость на полу ---------- */
 function makeContactShadow(renderer) {
-  const RES = 512, HEIGHT = 0.35, DARK = 1.4, OPACITY = 0.55;
+  const RES = 512, HEIGHT = 0.3, DARK = 1.8, OPACITY = 0.6;
   const rt = new THREE.WebGLRenderTarget(RES, RES); rt.texture.generateMipmaps = false;
   const rtB = new THREE.WebGLRenderTarget(RES, RES); rtB.texture.generateMipmaps = false;
   const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ map: rt.texture, transparent: true, opacity: OPACITY, depthWrite: false, toneMapped: false }));
