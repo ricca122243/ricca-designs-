@@ -5,12 +5,15 @@
 import numpy as np, cv2, sys
 from PIL import Image
 from scipy import ndimage as ndi
+import json
 SRC, OUT = sys.argv[1], sys.argv[2]
+CFG = json.loads(sys.argv[3]) if len(sys.argv) > 3 else None
 im = np.array(Image.open(SRC).convert('RGBA')).astype(np.float32)
 rgb = im[..., :3]; A = im[..., 3]
 H, W = A.shape
 L = rgb @ np.array([.299, .587, .114], np.float32)
 DEF = [((722, 476), (132, 50), -9), ((902, 366), (64, 29), -6), ((1228, 395), (46, 19), -5), ((1484, 302), (62, 20), -5)]
+if CFG: DEF = [(tuple(c), tuple(a), g) for c, a, g in CFG['def']]
 def ell(c, ax, ang, grow=0):
     m = np.zeros((H, W), np.uint8)
     cv2.ellipse(m, c, (ax[0] + grow, ax[1] + grow), ang, 0, 360, 255, -1)
@@ -21,7 +24,7 @@ for d in DEF: hole |= ell(*d)
 gx = ndi.sobel(ndi.gaussian_filter(L, 1.2), 1); gy = ndi.sobel(ndi.gaussian_filter(L, 1.2), 0)
 w = (~ndi.binary_dilation(hole, iterations=6) & (A > 250)).astype(np.float32)
 def nconv(x, s): return ndi.gaussian_filter(x * w, s) / np.maximum(ndi.gaussian_filter(w, s), 1e-4)
-S = 22
+S = CFG.get('S', 22) if CFG else 22
 Jxx, Jyy, Jxy = nconv(gx * gx, S), nconv(gy * gy, S), nconv(gx * gy, S)
 th = 0.5 * np.arctan2(2 * Jxy, Jxx - Jyy) + np.pi / 2       # направление ВДОЛЬ полосок
 dxf, dyf = np.cos(th), np.sin(th)
