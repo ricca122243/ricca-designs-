@@ -48,9 +48,9 @@ fi
 # HTML берём без комментариев: в них лежат отключённые блоки (например, редакционный кадр, которого ещё нет)
 html_nocomments=$(sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$SRC/index.html")
 # js/catalog-data.js: модели фабрики сайт больше не показывает (отзыв клиента 13 октября) — их фото в архив не идут;
-# из этого файла берём ссылки только раздела RICCA_WORKS (подтверждённые фото работ, когда появятся)
+# из этого файла берём ссылки только списка RICCA_WORKS (подтверждённые фото работ; RICCA_WORKS_PENDING — нет)
 js_code() { for f in "$OUT"/js/*.js; do
-  if [ "$(basename "$f")" = catalog-data.js ]; then sed -n '/^window\.RICCA_WORKS/,$p' "$f"; else cat "$f"; fi
+  if [ "$(basename "$f")" = catalog-data.js ]; then awk '/^window\.RICCA_WORKS =/{on=1} on{print} on&&/\];/{exit}' "$f"; else cat "$f"; fi
 done; }
 refs=$( (printf '%s' "$html_nocomments"; cat "$OUT/css/"*.css; js_code) \
          | grep -ohE '(img|video|fonts)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css)' | sed 's#^\.\./##' | sort -u)
