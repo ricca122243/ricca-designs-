@@ -344,7 +344,7 @@ ul, ol { padding: 0; list-style: none; }
 .styles { display: grid; gap: 14px; width: 100%; padding-top: 18px; border-top: 1px solid var(--line); }
 .styles__list { display: flex; flex-wrap: wrap; gap: 4px 0; font: 300 20px/1.45 var(--serif); color: var(--ink); }
 .styles__list li { white-space: nowrap; }
-.styles__list li + li::before { content: "·"; padding: 0 .55em; color: var(--ink-2); }
+.styles__list li:not(:last-child)::after { content: "·"; padding: 0 .55em; color: var(--ink-2); }   /* точка — в конце строки, а не в начале переноса */
 .styles__more { font: 400 13px/1.6 var(--sans); color: var(--ink-2); }
 @media (max-width: 599px) { .styles__list { font-size: 19px; } }
 @media (max-width: 599px) { .any__line { font-size: 21px; } .any__btn { width: 100%; } }
@@ -418,7 +418,7 @@ ul, ol { padding: 0; list-style: none; }
 .biz__list { width: 100%; border-bottom: 1px solid rgba(255, 255, 255, .2); }
 .biz__list li { padding: 15px 0; border-top: 1px solid rgba(255, 255, 255, .2); font: 300 15px/1.5 var(--sans); letter-spacing: .02em; }
 /* Дизайнерам и архитекторам — второй ряд чёрной полосы под тонкой линией, та же сетка: строка слева, список и кнопка справа */
-.biz__pro { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 28px; align-items: start; margin-top: clamp(56px, 7vw, 104px); padding-top: clamp(40px, 4.5vw, 64px); border-top: 1px solid rgba(255, 255, 255, .2); }
+.biz__pro { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 28px; align-items: start; margin-top: clamp(40px, 5vw, 72px); padding-top: clamp(36px, 4vw, 56px); border-top: 1px solid rgba(255, 255, 255, .2); }
 .biz__pro-head { grid-column: 1 / span 7; max-width: 17em; font: 300 clamp(24px, 2.2vw, 32px)/1.25 var(--serif); color: var(--on-noir); text-wrap: pretty; }
 @media (max-width: 899px) { .biz__pro-head { grid-column: 1 / -1; } }
 .btn--noir { background: transparent; color: var(--on-noir); border-color: var(--on-noir); }
