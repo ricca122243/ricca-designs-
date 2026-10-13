@@ -11,11 +11,8 @@ import { WALLS, FLOORS, wallOf, floorOf, floorMaterial, suggestFabrics } from '.
 
 const LIM = { W: [2, 12], L: [2, 12], H: [2.4, 4] };
 const WALL_T = 0.10, SKIRT_H = 0.06, SKIRT_T = 0.012, EYE_H = 1.6;
-const QUICK = {
-  sofa: {}, armchair: {}, chair: {}, pouf: {},
-  table: { shape: 'rect', w: 1.8, d: 0.9 },
-  bed: { mw: 1.6, ml: 2.0 },
-};
+/* быстрые предметы — только мягкая мебель (столы и стулья ателье не делает) */
+const QUICK = { sofa: {}, armchair: {}, pouf: {}, bed: { mw: 1.6, ml: 2.0 } };
 const WALL_TYPES = new Set(['sofa', 'corner', 'ushape', 'modular', 'bed']);
 const DEG = Math.PI / 180;
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -38,13 +35,15 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   const nextId = () => `i${++seq}`;
   const dimsOf = (it) => { try { return engine.dims(it.type, it.params); } catch (e) { return { w: 1, d: 1, h: 1 }; } };
   const titleOf = (it) => share.titleOf(it.type, it.params || {});
-  const fabricFor = (type, f) => (type === 'table' ? null : f || fabrics.defaultFabric());
+  const fabricFor = (type, f) => f || fabrics.defaultFabric();
+  let lostFabrics = 0;
 
   function normItem(raw) {
     if (!raw || !engine.DEFAULTS[raw.type]) return null;
     let params; try { params = engine.normalize(raw.type, raw.params || {}); } catch (e) { return null; }
     const fabric = raw.fabric || (raw.fabricRef && fabrics.findFabric(raw.fabricRef, fabrics.library)) || null;
-    return { id: nextId(), type: raw.type, params, fabric: fabricFor(raw.type, fabric), x: +raw.x || 0, z: +raw.z || 0, rot: Math.round(+raw.rot || 0), mine: !!raw.mine };
+    if (!fabric && raw.fabricRef) lostFabrics++;          // ткани больше нет в библиотеке — покажем спокойную и скажем об этом
+    return { id: nextId(), type: raw.type, params, fabric: fabricFor(raw.type, fabric), x: +raw.x || 0, z: +raw.z || 0, rot: Math.round(+raw.rot || 0), mine: !!raw.mine, quick: !!raw.quick };
   }
   function loadState() {
     let src = null;
@@ -62,7 +61,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     saveT = setTimeout(() => {
       try {
         localStorage.setItem(storageKey, JSON.stringify({ v: 1, W: room.W, L: room.L, H: room.H, wall: room.wall, floor: room.floor,
-          items: room.items.map((it) => ({ type: it.type, params: it.params, fabricRef: fabrics.fabricRef(it.fabric), x: it.x, z: it.z, rot: it.rot, mine: it.mine || undefined })) }));
+          items: room.items.map((it) => ({ type: it.type, params: it.params, fabricRef: fabrics.fabricRef(it.fabric), x: it.x, z: it.z, rot: it.rot, mine: it.mine || undefined, quick: it.quick || undefined })) }));
       } catch (e) { /* без localStorage — живём без него */ }
       if (active) { try { history.replaceState(null, '', '#room=' + encodeRoom()); } catch (e) { /* file:// */ } }
     }, 250);
@@ -78,23 +77,24 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     const lines = [`Здравствуйте! План комнаты из конструктора RICCA: ${fm(room.W)} × ${fm(room.L)} м, потолок ${fm(room.H)} м`,
       `Стены — ${wallOf(room.wall).title.toLowerCase()}, пол — ${floorOf(room.floor).title.toLowerCase()}`];
     if (!room.items.length) lines.push('Мебель пока не расставлена.');
+    /* по каждому предмету — те же строки, что в «Итоге» конструктора, и свой номер; типовой (не менялся) — «уточним» */
     room.items.forEach((it, i) => {
       const d = dimsOf(it);
       const st = { type: it.type, params: it.params, fabric: it.fabric, qty: 1, note: '' };
-      let head = `${i + 1}. ${titleOf(it)} ${share.fmtCm(d.w)} × ${share.fmtCm(d.d)} см`;
-      if (it.mine) {
-        head += ` · № ${cfgId({ type: it.type, params: it.params, fabric: it.fabric })}`;
-        lines.push(head);
-        try {
-          summaryLines(st, { dims: d }).filter((r) => !['Количество', 'Пожелание'].includes(r.label)).forEach((r) => lines.push(`   ${r.label}: ${r.value}`));
-        } catch (e) { /* */ }
-      } else { lines.push(head); if (it.fabric && it.type !== 'table') lines.push(`   Ткань: ${fabricLine(it.fabric)}`); }
+      const typical = !it.mine && isDefault(it);
+      lines.push(`${i + 1}. ${titleOf(it)} · № ${cfgId({ type: it.type, params: it.params, fabric: it.fabric })}${typical ? ' (типовой вариант — уточним)' : ''}`);
+      try {
+        summaryLines(st, { dims: d }).filter((r) => !['Количество', 'Пожелание'].includes(r.label)).forEach((r) => lines.push(`   ${r.label}: ${r.value}`));
+      } catch (e) { lines.push(`   Размер: ${share.fmtCm(d.w)} × ${share.fmtCm(d.d)} см`); if (it.fabric) lines.push(`   Ткань: ${fabricLine(it.fabric)}`); }
     });
     const link = planLink(); if (link) lines.push(`План: ${link}`);
     lines.push('Рассчитайте, пожалуйста, стоимость.');
     return lines.join('\n');
   }
   const waHref = () => share.waUrl(waText());
+  function isDefault(it) {
+    try { const a = engine.normalize(it.type, { ...(QUICK[it.type] || {}) }), b = it.params || {}; return Object.keys(a).every((k) => typeof a[k] === 'number' ? Math.abs(a[k] - (b[k] ?? a[k])) < 1e-6 : String(a[k]) === String(b[k] ?? a[k])); } catch (e) { return false; }
+  }
 
   /* ═════════ 3D ═════════ */
   const has3D = !!(stage && stage.scene);
@@ -232,7 +232,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     const ul = $('[data-room-items]'); if (!ul) return;
     ul.innerHTML = room.items.map((it) => {
       const d = dimsOf(it);
-      const f = it.type === 'table' ? null : it.fabric;
+      const f = it.fabric;
       const fab = f ? `<span class="rp__fab"><span class="rp__fab-c" style="background-color:${esc(f.hex)};background-image:url('${esc(f.src240 || f.src450 || '')}')" aria-hidden="true"></span>${esc(f.collectionTitle)} · ${esc(f.colour)}</span>` : '';
       return `<li><button type="button" data-room-item="${it.id}" aria-pressed="${selected === it.id}"><span><span>${esc(titleOf(it))}${it.mine ? ' <i class="rp__mine-tag">мой вариант</i>' : ''}</span>${fab}</span><span class="rp__sz">${share.fmtCm(d.w)} × ${share.fmtCm(d.d)} см</span></button></li>`;
     }).join('');
@@ -253,9 +253,9 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     floorMat = floorMaterial(THREE, stage.renderer, room.floor);
     if (floorMesh) floorMesh.material = floorMat;
   }
-  const UPH = (it) => it && it.type !== 'table';
-  /* куда ляжет ткань из подсказки: выбранный предмет; ничего не выбрано — первый мягкий предмет */
-  const suggTarget = () => { const s = room.items.find((x) => x.id === selected); return UPH(s) ? s : (selected ? null : room.items.find(UPH) || null); };
+  const UPH = (it) => !!it;                                           // вся мебель — мягкая
+  /* куда ляжет ткань из подсказки: выбранный предмет, иначе первый мягкий */
+  const suggTarget = () => { const s = room.items.find((x) => x.id === selected); return UPH(s) ? s : room.items.find(UPH) || null; };
   let sugg = { picks: [], rule: '' };
   function renderStyle() {
     const wb = $('[data-room-walls]'), fb = $('[data-room-floors]');
@@ -274,7 +274,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     const t = suggTarget();
     const on = t ? t.fabric : null;
     $$('[data-room-sugg-i]').forEach((b) => { const f = sugg.picks[+b.dataset.roomSuggI]; b.setAttribute('aria-pressed', String(!!(on && f && on.collectionId === f.fabric.collectionId && on.slug === f.fabric.slug))); b.disabled = !t; });
-    el.textContent = t ? `Коснитесь ткани — она ляжет на: ${titleOf(t).toLowerCase()}` : (room.items.some(UPH) ? 'Выберите в комнате диван, кресло или другой мягкий предмет' : 'Добавьте мебель — и примерьте на ней ткань');
+    el.textContent = t ? `Коснитесь ткани — ляжет на: ${titleOf(t).toLowerCase()}` : 'Добавьте мебель — и примерьте на ней ткань';
   }
   function setWall(id) {
     if (!WALLS.some((w) => w.id === id) || id === room.wall) return;
@@ -352,7 +352,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
         return ex;
       }
     }
-    const it = normItem({ type: spec.type, params: spec.params, fabric: spec.fabric, rot: spec.rot || 0, mine: spec.mine ?? spec.from === 'model' });
+    const it = normItem({ type: spec.type, params: spec.params, fabric: spec.fabric, rot: spec.rot || 0, mine: spec.mine ?? spec.from === 'model', quick: spec.quick });
     if (!it) return null;
     if (spec.x !== undefined && spec.z !== undefined) { it.x = spec.x; it.z = spec.z; clampItem(it); }
     else Object.assign(it, findSpot(it));
@@ -376,13 +376,28 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     addItem({ type: it.type, params: { ...it.params }, fabric: it.fabric, rot: it.rot, mine: it.mine }, { quiet: true });
     status('Копия добавлена');
   }
+  let undo = null;
   function remove(id) {
     const i = room.items.findIndex((x) => x.id === id); if (i < 0) return;
     const [it] = room.items.splice(i, 1);
     dropNode(id); if (editingId === id) editingId = null;
     if (selected === id) selected = null;
     updateTints(); renderItems(); select(null); persist(); redraw();
-    status(`Удалено: ${titleOf(it)}`);
+    /* «Удалено · Вернуть» — 5 с */
+    undo = { it, i };
+    const el = $('[data-room-status]');
+    if (el) {
+      el.innerHTML = `Удалено: ${esc(titleOf(it))} · <button type="button" class="rp__undo" data-room-undo>Вернуть</button>`;
+      clearTimeout(statusT); statusT = setTimeout(() => { el.textContent = ''; undo = null; }, 5000);
+    }
+  }
+  function restore() {
+    if (!undo) return;
+    const { it, i } = undo; undo = null;
+    room.items.splice(Math.min(i, room.items.length), 0, it);
+    if (has3D) buildNode(it);
+    updateTints(); renderItems(); select(it.id); persist(); redraw();
+    status(`Вернули: ${titleOf(it)}`);
   }
   function edit(id) {
     const it = room.items.find((x) => x.id === id); if (!it) return;
@@ -678,9 +693,11 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     if (mode === 'tour') { stopTour(true); return; }
     if (mode === 'eye' && eye) { e.preventDefault(); eye.fov = clamp(eye.fov + Math.sign(e.deltaY) * 3, 40, 75); applyEye(); }
   }
+  /* клавиши — только когда фокус в окне 3D или на панели предмета (не на всей странице: стрелки листают, Backspace не удаляет) */
   function onKey(e) {
     if (!active) return;
-    const t = e.target; if (t && (t.closest && t.closest('input, textarea, select, [contenteditable="true"], dialog[open]'))) return;
+    const t = e.target; if (!t || !t.closest || !t.closest('#vp, .rt')) return;
+    if (t.closest('input, textarea, select, [contenteditable="true"], dialog[open]')) return;
     if (mode === 'tour') { stopTour(true); }
     if (!selected) return;
     const k = e.key;
@@ -690,7 +707,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     else if (k === 'ArrowUp') { e.preventDefault(); moveBy(selected, 0, -step); }
     else if (k === 'ArrowDown') { e.preventDefault(); moveBy(selected, 0, step); }
     else if (k === 'r' || k === 'R' || k === 'к' || k === 'К') { e.preventDefault(); rotate(selected, e.shiftKey ? -15 : 15); }
-    else if (k === 'Delete' || k === 'Backspace') { e.preventDefault(); remove(selected); }
+    else if (k === 'Delete') { e.preventDefault(); remove(selected); }
     else if (k === 'Escape') select(null);
   }
   const host = has3D ? stage.canvas.parentElement : null;
@@ -705,10 +722,11 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
       if (add) {
         const k = add.dataset.roomAdd;
         if (k === 'current') { const cur = getCurrent(); addItem({ ...cur, mine: true }); }
-        else addItem({ type: k, params: { ...(QUICK[k] || {}) }, fabric: null, mine: false });
+        else addItem({ type: k, params: { ...(QUICK[k] || {}) }, fabric: null, mine: false, quick: true });
         return;
       }
       const li = e.target.closest('[data-room-item]'); if (li) { select(li.dataset.roomItem === selected ? null : li.dataset.roomItem); return; }
+      if (e.target.closest('[data-room-undo]')) { restore(); return; }
       const camB = e.target.closest('[data-room-cam]');
       if (camB) {
         const k = camB.dataset.roomCam;

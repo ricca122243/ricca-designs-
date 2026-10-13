@@ -514,10 +514,23 @@
     const fcLive = document.createElement('p');   // для чтения с экрана: какой цвет показан после стрелок / свайпа
     fcLive.className = 'sr-only'; fcLive.setAttribute('aria-live', 'polite');
     const isHex = (h) => /^#[0-9a-f]{3,8}$/i.test(h || '');
-    const fcSrc = (k) => k.src900 || k.src450;
-    // телефон берёт 700 px (src450), компьютер — 1400 px (src900): размеры рамки — как в css/site.css (.fc)
+    // телефон — всегда 700 px (src450, ~150 КБ): на экране с плотностью 3x браузер иначе брал бы 1400 px (~1 МБ) — фото грузилось
+    // секундами (заказчик: «фотографии долго загружаются»). Компьютер — 1400 px (src900), максимум качества
+    const FC_PHONE = window.matchMedia('(max-width: 767px)');
+    const fcSrc = (k) => (FC_PHONE.matches ? k.src450 || k.src900 : k.src900 || k.src450);
     const FC_SIZES = '(min-width: 1100px) 580px, (min-width: 768px) 46vw, calc(100vw - 40px)';
-    const fcSet = (k) => (k.src450 && k.src900 ? `${k.src450} 700w, ${k.src900} 1400w` : '');
+    const fcSet = (k) => (!FC_PHONE.matches && k.src450 && k.src900 ? `${k.src450} 700w, ${k.src900} 1400w` : '');
+    // мгновенное превью: миниатюра 160 px (~7 КБ) размыто под фото, пока грузится крупное — без пустой заливки
+    // адрес — полный: url() из переменной в css/site.css иначе считался бы от папки css/
+    const fcThumb = (k) => (k.src240 ? `url("${new URL(k.src240, document.baseURI).href.replace(/["\\()]/g, '')}")` : 'none');
+    const fcThumbs = new Set();
+    const fcWarm = (c, n) => {   // соседние цвета и все миниатюры коллекции — заранее, когда браузер свободен
+      const go = () => {
+        c.colours.forEach((k) => { if (k.src240 && !fcThumbs.has(k.src240)) { fcThumbs.add(k.src240); new Image().src = k.src240; } });
+        [n + 1, n - 1].forEach((j) => { const k = c.colours[(j + c.colours.length) % c.colours.length]; if (k && !k._warm) { k._warm = 1; fcPre(k, fcSrc(k)); } });
+      };
+      if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 1200 }); else setTimeout(go, 300);
+    };
     // предзагрузка того же файла, что выберет браузер для рамки (тот же srcset и sizes)
     const fcPre = (k, src) => { const im = new Image(); const set = src === fcSrc(k) ? fcSet(k) : ''; if (set) { im.sizes = FC_SIZES; im.srcset = set; } im.src = src; return im; };
     // по умолчанию — первый цвет с фото 900 px (у PIQUE первые цвета есть только в 450), иначе первый
@@ -551,7 +564,7 @@
           fsel.set(c.id, n);
           const k = c.colours[n], many = c.colours.length > 1, eager = order++ < 2;
           return `<article class="fc" id="fab-${esc(c.id)}" data-fc="${esc(c.id)}" aria-labelledby="fc-n-${esc(c.id)}">`
-            + `<div class="fc__fig"><div class="fc__frame" data-fc-frame${isHex(k.hex) ? ` style="--c:${k.hex}"` : ''}>`
+            + `<div class="fc__fig"><div class="fc__frame" data-fc-frame style="${isHex(k.hex) ? `--c:${k.hex};` : ''}--t:${esc(fcThumb(k))}">`
             + `<img data-fc-img src="${esc(fcSrc(k))}"${fcSet(k) ? ` srcset="${esc(fcSet(k))}" sizes="${FC_SIZES}"` : ''} width="900" height="900" alt="${esc(fcAlt(c, k))}" loading="${eager ? 'eager' : 'lazy'}" decoding="async">`
             + (many ? '<span class="fc__steps">'
               + '<button class="fc__step" type="button" data-fc-step="-1" aria-label="Предыдущий цвет"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg></button>'
@@ -577,6 +590,9 @@
       if (foot) foot.hidden = true;
       spyHold = 0;
       $$('.fc', content).forEach(fcSyncCart);
+      // коллекция показалась на экране — заранее грузим её миниатюры и соседние цвета (смена цвета — без ожидания)
+      const warm = (art) => { const x = FCOL.get(art.dataset.fc); if (x) fcWarm(x.c, fsel.get(x.c.id) || 0); };
+      if (hasIO) { const wio = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { wio.unobserve(e.target); warm(e.target); } }), { rootMargin: '30% 0px' }); $$('.fc', content).forEach((a) => wio.observe(a)); }
     }
     // корзина: эта ткань этого цвета уже в корзине — кнопка «Образец в корзине» открывает корзину
     function fcSyncCart(art) {
@@ -592,6 +608,8 @@
     function fcPhoto(art, c, k) {
       const frame = $('[data-fc-frame]', art), img = $('[data-fc-img]', art);
       if (isHex(k.hex)) frame.style.setProperty('--c', k.hex); else frame.style.removeProperty('--c');
+      frame.style.setProperty('--t', fcThumb(k));
+      fcWarm(c, c.colours.indexOf(k));
       const tok = (art._tok || 0) + 1;
       art._tok = tok;
       const put = (src) => {

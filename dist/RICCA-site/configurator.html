@@ -16,7 +16,12 @@
 <link rel="stylesheet" href="css/configurator.css">
 <script>document.documentElement.classList.replace('no-js', 'js');</script>
 <script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
-<script src="js/fabrics-data.js"></script>
+<link rel="modulepreload" href="js/cfg/app.js">
+<link rel="modulepreload" href="vendor/three/build/three.core.js">
+<link rel="modulepreload" href="vendor/three/build/three.module.js">
+<link rel="modulepreload" href="js/cfg/stage.js">
+<link rel="modulepreload" href="js/cfg/furniture3d.js">
+<script defer src="js/fabrics-data.js"></script>
 <script type="module" src="js/cfg/app.js"></script>
 </head>
 <body>
@@ -84,7 +89,9 @@
 <button class="vp__tool" type="button" id="t-frame" title="Сбросить вид"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-frame"/></svg><span class="sr-only">Сбросить вид</span></button>
 </div>
 
-<p class="vp__size" id="vp-size" aria-live="polite"></p>
+<p class="vp__size" id="vp-size"></p>
+<p class="sr-only" id="sr-status" role="status" aria-live="polite"></p>
+<button class="vp__fab" type="button" id="vp-fab" hidden><span class="vp__fab-c" id="vp-fab-c" aria-hidden="true"></span><span class="vp__fab-t" id="vp-fab-t"></span><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></button>
 <p class="vp__toast" id="vp-toast" role="status" aria-live="polite" hidden></p>
 
 <!-- фотореалистичный кадр: тонкая линия прогресса + «Отменить» / «Сохранить» -->
@@ -143,7 +150,6 @@
 <p class="fab__note">Цвет на&nbsp;экране может немного отличаться&nbsp;— образцы покажем в&nbsp;шоуруме.</p>
 <p class="fab__note">Больше 50&nbsp;коллекций и&nbsp;1000+ цветов&nbsp;— в&nbsp;шоуруме.</p>
 </div>
-<p class="fab__none" id="fab-none" hidden>Для стола ткань не&nbsp;нужна&nbsp;— столешницу и&nbsp;опору выберите в&nbsp;шаге «Форма».</p>
 <button class="step__next" type="button" data-next="5">Далее: итог<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button>
 </div>
 </li>
@@ -216,8 +222,6 @@
 <div class="rp__quick" role="group" aria-label="Быстро добавить">
 <button type="button" data-room-add="sofa"><svg aria-hidden="true"><use href="img/cfg/icons.svg#t-sofa"/></svg>Диван</button>
 <button type="button" data-room-add="armchair"><svg aria-hidden="true"><use href="img/cfg/icons.svg#t-armchair"/></svg>Кресло</button>
-<button type="button" data-room-add="chair"><svg aria-hidden="true"><use href="img/cfg/icons.svg#t-chair"/></svg>Стул</button>
-<button type="button" data-room-add="table"><svg aria-hidden="true"><use href="img/cfg/icons.svg#t-table"/></svg>Стол</button>
 <button type="button" data-room-add="bed"><svg aria-hidden="true"><use href="img/cfg/icons.svg#t-bed"/></svg>Кровать</button>
 <button type="button" data-room-add="pouf"><svg aria-hidden="true"><use href="img/cfg/icons.svg#t-pouf"/></svg>Пуф</button>
 </div>
@@ -260,6 +264,7 @@
 <div class="bar" id="bar">
 <button class="btn btn--line" type="button" id="bar-ar"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-ar"/></svg>У&nbsp;себя дома</button>
 <a class="btn btn--fill" id="bar-wa" href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>В&nbsp;WhatsApp</a>
+<button class="btn btn--fill bar__next" type="button" id="bar-next" hidden><span id="bar-next-t">Далее: форма</span><span class="bar__n" id="bar-next-n" aria-hidden="true">1/5</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button>
 </div>
 
 <dialog class="dlg dlg--drawing" id="dlg-drawing" aria-labelledby="dd-title">
@@ -268,11 +273,12 @@
 <h2 class="caps" id="dd-title">Чертёж <span class="dlg__id" id="dd-id"></span></h2>
 <button class="icon-btn" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
 </header>
-<div class="dlg__sheet" id="dd-sheet"><p class="dlg__wait" id="dd-wait">Готовим чертёж…</p><img id="dd-img" alt="Чертёж варианта: виды спереди, сбоку и сверху с размерами в сантиметрах" hidden></div>
+<div class="dlg__sheet" id="dd-sheet"><p class="dlg__wait" id="dd-wait">Готовим чертёж…</p><img id="dd-img" alt="Чертёж варианта: виды спереди, сбоку и сверху с размерами в сантиметрах" hidden>
+<button class="dlg__zoom" type="button" id="dd-open" hidden aria-label="Открыть чертёж во весь экран"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg><span>Крупно</span></button></div>
 <div class="dlg__acts">
 <button class="btn btn--fill" type="button" id="dd-png" disabled><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-download"/></svg>Скачать чертёж</button>
 <button class="btn btn--line" type="button" id="dd-send" disabled><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-share"/></svg>Отправить чертёж</button>
-<button class="caps-link" type="button" id="dd-svg" disabled>SVG</button>
+<button class="caps-link dlg__svg" type="button" id="dd-svg" disabled>Файл для дизайнера (SVG)</button>
 </div>
 <p class="dlg__fine">Схема для&nbsp;согласования. Размеры в&nbsp;см. Детали согласуем с&nbsp;мастером.</p>
 </div>
@@ -286,14 +292,14 @@
 </header>
 <div class="ar__phone" id="ar-phone">
 <ol class="ar__steps" role="list">
-<li><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-camera"/></svg><span>Нажмите «Открыть камеру»</span></li>
+<li><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-camera"/></svg><span>Освободите участок пола, нужен свет</span></li>
 <li><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-phone"/></svg><span>Наведите телефон на&nbsp;пол и&nbsp;медленно поведите им</span></li>
-<li><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-tap"/></svg><span>Коснитесь пола&nbsp;— мебель встанет в&nbsp;реальном размере</span></li>
+<li><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-tap"/></svg><span>Мебель встанет в&nbsp;реальном размере (на&nbsp;Android&nbsp;— коснитесь пола)</span></li>
 <li><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-hand"/></svg><span>Двигайте пальцем, поворачивайте двумя пальцами</span></li>
 </ol>
-<p class="ar__note">Нужен свет и&nbsp;свободный участок пола.</p>
 <button class="btn btn--fill btn--wide" type="button" id="ar-go" disabled>Готовим модель…</button>
 <p class="ar__msg" id="ar-msg" role="status" hidden></p>
+<button class="btn btn--line btn--wide ar__copy" type="button" id="ar-copy" hidden>Скопировать ссылку</button>
 </div>
 <div class="ar__desk" id="ar-desk" hidden>
 <div class="ar__qr" id="ar-qr" aria-hidden="true"></div>

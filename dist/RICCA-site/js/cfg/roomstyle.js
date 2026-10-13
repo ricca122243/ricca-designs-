@@ -2,7 +2,9 @@
    WALLS / FLOORS — готовые варианты (живое применение в room.js). floorMaterial() — процедурные бесшовные полы на canvas.
    suggestFabrics() — чистая функция (работает в node): 6 цветов библиотеки по двум простым правилам —
    1) тон: ткань заметно светлее или темнее стены (|ΔL*| ≥ 18), чтобы силуэт мебели читался;
-   2) тепло: к тёплому полу (дерево, ковёр) — тёплые и нейтральные оттенки, к холодному (бетон, мрамор) — холодные и нейтральные.
+   2) тепло: к тёплому полу (дерево, ковёр) — тёплые и нейтральные оттенки, к холодному (бетон, мрамор) — холодные и нейтральные;
+   3) одно место — «тон в тон · фактура»: букле или шенилл почти в цвет стены (ΔL* 5–17), контраст даёт фактура;
+   у цветной стены — без оттенков той же семьи (±45° тона) и с меньшим весом ярких тканей.
    Это подсказка, а не правило: решает клиент, образцы — в шоуруме. */
 
 export const WALLS = [
@@ -37,12 +39,13 @@ const dE = (p, q) => Math.hypot(p.L - q.L, p.a - q.a, p.b - q.b);
 /* температура ткани: +1 тёплая (жёлто-красная), −1 холодная (сине-зелёная, серо-голубая), 0 нейтральная (малая насыщенность) */
 export function warmthOf(lab) {
   const C = Math.hypot(lab.a, lab.b);
-  if (C < 6) return lab.b > 2.5 ? 0.3 : lab.b < -1.5 ? -0.3 : 0;
+  if (C < 6) return lab.b > 2.5 ? 0.3 : lab.b < -1.5 ? -0.3 : 0;   // нейтральный — только малонасыщенный (C* < 6)
   const h = (Math.atan2(lab.b, lab.a) * 180) / Math.PI;            // −180…180
   if (h > -10 && h < 105) return 1;                               // красный → жёлтый
-  if (h >= 105 && h < 150) return 0.2;                            // оливковый
+  if (h >= 105 && h < 130) return 0.6;                            // оливковый, хаки — тёплые
   return -1;                                                      // зелёный → синий → фиолетовый
 }
+const hueGap = (p, q) => Math.abs(((Math.atan2(p.b, p.a) - Math.atan2(q.b, q.a)) * 180 / Math.PI + 540) % 360 - 180);
 
 /* 6 цветов к стене и полу. all — плоский список тканей (fabrics.js → allFabrics), у каждой hex.
    → { picks: [{ fabric, why }], rule: 'одна строка, почему так' } */
@@ -59,9 +62,9 @@ export function suggestFabrics(all, wallId, floorId, { count = 6 } = {}) {
     if (Math.abs(dL) < 18) continue;                               // правило 1: тон
     if (dark && dL < 0) continue;                                  // к тёмной стене — только светлее (тёмное сольётся)
     if (dE(lab, wl) < 22) continue;                                // и не «тот же цвет, что стена»
-    /* у цветной стены (олива, терракота) — не тот же оттенок: тёмная терракота на терракоте сливается */
+    /* у цветной стены (олива, терракота) — не та же семья оттенков (±45°) при любой светлоте: тёмная олива у оливковой стены сливается */
     const wC = Math.hypot(wl.a, wl.b), fC = Math.hypot(lab.a, lab.b);
-    if (wC > 15 && fC > 12) { const dh = Math.abs(((Math.atan2(lab.b, lab.a) - Math.atan2(wl.b, wl.a)) * 180 / Math.PI + 540) % 360 - 180); if (dh < 22) continue; }
+    if (wC > 12 && fC >= 6 && hueGap(lab, wl) < 45) continue;
     const w = warmthOf(lab);
     if (floor.warm > 0 && w < -0.5) continue;                      // правило 2: к тёплому полу — без холодных
     if (floor.warm < 0 && w > 0.5 && Math.hypot(lab.a, lab.b) > 14) continue;   // к холодному — без ярко-тёплых
@@ -72,6 +75,7 @@ export function suggestFabrics(all, wallId, floorId, { count = 6 } = {}) {
     s += C < 22 ? 0.35 : C < 35 ? 0.15 : -0.25;
     if (Math.abs(lab.L - fl.L) < 10) s -= 0.3;
     if (lab.L < 22) s -= 0.3;                                       // почти чёрные — реже
+    if (wC > 12 && C > 30) s -= 0.4;                                // у цветной стены яркая ткань спорит со стеной
     scored.push({ f, lab, dL, w, C, s });
   }
   scored.sort((a, b) => b.s - a.s || a.f.hex.localeCompare(b.f.hex));
@@ -86,15 +90,26 @@ export function suggestFabrics(all, wallId, floorId, { count = 6 } = {}) {
   const tones = light || dark ? ['mid', 'mid', 'deep', 'mid', 'deep', 'any'] : ['up', 'down', 'up', 'down', 'any', 'any'];
   const temps = floor.warm > 0 ? ['warm', 'neutral', 'warm', 'neutral', 'warm', 'any'] : ['cool', 'neutral', 'cool', 'neutral', 'neutral', 'any'];
   const picks = [];
+  /* «тон в тон · фактура»: букле/шенилл на 5–17 единиц светлоты от стены (к тёмной — светлее), спокойный цвет */
+  const tt = [];
+  for (const f of all || []) {
+    if (!f || !/^#[0-9a-f]{6}$/i.test(f.hex || '') || !(f.kind === 'boucle' || f.kind === 'chenille')) continue;
+    const lab = hexToLab(f.hex), dL = lab.L - wl.L, C = Math.hypot(lab.a, lab.b);
+    if (Math.abs(dL) < 5 || Math.abs(dL) > 17 || dE(lab, wl) < 6 || (dark && dL < 0)) continue;
+    if (Math.hypot(wl.a, wl.b) > 12 ? hueGap(lab, wl) > 40 && C >= 6 : C > 16) continue;     // тон в тон — та же семья или нейтральный
+    tt.push({ f, lab, dL, w: warmthOf(lab), C, s: -Math.abs(Math.abs(dL) - 10) / 10 - C / 40, tone: true });
+  }
+  tt.sort((a, b) => b.s - a.s || a.f.hex.localeCompare(b.f.hex));
   /* разные коллекции, заметно разные цвета и не больше одного почти чёрного */
   const free = (c, gap) => !picks.includes(c) && !picks.some((p) => p.f.collectionId === c.f.collectionId) && !picks.some((p) => dE(p.lab, c.lab) < gap)
     && !(c.lab.L < 30 && picks.some((p) => p.lab.L < 30));
-  for (let i = 0; i < count; i++) {
+  if (tt.length) picks.push(tt[0]);
+  for (let i = 0; picks.length < count && i < count + 2; i++) {
     const t = T[tones[i] || 'any'], w = W[temps[i] || 'any'];
     const c = scored.find((x) => free(x, 14) && t(x) && w(x)) || scored.find((x) => free(x, 14) && t(x)) || scored.find((x) => free(x, 14)) || scored.find((x) => free(x, 8)) || scored.find((x) => !picks.includes(x) && !picks.some((p) => dE(p.lab, x.lab) < 8));
     if (c) picks.push(c);
   }
-  const why = (c) => [c.dL < 0 ? 'темнее стены' : 'светлее стены', c.w > 0.5 ? 'тёплый' : c.w < -0.5 ? 'холодный' : 'нейтральный'].join(' · ');
+  const why = (c) => (c.tone ? 'тон в тон · фактура' : [c.dL < 0 ? 'темнее стены' : 'светлее стены', c.w > 0.5 ? 'тёплый' : c.w < -0.5 ? 'холодный' : c.C < 6 ? 'нейтральный' : 'приглушённый'].join(' · '));
   const rule = `${light ? 'Светлая стена — ткань на тон-два темнее' : dark ? 'Тёмная стена — светлая ткань' : 'Стена средней светлоты — ткань светлее или глубже'}; ${floor.warm > 0 ? 'тёплый пол — тёплые и нейтральные оттенки' : 'холодный пол — холодные и нейтральные оттенки'}.`;
   return { picks: picks.slice(0, count).map((c) => ({ fabric: c.f, why: why(c) })), rule };
 }
@@ -104,7 +119,7 @@ const floorCache = new Map();
 export function floorMaterial(THREE, renderer, id) {
   id = floorOf(id).id;
   if (floorCache.has(id)) return floorCache.get(id);
-  const S = id === 'carpet' ? 512 : 1024;
+  const S = id === 'carpet' ? 512 : id === 'concrete' ? 1024 : 2048;
   const c = document.createElement('canvas'); c.width = c.height = S;
   const g = c.getContext('2d');
   let seed = { oak: 7, darkoak: 11, concrete: 23, marble: 31, carpet: 43 }[id];
@@ -113,18 +128,19 @@ export function floorMaterial(THREE, renderer, id) {
   const wrap = (fn) => { for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) fn(ox, oy); };
   let repeat = 1, rough = 0.62, env = 0.9;
   if (id === 'oak' || id === 'darkoak') {
-    const dark = id === 'darkoak', rows = 10, rh = S / rows;
+    /* доска ~20 см × 1,4–2,2 м на плитке 2,4 м (S 2048): спокойный разброс тона, неглубокие швы — не «ламинат» */
+    const dark = id === 'darkoak', rows = 12, rh = S / rows;
     const base = dark ? [112, 80, 56] : [216, 196, 163];
     g.fillStyle = `rgb(${base.join(',')})`; g.fillRect(0, 0, S, S);
     for (let r = 0; r < rows; r++) {
       const y = r * rh;
       let x = rnd() * S; const end = x + S;
       while (x < end) {
-        const len = Math.min(end - x, 420 + rnd() * 480);
-        const l = 0.94 + rnd() * 0.1, warm = rnd() * 6 - 3;
+        const len = Math.min(end - x, S * (1.4 + rnd() * 0.8) / 2.4);
+        const l = 0.97 + rnd() * 0.06, warm = rnd() * 4 - 2;
         g.fillStyle = `rgb(${Math.round(base[0] * l + warm)}, ${Math.round(base[1] * l)}, ${Math.round(base[2] * l - warm)})`;
         g.fillRect(x % S, y, len, rh); if ((x % S) + len > S) g.fillRect((x % S) - S, y, len, rh);
-        for (let k = 0; k < 26; k++) {
+        for (let k = 0; k < 34; k++) {
           const yy = y + 2 + rnd() * (rh - 4), a = (dark ? 0.06 : 0.025) + rnd() * 0.05, amp = 0.6 + rnd() * 1.6, ph = rnd() * 6.28;
           g.strokeStyle = dark ? `rgba(36, 22, 12, ${a})` : `rgba(110, 80, 45, ${a})`; g.lineWidth = 0.6 + rnd() * 1.1;
           for (const off of [0, -S]) {
@@ -133,10 +149,10 @@ export function floorMaterial(THREE, renderer, id) {
             g.stroke();
           }
         }
-        g.fillStyle = dark ? 'rgba(25, 16, 9, 0.5)' : 'rgba(90, 66, 40, 0.35)'; g.fillRect(x % S, y, 1.2, rh);
+        g.fillStyle = dark ? 'rgba(25, 16, 9, 0.22)' : 'rgba(90, 66, 40, 0.18)'; g.fillRect(x % S, y, 1.4, rh);
         x += len;
       }
-      g.fillStyle = dark ? 'rgba(25, 16, 9, 0.45)' : 'rgba(90, 66, 40, 0.32)'; g.fillRect(0, y, S, 1.4);
+      g.fillStyle = dark ? 'rgba(25, 16, 9, 0.22)' : 'rgba(90, 66, 40, 0.18)'; g.fillRect(0, y, S, 1.6);
     }
     rough = dark ? 0.55 : 0.62;
   } else if (id === 'concrete') {
@@ -147,28 +163,37 @@ export function floorMaterial(THREE, renderer, id) {
       wrap((ox, oy) => { const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r); gr.addColorStop(0, `rgba(${v},${v},${v},${a})`); gr.addColorStop(1, `rgba(${v},${v},${v},0)`); g.fillStyle = gr; g.fillRect(x + ox - r, y + oy - r, 2 * r, 2 * r); });
     }
     grain(g, S, rnd, 10);
-    repeat = 0.5; rough = 0.78; env = 0.7;
+    repeat = 1; rough = 0.78; env = 0.7;
   } else if (id === 'marble') {
-    /* светлый мрамор плитами 60 × 60 см (на плитке 1,2 м — 2 × 2), мягкие прожилки, тонкий шов */
+    /* светлый мрамор плитами 120 × 60 см на плитке 2,4 м (2 × 4): в каждой плите 2–3 длинные диагональные прожилки
+       с постоянным углом (±0,15 рад) — рисунок не повторяется каждые 1,2 м и не «червяками» */
     g.fillStyle = '#E9E7E2'; g.fillRect(0, 0, S, S);
-    for (let k = 0; k < 60; k++) {
-      const x = rnd() * S, y = rnd() * S, r = 60 + rnd() * 200, a = 0.03 + rnd() * 0.04, v = rnd() < 0.6 ? 255 : 196;
+    const sw = S / 2, sh = S / 4;
+    for (let k = 0; k < 90; k++) {
+      const x = rnd() * S, y = rnd() * S, r = 80 + rnd() * 260, a = 0.025 + rnd() * 0.035, v = rnd() < 0.6 ? 255 : 196;
       wrap((ox, oy) => { const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r); gr.addColorStop(0, `rgba(${v},${v - 2},${v - 6},${a})`); gr.addColorStop(1, `rgba(${v},${v},${v},0)`); g.fillStyle = gr; g.fillRect(x + ox - r, y + oy - r, 2 * r, 2 * r); });
     }
-    /* прожилки: ломаная с шумом, много проходов с малой прозрачностью — мягко, без «нарисованной» линии */
-    for (let v = 0; v < 7; v++) {
-      const pts = []; let x = rnd() * S, y = rnd() * S, ang = rnd() * Math.PI * 2;
-      for (let i = 0; i < 70; i++) { pts.push([x, y]); ang += (rnd() - 0.5) * 0.5; x += Math.cos(ang) * 14; y += Math.sin(ang) * 14; }
-      const main = rnd() < 0.4;
-      for (let pass = 0; pass < 5; pass++) {
-        g.strokeStyle = `rgba(118, 112, 104, ${(main ? 0.05 : 0.03) * (1 - pass * 0.15)})`; g.lineWidth = (main ? 1.2 : 0.7) + pass * (main ? 2.2 : 1.4);
-        wrap((ox, oy) => { g.beginPath(); pts.forEach(([px, py], i) => { const jx = (rnd() - 0.5) * 2, jy = (rnd() - 0.5) * 2; if (i === 0) g.moveTo(px + ox + jx, py + oy + jy); else g.lineTo(px + ox + jx, py + oy + jy); }); g.stroke(); });
+    for (let sy = 0; sy < 4; sy++) for (let sx = 0; sx < 2; sx++) {
+      const x0 = sx * sw, y0 = sy * sh;
+      g.save(); g.beginPath(); g.rect(x0, y0, sw, sh); g.clip();
+      const base = (rnd() < 0.5 ? 1 : -1) * (0.35 + rnd() * 0.3), n = 2 + Math.floor(rnd() * 2);
+      for (let v = 0; v < n; v++) {
+        let x = x0 - sw * 0.1 + rnd() * sw * 0.3, y = y0 + rnd() * sh, ang = base;
+        const pts = [];
+        for (let i = 0; i < 90; i++) { pts.push([x, y]); ang = base + Math.max(-0.15, Math.min(0.15, ang - base + (rnd() - 0.5) * 0.06)); x += Math.cos(ang) * 16; y += Math.sin(ang) * 16; if (y < y0 - 40 || y > y0 + sh + 40) break; }
+        const main = v === 0;
+        for (let pass = 0; pass < 5; pass++) {
+          g.strokeStyle = `rgba(118, 112, 104, ${(main ? 0.06 : 0.035) * (1 - pass * 0.15)})`; g.lineWidth = (main ? 1.4 : 0.8) + pass * (main ? 2.6 : 1.6);
+          g.beginPath(); pts.forEach(([px, py], i) => { const jx = (rnd() - 0.5) * 2, jy = (rnd() - 0.5) * 2; if (i === 0) g.moveTo(px + jx, py + jy); else g.lineTo(px + jx, py + jy); }); g.stroke();
+        }
       }
+      g.restore();
     }
     grain(g, S, rnd, 4);
     g.fillStyle = 'rgba(150, 146, 138, 0.55)';
-    for (const p of [0, S / 2]) { g.fillRect(p, 0, 1.5, S); g.fillRect(0, p, S, 1.5); }
-    rough = 0.2; env = 1;
+    for (const p of [0, sw]) g.fillRect(p, 0, 2, S);
+    for (const p of [0, sh, 2 * sh, 3 * sh]) g.fillRect(0, p, S, 2);
+    rough = 0.15; env = 1;
   } else if (id === 'carpet') {
     /* ковёр по всей комнате: мелкий ворс; плитка 40 см */
     g.fillStyle = '#BFB4A2'; g.fillRect(0, 0, S, S);
@@ -177,7 +202,7 @@ export function floorMaterial(THREE, renderer, id) {
       wrap((ox, oy) => { const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r); gr.addColorStop(0, `rgba(${v},${v},${v},${a})`); gr.addColorStop(1, `rgba(${v},${v},${v},0)`); g.fillStyle = gr; g.fillRect(x + ox - r, y + oy - r, 2 * r, 2 * r); });
     }
     grain(g, S, rnd, 22);
-    repeat = 3; rough = 1; env = 0.5;
+    repeat = 6; rough = 1; env = 0.5;
   }
   const tex = new THREE.CanvasTexture(c);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.colorSpace = THREE.SRGBColorSpace; tex.repeat.set(repeat, repeat);

@@ -749,7 +749,8 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .fc__frame { position: relative; aspect-ratio: 1; overflow: hidden; background: var(--c, var(--paper-2)); touch-action: pan-y; transition: background-color 300ms var(--ease); }
 /* волосяная рамка поверх фото: светлая ткань (молочный велюр, белое букле) не растворяется в белой странице — как у плиток каталога */
 .fc__frame::after { content: ''; position: absolute; inset: 0; z-index: 1; box-shadow: inset 0 0 0 1px rgba(11, 11, 12, .07); pointer-events: none; }
-.fc__frame img { width: 100%; height: 100%; object-fit: cover; transition: opacity 260ms var(--ease); }
+.fc__frame::before { content: ''; position: absolute; inset: 0; background: var(--t, none) center / cover no-repeat; filter: blur(10px); clip-path: inset(0); }   /* превью-миниатюра под фото, пока грузится крупное; clip — размытие не выходит за рамку (на телефоне overflow: visible) */
+.fc__frame img { position: relative; width: 100%; height: 100%; object-fit: cover; transition: opacity 260ms var(--ease); }
 .fc__frame.is-loading img { opacity: 0; }
 .fc__steps { position: absolute; right: 0; bottom: 0; z-index: 2; display: flex; align-items: center; background: var(--paper); color: var(--ink); }
 .fc__step { display: grid; place-items: center; width: 44px; height: 44px; transition: background 250ms var(--ease), color 250ms var(--ease); }

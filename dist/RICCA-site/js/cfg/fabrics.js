@@ -5,7 +5,8 @@
    на сайте); внутри (localStorage, номер варианта, комната) — «<typeId>/<collectionId>/<slug цвета>».
    Вид ткани для 3D (materials.js → KINDS) — по строке kind коллекции («велюр в рубчик» → рубчик, «букле» → букле…),
    иначе по типу; у экокожи — ещё отделка цвета (finish: гладкая · зернистая · винтаж). */
-import FALLBACK from './fabrics-fallback.js';
+/* запасная библиотека грузится только если на странице нет js/fabrics-data.js (loadLibrary) */
+let FALLBACK = null;
 
 /* тип ткани → вид материала для 3D (materials.js → KINDS) */
 const KIND_BY_TYPE = { velur: 'velour', velvet: 'corduroy', vel_vet: 'corduroy', velvet_: 'corduroy', bukle: 'boucle', shenill: 'chenille', rogozhka: 'matting', zamsha: 'suede', ekokozha: 'leather' };
@@ -34,10 +35,16 @@ function valid(lib) {
 }
 
 let cached = null;
+export async function loadLibrary() {
+  const ext = typeof window !== 'undefined' ? window.RICCA_FABRIC_LIBRARY : null;
+  if (!valid(ext) && !FALLBACK) FALLBACK = (await import('./fabrics-fallback.js')).default;
+  return getLibrary();
+}
 export function getLibrary() {
   if (cached) return cached;
   const ext = typeof window !== 'undefined' ? window.RICCA_FABRIC_LIBRARY : null;
   const src = valid(ext) ? ext : FALLBACK;
+  if (!src) return { types: [], source: 'none' };
   const types = src.types
     .map((t) => ({
       id: String(t.id), title: String(t.title || t.id),
@@ -94,11 +101,15 @@ export function findFabric(ref, lib = getLibrary()) {
   return col ? fabricOf(t, c, col) : null;
 }
 
-/* по умолчанию: велюр Alba, самый светлый молочный/бежевый */
+/* по умолчанию: спокойный молочный — самый светлый малонасыщенный цвет ALBA (или первой коллекции) */
 export function defaultFabric(lib = getLibrary()) {
-  const pref = findFabric('velur/alba/molochnyy', lib); if (pref) return pref;
-  const t = lib.types[0], c = t.collections[0];
-  const lum = (h) => { const n = parseInt(h.slice(1), 16); return 0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255); };
-  const col = c.colours.slice().sort((a, b) => lum(b.hex) - lum(a.hex))[0];
+  if (!lib.types.length) return null;
+  const t = lib.types.find((x) => x.collections.some((c) => c.id === 'alba')) || lib.types[0];
+  const c = t.collections.find((x) => x.id === 'alba') || t.collections[0];
+  const rgb = (h) => { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; };
+  const lum = (h) => { const [r, g, b] = rgb(h); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const chroma = (h) => { const [r, g, b] = rgb(h); return Math.max(r, g, b) - Math.min(r, g, b); };
+  const pool = c.colours.filter((x) => chroma(x.hex) < 28 && lum(x.hex) < 245);
+  const col = (pool.length ? pool : c.colours).slice().sort((a, b) => lum(b.hex) - lum(a.hex))[0];
   return fabricOf(t, c, col);
 }

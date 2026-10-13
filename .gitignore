@@ -2,3 +2,4 @@ dist/
 
 # оригиналы фото поставщиков — не публикуем в репозитории до проверки заказчиком; на сайт идут только обработанные файлы img/fabrics
 ricca/content/fabrics/_official/
+ricca/content/instagram/

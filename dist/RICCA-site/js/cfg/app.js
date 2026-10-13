@@ -2,12 +2,20 @@
    Тип → Форма → Размер → Ткань → Итог. Один setState() → validate → интерфейс → перестройка 3D (с задержкой) → адрес → сохранение.
    Параметры — в метрах (params.js), на экране — сантиметры. Цен нет: «Рассчитаем стоимость в WhatsApp». */
 
-/* 3D-движок: модель (furniture3d.js), материалы (materials.js), сцена (stage.js), проверка размеров (validate.js). */
-import * as F from './furniture3d.js'; import * as M from './materials.js'; import { createStage } from './stage.js'; import { validate } from './validate.js';
-
+/* Сначала — интерфейс (параметры, проверка, адрес, ткани: лёгкие модули), 3D-движок (three.js, модель, материалы, сцена)
+   догружается после первого показа шагов: initStage() → import(). Так кнопки выбора появляются, пока грузится 3D. */
+import { validate, MSG_HARD } from './validate.js';
 import * as P from './params.js';
-import { getLibrary, findFabric, defaultFabric, fabricOf, fabricRef, fabricShort, findFabricShort, allFabrics } from './fabrics.js';
+import { loadLibrary, findFabric, defaultFabric, fabricOf, fabricRef, fabricShort, findFabricShort, allFabrics } from './fabrics.js';
 import { encodeCfg, decodeCfg, cfgId, waText, waSizeText, waUrl, summaryLines, titleOf, optLabel, backLook, fmtCm, toCm, encodeRoom, decodeRoom, roomText } from './share.js';
+
+let F = null, M = null;          // furniture3d.js, materials.js — после загрузки 3D
+let engineP = null;
+function loadEngine() {
+  if (!engineP) engineP = Promise.all([import('./furniture3d.js'), import('./materials.js'), import('./stage.js')]).then(([f, m, st]) => { F = f; M = m; return { F: f, M: m, createStage: st.createStage }; });
+  return engineP;
+}
+const engineApi = () => ({ build: F.build, disposePiece: F.disposePiece, setMaterials: F.setMaterials, materialSet: M.materialSet, fabricMaterial: M.fabricMaterial, normalize: P.normalize, dims: P.dims, parts: P.parts, labelOf: P.labelOf, DEFAULTS: P.DEFAULTS, TYPES: P.TYPES });
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -26,7 +34,6 @@ const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* п�
 const SOFAS = new Set(['sofa', 'corner', 'ushape', 'modular']);
 const WOOD = P.WOOD_FINISHES || ['oak', 'walnut', 'blackwood'];
 const METAL = P.METAL_FINISHES || ['black', 'gold'];
-const STONE = P.STONE_TONES || ['light', 'grey', 'dark'];
 const LOWHIGH = { sofa: [P.SOFA_H_LOW, P.SOFA_H_HIGH], corner: [P.SOFA_H_LOW, P.SOFA_H_HIGH], ushape: [P.SOFA_H_LOW, P.SOFA_H_HIGH], armchair: [P.ARMCHAIR_H_LOW, P.ARMCHAIR_H_HIGH] };
 
 /* подписи на кнопках-чипах, где общий словарь звучит длинно под заголовком строки */
@@ -58,9 +65,6 @@ const FORM = {
   bed: [row('hbStyle', 'Изголовье', () => ['plain', 'channels', 'capitone', 'wings']), row('base', 'Основание', () => ['plinth', 'legs']),
     row('legFinish', 'Отделка ножек', () => [...WOOD, ...METAL], { when: (p) => p.base === 'legs' }), row('lift', 'Подъёмный механизм', () => [false, true]), ROWS.pipe()],
   armchair: [row('form', 'Форма', () => ['classic', 'round']), ROWS.arm('armchair'), ROWS.look(), { ...ROWS.backC(), when: (p) => p.form !== 'round' }, ROWS.legs(), ROWS.fin(), ROWS.pipe()],
-  chair: [row('arms', 'Подлокотники', () => ['none', 'thin']), row('backShape', 'Спинка', () => ['straight', 'rounded']), ROWS.legs(['wood', 'metal']), ROWS.fin(), ROWS.pipe()],
-  table: [row('shape', 'Форма', () => ['rect', 'round', 'oval']), row('top', 'Столешница', () => ['wood', 'stone']),
-    row('topTone', 'Тон столешницы', (p) => (p.top === 'stone' ? STONE : WOOD)), row('base', 'Опора', () => ['four', 'pedestal']), ROWS.legs(['wood', 'metal']), ROWS.fin()],
   pouf: [row('form', 'Форма', () => ['round', 'square', 'bench']), row('top', 'Верх', () => ['smooth', 'capitone']), ROWS.legs(['hidden', 'wood', 'metal']), ROWS.fin(), ROWS.pipe()],
 };
 
@@ -75,10 +79,9 @@ const SIZE = {
   modular: [fld('moduleW', 'Ширина модуля'), fld('chaiseL', 'Глубина шезлонга', (p) => p.chaise !== 'none'), ...SOFA_FIELDS().slice(1)],
   bed: [fld('mw', 'Ширина матраса'), fld('ml', 'Длина матраса'), fld('hbH', 'Высота изголовья'), fld('hbOver', 'Выступ изголовья с каждой стороны'),
     fld('frameT', 'Боковина'), fld('railH', 'Высота царги'), fld('legH', 'Высота ножек', (p) => p.base === 'legs')],
-  armchair: SOFA_FIELDS(),
-  chair: [fld('w', 'Ширина'), fld('d', 'Глубина'), fld('h', 'Высота'), fld('seatH', 'Высота сиденья')],
-  table: [fld('w', (p) => (p.shape === 'round' ? 'Диаметр' : 'Длина')), fld('d', 'Ширина', (p) => p.shape !== 'round'), fld('h', 'Высота'), fld('topT', 'Толщина столешницы'),
-    fld('legW', 'Сечение ножки', (p) => p.base === 'four'), fld('legInset', 'Отступ ножек от края', (p) => p.base === 'four')],
+  /* округлое кресло: оболочка вместо подлокотников — её толщина и высота спереди */
+  armchair: [...SOFA_FIELDS().slice(0, 5), fld('armW', (p) => (p.form === 'round' ? 'Толщина оболочки' : 'Ширина подлокотника'), (p) => p.armStyle !== 'none'),
+    fld('armH', (p) => (p.form === 'round' ? 'Высота оболочки спереди' : 'Высота подлокотника'), (p) => p.armStyle !== 'none'), fld('legH', legLabel, (p) => p.legs !== 'hidden')],
   pouf: [fld('w', (p) => ({ round: 'Диаметр', square: 'Сторона', bench: 'Длина' }[p.form] || 'Ширина')), fld('d', 'Глубина', (p) => p.form === 'bench'), fld('h', 'Высота'), fld('legH', 'Высота ножек', (p) => p.legs !== 'hidden')],
 };
 const KEY_CHIPS = { bed: { mw: [90, 120, 140, 160, 180, 200], ml: [190, 200, 210] } };
@@ -89,7 +92,7 @@ const rangeOf = (type, key, p) => (P.rangeOf ? P.rangeOf(type, key, p) : null) |
 function sideEffects(type, key, v, p) {
   const def = (k) => { const r = rangeOf(type, k, p); return r ? r.def : p[k]; };
   if (key === 'backLook') { const lh = LOWHIGH[type]; if (lh) p.h = v === 'low' ? lh[0] : lh[1]; delete p.backLook; }
-  if (key === 'armStyle') p.armW = v === 'none' ? 0 : ((P.ARMW_BY_STYLE && P.ARMW_BY_STYLE[v]) ? P.ARMW_BY_STYLE[v].def : 0.12);
+  if (key === 'armStyle') p.armW = v === 'none' ? 0 : P.armDef(type, v);
   if (key === 'legs') {
     if (v === 'metal' && !METAL.includes(p.legFinish)) p.legFinish = 'black';
     if (v === 'wood' && !WOOD.includes(p.legFinish)) p.legFinish = 'oak';
@@ -98,23 +101,27 @@ function sideEffects(type, key, v, p) {
   }
   if (type === 'bed' && key === 'base') { const r = rangeOf(type, 'legH', p); if (r) p.legH = r.def; if (v === 'legs' && !p.legFinish) p.legFinish = 'oak'; }
   if (type === 'corner' && key === 'form') p.l = def('l');
-  if (type === 'table' && key === 'shape') { p.w = def('w'); p.d = v === 'round' ? p.w : def('d'); p.base = v === 'rect' ? 'four' : 'pedestal'; }
-  if (type === 'table' && key === 'top') p.topTone = v === 'stone' ? 'light' : 'oak';
   if (type === 'pouf' && key === 'form') {
     p.w = def('w'); p.d = v === 'bench' ? 0.45 : p.w; p.legs = v === 'bench' ? 'wood' : 'hidden'; p.legFinish = 'oak';
     p.legH = v === 'bench' ? 0.12 : (P.HIDDEN_LEG_H || 0.02); p.piping = v === 'round';
   }
-  if (type === 'armchair' && key === 'form' && v === 'round' && p.armStyle === 'none') { p.armStyle = 'round'; p.armW = 0.22; }
+  if (type === 'armchair' && key === 'form' && v === 'round' && p.armStyle === 'none') { p.armStyle = 'round'; p.armW = P.armDef(type, 'round'); }
+  if (type === 'armchair' && key === 'form' && v === 'round') { const mx = p.d - Math.max(0.10, p.armW || 0.15) - 0.02; if (p.seatD > mx) p.seatD = Math.round(mx * 100) / 100; }
   /* округлое кресло — цельная оболочка, съёмных подушек спинки у него нет */
   if (type === 'armchair' && key === 'form' && v === 'round') p.backCushions = 'fixed';
 }
 
 /* ═════════ состояние ═════════ */
-const lib = getLibrary();
+const lib = await loadLibrary();
 const state = {
   v: 1, mode: 'model', type: 'sofa', params: {}, fabric: defaultFabric(lib), qty: 1, note: '', view: '3d', showDims: false, step: 1,
-  notes: [], fieldNotes: {}, errors: [], inputErr: {},
+  notes: [], fieldNotes: {}, errors: [], inputErr: {}, inputRaw: {},
+  /* ткань из ссылки/памяти, которой больше нет в библиотеке: на модели — спокойная по умолчанию, в итоге и WhatsApp — «подберём вместе» */
+  fabricLost: false, visited: new Set([1]),
 };
+const MSG_FAB_LOST = 'Эта ткань сейчас не в библиотеке конструктора — выберите похожую; образцы покажем в шоуруме';
+const MSG_TYPE_GONE = 'Ателье шьёт только мягкую мебель — показываем диван';
+let pendingToast = '';
 const memo = {};                // параметры других типов в этой сессии (вернуться без потерь)
 let qtyTouched = false;
 
@@ -133,11 +140,12 @@ function applyParams(type, params) {
   return r;
 }
 const curDims = () => { try { return P.dims(state.type, state.params); } catch (e) { return null; } };
-const id = () => cfgId({ type: state.type, params: state.params, fabric: state.type === 'table' ? null : state.fabric });
-const cfgState = () => ({ type: state.type, params: state.params, fabric: state.type === 'table' ? null : state.fabric, qty: state.qty, note: state.note });
+const shownFabric = () => (state.fabricLost ? null : state.fabric);
+const id = () => cfgId({ type: state.type, params: state.params, fabric: shownFabric() });
+const cfgState = () => ({ type: state.type, params: state.params, fabric: shownFabric(), qty: state.qty, note: state.note });
 /* адрес варианта: #cfg=<параметры>&f=<коллекция>:<N> (ткань — номером цвета, как на сайте #fabric-<коллекция>-<N>) */
 const hashOf = () => {
-  const s = cfgState(); const fs = fabricShort(s.fabric);
+  const s = cfgState(); const fs = fabricShort(s.fabric);   // ткань, которой нет в библиотеке, в адрес не пишем
   return `#cfg=${encodeCfg({ ...s, fabric: fs ? null : s.fabric }, { defaults: P.DEFAULTS[state.type] })}${fs ? `&f=${fs}` : ''}`;
 };
 const variantLink = () => (isHttp ? `${location.origin}${location.pathname}${hashOf()}` : '');
@@ -157,9 +165,11 @@ const firstError = () => Object.values(state.inputErr)[0] || state.errors[0] || 
 /* ═════════ загрузка: адрес → localStorage → по умолчанию ═════════ */
 function fromCfgString(str) {
   const d = decodeCfg(str, { defaults: P.DEFAULTS });
-  if (!d.type || !P.DEFAULTS[d.type]) return false;
+  if (!d.type) return false;
+  /* старые ссылки на стол или стул: ателье их не делает — открываем диван по умолчанию, без ошибок */
+  if (!P.DEFAULTS[d.type]) { if (!(P.REMOVED_TYPES || []).includes(d.type)) return false; applyParams('sofa', {}); state.qty = 1; state.note = d.note || ''; pendingToast = MSG_TYPE_GONE; return true; }
   applyParams(d.type, d.params);
-  state.fabric = (d.fabricRef && findFabric(d.fabricRef, lib)) || state.fabric;
+  if (d.fabricRef) { const f = findFabric(d.fabricRef, lib); if (f) { state.fabric = f; state.fabricLost = false; } else { state.fabric = defaultFabric(lib); state.fabricLost = true; pendingToast = MSG_FAB_LOST; } }
   state.qty = d.qty || P.DEFAULTS[d.type].qty || 1; state.note = d.note || '';
   qtyTouched = d.qty > 1;
   return true;
@@ -168,14 +178,16 @@ let arrivedFabric = null;         // ткань из ссылки «Пример
 function load() {
   const h = parseHash(location.hash);
   const fab = h.f ? findFabricShort(h.f, lib) : null;
-  if (h.cfg && fromCfgString(h.cfg)) { if (fab) state.fabric = fab; return 'hash'; }
+  const lost = !!h.f && !fab;
+  if (h.cfg && fromCfgString(h.cfg)) {
+    if (fab) { state.fabric = fab; state.fabricLost = false; }
+    if (lost) { state.fabricLost = true; pendingToast = MSG_FAB_LOST; return 'fabric'; }
+    return 'hash';
+  }
   if (h.room) state.mode = 'room';
   const src = loadStored();
-  if (fab) {
-    if (state.type === 'table') { applyParams('sofa', {}); state.qty = 1; }        // у стола ткани нет — показываем на диване
-    state.fabric = fab; arrivedFabric = fab;
-    return 'fabric';
-  }
+  if (fab) { state.fabric = fab; state.fabricLost = false; arrivedFabric = fab; return 'fabric'; }
+  if (lost) { state.fabricLost = true; pendingToast = MSG_FAB_LOST; return 'fabric'; }
   return src;
 }
 function loadStored() {
@@ -185,7 +197,7 @@ function loadStored() {
       const s = JSON.parse(raw);
       if (s && P.DEFAULTS[s.type]) {
         applyParams(s.type, s.params || {});
-        state.fabric = (s.fabricRef && findFabric(s.fabricRef, lib)) || state.fabric;
+        if (s.fabricRef) { const f = findFabric(s.fabricRef, lib); if (f) state.fabric = f; else { state.fabricLost = true; pendingToast = MSG_FAB_LOST; } }
         state.qty = Math.max(1, Math.min(99, +s.qty || 1)); state.note = String(s.note || '').slice(0, 300); qtyTouched = !!s.qtyTouched;
         return 'storage';
       }
@@ -195,7 +207,7 @@ function loadStored() {
   return 'defaults';
 }
 function save() {
-  lsSet(LS.cfg, JSON.stringify({ v: 1, type: state.type, params: state.params, fabricRef: fabricRef(state.fabric), qty: state.qty, qtyTouched, note: state.note }));
+  lsSet(LS.cfg, JSON.stringify({ v: 1, type: state.type, params: state.params, fabricRef: state.fabricLost ? '' : fabricRef(state.fabric), qty: state.qty, qtyTouched, note: state.note }));
 }
 let hashT = 0, lastHash = '';
 function writeHash() {
@@ -309,9 +321,9 @@ function renderSize() {
       <div class="fld__top">
         <label class="fld__l" for="f-${f.key}">${esc(lbl(f, p))}</label>
         <div class="fld__num">
-          <button class="fld__b" type="button" data-step="-1" aria-label="${esc(lbl(f, p))}: меньше на 1 см">${ico('i-minus')}</button>
+          <button class="fld__b" type="button" data-inc="-1" aria-label="${esc(lbl(f, p))}: меньше на 1 см">${ico('i-minus')}</button>
           <span class="fld__box"><input class="fld__i" id="f-${f.key}" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-describedby="fn-${f.key}"><span class="fld__u" aria-hidden="true">см</span></span>
-          <button class="fld__b" type="button" data-step="1" aria-label="${esc(lbl(f, p))}: больше на 1 см">${ico('i-plus')}</button>
+          <button class="fld__b" type="button" data-inc="1" aria-label="${esc(lbl(f, p))}: больше на 1 см">${ico('i-plus')}</button>
         </div>
       </div>
       <input class="fld__r" type="range" min="${min}" max="${max}" step="1" aria-label="${esc(lbl(f, p))}, см" tabindex="-1">
@@ -337,7 +349,10 @@ function syncSize(all = false) {
     const n = $('.fld__n', el);
     const err = state.inputErr[key];
     const note = err || state.fieldNotes[key] || '';
-    n.textContent = note; n.classList.toggle('is-err', !!err); el.classList.toggle('has-err', !!err);
+    if (err) {
+      n.innerHTML = `${esc(err)} <a class="fld__wa" href="${esc(sizeWaHref())}" target="_blank" rel="noopener">Написать в WhatsApp с этим размером</a>`;
+    } else n.textContent = note;
+    n.classList.toggle('is-err', !!err); el.classList.toggle('has-err', !!err);
     $$('[data-keychip]', el).forEach((b) => b.setAttribute('aria-pressed', String(Math.round(v * 100) === +b.dataset.v)));
   });
   $$('#presets [data-preset]').forEach((b) => b.setAttribute('aria-pressed', String(presetActive((P.PRESETS[t] || [])[+b.dataset.preset]))));
@@ -356,19 +371,22 @@ function setSize(key, cmVal, { drag = false } = {}) {
   const r = runValidate(state.type, cand);
   if (r.errors.length) {
     state.inputErr = { ...state.inputErr, [key]: r.fieldNotes[key] || r.errors[0] };
+    state.inputRaw = { ...state.inputRaw, [key]: cmVal };          // этот размер уйдёт в «Напишите — сошьём»
     renderSummary(); syncSize();
     return;
   }
   delete state.inputErr[key];
+  state.inputRaw = { ...state.inputRaw, [key]: cmVal };
   state.params = r.params; state.notes = r.notes; state.fieldNotes = r.fieldNotes; state.errors = r.errors;
   setState({}, { drag });
 }
 /* ± с повтором при удержании */
 let holdT = 0, holdI = 0;
 function stepOnce(btn) {
-  const fl = btn.closest('.fld'); const key = fl.dataset.key;
+  const fl = btn && btn.closest('.fld'); if (!fl) return;
+  const key = fl.dataset.key;
   const cur = toCm(state.params[key] || 0);
-  setSize(key, Math.round(cur + (+btn.dataset.step)), { drag: true });
+  setSize(key, Math.round(cur + (+btn.dataset.inc || 0)), { drag: true });
 }
 function holdStop() { clearTimeout(holdT); clearInterval(holdI); if (holdT || holdI) { holdT = holdI = 0; scheduleRebuild(false); } }
 
@@ -404,20 +422,25 @@ function renderFabricPreview() {
   $('#fab-pv-t').textContent = `${f.collectionTitle} · ${f.colour}`;
   $('#fab-pv-f').textContent = [f.kindTitle && !/:/.test(f.kindTitle) ? cap(f.kindTitle) : f.typeTitle, f.finish].filter(Boolean).join(' · ');
 }
-function renderFabricVisibility() {
-  const none = state.type === 'table';
-  $('#fab').hidden = none; $('#fab-none').hidden = !none;
-}
+function renderFabricVisibility() { /* у всех изделий есть ткань (столы и стулья ателье не делает) */ }
 function setFabric(slug) {
   const t = lib.types.find((x) => x.id === fabUI.typeId); const c = t && t.collections.find((x) => x.id === fabUI.collectionId);
   const col = c && c.colours.find((x) => x.slug === slug); if (!col) return;
-  state.fabric = fabricOf(t, c, col);
+  state.fabric = fabricOf(t, c, col); state.fabricLost = false;
   $$('#fab-sw .sw').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.fslug === slug)));
   renderFabricPreview();
   applyFabric();
   setState({}, { rebuild: false });
+  renderFabChip();
 }
 const plural = (n, f) => { const a = n % 100, b = n % 10; return a > 10 && a < 20 ? f[2] : b === 1 ? f[0] : b >= 2 && b <= 4 ? f[1] : f[2]; };
+
+/* «Нужен другой размер?»: текущий габарит + размеры, которые клиент ввёл (и те, что форма не приняла) */
+function sizeWaHref() {
+  const p = state.params, t = state.type;
+  const wanted = Object.entries(state.inputRaw).map(([k, cm]) => { const f = (SIZE[t] || []).find((x) => x.key === k); return f && (state.inputErr[k] || Math.abs(cm - toCm(p[k] || 0)) > 0.05) ? { label: lbl(f, p), cm } : null; }).filter(Boolean);
+  return waUrl(waSizeText(cfgState(), { link: variantLink(), id: id(), dims: curDims(), wanted }));
+}
 
 /* ═════════ шаг 5 — итог ═════════ */
 function renderSummary() {
@@ -438,7 +461,8 @@ function renderSummary() {
     a.classList.toggle('is-off', bad); a.setAttribute('aria-disabled', String(bad));
   }
   $('#b-drawing').disabled = bad;
-  $('#wa-size').href = waUrl(waSizeText(s, { link, id: rid }));
+  $('#wa-size').href = sizeWaHref();
+  syncBar();
   const plain = $('[data-wa-plain]'); if (plain) plain.href = waUrl('Здравствуйте! Пишу из конструктора RICCA.');
 }
 function renderHeads() {
@@ -447,18 +471,21 @@ function renderHeads() {
   set(1, (P.TYPES.find((t) => t.id === state.type) || {}).title || '');
   set(2, titleOf(state.type, p) === ((P.TYPES.find((t) => t.id === state.type) || {}).title) ? formHint() : titleOf(state.type, p));
   set(3, d ? `${fmtCm(d.w)} × ${fmtCm(d.d)} × ${fmtCm(d.h)} см` : '');
-  set(4, state.type === 'table' ? optLabel('table', 'top', p.top) : (state.fabric ? `${state.fabric.collectionTitle} · ${state.fabric.colour}` : ''));
+  set(4, state.fabricLost ? 'подберём вместе' : state.fabric ? `${state.fabric.collectionTitle} · ${state.fabric.colour}` : '');
   set(5, id());
 }
 function formHint() {
   const p = state.params, t = state.type;
   if (p.armStyle) return `${cap(optLabel(t, 'armStyle', p.armStyle))}${p.armStyle === 'none' ? '' : ' подлокотники'}`;
   if (t === 'bed') return cap(optLabel(t, 'hbStyle', p.hbStyle));
-  if (t === 'chair') return `Спинка ${optLabel(t, 'backShape', p.backShape)}`;
   return '';
 }
+let sizeAnnT = 0;
 function renderViewportSize() {
-  const d = curDims(); $('#vp-size').textContent = d ? `${fmtCm(d.w)} × ${fmtCm(d.d)} × ${fmtCm(d.h)} см` : '';
+  const d = curDims(); const txt = d ? `${fmtCm(d.w)} × ${fmtCm(d.d)} × ${fmtCm(d.h)} см` : '';
+  $('#vp-size').textContent = txt;
+  /* для экранного диктора — один раз, через 0,6 с после последнего изменения (не на каждом кадре ползунка) */
+  clearTimeout(sizeAnnT); sizeAnnT = setTimeout(() => { const a = $('#sr-status'); if (a && a.dataset.last !== txt) { a.dataset.last = txt; a.textContent = txt ? `Размер ${txt}` : ''; } }, 600);
 }
 
 /* ═════════ шаги на телефоне: аккордеон ═════════ */
@@ -467,13 +494,31 @@ function syncSteps() {
   $$('.step').forEach((li) => {
     const n = +li.dataset.step; const open = !phone || n === state.step;
     li.classList.toggle('is-open', open);
-    const b = $('.step__head', li); b.setAttribute('aria-expanded', String(open));
+    const b = $('.step__head', li);
+    /* на компьютере шаги всегда открыты — заголовок не притворяется кнопкой-аккордеоном */
+    if (phone) { b.setAttribute('aria-expanded', String(open)); b.setAttribute('aria-controls', `sb-${n}`); b.removeAttribute('aria-disabled'); }
+    else { b.removeAttribute('aria-expanded'); b.removeAttribute('aria-controls'); b.setAttribute('aria-disabled', 'true'); }
     b.tabIndex = phone ? 0 : -1;
     $('.step__body', li).hidden = !open;
   });
+  syncBar();
+}
+/* нижняя плашка телефона ведёт по шагам: «Далее: форма → 1/5» … на последнем шаге (или когда все пройдены) — «В WhatsApp» */
+const STEP_NAMES = { 1: 'тип', 2: 'форма', 3: 'размер', 4: 'ткань', 5: 'итог' };
+function nextStepFor() {
+  if (state.visited.size >= 5 || state.step === 5) return 0;
+  if (state.step >= 1 && state.step <= 4) return state.step + 1;
+  for (let n = 1; n <= 5; n++) if (!state.visited.has(n)) return n;
+  return 0;
+}
+function syncBar() {
+  const nb = $('#bar-next'), wa = $('#bar-wa'); if (!nb || !wa) return;
+  const n = state.mode === 'model' ? nextStepFor() : 0;
+  nb.hidden = !n; wa.hidden = !!n;
+  if (n) { $('#bar-next-t').textContent = `Далее: ${STEP_NAMES[n]}`; $('#bar-next-n').textContent = `${Math.max(1, Math.min(5, n - 1 || 1))}/5`; nb.dataset.next = String(n); }
 }
 function openStep(n, scroll = true) {
-  state.step = n; syncSteps();
+  state.step = n; if (n) state.visited.add(n); syncSteps();
   if (scroll && mqPhone.matches) {
     const li = $(`.step[data-step="${n}"]`);
     requestAnimationFrame(() => {
@@ -487,6 +532,7 @@ function openStep(n, scroll = true) {
 /* ═════════ 3D ═════════ */
 let stage = null, piece = null, mats = null, rbT = 0, rbLast = 0;
 const quality = () => (mqPhone.matches ? 'mid' : 'high');
+/* модель подтянется, когда догрузится 3D */
 function scheduleRebuild(drag) {
   if (!stage) return;
   clearTimeout(rbT);
@@ -544,7 +590,8 @@ function setView(v) {
 async function initStage() {
   const host = $('#stage');
   try {
-    stage = await Promise.resolve(createStage(host, { quality: 'auto' }));
+    const eng = await loadEngine();
+    stage = await Promise.resolve(eng.createStage(host, { quality: 'auto' }));
   } catch (e) {
     stage = null;
     const msg = $('#vp-ph-msg'); msg.hidden = false;
@@ -559,12 +606,67 @@ async function initStage() {
   real.hidden = !(typeof stage.photoreal === 'function' && (stage.supportsPhotoreal === true || stage.photorealSupported === true));
   rebuild(quality());
   if (stage.frame && state.mode === 'model') stage.frame({ animate: false });
+  renderFabChip();
+}
+
+/* ═════════ «На модели»: ткань в углу окна 3D; касание — крупный план подушки сиденья ═════════ */
+function renderFabChip() {
+  const chip = $('#vp-fab'); if (!chip) return;
+  const f = state.fabric;
+  if (!f || state.mode !== 'model') { chip.hidden = true; return; }
+  chip.hidden = false;
+  $('#vp-fab-c').style.backgroundImage = `url('${f.src240 || f.src450}')`; $('#vp-fab-c').style.backgroundColor = f.hex;
+  $('#vp-fab-t').textContent = state.fabricLost ? 'Ткань подберём вместе' : `${f.collectionTitle} · ${f.colour}`;
+  chip.setAttribute('aria-label', `${state.fabricLost ? 'Ткань подберём вместе' : `Ткань ${f.collectionTitle}, ${f.colour}`}: показать крупно на сиденье`);
+}
+function seatCloseUp() {
+  if (!stage || !stage.closeUp) return;
+  let it = null; try { it = P.parts(state.type, state.params).items.find((x) => x.role === 'seat'); } catch (e) { it = null; }
+  const d = curDims();
+  const target = it ? [it.x, it.y + it.sy / 2, it.z + it.sz * 0.15] : [0, d ? d.h * 0.55 : 0.4, 0];
+  if (stage.view !== '3d') setView('3d');
+  stage.closeUp(target, 0.95, { animate: !reduced });
 }
 
 /* ═════════ фото и файлы ═════════ */
-function toast(msg) {
+function toast(msg, ms = 2600) {
   const t = $('#vp-toast'); t.textContent = msg; t.hidden = false;
-  clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 2600);
+  clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, ms);
+}
+/* выбранный цвет ткани — в поле зрения (после прихода из «Ткани крупно») */
+function revealFabric() {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const sw = $('#fab-sw .sw[aria-checked="true"]') || $('#fab-sw');
+    if (sw) sw.scrollIntoView({ block: 'center', behavior: 'auto' });
+    const col = $('#fab-cols .fab__col[aria-checked="true"]'); if (col && mqPhone.matches) col.scrollIntoView({ inline: 'center', block: 'nearest' });
+  }));
+}
+/* радиогруппы (тип, опции, цвета, стены, пол): стрелки двигают выбор, Tab — одна остановка на группу */
+function rovingSync(root = document) {
+  $$('[role="radiogroup"]', root).forEach((g) => {
+    const rs = $$('[role="radio"]', g).filter((r) => r.closest('[role="radiogroup"]') === g);
+    if (!rs.length) return;
+    const on = rs.find((r) => r.getAttribute('aria-checked') === 'true') || rs[0];
+    rs.forEach((r) => { r.tabIndex = r === on ? 0 : -1; });
+  });
+}
+function bindRadioKeys() {
+  document.addEventListener('keydown', (e) => {
+    if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) return;
+    const r = e.target.closest && e.target.closest('[role="radio"]'); if (!r) return;
+    const g = r.closest('[role="radiogroup"]'); if (!g || g.classList.contains('vp__views')) return;
+    const rs = $$('[role="radio"]', g).filter((x) => x.closest('[role="radiogroup"]') === g && !x.disabled);
+    const i = rs.indexOf(r); if (i < 0) return;
+    e.preventDefault();
+    const n = rs[(i + (e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : -1) + rs.length) % rs.length];
+    const sel = n.dataset.type ? `[data-type="${CSS.escape(n.dataset.type)}"]` : n.dataset.opt ? `[data-opt="${CSS.escape(n.dataset.opt)}"][data-v="${CSS.escape(n.dataset.v)}"]`
+      : n.dataset.fcol ? `[data-fcol="${CSS.escape(n.dataset.fcol)}"]` : n.dataset.fslug ? `[data-fslug="${CSS.escape(n.dataset.fslug)}"]`
+        : n.dataset.roomWall ? `[data-room-wall="${CSS.escape(n.dataset.roomWall)}"]` : n.dataset.roomFloor ? `[data-room-floor="${CSS.escape(n.dataset.roomFloor)}"]` : null;
+    n.click();
+    const m = (sel && $(sel)) || n; m.focus({ preventScroll: false });
+  });
+  new MutationObserver(() => rovingSync()).observe($('#main'), { subtree: true, childList: true, attributes: true, attributeFilter: ['aria-checked'] });
+  rovingSync();
 }
 function download(blob, name) {
   const a = document.createElement('a'); const url = URL.createObjectURL(blob);
@@ -617,7 +719,11 @@ function drawingCfg() {
 async function openDrawing() {
   if (hasErrors()) return;
   const dlg = $('#dlg-drawing'); const img = $('#dd-img'); const wait = $('#dd-wait');
-  $('#dd-id').textContent = `№ ${id()}`;
+  $('#dd-id').textContent = `№ ${id()}`; $('#dd-open').hidden = true;
+  /* на телефоне главное — отправить: «Отправить чертёж» первой и залитой */
+  const ph = mqPhone.matches, send = $('#dd-send'), png = $('#dd-png');
+  send.classList.toggle('btn--fill', ph); send.classList.toggle('btn--line', !ph); png.classList.toggle('btn--fill', !ph); png.classList.toggle('btn--line', ph);
+  if (ph) send.parentNode.insertBefore(send, png); else png.parentNode.insertBefore(png, send);
   img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…';
   ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = true; });
   openDialog(dlg);
@@ -629,12 +735,19 @@ async function openDrawing() {
     drawing = { ...res, url, id: id() };
     img.src = url; img.hidden = false; wait.hidden = true;
     ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = false; });
+    $('#dd-open').hidden = false;
   } catch (e) {
     console.warn('drawing', e);
     wait.textContent = 'Чертёж пока не получилось подготовить. Отправьте вариант в WhatsApp — мастер пришлёт схему.';
   }
 }
 async function drawingPng() { const b = await drawing.toPNG(3508); return b; }
+/* чертёж во весь экран: PNG в новой вкладке — можно увеличить пальцами */
+async function openDrawingFull() {
+  if (!drawing) return;
+  const w = window.open('', '_blank');
+  try { const png = await drawingPng(); const u = URL.createObjectURL(png); if (w) w.location.href = u; else window.location.href = u; } catch (e) { if (w) w.close(); }
+}
 async function sendDrawing() {
   if (!drawing) return;
   const btn = $('#dd-send'); btn.disabled = true;
@@ -658,13 +771,20 @@ const isPhoneDevice = () => {
   const mobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (/Mac/.test(navigator.platform) && navigator.maxTouchPoints > 1);
   return touch && (matchMedia('(pointer: coarse)').matches || mobileUA);
 };
+/* встроенные браузеры Instagram, Facebook, LINE и вебвью: камера и AR там не запускаются */
+const inAppBrowser = () => /Instagram|FBAN|FBAV|FB_IAB|Line\/|; wv\)/.test(navigator.userAgent);
 async function openAR() {
   const dlg = $('#dlg-ar'); const phone = isPhoneDevice();
   $('#ar-phone').hidden = !phone; $('#ar-desk').hidden = phone;
-  const go = $('#ar-go'), msg = $('#ar-msg');
-  msg.hidden = true; go.disabled = true; go.textContent = 'Готовим модель…';
+  const go = $('#ar-go'), msg = $('#ar-msg'), copy = $('#ar-copy');
+  msg.hidden = true; go.disabled = true; go.hidden = false; go.textContent = 'Готовим модель…'; copy.hidden = true;
   openDialog(dlg);
   lsSet(LS.seen, '1');
+  if (phone && inAppBrowser()) {
+    go.hidden = true; msg.hidden = false; copy.hidden = !isHttp;
+    msg.textContent = 'Instagram открывает сайт во встроенном браузере — камера здесь не запустится. Нажмите ⋯ вверху справа → «Открыть в браузере».';
+    return;
+  }
   if (!phone) {
     const qr = $('#ar-qr'); qr.innerHTML = '';
     if (!isHttp) { qr.hidden = true; return; }
@@ -674,8 +794,10 @@ async function openAR() {
   }
   arAbort = new AbortController();
   try {
+    await loadEngine();
     const ar = await import('./ar.js');
     arSession = await ar.prepareAR({ type: state.type, params: state.params, fabric: state.fabric, engine: { build: F.build, disposePiece: F.disposePiece, materialSet: M.materialSet, dims: P.dims }, signal: arAbort.signal });
+    if (!arSession.canActivate) { arNoSupport(); return; }
     go.disabled = false; go.textContent = 'Открыть камеру';
   } catch (e) {
     if (arAbort && arAbort.signal.aborted) return;
@@ -686,7 +808,7 @@ function arNoSupport() {
   const go = $('#ar-go'), msg = $('#ar-msg');
   go.disabled = true; go.textContent = 'Открыть камеру';
   msg.hidden = false;
-  msg.textContent = 'Ваш телефон не поддерживает AR в браузере — откройте страницу в Safari на iPhone или в Chrome на Android. Или посмотрите вариант в шоуруме.';
+  msg.textContent = 'Этот телефон не может показать мебель через камеру в браузере — откройте страницу в Safari на iPhone или в Chrome на Android. Или посмотрите вариант в шоуруме.';
 }
 async function arGo() {
   if (!arSession) return;
@@ -721,13 +843,13 @@ function loadRoom() {
   if (roomApi) return Promise.resolve(roomApi);
   if (roomLoading) return roomLoading;
   const status = $('[data-room-status]');
-  roomLoading = import('./room.js').then((m) => {
+  roomLoading = Promise.all([import('./room.js'), loadEngine(), stageReady]).then(([m]) => {
     roomApi = m.mountRoom({
       stage, panel: $('#room-panel'), viewport: $('#vp'),
-      engine: { build: F.build, disposePiece: F.disposePiece, setMaterials: F.setMaterials, materialSet: M.materialSet, fabricMaterial: M.fabricMaterial, normalize: P.normalize, dims: P.dims, parts: P.parts, labelOf: P.labelOf, DEFAULTS: P.DEFAULTS, TYPES: P.TYPES },
+      engine: engineApi(),
       share: { encodeRoom, decodeRoom, roomText, waUrl, titleOf, fmtCm },
       fabrics: { library: lib, findFabric, defaultFabric: () => defaultFabric(lib), fabricRef, all: () => allFabrics(lib) },
-      getCurrent: () => ({ type: state.type, params: { ...state.params }, fabric: state.type === 'table' ? null : state.fabric }),
+      getCurrent: () => ({ type: state.type, params: { ...state.params }, fabric: state.fabric }),
       onEdit: (item) => editFromRoom(item),
       initialHash: location.hash.startsWith('#room=') ? location.hash.slice(6) : null,
       storageKey: LS.room,
@@ -752,11 +874,20 @@ async function setMode(mode, { focus = false } = {}) {
   if (focus) $(`[data-mode-tab="${mode}"]`).focus();
   if (room) {
     updateDims();
-    try { const api = await loadRoom(); if (state.mode === 'room' && api.enter) { api.enter(); syncRoomBar(); } } catch (e) { /* статус уже показан */ }
+    renderFabChip(); syncBar();
+    try {
+      const api = await loadRoom();
+      if (state.mode === 'room' && api.enter) {
+        api.enter();
+        /* пустая комната — сразу «Мой вариант», чтобы было что двигать */
+        if (!api.room.items.length) { api.addItem({ type: state.type, params: { ...state.params }, fabric: state.fabric, mine: true }, { quiet: true }); api.status && api.status('Ваш вариант уже в комнате. Двигайте его пальцем или мышью'); }
+        syncRoomBar();
+      }
+    } catch (e) { /* статус уже показан */ }
   } else {
     if (roomApi && roomApi.leave) roomApi.leave();
     if (stage) { if (stage.setStudio) stage.setStudio(true); if (piece) stage.setObject(piece); setView(state.view); if (stage.frame) stage.frame({ animate: false, reset: true }); updateDims(); }
-    renderSummary();
+    renderSummary(); renderFabChip(); syncBar();
     writeHash();
   }
 }
@@ -768,13 +899,13 @@ function syncRoomBar() {
 }
 async function addToRoom() {
   await setMode('room');
-  try { const api = await loadRoom(); api.addItem({ type: state.type, params: { ...state.params }, fabric: state.type === 'table' ? null : state.fabric, from: 'model' }); } catch (e) { /* статус уже показан */ }
+  try { const api = await loadRoom(); api.addItem({ type: state.type, params: { ...state.params }, fabric: state.fabric, from: 'model' }); } catch (e) { /* статус уже показан */ }
 }
 function editFromRoom(item) {
   if (!item || !P.DEFAULTS[item.type]) return;
   memo[state.type] = state.params;
   applyParams(item.type, item.params || {});
-  if (item.fabric) state.fabric = item.fabric;
+  if (item.fabric) { state.fabric = item.fabric; state.fabricLost = false; }
   syncTypes(); renderFabric();
   setMode('model').then(() => { setState({}, { structural: true }); openStep(3); });
 }
@@ -796,14 +927,14 @@ function bind() {
   const flds = $('#flds');
   flds.addEventListener('click', (e) => {
     const kc = e.target.closest('[data-keychip]'); if (kc) setSize(kc.dataset.keychip, +kc.dataset.v);
-    const st = e.target.closest('[data-step]'); if (st && e.detail === 0) { stepOnce(st); scheduleRebuild(false); }   // клавиатура
+    const st = e.target.closest('.fld__b[data-inc]'); if (st && e.detail === 0) { stepOnce(st); scheduleRebuild(false); }   // клавиатура
   });
   flds.addEventListener('pointerdown', (e) => {
-    const st = e.target.closest('[data-step]'); if (!st || e.button > 0) return;
+    const st = e.target.closest('.fld__b[data-inc]'); if (!st || e.button > 0) return;
     e.preventDefault(); stepOnce(st);
     holdT = setTimeout(() => { holdI = setInterval(() => stepOnce(st), 70); }, 420);
   });
-  ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => flds.addEventListener(ev, (e) => { if (e.target.closest && e.target.closest('[data-step]')) holdStop(); }));
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => flds.addEventListener(ev, (e) => { if (e.target.closest && e.target.closest('.fld__b[data-inc]')) holdStop(); }));
   window.addEventListener('pointerup', holdStop);
   flds.addEventListener('input', (e) => {
     if (e.target.classList.contains('fld__r')) { const key = e.target.closest('.fld').dataset.key; setSize(key, +e.target.value, { drag: true }); }
@@ -838,11 +969,15 @@ function bind() {
 
   $('#b-drawing').addEventListener('click', openDrawing);
   $('#b-ar').addEventListener('click', openAR); $('#bar-ar').addEventListener('click', openAR);
+  $('#bar-next').addEventListener('click', () => { const n = +$('#bar-next').dataset.next; if (n) openStep(n); });
+  $('#ar-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(variantLink()); toast('Ссылка скопирована'); } catch (e) { toast('Скопируйте адрес из строки браузера'); } });
+  $('#dd-open').addEventListener('click', openDrawingFull);
+  $('#vp-fab').addEventListener('click', seatCloseUp);
   $('#ar-go').addEventListener('click', arGo);
   $('#b-to-room').addEventListener('click', addToRoom);
   $('#b-reset').addEventListener('click', () => {
-    state.inputErr = {}; applyParams(state.type, {}); state.note = ''; qtyTouched = false; state.qty = (P.DEFAULTS[state.type] && P.DEFAULTS[state.type].qty) || 1;
-    state.fabric = defaultFabric(lib); fabUI = { typeId: null, collectionId: null }; renderFabric();
+    state.inputErr = {}; state.inputRaw = {}; applyParams(state.type, {}); state.note = ''; qtyTouched = false; state.qty = (P.DEFAULTS[state.type] && P.DEFAULTS[state.type].qty) || 1;
+    state.fabric = defaultFabric(lib); state.fabricLost = false; fabUI = { typeId: null, collectionId: null }; renderFabric(); renderFabChip();
     setState({}, { structural: true }); applyFabric();
   });
   $('#dd-png').addEventListener('click', async () => { if (!drawing) return; const b = $('#dd-png'); b.disabled = true; try { download(await drawingPng(), `ricca-chertezh-${drawing.id}.png`); } catch (e) { console.error(e); } b.disabled = false; });
@@ -874,42 +1009,56 @@ function bind() {
     const n = +b.closest('.step').dataset.step; openStep(n === state.step ? 0 : n, n !== state.step);
   }));
   $$('[data-next]').forEach((b) => b.addEventListener('click', () => openStep(+b.dataset.next)));
-  mqPhone.addEventListener('change', () => { syncSteps(); rebuild(quality()); });
+  mqPhone.addEventListener('change', () => { syncSteps(); if (stage) rebuild(quality()); });
+  bindRadioKeys();
 
   window.addEventListener('hashchange', () => {
     const h = location.hash;
     if (h === lastHash) return;
     const ph = parseHash(h);
     const fab = ph.f ? findFabricShort(ph.f, lib) : null;
-    if ((ph.cfg && fromCfgString(ph.cfg)) || fab) {
-      if (fab) { if (!ph.cfg && state.type === 'table') applyParams('sofa', {}); state.fabric = fab; }
+    const lost = !!ph.f && !fab;
+    pendingToast = '';
+    if ((ph.cfg && fromCfgString(ph.cfg)) || fab || lost) {
+      if (fab) { state.fabric = fab; state.fabricLost = false; }
+      if (lost) { state.fabricLost = true; pendingToast = MSG_FAB_LOST; }
       syncTypes(); fabUI = { typeId: null, collectionId: null }; renderFabric(); setMode('model'); setState({}, { structural: true });
-      if (fab && !ph.cfg) { openStep(4); toast(`На модели: ${fab.collectionTitle} · ${fab.colour}`); }
+      if (stage) { applyFabric(); rebuild(quality()); }
+      renderFabChip();
+      if ((fab && !ph.cfg) || lost) { openStep(4); revealFabric(); }
+      if (pendingToast) toast(pendingToast, 5000); else if (fab && !ph.cfg) toast(`На модели: ${fab.collectionTitle} · ${fab.colour}`);
     }
     else if (ph.room) setMode('room');
   });
 }
 
 /* ═════════ старт ═════════ */
+let stageReady = null;
 function init() {
   const src = load();
   renderTypes(); syncTypes(); renderFabricTabs(); renderFabric();
   renderForm(); renderSize(); renderFabricVisibility(); renderSummary(); renderHeads(); renderViewportSize();
   state.step = src === 'hash' ? 5 : src === 'fabric' ? 4 : 1;
+  if (src === 'hash') [1, 2, 3, 4, 5].forEach((n) => state.visited.add(n));
+  state.visited.add(state.step);
   syncSteps();
   bind();
-  initStage().then(() => {
+  document.documentElement.classList.add('cfg-ui');
+  /* 3D — после того как шаги уже на экране */
+  stageReady = new Promise((res) => requestAnimationFrame(() => setTimeout(res, 0))).then(initStage).then(() => {
     if (state.mode === 'room') setMode('room');
-    if (arrivedFabric) toast(`На модели: ${arrivedFabric.collectionTitle} · ${arrivedFabric.colour}`);
+    if (pendingToast) toast(pendingToast, 5000);
+    else if (arrivedFabric) toast(`На модели: ${arrivedFabric.collectionTitle} · ${arrivedFabric.colour}`, 4000);
   });
+  if (pendingToast && !stage) toast(pendingToast, 5000);
   /* пришли со страницы «Ткани» — сразу к шагу «Ткань» (на телефоне — под моделью, на компьютере — в колонке справа) */
   if (src === 'fabric') {
-    if (mqPhone.matches) openStep(4);
-    else requestAnimationFrame(() => { const li = $('.step[data-step="4"]'); if (li) window.scrollTo({ top: Math.max(0, li.getBoundingClientRect().top + window.scrollY - $('#hdr').offsetHeight - 16), behavior: 'auto' }); });
+    if (mqPhone.matches) { openStep(4); revealFabric(); }
+    else requestAnimationFrame(() => { const li = $('.step[data-step="4"]'); if (li) window.scrollTo({ top: Math.max(0, li.getBoundingClientRect().top + window.scrollY - $('#hdr').offsetHeight - 16), behavior: 'auto' }); revealFabric(); });
   }
   writeHash(); save();
   document.documentElement.classList.add('cfg-ready');
   /* для автоматических проверок (только с ?cfgtest в адресе) */
-  if (/[?&]cfgtest\b/.test(location.search)) window.__cfg = { state, F, M, P, get stage() { return stage; }, get piece() { return piece; }, get room() { return roomApi; }, get ar() { return arSession; }, setOption, setSize, setType, setFabric, setView, rebuild };
+  if (/[?&]cfgtest\b/.test(location.search)) window.__cfg = { state, get F() { return F; }, get M() { return M; }, P, get stage() { return stage; }, get piece() { return piece; }, get room() { return roomApi; }, get ar() { return arSession; }, setOption, setSize, setType, setFabric, setView, rebuild };
 }
 init();
