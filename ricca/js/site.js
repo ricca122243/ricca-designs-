@@ -84,17 +84,21 @@
     return n ? `${n} ${plural3(n, ['модель', 'модели', 'моделей'])}` : '';
   };
   const subOf = (cat) => { const c = CATS[cat] || {}; return [countOf(cat), c.desc || ''].filter(Boolean).map(typo).join(' · '); };
+  // на плитке: число — отдельным элементом, точка — при нём (телефон: число своей строкой, точка скрыта от глаз, но читается
+  // экранным диктором), описание — после; без висящей «·» в конце строки
+  const tileSubOf = (cat) => {
+    const c = CATS[cat] || {}, n = countOf(cat), d = c.desc || '';
+    return n && d ? `<span class="tile__n">${typo(n)}</span><span class="tile__dot"> · </span>${typo(d)}` : typo(n || d);
+  };
   $$('.tile[data-cat]').forEach((a) => {
     const cat = a.dataset.cat, c = CATS[cat];
     if (!c) return;
     const sub = $('[data-tile-sub]', a), img = $('.tile__img img', a);
-    if (sub) sub.innerHTML = subOf(cat);
+    if (sub) sub.innerHTML = tileSubOf(cat);
     if (img && c.coverAlt) img.alt = c.coverAlt;
   });
-  (() => {
-    const line = $('[data-cat-line]');
-    if (line && ITEMS.length) line.innerHTML = `${ITEMS.length} ${plural3(ITEMS.length, ['модель', 'модели', 'моделей'])}&nbsp;— выберите категорию, внутри все модели и&nbsp;фото.`;
-  })();
+  // строка под «Каталогом» — в HTML: модели каталога — примеры, шьём и любую другую (BRIEF, правки 13 октября); общего
+  // числа моделей не пишем, чтобы каталог не выглядел пределом
 
   /* ---------- «Наши работы»: только подтверждённые фото работ RICCA (RICCA_WORKS). Пусто — раздела и пунктов меню нет.
      Первые три кадра — большие рамки на главной, «Все работы» — когда кадров больше трёх ---------- */
@@ -149,7 +153,7 @@
   }
   function autoVideo(v, toggle, baseOf, opts = {}) {
     if (!v) return null;
-    let userPaused = saveData, inView = false, base = '';
+    let userPaused = saveData || !!opts.startPaused, inView = false, base = '';
     const label = toggle ? toggle.getAttribute('aria-label').replace(/^Остановить /, '') : '';
     const setUI = () => {
       if (!toggle) return;
@@ -196,13 +200,13 @@
     const heroMQ = window.matchMedia('(min-width: 900px) and (min-aspect-ratio: 4/5)');
     const heroV = autoVideo($('.hero__video'), $('.hero__toggle'), () => `video/hero-${heroMQ.matches ? 'desktop' : 'mobile'}`, { target: $('.hero'), threshold: 0.05, afterLoad: true });
     if (heroV) heroMQ.addEventListener('change', () => { $('.hero__video').classList.remove('is-on'); heroV.reload(); });
-    // телефон — свои лёгкие версии роликов (data-src-phone), тот же порог, что у шапки и плашки
-    $$('[data-autovideo]').forEach((box) => {
-      const v = $('video', box);
-      const ctl = autoVideo(v, $('[data-vtoggle]', box), () => (mqPhone.matches && v.dataset.srcPhone) || v.dataset.src, { target: box });
-      if (ctl && v.dataset.srcPhone) mqPhone.addEventListener('change', () => ctl.reload());
-    });
   }
+  // ролик ателье: телефон — своя лёгкая версия (data-src-phone). Reduced motion — не играет сам: постер и ▶, ролик — по нажатию
+  $$('[data-autovideo]').forEach((box) => {
+    const v = $('video', box);
+    const ctl = autoVideo(v, $('[data-vtoggle]', box), () => (mqPhone.matches && v.dataset.srcPhone) || v.dataset.src, { target: box, startPaused: reduceMotion });
+    if (ctl && v.dataset.srcPhone) mqPhone.addEventListener('change', () => ctl.reload());
+  });
 
   /* ---------- Появления при прокрутке (не на первом экране) ---------- */
   const pre = (el) => el.classList.add('is-pre');
@@ -455,7 +459,8 @@
       if (img.complete && img.naturalWidth) frame.classList.remove('is-loading');
       layout();
       count.innerHTML = ph.length > 1 ? `<span aria-hidden="true">${pad2(idx + 1)} / ${pad2(ph.length)}</span><span class="sr-only">Фото ${idx + 1} из ${ph.length}</span>` : '';
-      thumbs.forEach((t, j) => t.setAttribute('aria-current', String(j === idx)));
+      // миниатюры — одна остановка Tab (roving tabindex): ←/→ листают, фокус идёт за текущим фото
+      thumbs.forEach((t, j) => { t.setAttribute('aria-current', String(j === idx)); t.tabIndex = j === idx ? 0 : -1; });
       const t = thumbs[idx];
       if (t && thumbsBox.scrollWidth > thumbsBox.clientWidth) thumbsBox.scrollTo({ left: t.offsetLeft - (thumbsBox.clientWidth - t.offsetWidth) / 2, behavior: reduceMotion ? 'auto' : 'smooth' });
       // соседнее фото — заранее
@@ -507,7 +512,8 @@
     dlg.addEventListener('keydown', (e) => {
       if (!cur || cur.photos.length < 2 || e.altKey || e.metaKey || e.ctrlKey) return;
       if (e.target.closest('summary, a, .pd__actions')) return;
-      if (e.key === 'ArrowLeft') { e.preventDefault(); show(idx - 1); } else if (e.key === 'ArrowRight') { e.preventDefault(); show(idx + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); show(idx - 1); } else if (e.key === 'ArrowRight') { e.preventDefault(); show(idx + 1); } else return;
+      if (e.target.classList && e.target.classList.contains('pd__thumb') && thumbs[idx]) thumbs[idx].focus();
     });
     let sx = null, sy = 0;
     stage.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') { sx = e.clientX; sy = e.clientY; } });

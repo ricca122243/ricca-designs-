@@ -130,22 +130,21 @@
 </section>
 
 <!-- ═════════ 2. ВСТУПЛЕНИЕ + НОВОСТИ + ФАКТЫ. Слева — одна фраза о том, что мы делаем; справа — небольшая карточка-новость ELUNA
-     (белый прямоугольник, слева чёрный квадрат с луной: фаза, свечение, медленный поворот — только CSS; reduced motion — луна стоит).
+     (прямоугольник в тонкой линии, слева чёрный квадрат с луной: фаза при свете справа, свечение, лёгкое покачивание — только CSS; reduced motion — луна стоит).
      Ниже — четыре факта из брифа под тонкими линиями. ═════════ -->
 <section class="sec lead" id="news" aria-labelledby="news-title">
   <div class="wrap">
     <div class="lead__row">
-      <p class="lead__text rv">RICCA&nbsp;DESIGNS шьёт диваны, кровати и&nbsp;кресла по&nbsp;каталогу и&nbsp;под проект&nbsp;— в&nbsp;ткани или коже из&nbsp;нашей палитры. Для дома и&nbsp;для бизнеса.</p>
+      <p class="lead__text rv">RICCA&nbsp;DESIGNS шьёт диваны, кровати и&nbsp;кресла в&nbsp;любом стиле&nbsp;— по&nbsp;каталогу, вашему фото, эскизу или&nbsp;проекту. <span class="lead__tail">Для дома и&nbsp;для бизнеса.</span></p>
       <div class="lead__news rv">
         <h2 class="label" id="news-title">Новости</h2>
         <a class="news" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">
           <span class="news__sky" aria-hidden="true">
             <span class="news__glow"></span>
             <span class="news__moon"><img src="img/eluna/moon-256.webp" width="256" height="256" alt="" loading="lazy" decoding="async"></span>
-            <span class="news__phase"></span>
           </span>
           <span class="news__txt">
-            <span class="news__eye">Новинка&nbsp;· Матрасы&nbsp;ELUNA</span>
+            <span class="news__eye">Новинка<span class="news__sep">&nbsp;· </span><span class="news__brand">Матрасы&nbsp;ELUNA</span></span>
             <span class="news__line">Модели и&nbsp;цены&nbsp;— на&nbsp;новом сайте.</span>
             <span class="news__go">Смотреть<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg></span>
             <span class="sr-only"> — сайт ELUNA, откроется в&nbsp;новой вкладке</span>
@@ -170,7 +169,7 @@
   <div class="wrap">
     <header class="shead rv">
       <h2 class="title" id="cat-title">Каталог</h2>
-      <p class="shead__line" data-cat-line>Выберите категорию&nbsp;— внутри все модели и&nbsp;фото.</p>
+      <p class="shead__line" data-cat-line>Модели в&nbsp;каталоге&nbsp;— примеры: сошьём и&nbsp;любую другую.</p>
     </header>
     <ul class="tiles" role="list">
       <li class="rv"><a class="tile" href="#catalog/sofas" data-cat="sofas">
@@ -189,7 +188,7 @@
         <span class="tile__sub" data-tile-sub>Для отдыха: округлые, на&nbsp;цоколе</span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/chairs" data-cat="chairs">
-        <span class="tile__img"><img src="img/catalog/cover-chairs-600.webp" srcset="img/catalog/cover-chairs-600.webp 600w, img/catalog/cover-chairs.webp 1200w" sizes="(min-width: 1100px) 290px, (min-width: 600px) 46vw, 45vw" width="1200" height="1500" alt="Визуализация: полукресла в светлом букле у чёрного обеденного стола" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
+        <span class="tile__img"><img src="img/catalog/cover-chairs-600.webp" srcset="img/catalog/cover-chairs-600.webp 600w, img/catalog/cover-chairs.webp 1200w" sizes="(min-width: 1100px) 290px, (min-width: 600px) 46vw, 45vw" width="1200" height="1500" alt="Визуализация: спинка и ножки полукресла в светлом букле, крупно" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
         <span class="tile__cap"><span class="tile__name">Стулья</span><span class="tile__viz" aria-hidden="true">визуализация</span></span>
         <span class="tile__sub" data-tile-sub>С подлокотниками и&nbsp;без</span>
       </a></li>
@@ -199,14 +198,14 @@
         <span class="tile__sub" data-tile-sub>Обеденные: круглые, прямоугольные</span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/fabrics" data-cat="fabrics">
-        <span class="tile__img"><img src="img/catalog/cover-fabrics-600.webp" srcset="img/catalog/cover-fabrics-600.webp 600w, img/catalog/cover-fabrics.webp 1200w" sizes="(min-width: 1100px) 290px, (min-width: 600px) 46vw, 45vw" width="1200" height="1500" alt="Образцы тканей разных цветов в книгах-подборках" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
+        <span class="tile__img"><img src="img/catalog/cover-fabrics-600.webp" srcset="img/catalog/cover-fabrics-600.webp 600w, img/catalog/cover-fabrics.webp 1200w" sizes="(min-width: 1100px) 290px, (min-width: 600px) 46vw, 45vw" width="1200" height="1500" alt="Книга образцов тканей: от светло-серого до графитового" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
         <span class="tile__cap"><span class="tile__name">Ткани</span></span>
         <span class="tile__sub" data-tile-sub>Букле, твид, меланж&nbsp;— по&nbsp;цветам</span>
       </a></li>
       <li class="rv tiles__eluna"><a class="tile tile--ext" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener" data-cat="mattresses">
         <span class="tile__img is-noir"><picture>
-          <source media="(min-width: 600px) and (max-width: 1099.98px)" srcset="img/eluna/mattress-layers.webp" width="1200" height="800">
-          <img src="img/catalog/cover-mattresses-600.webp" srcset="img/catalog/cover-mattresses-600.webp 600w, img/catalog/cover-mattresses.webp 1200w" sizes="(min-width: 1100px) 290px, 45vw" width="1200" height="1500" alt="Матрас ELUNA в разрезе: слои над пружинным блоком" loading="lazy" decoding="async">
+          <source media="(min-width: 600px) and (max-width: 1099.98px)" srcset="img/catalog/cover-mattresses-wide.webp" width="1200" height="525">
+          <img src="img/catalog/cover-mattresses-600.webp" srcset="img/catalog/cover-mattresses-600.webp 600w, img/catalog/cover-mattresses.webp 1200w" sizes="(min-width: 1100px) 290px, 45vw" width="1200" height="1500" alt="Матрас ELUNA в луче света на чёрном фоне, знак ELUNA" loading="lazy" decoding="async">
         </picture></span>
         <span class="tile__cap"><span class="tile__name">Матрасы ELUNA</span><svg class="ico tile__ext" aria-hidden="true"><use href="#i-arrow-ne"/></svg></span>
         <span class="tile__sub" data-tile-sub>Ортопедические, на&nbsp;своём сайте</span><span class="sr-only"> — сайт ELUNA, откроется в&nbsp;новой вкладке</span>

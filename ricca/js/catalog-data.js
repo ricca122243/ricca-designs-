@@ -129,16 +129,16 @@ window.RICCA_CATALOG_CATEGORIES = {
     coverAlt: 'Визуализация: кресло в молочной обивке на чёрной раме у окна',
     desc: 'Для отдыха: округлые, на цоколе' },
   chairs: { label: 'Стулья', cover: 'img/catalog/cover-chairs', viz: true,
-    coverAlt: 'Визуализация: полукресла в светлом букле у чёрного обеденного стола',
+    coverAlt: 'Визуализация: спинка и ножки полукресла в светлом букле, крупно',
     desc: 'С подлокотниками и без' },
   tables: { label: 'Столы', cover: 'img/catalog/cover-tables', viz: true,
     coverAlt: 'Визуализация: чёрный обеденный стол, ветка в стеклянной вазе, подвесной светильник',
     desc: 'Обеденные: круглые, прямоугольные' },
   fabrics: { label: 'Ткани', cover: 'img/catalog/cover-fabrics', view: 'fabrics',
-    coverAlt: 'Образцы тканей разных цветов в книгах-подборках',
+    coverAlt: 'Книга образцов тканей: от светло-серого до графитового',
     desc: 'Букле, твид, меланж — по цветам' },
   mattresses: { label: 'Матрасы ELUNA', cover: 'img/catalog/cover-mattresses', href: 'https://ricca-designs.netlify.app',
-    coverAlt: 'Матрас ELUNA в разрезе: слои над пружинным блоком',
+    coverAlt: 'Матрас ELUNA в луче света на чёрном фоне, знак ELUNA',
     desc: 'Ортопедические, на своём сайте' }
 };
 window.RICCA_CATALOG_ORDER = ['sofas', 'beds', 'armchairs', 'chairs', 'tables', 'fabrics', 'mattresses'];
@@ -824,6 +824,7 @@ window.RICCA_CATALOG = [
     type: "Кресло",
     subtitle: "На ножках · белое букле",
     photos: [
+      {"src": "img/catalog/29-armchairs-boucle-white-atelier-cover.webp", "src600": "img/catalog/29-armchairs-boucle-white-atelier-cover-600.webp", "alt": "Кресло в белом букле у стены с молдингами, солнечные блики", "w": 960, "h": 1200},
       {"src": "img/catalog/29-armchairs-boucle-white-atelier.webp", "src600": "img/catalog/29-armchairs-boucle-white-atelier-600.webp", "alt": "Пара кресел в белом букле; рука на спинке показывает фактуру", "w": 1024, "h": 1280}
     ],
     description: "Живое фото: пара кресел в белом букле и рука на спинке — видно фактуру.",
@@ -1209,7 +1210,8 @@ window.RICCA_CATALOG = [
    TODO (заказчик): заказчик пришлёт папку тканей — добавить её образцы сюда: файлы в img/catalog/ (tex-<цвет>-N.webp, 600 × 600),
    по одному объекту { src, name, alt, w, h } в нужную семью цвета или новой семьёй { id, label, items: [...] }. HTML не трогать. */
 window.RICCA_FABRIC_PHOTOS = [
-  { src: 'img/catalog/39-fabrics-swatch-books.webp', src600: 'img/catalog/39-fabrics-swatch-books-900.webp', w600: 900, w: 1200, h: 1600, alt: 'Стопки книг-образцов тканей: светлые, серые, синие и терракотовые оттенки' }
+  /* 13 октября: кадр без бирок поставщика (тот же, что обложка плитки «Ткани»; tools/media-v3/covers-v4b.py) */
+  { src: 'img/catalog/cover-fabrics.webp', src600: 'img/catalog/cover-fabrics-600.webp', w600: 600, w: 1200, h: 1500, alt: 'Книга образцов тканей: от светло-серого до графитового' }
 ];
 window.RICCA_FABRICS = [
   {"id": "red", "label": "Красные и терракота", "items": [{"src": "img/catalog/tex-red-1.webp", "name": "Красно-белый меланж", "alt": "Образец ткани: красно-белый меланж", "w": 600, "h": 600}, {"src": "img/catalog/tex-red-2.webp", "name": "Коралловое плетение", "alt": "Образец ткани: коралловое плетение", "w": 600, "h": 600}, {"src": "img/catalog/tex-red-3.webp", "name": "Терракотовое букле", "alt": "Образец ткани: терракотовое букле", "w": 600, "h": 600}]},

@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 # Сборка готовой папки сайта RICCA DESIGNS для хостинга: dist/RICCA-site + dist/RICCA-site.zip
-# Запуск из корня репозитория: bash tools/build-ricca-dist.sh
+# Запуск из корня репозитория: bash tools/build-ricca-dist.sh   (DIST=/другая/папка — собрать не в dist/, например для проверки)
+# Хостинг получает ТОЛЬКО dist/RICCA-site (или zip). Папку ricca/ целиком не публиковать: в ней внутренние BRIEF.md, content/,
+# _directions/, _v3/, src/ — заметки и исходники, которых на сайте быть не должно.
 # Берёт только то, что нужно сайту: index.html, подключённые стили, js/, шрифты и медиа, на которые есть ссылки, и ролики,
 # которые скрипт подставляет по имени. vendor/ (GSAP) и кадры прежней сцены ELUNA (img/eluna/seq*) — только если сайт
 # на них ещё ссылается: после 9 октября главы ELUNA нет, и ~3,5 МБ кадров и GSAP в архив не идут.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SRC=ricca
-OUT=dist/RICCA-site
-rm -rf "$OUT" dist/RICCA-site.zip && mkdir -p "$OUT"
+DIST=${DIST:-dist}
+OUT=$DIST/RICCA-site
+rm -rf "$OUT" "$DIST/RICCA-site.zip" && mkdir -p "$OUT"
 
 cp "$SRC/index.html" "$OUT/"
 # Стили — только подключённые из index.html (в css/ лежат и старые файлы, например fonts-eluna.css прежней главы ELUNA)
@@ -43,18 +46,25 @@ done
 # MANIFEST*.md и README.md там же — внутренние заметки: в архив не идут
 mkdir -p "$OUT/img/catalog" && cp -r "$SRC/img/catalog/." "$OUT/img/catalog/" && find "$OUT/img/catalog" -name '*.md' -delete
 [ -f "$OUT/js/catalog-data.js" ] || { echo "нет js/catalog-data.js — каталог будет пустым"; exit 1; }
-# Ролики (вход hero-*, ELUNA eluna-loop*, ателье production*) js/site.js подставляет по имени: берём папку video целиком.
+# Ролики (вход hero-*, ателье production*) js/site.js подставляет по имени: берём папку video целиком.
 # Ролики шагов производства (step-NN-*) и их постеры (img/process) — только если сайт на них ещё ссылается: после 10 октября
-# ленты шагов нет, и ~3,2 МБ в архив не идут
+# ленты шагов нет, и ~3,2 МБ в архив не идут. Петля прежней панели «Новинка» (eluna-loop*, eluna-poster*) — тоже только по
+# ссылке: в v4 её нет (новость — карточка с луной), и ~2 МБ в архив не идут
 uses_steps=0
 if site_code | grep -E 'step-[0-9]|img/process' >/dev/null; then uses_steps=1; fi
+uses_eluna_loop=0
+if site_code | grep -E 'eluna-(loop|poster)' >/dev/null; then uses_eluna_loop=1; fi
 mkdir -p "$OUT/video"
 for f in "$SRC"/video/*.mp4 "$SRC"/video/*.webm "$SRC"/video/*.webp; do
   [ -f "$f" ] || continue
-  case "$(basename "$f")" in step-[0-9]*) [ "$uses_steps" -eq 1 ] || continue ;; esac
+  case "$(basename "$f")" in
+    step-[0-9]*) [ "$uses_steps" -eq 1 ] || continue ;;
+    eluna-*) [ "$uses_eluna_loop" -eq 1 ] || continue ;;
+  esac
   cp "$f" "$OUT/video/"
 done
-for need in hero-desktop hero-mobile eluna-loop; do
+[ "$uses_eluna_loop" -eq 1 ] || echo "петля ELUNA (video/eluna-loop*, eluna-poster*) сайтом не используется — в архив не идёт"
+for need in hero-desktop hero-mobile production; do
   ls "$OUT/video/$need".* >/dev/null 2>&1 || { echo "нет ролика: video/$need.*"; exit 1; }
 done
 if [ "$uses_steps" -eq 1 ]; then
@@ -86,5 +96,5 @@ done
 md_files=$(find "$OUT" -name '*.md')
 [ -z "$md_files" ] || { echo "в сборку попали внутренние .md: $md_files"; exit 1; }
 
-(cd dist && zip -qr -X RICCA-site.zip RICCA-site)
-echo "Готово: $OUT ($(du -sh "$OUT" | cut -f1)), dist/RICCA-site.zip ($(du -h dist/RICCA-site.zip | cut -f1))"
+(cd "$DIST" && zip -qr -X RICCA-site.zip RICCA-site)
+echo "Готово: $OUT ($(du -sh "$OUT" | cut -f1)), $DIST/RICCA-site.zip ($(du -h "$DIST/RICCA-site.zip" | cut -f1)). Загружать только эту папку (или zip), не ricca/"
