@@ -301,7 +301,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     if (n && has3D) {
       try {
         if (engine.setMaterials && engine.fabricMaterial) {
-          const nf = engine.fabricMaterial({ hex: fabric.hex, kind: fabric.kind, src450: fabric.src450, collectionId: fabric.collectionId, finish: fabric.finish, quality: phone() ? 'low' : 'mid' });
+          const nf = engine.fabricMaterial({ hex: fabric.hex, kind: fabric.kind, src450: fabric.src450, src900: fabric.src900, src900: fabric.src900, collectionId: fabric.collectionId, finish: fabric.finish, quality: phone() ? 'low' : 'mid' });
           engine.setMaterials(n.piece, { fabric: nf });
         } else { dropNode(id); buildNode(it); if (selected === id) n.outline.visible = true; }
       } catch (e) { dropNode(id); buildNode(it); }

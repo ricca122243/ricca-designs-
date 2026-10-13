@@ -559,7 +559,7 @@ function rebuild(q = quality()) {
 function applyFabric() {
   if (!stage || !piece || !mats) return;
   try {
-    const nf = M.fabricMaterial({ hex: state.fabric.hex, kind: state.fabric.kind, src450: state.fabric.src450, collectionId: state.fabric.collectionId, finish: state.fabric.finish, quality: quality() });
+    const nf = M.fabricMaterial({ hex: state.fabric.hex, kind: state.fabric.kind, src450: state.fabric.src450, src900: state.fabric.src900, src900: state.fabric.src900, collectionId: state.fabric.collectionId, finish: state.fabric.finish, quality: quality() });
     if (typeof F.setMaterials === 'function') F.setMaterials(piece, { fabric: nf });           // furniture3d.js: ткань + швы по userData.matKey
     else {
       const old = mats.fabric;

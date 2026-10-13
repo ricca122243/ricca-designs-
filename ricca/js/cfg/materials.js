@@ -11,7 +11,7 @@ export const KINDS = ['velour', 'corduroy', 'boucle', 'chenille', 'matting', 'su
 const KIND = {
   velour: { rough: 0.88, sheen: 1.0, sheenRough: 0.30, sheenLift: 0.25, nScale: 0.20, tile: 0.06 },
   corduroy: { rough: 0.84, sheen: 0.9, sheenRough: 0.35, sheenLift: 0.20, nScale: 1.0, tile: 0.04 },
-  boucle: { rough: 0.97, sheen: 0.18, sheenRough: 0.80, sheenLift: 0.08, nScale: 1.8, tile: 0.08 },
+  boucle: { rough: 0.97, sheen: 0.18, sheenRough: 0.80, sheenLift: 0.08, nScale: 1.0, tile: 0.08 },   // рельеф петель — в основном с фото (swatchAlbedo)
   chenille: { rough: 0.88, sheen: 0.6, sheenRough: 0.50, sheenLift: 0.15, nScale: 0.5, tile: 0.06 },
   matting: { rough: 0.92, sheen: 0.15, sheenRough: 0.70, sheenLift: 0.05, nScale: 0.6, tile: 0.05 },
   suede: { rough: 0.86, sheen: 0.5, sheenRough: 0.60, sheenLift: 0.12, nScale: 0.15, tile: 0.06 },
@@ -61,7 +61,7 @@ function heightToTextures(H, N, strength, roughBase, roughVar) {
 function dataTex(arr, N, srgb = false) {
   const t = new THREE.DataTexture(arr, N, N, THREE.RGBAFormat);
   t.wrapS = t.wrapT = THREE.RepeatWrapping; t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter;
-  t.generateMipmaps = true; t.anisotropy = 8; t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace; t.needsUpdate = true;
+  t.generateMipmaps = true; t.anisotropy = 16; t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace; t.needsUpdate = true;
   return t;
 }
 
@@ -174,7 +174,8 @@ function fabricMaps(kind, N) {
 /* фото образца → цветная бесшовная плитка (albedo, sRGB). Официальные фото — крупный план со складками и студийным светом:
    свет и складки убираем (делим на сильно размытую яркость — остаётся ровная ткань своего цвета), края сшиваем смешиванием
    с копией, сдвинутой на полплитки (без зеркал и швов). Размер плитки на изделии — PHOTO_TILE (м) по виду ткани. */
-const PHOTO_TILE = { boucle: 0.14, chenille: 0.16, matting: 0.14, corduroy: 0.16, velour: 0.22, suede: 0.22, leather: 0.2 };
+/* по фото: у букле в кадре ~65 петель по 3–4 мм → плитка ~22 см; меньше — петли мельче настоящих и видна «сетка» повторов */
+const PHOTO_TILE = { boucle: 0.22, chenille: 0.2, matting: 0.18, corduroy: 0.18, velour: 0.25, suede: 0.25, leather: 0.22 };
 /* радиус «выравнивания света» (доля плитки): у гладких тканей (велюр, замша, кожа) на фото — складки, их убираем сильнее;
    у букле, шенилла, рогожки крупные петли и плетение — часть ткани, их оставляем */
 const PHOTO_FLAT = { boucle: 1 / 10, chenille: 1 / 12, matting: 1 / 12, corduroy: 1 / 16, velour: 1 / 32, suede: 1 / 32, leather: 1 / 32 };
@@ -242,12 +243,14 @@ const LEATHER_FINISH = {
   'зернистая': { rough: 0.5, nScale: 0.9, clearcoat: 0.12, clearcoatRough: 0.45 },
   'винтаж': { rough: 0.6, nScale: 0.6, clearcoat: 0.04, clearcoatRough: 0.55, albAmp: 0.08 },
 };
-export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null, quality, collectionId = '', finish = '' } = {}) {
+export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null, src900 = null, quality, collectionId = '', finish = '' } = {}) {
   if (!KINDS.includes(kind)) kind = 'velour';
   const q = quality || defaultQuality;
   const N = q === 'high' ? 512 : 256;
   const fin = kind === 'leather' ? (LEATHER_FINISH[String(finish).toLowerCase()] ? String(finish).toLowerCase() : (collectionId === 'vintazh' ? 'винтаж' : '')) : '';
-  const key = `${hex}|${kind}|${src450 || ''}|${N}|${fin}`;
+  /* фото ткани: компьютер — 1400 px (src900) в плитку 1024, телефон — 700 px (src450) в 512, «Моя комната» на телефоне — 256 */
+  const photo = q === 'high' ? src900 || src450 : src450 || src900, PN = q === 'high' ? 1024 : q === 'mid' ? 512 : 256;
+  const key = `${hex}|${kind}|${photo || ''}|${N}|${fin}`;
   if (matCache.has(key)) return matCache.get(key);
   const k = fin ? { ...KIND[kind], ...LEATHER_FINISH[fin] } : KIND[kind];
   const maps = fabricMaps(kind, N);
@@ -261,13 +264,14 @@ export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null
     roughnessMap: maps.rough, map: maps.albedo,
   });
   if (kind === 'leather') { m.clearcoat = k.clearcoat; m.clearcoatRoughness = k.clearcoatRough; m.specularIntensity = k.specular; }
+  else m.specularIntensity = kind === 'velour' || kind === 'suede' ? 0.25 : 0.4;   // ткань не бликует как пластик: свет даёт ворс (sheen)
   /* одинаковый масштаб фактуры: UV в метрах → повтор = 1 / размер плитки */
   for (const t of [maps.normal, maps.rough, maps.albedo]) t.repeat.set(1 / k.tile, 1 / k.tile);
   m.name = `fabric-${kind}-${hex}`;
   m.userData = { kind, hex, src450, finish: fin, baseColor: base.clone(), ready: Promise.resolve(m) };
   /* ткань на модели — настоящее фото образца (цвет, плетение, рисунок), а не заливка цветом: заказчик «ткань в 3D не видна» */
-  if (src450) {
-    m.userData.ready = swatchAlbedo(src450, PHOTO_TILE[kind] || 0.16, q === 'high' ? 384 : 256, PHOTO_FLAT[kind] || 1 / 10).then((sw) => {
+  if (photo) {
+    m.userData.ready = swatchAlbedo(photo, PHOTO_TILE[kind] || 0.16, PN, PHOTO_FLAT[kind] || 1 / 10).then((sw) => {
       if (sw) { m.map = sw.tex; m.color.setRGB(1, 1, 1); m.needsUpdate = true; notify(); }
       return m;
     });
@@ -408,7 +412,7 @@ export function materialSet(cfg = {}) {
   const p = normalize(type, cfg.params || {});
   const f = cfg.fabric || {};
   const kind = f.kind && KINDS.includes(f.kind) ? f.kind : kindOf(f.typeId, f.collectionId);
-  const fabric = fabricMaterial({ hex: f.hex || '#E9E4DA', kind, src450: f.src450 || null, quality: cfg.quality, collectionId: f.collectionId || '', finish: f.finish || '' });
+  const fabric = fabricMaterial({ hex: f.hex || '#E9E4DA', kind, src450: f.src450 || null, src900: f.src900 || null, quality: cfg.quality, collectionId: f.collectionId || '', finish: f.finish || '' });
   let legs;
   const fin = p.legFinish;
   if (type === 'bed') legs = p.base === 'legs' ? woodMaterial(WOOD[fin] ? fin : 'oak') : metalMaterial('black');

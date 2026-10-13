@@ -51,7 +51,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     renderer = new THREE.WebGLRenderer({ antialias, alpha: false, powerPreference: 'high-performance', preserveDrawingBuffer: false });
   } catch (e) { throw new Error('webgl'); }
   if (!renderer.getContext()) throw new Error('webgl');
-  const dprCap = phone ? 1.5 : 2;
+  const dprCap = 2;   // телефон тоже 2x: модель одна, а при 1,5 ткань и края выглядели мыльными
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
@@ -76,7 +76,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   scene.add(hemi);
   const key = new THREE.DirectionalLight(0xffffff, 1.1);
   key.castShadow = true;
-  key.shadow.mapSize.set(phone ? 1024 : 2048, phone ? 1024 : 2048);
+  key.shadow.mapSize.set(2048, 2048);
   key.shadow.radius = 12; key.shadow.blurSamples = 24; key.shadow.bias = -0.0005; key.shadow.normalBias = 0.01;
   scene.add(key); scene.add(key.target);
   /* мягкий заполняющий свет со стороны камеры (без тени): бок, повёрнутый к зрителю, не проваливается в плоскую тень */
@@ -110,7 +110,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   function ensureComposer() {
     if (composer || aoMode === 'off') return composer;
     const size = renderer.getSize(new THREE.Vector2()), pr = renderer.getPixelRatio();
-    composer = new EffectComposer(renderer);
+    /* свой буфер с MSAA ×4: у EffectComposer по умолчанию сглаживания нет — края модели после AO шли «лесенкой» */
+    const rt = new THREE.WebGLRenderTarget(size.x * pr, size.y * pr, { type: THREE.HalfFloatType, samples: 4 });
+    composer = new EffectComposer(renderer, rt);
     renderPass = new RenderPass(scene, camera);
     composer.addPass(renderPass);
     gtao = new GTAOPass(scene, camera, size.x * pr, size.y * pr);
