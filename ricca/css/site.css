@@ -676,47 +676,59 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .fab__sw figcaption { font: 400 12px/1.5 var(--sans); color: var(--ink-2); }
 @media (max-width: 599px) { .fab__grid { gap: 28px 14px; } .fab__grid > li { flex-basis: calc((100% - 14px) / 2); } .fab__photos { gap: 14px; } }
 
-/* ткани — библиотека (js/fabrics-data.js): липкие вкладки по типам; коллекция — слева название, материал, факты и фактура,
-   справа образцы простыми квадратами (6 в ряд; планшет — 5, телефон — 4) с названием цвета */
+/* ткани — «одна ткань, цвет кнопками» (js/fabrics-data.js): липкие вкладки по типам; коллекция — один блок: слева большое
+   квадратное фото выбранного цвета (стрелки и счёт «01 / 22» — белой плашкой в углу), справа название капителью и цвет
+   антиквой, материал, факты одной строкой, круглые кнопки цветов (28 px, зона нажатия 44 px), действия.
+   Телефон: название и цвет → фото во всю ширину → кнопки цветов → действия */
 @media (min-width: 768px) {
   .view__tabs.is-fab { position: sticky; top: var(--hdr); z-index: 4; margin-bottom: clamp(32px, 3.4vw, 48px); padding: 4px 0; background: var(--paper); }
 }
 .fl__type { scroll-margin-top: calc(var(--hdr) + 72px); }
 .fl__type + .fl__type { margin-top: clamp(72px, 7vw, 112px); }
 .fl__tt { margin-bottom: clamp(24px, 2.6vw, 40px); font: 300 clamp(26px, 2.2vw, 34px)/1.15 var(--serif); }
-.fl__col { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); column-gap: var(--gap); padding: 28px 0 clamp(48px, 4.4vw, 64px); border-top: 1px solid var(--line); }
-.fl__info { display: grid; align-content: start; gap: 8px; }
-.fl__kind { font: 400 13px/1.5 var(--sans); color: var(--ink); }
-.fl__facts { font: 400 12px/1.65 var(--sans); color: var(--ink-2); max-width: 36ch; }
-.fl__tex { display: block; width: min(100%, 200px); aspect-ratio: 1; margin-top: 16px; overflow: hidden; background: var(--paper-2); }
-.fl__tex img { width: 100%; height: 100%; object-fit: cover; }
-.fl__grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 24px clamp(10px, 1.2vw, 16px); }
-.fl__sw { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 10px; width: 100%; text-align: left; cursor: zoom-in; }
-.fl__img { display: block; aspect-ratio: 1; overflow: hidden; background: var(--c, var(--paper-2)); }
-.fl__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease); }
-.fl__cn { font: 400 12px/1.4 var(--sans); color: var(--ink-2); letter-spacing: .01em; hyphens: auto; -webkit-hyphens: auto; overflow-wrap: anywhere; }   /* «Терракотовый» на 360 — с переносом, не шире квадрата */
-.fl__cn small { display: block; font-size: 11px; }
-@media (hover: hover) {
-  .fl__sw:hover .fl__img img { transform: scale(1.04); }
-  .fl__sw:hover .fl__cn { color: var(--ink); }
-}
+.fc { display: grid; grid-template-columns: clamp(360px, 40vw, 580px) minmax(0, 1fr); column-gap: clamp(48px, 6vw, 112px); align-items: start; padding: clamp(32px, 3.4vw, 48px) 0 clamp(56px, 5vw, 80px); border-top: 1px solid var(--line); scroll-margin-top: calc(var(--hdr) + 64px); }
+.fc__frame { position: relative; aspect-ratio: 1; overflow: hidden; background: var(--c, var(--paper-2)); touch-action: pan-y; transition: background-color 300ms var(--ease); }
+.fc__frame img { width: 100%; height: 100%; object-fit: cover; transition: opacity 260ms var(--ease); }
+.fc__frame.is-loading img { opacity: 0; }
+.fc__steps { position: absolute; right: 0; bottom: 0; display: flex; align-items: center; background: var(--paper); color: var(--ink); }
+.fc__step { display: grid; place-items: center; width: 44px; height: 44px; transition: background 250ms var(--ease), color 250ms var(--ease); }
+.fc__step .ico { width: 16px; height: 16px; }
+.fc__count { min-width: 64px; font: 500 11px/1 var(--sans); letter-spacing: .14em; text-align: center; font-variant-numeric: tabular-nums lining-nums; }
+@media (hover: hover) { .fc__step:hover { background: var(--ink); color: var(--paper); } }
+.fc__side { display: grid; align-content: start; justify-items: start; padding-top: 2px; }
+.fc__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 20px; font-weight: 400; }
+.fc__name { color: var(--ink); }
+.fc__cn { font: 300 clamp(26px, 2.2vw, 32px)/1.15 var(--serif); letter-spacing: .005em; color: var(--ink); }
+.fc__kind { margin-top: 18px; font: 400 13px/1.5 var(--sans); color: var(--ink); }
+.fc__facts { margin-top: 4px; font: 400 12px/1.65 var(--sans); color: var(--ink-2); max-width: 64ch; }
+.fc__sw { display: flex; flex-wrap: wrap; gap: 8px; margin: 28px 0 0 -8px; }   /* -8 px: край первого круга — по линии текста */
+.fc__dot { position: relative; display: grid; place-items: center; width: 44px; height: 44px; }
+.fc__dot::before { content: ''; width: 28px; height: 28px; border-radius: 50%; background: var(--c, var(--paper-2)); box-shadow: inset 0 0 0 1px rgba(11, 11, 12, .14); transition: box-shadow 250ms var(--ease); }
+.fc__dot[aria-checked="true"]::before { box-shadow: inset 0 0 0 1px rgba(11, 11, 12, .14), 0 0 0 3px var(--paper), 0 0 0 4px var(--ink); }
+.fc__dot:focus-visible { outline: none; }
+.fc__dot:focus-visible::before { outline: 1px solid var(--ink); outline-offset: 7px; }
+@media (hover: hover) { .fc__dot:hover:not([aria-checked="true"])::before { box-shadow: inset 0 0 0 1px rgba(11, 11, 12, .14), 0 0 0 3px var(--paper), 0 0 0 4px var(--line-2); } }
+.fc__acts { display: grid; grid-template-columns: minmax(0, 340px); gap: 12px; width: 100%; margin-top: 32px; }
+.fc__acts .btn .ico { width: 16px; height: 16px; }
+.fc__3d { justify-self: start; margin-top: 4px; }
 .fl__end { display: grid; justify-items: center; gap: 28px; margin-top: clamp(40px, 4vw, 64px); padding-top: clamp(56px, 5vw, 80px); border-top: 1px solid var(--line); text-align: center; }
 .fl__end-line { max-width: 30ch; font: 300 clamp(22px, 1.8vw, 26px)/1.4 var(--serif); text-wrap: balance; font-variant-numeric: lining-nums; }
 .fl__end-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 16px; }
 @media (max-width: 1099px) {
-  .fl__col { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); }
-  .fl__grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .fc { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--gap); }
 }
 @media (max-width: 767px) {
-  .fl__type { scroll-margin-top: calc(var(--hdr) + 60px); }
-  .fl__col { grid-template-columns: minmax(0, 1fr); row-gap: 20px; padding: 22px 0 40px; }
-  .fl__info { grid-template-columns: minmax(0, 1fr) 72px; column-gap: 16px; row-gap: 6px; }
-  .fl__info > * { grid-column: 1; }
-  .fl__tex { grid-column: 2; grid-row: 1 / span 3; width: 72px; margin-top: 0; }
-  .fl__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 6px; }
-  .fl__sw { gap: 6px; }
-  .fl__cn { font-size: 10px; line-height: 1.35; letter-spacing: -.01em; }   /* «Терракотовый» целиком в квадрат 74 px (360) */
-  .fl__cn small { font-size: 10px; }
+  .fl__type { scroll-margin-top: calc(var(--hdr) + 12px); }
+  .fc { grid-template-columns: minmax(0, 1fr); padding: 24px 0 48px; scroll-margin-top: calc(var(--hdr) + 12px); }
+  .fc__side { display: contents; }   /* порядок: название и цвет → фото → кнопки цветов → действия */
+  .fc__head { order: 1; gap: 4px 16px; }
+  .fc__cn { font-size: 26px; }
+  .fc__kind { order: 2; margin-top: 10px; }
+  .fc__facts { order: 3; }
+  .fc__fig { order: 4; margin-top: 20px; }
+  .fc__sw { order: 5; margin-top: 14px; }
+  .fc__acts { order: 6; grid-template-columns: minmax(0, 1fr); margin-top: 20px; }
+  .fc__acts .btn { min-height: 48px; }
   .fl__end-btns { display: grid; width: 100%; }
   /* вкладки тканей: все пять типов на 390; на 360/320 у правого края видно начало «Экокожи» — знак, что ряд листается */
   .view__tabs.is-fab { gap: 0 14px; }
@@ -848,31 +860,6 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   .lb__item { grid-column: 1; grid-row: auto; justify-self: start; }
 }
 
-/* ткань крупно — квадрат образца на подложке его цвета (пока грузится), подпись: цвет, коллекция, «Хочу эту ткань» */
-.fz__frame { position: relative; background: var(--c, var(--paper-2)); }
-.fz__frame img { width: 100%; height: 100%; object-fit: cover; transition: opacity 300ms var(--ease); }
-.fz__frame.is-loading img { opacity: 0; }
-.fz__cap .lb__title { font: 300 clamp(24px, 2vw, 30px)/1.2 var(--serif); letter-spacing: .005em; text-transform: none; }
-.fz__cap .lb__piece { font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
-.fz__wa { grid-column: 2; grid-row: 1 / span 3; }
-.fz__btns { grid-column: 2; grid-row: 1 / span 3; display: grid; gap: 8px; }
-.fz__btns .fz__wa { grid-column: auto; grid-row: auto; }
-.fz__cart[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
-.fz__3d { justify-self: center; margin-top: 2px; color: var(--ink-2); }   /* «Примерить на мебели в 3D» — тихая ссылка под кнопками */
-@media (hover: hover) { .fz__3d:hover { color: var(--ink); } }
-@media (max-width: 599px) {
-  .fz__wa { grid-column: 1; grid-row: 4; width: 100%; margin-top: 10px; }
-  .fz__btns { grid-column: 1; grid-row: 4; margin-top: 10px; }
-  .fz__btns .btn { width: 100%; min-height: 48px; }
-  .fz__btns .fz__wa { margin-top: 0; }
-  .fz__cap { gap: 2px; }
-  .fz__cap .lb__count { grid-row: 3; }   /* цвет, коллекция, «02 / 14», кнопка */
-  .fz .lb__stage { padding-inline: var(--pad); }   /* левый край квадрата — по подписи */
-  /* стрелки соседних цветов — под квадратом (только в «Ткани крупно»; в окне работ их нет) */
-  .fz .lb__stage .pd__arrow { display: grid; top: auto; bottom: 8px; margin-top: 0; }
-  .fz .pd__arrow--prev { left: 4px; } .fz .pd__arrow--next { right: 4px; }
-}
-
 /* подборка — панель справа (телефон — на весь экран) */
 .sl { position: fixed; inset: 0 0 0 auto; width: min(440px, 100%); height: 100%; height: 100dvh; display: flex; flex-direction: column; transform: translateX(24px); box-shadow: -1px 0 0 var(--line); }
 .sl.is-in { transform: none; }
@@ -924,7 +911,6 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   .sl__head { padding-left: var(--pad); }
   .cart .sl__list, .cart__form, .cart .sl__empty { padding-inline: var(--pad); }
   .sl__foot { padding-inline: var(--pad); }
-  .fz .toast { top: calc(64px + env(safe-area-inset-top)); bottom: auto; }   /* кнопки образца внизу не закрываем */
 }
 @media (max-width: 419px) { .cart__sends .btn { letter-spacing: .14em; padding: 0 12px; } }
 @media (max-height: 520px) { .cart:has(.cart__form :focus) .cart__foot { display: none; } }   /* клавиатура открыта — место форме */

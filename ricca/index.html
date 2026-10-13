@@ -588,30 +588,6 @@
   </figure>
 </dialog>
 
-<!-- Ткань крупно (экран «Ткани»): образец 900 px, цвет, коллекция; ←/→ и свайп — соседние цвета коллекции;
-     «Хочу эту ткань» — WhatsApp с коллекцией и цветом. Адрес #fabric-<коллекция>-<N>; содержимое — js/site.js (FZ) -->
-<dialog class="lb fz" id="fabric" aria-labelledby="fz-title">
-  <button class="icon-btn lb__close" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
-  <figure class="lb__fig">
-    <div class="lb__stage" data-fz-stage>
-      <div class="fz__frame" data-fz-frame><img data-fz-img alt="" width="900" height="900"></div>
-      <button class="pd__arrow pd__arrow--prev" type="button" data-fz-step="-1" aria-label="Предыдущий цвет"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
-      <button class="pd__arrow pd__arrow--next" type="button" data-fz-step="1" aria-label="Следующий цвет"><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
-    </div>
-    <figcaption class="lb__cap fz__cap">
-      <h2 class="lb__title" id="fz-title" data-fz-title tabindex="-1" autofocus></h2>
-      <p class="lb__piece" data-fz-piece></p>
-      <div class="fz__btns">
-        <a class="btn btn--fill fz__wa" data-fz-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Хочу эту ткань</a>
-        <button class="btn btn--line fz__cart" type="button" data-fz-cart><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg>В&nbsp;корзину&nbsp;— эта ткань</button>
-        <!-- конструктор 3D с этой тканью: js/site.js ставит href = configurator.html#f=<коллекция>:<N> -->
-        <a class="caps-link fz__3d" data-fz-3d href="configurator.html">Примерить на&nbsp;мебели в&nbsp;3D<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-      </div>
-      <p class="lb__count" data-fz-count aria-live="polite"></p>
-    </figcaption>
-  </figure>
-</dialog>
-
 <!-- Корзина: модели каталога, конструктора и ткани → одна заявка в WhatsApp (js/cart.js, localStorage ricca-cart-v1).
      Строки, количество и комментарии строит js/site.js; длинная заявка делится на части (кнопки «Часть 1 из N»). Цен нет. -->
 <dialog class="sl cart" id="cart" aria-labelledby="cart-title">

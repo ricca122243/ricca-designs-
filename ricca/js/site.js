@@ -473,39 +473,177 @@
       if (!uid) { CART.say(`В корзине уже ${RC.MAX_LINES} позиций — отправьте заявку, затем добавьте ещё`, true); return; }
       CART.say(`В корзине: ${t}`, true);
     });
-    /* Ткани — библиотека: вкладки по типам (липкие; подсвечивают тип, который сейчас на экране), коллекция — название капителью,
-       материал и число цветов, факты с карточки одной строкой, фактура крупно (если есть), образцы квадратами с названием цвета.
-       Образец → «Ткань крупно» (#fabric-<коллекция>-<N>). В конце — шоурум и WhatsApp «Помогите подобрать ткань» */
+    /* Ткани — «одна ткань, цвет кнопками» (отзыв клиента 13 октября). Вкладки по типам (липкие; подсвечивают тип на экране).
+       Коллекция — один блок: слева ОДНО большое квадратное фото выбранного цвета (src900, нет — src450; стрелки и свайп
+       листают цвета), справа название капителью и выбранный цвет рядом, материал и число цветов, факты одной строкой,
+       круглые кнопки цветов (заливка — hex; выбранная — в кольце; ←/→ на клавиатуре), «Хочу эту ткань» (WhatsApp),
+       «В корзину — образец» (строка корзины kind 'fabric'), «Примерить на мебели в 3D» (configurator.html#f=<коллекция>:<N>).
+       Грузится только фото выбранного цвета (первые блоки сразу, остальные — когда до них дошли); другие цвета — по нажатию
+       (и при наведении мышью). Выбор цвета пишет адрес #fabric-<коллекция>-<N> — им можно поделиться: откроется этот цвет.
+       В конце — шоурум и WhatsApp «Помогите подобрать ткань» */
     let spyHold = 0;
-    // образец в сетке: 240 px на телефоне, 450 px на компьютере (плитка 66–140 px)
-    const swImg = (k) => {
-      const big = k.src450 || k.src900, s240 = k.src240 || '';
-      return `<img src="${esc(s240 || big)}"${s240 && big ? ` srcset="${esc(`${s240} 240w, ${big} 450w`)}" sizes="(min-width: 1200px) 140px, (min-width: 768px) 12vw, 22vw"` : ''} width="450" height="450" alt="" loading="lazy" decoding="async">`;
+    const fsel = new Map();   // id коллекции → номер выбранного цвета (с 0)
+    const fcLive = document.createElement('p');   // для чтения с экрана: какой цвет показан после стрелок / свайпа
+    fcLive.className = 'sr-only'; fcLive.setAttribute('aria-live', 'polite');
+    const isHex = (h) => /^#[0-9a-f]{3,8}$/i.test(h || '');
+    const fcSrc = (k) => k.src900 || k.src450;
+    // по умолчанию — первый цвет с фото 900 px (у PIQUE первые цвета есть только в 450), иначе первый
+    const fcDefault = (c) => Math.max(0, c.colours.findIndex((k) => k.src900));
+    const fcName = (k) => `${k.name}${k.finish ? `, ${k.finish}` : ''}`;
+    const fcAlt = (c, k) => `Ткань ${c.title}, цвет ${k.name.toLowerCase()}${k.finish ? `, ${k.finish}` : ''}`;
+    const fcWa = (c, k, n) => {
+      const u = /^https?:$/.test(location.protocol) ? `\n${location.origin}${location.pathname}#fabric-${c.id}-${n + 1}` : '';
+      return waUrl(`Здравствуйте! Интересует ткань ${fabWaName(c, k)}, цвет ${k.name.toLowerCase()}.${u}`);
     };
+    const fcInCart = (id) => !!(RC && RC.list().some((x) => x.kind === 'fabric' && x.id === id));
     function renderLibrary() {
       title.textContent = 'Ткани';
-      nEl.innerHTML = typo('Популярные коллекции по типам.');   // «больше 50 коллекций и 1000 цветов» — один раз, в конце
+      nEl.innerHTML = typo('Популярные коллекции. Выберите цвет — фото сменится.');   // «больше 50 коллекций и 1000 цветов» — один раз, в конце
       back.textContent = 'Каталог';
       tabs.classList.add('is-fab');
       tabs.innerHTML = FLIB.map((t, i) => `<button type="button" data-ftype="${esc(t.id)}" aria-pressed="${i === 0}">${esc(t.title)}</button>`).join('');
       tabs.hidden = FLIB.length < 2;
       const kindLine = (c) => { const n = c.colours.length; let k = String(c.kind || '').trim(); if (!fabKindOf(c) && k.includes(':')) k = k.slice(k.indexOf(':') + 1).trim(); return `${typo(k.replace(/^./, (ch) => ch.toUpperCase()))}&nbsp;· ${n}&nbsp;${plural3(n, ['цвет', 'цвета', 'цветов'])}`; };
+      let order = 0;
       content.innerHTML = `<div class="fl">${FLIB.map((t) => `<section class="fl__type" id="fab-t-${esc(t.id)}" data-ftype="${esc(t.id)}" aria-labelledby="fl-t-${esc(t.id)}">`
         + `<h3 class="fl__tt" id="fl-t-${esc(t.id)}">${esc(t.title)}</h3>`
-        + t.collections.map((c) => `<article class="fl__col" id="fab-${esc(c.id)}" aria-label="${esc([c.title, fabKindOf(c)].filter(Boolean).join(', '))}"><div class="fl__info">`
-          + `<h4 class="caps fl__name">${esc(c.title)}</h4><p class="fl__kind">${kindLine(c)}</p>`
-          + ((c.facts || []).length ? `<p class="fl__facts">${numNb(typo(c.facts.slice(0, 3).map((f) => lcFirst(f)).join(' · ').replace(/^./, (ch) => ch.toUpperCase())))}</p>` : '')
-          + (c.texture ? `<span class="fl__tex"><img src="${esc(c.texture.replace(/texture-600\.webp$/, 'texture-160.webp'))}" srcset="${esc(`${c.texture.replace(/texture-600\.webp$/, 'texture-160.webp')} 160w, ${c.texture} 600w`)}" sizes="(max-width: 767px) 72px, 200px" width="600" height="600" alt="${esc(`${c.title}: фактура ткани крупно`)}" loading="lazy" decoding="async"></span>` : '')
-          + `</div><ul class="fl__grid" role="list">${c.colours.map((k, j) => `<li><button class="fl__sw" type="button" data-fab="${esc(c.id)}" data-n="${j + 1}" aria-haspopup="dialog" aria-label="${esc(`${c.title}, ${k.name.toLowerCase()}${k.finish ? `, ${k.finish}` : ''}: открыть крупно`)}">`
-            + `<span class="fl__img"${/^#[0-9a-f]{3,8}$/i.test(k.hex || '') ? ` style="--c:${k.hex}"` : ''}>${swImg(k)}</span>`
-            + `<span class="fl__cn" aria-hidden="true">${typo(k.name)}${k.finish ? `<small>${esc(k.finish)}</small>` : ''}</span></button></li>`).join('')}</ul></article>`).join('')
+        + t.collections.map((c) => {
+          const n = fsel.has(c.id) ? fsel.get(c.id) : fcDefault(c);
+          fsel.set(c.id, n);
+          const k = c.colours[n], many = c.colours.length > 1, eager = order++ < 2;
+          return `<article class="fc" id="fab-${esc(c.id)}" data-fc="${esc(c.id)}" aria-labelledby="fc-n-${esc(c.id)}">`
+            + `<div class="fc__fig"><div class="fc__frame" data-fc-frame${isHex(k.hex) ? ` style="--c:${k.hex}"` : ''}>`
+            + `<img data-fc-img src="${esc(fcSrc(k))}" width="900" height="900" alt="${esc(fcAlt(c, k))}" loading="${eager ? 'eager' : 'lazy'}" decoding="async">`
+            + (many ? '<span class="fc__steps">'
+              + '<button class="fc__step" type="button" data-fc-step="-1" aria-label="Предыдущий цвет"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg></button>'
+              + `<span class="fc__count" data-fc-count aria-hidden="true">${pad2(n + 1)} / ${pad2(c.colours.length)}</span>`
+              + '<button class="fc__step" type="button" data-fc-step="1" aria-label="Следующий цвет"><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button></span>' : '')
+            + '</div></div><div class="fc__side">'
+            + `<h4 class="fc__head" id="fc-n-${esc(c.id)}"><span class="caps fc__name">${esc(c.title)}</span><span class="fc__cn" data-fc-cn>${typo(fcName(k))}</span></h4>`
+            + `<p class="fc__kind">${kindLine(c)}</p>`
+            + ((c.facts || []).length ? `<p class="fc__facts">${numNb(typo(c.facts.slice(0, 3).map((f) => lcFirst(f)).join(' · ').replace(/^./, (ch) => ch.toUpperCase())))}</p>` : '')
+            + `<div class="fc__sw" role="radiogroup" aria-label="${esc(`Цвет ткани ${c.title}`)}">${c.colours.map((x, j) => `<button class="fc__dot" type="button" role="radio" data-fc-k="${j}" aria-checked="${j === n}" tabindex="${j === n ? 0 : -1}" aria-label="${esc(fcName(x))}" title="${esc(fcName(x))}"${isHex(x.hex) ? ` style="--c:${x.hex}"` : ''}></button>`).join('')}</div>`
+            + '<div class="fc__acts">'
+            + `<a class="btn btn--fill" data-fc-wa href="${esc(fcWa(c, k, n))}" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Хочу эту ткань<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a>`
+            + (RC ? '<button class="btn btn--line" type="button" data-fc-cart aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span>В&nbsp;корзину&nbsp;— образец</span></button>' : '')
+            + `<a class="caps-link fc__3d" data-fc-3d href="configurator.html#f=${esc(encodeURIComponent(c.id))}:${n + 1}">Примерить на&nbsp;мебели в&nbsp;3D<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>`
+            + '</div></div></article>';
+        }).join('')
         + '</section>').join('')}</div>`
         + `<div class="fl__end"><p class="fl__end-line">${typo('Больше 50 коллекций и 1000 цветов — вживую в шоуруме на Навои, 208/2.')}</p>`
         + `<div class="fl__end-btns"><a class="btn btn--fill" href="#showroom" data-to-showroom>Подобрать ткань в&nbsp;шоуруме</a>`
         + `<a class="btn btn--line" href="${esc(waUrl(CONFIG.msg.fabrics))}" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Помогите подобрать ткань<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a></div></div>`;
+      content.append(fcLive);
       if (foot) foot.hidden = true;
       spyHold = 0;
+      $$('.fc', content).forEach(fcSyncCart);
     }
+    // корзина: эта ткань этого цвета уже в корзине — кнопка «Образец в корзине» открывает корзину
+    function fcSyncCart(art) {
+      const b = $('[data-fc-cart]', art), x = FCOL.get(art.dataset.fc);
+      if (!b || !x) return;
+      const n = fsel.get(x.c.id) || 0, k = x.c.colours[n], on = fcInCart(`${x.c.id}-${n + 1}`);
+      b.setAttribute('aria-pressed', String(on));
+      b.lastChild.innerHTML = on ? 'Образец в&nbsp;корзине' : 'В&nbsp;корзину&nbsp;— образец';
+      b.setAttribute('aria-label', on ? `Образец ${x.c.title}, ${k.name.toLowerCase()} в корзине — открыть корзину` : `В корзину — образец ткани ${x.c.title}, ${k.name.toLowerCase()}`);
+    }
+    if (RC) RC.onChange(() => { if (spec && spec.type === 'fabrics') $$('.fc', content).forEach(fcSyncCart); });
+    // смена фото: новое грузится в фоне, старое стоит до готовности (дольше 90 мс — под ним цвет образца); ошибка 900 → 450
+    function fcPhoto(art, c, k) {
+      const frame = $('[data-fc-frame]', art), img = $('[data-fc-img]', art);
+      if (isHex(k.hex)) frame.style.setProperty('--c', k.hex); else frame.style.removeProperty('--c');
+      const tok = (art._tok || 0) + 1;
+      art._tok = tok;
+      const put = (src) => {
+        if (art._tok !== tok) return;
+        clearTimeout(art._slow);
+        img.src = src; img.alt = fcAlt(c, k);
+        frame.classList.remove('is-loading');
+      };
+      const load = (src) => {
+        const pre = new Image();
+        pre.onload = () => put(src);
+        pre.onerror = () => { if (k.src450 && src !== k.src450) load(k.src450); else put(src); };
+        pre.src = src;
+        if (pre.complete && pre.naturalWidth) put(src);
+      };
+      clearTimeout(art._slow);
+      art._slow = setTimeout(() => { if (art._tok === tok) frame.classList.add('is-loading'); }, 90);
+      load(fcSrc(k));
+    }
+    // выбрать цвет n коллекции: фото, имя цвета, кнопки, ссылки WhatsApp и 3D, корзина; адрес — #fabric-<коллекция>-<N>
+    function fcPick(id, n, how = {}) {
+      const x = FCOL.get(id), art = x && document.getElementById(`fab-${id}`);
+      if (!art) return;
+      const c = x.c, len = c.colours.length;
+      n = ((n % len) + len) % len;
+      const k = c.colours[n], was = fsel.get(id);
+      fsel.set(id, n);
+      if (was !== n || how.force) fcPhoto(art, c, k);
+      $('[data-fc-cn]', art).innerHTML = typo(fcName(k));
+      const cnt = $('[data-fc-count]', art);
+      if (cnt) cnt.textContent = `${pad2(n + 1)} / ${pad2(len)}`;
+      $$('[data-fc-k]', art).forEach((b) => { const on = +b.dataset.fcK === n; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+      const wa = $('[data-fc-wa]', art);
+      wa.href = fcWa(c, k, n);
+      wa.setAttribute('aria-label', `Хочу эту ткань: ${c.title}, ${k.name.toLowerCase()} — написать в WhatsApp`);
+      const t3 = $('[data-fc-3d]', art);
+      t3.href = `configurator.html#f=${encodeURIComponent(c.id)}:${n + 1}`;
+      t3.setAttribute('aria-label', `Примерить ткань ${c.title}, ${k.name.toLowerCase()} на мебели в 3D`);
+      fcSyncCart(art);
+      if (how.focus) { const b = $(`[data-fc-k="${n}"]`, art); if (b) b.focus(); }
+      if (how.say) fcLive.textContent = `${c.title}: ${fcName(k)}, ${n + 1} из ${len}`;
+      if (how.addr !== false) R.replace(`#fabric-${c.id}-${n + 1}`);
+    }
+    content.addEventListener('click', (e) => {
+      const art = e.target.closest('.fc');
+      if (!art || !spec || spec.type !== 'fabrics') return;
+      const id = art.dataset.fc, n = fsel.get(id) || 0;
+      const dot = e.target.closest('[data-fc-k]');
+      if (dot) { fcPick(id, +dot.dataset.fcK); return; }
+      const st = e.target.closest('[data-fc-step]');
+      if (st) { fcPick(id, n + (+st.dataset.fcStep), { say: true }); return; }
+      const cb = e.target.closest('[data-fc-cart]');
+      if (cb && RC) {
+        const c = FCOL.get(id).c, k = c.colours[n], fid = `${id}-${n + 1}`;
+        if (fcInCart(fid)) { CART.open(cb); return; }
+        const name = fabWaName(c, k), colour = k.name.toLowerCase();
+        const uid = RC.add({ kind: 'fabric', id: fid, title: `Ткань ${name}, ${colour}`, subtitle: [fabKind(c), k.finish].filter(Boolean).join(', '),
+          qty: 1, fabric: { collection: name, colour, kind: fabKind(c), id: fid }, link: RC.abs(`#fabric-${fid}`), thumb: k.src240 || k.src450 || '' });
+        if (!uid) { CART.say(`В корзине уже ${RC.MAX_LINES} позиций — отправьте заявку, затем добавьте ещё`, true); return; }
+        CART.say(`Образец в корзине: ${c.title}, ${colour}`, true);
+      }
+    });
+    // кнопки цветов — одна остановка Tab на коллекцию; ←/→ (↑/↓), Home/End — соседний / первый / последний цвет
+    content.addEventListener('keydown', (e) => {
+      const dot = e.target.closest('[data-fc-k]');
+      if (!dot || e.altKey || e.metaKey || e.ctrlKey) return;
+      const art = dot.closest('.fc'), id = art.dataset.fc, n = +dot.dataset.fcK, len = FCOL.get(id).c.colours.length;
+      const to = { ArrowRight: n + 1, ArrowDown: n + 1, ArrowLeft: n - 1, ArrowUp: n - 1, Home: 0, End: len - 1 }[e.key];
+      if (to == null) return;
+      e.preventDefault();
+      fcPick(id, to, { focus: true });
+    });
+    // мышь над кнопкой цвета — фото этого цвета грузится заранее (только его)
+    content.addEventListener('pointerover', (e) => {
+      const dot = e.pointerType === 'mouse' && e.target.closest('[data-fc-k]');
+      if (!dot || dot._pre) return;
+      const x = FCOL.get(dot.closest('.fc').dataset.fc), k = x && x.c.colours[+dot.dataset.fcK];
+      if (k) { dot._pre = 1; const pre = new Image(); pre.src = fcSrc(k); }
+    });
+    // свайп по фото (палец, перо): влево — следующий цвет, вправо — предыдущий
+    let fsx = null, fsy = 0, fsArt = null;
+    content.addEventListener('pointerdown', (e) => {
+      const fr = e.pointerType !== 'mouse' && !e.target.closest('[data-fc-step]') && e.target.closest('[data-fc-frame]');
+      fsx = fr ? e.clientX : null; fsy = e.clientY; fsArt = fr ? fr.closest('.fc') : null;
+    });
+    content.addEventListener('pointerup', (e) => {
+      if (fsx == null || !fsArt) return;
+      const dx = e.clientX - fsx, dy = e.clientY - fsy, id = fsArt.dataset.fc;
+      fsx = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) fcPick(id, (fsel.get(id) || 0) + (dx < 0 ? 1 : -1), { say: true });
+    });
+    content.addEventListener('pointercancel', () => { fsx = null; });
     // какая вкладка подсвечена: последний тип, чей заголовок уже под вкладками; в самом конце — последний тип
     let spyRaf = 0;
     function spy() {
@@ -595,8 +733,20 @@
         const was = dlg.open;
         showDlg(dlg, R.opener);
         if (fresh) { dlg.scrollTop = 0; dlg.classList.remove('is-scrolled'); }   // закрытое окно не помнит прокрутку — сбрасываем после показа
-        if (fresh && s.type === 'fabrics' && s.sub && s.sub !== 'all') requestAnimationFrame(() => toType(s.sub, false));   // #catalog/fabrics/bukle
+        if (fresh && s.type === 'fabrics' && s.sub && s.sub !== 'all' && s.fab == null) requestAnimationFrame(() => toType(s.sub, false));   // #catalog/fabrics/bukle
         if (!was || fresh) requestAnimationFrame(() => title.focus({ preventScroll: true }));
+        // #fabric-<коллекция>-<N>: эта коллекция с цветом N — к её блоку (под липкими вкладками)
+        if (s.type === 'fabrics' && s.fab != null && FCOL.has(s.fab)) {
+          fcPick(s.fab, s.fabN, { addr: false });
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            const art = document.getElementById(`fab-${s.fab}`);
+            if (!art) return;
+            const sec = art.closest('.fl__type');
+            if (sec) markTab(sec.dataset.ftype);
+            spyHold = Date.now() + 200;
+            art.scrollIntoView({ block: 'start' });
+          }));
+        }
         if (fresh && s.type === 'cat') requestAnimationFrame(() => drawOn($('.kind__fig .draw', content), true));
       },
       close(focus = true) { hideDlg(dlg, focus); }
@@ -850,105 +1000,6 @@
     };
   })();
 
-  /* ---------- Ткань крупно: образец 900 px (нет — 450), цвет, коллекция; ←/→, свайп и стрелки — соседние цвета коллекции;
-     «Хочу эту ткань» — WhatsApp «Интересует ткань RIVER, цвет молочный.» и ссылка на этот образец;
-     «В корзину — эта ткань» — строка корзины kind 'fabric' (уже в корзине — кнопка «Ткань в корзине» открывает корзину) ---------- */
-  const FZ = (() => {
-    const dlg = $('#fabric');
-    if (!dlg) return { open() {}, close() {} };
-    const stage = $('[data-fz-stage]', dlg), frame = $('[data-fz-frame]', dlg), img = $('[data-fz-img]', dlg);
-    const title = $('[data-fz-title]', dlg), piece = $('[data-fz-piece]', dlg), wa = $('[data-fz-wa]', dlg), count = $('[data-fz-count]', dlg);
-    const steps = $$('[data-fz-step]', dlg), cartBtn = $('[data-fz-cart]', dlg);
-    const to3d = $('[data-fz-3d]', dlg);   // «Примерить на мебели в 3D» → configurator.html#f=<коллекция>:<N> (диван по умолчанию)
-    let cur = null, idx = 0;
-    const fzId = () => (cur ? `${cur.c.id}-${idx + 1}` : '');
-    const fzIn = () => !!(RC && cur && RC.list().some((x) => x.kind === 'fabric' && x.id === fzId()));
-    function syncCart() {
-      if (!cartBtn || !cur) return;
-      const on = fzIn(), k = list()[idx];
-      cartBtn.setAttribute('aria-pressed', String(on));
-      cartBtn.lastChild.textContent = on ? 'Ткань в\u00a0корзине' : 'В\u00a0корзину\u00a0— эта ткань';
-      cartBtn.setAttribute('aria-label', on ? 'Ткань в корзине — открыть корзину' : `В корзину — ткань ${cur.c.title}, ${k ? k.name.toLowerCase() : ''}`);
-    }
-    if (cartBtn && !RC) cartBtn.hidden = true;
-    if (cartBtn && RC) {
-      RC.onChange(syncCart);
-      cartBtn.addEventListener('click', () => {
-        if (!cur) return;
-        if (fzIn()) { CART.open(cartBtn); return; }
-        const c = cur.c, k = list()[idx];
-        if (!k) return;
-        const name = fabWaName(c, k), colour = k.name.toLowerCase();
-        const uid = RC.add({ kind: 'fabric', id: fzId(), title: `Ткань ${name}, ${colour}`, subtitle: [fabKind(c), k.finish].filter(Boolean).join(', '),
-          qty: 1, fabric: { collection: name, colour, kind: fabKind(c), id: fzId() }, link: RC.abs(`#fabric-${fzId()}`), thumb: k.src240 || k.src450 || '' });
-        if (!uid) { CART.say(`В корзине уже ${RC.MAX_LINES} позиций — отправьте заявку, затем добавьте ещё`, true); return; }
-        CART.say(`Ткань в корзине: ${c.title}, ${colour}`, true);
-      });
-    }
-    const list = () => (cur ? cur.c.colours : []);
-    function layout() {
-      const k = list()[idx];
-      if (!k) return;
-      const cs = getComputedStyle(stage);
-      const sw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-      const sh = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-      if (sw <= 0 || sh <= 0) return;
-      // размер квадрата — один на всю коллекцию (не прыгает при листании): все цвета с 900 px — до 640, иначе — до 450
-      const cap = list().every((x) => x.src900) ? 640 : 450;
-      const side = Math.floor(Math.min(sw, sh, cap));
-      frame.style.width = frame.style.height = `${side}px`;
-    }
-    function show(i) {
-      const ks = list();
-      if (!ks.length) return;
-      idx = (i + ks.length) % ks.length;
-      const k = ks[idx], c = cur.c;
-      frame.style.setProperty('--c', /^#[0-9a-f]{3,8}$/i.test(k.hex || '') ? k.hex : '');
-      frame.classList.add('is-loading');
-      img.onload = () => frame.classList.remove('is-loading');
-      img.onerror = () => { if (k.src450 && img.getAttribute('src') !== k.src450) img.src = k.src450; else frame.classList.remove('is-loading'); };
-      img.alt = `Ткань ${c.title}, цвет ${k.name.toLowerCase()}${k.finish ? `, ${k.finish}` : ''}`;
-      img.src = k.src900 || k.src450;
-      if (img.complete && img.naturalWidth) frame.classList.remove('is-loading');
-      layout();
-      title.innerHTML = typo(k.name);
-      piece.innerHTML = typo([c.title, [fabKindOf(c), k.finish].filter(Boolean).join(', ')].filter(Boolean).join(' · '));
-      const u = /^https?:$/.test(location.protocol) ? `\n${location.origin}${location.pathname}#fabric-${c.id}-${idx + 1}` : '';
-      wa.href = waUrl(`Здравствуйте! Интересует ткань ${fabWaName(c, k)}, цвет ${k.name.toLowerCase()}.${u}`);
-      wa.setAttribute('aria-label', `Хочу эту ткань: ${c.title}, ${k.name.toLowerCase()} — написать в WhatsApp`);
-      if (to3d) { to3d.href = `configurator.html#f=${encodeURIComponent(c.id)}:${idx + 1}`; to3d.setAttribute('aria-label', `Примерить ткань ${c.title}, ${k.name.toLowerCase()} на мебели в 3D`); }
-      count.innerHTML = ks.length > 1 ? `<span aria-hidden="true">${pad2(idx + 1)} / ${pad2(ks.length)}</span><span class="sr-only">Цвет ${idx + 1} из ${ks.length}</span>` : '';
-      steps.forEach((b) => { b.hidden = ks.length < 2; });
-      syncCart();
-      const nx = ks[(idx + 1) % ks.length];
-      if (nx && nx !== k) { const pre = new Image(); pre.src = nx.src900 || nx.src450; }
-    }
-    const step = (d) => { show(idx + d); if (cur) R.replace(`#fabric-${cur.c.id}-${idx + 1}`); };
-    steps.forEach((b) => b.addEventListener('click', () => step(+b.dataset.fzStep)));
-    dlg.addEventListener('keydown', (e) => {
-      if (e.altKey || e.metaKey || e.ctrlKey || list().length < 2) return;
-      if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); } else if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
-    });
-    let sx = null, sy = 0;
-    stage.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') { sx = e.clientX; sy = e.clientY; } });
-    stage.addEventListener('pointerup', (e) => { if (sx == null) return; const dx = e.clientX - sx, dy = e.clientY - sy; sx = null; if (list().length > 1 && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) step(dx < 0 ? 1 : -1); });
-    stage.addEventListener('pointercancel', () => { sx = null; });
-    if ('ResizeObserver' in window) new ResizeObserver(() => { if (dlg.open) layout(); }).observe(stage);
-    else window.addEventListener('resize', () => { if (dlg.open) layout(); });
-    return {
-      open(id, n) {
-        const x = FCOL.get(id);
-        if (!x) return;
-        const same = dlg.open && cur === x && idx === n;
-        cur = x;
-        showDlg(dlg, R.opener);
-        if (!same) show(n);
-        requestAnimationFrame(layout);
-      },
-      close(focus = true) { hideDlg(dlg, focus); }
-    };
-  })();
-
   /* ---------- Корзина: строки из js/cart.js (RICCA_CART) → заявка в WhatsApp одним сообщением (длинная — по частям).
      Строка: фото, название, строка модели, ткань, размер, количество (−/+), комментарий, «Убрать». Ниже — имя, город и
      комментарий к заказу (по желанию; помнятся в этом браузере, ricca-cart-contact-v1). После отправки — «Очистить корзину?»
@@ -1170,7 +1221,6 @@
     view: () => R.closeTo(View.parentHash()),
     product: () => R.closeTo(View.isOpen() ? View.hash() : '#catalog'),
     lightbox: () => R.closeTo(View.isOpen() ? View.hash() : '#works'),
-    fabric: () => R.closeTo(View.isOpen() ? View.hash() : '#catalog/fabrics'),
     cart: () => CART.close(),
     menu: () => hideDlg(menu)
   };
@@ -1189,13 +1239,11 @@
     if (it && ITEM.has(it.dataset.item)) { e.preventDefault(); R.go(`#item-${it.dataset.item}`, it); return; }
     const wk = e.target.closest('[data-work]');
     if (wk && WORKS[+wk.dataset.work]) { e.preventDefault(); R.go(`#work-${pad2(+wk.dataset.work + 1)}`, wk); return; }
-    const fb = e.target.closest('[data-fab]');
-    if (fb && FCOL.has(fb.dataset.fab)) { e.preventDefault(); R.go(`#fabric-${fb.dataset.fab}-${+fb.dataset.n || 1}`, fb); return; }
     // «Подобрать ткань в шоуруме» (экран «Ткани»): окна закрыть, к разделу «Шоурум»
     const ts = e.target.closest('[data-to-showroom]');
     if (ts) {
       e.preventDefault();
-      R.replace('#showroom'); FZ.close(false); PD.close(false); View.close(false);
+      R.replace('#showroom'); PD.close(false); View.close(false);
       const el = document.getElementById('showroom');
       if (el) requestAnimationFrame(() => el.scrollIntoView({ block: 'start' }));
       return;
@@ -1203,7 +1251,7 @@
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
     const h = a.getAttribute('href');
-    if (/^#catalog\/[a-z]/.test(h) || h === '#works/all') {
+    if (/^#catalog\/[a-z]/.test(h) || h === '#works/all' || /^#fabric-[a-z0-9-]+-\d+$/.test(h)) {
       e.preventDefault();
       if (menu.open) { menu.classList.remove('is-in'); menu.close(); lock(); }
       R.go(h, a);
