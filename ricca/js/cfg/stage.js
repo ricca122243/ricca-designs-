@@ -198,6 +198,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     if (more) requestRender();
   }
   function renderFrame(moving) {
+    emit('beforeRender');
     if (studioOn && contact.dirty) contact.update(scene, root);
     const useAO = aoMode === 'always' || (aoMode === 'idle' && !moving && !interacting);
     if (useAO && ensureComposer()) {
@@ -215,7 +216,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   controls.addEventListener('end', () => { requestRender(); });
 
   /* ---------- объект ---------- */
-  function setObject(group) {
+  function setObject(group, { reframe = true } = {}) {
     if (object) root.remove(object);
     object = group;
     if (group) root.add(group);
@@ -226,7 +227,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     contact.fit(box); contact.dirty = true;
     renderer.shadowMap.needsUpdate = true;
     const r = radius();
-    if (!lastRadius || Math.abs(r - lastRadius) / lastRadius > 0.1) { const first = !lastRadius; lastRadius = r; frame({ animate: !first && !reduced() }); }
+    if (!reframe) { /* комната: камерой управляет room.js */ }
+    else if (!lastRadius || Math.abs(r - lastRadius) / lastRadius > 0.1) { const first = !lastRadius; lastRadius = r; frame({ animate: !first && !reduced() }); }
     else if (view !== '3d') fitOrtho();
     requestRender();
   }
@@ -481,6 +483,10 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     get box() { return box.clone(); },
     supportsPhotoreal: false,
     setObject, setView, frame, setDims, setStudio, requestRender, snapshot, resize,
+    cancelAnim() { anim = null; },
+    get animating() { return !!anim; },
+    /* после комнаты: запомнить текущий габарит как «последний», чтобы модель не перекадрировалась сама */
+    resetFraming() { lastRadius = 0; },
     photoreal() { return null; },
     on(e, fn) { (listeners[e] = listeners[e] || []).push(fn); return stage; },
     off(e, fn) { listeners[e] = (listeners[e] || []).filter((f) => f !== fn); return stage; },

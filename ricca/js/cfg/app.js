@@ -2,9 +2,8 @@
    Тип → Форма → Размер → Ткань → Итог. Один setState() → validate → интерфейс → перестройка 3D (с задержкой) → адрес → сохранение.
    Параметры — в метрах (params.js), на экране — сантиметры. Цен нет: «Рассчитаем стоимость в WhatsApp». */
 
-/* 3D-движок. Строка 1 — заглушка для разработки (js/cfg/_stub3d.js); при сборке заменить её строкой ENGINE (без «//»). */
-import * as F from './_stub3d.js'; import * as M from './_stub3d.js'; import { createStage } from './_stub3d.js'; import { validate } from './_stub3d.js';
-// ENGINE: import * as F from './furniture3d.js'; import * as M from './materials.js'; import { createStage } from './stage.js'; import { validate } from './validate.js';
+/* 3D-движок: модель (furniture3d.js), материалы (materials.js), сцена (stage.js), проверка размеров (validate.js). */
+import * as F from './furniture3d.js'; import * as M from './materials.js'; import { createStage } from './stage.js'; import { validate } from './validate.js';
 
 import * as P from './params.js';
 import { getLibrary, findFabric, defaultFabric, fabricOf, fabricRef } from './fabrics.js';
@@ -397,6 +396,7 @@ function renderSummary() {
   const bad = hasErrors();
   const err = $('#sum-err'); err.hidden = !bad; err.textContent = bad ? firstError() : '';
   for (const a of [$('#wa-send'), $('#bar-wa')]) {
+    if (a.id === 'bar-wa' && state.mode === 'room' && roomApi) { a.href = roomApi.waHref(); continue; }
     a.href = bad ? '#size' : waUrl(waText(s, { link, dims: d, id: rid }));
     a.classList.toggle('is-off', bad); a.setAttribute('aria-disabled', String(bad));
   }
@@ -649,7 +649,7 @@ function arNoSupport() {
   const go = $('#ar-go'), msg = $('#ar-msg');
   go.disabled = true; go.textContent = 'Открыть камеру';
   msg.hidden = false;
-  msg.textContent = 'На этом телефоне AR в браузере недоступен. Откройте страницу в Safari на iPhone или в Chrome на Android — или посмотрите вариант в шоуруме.';
+  msg.textContent = 'Ваш телефон не поддерживает AR в браузере — откройте страницу в Safari на iPhone или в Chrome на Android. Или посмотрите вариант в шоуруме.';
 }
 async function arGo() {
   if (!arSession) return;
@@ -694,6 +694,7 @@ function loadRoom() {
       onEdit: (item) => editFromRoom(item),
       initialHash: location.hash.startsWith('#room=') ? location.hash.slice(6) : null,
       storageKey: LS.room,
+      onChange: () => syncRoomBar(),
     });
     return roomApi;
   }).catch((e) => {
@@ -714,12 +715,19 @@ async function setMode(mode, { focus = false } = {}) {
   if (focus) $(`[data-mode-tab="${mode}"]`).focus();
   if (room) {
     updateDims();
-    try { const api = await loadRoom(); if (state.mode === 'room' && api.enter) api.enter(); } catch (e) { /* статус уже показан */ }
+    try { const api = await loadRoom(); if (state.mode === 'room' && api.enter) { api.enter(); syncRoomBar(); } } catch (e) { /* статус уже показан */ }
   } else {
     if (roomApi && roomApi.leave) roomApi.leave();
-    if (stage) { if (stage.setStudio) stage.setStudio(true); if (piece) stage.setObject(piece); setView(state.view); if (stage.frame) stage.frame({ animate: false }); }
+    if (stage) { if (stage.setStudio) stage.setStudio(true); if (piece) stage.setObject(piece); setView(state.view); if (stage.frame) stage.frame({ animate: false }); updateDims(); }
+    renderSummary();
     writeHash();
   }
+}
+/* в комнате нижняя кнопка «В WhatsApp» отправляет план комнаты (размер + предметы + параметры «Моего варианта») */
+function syncRoomBar() {
+  const a = $('#bar-wa'); if (!a) return;
+  if (state.mode === 'room' && roomApi && roomApi.waHref) { a.href = roomApi.waHref(); a.classList.remove('is-off'); a.setAttribute('aria-disabled', 'false'); }
+  else renderSummary();
 }
 async function addToRoom() {
   await setMode('room');
@@ -789,7 +797,7 @@ function bind() {
   $('#note').addEventListener('input', (e) => { state.note = e.target.value.slice(0, 300); setState({}, { rebuild: false }); });
   $('#qty').addEventListener('change', (e) => { const q = parseInt(e.target.value, 10); qtyTouched = true; setState({ qty: Math.max(1, Math.min(99, Number.isFinite(q) ? q : state.qty)) }, { rebuild: false }); });
   $$('[data-qty]').forEach((b) => b.addEventListener('click', () => { qtyTouched = true; setState({ qty: Math.max(1, Math.min(99, state.qty + (+b.dataset.qty))) }, { rebuild: false }); }));
-  for (const a of [$('#wa-send'), $('#bar-wa')]) a.addEventListener('click', (e) => { if (hasErrors()) { e.preventDefault(); openStep(3); const f = $('#flds .has-err .fld__i'); if (f) f.focus(); } });
+  for (const a of [$('#wa-send'), $('#bar-wa')]) a.addEventListener('click', (e) => { if (state.mode === 'room' && a.id === 'bar-wa') return; if (hasErrors()) { e.preventDefault(); openStep(3); const f = $('#flds .has-err .fld__i'); if (f) f.focus(); } });
 
   $('#b-drawing').addEventListener('click', openDrawing);
   $('#b-ar').addEventListener('click', openAR); $('#bar-ar').addEventListener('click', openAR);
@@ -816,7 +824,7 @@ function bind() {
   });
   $('#t-dims').addEventListener('click', () => { state.showDims = !state.showDims; $('#t-dims').setAttribute('aria-pressed', String(state.showDims)); updateDims(); });
   $('#t-photo').addEventListener('click', savePhoto);
-  $('#t-frame').addEventListener('click', () => { if (stage && stage.frame) stage.frame({ animate: !reduced }); });
+  $('#t-frame').addEventListener('click', () => { if (state.mode === 'room' && roomApi) { roomApi.resetView(); return; } if (stage && stage.frame) stage.frame({ animate: !reduced }); });
   $('#t-real').addEventListener('click', photoreal);
   $('#vp-pt-cancel').addEventListener('click', () => { if (ptAbort) ptAbort.abort(); $('#vp-pt').hidden = true; $('#vp-pt-cancel').textContent = 'Отменить'; });
   $('#vp-pt-save').addEventListener('click', async () => { if (ptBlob) await shareOrDownload(ptBlob, `ricca-${id()}-foto.png`); $('#vp-pt').hidden = true; $('#vp-pt-cancel').textContent = 'Отменить'; });
@@ -850,5 +858,7 @@ function init() {
   initStage().then(() => { if (state.mode === 'room') setMode('room'); });
   writeHash(); save();
   document.documentElement.classList.add('cfg-ready');
+  /* для автоматических проверок (только с ?cfgtest в адресе) */
+  if (/[?&]cfgtest\b/.test(location.search)) window.__cfg = { state, F, M, P, get stage() { return stage; }, get piece() { return piece; }, get room() { return roomApi; }, get ar() { return arSession; }, setOption, setSize, setType, setFabric, setView, rebuild };
 }
 init();

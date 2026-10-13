@@ -460,3 +460,16 @@ ul, ol { padding: 0; list-style: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 1ms !important; animation-duration: 1ms !important; }
 }
+
+/* ---------- комната: панель над выбранным предметом (room.js) ---------- */
+.rt { position: absolute; left: 0; top: 0; z-index: 6; display: flex; gap: 0; background: var(--paper); border: 1px solid var(--line-2); box-shadow: 0 8px 24px rgba(17, 17, 17, .08); will-change: transform; }
+.rt__b { position: relative; display: grid; place-items: center; width: 44px; height: 44px; color: var(--ink); transition: background 200ms; }
+.rt__b + .rt__b { border-left: 1px solid var(--line); }
+.rt__b .ico { width: 20px; height: 20px; }
+.rt__x { position: absolute; right: 3px; bottom: 2px; font: 500 8px/1 var(--sans); letter-spacing: .02em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+@media (hover: hover) { .rt__b:hover { background: var(--paper-2); } }
+.rt__b:focus-visible { outline-offset: -3px; }
+.rp__items button > span:first-child { min-width: 0; }
+.rp__sz { flex: none; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.rp__mine-tag { display: inline-block; margin-left: 6px; font: normal 500 9px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.ar__qrh { display: block; margin-bottom: 8px; font: 500 11px/1.3 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink); }
