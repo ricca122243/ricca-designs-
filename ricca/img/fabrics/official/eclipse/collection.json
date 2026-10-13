@@ -1,0 +1,137 @@
+{
+ "id": "eclipse",
+ "colours": [
+  {
+   "code": "100",
+   "name": "Eclipse 100",
+   "hex": "#dddbd6",
+   "src1200": "img/fabrics/official/eclipse/100-1200.webp",
+   "src600": "img/fabrics/official/eclipse/100-600.webp",
+   "thumb": "img/fabrics/official/eclipse/100-160.webp"
+  },
+  {
+   "code": "150",
+   "name": "Eclipse 150",
+   "hex": "#d1c1a9",
+   "src1200": "img/fabrics/official/eclipse/150-1200.webp",
+   "src600": "img/fabrics/official/eclipse/150-600.webp",
+   "thumb": "img/fabrics/official/eclipse/150-160.webp"
+  },
+  {
+   "code": "290",
+   "name": "Eclipse 290",
+   "hex": "#9d8f83",
+   "src1200": "img/fabrics/official/eclipse/290-1200.webp",
+   "src600": "img/fabrics/official/eclipse/290-600.webp",
+   "thumb": "img/fabrics/official/eclipse/290-160.webp"
+  },
+  {
+   "code": "520",
+   "name": "Eclipse 520",
+   "hex": "#cc964a",
+   "src1200": "img/fabrics/official/eclipse/520-1200.webp",
+   "src600": "img/fabrics/official/eclipse/520-600.webp",
+   "thumb": "img/fabrics/official/eclipse/520-160.webp"
+  },
+  {
+   "code": "690",
+   "name": "Eclipse 690",
+   "hex": "#bacdc5",
+   "src1200": "img/fabrics/official/eclipse/690-1200.webp",
+   "src600": "img/fabrics/official/eclipse/690-600.webp",
+   "thumb": "img/fabrics/official/eclipse/690-160.webp"
+  },
+  {
+   "code": "694",
+   "name": "Eclipse 694",
+   "hex": "#697b63",
+   "src1200": "img/fabrics/official/eclipse/694-1200.webp",
+   "src600": "img/fabrics/official/eclipse/694-600.webp",
+   "thumb": "img/fabrics/official/eclipse/694-160.webp"
+  },
+  {
+   "code": "795",
+   "name": "Eclipse 795",
+   "hex": "#426179",
+   "src1200": "img/fabrics/official/eclipse/795-1200.webp",
+   "src600": "img/fabrics/official/eclipse/795-600.webp",
+   "thumb": "img/fabrics/official/eclipse/795-160.webp"
+  },
+  {
+   "code": "924",
+   "name": "Eclipse 924",
+   "hex": "#a1988d",
+   "src1200": "img/fabrics/official/eclipse/924-1200.webp",
+   "src600": "img/fabrics/official/eclipse/924-600.webp",
+   "thumb": "img/fabrics/official/eclipse/924-160.webp"
+  },
+  {
+   "code": "986",
+   "name": "Eclipse 986",
+   "hex": "#696869",
+   "src1200": "img/fabrics/official/eclipse/986-1200.webp",
+   "src600": "img/fabrics/official/eclipse/986-600.webp",
+   "thumb": "img/fabrics/official/eclipse/986-160.webp"
+  },
+  {
+   "code": "990",
+   "name": "Eclipse 990",
+   "hex": "#c0bfc0",
+   "src1200": "img/fabrics/official/eclipse/990-1200.webp",
+   "src600": "img/fabrics/official/eclipse/990-600.webp",
+   "thumb": "img/fabrics/official/eclipse/990-160.webp"
+  },
+  {
+   "code": "993",
+   "name": "Eclipse 993",
+   "hex": "#939390",
+   "src1200": "img/fabrics/official/eclipse/993-1200.webp",
+   "src600": "img/fabrics/official/eclipse/993-600.webp",
+   "thumb": "img/fabrics/official/eclipse/993-160.webp"
+  }
+ ],
+ "heroes": [
+  {
+   "src": "img/fabrics/official/eclipse/hero-1-1600.webp",
+   "w": 1012,
+   "h": 1157
+  },
+  {
+   "src": "img/fabrics/official/eclipse/hero-2-1600.webp",
+   "w": 1013,
+   "h": 1424
+  },
+  {
+   "src": "img/fabrics/official/eclipse/hero-3-1600.webp",
+   "w": 855,
+   "h": 1084
+  },
+  {
+   "src": "img/fabrics/official/eclipse/hero-4-1600.webp",
+   "w": 1600,
+   "h": 1600
+  }
+ ],
+ "inuse": [
+  {
+   "src": "img/fabrics/official/eclipse/inuse-1-1200.webp",
+   "w": 1056,
+   "h": 1200
+  },
+  {
+   "src": "img/fabrics/official/eclipse/inuse-2-1200.webp",
+   "w": 757,
+   "h": 1166
+  },
+  {
+   "src": "img/fabrics/official/eclipse/inuse-3-1200.webp",
+   "w": 1200,
+   "h": 1060
+  },
+  {
+   "src": "img/fabrics/official/eclipse/inuse-4-1200.webp",
+   "w": 825,
+   "h": 900
+  }
+ ]
+}

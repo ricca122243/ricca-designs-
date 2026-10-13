@@ -1,0 +1,151 @@
+{
+ "id": "torrens-plain",
+ "colours": [
+  {
+   "code": "01",
+   "name": "Торренс ровный / Torrens plain 01",
+   "hex": "#dfdbd2",
+   "src1200": "img/fabrics/official/torrens-plain/01-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/01-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/01-160.webp"
+  },
+  {
+   "code": "02",
+   "name": "Торренс ровный / Torrens plain 02",
+   "hex": "#bfbab0",
+   "src1200": "img/fabrics/official/torrens-plain/02-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/02-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/02-160.webp"
+  },
+  {
+   "code": "03",
+   "name": "Торренс ровный / Torrens plain 03",
+   "hex": "#b7afa2",
+   "src1200": "img/fabrics/official/torrens-plain/03-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/03-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/03-160.webp"
+  },
+  {
+   "code": "04",
+   "name": "Торренс ровный / Torrens plain 04",
+   "hex": "#948a7d",
+   "src1200": "img/fabrics/official/torrens-plain/04-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/04-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/04-160.webp"
+  },
+  {
+   "code": "05",
+   "name": "Торренс ровный / Torrens plain 05",
+   "hex": "#7c6e61",
+   "src1200": "img/fabrics/official/torrens-plain/05-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/05-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/05-160.webp"
+  },
+  {
+   "code": "06",
+   "name": "Торренс ровный / Torrens plain 06",
+   "hex": "#654642",
+   "src1200": "img/fabrics/official/torrens-plain/06-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/06-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/06-160.webp"
+  },
+  {
+   "code": "07",
+   "name": "Торренс ровный / Torrens plain 07",
+   "hex": "#5a5948",
+   "src1200": "img/fabrics/official/torrens-plain/07-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/07-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/07-160.webp"
+  },
+  {
+   "code": "08",
+   "name": "Торренс ровный / Torrens plain 08",
+   "hex": "#868889",
+   "src1200": "img/fabrics/official/torrens-plain/08-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/08-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/08-160.webp"
+  },
+  {
+   "code": "09",
+   "name": "Торренс ровный / Torrens plain 09",
+   "hex": "#b0aba4",
+   "src1200": "img/fabrics/official/torrens-plain/09-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/09-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/09-160.webp"
+  },
+  {
+   "code": "10",
+   "name": "Торренс ровный / Torrens plain 10",
+   "hex": "#aea8a1",
+   "src1200": "img/fabrics/official/torrens-plain/10-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/10-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/10-160.webp"
+  },
+  {
+   "code": "11",
+   "name": "Торренс ровный / Torrens plain 11",
+   "hex": "#666361",
+   "src1200": "img/fabrics/official/torrens-plain/11-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/11-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/11-160.webp"
+  },
+  {
+   "code": "12",
+   "name": "Торренс ровный / Torrens plain 12",
+   "hex": "#625b58",
+   "src1200": "img/fabrics/official/torrens-plain/12-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/12-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/12-160.webp"
+  },
+  {
+   "code": "13",
+   "name": "Торренс ровный / Torrens plain 13",
+   "hex": "#474b50",
+   "src1200": "img/fabrics/official/torrens-plain/13-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/13-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/13-160.webp"
+  },
+  {
+   "code": "14",
+   "name": "Торренс ровный / Torrens plain 14",
+   "hex": "#7b909e",
+   "src1200": "img/fabrics/official/torrens-plain/14-1200.webp",
+   "src600": "img/fabrics/official/torrens-plain/14-600.webp",
+   "thumb": "img/fabrics/official/torrens-plain/14-160.webp"
+  }
+ ],
+ "heroes": [
+  {
+   "src": "img/fabrics/official/torrens-plain/hero-1-1600.webp",
+   "w": 1600,
+   "h": 1067
+  },
+  {
+   "src": "img/fabrics/official/torrens-plain/hero-2-1600.webp",
+   "w": 1600,
+   "h": 1067
+  },
+  {
+   "src": "img/fabrics/official/torrens-plain/hero-3-1600.webp",
+   "w": 1600,
+   "h": 1067
+  }
+ ],
+ "inuse": [
+  {
+   "src": "img/fabrics/official/torrens-plain/inuse-1-1200.webp",
+   "w": 900,
+   "h": 1200
+  },
+  {
+   "src": "img/fabrics/official/torrens-plain/inuse-2-1200.webp",
+   "w": 900,
+   "h": 1200
+  },
+  {
+   "src": "img/fabrics/official/torrens-plain/inuse-3-1200.webp",
+   "w": 900,
+   "h": 1200
+  }
+ ]
+}
