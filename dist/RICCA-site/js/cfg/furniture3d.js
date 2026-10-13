@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { parts, normalize, dims as dimsOf } from './params.js';
-import { seamMaterial } from './materials.js';
+import { seamMaterial, pipingMaterial } from './materials.js';
 
 export { TYPES, OPTIONS, RANGES, DEFAULTS, PRESETS, normalize, parts, dims, labelOf, rangeOf, itemBounds } from './params.js';
 
@@ -269,7 +269,8 @@ function softCyl(sx, sy, sz, o = {}) {
       const ph = (s / nSeg) * Math.PI * 2;
       const ax = Math.max(0, A - dl), bz = Math.max(0, B - dl);
       let x = ax * Math.cos(ph), z = bz * Math.sin(ph), yy = y;
-      if (crown && kind === 2) { const u = Math.hypot(x / A, z / B); yy += crown * Math.max(0, 1 - u * u) * (dl >= rT ? 1 : smooth(0, rT, dl)); }
+      /* «купол» — по положению на скруглении, а не по зоне UV: иначе продублированная строка на стыке UV расходится и даёт щели-точки */
+      if (crown && y > Hh - rT - 1e-9) { const u = Math.hypot(x / A, z / B); yy += crown * Math.max(0, 1 - u * u) * (dl >= rT ? 1 : smooth(0, rT, dl)); }
       if (tuftFn && kind === 2 && dl > rT) {
         let best = 9; for (const [bx, bzz] of btn) { const d = (x - bx) ** 2 + (z - bzz) ** 2; if (d < best) best = d; }
         yy += -0.011 * Math.exp(-best / (0.022 * 0.022)) * smooth(rT, rT + 0.03, dl);
@@ -551,9 +552,10 @@ export function build(type, params, materials = {}, opts = {}) {
     decor: materials.decor || neutral('decor'), support: neutral('support'),
   };
   const seamM = seamMaterial(M.fabric) || M.fabric;
+  const pipeM = pipingMaterial(M.fabric) || M.fabric;
   const meshes = [];
   const addMesh = (geo, matKey, it, extra) => {
-    const mat = matKey === 'seam' ? seamM : M[matKey] || M.fabric;
+    const mat = matKey === 'seam' ? seamM : matKey === 'piping' ? pipeM : M[matKey] || M.fabric;
     const mesh = new THREE.Mesh(geo, mat);
     mesh.castShadow = true; mesh.receiveShadow = true;
     mesh.userData = { partId: it.id, role: it.role, matKey, ...(extra || {}) };
@@ -583,16 +585,16 @@ export function build(type, params, materials = {}, opts = {}) {
       for (const sgn of loops) {
         const tg = tubeAlong(geo.userData.edgeLoop(axis, sgn), pr2, quality, true, dense);
         if (tg && geo.userData.fitMatrix) tg.applyMatrix4(geo.userData.fitMatrix);
-        if (tg) addMesh(tg, it.piping ? pipeMat : 'seam', it, { detail: it.piping ? 'piping' : 'seam' });
+        if (tg) addMesh(tg, it.piping ? (pipeMat === 'fabric' ? 'piping' : pipeMat) : 'seam', it, { detail: it.piping ? 'piping' : 'seam' });
       }
     } else if (geo.userData.edgeLoop && it.piping && quality === 'low') {
       const tg = tubeAlong(geo.userData.edgeLoop(it.role === 'back' && it.cushion ? 'z' : 'y', 1), 0.004, quality, true);
       if (tg && geo.userData.fitMatrix) tg.applyMatrix4(geo.userData.fitMatrix);
-      if (tg) addMesh(tg, pipeMat, it, { detail: 'piping' });
+      if (tg) addMesh(tg, pipeMat === 'fabric' ? 'piping' : pipeMat, it, { detail: 'piping' });
     }
     if (it.shape === 'shell' && it.piping && geo.userData.topLine) {
       const tg = tubeAlong(geo.userData.topLine(), 0.004, quality, false);
-      if (tg) addMesh(tg, 'fabric', it, { detail: 'piping' });
+      if (tg) addMesh(tg, 'piping', it, { detail: 'piping' });
     }
     /* пуговицы стяжки */
     if (it.tufting === 'capitone' && geo.userData.buttons && geo.userData.buttons.length) {
@@ -628,7 +630,7 @@ export function build(type, params, materials = {}, opts = {}) {
       e.geos.forEach((g) => { for (const n of Object.keys(g.attributes)) if (!attrs.includes(n)) g.deleteAttribute(n); if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]); });
       const merged = mergeGeometries(e.geos, false);
       e.geos.forEach((g) => g.dispose());
-      const mesh = new THREE.Mesh(merged, k === 'seam' ? seamM : M[k] || M.fabric);
+      const mesh = new THREE.Mesh(merged, k === 'seam' ? seamM : k === 'piping' ? pipeM : M[k] || M.fabric);
       mesh.castShadow = mesh.receiveShadow = true;
       mesh.userData = { partId: 'merged-' + kk, partIds: [...new Set(e.ids)], matKey: k, merged: true, ...(det ? { detail: det } : {}) };
       group.add(mesh);
@@ -642,10 +644,12 @@ export function build(type, params, materials = {}, opts = {}) {
 /* смена ткани/ножек без пересборки геометрии */
 export function setMaterials(group, materials = {}) {
   const seamM = materials.fabric ? seamMaterial(materials.fabric) : null;
+  const pipeM = materials.fabric ? pipingMaterial(materials.fabric) : null;
   group.traverse((o) => {
     if (!o.isMesh) return;
     const k = o.userData.matKey;
     if (k === 'seam' && seamM) o.material = seamM;
+    else if (k === 'piping' && pipeM) o.material = pipeM;
     else if (materials[k]) o.material = materials[k];
   });
 }

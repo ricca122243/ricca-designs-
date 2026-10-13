@@ -164,8 +164,9 @@
 
 <!-- ═════════ 3. КАТАЛОГ: семь плиток категорий. Нажали плитку — экран категории (#catalog/sofas): что шьём в этой категории
      и три действия — «Собрать в 3D», «Отправить фото в WhatsApp», «В корзину — заявка». Моделей фабрики нет (отзыв клиента
-     13 октября: «у нас совсем другой стиль»); обложки — тонкие линейные рисунки (inline SVG, js/site.js дорисовывает их при
-     наведении), у «Тканей» — веер образцов в настоящих цветах из js/fabrics-data.js, у ELUNA — постер заказчика.
+     13 октября: «у нас совсем другой стиль»); обложки «Диваны / Кровати / Кресла» — реальные работы ателье (js/site.js ставит
+     первое фото первой работы категории из js/works-data.js; линейный рисунок в HTML — запас, если работ нет), у «Тканей» — веер
+     образцов в настоящих цветах из js/fabrics-data.js, у ELUNA — постер заказчика.
      Только мягкая мебель (столов и стульев нет — владелец, 13 октября). Ряд 1 — три плитки 4 : 5, ряд 2 — две широкие 2 : 1 (Ткани, ELUNA); телефон: Диваны во всю ширину, затем пары. ═════════ -->
 <section class="sec cat" id="catalog" aria-labelledby="cat-title">
   <div class="wrap">
@@ -210,6 +211,24 @@
   </div>
 </section>
 
+<!-- ═════════ 3b. НАШИ РАБОТЫ: реальные фото работ ателье из Instagram @ricca.designs (js/works-data.js; выборка и подписи —
+     tools/media-v3/works-selection.json, файлы — tools/media-v3/works-photos.py). Фото из content/client-photos — не работы ателье.
+     Лента лучших кадров (телефон — свайп, компьютер — стрелки); кадр открывает работу (#work-<id>): все фото, «Хочу такой», корзина, 3D.
+     «Все работы» — экран категории (#catalog/sofas), там сетка всех работ. Нет данных — js/site.js убирает раздел и пункты меню. ═════════ -->
+<section class="sec works" id="works" aria-labelledby="works-title" hidden>
+  <div class="wrap">
+    <header class="works__head rv">
+      <h2 class="title" id="works-title">Наши работы</h2>
+      <div class="works__nav">
+        <button class="works__step" type="button" data-works-step="-1" aria-label="Листать работы назад"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
+        <button class="works__step" type="button" data-works-step="1" aria-label="Листать работы вперёд"><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
+        <a class="caps-link works__all" href="#catalog/sofas">Все работы<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+    </header>
+    <ul class="works__strip rv" data-works-row role="list" aria-label="Работы ателье"></ul>
+  </div>
+</section>
+
 <!-- ═════════ 3a. ЛЮБОЙ СТИЛЬ, ЛЮБАЯ МОДЕЛЬ (заказчик, 13 октября): каталог — примеры, шьём по фото, эскизу или дизайн-проекту.
      Слева заголовок, справа строка, три коротких шага под тонкими линиями и WhatsApp «по фото»; телефон — столбиком ═════════ -->
 <section class="sec any" id="any" aria-labelledby="any-title">
@@ -234,18 +253,6 @@
         <a class="caps-link any__3d" href="configurator.html">Собрать онлайн в&nbsp;3D<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ═════════ НАШИ РАБОТЫ: только подтверждённые фото работ RICCA (RICCA_WORKS в js/catalog-data.js). Пока заказчик их не подтвердил,
-     список пуст — js/site.js убирает раздел и пункты меню. Есть кадры — три большие рамки (телефон — свайп) и «Все работы» (#works/all). ═════════ -->
-<section class="sec works" id="works" aria-labelledby="works-title" hidden>
-  <div class="wrap">
-    <header class="shead rv">
-      <h2 class="title" id="works-title">Наши работы</h2>
-    </header>
-    <div class="works__row" data-works-row></div>
-    <p class="works__all rv" hidden><a class="caps-link" href="#works/all">Все работы<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
   </div>
 </section>
 
@@ -486,7 +493,7 @@
   <a class="btn" href="#showroom" tabindex="-1">Шоурум</a>
 </div>
 
-<!-- ═════════ Окна. Все — <dialog>; «Назад», Esc и ✕ закрывают уровень; адрес: #catalog/<категория>, #works/all, #item-<id>, #work-NN ═════════ -->
+<!-- ═════════ Окна. Все — <dialog>; «Назад», Esc и ✕ закрывают уровень; адрес: #catalog/<категория>, #item-<id>, #work-<id> (работа из Instagram) ═════════ -->
 
 <!-- Меню (телефон и планшет) -->
 <dialog class="menu" id="menu" aria-label="Меню">
@@ -511,8 +518,8 @@
   </div>
 </dialog>
 
-<!-- Экран категории / тканей / всех работ (один полноэкранный уровень; содержимое строит js/site.js).
-     Категория: рисунок, что шьём, три действия (3D, фото в WhatsApp, заявка в корзину) — строит js/site.js (KINDS). -->
+<!-- Экран категории / тканей (один полноэкранный уровень; содержимое строит js/site.js).
+     Категория: сетка реальных работ (js/works-data.js), ниже — что шьём на заказ и три действия (3D, фото в WhatsApp, заявка в корзину) — KINDS. -->
 <dialog class="view" id="view" aria-labelledby="view-title">
   <div class="view__bar">
     <button class="view__back" type="button" data-close><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg><span data-view-back>Каталог</span></button>
@@ -604,22 +611,30 @@
   </div>
 </dialog>
 
-<!-- Лайтбокс работ: фото целиком, подпись — комната; «Смотреть модель» открывает окно изделия -->
-<dialog class="lb" id="lightbox" aria-labelledby="lb-title">
+<!-- Работа (готовый каталог): все фото работы целиком (свайп, стрелки, ←/→), счётчик, название и ткань; «Хочу такой» (WhatsApp со ссылкой
+     #work-<id>), «В корзину», «Собрать похожий в 3D» (конструктор с ближайшим типом), «Смотреть в Instagram». Строит js/site.js (LB) -->
+<dialog class="lb" id="lightbox" aria-labelledby="lb-title" aria-describedby="lb-sub">
   <button class="icon-btn lb__close" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
-  <figure class="lb__fig">
+  <div class="lb__in">
     <div class="lb__stage" data-lb-stage>
-      <div class="lb__frame" data-lb-frame><img data-lb-img alt="" width="1200" height="1500"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></div>
+      <div class="lb__frame" data-lb-frame><img data-lb-img alt="" width="1280" height="1600"></div>
       <button class="pd__arrow pd__arrow--prev" type="button" data-lb-step="-1" aria-label="Предыдущее фото"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
       <button class="pd__arrow pd__arrow--next" type="button" data-lb-step="1" aria-label="Следующее фото"><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
     </div>
-    <figcaption class="lb__cap">
-      <h2 class="lb__title" id="lb-title" data-lb-title tabindex="-1" autofocus></h2>
-      <p class="lb__piece" data-lb-piece></p>
-      <a class="caps-link lb__item" href="#catalog" data-lb-item hidden>Смотреть модель<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-      <p class="lb__count" data-lb-count aria-live="polite"></p>
-    </figcaption>
-  </figure>
+    <div class="lb__bar">
+      <div class="lb__cap">
+        <h2 class="lb__title" id="lb-title" data-lb-title tabindex="-1" autofocus></h2>
+        <p class="lb__piece" id="lb-sub" data-lb-piece></p>
+        <p class="lb__count" data-lb-count aria-live="polite"></p>
+      </div>
+      <div class="lb__acts">
+        <a class="btn btn--fill" data-lb-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-lb-wa-t>Хочу такой</span><span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a>
+        <button class="btn btn--line" type="button" data-lb-cart aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span>В&nbsp;корзину</span></button>
+        <a class="caps-link lb__3d" data-lb-3d href="configurator.html">Собрать похожий в&nbsp;3D<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="lb__ig" data-lb-ig href="https://instagram.com/ricca.designs" target="_blank" rel="noopener">Смотреть в&nbsp;Instagram<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a>
+      </div>
+    </div>
+  </div>
 </dialog>
 
 <!-- Корзина: модели каталога, конструктора и ткани → одна заявка в WhatsApp (js/cart.js, localStorage ricca-cart-v1).
@@ -657,6 +672,7 @@
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__open" id="toast-open">Открыть</button></div>
 
 <script src="js/catalog-data.js" defer></script>
+<script src="js/works-data.js" defer></script>
 <script src="js/fabrics-data.js" defer></script>
 <script src="js/cart.js" defer></script>
 <script src="js/site.js" defer></script>

@@ -516,7 +516,7 @@ function syncBar() {
   const nb = $('#bar-next'), wa = $('#bar-wa'); if (!nb || !wa) return;
   const n = state.mode === 'model' ? nextStepFor() : 0;
   nb.hidden = !n; wa.hidden = !!n;
-  if (n) { $('#bar-next-t').textContent = `Далее: ${STEP_NAMES[n]}`; $('#bar-next-n').textContent = `${Math.max(1, Math.min(5, n - 1 || 1))}/5`; nb.dataset.next = String(n); }
+  if (n) { $('#bar-next-t').textContent = `Далее: ${STEP_NAMES[n]}`; $('#bar-next-n').textContent = `${Math.max(1, Math.min(5, n - 1 || 1))}/5`; nb.dataset.goto = String(n); }
 }
 function openStep(n, scroll = true) {
   state.step = n; if (n) state.visited.add(n); syncSteps();
@@ -881,7 +881,7 @@ async function setMode(mode, { focus = false } = {}) {
       if (state.mode === 'room' && api.enter) {
         api.enter();
         /* пустая комната — сразу «Мой вариант», чтобы было что двигать */
-        if (!api.room.items.length) { api.addItem({ type: state.type, params: { ...state.params }, fabric: state.fabric, mine: true }, { quiet: true }); api.status && api.status('Ваш вариант уже в комнате. Двигайте его пальцем или мышью'); }
+        if (!api.room.items.length) { api.addItem({ type: state.type, params: { ...state.params }, fabric: state.fabric, mine: true }, { quiet: true }); api.status && api.status('Ваш вариант уже в комнате. Двигайте его пальцем или мышью', 8000); }
         syncRoomBar();
       }
     } catch (e) { /* статус уже показан */ }
@@ -970,7 +970,7 @@ function bind() {
 
   $('#b-drawing').addEventListener('click', openDrawing);
   $('#b-ar').addEventListener('click', openAR); $('#bar-ar').addEventListener('click', openAR);
-  $('#bar-next').addEventListener('click', () => { const n = +$('#bar-next').dataset.next; if (n) openStep(n); });
+  $('#bar-next').addEventListener('click', () => { const n = +$('#bar-next').dataset.goto; if (n) openStep(n); });
   $('#ar-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(variantLink()); toast('Ссылка скопирована'); } catch (e) { toast('Скопируйте адрес из строки браузера'); } });
   $('#dd-open').addEventListener('click', openDrawingFull);
   $('#vp-fab').addEventListener('click', seatCloseUp);
@@ -1045,7 +1045,10 @@ function init() {
   syncSteps();
   bind();
   document.documentElement.classList.add('cfg-ui');
-  /* 3D — после того как шаги уже на экране */
+  /* 3D — после того как шаги уже на экране; three.js и модель — параллельно, без цепочки импортов */
+  for (const u of ['../../vendor/three/build/three.core.js', '../../vendor/three/build/three.module.js', './stage.js', './furniture3d.js', './materials.js']) {
+    const l = document.createElement('link'); l.rel = 'modulepreload'; l.href = new URL(u, import.meta.url).href; document.head.appendChild(l);
+  }
   stageReady = new Promise((res) => requestAnimationFrame(() => setTimeout(res, 0))).then(initStage).then(() => {
     if (state.mode === 'room') setMode('room');
     if (pendingToast) toast(pendingToast, 5000);

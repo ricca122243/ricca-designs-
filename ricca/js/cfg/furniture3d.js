@@ -269,7 +269,8 @@ function softCyl(sx, sy, sz, o = {}) {
       const ph = (s / nSeg) * Math.PI * 2;
       const ax = Math.max(0, A - dl), bz = Math.max(0, B - dl);
       let x = ax * Math.cos(ph), z = bz * Math.sin(ph), yy = y;
-      if (crown && kind === 2) { const u = Math.hypot(x / A, z / B); yy += crown * Math.max(0, 1 - u * u) * (dl >= rT ? 1 : smooth(0, rT, dl)); }
+      /* «купол» — по положению на скруглении, а не по зоне UV: иначе продублированная строка на стыке UV расходится и даёт щели-точки */
+      if (crown && y > Hh - rT - 1e-9) { const u = Math.hypot(x / A, z / B); yy += crown * Math.max(0, 1 - u * u) * (dl >= rT ? 1 : smooth(0, rT, dl)); }
       if (tuftFn && kind === 2 && dl > rT) {
         let best = 9; for (const [bx, bzz] of btn) { const d = (x - bx) ** 2 + (z - bzz) ** 2; if (d < best) best = d; }
         yy += -0.011 * Math.exp(-best / (0.022 * 0.022)) * smooth(rT, rT + 0.03, dl);

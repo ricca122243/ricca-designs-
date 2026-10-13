@@ -292,13 +292,13 @@ export function seamMaterial(fabric) {
   return s;
 }
 
-/* кант: та же ткань (фактура видна), но рельеф карты нормалей слабее — на тонкой трубке сильный рельеф даёт искры */
+/* кант: та же ткань (цвет, фото, карта нормалей — не «пластиковая» трубка), рельеф вдвое мягче */
 const pipeCache = new WeakMap();
 export function pipingMaterial(fabric) {
   if (!fabric) return null;
   if (pipeCache.has(fabric)) return pipeCache.get(fabric);
   const s = fabric.clone();
-  if (s.normalScale) s.normalScale = fabric.normalScale.clone().multiplyScalar(0.3);
+  if (s.normalScale) s.normalScale = fabric.normalScale.clone().multiplyScalar(0.5); s.roughness = Math.min(1, fabric.roughness + 0.05);
   s.sheenRoughness = Math.min(1, (fabric.sheenRoughness || 0.5) + 0.2);
   s.name = fabric.name + '-piping';
   pipeCache.set(fabric, s);
