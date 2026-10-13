@@ -400,6 +400,43 @@ textarea.fld { min-height: 64px; resize: vertical; }
 @media (max-width: 599px) { .proc__cta .btn { width: 100%; } }
 
 /* ==========================================================================
+   4а. ГЕОГРАФИЯ — «Работаем по всему миру»: точечная карта (точки ~28 %), Алматы и тонкие дуги чёрной тушью.
+   Координаты — viewBox карты (0 -1 147 72): Алматы — 105,5 × 22,5. Дуги: pathLength="1", рисуются снятием .is-pre (js/site.js)
+   ========================================================================== */
+.geo__head { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px var(--gap); align-items: end; }
+.geo__a { display: grid; gap: 18px; justify-items: start; }
+.geo__b { display: grid; gap: 28px; justify-items: start; }
+.geo__line { font: 400 14px/1.7 var(--sans); color: var(--ink-2); max-width: 40ch; }
+.geo__map { position: relative; margin-top: clamp(48px, 5.6vw, 88px); aspect-ratio: 147 / 72; }
+.geo__map img { width: 100%; height: 100%; opacity: .28; }
+.geo__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.geo__arcs path { stroke: var(--ink); stroke-width: .15px; stroke-linecap: round; stroke-dasharray: 1 2; stroke-dashoffset: 0;
+  transition: stroke-dashoffset calc(1.6s + var(--i) * .11s) cubic-bezier(.45, 0, .2, 1) calc(.1s + var(--i) * .14s); }
+.geo__pins circle { r: .42px; fill: var(--ink); transition: opacity .6s var(--ease) calc(.1s + var(--i) * .14s + (1.6s + var(--i) * .11s) * .85); }
+.geo__home { fill: var(--ink); }
+.geo__ring { fill: none; stroke: var(--ink); stroke-width: .12px; transform-box: fill-box; transform-origin: center; transition: opacity .8s var(--ease) .1s, transform 1.2s var(--ease) .1s; }
+/* скрытое состояние ставится мгновенно (transition: none), анимация — только при снятии .is-pre */
+.geo__map.is-pre .geo__arcs path { stroke-dashoffset: 1; transition: none; }
+.geo__map.is-pre .geo__pins circle { opacity: 0; transition: none; }
+.geo__map.is-pre .geo__ring { opacity: 0; transform: scale(.4); transition: none; }
+/* подпись — справа от кольца (2,6 ед. карты от точки); белая подложка-прямоугольник прерывает дугу под словом, как на картах */
+.geo__city { position: absolute; left: calc(108.1 / 147 * 100%); top: calc(23.5 / 72 * 100%); transform: translateY(-50%); padding: 3px 5px; background: var(--paper);
+  font: 500 10px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink); white-space: nowrap;
+  pointer-events: none; }
+@media (max-width: 899px) {
+  .geo__head { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .geo__b { gap: 24px; }
+  .geo__map { margin-inline: calc(-1 * var(--pad)); margin-top: 40px; }   /* телефон: карта во всю ширину экрана */
+  .geo__arcs path { stroke-width: .3px; }
+  .geo__pins circle { r: .6px; }
+  .geo__ring { stroke-width: .22px; }
+  /* телефон: подпись короче не станет, справа её пересекает дуга на восток — ставим над точкой, над дугами (свободный участок карты) */
+  .geo__city { left: calc(105.5 / 147 * 100%); top: calc(15.5 / 72 * 100%); padding: 0; background: none; font-size: 9px; letter-spacing: .16em;
+    text-shadow: 0 0 3px var(--paper), 0 0 3px var(--paper), 0 0 3px var(--paper); }
+}
+@media (max-width: 599px) { .geo__b .btn { width: 100%; } .geo__b { justify-items: stretch; } }
+
+/* ==========================================================================
    5. АТЕЛЬЕ — текст и два станка + малое видео в рамке
    ========================================================================== */
 /* 12 колонок: текст — слева, ролик — с 8-й колонки, на одной оси со списком «Для бизнеса» и телефонами шоурума; верхние края
@@ -699,6 +736,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .fc__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 20px; font-weight: 400; }
 .fc__name { color: var(--ink); }
 .fc__cn { font: 300 clamp(26px, 2.2vw, 32px)/1.15 var(--serif); letter-spacing: .005em; color: var(--ink); }
+.fc__code { margin-left: 12px; font: 500 11px/1 var(--sans); letter-spacing: .14em; color: var(--ink-2); vertical-align: .3em; }
 .fc__kind { margin-top: 18px; font: 400 13px/1.5 var(--sans); color: var(--ink); }
 .fc__facts { margin-top: 4px; font: 400 12px/1.65 var(--sans); color: var(--ink-2); max-width: 64ch; }
 .fc__sw { display: flex; flex-wrap: wrap; gap: 8px; margin: 28px 0 0 -8px; }   /* -8 px: край первого круга — по линии текста */

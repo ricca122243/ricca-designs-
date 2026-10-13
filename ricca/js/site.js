@@ -27,6 +27,7 @@
       projects: 'Здравствуйте! Хочу обсудить мебель для своей комнаты: гостиная / спальня / столовая / кабинет / другое. Размеры и фото пришлю следующим сообщением.',
       business: 'Здравствуйте! Хочу обсудить проект для бизнеса: отель / ресторан / апарт-комплекс / жилой проект / офис.',
       master: 'Здравствуйте! У меня вопрос к мастеру RICCA.',
+      abroad: 'Здравствуйте! Я из ___. Хочу заказать мебель с доставкой.',
       designer: 'Здравствуйте! Я дизайнер / архитектор, хочу обсудить мебель по проекту. Чертежи, визуализации и спецификации пришлю следующим сообщением.'
     },
     introMs: 1620     // длительность входа-занавеса (CSS: .intro …; занавес 850–1500 мс) — после неё класс снимается
@@ -61,7 +62,7 @@
   const FABRICS = Array.isArray(window.RICCA_FABRICS) ? window.RICCA_FABRICS : [];
   const FABRIC_PHOTOS = Array.isArray(window.RICCA_FABRIC_PHOTOS) ? window.RICCA_FABRIC_PHOTOS : [];
   /* Библиотека тканей (js/fabrics-data.js): типы → коллекции → цвета. Есть она — экран «Ткани» строится из неё
-     (вкладки по типам, коллекции, образцы, «Ткань крупно»); нет — старая сетка RICCA_FABRICS. FCOL: id коллекции → { t, c } */
+     (вкладки по типам; у коллекции одно большое фото и цвета кнопками); нет — старая сетка RICCA_FABRICS. FCOL: id коллекции → { t, c } */
   const FLIB = ((window.RICCA_FABRIC_LIBRARY && Array.isArray(window.RICCA_FABRIC_LIBRARY.types)) ? window.RICCA_FABRIC_LIBRARY.types : [])
     .filter((t) => t && t.id && t.title && Array.isArray(t.collections))
     .map((t) => Object.assign({}, t, { collections: t.collections.filter((c) => c && c.id && c.title && Array.isArray(c.colours))
@@ -289,6 +290,22 @@
     $$('.rv').forEach((el) => { if (el.getBoundingClientRect().top > vh) { pre(el); io.observe(el); } });
   }
 
+  /* ---------- «Работаем по всему миру»: дуги из Алматы рисуются, когда карта входит в экран (CSS: .geo__map.is-pre —
+     stroke-dashoffset по pathLength="1", 1,6–2,4 с с шагом; точки проявляются в конце своей дуги). Без IO и при
+     reduced motion класс не ставится — карта статична, всё видно сразу ---------- */
+  (() => {
+    const map = $('.geo__map');
+    if (!map || !hasIO || reduceMotion) return;
+    if (map.getBoundingClientRect().top < window.innerHeight * 0.7) return;   // уже на экране при загрузке — не прячем
+    map.classList.add('is-pre');
+    const io = new IntersectionObserver((es) => {
+      if (!es.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      requestAnimationFrame(() => map.classList.remove('is-pre'));
+    }, { threshold: 0.35 });
+    io.observe(map);
+  })();
+
   /* ---------- Окна: показ/скрытие с анимацией, блокировка прокрутки, возврат фокуса ---------- */
   const updateBarSoon = () => requestAnimationFrame(() => updateBar());
   function lock() { root.classList.toggle('is-locked', !!$('dialog[open]')); updateBarSoon(); }
@@ -489,12 +506,16 @@
     const fcSrc = (k) => k.src900 || k.src450;
     // по умолчанию — первый цвет с фото 900 px (у PIQUE первые цвета есть только в 450), иначе первый
     const fcDefault = (c) => Math.max(0, c.colours.findIndex((k) => k.src900));
+    // code — необязательный код цвета поставщика («12», «Milk 02»): виден рядом с названием, идёт в WhatsApp и корзину
     const fcName = (k) => `${k.name}${k.finish ? `, ${k.finish}` : ''}`;
-    const fcAlt = (c, k) => `Ткань ${c.title}, цвет ${k.name.toLowerCase()}${k.finish ? `, ${k.finish}` : ''}`;
+    const fcCode = (k) => (k.code ? ` (${k.code})` : '');
+    const fcColour = (k) => `${k.name.toLowerCase()}${fcCode(k)}`;
+    const fcAlt = (c, k) => `Ткань ${c.title}, цвет ${k.name.toLowerCase()}${k.finish ? `, ${k.finish}` : ''}${fcCode(k)}`;
     const fcWa = (c, k, n) => {
       const u = /^https?:$/.test(location.protocol) ? `\n${location.origin}${location.pathname}#fabric-${c.id}-${n + 1}` : '';
-      return waUrl(`Здравствуйте! Интересует ткань ${fabWaName(c, k)}, цвет ${k.name.toLowerCase()}.${u}`);
+      return waUrl(`Здравствуйте! Интересует ткань ${fabWaName(c, k)}, цвет ${fcColour(k)}.${u}`);
     };
+    const fcCnHtml = (k) => `${typo(fcName(k))}${k.code ? `<small class="fc__code">${esc(k.code)}</small>` : ''}`;
     const fcInCart = (id) => !!(RC && RC.list().some((x) => x.kind === 'fabric' && x.id === id));
     function renderLibrary() {
       title.textContent = 'Ткани';
@@ -519,10 +540,10 @@
               + `<span class="fc__count" data-fc-count aria-hidden="true">${pad2(n + 1)} / ${pad2(c.colours.length)}</span>`
               + '<button class="fc__step" type="button" data-fc-step="1" aria-label="Следующий цвет"><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button></span>' : '')
             + '</div></div><div class="fc__side">'
-            + `<h4 class="fc__head" id="fc-n-${esc(c.id)}"><span class="caps fc__name">${esc(c.title)}</span><span class="fc__cn" data-fc-cn>${typo(fcName(k))}</span></h4>`
+            + `<h4 class="fc__head" id="fc-n-${esc(c.id)}"><span class="caps fc__name">${esc(c.title)}</span><span class="fc__cn" data-fc-cn>${fcCnHtml(k)}</span></h4>`
             + `<p class="fc__kind">${kindLine(c)}</p>`
             + ((c.facts || []).length ? `<p class="fc__facts">${numNb(typo(c.facts.slice(0, 3).map((f) => lcFirst(f)).join(' · ').replace(/^./, (ch) => ch.toUpperCase())))}</p>` : '')
-            + `<div class="fc__sw" role="radiogroup" aria-label="${esc(`Цвет ткани ${c.title}`)}">${c.colours.map((x, j) => `<button class="fc__dot" type="button" role="radio" data-fc-k="${j}" aria-checked="${j === n}" tabindex="${j === n ? 0 : -1}" aria-label="${esc(fcName(x))}" title="${esc(fcName(x))}"${isHex(x.hex) ? ` style="--c:${x.hex}"` : ''}></button>`).join('')}</div>`
+            + `<div class="fc__sw" role="radiogroup" aria-label="${esc(`Цвет ткани ${c.title}`)}">${c.colours.map((x, j) => `<button class="fc__dot" type="button" role="radio" data-fc-k="${j}" aria-checked="${j === n}" tabindex="${j === n ? 0 : -1}" aria-label="${esc(fcName(x) + fcCode(x))}" title="${esc(fcName(x) + fcCode(x))}"${isHex(x.hex) ? ` style="--c:${x.hex}"` : ''}></button>`).join('')}</div>`
             + '<div class="fc__acts">'
             + `<a class="btn btn--fill" data-fc-wa href="${esc(fcWa(c, k, n))}" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Хочу эту ткань<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a>`
             + (RC ? '<button class="btn btn--line" type="button" data-fc-cart aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span>В&nbsp;корзину&nbsp;— образец</span></button>' : '')
@@ -580,7 +601,7 @@
       const k = c.colours[n], was = fsel.get(id);
       fsel.set(id, n);
       if (was !== n || how.force) fcPhoto(art, c, k);
-      $('[data-fc-cn]', art).innerHTML = typo(fcName(k));
+      $('[data-fc-cn]', art).innerHTML = fcCnHtml(k);
       const cnt = $('[data-fc-count]', art);
       if (cnt) cnt.textContent = `${pad2(n + 1)} / ${pad2(len)}`;
       $$('[data-fc-k]', art).forEach((b) => { const on = +b.dataset.fcK === n; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
@@ -607,7 +628,7 @@
       if (cb && RC) {
         const c = FCOL.get(id).c, k = c.colours[n], fid = `${id}-${n + 1}`;
         if (fcInCart(fid)) { CART.open(cb); return; }
-        const name = fabWaName(c, k), colour = k.name.toLowerCase();
+        const name = fabWaName(c, k), colour = fcColour(k);
         const uid = RC.add({ kind: 'fabric', id: fid, title: `Ткань ${name}, ${colour}`, subtitle: [fabKind(c), k.finish].filter(Boolean).join(', '),
           qty: 1, fabric: { collection: name, colour, kind: fabKind(c), id: fid }, link: RC.abs(`#fabric-${fid}`), thumb: k.src240 || k.src450 || '' });
         if (!uid) { CART.say(`В корзине уже ${RC.MAX_LINES} позиций — отправьте заявку, затем добавьте ещё`, true); return; }

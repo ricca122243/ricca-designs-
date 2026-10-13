@@ -274,6 +274,54 @@
   </div>
 </section>
 
+<!-- ═════════ 4а. ГЕОГРАФИЯ (просьба владельца, BRIEF «КАРТА»): точечная карта мира (img/map/world-dots.svg, viewBox 0 -1 147 72),
+     точка Алматы и тонкие дуги на другие континенты. Стран, сроков и цен доставки не называем — не подтверждены.
+     Дуги рисуются при появлении раздела (js/site.js: .geo__map.is-pre → снятие класса), reduced motion — статично ═════════ -->
+<section class="sec geo" id="geo" aria-labelledby="geo-title">
+  <div class="wrap">
+    <div class="geo__head">
+      <div class="geo__a rv">
+        <p class="label">География</p>
+        <h2 class="title" id="geo-title">Работаем по&nbsp;всему миру</h2>
+      </div>
+      <div class="geo__b rv">
+        <p class="geo__line">Шьём в&nbsp;Алматы&nbsp;— принимаем заказы из&nbsp;любой страны. Доставку и&nbsp;сроки рассчитаем под&nbsp;ваш адрес.</p>
+        <a class="btn btn--line" href="https://wa.me/77084802047" data-wa="abroad"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Заказать из&nbsp;другой страны<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a>
+      </div>
+    </div>
+    <figure class="geo__map" aria-hidden="true">
+      <img src="img/map/world-dots.svg" width="1470" height="720" alt="" loading="lazy" decoding="async">
+      <svg class="geo__svg" viewBox="0 -1 147 72" focusable="false">
+        <g class="geo__arcs" fill="none">
+          <path style="--i:0" pathLength="1" d="M105.5 22.5 Q97 14 89 14.7"/>
+          <path style="--i:1" pathLength="1" d="M105.5 22.5 Q101 22 96.5 31.2"/>
+          <path style="--i:2" pathLength="1" d="M105.5 22.5 Q90 6 74.5 19"/>
+          <path style="--i:3" pathLength="1" d="M105.5 22.5 Q111 30 116.5 41.6"/>
+          <path style="--i:4" pathLength="1" d="M105.5 22.5 Q118 12 130.5 26"/>
+          <path style="--i:5" pathLength="1" d="M105.5 22.5 Q126 34 135.5 57.2"/>
+          <path style="--i:6" pathLength="1" d="M105.5 22.5 Q80 28 54.5 52"/>
+          <path style="--i:7" pathLength="1" d="M105.5 22.5 Q74 -6 43 23.4"/>
+        </g>
+        <g class="geo__pins">
+          <circle style="--i:0" cx="89" cy="14.7" r=".55"/>
+          <circle style="--i:1" cx="96.5" cy="31.2" r=".55"/>
+          <circle style="--i:2" cx="74.5" cy="19" r=".55"/>
+          <circle style="--i:3" cx="116.5" cy="41.6" r=".55"/>
+          <circle style="--i:4" cx="130.5" cy="26" r=".55"/>
+          <circle style="--i:5" cx="135.5" cy="57.2" r=".55"/>
+          <circle style="--i:6" cx="54.5" cy="52" r=".55"/>
+          <circle style="--i:7" cx="43" cy="23.4" r=".55"/>
+        </g>
+        <g class="geo__home">
+          <circle class="geo__ring" cx="105.5" cy="22.5" r="2"/>
+          <circle cx="105.5" cy="22.5" r=".85"/>
+        </g>
+      </svg>
+      <span class="geo__city">Алматы</span>
+    </figure>
+  </div>
+</section>
+
 <!-- ═════════ 5. АТЕЛЬЕ: слева текст и два станка, справа — небольшое видео производства в рамке (ролик 478 × 850 — только малым форматом).
      ИИ-мастерская (img/projects/atelier-wide) здесь не используется: она выдавала бы себя за настоящее ателье. ═════════ -->
 <section class="sec atelier" id="atelier" aria-labelledby="atelier-title">
