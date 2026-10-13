@@ -22,9 +22,8 @@
 <link rel="icon" href="img/v3/favicon-v3.svg" type="image/svg+xml">
 <link rel="icon" href="img/v3/favicon-v3-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="img/v3/favicon-v3-180.png">
-<!-- первый кадр видео входа = LCP: грузится первым; какой — решает тот же media, что у <picture> первого экрана -->
-<link rel="preload" as="image" href="video/hero-desktop-poster.webp" media="(min-width: 900px) and (min-aspect-ratio: 4/5)" fetchpriority="high">
-<link rel="preload" as="image" href="video/hero-mobile-poster.webp" media="(max-width: 899.98px), (max-aspect-ratio: 799/1000)" fetchpriority="high">
+<!-- первый кадр видео входа (своё ателье, video/production*) = LCP: грузится первым -->
+<link rel="preload" as="image" href="video/production-poster.webp" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts-v3.css">
@@ -111,14 +110,14 @@
 
 <main id="main">
 
-<!-- ═════════ 1. ВХОД: видео RICCA на весь экран. Поверх — только шапка и одна строка. Постер = первый кадр ролика (LCP).
-     Ролик (компьютер 16:9 / телефон 9:16) подключает js/site.js; prefers-reduced-motion и «экономия трафика» — только постер. ═════════ -->
+<!-- ═════════ 1. ВХОД: свой ролик ателье RICCA (video/production*: пошив, шлифовка, раскрой, обивка, готовый диван в шоуруме).
+     Рендеры фабрики-партнёра (video/hero-*) сняты 13 октября: клиент — «их изделия», «картинки не годятся».
+     Телефон: ролик на весь экран, поверх — шапка и одна строка. Компьютер: ролик 478 × 850 не растягиваем на 16 : 9 — белый первый
+     экран в две колонки: строка слева, ролик в прямоугольной рамке 9 : 16 справа (css/site.css, .hero). Источник подставляет js/site.js;
+     prefers-reduced-motion и «экономия трафика» — только постер. ═════════ -->
 <section class="hero" id="top">
   <div class="hero__media" aria-hidden="true">
-    <picture>
-      <source media="(min-width: 900px) and (min-aspect-ratio: 4/5)" srcset="video/hero-desktop-poster.webp" width="1600" height="900">
-      <img class="hero__poster" src="video/hero-mobile-poster.webp" width="720" height="1280" alt="" fetchpriority="high" decoding="async">
-    </picture>
+    <img class="hero__poster" src="video/production-poster.webp" width="478" height="850" alt="" fetchpriority="high" decoding="async">
     <video class="hero__video" muted playsinline loop preload="none" disablepictureinpicture tabindex="-1"></video>
   </div>
   <div class="hero__shade" aria-hidden="true"></div>

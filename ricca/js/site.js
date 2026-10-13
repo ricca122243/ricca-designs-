@@ -268,8 +268,9 @@
   };
   if (document.readyState === 'complete') watchPosters(); else window.addEventListener('load', watchPosters, { once: true });
   if (!reduceMotion) {
+    // вход — свой ролик ателье (video/production*); телефон — лёгкая версия. Рендеры фабрики (video/hero-*) сняты 13 октября
     const heroMQ = window.matchMedia('(min-width: 900px) and (min-aspect-ratio: 4/5)');
-    const heroV = autoVideo($('.hero__video'), $('.hero__toggle'), () => `video/hero-${heroMQ.matches ? 'desktop' : 'mobile'}`, { target: $('.hero'), threshold: 0.05, afterLoad: true });
+    const heroV = autoVideo($('.hero__video'), $('.hero__toggle'), () => `video/production${heroMQ.matches ? '' : '-phone'}`, { target: $('.hero'), threshold: 0.05, afterLoad: true });
     if (heroV) heroMQ.addEventListener('change', () => { $('.hero__video').classList.remove('is-on'); heroV.reload(); });
   }
   // ролик ателье: телефон — своя лёгкая версия (data-src-phone). Reduced motion — не играет сам: постер и ▶, ролик — по нажатию

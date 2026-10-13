@@ -149,7 +149,7 @@ textarea.fld { min-height: 64px; resize: vertical; }
 /* ==========================================================================
    1. ВХОД — видео на весь экран
    ========================================================================== */
-.hero { position: relative; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden; background: #CFCAC0; color: #fff; isolation: isolate; }
+.hero { position: relative; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden; background: var(--ink); color: #fff; isolation: isolate; }
 .hero__media { position: absolute; inset: 0; z-index: -2; }
 .hero__media picture, .hero__poster, .hero__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero__video { opacity: 0; transition: opacity 700ms var(--ease); }
@@ -181,6 +181,21 @@ textarea.fld { min-height: 64px; resize: vertical; }
   .hero__cue { display: none; }   /* на телефоне строка и пауза уже занимают низ кадра — линия резала мебель */
 }
 @media (max-width: 359px) { .hero__line { font-size: 10px; letter-spacing: .2em; } }
+/* Компьютер (горизонтальный экран): свой ролик ателье — 478 × 850, на 16 : 9 во всю ширину он мылится. Белый первый экран в две
+   колонки: слева одна строка антиквой, справа ролик в прямоугольной рамке 9 : 16 высотой в экран под шапкой; низ строки — по низу рамки.
+   Шапка над входом — обычная (чёрный текст на белом), без прозрачного режима. Тот же media, что у источника ролика в js/site.js */
+@media (min-width: 900px) and (min-aspect-ratio: 4/5) {
+  .hero { --hb: clamp(24px, 3.4vh, 40px); --fh: min(calc(100svh - var(--hdr) - var(--hb)), 1000px); background: var(--paper); color: var(--ink); }
+  .hero__media { inset: auto; right: max(var(--pad), (100% - 1440px) / 2); bottom: var(--hb); width: calc(var(--fh) * 9 / 16); height: var(--fh); background: var(--paper-2); overflow: hidden; }
+  .hero__shade, .hero__cue { display: none; }
+  .hero__foot { bottom: var(--hb); align-items: flex-end; }
+  .hero__line { max-width: 11em; padding-bottom: 0; white-space: normal; text-shadow: none; font: 300 clamp(32px, 3vw, 44px)/1.12 var(--serif); letter-spacing: .005em; text-transform: none; color: var(--ink); text-wrap: balance; }
+  .hero__toggle { position: absolute; right: 4px; bottom: 4px; margin: 0; }
+  .hdr.is-over { background: var(--paper); border-color: transparent; color: var(--ink); }
+  .hdr.is-over .logo, .hdr.is-over .hdr__nav a { text-shadow: none; }
+  .hdr.is-over .logo__mono { filter: none; }
+  .hdr.is-over .hdr__count { background: var(--ink); color: var(--paper); }
+}
 
 /* ==========================================================================
    Разделы на белом: общий ритм, подпись-капитель, заголовок слева
