@@ -9,16 +9,16 @@
 
 :root {
   /* цвет: контраст текста ≥ 7 : 1, капитель ≥ 4,5 : 1 (проверено) */
-  --paper: #FAFAF8;      /* страница */
-  --paper-2: #F1F0EC;    /* подложка фото, пока грузится */
-  --studio: #FAFAF8;     /* фон предметных рендеров — тот же, что в файлах и у страницы (tools/media-v3/studio-rekey.py): рамки не видны */
-  --ink: #111111;        /* текст 18,4 : 1 на --paper */
-  --ink-2: #4A4A47;      /* второстепенный 8,6 : 1 на --paper */
-  --line: #E3E2DD;
-  --line-2: #C9C8C2;
+  --paper: #FFFFFF;      /* страница — холодный белый (заказчик 13 окт.: «айвори слишком жёлтый») */
+  --paper-2: #F2F3F5;    /* подложка фото, пока грузится */
+  --studio: #FFFFFF;     /* фон предметных рендеров — тот же, что в файлах и у страницы (tools/media-v3/studio-rekey.py): рамки не видны */
+  --ink: #0B0B0C;        /* текст 19,6 : 1 на --paper */
+  --ink-2: #45474C;      /* второстепенный 9,4 : 1 на --paper */
+  --line: #E3E5E9;
+  --line-2: #C6C9CF;
   --noir: #000000;      /* «Для бизнеса» и подвал */
-  --on-noir: #F4F4F1;    /* 19,1 : 1 на --noir */
-  --on-noir-2: #A6A6A0;  /* 8,6 : 1 на --noir */
+  --on-noir: #F5F6F8;    /* 19,1 : 1 на --noir */
+  --on-noir-2: #A6A9AF;  /* 8,6 : 1 на --noir */
   --gold: #D2B57A;       /* основной телефон в подвале (макет заказчика) — 10,5 : 1 */
   --sans: 'Montserrat', 'Helvetica Neue', Arial, system-ui, sans-serif;
   --serif: 'Cormorant', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
@@ -702,7 +702,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 
 /* окно изделия */
 .pd { overflow-y: auto; overscroll-behavior: contain; }
-.pd__close { position: fixed; top: 10px; right: calc(var(--pad) - 10px); z-index: 6; background: rgba(250, 250, 248, .9); }
+.pd__close { position: fixed; top: 10px; right: calc(var(--pad) - 10px); z-index: 6; background: rgba(255, 255, 255, .9); }
 .pd__in { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, 1fr); min-height: 100%; }
 .pd__gallery { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; min-width: 0; height: 100dvh; position: sticky; top: 0; background: var(--paper-2); transition: background-color 300ms var(--ease); }
 .pd__gallery.is-studio { background: var(--studio); }   /* предметный кадр — на одном тоне с панелью */
@@ -713,7 +713,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .pd__frame.is-studio img { transform: scale(var(--z, 1)); }
 .pd__frame.is-loading img { opacity: .25; }
 .pd__arrow { position: absolute; top: 50%; z-index: 3; width: 48px; height: 48px; margin-top: -24px; display: grid; place-items: center; color: var(--ink); }
-.pd__arrow::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: rgba(250, 250, 248, .9); transition: background 300ms; }
+.pd__arrow::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: rgba(255, 255, 255, .9); transition: background 300ms; }
 .pd__arrow .ico { position: relative; width: 18px; height: 18px; }
 .pd__arrow--prev { left: 12px; } .pd__arrow--next { right: 12px; }
 .pd__strip { display: flex; align-items: center; gap: 20px; padding: 0 clamp(20px, 3vw, 40px) 20px; }
