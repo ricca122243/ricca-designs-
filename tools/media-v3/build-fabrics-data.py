@@ -82,7 +82,8 @@ header = re.sub(r' \* ФОТО — ТОЛЬКО ОФИЦИАЛЬНЫЕ[^\n]*\n \
 header = header.replace('/*\n', '/*\n' + NOTE, 1)
 header = header.replace('texture  — крупный план ткани (img/fabrics/<тип>/<коллекция>/texture-600.webp) или null (на экране «Ткани» сейчас не показывается)',
                         'texture  — простое фото ткани без надписей (сейчас — первый цвет коллекции) или null; на экране «Ткани» не показывается')
-header = header.replace('900 × 900 (качество ~82)', '1160 × 1160 (качество ~78, до 250 КБ)')
+for old in ('900 × 900 (качество ~82)', '1160 × 1160 (качество ~78, до 250 КБ)'):
+    header = header.replace(old, '1400 × 1400 (качество 90 — максимум, не уменьшать)')
 open(dst, 'w').write(header + 'window.RICCA_FABRIC_LIBRARY = ' + json.dumps(lib, ensure_ascii=False, indent=2) + ';\n')
 print('types', len(types), 'collections', sum(len(t['collections']) for t in types),
       'colours', sum(len(c['colours']) for t in types for c in t['collections']))

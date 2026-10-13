@@ -55,6 +55,10 @@ js_code() { for f in "$OUT"/js/*.js; do
 done; }
 refs=$( (printf '%s' "$html_nocomments"; cat "$OUT/css/"*.css; js_code) \
          | grep -ohE '(img|video|fonts)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css)' | sed 's#^\.\./##' | sort -u)
+# Крупные планы и фото «в изделии» поставщиков тканей (img/fabrics/official/<коллекция>/hero-*, inuse-*) — НЕ публикуем ни при какой
+# ссылке: на части — название поставщика, обложки буклетов, люди и чужие/ИИ-интерьеры (BRIEF: названия поставщиков и чужие фото — нельзя)
+no_supplier_extras() { grep -vE '^img/fabrics/official/[^/]+/(hero|inuse)-' || true; }
+refs=$(printf '%s\n' $refs | no_supplier_extras)
 for ref in $refs; do
   if [ ! -f "$SRC/$ref" ]; then
     echo "нет файла: $ref"; exit 1
@@ -65,7 +69,7 @@ done
 # Медиа и шрифты конструктора: ссылки из configurator.html и js/cfg/*.js (образцы тканей запасной библиотеки, шрифты чертежа, иконка)
 if [ "$cfg_page" -eq 1 ]; then
   cfg_refs=$( (sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$SRC/configurator.html"; cat "$OUT"/js/cfg/*.js) \
-         | grep -ohE '(img|fonts)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2)' | sort -u)
+         | grep -ohE '(img|fonts)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2)' | sort -u | no_supplier_extras)
   for ref in $cfg_refs; do
     [ -f "$SRC/$ref" ] || { echo "нет файла (конструктор): $ref"; exit 1; }
     mkdir -p "$OUT/$(dirname "$ref")"
@@ -93,17 +97,23 @@ uses_steps=0
 if site_code | grep -E 'step-[0-9]|img/process' >/dev/null; then uses_steps=1; fi
 uses_eluna_loop=0
 if site_code | grep -E 'eluna-(loop|poster)' >/dev/null; then uses_eluna_loop=1; fi
+# Прежний ролик входа из рендеров фабрики-партнёра (video/hero-*) снят 13 октября (вход — свой ролик ателье video/production*):
+# в архив — только если сайт снова на него сошлётся
+uses_hero_render=0
+if site_code | grep -E 'video/hero-|hero-(desktop|mobile)' >/dev/null; then uses_hero_render=1; fi
 mkdir -p "$OUT/video"
 for f in "$SRC"/video/*.mp4 "$SRC"/video/*.webm "$SRC"/video/*.webp; do
   [ -f "$f" ] || continue
   case "$(basename "$f")" in
     step-[0-9]*) [ "$uses_steps" -eq 1 ] || continue ;;
     eluna-*) [ "$uses_eluna_loop" -eq 1 ] || continue ;;
+    hero-*) [ "$uses_hero_render" -eq 1 ] || continue ;;
   esac
   cp "$f" "$OUT/video/"
 done
 [ "$uses_eluna_loop" -eq 1 ] || echo "петля ELUNA (video/eluna-loop*, eluna-poster*) сайтом не используется — в архив не идёт"
-for need in hero-desktop hero-mobile production; do
+[ "$uses_hero_render" -eq 1 ] || echo "ролик входа из рендеров фабрики (video/hero-*) сайтом не используется — в архив не идёт"
+for need in production production-phone; do
   ls "$OUT/video/$need".* >/dev/null 2>&1 || { echo "нет ролика: video/$need.*"; exit 1; }
 done
 if [ "$uses_steps" -eq 1 ]; then
@@ -139,6 +149,9 @@ fi
 # Внутренние заметки (*.md: MANIFEST каталога и т. п.) в архив не попадают
 md_files=$(find "$OUT" -name '*.md')
 [ -z "$md_files" ] || { echo "в сборку попали внутренние .md: $md_files"; exit 1; }
+# Фото поставщиков с их названиями / людьми / чужими интерьерами в сборку попасть не должны
+extras=$(find "$OUT/img/fabrics" -type f \( -name 'hero-*' -o -name 'inuse-*' \) 2>/dev/null || true)
+[ -z "$extras" ] || { echo "в сборку попали фото поставщиков hero-/inuse-: $extras"; exit 1; }
 
 (cd "$DIST" && zip -qr -X RICCA-site.zip RICCA-site)
 echo "Готово: $OUT ($(du -sh "$OUT" | cut -f1)), $DIST/RICCA-site.zip ($(du -h "$DIST/RICCA-site.zip" | cut -f1)). Загружать только эту папку (или zip), не ricca/"

@@ -2,6 +2,8 @@
    Единицы: в параметрах — метры, в адресе и тексте — сантиметры. Формат адреса (SPEC §3.3):
    #cfg=v1~t.corner~s.left~w.280~…~fb.velur/alba/molochnyy~nt.<encodeURIComponent, ≤ 140> */
 
+import { parts as partsOf, DEFAULTS as PDEF } from './params.js';
+
 export const WA_NUMBER = '77084802047';                     // как в js/site.js (CONFIG.wa)
 export const waUrl = (text) => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
 
@@ -18,7 +20,7 @@ const COUNT_KEYS = new Set(['sections', 'modules', 'qty']);           // цел�
 const BOOL_KEYS = new Set(['piping', 'lift']);
 const DERIVED = new Set(['hbT', 'backLook', 'qty']);                   // не пишем в адрес (qty — отдельно, «q.»)
 /* выводятся из других ключей (params.js → normalize) — тоже не пишем */
-const DERIVED_BY_TYPE = { bed: ['w', 'd', 'h'], modular: ['w'], chair: ['seatD', 'armH'] };
+const DERIVED_BY_TYPE = { bed: ['w', 'd', 'h'], modular: ['w'] };
 
 /* ---------- числа ---------- */
 export const toCm = (m) => Math.round(m * 1000) / 10;
@@ -99,7 +101,7 @@ export function cfgId(stateOrCanonical) {
 /* ---------- словарь (русские подписи; совпадают с params.js → OPTIONS) ---------- */
 export const TYPE_TITLES = {
   sofa: 'Диван прямой', corner: 'Диван угловой', ushape: 'Диван П-образный', modular: 'Модульный диван', bed: 'Кровать',
-  armchair: 'Кресло', chair: 'Стул', table: 'Стол', pouf: 'Пуф / банкетка',
+  armchair: 'Кресло', pouf: 'Пуф / банкетка',
 };
 const COMMON = {
   armStyle: { none: 'без подлокотников', thin: 'тонкие', wide: 'широкие', round: 'округлые' },
@@ -119,13 +121,6 @@ export const VOCAB = {
     base: { legs: 'ножки', plinth: 'цоколь' }, lift: { false: 'без механизма', true: 'подъёмный механизм' },
   },
   armchair: { form: { classic: 'классическое', round: 'округлое' } },
-  chair: { arms: { none: 'без подлокотников', thin: 'полукресло' }, backShape: { straight: 'прямая', rounded: 'округлая' } },
-  table: {
-    shape: { rect: 'прямоугольный', round: 'круглый', oval: 'овальный' },
-    top: { wood: 'дерево (вид)', stone: 'камень (вид)' },
-    topTone: { oak: 'светлое дерево', walnut: 'орех', blackwood: 'тёмное дерево', light: 'светлый', grey: 'серый', dark: 'тёмный' },
-    base: { four: 'четыре ножки', pedestal: 'опора' },
-  },
   pouf: { form: { round: 'круглый', square: 'квадратный', bench: 'банкетка' }, top: { smooth: 'гладкий', capitone: 'каретная стяжка' } },
 };
 export const optLabel = (type, key, value) => {
@@ -139,24 +134,31 @@ const LOW_HIGH = { sofa: 0.80, corner: 0.80, ushape: 0.80, modular: 0.80, armcha
 export const backLook = (type, p) => (p.h < (LOW_HIGH[type] || 0.8) - 1e-9 ? 'низкая' : 'высокая');
 const HBT = { plain: 0.08, channels: 0.10, capitone: 0.10, wings: 0.12 };
 
-/* число секций сиденья (как params.js) */
-export function seatSections(type, p) {
-  if (p.seatCushions === 'single') return 1;
-  if (p.sections && p.sections !== 'auto') return +p.sections;
-  const armW = p.armStyle === 'none' ? 0 : (p.armW || 0);
-  const wi = type === 'corner' ? (p.w || 0) - armW - (p.form === 'chaise' ? armW : (p.d || 0))   // прямой участок вдоль спинки
-    : type === 'ushape' ? (p.w || 0) - 2 * (p.d || 0) : (p.w || 0) - 2 * armW;
-  return Math.max(2, Math.min(4, Math.round(wi / 0.70)));
+/* подушки сиденья — считаем по деталям модели (params.js → parts), один источник правды с 3D и чертежом */
+export function seatCushions(type, p) {
+  let items = [];
+  try { items = partsOf(type, p).items; } catch (e) { return null; }
+  const n = (re) => items.filter((i) => re.test(i.id)).length;
+  return { main: n(/^seat-\d+$/), side: n(/^seat-2-\d+$/), left: n(/^seat-L-\d+$/), right: n(/^seat-R-\d+$/), corner: n(/^seat-c(-[lr])?$/), chaise: n(/^seat-ch$/) };
+}
+export function seatSections(type, p) { const c = seatCushions(type, p); return c ? c.main : 1; }
+/* «по секциям (3)», «2 + угол + 1», «3 + шезлонг», «1 + угол + 2 + угол + 1» */
+export function seatLine(type, p) {
+  if (p.seatCushions === 'single') return 'одна подушка';
+  const c = seatCushions(type, p); if (!c) return 'по секциям';
+  if (type === 'corner' && p.form === 'chaise') return `по секциям (${c.main}) + шезлонг`;
+  if (type === 'corner') return p.side === 'right' ? `по секциям: ${c.main} + угол + ${c.side}` : `по секциям: ${c.side} + угол + ${c.main}`;
+  if (type === 'ushape') return `по секциям: ${c.left} + угол + ${c.main} + угол + ${c.right}`;
+  return `по секциям (${c.main})`;
 }
 
 /* название варианта: «Диван угловой, угол слева» */
 export function titleOf(type, p = {}) {
+  if (!PDEF[type]) type = 'sofa';
   if (type === 'corner') return p.form === 'chaise' ? `Диван угловой с шезлонгом, шезлонг ${p.side === 'right' ? 'справа' : 'слева'}` : `Диван угловой, ${optLabel(type, 'side', p.side || 'left')}`;
   if (type === 'modular') return p.chaise && p.chaise !== 'none' ? `Модульный диван, ${optLabel(type, 'chaise', p.chaise)}` : 'Модульный диван';
   if (type === 'pouf') return p.form === 'bench' ? 'Банкетка' : `Пуф ${optLabel(type, 'form', p.form || 'round')}`;
   if (type === 'armchair' && p.form === 'round') return 'Кресло округлое';
-  if (type === 'chair' && p.arms === 'thin') return 'Стул-полукресло';
-  if (type === 'table') return `Стол ${optLabel(type, 'shape', p.shape || 'rect')}`;
   return TYPE_TITLES[type] || 'Изделие';
 }
 
@@ -172,10 +174,13 @@ function armsLine(type, p) {
 }
 export function fabricLine(f) {
   if (!f || !f.typeId) return 'подберём вместе';
-  const type = String(f.typeTitle || '').toLowerCase();
-  /* «экокожа Экокожа» не пишем: у коллекции без своего имени — только тип; отделка экокожи — после цвета */
-  const name = String(f.collectionTitle || '').toLowerCase() === type ? type : `${type} ${f.collectionTitle}`.trim();
-  return `${name}, цвет «${f.colour}»${f.finish ? `, ${String(f.finish).toLowerCase()}` : ''}`;
+  /* вид — как на карточке коллекции («микровелюр», «велюр в рубчик»), иначе тип; «экокожа Экокожа» не пишем */
+  const kind = String(f.kindTitle && !/:/.test(f.kindTitle) ? f.kindTitle : f.typeTitle || '').toLowerCase();
+  const name = String(f.collectionTitle || '').toLowerCase() === kind ? kind : `${kind} ${f.collectionTitle}`.trim();
+  /* код цвета («№ 238», «FL 100») — без «№» и кавычек, как на сайте; название — в кавычках */
+  const col = String(f.colour || '').replace(/^№\s*/, '');
+  const colTxt = /\d/.test(col) ? col : `«${col}»`;
+  return `${name}, цвет ${colTxt}${f.finish ? `, отделка ${String(f.finish).toLowerCase()}` : ''}`;
 }
 
 /* строки итога — те же в «Итоге», в WhatsApp и в таблице чертежа: [{ label, value }]
@@ -198,9 +203,9 @@ export function summaryLines(state, { dims = null } = {}) {
   if (SOFAS.has(t) || t === 'armchair') {
     if (t === 'armchair') { add('Форма', optLabel(t, 'form', p.form || 'classic')); add('Размер', `ширина ${fmtCm(p.w)} см, глубина ${fmtCm(p.d)} см, ${H}`); }
     add('Посадка', `высота ${fmtCm(p.seatH)} см, глубина ${fmtCm(p.seatD)} см`);
-    add('Подлокотники', armsLine(t, p));
+    add('Подлокотники', t === 'armchair' && p.form === 'round' ? `округлая оболочка, толщина ${fmtCm(Math.max(0.10, p.armW || 0.15))} см, высота спереди ${fmtCm(p.armH)} см` : armsLine(t, p));
     add('Спинка', `${backLook(t, p)}, ${optLabel(t, 'backCushions', t === 'armchair' && p.form === 'round' ? 'fixed' : p.backCushions)}`);
-    if (t !== 'armchair' && p.seatCushions) add('Сиденье', p.seatCushions === 'single' ? 'одна подушка' : `по секциям (${seatSections(t, p)})`);
+    if (t !== 'armchair' && t !== 'modular' && p.seatCushions) add('Сиденье', seatLine(t, p));
     add('Ножки', legsLine(t, p));
     add('Кант', p.piping ? 'есть' : 'нет');
   }
@@ -216,22 +221,6 @@ export function summaryLines(state, { dims = null } = {}) {
     if (p.lift) add('Подъёмный механизм', 'обсудим');
     add('Кант', p.piping ? 'есть' : 'нет');
   }
-  if (t === 'chair') {
-    add('Размер', `ширина ${fmtCm(p.w)} см, глубина ${fmtCm(p.d)} см, ${H}`);
-    add('Посадка', `высота ${fmtCm(p.seatH)} см`);
-    add('Подлокотники', p.arms === 'thin' ? 'полукресло' : 'без подлокотников');
-    add('Спинка', optLabel(t, 'backShape', p.backShape));
-    add('Ножки', [optLabel(t, 'legs', p.legs), p.legFinish ? optLabel(t, 'legFinish', p.legFinish) : ''].filter(Boolean).join(', '));
-    add('Кант', p.piping ? 'есть' : 'нет');
-  }
-  if (t === 'table') {
-    add('Форма', optLabel(t, 'shape', p.shape));
-    add('Размер', p.shape === 'round' ? `Ø ${fmtCm(p.w)} см, ${H}` : `${fmtCm(p.w)} × ${fmtCm(p.d)} см, ${H}`);
-    add('Столешница', `${optLabel(t, 'top', p.top)}, ${optLabel(t, 'topTone', p.topTone)}, толщина ${fmtCm(p.topT)} см`);
-    const two = p.base === 'pedestal' && p.shape === 'oval' && p.w > 1.6;
-    const baseTxt = p.base === 'four' ? `четыре ножки ${fmtCm(p.legW)} см, отступ от края ${fmtCm(p.legInset)} см` : (two ? 'две опоры' : 'центральная опора');
-    add('Опора', [baseTxt, optLabel(t, 'legs', p.legs), p.legFinish ? optLabel(t, 'legFinish', p.legFinish) : ''].filter(Boolean).join(', '));
-  }
   if (t === 'pouf') {
     add('Форма', optLabel(t, 'form', p.form));
     add('Размер', p.form === 'round' ? `Ø ${fmtCm(p.w)} см, ${H}` : `${fmtCm(p.w)} × ${fmtCm(p.form === 'square' ? p.w : p.d)} см, ${H}`);
@@ -239,7 +228,7 @@ export function summaryLines(state, { dims = null } = {}) {
     add('Ножки', legsLine(t, p));
     add('Кант', p.piping ? 'есть' : 'нет');
   }
-  if (t !== 'table') add('Ткань', fabricLine(state.fabric));
+  add('Ткань', fabricLine(state.fabric));
   add('Количество', String(state.qty || 1));
   const note = String(state.note || '').trim();
   if (note) add('Пожелание', note);
@@ -256,9 +245,13 @@ export function waText(state, { link = '', drawingLater = false, dims = null, id
   return lines.join('\n');
 }
 
-/* «Нужен другой размер?» — короткое сообщение с текущим вариантом */
-export function waSizeText(state, { link = '', id = '' } = {}) {
-  return [`Здравствуйте! Нужен другой размер — ${titleOf(state.type, state.params).toLowerCase()}, № ${id || cfgId(state)}.`,
+/* «Нужен другой размер?» — сообщение с текущим размером и тем, что клиент ввёл (в том числе то, что форма не приняла):
+   wanted = [{ label: 'Длина вдоль спинки', cm: 900 }] */
+export function waSizeText(state, { link = '', id = '', dims = null, wanted = [] } = {}) {
+  const now = dims ? `Сейчас: ${fmtCm(dims.w)} × ${fmtCm(dims.d)} × ${fmtCm(dims.h)} см.` : '';
+  const need = (wanted || []).filter((x) => x && x.label && Number.isFinite(x.cm)).map((x) => `${x.label.toLowerCase()} ${String(x.cm).replace('.', ',')} см`);
+  return [`Здравствуйте! Нужен другой размер — ${titleOf(state.type, state.params).toLowerCase()}, № ${id || cfgId(state)}.`, now,
+    need.length ? `Нужно: ${need.join(', ')}.` : '',
     link && /^https?:/.test(link) ? `Вариант: ${link}` : ''].filter(Boolean).join('\n');
 }
 

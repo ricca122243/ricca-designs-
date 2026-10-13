@@ -2,13 +2,14 @@
 
 Вход:  ricca/content/fabrics/_official/<коллекция>/COLOURS.json (+ colours/, texture/, in-use/, SPECS.md)
 Выход: ricca/img/fabrics/official/<коллекция>/
-       <код>-1200.webp (1400 px, максимум качества), -600.webp (700 px) — квадрат из центра фото цвета (видна фактура, не «плоский прямоугольник»)
+       <код>-1200.webp (1400 px, качество 90 — максимум, не уменьшать: решение владельца), -600.webp (700 px) — квадрат из центра фото цвета (видна фактура, не «плоский прямоугольник»)
        <код>-160.webp             — миниатюра для кнопки цвета
-       hero-N-1600.webp           — крупные планы / драпировка (главное фото коллекции)
-       inuse-N-1200.webp          — фото «в изделии / в интерьере»
+       hero-N-1600.webp           — крупные планы / драпировка поставщика } на сайт НЕ идут: на части есть названия поставщика,
+       inuse-N-1200.webp          — фото «в изделии / в интерьере»        } люди и чужие интерьеры (сборка dist их отбрасывает)
        collection.json            — коды, названия цветов, средний цвет (hex), пути к файлам
 Цвет фото не меняется (только масштаб и кадр).
-Запуск: python3 tools/media-v3/official-fabrics.py sambia [eclipse ...]   (без аргументов — все готовые)
+Запуск: python3 tools/media-v3/official-fabrics.py sambia [eclipse ...]   (без аргументов — все готовые;
+        --large-only — пересжать только большие фото <код>-1200.webp)
 """
 import glob, json, os, sys
 import numpy as np
@@ -59,13 +60,18 @@ def build(coll):
         frac = max(0.4, min(0.9, 1800 / min(im.size)))
         sq = square_center(im, frac)
         code = str(c.get('code', len(colours) + 1)).strip().replace('/', '-').replace(' ', '-')
-        save(sq, f'{out}/{code}-1200.webp', 1400, 90)
+        save(sq, f'{out}/{code}-1200.webp', 1400, 90)   # максимум качества — решение владельца («не уменьшать»); телефон берёт -600 через srcset
+        if LARGE_ONLY:
+            continue
         save(sq, f'{out}/{code}-600.webp', 700, 88)
         save(square_center(im, 0.5), f'{out}/{code}-160.webp', 160, 80)
         colours.append({'code': code, 'name': c.get('name', code), 'hex': hexof(sq),
                         'src1200': f'img/fabrics/official/{coll}/{code}-1200.webp',
                         'src600': f'img/fabrics/official/{coll}/{code}-600.webp',
                         'thumb': f'img/fabrics/official/{coll}/{code}-160.webp'})
+    if LARGE_ONLY:   # только пересжатие -1200: остальные файлы и collection.json не трогаем
+        print(coll, 'large only')
+        return
     heroes = []
     for i, f in enumerate(sorted(glob.glob(os.path.join(src, 'texture', '*'))), 1):
         im = fit_long(ImageOps.exif_transpose(Image.open(f)).convert('RGB'), 2000)
@@ -81,7 +87,9 @@ def build(coll):
     print(coll, 'colours', len(colours), 'heroes', len(heroes), 'inuse', len(inuse))
 
 
+LARGE_ONLY = '--large-only' in sys.argv
+
 if __name__ == '__main__':
-    colls = sys.argv[1:] or [os.path.basename(os.path.dirname(p)) for p in glob.glob(os.path.join(SRC, '*', 'COLOURS.json'))]
+    colls = [a for a in sys.argv[1:] if not a.startswith('--')] or [os.path.basename(os.path.dirname(p)) for p in glob.glob(os.path.join(SRC, '*', 'COLOURS.json'))]
     for c in colls:
         build(c)
