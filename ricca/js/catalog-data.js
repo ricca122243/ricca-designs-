@@ -138,7 +138,7 @@ window.RICCA_CATALOG_CATEGORIES = {
     coverAlt: 'Книга образцов тканей: от светло-серого до графитового',
     desc: 'Букле, твид, меланж — по цветам' },
   mattresses: { label: 'Матрасы ELUNA', cover: 'img/catalog/cover-mattresses', href: 'https://ricca-designs.netlify.app',
-    coverAlt: 'Матрас ELUNA на фоне звёздного неба и луны, логотип ELUNA',
+    coverAlt: 'Постер ELUNA «Мы убирали всё лишнее — пока не осталась тишина»: матрас на звёздном небе',
     desc: 'Ортопедические, на своём сайте' }
 };
 window.RICCA_CATALOG_ORDER = ['sofas', 'beds', 'armchairs', 'chairs', 'tables', 'fabrics', 'mattresses'];
