@@ -72,14 +72,78 @@ function smoothNormalsByPosition(geo) {
   geo.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
 }
 
+/* ---------- шов (кромка панелей) для шейдера ткани ----------
+   Атрибут seam (vec4): x — расстояние по поверхности до ближайшей линии шва (м), y — 1 (есть швы), zw — направление шва в UV.
+   Шов рисует шейдер ткани (materials.js): тонкая тёмная линия + валик припуска + лёгкие «натяжные» складки рядом —
+   видно на любом расстоянии без лишних треугольников (трубки-швы по-прежнему добавляются только для крупного плана). */
+const AX = ['x', 'y', 'z'];
+/* оси UV по граням (как в face(): верх (x,−z), низ (x,z), фронт (x,y), тыл (−x,y), правый (−z,y), левый (z,y)) */
+const FACE_UV = {
+  top: [[1, 0, 0], [0, 0, -1]], bottom: [[1, 0, 0], [0, 0, 1]], front: [[1, 0, 0], [0, 1, 0]],
+  back: [[-1, 0, 0], [0, 1, 0]], right: [[0, 0, -1], [0, 1, 0]], left: [[0, 0, 1], [0, 1, 0]],
+};
+function makeSeamer(Hx, Hy, Hz, R, seams) {
+  const I = [[-Hx + R.x[0], Hx - R.x[1]], [-Hy + R.y[0], Hy - R.y[1]], [-Hz + R.z[0], Hz - R.z[1]]];
+  const RR = [R.x, R.y, R.z];
+  const c = [0, 0, 0], e = [0, 0, 0], r = [0, 0, 0], t3 = [0, 0, 0];
+  const Q4 = Math.PI / 4;
+  /* out: [d, tu, tv] */
+  return (g, uvAx, out) => {
+    for (let k = 0; k < 3; k++) {
+      c[k] = Math.min(I[k][1], Math.max(I[k][0], g[k]));
+      const dd = g[k] - c[k]; r[k] = dd >= 0 ? RR[k][1] : RR[k][0];
+      e[k] = r[k] > 1e-6 ? dd / r[k] : 0;
+    }
+    const l = Math.hypot(e[0], e[1], e[2]) || 1;
+    let best = Infinity, bt0 = 0, bt1 = 0, bt2 = 0;
+    for (const [a, s] of seams) {
+      const ai = AX.indexOf(a);
+      const cosT = Math.max(-1, Math.min(1, (s * e[ai]) / l)), th = Math.acos(cosT);
+      /* радиус дуги: среднее радиуса по оси шва и по направлению выхода к боковине */
+      let ro = 0, wo = 0;
+      for (let k = 0; k < 3; k++) if (k !== ai) { ro += e[k] * e[k] * r[k] * r[k]; wo += e[k] * e[k]; }
+      const rOth = wo > 1e-9 ? Math.sqrt(ro / wo) : (r[(ai + 1) % 3] + r[(ai + 2) % 3]) / 2;
+      const rr = (r[ai] + rOth) / 2;
+      let flat;
+      if (th < Q4) { flat = Infinity; for (let k = 0; k < 3; k++) if (k !== ai) flat = Math.min(flat, c[k] - I[k][0], I[k][1] - c[k]); }
+      else flat = s > 0 ? I[ai][1] - c[ai] : c[ai] - I[ai][0];
+      const d = rr * Math.abs(th - Q4) + Math.max(0, flat);
+      if (d < best) {
+        best = d;
+        /* направление шва: ось шва × направление «наружу» (к ближайшей кромке) */
+        let ox = ai === 0 ? 0 : e[0], oy = ai === 1 ? 0 : e[1], oz = ai === 2 ? 0 : e[2];
+        if (Math.hypot(ox, oy, oz) < 1e-6) {
+          let mk = -1, md = Infinity;
+          for (let k = 0; k < 3; k++) if (k !== ai) { const dl = c[k] - I[k][0], dh = I[k][1] - c[k]; if (dl < md) { md = dl; mk = -(k + 1); } if (dh < md) { md = dh; mk = k + 1; } }
+          ox = Math.abs(mk) === 1 ? Math.sign(mk) : 0; oy = Math.abs(mk) === 2 ? Math.sign(mk) : 0; oz = Math.abs(mk) === 3 ? Math.sign(mk) : 0;
+        }
+        const ax = ai === 0 ? s : 0, ay = ai === 1 ? s : 0, az = ai === 2 ? s : 0;
+        t3[0] = ay * oz - az * oy; t3[1] = az * ox - ax * oz; t3[2] = ax * oy - ay * ox;
+        bt0 = t3[0]; bt1 = t3[1]; bt2 = t3[2];
+      }
+    }
+    const U = uvAx[0], V = uvAx[1];
+    let tu = bt0 * U[0] + bt1 * U[1] + bt2 * U[2], tv = bt0 * V[0] + bt1 * V[1] + bt2 * V[2];
+    const tl = Math.hypot(tu, tv) || 1; tu /= tl; tv /= tl;
+    out[0] = Math.min(best, 1); out[1] = tu; out[2] = tv;
+  };
+}
+/* нулевой атрибут шва для деталей без швов (один шейдер ткани на всё изделие) */
+function ensureSeamAttr(geo) {
+  if (!geo || geo.attributes.seam) return geo;
+  geo.setAttribute('seam', new THREE.BufferAttribute(new Float32Array(geo.attributes.position.count * 4), 4));
+  return geo;
+}
+
 /* ---------- мягкий бокс ---------- */
-/* o: { rx, rz, rTop, rBottom, quality, crown, crownFace:'y'|'z', bulge, sag, tufting, tuftFace:'z'|'y', taper, rough } */
+/* o: { rx, rz, rTop, rBottom, quality, crown, crownFace:'y'|'z', crownBack, crownP, bulge, sag, tufting, tuftFace:'z'|'y', taper, pillow, seams } */
 function softBox(sx, sy, sz, o = {}) {
   const q = Q[o.quality] || Q.high;
   const crown = o.crown || 0, bulge = o.bulge || 0;
   const cf = o.crownFace || 'y';
+  const crownBack = cf === 'z' ? o.crownBack || 0 : 0;
   /* базовый бокс уменьшен на «купол» и выпуклость — после деформации деталь ровно в габарите */
-  const bx = sx - 2 * bulge, by = sy - (cf === 'y' ? crown : 0), bz = sz - 2 * bulge - (cf === 'z' ? crown : 0);
+  const bx = sx - 2 * bulge, by = sy - (cf === 'y' ? crown : 0), bz = sz - 2 * bulge - (cf === 'z' ? crown + crownBack : 0);
   const Hx = bx / 2, Hy = by / 2, Hz = bz / 2;
   const lim = (r, h) => Math.max(0.0005, Math.min(r, h * 0.999));
   const rx = lim(o.rx ?? 0.02, Hx), rz = lim(o.rz ?? o.rx ?? 0.02, Hz);
@@ -91,20 +155,24 @@ function softBox(sx, sy, sz, o = {}) {
   /* плотность стяжки: не мельче q.tuft и не больше ~30 тыс. вершин на две большие грани */
   const tArea = tuft ? (o.tuftFace === 'y' ? sx * sz : sx * sy) : 0;
   const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 6000 : o.quality === 'mid' ? 12000 : 24000))) : q.sp;
-  const deformed = crown || bulge || tuft || o.sag || (o.taper && o.taper !== 1);
+  const deformed = crown || crownBack || bulge || tuft || o.sag || o.pillow || (o.taper && o.taper !== 1);
   const sp = (deformed ? q.sp : q.flat) * (o.dense || 1);
   const tf = o.tuftFace || 'z';
   const X = axisSamples(Hx, rx, rx, tuft ? spTuft : sp, q.nq);
   const Y = axisSamples(Hy, rB, rT, tuft && tf === 'z' ? spTuft : sp, q.nq);
   const Z = axisSamples(Hz, rz, rz + (cf === 'z' ? 0 : 0), tuft && tf === 'y' ? spTuft : sp, q.nq);
-  const positions = [], normals = [], uvs = [], index = [];
+  const positions = [], normals = [], uvs = [], index = [], seamA = [];
   const P = new THREE.Vector3(), N = new THREE.Vector3();
-  const yOff = cf === 'y' ? -crown / 2 : 0, zOff = cf === 'z' ? -crown / 2 : 0;
-  const disp = makeDisplacer({ Hx, Hy, Hz, crown, cf, bulge, sag: o.sag || 0, tuft, tf, sx, sy, sz, taper: o.taper || 1, rT });
-  const face = (A, B, mk, uvf, flip) => {
+  const yOff = cf === 'y' ? -crown / 2 : 0, zOff = cf === 'z' ? -(crown - crownBack) / 2 : 0;
+  const disp = makeDisplacer({ Hx, Hy, Hz, crown, crownBack, crownP: o.crownP || 2, cf, bulge, sag: o.sag || 0, tuft, tf, sx, sy, sz, taper: o.taper || 1, rT, pillow: o.pillow || 0 });
+  const seamer = o.seams && o.seams.length && o.quality !== 'low' ? makeSeamer(Hx, Hy, Hz, R, o.seams) : null;
+  const sOut = [0, 0, 0];
+  const face = (A, B, mk, uvf, flip, fname) => {
     const base = positions.length / 3;
+    const uvAx = FACE_UV[fname];
     for (let j = 0; j < B.length; j++) for (let i = 0; i < A.length; i++) {
       const g = mk(A[i], B[j]);
+      if (seamer) { seamer(g, uvAx, sOut); seamA.push(sOut[0], 1, sOut[1], sOut[2]); }
       proj(g[0], g[1], g[2], P, N);
       disp(P, N);
       positions.push(P.x, P.y + yOff, P.z + zOff); normals.push(N.x, N.y, N.z);
@@ -116,18 +184,19 @@ function softBox(sx, sy, sz, o = {}) {
       if (flip) index.push(a, b, c, b, d, c); else index.push(a, c, b, b, c, d);
     }
   };
-  face(X, Z, (a, b) => [a, Hy, b], (p) => [p.x, -p.z], false); // верх
-  face(X, Z, (a, b) => [a, -Hy, b], (p) => [p.x, p.z], true); // низ
-  face(X, Y, (a, b) => [a, b, Hz], (p) => [p.x, p.y], true); // фронт
-  face(X, Y, (a, b) => [a, b, -Hz], (p) => [-p.x, p.y], false); // тыл
-  face(Z, Y, (a, b) => [Hx, b, a], (p) => [-p.z, p.y], false); // правый бок
-  face(Z, Y, (a, b) => [-Hx, b, a], (p) => [p.z, p.y], true); // левый бок
+  face(X, Z, (a, b) => [a, Hy, b], (p) => [p.x, -p.z], false, 'top'); // верх
+  face(X, Z, (a, b) => [a, -Hy, b], (p) => [p.x, p.z], true, 'bottom'); // низ
+  face(X, Y, (a, b) => [a, b, Hz], (p) => [p.x, p.y], true, 'front'); // фронт
+  face(X, Y, (a, b) => [a, b, -Hz], (p) => [-p.x, p.y], false, 'back'); // тыл
+  face(Z, Y, (a, b) => [Hx, b, a], (p) => [-p.z, p.y], false, 'right'); // правый бок
+  face(Z, Y, (a, b) => [-Hx, b, a], (p) => [p.z, p.y], true, 'left'); // левый бок
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
   geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+  if (seamer) geo.setAttribute('seam', new THREE.Float32BufferAttribute(seamA, 4));
   geo.setIndex(index);
-  if (crown || bulge || tuft || o.sag || (o.taper && o.taper !== 1)) smoothNormalsByPosition(geo);
+  if (deformed) smoothNormalsByPosition(geo);
   /* линии кромки (для канта/шва): периметр грани на 45° скругления */
   geo.userData.edgeLoop = (axis, sign) => {
     const pts = [];
@@ -154,12 +223,16 @@ function softBox(sx, sy, sz, o = {}) {
 /* деформации: купол, выпуклость боков, прогиб у фронта, стяжка (каналы / капитоне), сужение ног */
 function makeDisplacer(s) {
   const { Hx, Hy, Hz, crown, cf, bulge, sag, tuft, tf, taper, sx, sy } = s;
+  const crownBack = s.crownBack || 0, cp = s.crownP || 2, pillow = s.pillow || 0;
+  /* профиль «купола»: 1 − |u|^p (p > 2 — полнее, «набитая» подушка с мягким спадом к кромке) */
+  const cprof = (u) => 1 - Math.pow(Math.min(1, u), cp);
   const buttons = [];
   let tuftFn = null;
   if (tuft === 'channels') {
     const n = Math.max(5, Math.min(9, Math.round(sx / 0.24)));
-    const depth = 0.016;
-    tuftFn = (u, v) => { const f = Math.pow(Math.abs(Math.sin(Math.PI * n * (u * 0.5 + 0.5))), 0.3); return depth * (f - 1); };
+    /* каналы — круглые «валики» (профиль ≈ полуокружность), глубина шва между ними 2,4 см */
+    const depth = 0.024;
+    tuftFn = (u, v) => { const f = Math.pow(Math.abs(Math.sin(Math.PI * n * (u * 0.5 + 0.5))), 0.45); return depth * (f - 1); };
   } else if (tuft === 'capitone') {
     const a = 0.14, b = 0.12, dD = 0.010, dP = 0.003;
     /* решётка ромбом: пуговицы в (s,t) целых с s+t чётным, где s = x/(a/2), t = y/b */
@@ -188,14 +261,20 @@ function makeDisplacer(s) {
   const fn = (P, N) => {
     /* сужение (ножки): горизонтальный масштаб от низа (taper) к верху (1) */
     if (taper !== 1) { const t = (P.y + Hy) / (2 * Hy); const k = taper + (1 - taper) * t; P.x *= k; P.z *= k; }
+    /* подушка спинки: к верху тоньше (наполнитель оседает вниз), толщина у низа — полная */
+    if (pillow && cf === 'z') { const t = (P.y + Hy) / (2 * Hy); P.z *= 1 - pillow * Math.pow(smooth(0.25, 1.0, t), 1.3); }
     if (crown) {
       if (cf === 'y' && N.y > 0.2) {
-        const u = Math.min(1, Math.abs(P.x) / Hx), v = Math.min(1, Math.abs(P.z) / Hz);
-        P.y += crown * (1 - u * u) * (1 - v * v) * smooth(0.2, 0.95, N.y);
+        const u = Math.abs(P.x) / Hx, v = Math.abs(P.z) / Hz;
+        P.y += crown * cprof(u) * cprof(v) * smooth(0.2, 0.95, N.y);
       } else if (cf === 'z' && N.z > 0.2) {
-        const u = Math.min(1, Math.abs(P.x) / Hx), v = Math.min(1, Math.abs(P.y) / Hy);
-        P.z += crown * (1 - u * u) * (1 - v * v) * smooth(0.2, 0.95, N.z);
+        const u = Math.abs(P.x) / Hx, v = Math.abs(P.y) / Hy;
+        P.z += crown * cprof(u) * cprof(v) * smooth(0.2, 0.95, N.z);
       }
+    }
+    if (crownBack && N.z < -0.2) {
+      const u = Math.abs(P.x) / Hx, v = Math.abs(P.y) / Hy;
+      P.z -= crownBack * cprof(u) * cprof(v) * smooth(0.2, 0.95, -N.z);
     }
     if (bulge && Math.abs(N.y) < 0.85) {
       const t = (P.y + Hy) / (2 * Hy), m = Math.sin(Math.PI * Math.min(1, Math.max(0, t)));
@@ -262,6 +341,18 @@ function softCyl(sx, sy, sz, o = {}) {
     for (let i = 0; i < n; i++) btn.push([Math.cos((i / n) * Math.PI * 2) * rr * (A / mR), Math.sin((i / n) * Math.PI * 2) * rr * (B / mR)]);
   }
   const ringStart = [];
+  /* швы (шейдер): длина по профилю до линий на 45° верхнего и нижнего скругления */
+  const seamA = o.seams ? [] : null;
+  let sB = 0, sT = 0;
+  const rowS = [];
+  if (seamA) {
+    let acc = 0;
+    for (let i = 0; i < rows.length; i++) { if (i) acc += Math.hypot(rows[i][0] - rows[i - 1][0], rows[i][1] - rows[i - 1][1]); rowS.push(acc); }
+    const yB = -Hh + rB - rB * Math.SQRT1_2, yT = Hh - rT + rT * Math.SQRT1_2;
+    let bi = 0, ti = 0;
+    for (let i = 0; i < rows.length; i++) { if (Math.abs(rows[i][1] - yB) < Math.abs(rows[bi][1] - yB) && rows[i][0] < mR * 0.5) bi = i; if (Math.abs(rows[i][1] - yT) < Math.abs(rows[ti][1] - yT) && rows[i][0] < mR * 0.5) ti = i; }
+    sB = rowS[bi]; sT = rowS[ti];
+  }
   for (let r = 0; r < rows.length; r++) {
     const [dl, y, kind] = rows[r];
     ringStart.push(positions.length / 3);
@@ -277,6 +368,10 @@ function softCyl(sx, sy, sz, o = {}) {
       }
       positions.push(x, yy + (crown ? -crown / 2 : 0), z);
       if (kind === 1) uvs.push((s / nSeg) * per, y); else uvs.push(x, kind === 2 ? -z : z);
+      if (seamA) {
+        const d = Math.min(Math.abs(rowS[r] - sB), Math.abs(rowS[r] - sT));
+        if (kind === 1) seamA.push(d, 1, 1, 0); else seamA.push(d, 1, -Math.sin(ph), kind === 2 ? -Math.cos(ph) : Math.cos(ph));
+      }
     }
   }
   for (let r = 0; r < rows.length - 1; r++) {
@@ -287,6 +382,7 @@ function softCyl(sx, sy, sz, o = {}) {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+  if (seamA) geo.setAttribute('seam', new THREE.Float32BufferAttribute(seamA, 4));
   geo.setIndex(index);
   smoothNormalsByPosition(geo);
   geo.userData.edgeLoop = (axis, sign) => {
@@ -480,35 +576,65 @@ function itemGeometry(it, quality, type, dense = 1) {
   if (it.shape === 'cyl') {
     const isTop = it.role === 'top', base = it.id.startsWith('pbase');
     return softCyl(it.sx, it.sy, it.sz, {
-      quality, crown: it.crown || 0, tufting: it.tufting,
+      quality, crown: cushion ? Math.max(it.crown || 0, 0.018) : it.crown || 0, tufting: it.tufting,
+      seams: cushion && it.seam && !it.piping && quality !== 'low',
       rTop: isTop ? it.r : base ? 0.008 : it.r || 0.02, rBottom: isTop ? it.r * 0.6 : base ? 0.004 : it.rBottom || Math.min(0.02, it.r || 0.02),
     });
   }
   /* roundbox */
   const r = it.r ?? 0.02;
   const o = { quality, rx: r, rz: r, rTop: r, rBottom: Math.min(r, 0.02), dense };
+  /* швы (шейдер): у деталей с кантом шов — сам кант (трубка) */
+  const seams = (list) => { if (!it.piping) o.seams = list; };
+  const soft = type !== 'pouf';
   if (it.role === 'arm') {
-    if (it.armStyle === 'round') { o.rx = it.sx / 2; o.rTop = it.sx / 2; o.rz = 0.045; o.rBottom = 0.02; }
-    else if (it.armStyle === 'wide') { o.rx = 0.035; o.rz = 0.035; o.rTop = 0.05; }
-    else { o.rx = 0.02; o.rz = 0.02; o.rTop = 0.02; }
-    o.bulge = it.sx > 0.15 ? 0.004 : 0;
+    /* подлокотник: мягкое скругление верха (не «доска»), чуть выпуклые бока и верх, шов по передней панели */
+    if (it.armStyle === 'round') { o.rx = it.sx / 2; o.rTop = it.sx / 2; o.rz = 0.06; o.rBottom = 0.02; o.crown = 0.008; }
+    else if (it.armStyle === 'wide') { o.rx = 0.06; o.rz = 0.05; o.rTop = 0.07; o.rBottom = 0.02; o.crown = 0.01; o.crownP = 2.5; }
+    else { o.rx = Math.min(0.035, it.sx * 0.3); o.rz = 0.035; o.rTop = 0.045; o.rBottom = 0.015; o.crown = 0.005; }
+    o.bulge = it.sx > 0.15 ? 0.008 : 0.005;
+    seams([['z', 1]]);
   }
-  if (cushion && it.role === 'seat') { o.crown = it.crown || 0.012; o.bulge = 0.006; o.sag = type === 'chair' || type === 'pouf' ? 0 : 0.006; o.rx = o.rz = r; o.rTop = r; o.rBottom = Math.min(r, 0.03); }
-  if (cushion && it.role === 'back') { o.crown = it.crown || 0.02; o.crownFace = 'z'; o.bulge = 0.005; o.rx = r; o.rTop = r; o.rBottom = r * 0.8; o.rz = Math.min(r, it.sz * 0.45); }
-  if (!cushion && it.role === 'back') { o.rTop = Math.min(0.05, it.sz * 0.4); o.rx = 0.03; o.rz = Math.min(0.04, it.sz * 0.4); if (it.crown) { o.crown = it.crown; o.crownFace = 'z'; } }
+  if (cushion && it.role === 'seat') {
+    /* подушка сиденья: «набитый» купол, скругление кромки 5 см, выпуклая боковая лента, прогиб там, где сидят */
+    const cr = type === 'pouf' ? it.crown || 0.015 : 0.022;
+    o.crown = cr; o.crownP = 2.4; o.bulge = type === 'pouf' ? 0.008 : 0.012; o.sag = type === 'pouf' ? 0 : 0.008;
+    o.rx = o.rz = Math.max(r, 0.05); o.rTop = Math.max(r, 0.05); o.rBottom = Math.min(Math.max(r, 0.035), 0.035);
+    if (it.seam) seams([['y', 1], ['y', -1]]);
+  }
+  if (cushion && it.role === 'back') {
+    /* подушка спинки: пухлая, к верху тоньше, обе стороны выпуклые, очень мягкий верх */
+    o.crown = Math.max(it.crown || 0.02, 0.04); o.crownBack = 0.015; o.crownP = 2.2; o.crownFace = 'z'; o.bulge = 0.01; o.pillow = 0.22;
+    o.rx = Math.max(r, 0.07); o.rTop = 0.075; o.rBottom = 0.05; o.rz = Math.min(0.08, it.sz * 0.4);
+    if (it.seam) seams([['z', 1], ['z', -1]]);
+  }
+  if (!cushion && it.role === 'back') {
+    o.rTop = Math.min(0.09, it.sz * 0.45); o.rx = 0.035; o.rz = Math.min(0.08, it.sz * 0.45);
+    if (it.crown) { o.crown = it.sz > 0.15 ? 0.025 : it.crown; o.crownP = 2.5; o.crownFace = 'z'; o.bulge = 0.006; }
+    if (it.sz > 0.15) seams([['z', 1]]);
+  }
   if (it.backShape === 'rounded') { o.rx = Math.min(it.sx * 0.25, 0.12); o.rTop = o.rx; o.rz = Math.min(0.025, it.sz * 0.45); o.rBottom = 0.02; }
   if (it.role === 'headboard') {
-    o.rx = it.wing ? 0.05 : 0.03; o.rTop = it.wing ? 0.06 : 0.04; o.rz = Math.min(0.035, it.sz * 0.4); o.rBottom = 0.01;
-    if (it.crown) { o.crown = it.crown; o.crownFace = 'z'; }
+    /* изголовье: мягкая панель с выпуклым фронтом и швом-кантом по периметру фронта */
+    o.rx = it.wing ? 0.055 : 0.045; o.rTop = it.wing ? 0.065 : 0.055; o.rz = Math.min(0.04, it.sz * 0.4); o.rBottom = 0.01;
+    if (it.crown) { o.crown = it.tufting ? it.crown : 0.02; o.crownP = 2.5; o.crownFace = 'z'; }
     if (it.tufting) { o.tufting = it.tufting; o.tuftFace = 'z'; }
+    seams([['z', 1]]);
   }
   if (it.role === 'mattress') { o.rx = o.rz = 0.05; o.rTop = 0.035; o.rBottom = 0.035; o.crown = it.crown || 0.008; o.bulge = 0.004; }
   if (it.role === 'seat' && it.tufting) { o.tufting = it.tufting; o.tuftFace = 'y'; }
   if (it.role === 'top') { o.rx = o.rz = it.rPlan || 0.012; o.rTop = it.r; o.rBottom = it.r * 0.6; }
   if (it.role === 'decor') { o.crown = it.crown || 0.02; o.rx = o.rz = it.r; o.rTop = it.r; o.rBottom = 0.01; o.bulge = it.decorKind === 'pillow' ? 0.012 : 0.004; }
-  if (cushion === false && it.softBack) { o.rTop = 0.07; o.rx = 0.05; o.rz = Math.min(0.06, it.sz * 0.4); o.crown = it.crown || 0.02; o.crownFace = 'z'; o.bulge = 0.005; }
+  if (cushion === false && it.softBack) { o.rTop = 0.08; o.rx = 0.055; o.rz = Math.min(0.07, it.sz * 0.4); o.crown = Math.max(it.crown || 0.02, 0.03); o.crownP = 2.3; o.crownFace = 'z'; o.bulge = 0.008; o.seams = it.piping ? undefined : [['z', 1]]; }
   if (it.role === 'plinth') { o.rx = o.rz = 0.01; o.rTop = 0.004; o.rBottom = 0.004; }
-  if (it.role === 'frame' || it.role === 'rail') { o.rTop = Math.min(it.r ?? 0.02, it.sy * 0.4); o.rBottom = 0.01; }
+  if (it.role === 'frame') {
+    /* основание под подушками: мягкая обивка, чуть выпуклый фронт */
+    o.rTop = Math.min(0.03, it.sy * 0.4); o.rBottom = 0.012; o.rx = o.rz = Math.max(r, soft ? 0.03 : r); o.bulge = soft && it.sy > 0.12 ? 0.005 : 0;
+  }
+  if (it.role === 'rail') {
+    o.rTop = Math.min(0.035, it.sy * 0.4); o.rBottom = 0.012; o.rx = o.rz = Math.min(0.03, it.sx * 0.4, it.sz * 0.4); o.crown = 0.004; o.bulge = 0.005;
+    seams([['y', 1]]);
+  }
   return softBox(it.sx, it.sy, it.sz, o);
 }
 
@@ -555,6 +681,7 @@ export function build(type, params, materials = {}, opts = {}) {
   const pipeM = pipingMaterial(M.fabric) || M.fabric;
   const meshes = [];
   const addMesh = (geo, matKey, it, extra) => {
+    ensureSeamAttr(geo);
     const mat = matKey === 'seam' ? seamM : matKey === 'piping' ? pipeM : M[matKey] || M.fabric;
     const mesh = new THREE.Mesh(geo, mat);
     mesh.castShadow = true; mesh.receiveShadow = true;
@@ -626,7 +753,7 @@ export function build(type, params, materials = {}, opts = {}) {
     }
     for (const [kk, e] of byMat) {
       const [k, det] = kk.split('|');
-      const attrs = ['position', 'normal', 'uv'];
+      const attrs = ['position', 'normal', 'uv', 'seam'];
       e.geos.forEach((g) => { for (const n of Object.keys(g.attributes)) if (!attrs.includes(n)) g.deleteAttribute(n); if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]); });
       const merged = mergeGeometries(e.geos, false);
       e.geos.forEach((g) => g.dispose());
