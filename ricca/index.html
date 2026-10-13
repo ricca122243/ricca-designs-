@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RICCA DESIGNS — мебель на заказ · Алматы</title>
-<meta name="description" content="Диваны, кровати и кресла на заказ — по каталогу и под проект. Своё ателье в Алматы, шоурум на Навои, 208/2. Гарантия 3 года, доставка по Казахстану.">
+<meta name="description" content="Диваны, кровати и кресла на заказ — по вашему фото, эскизу или проекту. Своё ателье в Алматы, шоурум на Навои, 208/2. Гарантия 3 года, доставка по Казахстану.">
 <!-- TODO (заказчик): домен сайта не подтверждён. Когда адрес будет известен — снять noindex и поправить https://ricca-designs.kz/ в canonical, og:url, og:image и JSON-LD. -->
 <meta name="robots" content="noindex">
 <link rel="canonical" href="https://ricca-designs.kz/">
@@ -137,7 +137,7 @@
 <section class="sec lead" id="news" aria-labelledby="news-title">
   <div class="wrap">
     <div class="lead__row">
-      <p class="lead__text rv">RICCA&nbsp;DESIGNS шьёт диваны, кровати и&nbsp;кресла в&nbsp;любом стиле&nbsp;— по&nbsp;каталогу, вашему фото, эскизу или&nbsp;проекту. <span class="lead__tail">Для дома и&nbsp;для бизнеса.</span></p>
+      <p class="lead__text rv">RICCA&nbsp;DESIGNS шьёт диваны, кровати и&nbsp;кресла в&nbsp;любом стиле&nbsp;— по&nbsp;вашему фото, эскизу или&nbsp;проекту. <span class="lead__tail">Для дома и&nbsp;для бизнеса.</span></p>
       <div class="lead__news rv">
         <h2 class="label" id="news-title">Новости</h2>
         <a class="news" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">
@@ -163,44 +163,45 @@
   </div>
 </section>
 
-<!-- ═════════ 3. КАТАЛОГ: семь плиток категорий — по одному фото. Нажали плитку — экран категории (#catalog/sofas): все модели сразу;
-     нажали модель — окно изделия со всеми фото. Ряд 1 — три крупные плитки, ряд 2 — четыре; телефон: Диваны во всю ширину, затем пары.
-     Обложки 1–5 — наши ИИ-визуализации (подпись «визуализация», alt с «Визуализация:»), не выполненные проекты. Подписи, alt и число моделей
-     сайт берёт из js/catalog-data.js (RICCA_CATALOG_CATEGORIES: coverAlt, desc) — текст ниже для показа без скриптов. ═════════ -->
+<!-- ═════════ 3. КАТАЛОГ: семь плиток категорий. Нажали плитку — экран категории (#catalog/sofas): что шьём в этой категории
+     и три действия — «Собрать в 3D», «Отправить фото в WhatsApp», «В корзину — заявка». Моделей фабрики нет (отзыв клиента
+     13 октября: «у нас совсем другой стиль»); обложки — тонкие линейные рисунки (inline SVG, js/site.js дорисовывает их при
+     наведении), у «Тканей» — веер образцов в настоящих цветах из js/fabrics-data.js, у ELUNA — постер заказчика.
+     Ряд 1 — три крупные плитки, ряд 2 — четыре; телефон: Диваны во всю ширину, затем пары. ═════════ -->
 <section class="sec cat" id="catalog" aria-labelledby="cat-title">
   <div class="wrap">
     <header class="shead rv">
       <h2 class="title" id="cat-title">Каталог</h2>
-      <p class="shead__line" data-cat-line>Модели в&nbsp;каталоге&nbsp;— примеры: сошьём и&nbsp;любую другую.</p>
+      <p class="shead__line" data-cat-line>Шьём на&nbsp;заказ&nbsp;— по&nbsp;вашему фото, эскизу или&nbsp;проекту.</p>
     </header>
     <ul class="tiles" role="list">
       <li class="rv"><a class="tile" href="#catalog/sofas" data-cat="sofas">
-        <span class="tile__img"><img src="img/catalog/cover-sofas-600.webp" srcset="img/catalog/cover-sofas-600.webp 600w, img/catalog/cover-sofas.webp 1200w" sizes="(min-width: 1100px) 400px, (min-width: 600px) 46vw, 92vw" width="1200" height="1500" alt="Визуализация: модульный диван в светлой ткани и низкий чёрный стол в вечерней гостиной" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Диваны</span><span class="tile__viz" aria-hidden="true">визуализация</span></span>
+        <span class="tile__img tile__img--draw"><svg class="draw" viewBox="0 0 400 500" aria-hidden="true" focusable="false"><line class="draw__fl" x1="36" y1="380" x2="364" y2="380"/><rect x="66" y="270" width="268" height="58" rx="5"/><rect x="84" y="276" width="76" height="46" rx="7"/><rect x="162" y="276" width="76" height="46" rx="7"/><rect x="240" y="276" width="76" height="46" rx="7"/><rect x="56" y="340" width="288" height="22" rx="2"/><rect x="82" y="318" width="80" height="24" rx="5"/><rect x="160" y="318" width="80" height="24" rx="5"/><rect x="238" y="318" width="80" height="24" rx="5"/><rect x="56" y="300" width="28" height="62" rx="5"/><rect x="316" y="300" width="28" height="62" rx="5"/><path d="M70 362h10l-2 18h-6z"/><path d="M320 362h10l-2 18h-6z"/></svg></span>
+        <span class="tile__cap"><span class="tile__name">Диваны</span></span>
         <span class="tile__sub" data-tile-sub>Прямые, угловые, модульные, раскладные</span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/beds" data-cat="beds">
-        <span class="tile__img"><img src="img/catalog/cover-beds-600.webp" srcset="img/catalog/cover-beds-600.webp 600w, img/catalog/cover-beds.webp 1200w" sizes="(min-width: 1100px) 400px, (min-width: 600px) 46vw, 45vw" width="1200" height="1500" alt="Визуализация: кровать с высоким стёганым изголовьем в светлой спальне" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Кровати</span><span class="tile__viz" aria-hidden="true">визуализация</span></span>
+        <span class="tile__img tile__img--draw"><svg class="draw" viewBox="0 0 400 500" aria-hidden="true" focusable="false"><line class="draw__fl" x1="36" y1="380" x2="364" y2="380"/><rect x="70" y="190" width="260" height="150" rx="16"/><path class="draw__ln" d="M107 190v150M144 190v150M181 190v150M219 190v150M256 190v150M293 190v150"/><rect x="98" y="270" width="94" height="34" rx="13"/><rect x="208" y="270" width="94" height="34" rx="13"/><rect x="80" y="296" width="240" height="42" rx="6"/><path class="draw__ln" d="M80 310h240"/><rect x="74" y="336" width="252" height="30" rx="3"/><rect x="88" y="366" width="8" height="14"/><rect x="304" y="366" width="8" height="14"/></svg></span>
+        <span class="tile__cap"><span class="tile__name">Кровати</span></span>
         <span class="tile__sub" data-tile-sub>С подъёмным механизмом и&nbsp;без</span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/armchairs" data-cat="armchairs">
-        <span class="tile__img"><img src="img/catalog/cover-armchairs-600.webp" srcset="img/catalog/cover-armchairs-600.webp 600w, img/catalog/cover-armchairs.webp 1200w" sizes="(min-width: 1100px) 400px, (min-width: 600px) 46vw, 45vw" width="1200" height="1500" alt="Визуализация: кресло в молочной обивке на чёрной раме у окна" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Кресла</span><span class="tile__viz" aria-hidden="true">визуализация</span></span>
-        <span class="tile__sub" data-tile-sub>Для отдыха: округлые, на&nbsp;цоколе</span>
+        <span class="tile__img tile__img--draw"><svg class="draw" viewBox="0 0 400 500" aria-hidden="true" focusable="false"><line class="draw__fl" x1="36" y1="380" x2="364" y2="380"/><rect x="138" y="222" width="124" height="112" rx="16"/><rect x="148" y="340" width="104" height="24" rx="2"/><rect x="146" y="316" width="108" height="26" rx="5"/><rect x="116" y="290" width="34" height="74" rx="6"/><rect x="250" y="290" width="34" height="74" rx="6"/><path d="M124 364h10l-2 16h-6z"/><path d="M266 364h10l-2 16h-6z"/></svg></span>
+        <span class="tile__cap"><span class="tile__name">Кресла</span></span>
+        <span class="tile__sub" data-tile-sub>Для отдыха, пуфы и&nbsp;банкетки</span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/chairs" data-cat="chairs">
-        <span class="tile__img"><img src="img/catalog/cover-chairs-600.webp" srcset="img/catalog/cover-chairs-600.webp 600w, img/catalog/cover-chairs.webp 1200w" sizes="(min-width: 1100px) 290px, (min-width: 600px) 46vw, 45vw" width="1200" height="1500" alt="Визуализация: спинка и ножки полукресла в светлом букле, крупно" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Стулья</span><span class="tile__viz" aria-hidden="true">визуализация</span></span>
-        <span class="tile__sub" data-tile-sub>С подлокотниками и&nbsp;без</span>
+        <span class="tile__img tile__img--draw"><svg class="draw" viewBox="0 0 400 500" aria-hidden="true" focusable="false"><line class="draw__fl" x1="36" y1="380" x2="364" y2="380"/><rect x="152" y="176" width="26" height="122" rx="11" transform="rotate(-6 165 298)"/><rect x="150" y="286" width="112" height="20" rx="6"/><path d="M158 306h9l-4 74h-8z"/><path d="M246 306h9l4 74h-8z"/></svg></span>
+        <span class="tile__cap"><span class="tile__name">Стулья</span></span>
+        <span class="tile__sub" data-tile-sub>Мягкие стулья по&nbsp;вашему проекту</span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/tables" data-cat="tables">
-        <span class="tile__img"><img src="img/catalog/cover-tables-600.webp" srcset="img/catalog/cover-tables-600.webp 600w, img/catalog/cover-tables.webp 1200w" sizes="(min-width: 1100px) 290px, (min-width: 600px) 46vw, 45vw" width="1200" height="1500" alt="Визуализация: чёрный обеденный стол, ветка в стеклянной вазе, подвесной светильник" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
-        <span class="tile__cap"><span class="tile__name">Столы</span><span class="tile__viz" aria-hidden="true">визуализация</span></span>
-        <span class="tile__sub" data-tile-sub>Обеденные: круглые, прямоугольные</span>
+        <span class="tile__img tile__img--draw"><svg class="draw" viewBox="0 0 400 500" aria-hidden="true" focusable="false"><line class="draw__fl" x1="36" y1="380" x2="364" y2="380"/><rect x="54" y="262" width="292" height="12" rx="2"/><rect x="70" y="274" width="260" height="14"/><path d="M82 288h14l-3 92h-8z"/><path d="M304 288h14l-3 92h-8z"/></svg></span>
+        <span class="tile__cap"><span class="tile__name">Столы</span></span>
+        <span class="tile__sub" data-tile-sub>Столы и&nbsp;консоли по&nbsp;вашему проекту</span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/fabrics" data-cat="fabrics">
-        <span class="tile__img"><img src="img/catalog/cover-fabrics-600.webp" srcset="img/catalog/cover-fabrics-600.webp 600w, img/catalog/cover-fabrics.webp 1200w" sizes="(min-width: 1100px) 290px, (min-width: 600px) 46vw, 45vw" width="1200" height="1500" alt="Книга образцов тканей: от светло-серого до графитового" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
+        <span class="tile__img tile__img--draw tile__img--fan"><svg class="draw" viewBox="0 0 400 500" aria-hidden="true" focusable="false"><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#ebe6db;--a:-35deg"/><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#b2b4b7;--a:-21deg"/><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#85978e;--a:-7deg"/><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#bb783c;--a:7deg"/><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#2e4861;--a:21deg"/><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#19191e;--a:35deg"/><circle cx="200" cy="386" r="4"/></svg></span>
         <span class="tile__cap"><span class="tile__name">Ткани</span></span>
         <span class="tile__sub" data-tile-sub>Велюр, букле, шенилл, замша, экокожа</span>
       </a></li>
@@ -214,7 +215,7 @@
       </a></li>
     </ul>
     <div class="cat__foot rv">
-      <p class="cat__hint">Складывайте модели и&nbsp;ткани в&nbsp;корзину <svg class="ico cat__heart" aria-hidden="true"><use href="#i-bag"/></svg>&nbsp;— и&nbsp;отправьте заявку в&nbsp;WhatsApp одним сообщением.</p>
+      <p class="cat__hint">Складывайте мебель и&nbsp;ткани в&nbsp;корзину <svg class="ico cat__heart" aria-hidden="true"><use href="#i-bag"/></svg>&nbsp;— и&nbsp;отправьте заявку в&nbsp;WhatsApp одним сообщением.</p>
       <a class="caps-link cat__fab" href="#catalog/fabrics">Ткани: больше 1000&nbsp;цветов<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
   </div>
@@ -226,7 +227,7 @@
   <div class="wrap any__in">
     <h2 class="title any__title rv" id="any-title">Любой стиль.<br> Любая модель.</h2>
     <div class="any__side rv">
-      <p class="any__line">Каталог&nbsp;— это примеры. Сошьём любую модель в&nbsp;любом стиле&nbsp;— в&nbsp;нужном размере и&nbsp;ткани.</p>
+      <p class="any__line">Сошьём любую модель в&nbsp;любом стиле&nbsp;— в&nbsp;нужном размере и&nbsp;ткани.</p>
       <div class="styles">
         <h3 class="label">Стили</h3>
         <ul class="styles__list" role="list">
@@ -265,7 +266,7 @@
     <h2 class="title proc__title rv" id="proc-title">Как заказать</h2>
     <ol class="steps" role="list">
       <li class="step rv"><span class="step__n" aria-hidden="true">01</span><div class="step__body"><h3 class="step__t">Заявка</h3><p class="step__p">Напишите в&nbsp;WhatsApp или приходите в&nbsp;шоурум на&nbsp;Навои.</p></div></li>
-      <li class="step rv"><span class="step__n" aria-hidden="true">02</span><div class="step__body"><h3 class="step__t">Модель</h3><p class="step__p">Из&nbsp;каталога или индивидуальная. Согласуем размер, обивку и&nbsp;механизм&nbsp;— где он&nbsp;есть.</p></div></li>
+      <li class="step rv"><span class="step__n" aria-hidden="true">02</span><div class="step__body"><h3 class="step__t">Модель</h3><p class="step__p">По&nbsp;вашему фото, эскизу или проекту. Согласуем размер, обивку и&nbsp;механизм&nbsp;— где он&nbsp;есть.</p></div></li>
       <li class="step rv"><span class="step__n" aria-hidden="true">03</span><div class="step__body"><h3 class="step__t">Производство</h3><p class="step__p">В&nbsp;нашем ателье, после утверждения проекта.</p></div></li>
       <li class="step rv"><span class="step__n" aria-hidden="true">04</span><div class="step__body"><h3 class="step__t">Доставка</h3><p class="step__p">Привозим по&nbsp;Казахстану.</p></div></li>
     </ol>
@@ -290,7 +291,7 @@
           <li><span class="any__n" aria-hidden="true">05</span>Сборка</li>
         </ol>
       </div>
-      <p class="atelier__p">Любую модель&nbsp;— из&nbsp;каталога, по&nbsp;фото, эскизу или проекту&nbsp;— в&nbsp;нужном размере. Ткани и&nbsp;кожи&nbsp;— образцы в&nbsp;шоуруме. Гарантия 3&nbsp;года, доставка по&nbsp;Казахстану.</p>
+      <p class="atelier__p">Любую модель&nbsp;— по&nbsp;фото, эскизу или проекту&nbsp;— в&nbsp;нужном размере. Ткани и&nbsp;кожи&nbsp;— образцы в&nbsp;шоуруме. Гарантия 3&nbsp;года, доставка по&nbsp;Казахстану.</p>
       <dl class="kit">
         <div><dt>SCM</dt><dd>станки, Италия</dd></div>
         <div><dt>Dürkopp&nbsp;Adler</dt><dd>станки, Германия</dd></div>
@@ -343,8 +344,8 @@
     <div class="faq__grid">
       <div class="qa rv"><h3 class="qa__q">Можно изменить размер?</h3><p class="qa__a">Да, адаптируем модели под проект. Пришлите размеры комнаты в&nbsp;WhatsApp.</p></div>
       <div class="qa rv"><h3 class="qa__q">Сделаете по&nbsp;моему эскизу?</h3><p class="qa__a">Да, делаем индивидуальные изделия. Пришлите эскиз или фото.</p></div>
-      <div class="qa rv"><h3 class="qa__q">Какие есть механизмы?</h3><p class="qa__a">Раскладной&nbsp;— у&nbsp;части диванов, подъёмный&nbsp;— у&nbsp;большинства кроватей. Точно&nbsp;— в&nbsp;карточке модели.</p></div>
-      <div class="qa rv"><h3 class="qa__q">Сколько стоит?</h3><p class="qa__a">Зависит от&nbsp;модели, размера и&nbsp;обивки. Рассчитаем в&nbsp;WhatsApp: отправьте модель или заявку из&nbsp;корзины.</p></div>
+      <div class="qa rv"><h3 class="qa__q">Какие есть механизмы?</h3><p class="qa__a">Раскладной&nbsp;— для диванов, подъёмный&nbsp;— для кроватей. Подберём под вашу модель.</p></div>
+      <div class="qa rv"><h3 class="qa__q">Сколько стоит?</h3><p class="qa__a">Зависит от&nbsp;модели, размера и&nbsp;обивки. Рассчитаем в&nbsp;WhatsApp: отправьте фото или заявку из&nbsp;корзины.</p></div>
       <div class="qa rv"><h3 class="qa__q">Какие сроки?</h3><p class="qa__a">Называем после утверждения проекта и&nbsp;выбора ткани.</p></div>
       <div class="qa rv"><h3 class="qa__q">Доставка и&nbsp;гарантия?</h3><p class="qa__a">Доставляем по&nbsp;Казахстану. Гарантия&nbsp;— 3&nbsp;года.</p></div>
     </div>
@@ -477,7 +478,7 @@
 </dialog>
 
 <!-- Экран категории / тканей / всех работ (один полноэкранный уровень; содержимое строит js/site.js).
-     Под заголовком — одна строка: число моделей и что внутри (desc из RICCA_CATALOG_CATEGORIES). -->
+     Категория: рисунок, что шьём, три действия (3D, фото в WhatsApp, заявка в корзину) — строит js/site.js (KINDS). -->
 <dialog class="view" id="view" aria-labelledby="view-title">
   <div class="view__bar">
     <button class="view__back" type="button" data-close><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg><span data-view-back>Каталог</span></button>
@@ -621,7 +622,7 @@
   <div class="cart__body">
     <ul class="sl__list cart__list" data-cart-list aria-label="Позиции в корзине"></ul>
     <div class="sl__empty" data-cart-empty>
-      <p>Пока пусто. Складывайте модели из&nbsp;каталога и&nbsp;ткани&nbsp;— и&nbsp;отправьте заявку одним сообщением в&nbsp;WhatsApp.</p>
+      <p>Пока пусто. Складывайте мебель и&nbsp;ткани&nbsp;— и&nbsp;отправьте заявку одним сообщением в&nbsp;WhatsApp.</p>
       <a class="caps-link" href="#catalog" data-cart-browse>Смотреть каталог<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
     <form class="cart__form" data-cart-form novalidate>

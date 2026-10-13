@@ -52,7 +52,10 @@
 
   /* ---------- Данные каталога ---------- */
   const CATS = window.RICCA_CATALOG_CATEGORIES || {};
-  const ITEMS = (Array.isArray(window.RICCA_CATALOG) ? window.RICCA_CATALOG : []).filter((x) => x && x.id && x.name && x.category && Array.isArray(x.photos) && x.photos.length);
+  /* Модели фабрики на сайте не показываем (отзыв клиента 13 октября: «у нас совсем другой стиль, мы такие изделия не делаем»).
+     js/catalog-data.js остаётся на диске как запас, но сетки моделей и окна изделия не строятся: ITEMS пуст. Старые ссылки
+     #item-sofa-01 ведут на экран категории (R.apply — по началу id). Вернуть модели — снова читать RICCA_CATALOG здесь */
+  const ITEMS = [];
   const ITEM = new Map(ITEMS.map((x) => [x.id, x]));
   const FABRICS = Array.isArray(window.RICCA_FABRICS) ? window.RICCA_FABRICS : [];
   const FABRIC_PHOTOS = Array.isArray(window.RICCA_FABRIC_PHOTOS) ? window.RICCA_FABRIC_PHOTOS : [];
@@ -113,21 +116,56 @@
     return n ? `${n} ${plural3(n, ['модель', 'модели', 'моделей'])}` : '';
   };
   const subOf = (cat) => { const c = CATS[cat] || {}; return [countOf(cat), c.desc || ''].filter(Boolean).map(typo).join(' · '); };
-  // на плитке: число — отдельным элементом, точка — при нём (телефон: число своей строкой, точка скрыта от глаз, но читается
-  // экранным диктором), описание — после; без висящей «·» в конце строки
-  // на плитках каталога число моделей не пишем: каталог — примеры, шьём и любую другую модель (BRIEF, правки 13 октября);
-  // число оставляем только у тканей («14 коллекций»)
-  const tileSubOf = (cat) => {
-    const c = CATS[cat] || {}, n = c.view === 'fabrics' ? countOf(cat) : '', d = c.desc || '';
-    return n && d ? `<span class="tile__n">${typo(n)}</span><span class="tile__dot"> · </span>${typo(d)}` : typo(n || d);
+  /* Плитки каталога: рисунок, название и строка «что шьём» — в HTML (index.html), числа моделей нет.
+     Виды мебели (KINDS): экран категории — рисунок, абзац «Шьём … на заказ», что шьём, три действия:
+     «Собрать в 3D» (configurator.html#cfg=v1~t.<тип> — конструктор открывается с этим типом), «Отправить фото в WhatsApp»
+     («Здравствуйте! Хочу заказать <диван> по фото.»), «В корзину — заявка» (строка корзины 'custom' «<Диван> по вашему проекту»).
+     Стулья и столы — «по вашему проекту»: моделей с картинок фабрики клиент не делает (отзыв 13 октября) */
+  const KINDS = {
+    sofas: { verb: 'Шьём диваны', what: ['Прямые', 'Угловые и\u00a0П-образные', 'Модульные', 'Раскладные'], cfg: 'sofa', wa: 'диван', title: 'Диван' },
+    beds: { verb: 'Шьём кровати', what: ['С\u00a0подъёмным механизмом', 'Без механизма', 'На\u00a0ножках или на\u00a0цоколе', 'Под размер вашего матраса'], cfg: 'bed', wa: 'кровать', title: 'Кровать' },
+    armchairs: { verb: 'Шьём кресла', what: ['Кресла для\u00a0отдыха', 'Округлые, на\u00a0ножках или на\u00a0цоколе', 'Пуфы и\u00a0банкетки'], cfg: 'armchair', wa: 'кресло', title: 'Кресло' },
+    chairs: { verb: 'Шьём стулья', what: ['Мягкие стулья\u00a0— по\u00a0вашему проекту', 'С\u00a0подлокотниками и\u00a0без', 'Обивка\u00a0— из\u00a0палитры тканей'], cfg: 'chair', wa: 'стулья', title: 'Стулья' },
+    tables: { verb: 'Делаем столы', what: ['Столы и\u00a0консоли\u00a0— по\u00a0вашему проекту', 'Обеденные: круглые и\u00a0прямоугольные', 'В\u00a0пару к\u00a0мягкой мебели'], cfg: 'table', wa: 'стол', title: 'Стол' }
   };
-  $$('.tile[data-cat]').forEach((a) => {
-    const cat = a.dataset.cat, c = CATS[cat];
-    if (!c) return;
-    const sub = $('[data-tile-sub]', a), img = $('.tile__img img', a);
-    if (sub) sub.innerHTML = tileSubOf(cat);
-    if (img && c.coverAlt) img.alt = c.coverAlt;
-  });
+  const kindCartId = (cat) => `kind-${cat}`;
+
+  /* Линейные рисунки (.draw в плитках и на экране категории): при наведении и один раз при появлении на экране линия
+     рисуется заново (stroke-dashoffset). Штрих — в пикселях экрана (vector-effect: non-scaling-stroke), поэтому длину
+     считаем от ширины рисунка. prefers-reduced-motion — без анимации */
+  const drawOn = (svg, slow) => {
+    if (reduceMotion || !svg || svg._drawing || typeof svg.animate !== 'function') return;
+    const k = svg.getBoundingClientRect().width / ((svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width) || 400);
+    const els = $$('rect, path, line, circle', svg).filter((el) => !el.classList.contains('draw__sw') && typeof el.getTotalLength === 'function');
+    if (!k || !els.length) return;
+    svg._drawing = true;
+    let left = els.length;
+    const done = (el) => { el.style.strokeDasharray = ''; left -= 1; if (left <= 0) svg._drawing = false; };
+    els.forEach((el, i) => {
+      let len = 0;
+      try { len = el.getTotalLength() * k + 2; } catch (_) { len = 0; }
+      if (!len) { done(el); return; }
+      el.style.strokeDasharray = `${len}px ${len}px`;
+      const an = el.animate([{ strokeDashoffset: `${len}px` }, { strokeDashoffset: '0px' }],
+        { duration: slow ? 1400 : 950, delay: i * (slow ? 70 : 45), easing: 'cubic-bezier(.45, 0, .2, 1)', fill: 'backwards' });
+      an.onfinish = () => done(el); an.oncancel = () => done(el);
+    });
+  };
+  (() => {
+    const tiles = $$('.tile[data-cat]').filter((a) => $('.draw', a));
+    tiles.forEach((a) => {
+      const svg = $('.draw', a);
+      a.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') drawOn(svg); });
+      a.addEventListener('focus', () => drawOn(svg));
+    });
+    if (!hasIO || reduceMotion) return;
+    const io = new IntersectionObserver((es) => es.forEach((en) => {
+      if (!en.isIntersecting) return;
+      io.unobserve(en.target);
+      drawOn($('.draw', en.target), true);
+    }), { threshold: 0.45 });
+    tiles.forEach((a) => io.observe(a));
+  })();
   // строка под «Каталогом» — в HTML: модели каталога — примеры, шьём и любую другую (BRIEF, правки 13 октября); общего
   // числа моделей не пишем, чтобы каталог не выглядел пределом
 
@@ -372,37 +410,73 @@
     const back = $('[data-view-back]'), wa = $('[data-view-wa]'), waLabel = $('[data-view-wa-label]'), foot = $('[data-view-foot]');
     let key = null, spec = null;
     const mark = '<span class="mark" aria-hidden="true">RICCA DESIGNS</span>';
-    // широкий предметный кадр (диван, кровать, стол на 4 : 3) — в сетке широкой рамки 5 : 4, а не узкой 4 : 5 с крошечным предметом
-    const isWide = (it) => { const p = it.photos[0]; return !!p.studio && (p.w || 0) > (p.h || 0); };
-    // увеличенный кадр (--z) просит файл крупнее: sizes умножаем на масштаб, иначе 600 px растянутся и поплывут
-    const sizesFor = ([d, t, m], z) => `(min-width: 1200px) ${Math.round(d * z)}vw, (min-width: 768px) ${Math.round(t * z)}vw, ${Math.round(m * z)}vw`;
-    function modelHTML(it, wide) {
-      const p = it.photos[0], z = wide ? fitZoom(p, 1.25, 0.88) : fitZoom(p, 0.8, 0.72), st = [];
-      if (z !== 1) st.push(`--z:${z.toFixed(3)}`);
-      if (p.pos) st.push(`object-position:${p.pos}`, `transform-origin:${p.pos}`);   // увеличение — к предмету, а не к центру фото
-      const set = srcsetOf(p);
-      return `<li data-tags="${esc((it.tags || []).join(' '))}"><button class="model" type="button" data-item="${esc(it.id)}" aria-haspopup="dialog" aria-label="${esc(`${labelOf(it)}${it.subtitle ? `, ${lcFirst(it.subtitle).replace(/ · /g, ', ')}` : ''}`)}">`
-        + `<span class="model__img${p.studio ? ' is-studio' : ''}"><img src="${esc(p.src600 || p.src)}"${set ? ` srcset="${esc(set)}" sizes="${sizesFor(wide ? [30, 30, 46] : [22, 30, 46], z)}"` : ''} width="${p.w || 1200}" height="${p.h || 1500}" alt="" loading="lazy" decoding="async"${st.length ? ` style="${st.join(';')}"` : ''}>${mark}</span>`
-        + `<span class="model__name" aria-hidden="true">${typo(shortOf(it))}</span></button></li>`;
+    /* Экран категории: моделей нет — рисунок (тот же, что на плитке), абзац, что шьём, три действия */
+    function kindArt(cat) {
+      const src = document.querySelector(`.tile[data-cat="${cat}"] .draw`);
+      if (!src) return '';
+      const svg = src.cloneNode(true);
+      svg.setAttribute('viewBox', '10 128 380 304');   // крупнее: без пустого поля над предметом (5 : 4)
+      return svg.outerHTML;
     }
     function renderCat(cat) {
-      const list = ITEMS.filter((i) => i.category === cat);
-      const tall = list.filter((i) => !isWide(i)), wide = list.filter(isWide);
-      const w4 = wide.length % 3 !== 0 && wide.length % 4 === 0;   // 8 или 4 широких — ровно по 4 в ряд, иначе по 3
+      const k = KINDS[cat] || { verb: `Шьём: ${lcFirst(catLabel(cat))}`, what: [], wa: lcFirst(catLabel(cat)), title: catLabel(cat) };
       title.textContent = catLabel(cat);
-      tabs.classList.remove('is-fab'); if (foot) foot.hidden = false;
-      const dsc = (CATS[cat] && CATS[cat].desc) || '';   // без числа моделей: каталог — примеры, не предел
-      nEl.innerHTML = `${dsc ? `${typo(dsc)}. ` : ''}Сошьём и&nbsp;любую другую модель`;
+      tabs.classList.remove('is-fab'); tabs.innerHTML = ''; tabs.hidden = true;
+      if (foot) foot.hidden = true;   // WhatsApp — среди трёх действий
+      nEl.innerHTML = '';
       back.textContent = 'Каталог';
-      const tg = CATS[cat] && CATS[cat].tags;
-      const keys = tg ? Object.keys(tg).filter((k) => list.some((i) => (i.tags || []).includes(k))) : [];
-      tabs.innerHTML = keys.length > 1 ? [['all', 'Все']].concat(keys.map((k) => [k, tg[k]])).map(([k, l]) => `<button type="button" data-sub="${esc(k)}" aria-pressed="false">${esc(l)}</button>`).join('') : '';
-      tabs.hidden = keys.length < 2;
-      content.innerHTML = (tall.length ? `<ul class="models" role="list">${tall.map((it) => modelHTML(it, false)).join('')}</ul>` : '')
-        + (wide.length ? `<ul class="models models--wide${w4 ? ' models--w4' : ''}" role="list">${wide.map((it) => modelHTML(it, true)).join('')}</ul>` : '');
-      wa.href = waUrl(CONFIG.msg[cat] || CONFIG.msg.general);
-      waLabel.innerHTML = 'Обсудить в&nbsp;WhatsApp';
+      content.innerHTML = '<div class="kind">'
+        + `<div class="kind__fig" aria-hidden="true">${kindArt(cat)}</div>`
+        + '<div class="kind__side">'
+        + `<p class="kind__p">${typo(`${k.verb} на заказ — любой формы и размера, по вашему фото, эскизу или дизайн-проекту.`)}</p>`
+        + (k.what.length ? `<ul class="kind__list" role="list" aria-label="Что шьём">${k.what.map((w) => `<li>${typo(w)}</li>`).join('')}</ul>` : '')
+        + '<div class="kind__acts">'
+        + `<a class="btn btn--fill" href="configurator.html${k.cfg ? `#cfg=v1~t.${k.cfg}` : ''}">Собрать в&nbsp;3D<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>`
+        + `<a class="btn btn--line" href="${esc(waUrl(`Здравствуйте! Хочу заказать ${k.wa} по фото.`))}" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Отправить фото в&nbsp;WhatsApp<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a>`
+        + (RC ? `<button class="caps-link kind__cart" type="button" data-kind-cart="${esc(cat)}"><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span>В&nbsp;корзину&nbsp;— заявка</span></button>` : '')
+        + '</div>'
+        + '<p class="kind__note">Цену рассчитаем и&nbsp;ответим в&nbsp;WhatsApp.</p>'
+        + '</div></div>';
+      syncKind();
     }
+    // «В корзину — заявка»: уже в корзине — кнопка открывает корзину
+    function syncKind() {
+      const b = $('[data-kind-cart]', content);
+      if (!b || !RC) return;
+      const on = RC.list().some((x) => x.kind === 'custom' && x.id === kindCartId(b.dataset.kindCart));
+      b.lastChild.innerHTML = on ? 'Заявка в&nbsp;корзине&nbsp;— открыть' : 'В&nbsp;корзину&nbsp;— заявка';
+      b.setAttribute('aria-pressed', String(on));
+    }
+    if (RC) RC.onChange(syncKind);
+    // миниатюра для корзины: тот же рисунок картинкой (data:image/svg+xml), с цветами и толщиной линии прямо в файле
+    function kindThumb(cat) {
+      const src = document.querySelector(`.tile[data-cat="${cat}"] .draw`);
+      if (!src) return '';
+      const svg = src.cloneNode(true);
+      svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      svg.setAttribute('viewBox', '30 140 340 425');
+      svg.removeAttribute('class'); svg.removeAttribute('aria-hidden'); svg.removeAttribute('focusable');
+      $$('*', svg).forEach((el) => {
+        el.setAttribute('vector-effect', 'none');
+        el.setAttribute('stroke', el.classList.contains('draw__fl') ? '#C6C9CF' : '#0B0B0C');
+        el.setAttribute('stroke-width', '4'); el.setAttribute('stroke-linejoin', 'round');
+        el.setAttribute('fill', el.classList.contains('draw__ln') || el.tagName === 'line' ? 'none' : '#FFFFFF');
+        el.removeAttribute('class');
+      });
+      svg.insertAdjacentHTML('afterbegin', '<rect x="0" y="0" width="400" height="600" fill="#FFFFFF" stroke="none"/>');
+      return `data:image/svg+xml,${encodeURIComponent(new XMLSerializer().serializeToString(svg))}`;
+    }
+    content.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-kind-cart]');
+      if (!b || !RC) return;
+      const cat = b.dataset.kindCart, k = KINDS[cat] || { title: catLabel(cat) };
+      if (RC.list().some((x) => x.kind === 'custom' && x.id === kindCartId(cat))) { CART.open(b); return; }
+      const t = `${k.title} по вашему проекту`;
+      const uid = RC.add({ kind: 'custom', id: kindCartId(cat), title: t, subtitle: 'По фото, эскизу или дизайн-проекту', qty: 1,
+        link: RC.abs(`#catalog/${cat}`), thumb: kindThumb(cat) });
+      if (!uid) { CART.say(`В корзине уже ${RC.MAX_LINES} позиций — отправьте заявку, затем добавьте ещё`, true); return; }
+      CART.say(`В корзине: ${t}`, true);
+    });
     /* Ткани — библиотека: вкладки по типам (липкие; подсвечивают тип, который сейчас на экране), коллекция — название капителью,
        материал и число цветов, факты с карточки одной строкой, фактура крупно (если есть), образцы квадратами с названием цвета.
        Образец → «Ткань крупно» (#fabric-<коллекция>-<N>). В конце — шоурум и WhatsApp «Помогите подобрать ткань» */
@@ -527,6 +601,7 @@
         if (fresh) { dlg.scrollTop = 0; dlg.classList.remove('is-scrolled'); }   // закрытое окно не помнит прокрутку — сбрасываем после показа
         if (fresh && s.type === 'fabrics' && s.sub && s.sub !== 'all') requestAnimationFrame(() => toType(s.sub, false));   // #catalog/fabrics/bukle
         if (!was || fresh) requestAnimationFrame(() => title.focus({ preventScroll: true }));
+        if (fresh && s.type === 'cat') requestAnimationFrame(() => drawOn($('.kind__fig .draw', content), true));
       },
       close(focus = true) { hideDlg(dlg, focus); }
     };

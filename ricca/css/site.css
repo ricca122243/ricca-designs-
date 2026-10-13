@@ -276,12 +276,19 @@ textarea.fld { min-height: 64px; resize: vertical; }
 .tile { display: grid; grid-template-columns: minmax(0, 1fr); }
 .tile__img { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--paper-2); }
 .tile__img.is-night { background: #0e1326; }
+/* линейный рисунок вместо фото (отзыв клиента 13 октября: обложки-визуализации «не годятся»): белое поле, волосяная рамка,
+   линия 1,1 px при любом размере плитки (non-scaling-stroke); js/site.js дорисовывает линию при наведении и появлении */
+.tile__img--draw { background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); transition: box-shadow 500ms var(--ease); }
+.draw { display: block; width: 100%; height: 100%; fill: var(--paper); stroke: var(--ink); stroke-width: 1.1; stroke-linejoin: round; stroke-linecap: round; overflow: visible; }
+.draw * { vector-effect: non-scaling-stroke; }
+.draw .draw__fl { stroke: var(--line-2); }
+.draw .draw__ln { fill: none; }
+/* «Ткани»: веер образцов в настоящих цветах коллекций; при наведении веер чуть раскрывается */
+.draw .draw__sw { stroke-width: 1; transform-box: view-box; transform-origin: 200px 386px; transform: rotate(var(--a, 0deg)); transition: transform 900ms var(--ease); }
 .tile__img picture { display: contents; }
 .tile__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease); }
 .tile__cap { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-top: 18px; }
 .tile__name { font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; white-space: nowrap; }
-/* «визуализация» — тихая строчная пометка, не вторая капитель рядом с названием */
-.tile__viz { font: 400 11px/1.5 var(--sans); letter-spacing: .02em; text-transform: none; color: var(--ink-2); white-space: nowrap; }
 .tile__ext { width: 14px; height: 14px; align-self: center; }
 .tile__sub { margin-top: 4px; font: 400 13px/1.55 var(--sans); color: var(--ink-2); letter-spacing: .01em; }
 .tile__n { white-space: nowrap; }
@@ -292,6 +299,8 @@ textarea.fld { min-height: 64px; resize: vertical; }
 .cat__foot .cat__hint { margin-top: 0; }
 @media (hover: hover) {
   .tile:hover .tile__img img { transform: scale(1.03); }
+  .tile:hover .tile__img--draw { box-shadow: inset 0 0 0 1px var(--line-2); }
+  .tile:hover .draw__sw { transform: rotate(calc(var(--a, 0deg) * 1.16)); }
   .tile:hover .tile__name { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 }
 @media (max-width: 1099.98px) {
@@ -307,11 +316,10 @@ textarea.fld { min-height: 64px; resize: vertical; }
   .tiles > li.tiles__eluna { grid-column: span 1; }
   .tiles__eluna .tile__img { aspect-ratio: 4 / 5; }
   .tiles__eluna .tile__img img { object-position: 50% 50%; }
-  /* все плитки одинаково: название / визуализация / число / описание — каждое своей строкой, без висящей «·» */
+  /* все плитки одинаково: название / описание — каждое своей строкой, без висящей «·» */
   .tile__cap { display: grid; justify-items: start; gap: 2px; margin-top: 12px; }
   .tile--ext .tile__cap { display: flex; align-items: center; gap: 8px; }
   .tile__name { font-size: 11px; letter-spacing: .15em; }
-  .tile__viz { font-size: 10.5px; }
   .tile__sub { margin-top: 2px; font-size: 12px; line-height: 1.5; }
   .tile__n { display: block; color: var(--ink); }
   .tile__dot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -599,6 +607,32 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
     margin: 0 calc(-1 * var(--pad)) 32px; padding: 2px var(--pad); background: var(--paper); }
   .view__tabs::-webkit-scrollbar { display: none; }
   .view__tabs button { flex: none; letter-spacing: .18em; }
+}
+/* Экран категории без моделей: рисунок слева, справа — абзац, что шьём, три действия; телефон — столбиком */
+.view__n:empty { display: none; }
+.kind { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: center; max-width: 1280px; margin: 0 auto; }
+.kind__fig { grid-column: 1 / span 6; aspect-ratio: 5 / 4; box-shadow: inset 0 0 0 1px var(--line); }
+.kind__side { grid-column: 8 / -1; display: grid; justify-items: start; gap: 36px; }
+.kind__p { font: 300 clamp(22px, 1.8vw, 26px)/1.4 var(--serif); color: var(--ink); max-width: 30ch; text-wrap: pretty; }
+.kind__list { width: 100%; border-bottom: 1px solid var(--line); }
+.kind__list li { padding: 15px 0 16px; border-top: 1px solid var(--line); font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
+.kind__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+.kind__acts .btn--fill .ico { width: 14px; height: 14px; }
+.kind__cart .ico { width: 16px; height: 16px; }
+.kind__note { margin-top: -16px; font: 400 12px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .02em; }
+@media (max-width: 1099.98px) {
+  .kind__fig { grid-column: 1 / span 6; }
+  .kind__side { grid-column: 7 / -1; }
+  .kind__acts { display: grid; justify-items: stretch; width: 100%; }
+  .kind__acts .caps-link { justify-self: start; }
+}
+@media (max-width: 767px) {
+  .kind { display: block; }
+  .kind__fig { margin: 0 auto 40px; }
+  .kind__side { gap: 28px; }
+  .kind__p { font-size: 21px; }
+  .kind__list li { padding: 13px 0 14px; letter-spacing: .16em; }
+  .kind__note { margin-top: -12px; }
 }
 .view__foot { display: flex; justify-content: center; margin-top: clamp(80px, 8vw, 128px); }
 .view__foot .caps-link .ico { width: 16px; height: 16px; }
