@@ -14,6 +14,7 @@ OUT=$DIST/RICCA-site
 rm -rf "$OUT" "$DIST/RICCA-site.zip" && mkdir -p "$OUT"
 
 cp "$SRC/index.html" "$OUT/"
+cp tools/hosting/*.txt "$OUT/"   # инструкция для заказчика: как залить на хостинг
 # Стили — только подключённые из index.html (в css/ лежат и старые файлы, например fonts-eluna.css прежней главы ELUNA)
 css_links=$(grep -ohE 'href="css/[A-Za-z0-9_.-]+\.css"' "$SRC/index.html" | sed -e 's/^href="//' -e 's/"$//' | sort -u)
 [ -n "$css_links" ] || { echo "в index.html нет ссылок на css/"; exit 1; }
