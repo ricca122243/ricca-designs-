@@ -108,6 +108,9 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   let floorMat = has3D ? floorMaterial(THREE, stage.renderer, room.floor) : null;
   const wallMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(wallOf(room.wall).hex), roughness: 0.95, metalness: 0 });
   const skirtMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(wallOf(room.wall).skirt), roughness: 0.6, metalness: 0 });
+  const gapMat = new THREE.MeshBasicMaterial({ color: 0x2c2a27, transparent: true, opacity: 0.35, depthWrite: false });
+  const ceilMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(wallOf(room.wall).hex).multiplyScalar(1.04), roughness: 0.95, metalness: 0, side: THREE.BackSide });
+  let ceiling = null;
   const outlineMat = new THREE.LineBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.9, depthWrite: false });
   const tintMat = new THREE.MeshBasicMaterial({ color: 0xd2453a, transparent: true, opacity: 0.22, depthWrite: false, toneMapped: false });
   const noRay = () => {};
@@ -118,14 +121,16 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     const { W, L, H } = room;
     const fg = new THREE.PlaneGeometry(W, L).rotateX(-Math.PI / 2);
     const uv = fg.attributes.uv, pos = fg.attributes.position;
-    for (let i = 0; i < uv.count; i++) uv.setXY(i, (pos.getX(i) + W / 2) / 1.2, (pos.getZ(i) + L / 2) / 1.2);  // доска 12 см, плитка 1,2 м
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, (pos.getX(i) + W / 2) / 2.4, (pos.getZ(i) + L / 2) / 2.4);  // плитка текстуры пола — 2,4 м
     floorMesh = new THREE.Mesh(fg, floorMat); floorMesh.receiveShadow = true; floorMesh.name = 'floor';
     shell.add(floorMesh);
     const mk = (n, len, cx, cz, rotY) => {
       const g = new THREE.Group(); g.name = 'wall-' + n.join(',');
       const wall = new THREE.Mesh(new THREE.BoxGeometry(len, H, WALL_T), wallMat); wall.position.y = H / 2; wall.receiveShadow = true;
       const sk = new THREE.Mesh(new THREE.BoxGeometry(len - 2 * WALL_T, SKIRT_H, SKIRT_T), skirtMat); sk.position.set(0, SKIRT_H / 2, WALL_T / 2 + SKIRT_T / 2); sk.receiveShadow = true;
-      g.add(wall, sk); g.position.set(cx, 0, cz); g.rotation.y = rotY;
+      /* теневой шов 1 см над плинтусом */
+      const gap = new THREE.Mesh(new THREE.BoxGeometry(len - 2 * WALL_T, 0.01, 0.002), gapMat); gap.position.set(0, SKIRT_H + 0.005, WALL_T / 2 + 0.001); gap.raycast = noRay;
+      g.add(wall, sk, gap); g.position.set(cx, 0, cz); g.rotation.y = rotY;
       g.userData.normal = new THREE.Vector3(...n);
       shell.add(g); walls.push(g);
     };
@@ -134,6 +139,9 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     mk([0, 0, 1], W + 2 * WALL_T, 0, L / 2 + WALL_T / 2, Math.PI);
     mk([-1, 0, 0], L + 2 * WALL_T, -W / 2 - WALL_T / 2, 0, Math.PI / 2);
     mk([1, 0, 0], L + 2 * WALL_T, W / 2 + WALL_T / 2, 0, -Math.PI / 2);
+    /* потолок — только во «Взгляде из комнаты» (сверху его не видно) */
+    ceiling = new THREE.Mesh(new THREE.PlaneGeometry(W, L).rotateX(-Math.PI / 2), ceilMat); ceiling.position.y = H; ceiling.visible = mode === 'eye'; ceiling.raycast = noRay; ceiling.name = 'ceiling';
+    shell.add(ceiling);
     /* сетка 1 м */
     const pts = [];
     for (let x = Math.ceil(-W / 2 + 0.001); x <= W / 2 - 0.001; x++) pts.push(x, 0.002, -L / 2, x, 0.002, L / 2);
@@ -249,7 +257,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   function applyStyle3D() {
     if (!has3D) return;
     const w = wallOf(room.wall);
-    wallMat.color.set(w.hex); skirtMat.color.set(w.skirt);
+    wallMat.color.set(w.hex); skirtMat.color.set(w.skirt); ceilMat.color.set(w.hex).multiplyScalar(1.04);
     floorMat = floorMaterial(THREE, stage.renderer, room.floor);
     if (floorMesh) floorMesh.material = floorMat;
   }
@@ -426,16 +434,23 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     const c = new THREE.Vector3(); room.items.forEach((it) => c.add(new THREE.Vector3(it.x, 0, it.z)));
     c.multiplyScalar(1 / room.items.length); c.y = 0.35; return c;
   };
-  function fitDist(fovDeg) {
-    const r = Math.hypot(room.W, room.L, room.H) / 2;
+  const ORBIT_DIR = () => new THREE.Vector3(Math.sin(35 * DEG) * Math.cos(46 * DEG), Math.sin(46 * DEG), Math.cos(35 * DEG) * Math.cos(46 * DEG));
+  /* расстояние, при котором пол и дальние стены целиком в кадре — по горизонтальному и вертикальному углу обзора */
+  function fitDist(fovDeg, dir = ORBIT_DIR(), t = new THREE.Vector3(0, 0.35, 0)) {
     const c = stage.canvas; const aspect = Math.max(0.3, (c.clientWidth || 1) / (c.clientHeight || 1));
-    const v = fovDeg * DEG, h = 2 * Math.atan(Math.tan(v / 2) * aspect);
-    return (r / Math.sin(Math.min(v, h) / 2)) * 0.82;
+    const f = dir.clone().normalize(), r = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), f).normalize(), u = new THREE.Vector3().crossVectors(f, r);
+    const ty = Math.tan((fovDeg * DEG) / 2) * 0.92, tx = ty * aspect;
+    let d = 1;
+    for (const x of [-room.W / 2, room.W / 2]) for (const z of [-room.L / 2, room.L / 2]) for (const y of [0, room.H * 0.6]) {
+      const p = new THREE.Vector3(x, y, z).sub(t), cz = p.dot(f);
+      d = Math.max(d, Math.abs(p.dot(r)) / tx + cz, Math.abs(p.dot(u)) / ty + cz);
+    }
+    return d;
   }
   function orbitPose() {
-    const az = 35 * DEG, el = 46 * DEG, d = fitDist(30);
+    const d = fitDist(30);
     const t = new THREE.Vector3(0, 0.35, 0);
-    return { pos: t.clone().add(new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(d)), target: t, fov: 30 };
+    return { pos: t.clone().add(ORBIT_DIR().multiplyScalar(d)), target: t, fov: 30 };
   }
   function orbitLimits() {
     const c = stage.controls, d = fitDist(30), diag = Math.hypot(room.W, room.L);
@@ -469,13 +484,34 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
 
   /* облёт: замкнутая Catmull-Rom через 4 высоких угла и 2 точки на высоте глаз, 20 с */
   let tour = null;
+  /* точка свободна, если до каждого предмета (его пятна + 50 см) не достаёт */
+  function freeAt(x, z, pad = 0.5) {
+    return room.items.every((it) => {
+      const d = dimsOf(it), a = it.rot * DEG, dx = x - it.x, dz = z - it.z;
+      const lx = dx * Math.cos(a) - dz * Math.sin(a), lz = dx * Math.sin(a) + dz * Math.cos(a);
+      return Math.abs(lx) >= d.w / 2 + pad || Math.abs(lz) >= d.d / 2 + pad;
+    });
+  }
+  /* облёт: 4 высоких угла и 2 точки на высоте глаз — в свободном месте (сдвигаем к центру, пока не отойдём от мебели на 50 см;
+     не нашлось — точка остаётся высокой). Смотрим на центр общего габарита мебели. */
   function tourCurve() {
     const { W, L, H } = room, m = 0.9, hh = H + 1.3;
+    const eyePt = (sx) => {
+      for (let k = 0; k <= 20; k++) { const x = sx * (W / 2 - 0.6) * (1 - k / 20); if (freeAt(x, 0)) return [x, EYE_H, 0]; }
+      for (let k = 0; k <= 20; k++) for (const z of [L / 4, -L / 4]) { const x = sx * (W / 2 - 0.6) * (1 - k / 20); if (freeAt(x, z)) return [x, EYE_H, z]; }
+      return [sx * (W / 2 + m * 0.5), hh, 0];
+    };
     const pts = [
-      [W / 2 + m, hh, L / 2 + m], [W / 2 - 0.6, EYE_H, 0], [W / 2 + m, hh, -L / 2 - m],
-      [-W / 2 - m, hh, -L / 2 - m], [-W / 2 + 0.6, EYE_H, 0], [-W / 2 - m, hh, L / 2 + m],
+      [W / 2 + m, hh, L / 2 + m], eyePt(1), [W / 2 + m, hh, -L / 2 - m],
+      [-W / 2 - m, hh, -L / 2 - m], eyePt(-1), [-W / 2 - m, hh, L / 2 + m],
     ].map((a) => new THREE.Vector3(...a));
     return new THREE.CatmullRomCurve3(pts, true, 'centripetal');
+  }
+  function itemsCenter() {
+    if (!room.items.length) return new THREE.Vector3(0, 0.35, 0);
+    let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity, h = 0;
+    for (const it of room.items) { const e = halfExt(it); x0 = Math.min(x0, it.x - e.hx); x1 = Math.max(x1, it.x + e.hx); z0 = Math.min(z0, it.z - e.hz); z1 = Math.max(z1, it.z + e.hz); h = Math.max(h, dimsOf(it).h); }
+    return new THREE.Vector3((x0 + x1) / 2, Math.min(0.5, h * 0.45), (z0 + z1) / 2);
   }
   function startTour() {
     if (!has3D) return;
@@ -484,7 +520,10 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     const c = stage.controls; c.enabled = false;
     const p = cam();
     tour = { curve: tourCurve(), start: performance.now(), p0: p.position.clone(), t0: c.target.clone(), f0: p.fov, raf: 0, still: 0 };
-    const look = centroid();
+    const look = itemsCenter();
+    const hh = room.H + 1.3;
+    /* у пола (высота глаз) — шире угол, 45°; сверху — 34° */
+    const fovAt = (y) => 34 + 11 * clamp((hh - y) / (hh - EYE_H), 0, 1);
     if (reduced()) {
       const corners = [0, 2, 3, 5].map((i) => tour.curve.points[i]);
       let k = 0;
@@ -505,7 +544,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
         const k = ease(Math.min(1, t / 1.2));
         p.position.lerpVectors(tour.p0, pt, k);
         c.target.lerpVectors(tour.t0, look, k);
-        p.fov = tour.f0 + (34 - tour.f0) * k; p.updateProjectionMatrix();
+        p.fov = tour.f0 + (fovAt(pt.y) - tour.f0) * k; p.updateProjectionMatrix();
         p.lookAt(c.target);
         stage.requestRender();
         tour.raf = requestAnimationFrame(step);
@@ -530,7 +569,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   function enterEye() {
     if (!has3D) return;
     stopTour(false); cancelAnimationFrame(camAnim);
-    mode = 'eye';
+    mode = 'eye'; if (ceiling) ceiling.visible = true;
     stage.controls.enabled = false;
     eye = { x: 0, z: room.L / 2 - 0.4, yaw: 0, pitch: -8 * DEG, fov: 60 };
     const to = eyePose();
@@ -563,7 +602,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   }
   function leaveEye(resume = true) {
     if (mode !== 'eye') return;
-    eye = null; cancelAnimationFrame(camAnim);
+    eye = null; cancelAnimationFrame(camAnim); if (ceiling) ceiling.visible = false;
     if (resume) setOrbit({ animate: true });
   }
   function syncCamButtons() {
@@ -795,7 +834,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   }
   function leave() {
     if (!active) return;
-    stopTour(false); eye = null; cancelAnimationFrame(camAnim); mode = 'orbit'; syncCamButtons();
+    stopTour(false); eye = null; cancelAnimationFrame(camAnim); mode = 'orbit'; syncCamButtons(); if (ceiling) ceiling.visible = false;
     active = false; bar.hidden = true; drag = look = twist = pinch = null; ptrs.clear();
     if (!has3D) return;
     host.removeEventListener('pointerdown', onDown, true);
@@ -827,12 +866,13 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   loadState();
   if (has3D) { applyStyle3D(); buildShell(); room.items.forEach(buildNode); updateTints(); }
   bindPanel(); renderDims(); renderItems(); renderSend(); renderStyle();
+  if (lostFabrics) setTimeout(() => status(lostFabrics === 1 ? 'Ткани одного предмета сейчас нет в библиотеке — показали спокойную, подберём вместе' : 'Тканей нескольких предметов сейчас нет в библиотеке — показали спокойные, подберём вместе'), 300);
 
   const api = {
     enter, leave, addItem, dispose,
     select, rotate, duplicate, remove, moveBy, edit,
     startTour, stopTour, enterEye, leaveEye, resetView: () => setOrbit({ animate: true }),
-    waText, waHref, encode: encodeRoom, setWall, setFloor, setItemFabric, get suggestions() { return sugg; },
+    waText, waHref, encode: encodeRoom, setWall, setFloor, setItemFabric, status, restore, get suggestions() { return sugg; },
     get room() { return room; }, get selected() { return selected; }, get mode() { return mode; },
     get group() { return group; },
     /* для проверок: экранная точка предмета */
