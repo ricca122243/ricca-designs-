@@ -11,9 +11,12 @@ last shot fades into the first; frame 0 = shot 0 fully visible (after its fade-i
 Optional "t0" (seconds, default = fade): local time of shot 0 at frame 0. A value inside the solo part of shot 0 puts the
 loop point mid-shot, so the file never ends on dissolve frames (H.264 codes those worse than the I-frame that follows,
 which shows as a slight "snap" at the loop). Frame 0 is also the poster. Keep T * fps whole (sum(L) - N * fade).
+Optional per photo shot (v4, 13 Oct): "rotate" (degrees CCW, for top-down shots only) and "grade": [color, r, b] — PIL
+ImageEnhance.Color(color), then R x r, B x b (the neutral grade of the AI frames, img/projects/MANIFEST.md), applied to the
+source before cropping; a/b are fractions of the rotated source.
 """
 import json, sys, os, subprocess, math, glob
-from PIL import Image
+from PIL import Image, ImageEnhance
 
 cfg = json.load(open(sys.argv[1]))
 out = sys.argv[2]
@@ -34,6 +37,15 @@ def smooth(x):
 for s in shots:
     if s['type'] == 'photo':
         im = Image.open(s['src']).convert('RGB')
+        if s.get('grade'):
+            gc, gr, gb = s['grade']
+            im = ImageEnhance.Color(im).enhance(gc)
+            R, G, B = im.split()
+            R = R.point(lambda v: min(255, round(v * gr)))
+            B = B.point(lambda v: min(255, round(v * gb)))
+            im = Image.merge('RGB', (R, G, B))
+        if s.get('rotate'):
+            im = im.rotate(s['rotate'], expand=True)
         sw, sh = im.size
         rects = []
         for key in ('a', 'b'):
