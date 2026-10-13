@@ -1,6 +1,6 @@
 /* RICCA · конструктор — материалы (MeshPhysicalMaterial). Цвет ткани = hex образца (sRGB → линейный через ColorManagement).
    Фактура: процедурные бесшовные карты нормалей и шероховатости по виду ткани (генерируются один раз и кешируются),
-   мелкая «живая» неоднородность — из фото образца (src450, высокочастотная яркость, среднее сохраняется).
+   цвет и рисунок — настоящее фото образца (src450 → бесшовная плитка без студийного света и складок, swatchAlbedo).
    UV у всех деталей — в метрах (furniture3d.js), поэтому масштаб фактуры одинаков на любом размере изделия. */
 import * as THREE from 'three';
 import { normalize } from './params.js';
@@ -17,8 +17,6 @@ const KIND = {
   suede: { rough: 0.86, sheen: 0.5, sheenRough: 0.60, sheenLift: 0.12, nScale: 0.15, tile: 0.06 },
   leather: { rough: 0.5, sheen: 0.15, sheenRough: 0.4, sheenLift: 0.05, nScale: 0.6, tile: 0.10, clearcoat: 0.12, clearcoatRough: 0.45, specular: 0.45 },
 };
-/* одна плитка фото образца: у букле и шенилла это структура (12 см), у велюра и замши на фото — только пятна света (30 см) */
-const SWATCH_TILE = { boucle: 0.12, chenille: 0.12, matting: 0.12, corduroy: 0.12, velour: 0.30, suede: 0.30, leather: 0.20 };
 
 export function kindOf(fabricTypeId, collection) {
   const k = collection && typeof collection === 'object' ? collection.kind : null;
@@ -173,57 +171,58 @@ function fabricMaps(kind, N) {
   return out;
 }
 
-/* фото образца → высокочастотная яркость, среднее = 1 − amp/2 (умножается на цвет; цвет компенсируется) */
-const swatchCache = new Map();
-/* сила детали из фото образца по виду ткани: у букле и шенилла рельеф петель и ворса — главное, у велюра и кожи — лёгкая неоднородность */
-/* рубчик: на фото образцов — драпировка и складки, рёбра дают процедурные карты (0) */
-const SWATCH_AMP = { boucle: 0.42, chenille: 0.22, corduroy: 0, matting: 0.1, velour: 0.03, suede: 0.03, leather: 0.07 };
-function swatchDetail(src, amp = 0.06, tile = 0.12) {
-  const ck = `${src}|${amp}|${tile}`;
-  if (swatchCache.has(ck)) return swatchCache.get(ck);
+/* фото образца → цветная бесшовная плитка (albedo, sRGB). Официальные фото — крупный план со складками и студийным светом:
+   свет и складки убираем (делим на сильно размытую яркость — остаётся ровная ткань своего цвета), края сшиваем смешиванием
+   с копией, сдвинутой на полплитки (без зеркал и швов). Размер плитки на изделии — PHOTO_TILE (м) по виду ткани. */
+const PHOTO_TILE = { boucle: 0.14, chenille: 0.16, matting: 0.14, corduroy: 0.16, velour: 0.22, suede: 0.22, leather: 0.2 };
+/* радиус «выравнивания света» (доля плитки): у гладких тканей (велюр, замша, кожа) на фото — складки, их убираем сильнее;
+   у букле, шенилла, рогожки крупные петли и плетение — часть ткани, их оставляем */
+const PHOTO_FLAT = { boucle: 1 / 10, chenille: 1 / 12, matting: 1 / 12, corduroy: 1 / 16, velour: 1 / 32, suede: 1 / 32, leather: 1 / 32 };
+const albedoCache = new Map();
+function swatchAlbedo(src, tile = 0.16, N = 384, flat = 1 / 10) {
+  const ck = `${src}|${tile}|${N}|${flat}`;
+  if (albedoCache.has(ck)) return albedoCache.get(ck);
   const p = new Promise((resolve) => {
     if (typeof Image === 'undefined' || typeof document === 'undefined') return resolve(null);
     const img = new Image();
     img.decoding = 'async';
     img.onload = () => {
       try {
-        const N = 256, c = document.createElement('canvas'); c.width = c.height = N;
+        const c = document.createElement('canvas'); c.width = c.height = N;
         const g = c.getContext('2d', { willReadFrequently: true });
-        /* только ровный центр фото (35 %): края — драпировка, складки, тени */
-        const cw = img.naturalWidth || img.width, chh = img.naturalHeight || img.height, cs = Math.min(cw, chh) * 0.35;
+        const cw = img.naturalWidth || img.width, chh = img.naturalHeight || img.height, cs = Math.min(cw, chh) * 0.7;   // центр 70 %: без краёв кадра
         g.drawImage(img, (cw - cs) / 2, (chh - cs) / 2, cs, cs, 0, 0, N, N);
         const d = g.getImageData(0, 0, N, N).data;
         const L = new Float32Array(N * N);
-        for (let i = 0; i < N * N; i++) L[i] = 0.2126 * d[i * 4] + 0.7152 * d[i * 4 + 1] + 0.0722 * d[i * 4 + 2];
-        /* размытие (box 2 прохода, радиус 10) → high-pass */
-        /* размытие с зеркальными краями (плитка повторяется зеркально — швов нет) */
+        let Lm = 0; for (let i = 0; i < N * N; i++) { L[i] = 0.2126 * d[i * 4] + 0.7152 * d[i * 4 + 1] + 0.0722 * d[i * 4 + 2] + 1; Lm += L[i]; }
+        Lm /= N * N;
         const rf = (i) => (i < 0 ? -i - 1 : i >= N ? 2 * N - i - 1 : i);
-        const blur = (src, r) => { const tmp = new Float32Array(N * N), out = new Float32Array(N * N), k = 1 / (2 * r + 1); for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let j = -r; j <= r; j++) s += src[y * N + rf(x + j)]; tmp[y * N + x] = s * k; } for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let j = -r; j <= r; j++) s += tmp[rf(y + j) * N + x]; out[y * N + x] = s * k; } return out; };
-        /* high-pass радиусом 3–4 px — остаётся только фактура плетения; если складки (низкие частоты) сильнее — фото не берём */
-        const B = blur(blur(L, 4), 3), B2 = blur(blur(L, 16), 16);
-        let sd = 0, lo = 0; for (let i = 0; i < N * N; i++) { const h = L[i] - B[i]; sd += h * h; const l = B[i] - B2[i]; lo += l * l; } sd = Math.sqrt(sd / (N * N)) || 1; lo = Math.sqrt(lo / (N * N));
-        if (lo / sd > 1.5) { resolve(null); return; }
-        const base = 1 - amp; // значения 1 − 2·amp…1, среднее 1 − amp (цвет компенсируется делением на среднее)
-        /* бесшовная плитка без зеркал: смешиваем образец с его копией, сдвинутой на полплитки (вес 0 у краёв, 1 ближе к середине),
-           дисперсию возвращаем делением на √(w² + (1 − w)²) — на изделии не видно ни швов, ни «калейдоскопа» */
-        const HP = new Float32Array(N * N); for (let i = 0; i < N * N; i++) HP[i] = (L[i] - B[i]) / sd;
-        const tent = (i) => 1 - Math.abs((2 * (i + 0.5)) / N - 1);
-        const out = new Uint8Array(N * N * 4); let mean = 0;
-        for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-          const i = y * N + x, w = Math.min(1, Math.min(tent(x), tent(y)) * 2.2);
-          const j = ((y + N / 2) % N) * N + ((x + N / 2) % N);
-          const hs = (w * HP[i] + (1 - w) * HP[j]) / Math.sqrt(w * w + (1 - w) * (1 - w));
-          const h = Math.max(-2, Math.min(2, hs)) / 2; const v = base + amp * h; const b = Math.round(Math.max(0, Math.min(1, v)) * 255);
-          out[i * 4] = out[i * 4 + 1] = out[i * 4 + 2] = b; out[i * 4 + 3] = 255; mean += b / 255;
+        const blur = (a, r) => { const tmp = new Float32Array(N * N), out = new Float32Array(N * N), k = 1 / (2 * r + 1); for (let y = 0; y < N; y++) { let s = 0; for (let j = -r; j <= r; j++) s += a[y * N + rf(j)]; for (let x = 0; x < N; x++) { tmp[y * N + x] = s * k; s += a[y * N + rf(x + r + 1)] - a[y * N + rf(x - r)]; } } for (let x = 0; x < N; x++) { let s = 0; for (let j = -r; j <= r; j++) s += tmp[rf(j) * N + x]; for (let y = 0; y < N; y++) { out[y * N + x] = s * k; s += tmp[rf(y + r + 1) * N + x] - tmp[rf(y - r) * N + x]; } } return out; };
+        const r = Math.max(2, Math.round(N * flat)), B = blur(blur(L, r), r);   // свет и складки (низкие частоты)
+        const F = new Float32Array(N * N * 3);
+        /* гладкие ткани (велюр, замша, кожа): в складках у них меняется и оттенок (ворс ложится по-разному) — цвет берём средний
+           по всему фото, с фото — только фактура поверхности (яркость мелкого масштаба) */
+        const smooth = flat < 1 / 24, M = [0, 0, 0];
+        if (smooth) { for (let i = 0; i < N * N; i++) { M[0] += d[i * 4]; M[1] += d[i * 4 + 1]; M[2] += d[i * 4 + 2]; } M[0] /= N * N; M[1] /= N * N; M[2] /= N * N; }
+        for (let i = 0; i < N * N; i++) {
+          if (smooth) { const t = Math.max(0.7, Math.min(1.3, L[i] / B[i])); F[i * 3] = M[0] * t; F[i * 3 + 1] = M[1] * t; F[i * 3 + 2] = M[2] * t; continue; }
+          const k = Math.max(0.5, Math.min(2, Lm / B[i])); F[i * 3] = d[i * 4] * k; F[i * 3 + 1] = d[i * 4 + 1] * k; F[i * 3 + 2] = d[i * 4 + 2] * k;
         }
-        const t = dataTex(out, N); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / tile, 1 / tile);
-        resolve({ tex: t, mean: mean / (N * N) });
+        const tent = (i) => 1 - Math.abs((2 * (i + 0.5)) / N - 1);
+        const out = new Uint8Array(N * N * 4);
+        for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+          const i = y * N + x, w = Math.min(1, Math.min(tent(x), tent(y)) * 2.2), j = ((y + N / 2) % N) * N + ((x + N / 2) % N);
+          for (let ch = 0; ch < 3; ch++) out[i * 4 + ch] = Math.max(0, Math.min(255, Math.round(w * F[i * 3 + ch] + (1 - w) * F[j * 3 + ch])));
+          out[i * 4 + 3] = 255;
+        }
+        const t = dataTex(out, N, true); t.repeat.set(1 / tile, 1 / tile);
+        resolve({ tex: t });
       } catch (e) { resolve(null); }
     };
     img.onerror = () => resolve(null);
     img.src = src;
   });
-  swatchCache.set(ck, p);
+  albedoCache.set(ck, p);
   return p;
 }
 
@@ -266,9 +265,10 @@ export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null
   for (const t of [maps.normal, maps.rough, maps.albedo]) t.repeat.set(1 / k.tile, 1 / k.tile);
   m.name = `fabric-${kind}-${hex}`;
   m.userData = { kind, hex, src450, finish: fin, baseColor: base.clone(), ready: Promise.resolve(m) };
-  if (src450 && (SWATCH_AMP[kind] ?? 0.06) > 0) {
-    m.userData.ready = swatchDetail(src450, kind === 'leather' && k.albAmp ? k.albAmp : SWATCH_AMP[kind] ?? 0.06, SWATCH_TILE[kind] || 0.12).then((sw) => {
-      if (sw) { m.map = sw.tex; m.color.copy(base).multiplyScalar(1 / sw.mean); m.needsUpdate = true; notify(); }
+  /* ткань на модели — настоящее фото образца (цвет, плетение, рисунок), а не заливка цветом: заказчик «ткань в 3D не видна» */
+  if (src450) {
+    m.userData.ready = swatchAlbedo(src450, PHOTO_TILE[kind] || 0.16, q === 'high' ? 384 : 256, PHOTO_FLAT[kind] || 1 / 10).then((sw) => {
+      if (sw) { m.map = sw.tex; m.color.setRGB(1, 1, 1); m.needsUpdate = true; notify(); }
       return m;
     });
   }
@@ -285,10 +285,10 @@ export function seamMaterial(fabric) {
   s.color = fabric.color.clone().multiplyScalar(0.9);
   if (s.sheenColor) s.sheenColor = fabric.sheenColor.clone().multiplyScalar(0.9);
   s.roughness = Math.min(1, fabric.roughness + 0.05);
-  s.normalMap = null; s.map = null; s.roughnessMap = null;
+  s.normalMap = null; s.roughnessMap = null;   // фото ткани остаётся (иначе при белом цвете материала шов был бы белым)
   s.name = fabric.name + '-seam';
   seamCache.set(fabric, s);
-  if (fabric.userData && fabric.userData.ready) fabric.userData.ready.then(() => { s.color.copy(fabric.color).multiplyScalar(0.9 * (fabric.map === null ? 1 : 0.94)); });
+  if (fabric.userData && fabric.userData.ready) fabric.userData.ready.then(() => { s.map = fabric.map; s.color.copy(fabric.color).multiplyScalar(0.85); s.needsUpdate = true; });
   return s;
 }
 

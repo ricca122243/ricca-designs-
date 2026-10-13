@@ -522,7 +522,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       const pos = t.clone().add(dir.multiplyScalar(dist));
       controls.minDistance = Math.min(controls.minDistance, dist * 0.6);
       if (animate && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, pos, t, FOV, 700, null);
-      else { persp.position.copy(pos); controls.target.copy(t); controls.update(); }
+      else { persp.position.copy(pos); controls.target.copy(t); controls.update(); applySeamLOD(persp, H); }
       requestRender();
     },
     get animating() { return !!anim; },
