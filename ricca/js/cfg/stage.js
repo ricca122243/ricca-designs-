@@ -51,13 +51,15 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     renderer = new THREE.WebGLRenderer({ antialias, alpha: false, powerPreference: 'high-performance', preserveDrawingBuffer: false });
   } catch (e) { throw new Error('webgl'); }
   if (!renderer.getContext()) throw new Error('webgl');
-  const dprCap = 2;   // телефон тоже 2x: модель одна, а при 1,5 ткань и края выглядели мыльными
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
+  /* чёткость: в покое — 2x (ткань и края чёткие), пока модель крутят — меньше (плавно, без лагов на телефоне) */
+  const dprFull = Math.min(window.devicePixelRatio || 1, 2), dprMove = Math.min(dprFull, phone ? 1 : 1.25);
+  renderer.setPixelRatio(dprFull);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 0.9; // подобрано по ΔE2000 образцов (§8.3): среднее 0,7
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.VSMShadowMap;
+  renderer.shadowMap.autoUpdate = false;   // тени пересчитываем только в покое: при облёте камерой они не меняются (renderFrame)
   renderer.shadowMap.autoUpdate = false;
   const canvas = renderer.domElement;
   canvas.style.display = 'block'; canvas.style.width = '100%'; canvas.style.height = '100%'; canvas.style.touchAction = 'none';
@@ -105,7 +107,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   controls.zoomSpeed = 0.8; controls.rotateSpeed = 0.7;
 
   /* пост: RenderPass → GTAO → Output */
-  const aoMode = ao === false ? 'off' : phone ? 'idle' : 'always';
+  const aoMode = ao === false ? 'off' : 'idle';   // AO — в покое (и на компьютере): при вращении кадр лёгкий, после — полный
   let composer = null, gtao = null, renderPass = null;
   function ensureComposer() {
     if (composer || aoMode === 'off') return composer;
@@ -156,7 +158,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     renderer.setSize(W, H, false);
     persp.aspect = W / H; persp.updateProjectionMatrix();
     fitOrtho();
-    if (composer) { composer.setSize(W, H); composer.setPixelRatio(renderer.getPixelRatio()); }
+    if (composer) { composer.setSize(W, H); composer.setPixelRatio(dprFull); }
     requestRender();
   }
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
@@ -224,14 +226,18 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     emit('beforeRender');
     applySeamLOD(camera, H);
     if (studioOn && contact.dirty) contact.update(scene, root);
-    const useAO = aoMode === 'always' || (aoMode === 'idle' && !moving && !interacting);
+    const still = !moving && !interacting;
+    const useAO = aoMode === 'always' || (aoMode === 'idle' && still);
+    if (still) renderer.shadowMap.needsUpdate = true;
+    const pr = still || useAO ? dprFull : dprMove;
+    if (renderer.getPixelRatio() !== pr) renderer.setPixelRatio(pr);
     if (useAO && ensureComposer()) {
       if (renderPass.camera !== camera) setPassCamera(camera);
       if (studioOn) scene.background = bgComposite;
       composer.render();
       if (studioOn) scene.background = bgDirect;
     } else renderer.render(scene, camera);
-    if (aoMode === 'idle' && (moving || interacting)) { clearTimeout(idleT); idleT = setTimeout(() => { interacting = false; requestRender(); }, 160); }
+    if (!still) { clearTimeout(idleT); idleT = setTimeout(() => { interacting = false; requestRender(); }, 160); }
     if (dimList) drawDims();
     emit('render');
   }
@@ -489,7 +495,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       key.shadow.mapSize.copy(prevMap); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; }
       renderer.shadowMap.needsUpdate = true;
       renderer.setPixelRatio(prevPR); renderer.setSize(prevSize.x, prevSize.y, false);
-      if (composer) { composer.setPixelRatio(prevPR); composer.setSize(prevSize.x, prevSize.y); gtao.updateGtaoMaterial({ samples: phone ? 12 : 24 }); setPassCamera(camera); }
+      if (composer) { composer.setPixelRatio(dprFull); composer.setSize(prevSize.x, prevSize.y); gtao.updateGtaoMaterial({ samples: phone ? 12 : 24 }); setPassCamera(camera); }
       applySeamLOD(camera, H);
       requestRender();
     }
