@@ -19,6 +19,25 @@ const DIRS = {
 };
 const dir3q = () => new THREE.Vector3(Math.sin(AZ) * Math.cos(EL), Math.sin(EL), Math.cos(AZ) * Math.cos(EL));
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+/* фон через EffectComposer проходит тон-маппинг (OutputPass) — подбираем такой линейный цвет, чтобы на экране
+   получился ровно BG (бесшовно с рамкой страницы). Neutral tone mapping three.js, повторённый на JS. */
+function neutralTM(c, exposure) {
+  let r = c[0] * exposure, g = c[1] * exposure, b = c[2] * exposure;
+  const x = Math.min(r, g, b), off = x < 0.08 ? x - 6.25 * x * x : 0.04;
+  r -= off; g -= off; b -= off;
+  const peak = Math.max(r, g, b), S = 0.76;
+  if (peak < S) return [r, g, b];
+  const d = 1 - S, np = 1 - (d * d) / (peak + d - S);
+  r *= np / peak; g *= np / peak; b *= np / peak;
+  const k = 1 - 1 / (0.15 * (peak - np) + 1);
+  return [r + (np - r) * k, g + (np - g) * k, b + (np - b) * k];
+}
+function preToneMapped(hex, exposure) {
+  const t = new THREE.Color(hex); const target = [t.r, t.g, t.b]; // линейные
+  let c = target.slice();
+  for (let i = 0; i < 60; i++) { const f = neutralTM(c, exposure); c = c.map((v, k) => Math.max(0, v + (target[k] - f[k]) * 1.5)); }
+  return new THREE.Color(c[0], c[1], c[2]); // уже линейный: присваиваем компонентами
+}
 const reduced = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isPhone = () => typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 900;
 
@@ -182,7 +201,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     const useAO = aoMode === 'always' || (aoMode === 'idle' && !moving && !interacting);
     if (useAO && ensureComposer()) {
       if (renderPass.camera !== camera) setPassCamera(camera);
+      if (studioOn) scene.background = bgComposite;
       composer.render();
+      if (studioOn) scene.background = bgDirect;
     } else renderer.render(scene, camera);
     if (aoMode === 'idle' && (moving || interacting)) { clearTimeout(idleT); idleT = setTimeout(() => { interacting = false; requestRender(); }, 160); }
     if (dimList) drawDims();
@@ -254,13 +275,14 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       const finish = () => {
         fitOrtho(half); ortho.zoom = 1;
         ortho.position.copy(T).add(endDir.clone().multiplyScalar(50)); ortho.up.set(0, 1, 0); ortho.lookAt(T);
-        useCamera(ortho); controls.target.copy(T); controls.update(); emit('view', v); requestRender();
+        useCamera(ortho); floor.visible = false; controls.target.copy(T); controls.update(); emit('view', v); requestRender();
       };
       if (instant) { finish(); return; }
       anim = { start: performance.now(), dur: 650, kind: 'toOrtho', startDir, endDir, startHalf, endHalf: half, t0: controls.target.clone(), t1: T, f0: persp.fov, f1: 6, done: finish, cancelable: false };
       requestRender();
     } else {
       enterPerspFromOrtho();
+      floor.visible = true;
       controls.enableRotate = true; controls.enablePan = !phone;
       const endDir = dir3q(), dist = framingDist(endDir);
       const startDir = persp.position.clone().sub(controls.target).normalize();
@@ -325,33 +347,63 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     return [(v.x * 0.5 + 0.5) * W, (-v.y * 0.5 + 0.5) * H, v.z];
   }
   function drawDims() {
-    const frag = [];
-    const OFF = { 0: 34, 1: 22, 2: 12 };
-    const c = toScreen([center.x, center.y, center.z]);
-    for (const d of dimList) {
-      let a = toScreen(d.a), b = toScreen(d.b);
-      /* смещение наружу: перпендикуляр к линии, в сторону от центра */
-      let dx = b[0] - a[0], dy = b[1] - a[1]; const len = Math.hypot(dx, dy); if (len < 6) continue;
-      let nx = -dy / len, ny = dx / len;
-      const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
-      if ((mx - c[0]) * nx + (my - c[1]) * ny < 0) { nx = -nx; ny = -ny; }
-      const off = OFF[d.tier] ?? 16;
-      const A = [a[0] + nx * off, a[1] + ny * off], B = [b[0] + nx * off, b[1] + ny * off];
-      frag.push(`<line x1="${a[0] + nx * 4}" y1="${a[1] + ny * 4}" x2="${A[0] + nx * 4}" y2="${A[1] + ny * 4}" />`);
-      frag.push(`<line x1="${b[0] + nx * 4}" y1="${b[1] + ny * 4}" x2="${B[0] + nx * 4}" y2="${B[1] + ny * 4}" />`);
-      frag.push(`<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" />`);
-      const tk = 4, ux = dx / len, uy = dy / len;
-      for (const P of [A, B]) frag.push(`<line x1="${P[0] - (ux + nx) * tk}" y1="${P[1] - (uy + ny) * tk}" x2="${P[0] + (ux + nx) * tk}" y2="${P[1] + (uy + ny) * tk}" />`);
-      let ang = (Math.atan2(dy, dx) * 180) / Math.PI; if (ang > 90) ang -= 180; if (ang < -90) ang += 180;
-      const tx = (A[0] + B[0]) / 2 + nx * 9, ty = (A[1] + B[1]) / 2 + ny * 9;
-      frag.push(`<text x="${tx}" y="${ty}" transform="rotate(${ang} ${tx} ${ty})">${fmt(d.value)}</text>`);
+    const L = [], T = [];
+    const line = (x1, y1, x2, y2) => L.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" />`);
+    const label = (x, y, ang, txt) => T.push(`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" transform="rotate(${ang} ${x.toFixed(1)} ${y.toFixed(1)})">${txt}</text>`);
+    const tick = (x, y) => line(x - 3.5, y + 3.5, x + 3.5, y - 3.5);
+    if (view === '3d') {
+      /* 3D: Ш × Г × В по габариту — вдоль нижних рёбер и переднего правого ребра */
+      const mn = box.min, mx = box.max;
+      const c = toScreen([center.x, center.y, center.z]);
+      const seg = (p, q, val) => {
+        const a = toScreen(p), b = toScreen(q);
+        let dx = b[0] - a[0], dy = b[1] - a[1]; const len = Math.hypot(dx, dy); if (len < 8) return;
+        let nx = -dy / len, ny = dx / len;
+        if (((a[0] + b[0]) / 2 - c[0]) * nx + ((a[1] + b[1]) / 2 - c[1]) * ny < 0) { nx = -nx; ny = -ny; }
+        const off = 22, A = [a[0] + nx * off, a[1] + ny * off], B = [b[0] + nx * off, b[1] + ny * off];
+        line(a[0] + nx * 5, a[1] + ny * 5, A[0] + nx * 5, A[1] + ny * 5); line(b[0] + nx * 5, b[1] + ny * 5, B[0] + nx * 5, B[1] + ny * 5);
+        line(A[0], A[1], B[0], B[1]); tick(A[0], A[1]); tick(B[0], B[1]);
+        let ang = (Math.atan2(dy, dx) * 180) / Math.PI; if (ang > 90) ang -= 180; if (ang < -90) ang += 180;
+        label((A[0] + B[0]) / 2 + nx * 10, (A[1] + B[1]) / 2 + ny * 10, ang, fmt(val));
+      };
+      seg([mn.x, 0, mx.z], [mx.x, 0, mx.z], size.x);
+      seg([mx.x, 0, mx.z], [mx.x, 0, mn.z], size.z);
+      seg([mx.x, 0, mx.z], [mx.x, mx.y, mx.z], size.y);
+    } else {
+      /* орто-виды: ряды размеров снаружи силуэта, ярус 2 — ближе всего, 0 — дальше */
+      let sx0 = Infinity, sx1 = -Infinity, sy0 = Infinity, sy1 = -Infinity;
+      for (let i = 0; i < 8; i++) { const p = toScreen([i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z]); sx0 = Math.min(sx0, p[0]); sx1 = Math.max(sx1, p[0]); sy0 = Math.min(sy0, p[1]); sy1 = Math.max(sy1, p[1]); }
+      const rowOff = (tier) => 14 + (2 - (tier ?? 1)) * 18;
+      for (const d of dimList) {
+        const a = toScreen(d.a), b = toScreen(d.b);
+        const horiz = Math.abs(b[0] - a[0]) >= Math.abs(b[1] - a[1]);
+        const len = horiz ? Math.abs(b[0] - a[0]) : Math.abs(b[1] - a[1]);
+        if (len < 3) continue;
+        const place = d.place || (horiz ? 'bottom' : 'right');
+        const off = rowOff(d.tier);
+        const txt = fmt(d.value);
+        const tw = txt.length * 6.6 + 4;
+        if (horiz) {
+          const y = place === 'top' ? sy0 - off : sy1 + off, sgn = place === 'top' ? -1 : 1;
+          line(a[0], a[1] + sgn * 3, a[0], y + sgn * 4); line(b[0], b[1] + sgn * 3, b[0], y + sgn * 4);
+          line(a[0], y, b[0], y); tick(a[0], y); tick(b[0], y);
+          const mid = (a[0] + b[0]) / 2, fits = tw < len - 4;
+          label(fits ? mid : Math.max(a[0], b[0]) + tw / 2 + 4, y - 7, 0, txt);
+        } else {
+          const x = place === 'left' ? sx0 - off : sx1 + off, sgn = place === 'left' ? -1 : 1;
+          line(a[0] + sgn * 3, a[1], x + sgn * 4, a[1]); line(b[0] + sgn * 3, b[1], x + sgn * 4, b[1]);
+          line(x, a[1], x, b[1]); tick(x, a[1]); tick(x, b[1]);
+          const mid = (a[1] + b[1]) / 2, fits = tw < len - 4;
+          label(x - 7, fits ? mid : Math.min(a[1], b[1]) - tw / 2 - 4, -90, txt);
+        }
+      }
     }
-    overlay.innerHTML = `<g fill="none" stroke="#111" stroke-width="0.9" stroke-linecap="round">${frag.filter((s) => s.startsWith('<line')).join('')}</g>` +
-      `<g fill="#111" stroke="#F3F2EE" stroke-width="3" paint-order="stroke" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="500" text-anchor="middle" dominant-baseline="middle" style="font-variant-numeric: tabular-nums; letter-spacing: .02em">${frag.filter((s) => s.startsWith('<text')).join('')}</g>`;
+    overlay.innerHTML = `<g fill="none" stroke="#111" stroke-width="0.8" stroke-linecap="round">${L.join('')}</g>` +
+      `<g fill="#111" stroke="#F3F2EE" stroke-width="3" paint-order="stroke" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="500" text-anchor="middle" dominant-baseline="middle" style="font-variant-numeric: tabular-nums; letter-spacing: .02em">${T.join('')}</g>`;
   }
 
   /* ---------- студия ---------- */
-  function setStudio(on) { studioOn = !!on; studio.visible = studioOn; scene.background = studioOn ? new THREE.Color(BG) : scene.background; requestRender(); }
+  function setStudio(on) { studioOn = !!on; studio.visible = studioOn; if (studioOn) scene.background = bgDirect; requestRender(); }
 
   /* ---------- снимок ---------- */
   async function snapshot({ width = 2400, height = 1600, view: sv = '3q', watermark = true, background = BG } = {}) {
@@ -374,7 +426,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       cam.left = -h * RW / RH; cam.right = h * RW / RH; cam.top = h; cam.bottom = -h; cam.updateProjectionMatrix();
       const t = viewTarget(sv); cam.position.copy(t).add(DIRS[sv].clone().multiplyScalar(50)); cam.lookAt(t);
     }
-    const prevBg = scene.background; scene.background = new THREE.Color(background);
+    const prevBg = scene.background;
+    const useComp = aoMode !== 'off';
+    scene.background = useComp ? preToneMapped(background, renderer.toneMappingExposure) : new THREE.Color(background);
     const prevMap = key.shadow.mapSize.clone();
     key.shadow.mapSize.set(4096, 4096); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; }
     renderer.shadowMap.needsUpdate = true;
@@ -408,6 +462,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   }
 
   const offMat = onMaterialUpdate(() => requestRender());
+  const bgDirect = new THREE.Color(BG);
+  let bgComposite = preToneMapped(BG, renderer.toneMappingExposure);
 
   const stage = {
     renderer, scene, controls, canvas, root, studio, overlay,

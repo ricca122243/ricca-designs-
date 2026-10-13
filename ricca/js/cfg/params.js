@@ -602,7 +602,7 @@ function partsArmchair(p) {
     add({ id: 'shell', role: 'shell', mat: 'fabric', shape: 'shell', x: W / 2, y: (legH + p.h) / 2, z: zc, sx: W, sy: p.h - legH, sz: 2 * B, t, open, topFront: p.armH, r: t / 2, rotY: 0, piping: !!p.piping });
     const sx = W - 2 * t + 0.03, seatZ0 = zc - (B - t) * 0.75;
     add(cyl('seat-1', 'seat', 'fabric', W / 2, (seatZ0 + d) / 2, sx, d - seatZ0, yF, p.seatH, { r: 0.04, crown: 0.012, cushion: true, piping: !!p.piping, seam: true, frontFlat: false }));
-    legsFor({ legs: p.legs }, legH, [{ x0: W * 0.12, x1: W * 0.88, z0: 0.04, z1: d - 0.06 }], add);
+    legsFor({ legs: p.legs }, legH, [{ x0: W * 0.16, x1: W * 0.84, z0: 0.06, z1: d - 0.16 }], add);
     dims.push(D('armW-l', 'Подлокотник', 'front', 'x', [0, legH, d], [t, legH, d], 1, 'bottom'));
     dims.push(D('inner', 'Сиденье', 'front', 'x', [t, yF, d], [W - t, yF, d], 1, 'bottom'));
     dims.push(D('armW-r', 'Подлокотник', 'front', 'x', [W - t, legH, d], [W, legH, d], 1, 'bottom'));
@@ -639,7 +639,8 @@ function partsChair(p) {
   const zBack0 = 0.0;
   const pts = [[ins + dia / 2, d - ins - dia / 2], [W - ins - dia / 2, d - ins - dia / 2], [ins + dia / 2, backT * 0.5 + dia / 2], [W - ins - dia / 2, backT * 0.5 + dia / 2]];
   pts.forEach(([x, z], i) => add(cyl(`leg-${i + 1}`, 'leg', 'legs', x, z, dia, dia, 0, legTop + 0.005, { taper, legKind: p.legs })));
-  add(box('apron', 'frame', 'fabric', 0.006, W - 0.006, legTop, sH - 0.06, backT * 0.5, d - 0.006, { r: 0.012 }));
+  /* царга — из того же материала, что ножки (дерево/металл), утоплена на 1 см под мягким сиденьем */
+  add(box('apron', 'frame', 'legs', 0.012, W - 0.012, legTop, sH - 0.06 + 0.004, backT * 0.5, d - 0.012, { r: 0.004 }));
   add(box('seat-1', 'seat', 'fabric', 0, W, sH - 0.06, sH, backT * 0.4, d, { r: 0.025, crown: 0.01, cushion: true, piping: !!p.piping, seam: !p.piping }));
   /* спинка: панель с лёгким наклоном; округлая — со скруглёнными верхними углами */
   const bh = p.h - (sH - 0.03);

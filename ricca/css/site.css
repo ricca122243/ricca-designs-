@@ -643,7 +643,11 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   .fl__cn { font-size: 10px; line-height: 1.35; letter-spacing: -.01em; }   /* «Терракотовый» целиком в квадрат 74 px (360) */
   .fl__cn small { font-size: 10px; }
   .fl__end-btns { display: grid; width: 100%; }
+  /* вкладки тканей: все пять типов на 390; на 360/320 у правого края видно начало «Экокожи» — знак, что ряд листается */
+  .view__tabs.is-fab { gap: 0 14px; }
+  .view__tabs.is-fab button { letter-spacing: .12em; }
 }
+@media (max-width: 389px) { .fl__end-btns .btn { padding-inline: 12px; gap: 10px; letter-spacing: .12em; white-space: nowrap; } }   /* 360/320: «Помогите подобрать ткань» — в одну строку */
 
 /* все работы — фото целиком, колонками */
 .wgal { columns: 3; column-gap: clamp(16px, 2.4vw, 40px); }
@@ -758,8 +762,13 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .fz__cap .lb__piece { font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
 .fz__wa { grid-column: 2; grid-row: 1 / span 3; }
 @media (max-width: 599px) {
-  .fz__wa { grid-column: 1; grid-row: auto; width: 100%; margin-top: 10px; }
+  .fz__wa { grid-column: 1; grid-row: 4; width: 100%; margin-top: 10px; }
   .fz__cap { gap: 2px; }
+  .fz__cap .lb__count { grid-row: 3; }   /* цвет, коллекция, «02 / 14», кнопка */
+  .fz .lb__stage { padding-inline: var(--pad); }   /* левый край квадрата — по подписи */
+  /* стрелки соседних цветов — под квадратом (только в «Ткани крупно»; в окне работ их нет) */
+  .fz .lb__stage .pd__arrow { display: grid; top: auto; bottom: 8px; margin-top: 0; }
+  .fz .pd__arrow--prev { left: 4px; } .fz .pd__arrow--next { right: 4px; }
 }
 
 /* подборка — панель справа (телефон — на весь экран) */

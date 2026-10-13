@@ -66,6 +66,8 @@
   const FCOL = new Map();
   FLIB.forEach((t) => t.collections.forEach((c) => FCOL.set(c.id, { t, c })));
   const fabKind = (c) => String(c.kind || '').split(':')[0].trim();   // «экокожа: зернистая, гладкая…» → «экокожа»
+  // материал рядом с названием — только если он не повторяет название («Экокожа · экокожа» не пишем)
+  const fabKindOf = (c) => { const k = fabKind(c); return k.toLowerCase() === String(c.title || '').toLowerCase() ? '' : k; };
   // название в WhatsApp: коллекция; если такое имя у двух коллекций (ALBA — микровелюр и экокожа) — с материалом; экокожа — с поверхностью
   const fabWaName = (c, k) => {
     let dup = 0;
@@ -109,8 +111,10 @@
   const subOf = (cat) => { const c = CATS[cat] || {}; return [countOf(cat), c.desc || ''].filter(Boolean).map(typo).join(' · '); };
   // на плитке: число — отдельным элементом, точка — при нём (телефон: число своей строкой, точка скрыта от глаз, но читается
   // экранным диктором), описание — после; без висящей «·» в конце строки
+  // на плитках каталога число моделей не пишем: каталог — примеры, шьём и любую другую модель (BRIEF, правки 13 октября);
+  // число оставляем только у тканей («14 коллекций»)
   const tileSubOf = (cat) => {
-    const c = CATS[cat] || {}, n = countOf(cat), d = c.desc || '';
+    const c = CATS[cat] || {}, n = c.view === 'fabrics' ? countOf(cat) : '', d = c.desc || '';
     return n && d ? `<span class="tile__n">${typo(n)}</span><span class="tile__dot"> · </span>${typo(d)}` : typo(n || d);
   };
   $$('.tile[data-cat]').forEach((a) => {
@@ -383,7 +387,8 @@
       const w4 = wide.length % 3 !== 0 && wide.length % 4 === 0;   // 8 или 4 широких — ровно по 4 в ряд, иначе по 3
       title.textContent = catLabel(cat);
       tabs.classList.remove('is-fab'); if (foot) foot.hidden = false;
-      nEl.innerHTML = subOf(cat);   // «12 моделей · Прямые, угловые, модульные, раскладные» — как на плитке
+      const dsc = (CATS[cat] && CATS[cat].desc) || '';   // без числа моделей: каталог — примеры, не предел
+      nEl.innerHTML = `${dsc ? `${typo(dsc)}. ` : ''}Сошьём и&nbsp;любую другую модель`;
       back.textContent = 'Каталог';
       const tg = CATS[cat] && CATS[cat].tags;
       const keys = tg ? Object.keys(tg).filter((k) => list.some((i) => (i.tags || []).includes(k))) : [];
@@ -398,22 +403,27 @@
        материал и число цветов, факты с карточки одной строкой, фактура крупно (если есть), образцы квадратами с названием цвета.
        Образец → «Ткань крупно» (#fabric-<коллекция>-<N>). В конце — шоурум и WhatsApp «Помогите подобрать ткань» */
     let spyHold = 0;
+    // образец в сетке: 240 px на телефоне, 450 px на компьютере (плитка 66–140 px)
+    const swImg = (k) => {
+      const big = k.src450 || k.src900, s240 = k.src240 || '';
+      return `<img src="${esc(s240 || big)}"${s240 && big ? ` srcset="${esc(`${s240} 240w, ${big} 450w`)}" sizes="(min-width: 1200px) 140px, (min-width: 768px) 12vw, 22vw"` : ''} width="450" height="450" alt="" loading="lazy" decoding="async">`;
+    };
     function renderLibrary() {
       title.textContent = 'Ткани';
-      nEl.innerHTML = typo('Популярные коллекции. Больше 50 коллекций и 1000 цветов — в шоуруме.');
+      nEl.innerHTML = typo('Популярные коллекции по типам.');   // «больше 50 коллекций и 1000 цветов» — один раз, в конце
       back.textContent = 'Каталог';
       tabs.classList.add('is-fab');
       tabs.innerHTML = FLIB.map((t, i) => `<button type="button" data-ftype="${esc(t.id)}" aria-pressed="${i === 0}">${esc(t.title)}</button>`).join('');
       tabs.hidden = FLIB.length < 2;
-      const kindLine = (c) => { const k = String(c.kind || '').trim(), n = c.colours.length; return `${typo(k.replace(/^./, (ch) => ch.toUpperCase()))}&nbsp;· ${n}&nbsp;${plural3(n, ['цвет', 'цвета', 'цветов'])}`; };
+      const kindLine = (c) => { const n = c.colours.length; let k = String(c.kind || '').trim(); if (!fabKindOf(c) && k.includes(':')) k = k.slice(k.indexOf(':') + 1).trim(); return `${typo(k.replace(/^./, (ch) => ch.toUpperCase()))}&nbsp;· ${n}&nbsp;${plural3(n, ['цвет', 'цвета', 'цветов'])}`; };
       content.innerHTML = `<div class="fl">${FLIB.map((t) => `<section class="fl__type" id="fab-t-${esc(t.id)}" data-ftype="${esc(t.id)}" aria-labelledby="fl-t-${esc(t.id)}">`
         + `<h3 class="fl__tt" id="fl-t-${esc(t.id)}">${esc(t.title)}</h3>`
-        + t.collections.map((c) => `<article class="fl__col" id="fab-${esc(c.id)}" aria-label="${esc(`${c.title}, ${fabKind(c)}`)}"><div class="fl__info">`
+        + t.collections.map((c) => `<article class="fl__col" id="fab-${esc(c.id)}" aria-label="${esc([c.title, fabKindOf(c)].filter(Boolean).join(', '))}"><div class="fl__info">`
           + `<h4 class="caps fl__name">${esc(c.title)}</h4><p class="fl__kind">${kindLine(c)}</p>`
           + ((c.facts || []).length ? `<p class="fl__facts">${numNb(typo(c.facts.slice(0, 3).map((f) => lcFirst(f)).join(' · ').replace(/^./, (ch) => ch.toUpperCase())))}</p>` : '')
-          + (c.texture ? `<span class="fl__tex"><img src="${esc(c.texture)}" width="600" height="600" alt="${esc(`${c.title}: фактура ткани крупно`)}" loading="lazy" decoding="async"></span>` : '')
+          + (c.texture ? `<span class="fl__tex"><img src="${esc(c.texture.replace(/texture-600\.webp$/, 'texture-160.webp'))}" srcset="${esc(`${c.texture.replace(/texture-600\.webp$/, 'texture-160.webp')} 160w, ${c.texture} 600w`)}" sizes="(max-width: 767px) 72px, 200px" width="600" height="600" alt="${esc(`${c.title}: фактура ткани крупно`)}" loading="lazy" decoding="async"></span>` : '')
           + `</div><ul class="fl__grid" role="list">${c.colours.map((k, j) => `<li><button class="fl__sw" type="button" data-fab="${esc(c.id)}" data-n="${j + 1}" aria-haspopup="dialog" aria-label="${esc(`${c.title}, ${k.name.toLowerCase()}${k.finish ? `, ${k.finish}` : ''}: открыть крупно`)}">`
-            + `<span class="fl__img"${/^#[0-9a-f]{3,8}$/i.test(k.hex || '') ? ` style="--c:${k.hex}"` : ''}><img src="${esc(k.src450 || k.src900)}" width="450" height="450" alt="" loading="lazy" decoding="async"></span>`
+            + `<span class="fl__img"${/^#[0-9a-f]{3,8}$/i.test(k.hex || '') ? ` style="--c:${k.hex}"` : ''}>${swImg(k)}</span>`
             + `<span class="fl__cn" aria-hidden="true">${typo(k.name)}${k.finish ? `<small>${esc(k.finish)}</small>` : ''}</span></button></li>`).join('')}</ul></article>`).join('')
         + '</section>').join('')}</div>`
         + `<div class="fl__end"><p class="fl__end-line">${typo('Больше 50 коллекций и 1000 цветов — вживую в шоуруме на Навои, 208/2.')}</p>`
@@ -697,7 +707,9 @@
       const sw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
       const sh = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
       if (sw <= 0 || sh <= 0) return;
-      const side = Math.floor(Math.min(sw, sh, k.src900 ? 900 : 600));   // 450 px не растягиваем до 900
+      // размер квадрата — один на всю коллекцию (не прыгает при листании): все цвета с 900 px — до 640, иначе — до 450
+      const cap = list().every((x) => x.src900) ? 640 : 450;
+      const side = Math.floor(Math.min(sw, sh, cap));
       frame.style.width = frame.style.height = `${side}px`;
     }
     function show(i) {
@@ -714,7 +726,7 @@
       if (img.complete && img.naturalWidth) frame.classList.remove('is-loading');
       layout();
       title.innerHTML = typo(k.name);
-      piece.innerHTML = typo(`${c.title} · ${[fabKind(c), k.finish].filter(Boolean).join(', ')}`);
+      piece.innerHTML = typo([c.title, [fabKindOf(c), k.finish].filter(Boolean).join(', ')].filter(Boolean).join(' · '));
       const u = /^https?:$/.test(location.protocol) ? `\n${location.origin}${location.pathname}#fabric-${c.id}-${idx + 1}` : '';
       wa.href = waUrl(`Здравствуйте! Интересует ткань ${fabWaName(c, k)}, цвет ${k.name.toLowerCase()}.${u}`);
       wa.setAttribute('aria-label', `Хочу эту ткань: ${c.title}, ${k.name.toLowerCase()} — написать в WhatsApp`);

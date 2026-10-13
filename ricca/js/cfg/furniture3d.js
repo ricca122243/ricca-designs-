@@ -381,6 +381,8 @@ function legGeometry(it, quality) {
     for (let i = 0; i <= n; i++) { const tt = i / n; const r = rTop * (1 + (it.flare - 1) * Math.pow(1 - tt, 2.2)); pts.push(new THREE.Vector2(r, -it.sy / 2 + it.sy * tt)); }
     pts.push(new THREE.Vector2(0, it.sy / 2));
     geo = new THREE.LatheGeometry(pts, q.radial * 2);
+    const nn = geo.attributes.normal, pp = geo.attributes.position;
+    for (let i = 0; i < nn.count; i++) { const l = Math.hypot(nn.getX(i), nn.getY(i), nn.getZ(i)); if (l < 0.5) nn.setXYZ(i, 0, Math.sign(pp.getY(i)) || 1, 0); else nn.setXYZ(i, nn.getX(i) / l, nn.getY(i) / l, nn.getZ(i) / l); }
   } else {
     geo = new THREE.CylinderGeometry(rTop, rBot, it.sy, it.legKind === 'glide' ? 16 : q.radial, 1, false);
   }
