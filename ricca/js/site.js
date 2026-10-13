@@ -167,6 +167,16 @@
     box.classList.add('tile__img--photo');
     box.innerHTML = workPic(w.photos[0], '(min-width: 1100px) 30vw, 46vw', false);
   });
+  // плитка «Ткани»: 8 настоящих образцов из библиотеки — по два из каждого типа (разные по светлоте), остальное — первыми типами
+  (() => {
+    const box = $('[data-fab-mosaic]');
+    if (!box || !FLIB.length) return;
+    const lum = (h) => { const n = parseInt(String(h || '#888').slice(1, 7), 16); return (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)); };
+    const picks = [];
+    FLIB.forEach((t) => { const c = t.collections[0]; if (!c) return; const ks = c.colours.filter((k) => k.src240).slice().sort((a, b) => lum(b.hex) - lum(a.hex)); if (!ks.length) return; picks.push([c, ks[Math.floor(ks.length * 0.25)]]); if (ks.length > 2) picks.push([c, ks[Math.floor(ks.length * 0.75)]]); });
+    FLIB.forEach((t) => t.collections.slice(1).forEach((c) => { if (picks.length < 8 && c.colours[0]) picks.push([c, c.colours[Math.floor(c.colours.length / 2)]]); }));
+    box.innerHTML = picks.slice(0, 8).map(([c, k]) => `<img src="${esc(k.src240 || k.src450)}" width="160" height="160" alt="" loading="lazy" decoding="async">`).join('');
+  })();
   // лента «Наши работы» на главной: кадры из RICCA_WORKS_STRIP ([id, номер фото]); нет списка — первые фото первых работ
   (() => {
     const sec = $('#works');
@@ -329,10 +339,25 @@
   if (document.readyState === 'complete') watchPosters(); else window.addEventListener('load', watchPosters, { once: true });
   if (!reduceMotion) {
     // вход — свой ролик ателье (video/production*); телефон — лёгкая версия. Прежний ролик из рендеров фабрики снят 13 октября
-    const heroMQ = window.matchMedia('(min-width: 900px) and (min-aspect-ratio: 4/5)');
-    const heroV = autoVideo($('.hero__video'), $('.hero__toggle'), () => `video/production${heroMQ.matches ? '' : '-phone'}`, { target: $('.hero'), threshold: 0.05, afterLoad: true });
-    if (heroV) heroMQ.addEventListener('change', () => { $('.hero__video').classList.remove('is-on'); heroV.reload(); });
   }
+  /* вход: смена кадров реальных работ (img/hero) каждые 6 с, подпись и ссылка на работу; reduced motion — один кадр;
+     на невидимом входе (прокрутили ниже, другая вкладка) не крутим */
+  (() => {
+    const slides = $$('.hero__slide'), cap = $('[data-hero-cap]'), capN = $('[data-hero-n]'), capT = $('[data-hero-t]');
+    if (slides.length < 2 || reduceMotion) return;
+    let i = 0, t = 0, seen = true;
+    const show = (n) => {
+      slides[i].classList.remove('is-on'); i = (n + slides.length) % slides.length; slides[i].classList.add('is-on');
+      const img = $('img', slides[i]); if (img && img.loading === 'lazy') img.loading = 'eager';
+      const nx = $('img', slides[(i + 1) % slides.length]); if (nx && nx.loading === 'lazy') nx.loading = 'eager';   // следующий — заранее
+      if (capN) capN.textContent = `${pad2(i + 1)} / ${pad2(slides.length)}`;
+      if (capT) capT.textContent = slides[i].dataset.cap || '';
+      if (cap) cap.href = `#work-${slides[i].dataset.work}`;
+    };
+    const tick = () => { if (seen && !document.hidden) show(i + 1); t = setTimeout(tick, 6000); };
+    t = setTimeout(tick, 6000);
+    if (hasIO) new IntersectionObserver((es) => { seen = es[es.length - 1].isIntersecting; }, { threshold: 0.05 }).observe($('.hero'));
+  })();
   // ролик ателье: телефон — своя лёгкая версия (data-src-phone). Reduced motion — не играет сам: постер и ▶, ролик — по нажатию
   $$('[data-autovideo]').forEach((box) => {
     const v = $('video', box);

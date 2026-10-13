@@ -22,8 +22,9 @@
 <link rel="icon" href="img/v3/favicon-v3.svg" type="image/svg+xml">
 <link rel="icon" href="img/v3/favicon-v3-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="img/v3/favicon-v3-180.png">
-<!-- первый кадр видео входа (своё ателье, video/production*) = LCP: грузится первым -->
-<link rel="preload" as="image" href="video/production-poster.webp" fetchpriority="high">
+<!-- первый кадр входа (реальная работа ателье) = LCP: грузится первым; телефон — портрет, компьютер — ландшафт -->
+<link rel="preload" as="image" href="img/hero/DdAJz7PiC61-2-p.webp" media="(max-aspect-ratio: 1/1)" fetchpriority="high">
+<link rel="preload" as="image" href="img/hero/DdAJz7PiC61-2-l.webp" media="(min-aspect-ratio: 1/1)" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts-v3.css">
@@ -110,28 +111,46 @@
 
 <main id="main">
 
-<!-- ═════════ 1. ВХОД: свой ролик ателье RICCA (video/production*: пошив, шлифовка, раскрой, обивка, готовый диван в шоуруме).
-     Рендеры фабрики-партнёра (video/hero-*) сняты 13 октября: клиент — «их изделия», «картинки не годятся».
-     Телефон: ролик на весь экран, поверх — шапка и одна строка. Компьютер: ролик 478 × 850 не растягиваем на 16 : 9 — белый первый
-     экран в две колонки: строка слева, ролик в прямоугольной рамке 9 : 16 справа (css/site.css, .hero). Источник подставляет js/site.js;
-     prefers-reduced-motion и «экономия трафика» — только постер. ═════════ -->
+<!-- ═════════ 1. ВХОД: реальные работы ателье (Instagram @ricca.designs; кадры — tools/media-v3/hero-photos.py → img/hero/).
+     Фото на весь экран, медленная смена четырёх кадров (js/site.js, 6 с; reduced motion — один кадр), крупный заголовок антиквой,
+     две кнопки. Компьютер — ландшафтный кадр 16 : 10 (-l), телефон — портретный 9 : 16 (-p). Подпись кадра справа внизу ведёт на работу.
+     Прежний ролик ателье (шлифовка, 13 октября: «обложка видео странная») остался в разделе «Ателье». ═════════ -->
 <section class="hero" id="top">
-  <div class="hero__media" aria-hidden="true">
-    <img class="hero__poster" src="video/production-poster.webp" width="478" height="850" alt="" fetchpriority="high" decoding="async">
-    <video class="hero__video" muted playsinline loop preload="none" disablepictureinpicture tabindex="-1"></video>
-  </div>
+  <ul class="hero__slides" role="list" aria-hidden="true">
+    <li class="hero__slide is-on" data-work="DdAJz7PiC61" data-cap="Кровать с панельным изголовьем"><picture>
+      <source media="(min-aspect-ratio: 1/1)" srcset="img/hero/DdAJz7PiC61-2-l.webp" width="1440" height="900">
+      <img src="img/hero/DdAJz7PiC61-2-p.webp" width="900" height="1600" alt="" fetchpriority="high" decoding="async">
+    </picture></li>
+    <li class="hero__slide" data-work="C_tjlDdgnmn" data-cap="Диван Klint · шенилл"><picture>
+      <source media="(min-aspect-ratio: 1/1)" srcset="img/hero/C_tjlDdgnmn-4-l.webp" width="1440" height="900">
+      <img src="img/hero/C_tjlDdgnmn-4-p.webp" width="900" height="1600" alt="" loading="lazy" decoding="async">
+    </picture></li>
+    <li class="hero__slide" data-work="C7E_JvdoXM-" data-cap="Угловой модульный диван"><picture>
+      <source media="(min-aspect-ratio: 1/1)" srcset="img/hero/C7E_JvdoXM--1-l.webp" width="1440" height="900">
+      <img src="img/hero/C7E_JvdoXM--1-p.webp" width="899" height="1600" alt="" loading="lazy" decoding="async">
+    </picture></li>
+    <li class="hero__slide" data-work="C9h3Txai1KF" data-cap="Угловой диван · букле"><picture>
+      <source media="(min-aspect-ratio: 1/1)" srcset="img/hero/C9h3Txai1KF-1-l.webp" width="1920" height="1200">
+      <img src="img/hero/C9h3Txai1KF-1-p.webp" width="900" height="1600" alt="" loading="lazy" decoding="async">
+    </picture></li>
+  </ul>
   <div class="hero__shade" aria-hidden="true"></div>
   <div class="wrap hero__foot">
-    <h1 class="hero__line"><span class="sr-only">RICCA DESIGNS&nbsp;— </span>Мебель на&nbsp;заказ&nbsp;<span aria-hidden="true">·</span><span class="sr-only">,</span> Алматы</h1>
-    <a class="hero__cue" href="#news"><span class="hero__cue-line" aria-hidden="true"></span><span class="sr-only">Листать дальше</span></a>
-    <button class="vbtn hero__toggle" type="button" data-vtoggle aria-pressed="false" aria-label="Остановить видео" hidden>
-      <svg class="ico ico--pause" aria-hidden="true"><use href="#i-pause"/></svg><svg class="ico ico--play" aria-hidden="true"><use href="#i-play"/></svg>
-    </button>
+    <div class="hero__text">
+      <p class="hero__eye">RICCA DESIGNS&nbsp;· Алматы</p>
+      <h1 class="hero__title">Мягкая мебель<br>на&nbsp;заказ</h1>
+      <p class="hero__sub">Диваны, кровати и&nbsp;кресла — по&nbsp;вашему фото, эскизу или проекту. Своё ателье.</p>
+      <div class="hero__btns">
+        <a class="btn btn--white" href="#catalog">Смотреть работы</a>
+        <a class="btn btn--glass" href="https://wa.me/77084802047" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
+      </div>
+    </div>
+    <a class="hero__cap" href="#work-DdAJz7PiC61" data-hero-cap><span class="hero__cap-n" data-hero-n>01 / 04</span><span class="hero__cap-t" data-hero-t>Кровать с панельным изголовьем</span><span class="sr-only"> — открыть работу</span></a>
   </div>
 </section>
 
 <!-- ═════════ 2. ВСТУПЛЕНИЕ + НОВОСТИ + ФАКТЫ. Слева — одна фраза о том, что мы делаем; справа — небольшая карточка-новость ELUNA
-     (прямоугольник в тонкой линии, слева чёрный квадрат с луной: фаза при свете справа, свечение, лёгкое покачивание — только CSS; reduced motion — луна стоит).
+     (прямоугольник в тонкой линии, слева квадрат с фрагментом постера «Манифест» ELUNA — тот же, что на плитке каталога).
      Ниже — четыре факта из брифа под тонкими линиями. ═════════ -->
 <section class="sec lead" id="news" aria-labelledby="news-title">
   <div class="wrap">
@@ -140,10 +159,7 @@
       <div class="lead__news rv">
         <h2 class="label" id="news-title">Новости</h2>
         <a class="news" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">
-          <span class="news__sky" aria-hidden="true">
-            <span class="news__glow"></span>
-            <span class="news__moon"><img src="img/eluna/moon-256.webp" width="256" height="256" alt="" loading="lazy" decoding="async"></span>
-          </span>
+          <span class="news__sky" aria-hidden="true"><img src="img/catalog/cover-mattresses-600.webp" width="600" height="750" alt="" loading="lazy" decoding="async"></span>
           <span class="news__txt">
             <span class="news__eye">Новинка<span class="news__sep">&nbsp;· </span><span class="news__brand">Матрасы&nbsp;ELUNA</span></span>
             <span class="news__line">Модели и&nbsp;цены&nbsp;— на&nbsp;новом сайте.</span>
@@ -191,7 +207,7 @@
         <span class="tile__sub" data-tile-sub>Для отдыха, пуфы и&nbsp;банкетки</span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/fabrics" data-cat="fabrics">
-        <span class="tile__img tile__img--draw tile__img--fan"><svg class="draw" viewBox="30 66 340 425" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#ebe6db;--a:-35deg"/><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#b2b4b7;--a:-21deg"/><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#85978e;--a:-7deg"/><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#bb783c;--a:7deg"/><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#2e4861;--a:21deg"/><rect class="draw__sw" x="154" y="166" width="92" height="232" rx="2" style="fill:#19191e;--a:35deg"/><circle cx="200" cy="386" r="4"/></svg></span>
+        <span class="tile__img tile__img--mosaic" data-fab-mosaic aria-hidden="true"></span>
         <span class="tile__cap"><span class="tile__name">Ткани</span></span>
         <span class="tile__sub" data-tile-sub data-fab-types>Велюр, букле, шенилл</span>
       </a></li>

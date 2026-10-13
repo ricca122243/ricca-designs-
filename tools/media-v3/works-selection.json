@@ -1,63 +1,498 @@
 {
-  "_readme": [
-    "Готовый каталог «Наши работы» — только реальные фото ателье из Instagram @ricca.designs (ricca/content/instagram/, в git не входит).",
-    "Одна работа = один пост Instagram (id = shortcode). Порядок работ в списке = порядок на сайте внутри категории.",
-    "cat: sofas | beds | armchairs (кресла, пуфы, банкетки). title — название модели, ТОЛЬКО если оно есть в подписи поста; иначе описательно.",
-    "sub — коротко ткань и цвет. cfg — тип для «Собрать похожий в 3D»: sofa | corner | ushape | modular | bed | armchair | pouf.",
-    "photos — номера кадров поста (…-<shortcode>-<N>.jpg), первый — обложка работы; до 6.",
-    "home.strip — кадры для ленты «Наши работы» на главной: [shortcode, N] (лучше не те, что на обложках плиток прямо над лентой). Обложка плитки категории — первый кадр первой работы категории.",
-    "Нельзя: рендеры и сток (список — content/instagram/CLASSIFY.md), лица, надписи поверх фото, названия поставщиков, ЖК, клиентов, цены.",
-    "После правки: python3 tools/media-v3/works-photos.py (пересоберёт ricca/img/works/ и ricca/js/works-data.js)."
-  ],
-  "works": [
-    {"id": "C_tjlDdgnmn", "cat": "sofas", "title": "Диван Klint", "sub": "шенилл, терракотовый", "cfg": "corner", "photos": [3, 4, 2, 1]},
-    {"id": "DGy-8O2Ilbr", "cat": "sofas", "title": "Модульный диван ARCO", "sub": "букле, графитовый", "cfg": "modular", "photos": [1, 2, 3]},
-    {"id": "C9h3Txai1KF", "cat": "sofas", "title": "Угловой диван", "sub": "букле, молочный", "cfg": "corner", "photos": [1]},
-    {"id": "C0EZbsnoxni", "cat": "sofas", "title": "П-образный модульный диван", "sub": "шенилл, молочный", "cfg": "ushape", "photos": [1]},
-    {"id": "DEPhoQhofzg", "cat": "sofas", "title": "Угловой диван", "sub": "велюр, зелёный", "cfg": "corner", "photos": [1]},
-    {"id": "DMTFAQ6IyzO", "cat": "sofas", "title": "Угловой диван с пуфом", "sub": "шенилл, молочный", "cfg": "corner", "photos": [1]},
-    {"id": "C9weNeLC1nc", "cat": "sofas", "title": "Модульный диван Bubble", "sub": "шенилл, светло-бежевый", "cfg": "modular", "photos": [1]},
-    {"id": "C9S4tzXCmg4", "cat": "sofas", "title": "Диван Comfort mini", "sub": "шенилл, светло-серый", "cfg": "corner", "photos": [1, 2]},
-    {"id": "C7E_JvdoXM-", "cat": "sofas", "title": "Угловой модульный диван", "sub": "шенилл, светло-серый", "cfg": "modular", "photos": [1, 2]},
-    {"id": "C7B6kL3t3V5", "cat": "sofas", "title": "Угловой диван", "sub": "шенилл, слоновая кость", "cfg": "corner", "photos": [1]},
-    {"id": "C1NIwXGIlHU", "cat": "sofas", "title": "Угловой диван на ножках", "sub": "шенилл, молочный", "cfg": "corner", "photos": [2, 3]},
-    {"id": "C1Ur3ZXIE3f", "cat": "sofas", "title": "Диван Денвер", "sub": "рогожка, мокко", "cfg": "modular", "photos": [1, 2, 3]},
-    {"id": "DaSQW3WOlDs", "cat": "sofas", "title": "Диван Soho", "sub": "раскладной, светло-бежевый", "cfg": "sofa", "photos": [1]},
-    {"id": "DKhrP6NISpm", "cat": "sofas", "title": "Диван Soho", "sub": "угловой, белый", "cfg": "corner", "photos": [1]},
-    {"id": "DJgcfelsXAG", "cat": "sofas", "title": "Диван Soho", "sub": "угловой, раскладной, белый", "cfg": "corner", "photos": [1]},
-    {"id": "DCpg6fwuU5M", "cat": "sofas", "title": "Диван KRAFT", "sub": "велюр, серо-бежевый", "cfg": "corner", "photos": [1]},
-    {"id": "DA_sT9RAnIX", "cat": "sofas", "title": "Диван VIVALDI", "sub": "велюр, пудровый", "cfg": "corner", "photos": [1]},
-    {"id": "C1JHHPOILyy", "cat": "sofas", "title": "П-образный модульный диван", "sub": "велюр, мокко", "cfg": "ushape", "photos": [1, 2]},
-    {"id": "C1FO4tyoygV", "cat": "sofas", "title": "Модульный диван", "sub": "округлый, молочный", "cfg": "modular", "photos": [1]},
-    {"id": "C59rkDMo2P-", "cat": "sofas", "title": "Компактный угловой диван", "sub": "шенилл, светло-серый", "cfg": "corner", "photos": [1, 2]},
-    {"id": "C0GpG2gokyH", "cat": "sofas", "title": "Угловой диван", "sub": "велюр, светло-серый", "cfg": "corner", "photos": [1, 2]},
-
-    {"id": "DdAJz7PiC61", "cat": "beds", "title": "Кровать с панельным изголовьем", "sub": "шенилл, серо-бежевый", "cfg": "bed", "photos": [6, 2, 1, 3, 4]},
-    {"id": "DaSUDdwDKly", "cat": "beds", "title": "Кровать с мягким изголовьем", "sub": "велюр, горчичный", "cfg": "bed", "photos": [1, 2, 3, 4]},
-    {"id": "DJU1WlUuBh8", "cat": "beds", "title": "Кровать NUBO", "sub": "букле, бежевый", "cfg": "bed", "photos": [1, 2, 3]},
-    {"id": "DGlGyYrND3R", "cat": "beds", "title": "Кровать с округлым изголовьем", "sub": "букле, белый", "cfg": "bed", "photos": [4, 1, 2, 3]},
-    {"id": "DGgipIMx6ma", "cat": "beds", "title": "Кровать Modena", "sub": "букле, молочный", "cfg": "bed", "photos": [1, 2, 4, 3]},
-    {"id": "C1FP--EoU3D", "cat": "beds", "title": "Кровать с двойным изголовьем", "sub": "букле, молочный", "cfg": "bed", "photos": [1]},
-    {"id": "DdUDubKCPO-", "cat": "beds", "title": "Двухцветная кровать и пуф", "sub": "букле и замша, молочный и рыжий", "cfg": "bed", "photos": [1, 3]},
-    {"id": "DK-BO0GIS-0", "cat": "beds", "title": "Минималистичная кровать", "sub": "молочный", "cfg": "bed", "photos": [1]},
-    {"id": "DHOzV_ZsRNC", "cat": "beds", "title": "Кровать Duo", "sub": "рогожка, серо-бежевый", "cfg": "bed", "photos": [2, 1]},
-    {"id": "C-_OvvYCeIW", "cat": "beds", "title": "Кровать", "sub": "шенилл, айвори", "cfg": "bed", "photos": [1]},
-    {"id": "C5oOF25o4K8", "cat": "beds", "title": "Кровать с округлым изголовьем", "sub": "светлый серо-бежевый", "cfg": "bed", "photos": [1]},
-    {"id": "DIqYqhOs1RH", "cat": "beds", "title": "Парящая кровать", "sub": "букле, молочный, кант", "cfg": "bed", "photos": [1]},
-    {"id": "DBiOLIUt93C", "cat": "beds", "title": "Кровать LOFT", "sub": "светло-серый", "cfg": "bed", "photos": [1]},
-    {"id": "DBjWhpUNF_i", "cat": "beds", "title": "Кровать LOFT", "sub": "айвори", "cfg": "bed", "photos": [1]},
-    {"id": "C0Gnx4AIzhR", "cat": "beds", "title": "Кровать", "sub": "рогожка, светло-серый", "cfg": "bed", "photos": [1]},
-
-    {"id": "DKkV-ORIobz", "cat": "armchairs", "title": "Округлое кресло", "sub": "букле, молочный", "cfg": "armchair", "photos": [1]},
-    {"id": "C6OtdIJIaLP", "cat": "armchairs", "title": "Банкетка", "sub": "букле, молочный", "cfg": "pouf", "photos": [1]},
-    {"id": "DFSkt4qNMkT", "cat": "armchairs", "title": "Пара кресел", "sub": "велюр, изумрудный", "cfg": "armchair", "photos": [1]},
-    {"id": "DCKZv9bR2UM", "cat": "armchairs", "title": "Кресло", "sub": "велюр, светло-серый", "cfg": "armchair", "photos": [1]},
-    {"id": "DIqwKzSIULV", "cat": "armchairs", "title": "Пуф на трёх ножках", "sub": "букле, бежевый", "cfg": "pouf", "photos": [1]}
-  ],
-  "home": {
-    "strip": [
-      ["C9h3Txai1KF", 1], ["DdAJz7PiC61", 2], ["DGy-8O2Ilbr", 1], ["C_tjlDdgnmn", 4], ["DaSUDdwDKly", 1],
-      ["DEPhoQhofzg", 1], ["DGlGyYrND3R", 4], ["DJU1WlUuBh8", 1], ["C0EZbsnoxni", 1], ["DFSkt4qNMkT", 1]
-    ]
+ "_readme": [
+  "Готовый каталог «Наши работы» — только реальные фото ателье из Instagram @ricca.designs (ricca/content/instagram/, в git не входит).",
+  "Одна работа = один пост Instagram (id = shortcode). Порядок работ в списке = порядок на сайте внутри категории.",
+  "cat: sofas | beds | armchairs (кресла, пуфы, банкетки). title — название модели, ТОЛЬКО если оно есть в подписи поста; иначе описательно.",
+  "sub — коротко ткань и цвет. cfg — тип для «Собрать похожий в 3D»: sofa | corner | ushape | modular | bed | armchair | pouf.",
+  "photos — номера кадров поста (…-<shortcode>-<N>.jpg), первый — обложка работы; до 6.",
+  "home.strip — кадры для ленты «Наши работы» на главной: [shortcode, N] (лучше не те, что на обложках плиток прямо над лентой). Обложка плитки категории — первый кадр первой работы категории.",
+  "Нельзя: рендеры и сток (список — content/instagram/CLASSIFY.md), лица, надписи поверх фото, названия поставщиков, ЖК, клиентов, цены.",
+  "После правки: python3 tools/media-v3/works-photos.py (пересоберёт ricca/img/works/ и ricca/js/works-data.js)."
+ ],
+ "works": [
+  {
+   "id": "C_tjlDdgnmn",
+   "cat": "sofas",
+   "title": "Диван Klint",
+   "sub": "шенилл, терракотовый",
+   "cfg": "corner",
+   "photos": [
+    4,
+    3,
+    2,
+    1
+   ]
+  },
+  {
+   "id": "DGy-8O2Ilbr",
+   "cat": "sofas",
+   "title": "Модульный диван ARCO",
+   "sub": "букле, графитовый",
+   "cfg": "modular",
+   "photos": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "id": "C9h3Txai1KF",
+   "cat": "sofas",
+   "title": "Угловой диван",
+   "sub": "букле, молочный",
+   "cfg": "corner",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "C0EZbsnoxni",
+   "cat": "sofas",
+   "title": "П-образный модульный диван",
+   "sub": "шенилл, молочный",
+   "cfg": "ushape",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DEPhoQhofzg",
+   "cat": "sofas",
+   "title": "Угловой диван",
+   "sub": "велюр, зелёный",
+   "cfg": "corner",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DMTFAQ6IyzO",
+   "cat": "sofas",
+   "title": "Угловой диван с пуфом",
+   "sub": "шенилл, молочный",
+   "cfg": "corner",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "C9weNeLC1nc",
+   "cat": "sofas",
+   "title": "Модульный диван Bubble",
+   "sub": "шенилл, светло-бежевый",
+   "cfg": "modular",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "C9S4tzXCmg4",
+   "cat": "sofas",
+   "title": "Диван Comfort mini",
+   "sub": "шенилл, светло-серый",
+   "cfg": "corner",
+   "photos": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "C7E_JvdoXM-",
+   "cat": "sofas",
+   "title": "Угловой модульный диван",
+   "sub": "шенилл, светло-серый",
+   "cfg": "modular",
+   "photos": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "C7B6kL3t3V5",
+   "cat": "sofas",
+   "title": "Угловой диван",
+   "sub": "шенилл, слоновая кость",
+   "cfg": "corner",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "C1NIwXGIlHU",
+   "cat": "sofas",
+   "title": "Угловой диван на ножках",
+   "sub": "шенилл, молочный",
+   "cfg": "corner",
+   "photos": [
+    2,
+    3
+   ]
+  },
+  {
+   "id": "C1Ur3ZXIE3f",
+   "cat": "sofas",
+   "title": "Диван Денвер",
+   "sub": "рогожка, мокко",
+   "cfg": "modular",
+   "photos": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "id": "DaSQW3WOlDs",
+   "cat": "sofas",
+   "title": "Диван Soho",
+   "sub": "раскладной, светло-бежевый",
+   "cfg": "sofa",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DKhrP6NISpm",
+   "cat": "sofas",
+   "title": "Диван Soho",
+   "sub": "угловой, белый",
+   "cfg": "corner",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DJgcfelsXAG",
+   "cat": "sofas",
+   "title": "Диван Soho",
+   "sub": "угловой, раскладной, белый",
+   "cfg": "corner",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DCpg6fwuU5M",
+   "cat": "sofas",
+   "title": "Диван KRAFT",
+   "sub": "велюр, серо-бежевый",
+   "cfg": "corner",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DA_sT9RAnIX",
+   "cat": "sofas",
+   "title": "Диван VIVALDI",
+   "sub": "велюр, пудровый",
+   "cfg": "corner",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "C1JHHPOILyy",
+   "cat": "sofas",
+   "title": "П-образный модульный диван",
+   "sub": "велюр, мокко",
+   "cfg": "ushape",
+   "photos": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "C1FO4tyoygV",
+   "cat": "sofas",
+   "title": "Модульный диван",
+   "sub": "округлый, молочный",
+   "cfg": "modular",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "C59rkDMo2P-",
+   "cat": "sofas",
+   "title": "Компактный угловой диван",
+   "sub": "шенилл, светло-серый",
+   "cfg": "corner",
+   "photos": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "C0GpG2gokyH",
+   "cat": "sofas",
+   "title": "Угловой диван",
+   "sub": "велюр, светло-серый",
+   "cfg": "corner",
+   "photos": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "DaSUDdwDKly",
+   "cat": "beds",
+   "title": "Кровать с мягким изголовьем",
+   "sub": "велюр, горчичный",
+   "cfg": "bed",
+   "photos": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "id": "DdAJz7PiC61",
+   "cat": "beds",
+   "title": "Кровать с панельным изголовьем",
+   "sub": "шенилл, серо-бежевый",
+   "cfg": "bed",
+   "photos": [
+    6,
+    2,
+    1,
+    3,
+    4
+   ]
+  },
+  {
+   "id": "DJU1WlUuBh8",
+   "cat": "beds",
+   "title": "Кровать NUBO",
+   "sub": "букле, бежевый",
+   "cfg": "bed",
+   "photos": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "id": "DGlGyYrND3R",
+   "cat": "beds",
+   "title": "Кровать с округлым изголовьем",
+   "sub": "букле, белый",
+   "cfg": "bed",
+   "photos": [
+    4,
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "id": "DGgipIMx6ma",
+   "cat": "beds",
+   "title": "Кровать Modena",
+   "sub": "букле, молочный",
+   "cfg": "bed",
+   "photos": [
+    1,
+    2,
+    4,
+    3
+   ]
+  },
+  {
+   "id": "C1FP--EoU3D",
+   "cat": "beds",
+   "title": "Кровать с двойным изголовьем",
+   "sub": "букле, молочный",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DdUDubKCPO-",
+   "cat": "beds",
+   "title": "Двухцветная кровать и пуф",
+   "sub": "букле и замша, молочный и рыжий",
+   "cfg": "bed",
+   "photos": [
+    1,
+    3
+   ]
+  },
+  {
+   "id": "DK-BO0GIS-0",
+   "cat": "beds",
+   "title": "Минималистичная кровать",
+   "sub": "молочный",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DHOzV_ZsRNC",
+   "cat": "beds",
+   "title": "Кровать Duo",
+   "sub": "рогожка, серо-бежевый",
+   "cfg": "bed",
+   "photos": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "C-_OvvYCeIW",
+   "cat": "beds",
+   "title": "Кровать",
+   "sub": "шенилл, айвори",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "C5oOF25o4K8",
+   "cat": "beds",
+   "title": "Кровать с округлым изголовьем",
+   "sub": "светлый серо-бежевый",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DIqYqhOs1RH",
+   "cat": "beds",
+   "title": "Парящая кровать",
+   "sub": "букле, молочный, кант",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DBiOLIUt93C",
+   "cat": "beds",
+   "title": "Кровать LOFT",
+   "sub": "светло-серый",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DBjWhpUNF_i",
+   "cat": "beds",
+   "title": "Кровать LOFT",
+   "sub": "айвори",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "C0Gnx4AIzhR",
+   "cat": "beds",
+   "title": "Кровать",
+   "sub": "рогожка, светло-серый",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DKkV-ORIobz",
+   "cat": "armchairs",
+   "title": "Округлое кресло",
+   "sub": "букле, молочный",
+   "cfg": "armchair",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "C6OtdIJIaLP",
+   "cat": "armchairs",
+   "title": "Банкетка",
+   "sub": "букле, молочный",
+   "cfg": "pouf",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DFSkt4qNMkT",
+   "cat": "armchairs",
+   "title": "Пара кресел",
+   "sub": "велюр, изумрудный",
+   "cfg": "armchair",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DCKZv9bR2UM",
+   "cat": "armchairs",
+   "title": "Кресло",
+   "sub": "велюр, светло-серый",
+   "cfg": "armchair",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "DIqwKzSIULV",
+   "cat": "armchairs",
+   "title": "Пуф на трёх ножках",
+   "sub": "букле, бежевый",
+   "cfg": "pouf",
+   "photos": [
+    1
+   ]
   }
+ ],
+ "home": {
+  "strip": [
+   [
+    "DGy-8O2Ilbr",
+    1
+   ],
+   [
+    "DEPhoQhofzg",
+    1
+   ],
+   [
+    "DGlGyYrND3R",
+    4
+   ],
+   [
+    "DJU1WlUuBh8",
+    1
+   ],
+   [
+    "C0EZbsnoxni",
+    1
+   ],
+   [
+    "DFSkt4qNMkT",
+    1
+   ],
+   [
+    "DGgipIMx6ma",
+    1
+   ],
+   [
+    "C1NIwXGIlHU",
+    2
+   ],
+   [
+    "DdUDubKCPO-",
+    1
+   ],
+   [
+    "C9weNeLC1nc",
+    1
+   ]
+  ]
+ }
 }
