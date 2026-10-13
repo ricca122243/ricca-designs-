@@ -163,7 +163,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   const radius = () => Math.max(0.3, size.length() / 2);
   /* угловые, П-образные и с шезлонгом (глубина > 1,4 м) — камера выше, чтобы читался план; длинные — плотнее в кадре */
   const dir3q = () => dirAt(AZ, size.z > 1.4 ? EL_PLAN : EL);
-  const fillFor = () => (size.x / Math.max(0.01, size.y) > 2.2 ? 0.84 : 0.74);
+  const fillFor = () => (W < 600 ? 0.7 : size.x / Math.max(0.01, size.y) > 2.2 ? 0.84 : 0.74);   // телефон: снизу кнопки видов
   const aimOf = () => center.clone().add(new THREE.Vector3(0, size.y * 0.06, 0));
   /* расстояние, при котором габарит занимает fill кадра по ширине и высоте */
   function fitDistance(dir, fov, aspect, fill = 0.74) {

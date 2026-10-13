@@ -292,6 +292,20 @@ export function seamMaterial(fabric) {
   return s;
 }
 
+/* кант: та же ткань (фактура видна), но рельеф карты нормалей слабее — на тонкой трубке сильный рельеф даёт искры */
+const pipeCache = new WeakMap();
+export function pipingMaterial(fabric) {
+  if (!fabric) return null;
+  if (pipeCache.has(fabric)) return pipeCache.get(fabric);
+  const s = fabric.clone();
+  if (s.normalScale) s.normalScale = fabric.normalScale.clone().multiplyScalar(0.3);
+  s.sheenRoughness = Math.min(1, (fabric.sheenRoughness || 0.5) + 0.2);
+  s.name = fabric.name + '-piping';
+  pipeCache.set(fabric, s);
+  if (fabric.userData && fabric.userData.ready) fabric.userData.ready.then(() => { s.map = fabric.map; s.color.copy(fabric.color); s.needsUpdate = true; });
+  return s;
+}
+
 /* ---------- дерево ---------- */
 const WOOD = { oak: '#C9AE87', walnut: '#5E4330', blackwood: '#2A2622' };
 const woodCache = new Map();

@@ -109,7 +109,8 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   const wallMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(wallOf(room.wall).hex), roughness: 0.95, metalness: 0 });
   const skirtMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(wallOf(room.wall).skirt), roughness: 0.6, metalness: 0 });
   const gapMat = new THREE.MeshBasicMaterial({ color: 0x2c2a27, transparent: true, opacity: 0.35, depthWrite: false });
-  const ceilMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(wallOf(room.wall).hex).multiplyScalar(1.04), roughness: 0.95, metalness: 0, side: THREE.BackSide });
+  /* потолок снизу не освещён ключевым светом — ровный цвет стены, чуть светлее */
+  const ceilMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(wallOf(room.wall).hex).multiplyScalar(1.04), side: THREE.DoubleSide });
   let ceiling = null;
   const outlineMat = new THREE.LineBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.9, depthWrite: false });
   const tintMat = new THREE.MeshBasicMaterial({ color: 0xd2453a, transparent: true, opacity: 0.22, depthWrite: false, toneMapped: false });

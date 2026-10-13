@@ -1045,7 +1045,10 @@ function init() {
   syncSteps();
   bind();
   document.documentElement.classList.add('cfg-ui');
-  /* 3D — после того как шаги уже на экране */
+  /* 3D — после того как шаги уже на экране; three.js и модель — параллельно, без цепочки импортов */
+  for (const u of ['../../vendor/three/build/three.core.js', '../../vendor/three/build/three.module.js', './stage.js', './furniture3d.js', './materials.js']) {
+    const l = document.createElement('link'); l.rel = 'modulepreload'; l.href = new URL(u, import.meta.url).href; document.head.appendChild(l);
+  }
   stageReady = new Promise((res) => requestAnimationFrame(() => setTimeout(res, 0))).then(initStage).then(() => {
     if (state.mode === 'room') setMode('room');
     if (pendingToast) toast(pendingToast, 5000);

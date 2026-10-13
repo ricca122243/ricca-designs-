@@ -181,22 +181,6 @@
     sw.forEach((r, i) => { r.style.fill = hexes[Math.round((i + 0.5) / sw.length * (hexes.length - 1))]; });
   })();
 
-  /* ---------- «Наши работы»: только подтверждённые фото работ RICCA (RICCA_WORKS). Пусто — раздела и пунктов меню нет.
-     Первые три кадра — большие рамки на главной, «Все работы» — когда кадров больше трёх ---------- */
-  const WORKS = (Array.isArray(window.RICCA_WORKS) ? window.RICCA_WORKS : []).filter((w) => w && w.src && w.w && w.h).map((w) => Object.assign({}, w));
-  (() => {
-    const sec = $('#works');
-    if (!sec) return;
-    if (!WORKS.length) { sec.remove(); $$('[data-works-link]').forEach((a) => a.remove()); return; }
-    const SLOT = [['a', '(min-width: 900px) 44vw, 80vw'], ['b', '(min-width: 900px) 32vw, 80vw'], ['c', '(min-width: 900px) 44vw, 80vw']];
-    $('[data-works-row]', sec).innerHTML = WORKS.slice(0, 3).map((w, i) => `<figure class="frame frame--${SLOT[i][0]} rv"><button class="frame__open" type="button" data-work="${i}" aria-label="Открыть фото: ${esc(lcFirst(w.room))}">`
-      + `<img src="${esc(w.src600 || w.src)}"${w.src600 ? ` srcset="${esc(`${w.src600} 600w, ${w.src} ${w.w}w`)}" sizes="${SLOT[i][1]}"` : ''} width="${w.w}" height="${w.h}" alt="${esc(w.alt || w.room)}" loading="lazy" decoding="async">`
-      + `<span class="mark" aria-hidden="true">RICCA DESIGNS</span></button><figcaption class="frame__cap">${typo(w.room)}</figcaption></figure>`).join('');
-    $('.works__all', sec).hidden = WORKS.length <= 3;
-    sec.hidden = false;
-    $$('[data-works-link]').forEach((a) => { a.hidden = false; });
-  })();
-
   /* ---------- Телефоны и WhatsApp из CONFIG ---------- */
   $$('[data-tel]').forEach((a) => { const t = CONFIG.tel[a.dataset.tel]; if (t) a.href = `tel:${t}`; });
   $$('[data-wa]').forEach((a) => {
