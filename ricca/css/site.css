@@ -92,6 +92,22 @@ ul, ol { padding: 0; list-style: none; }
 .icon-btn { display: inline-grid; place-items: center; width: 44px; height: 44px; position: relative; }
 .icon-btn .ico { width: 20px; height: 20px; }
 
+/* поля заказа и корзины: тонкая линия снизу, без рамок; количество — «− 2 +» в тонкой рамке */
+.fld { display: block; width: 100%; min-height: 44px; margin: 0; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line-2); border-radius: 0; background: transparent; color: var(--ink); font: 400 14px/1.5 var(--sans); letter-spacing: .01em; }
+.fld::placeholder { color: #6E6E69; opacity: 1; }   /* 4,9 : 1 на --paper */
+.fld:focus { outline: none; border-bottom-color: var(--ink); box-shadow: 0 1px 0 var(--ink); }
+textarea.fld { min-height: 64px; resize: vertical; }
+@media (max-width: 899px) { .fld { font-size: 16px; } }   /* iOS не увеличивает страницу при вводе */
+.sel { position: relative; display: block; }
+.sel select { appearance: none; -webkit-appearance: none; padding-right: 28px; cursor: pointer; text-overflow: ellipsis; }
+.sel .ico { position: absolute; right: 2px; top: 50%; width: 14px; height: 14px; margin-top: -7px; transform: rotate(90deg); pointer-events: none; }
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--line-2); }
+.qty__b { display: grid; place-items: center; width: 44px; height: 44px; }
+.qty__b .ico { width: 14px; height: 14px; }
+.qty__b[aria-disabled="true"] { color: var(--line-2); cursor: default; }
+.qty__n { min-width: 44px; text-align: center; font: 400 14px/1 var(--sans); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.qty--s .qty__n { min-width: 52px; font-size: 13px; }
+
 /* метка RICCA DESIGNS — одна на фото, тихо в углу (CSS-слой, не в файле) */
 .mark { position: absolute; right: 10px; bottom: 10px; z-index: 2; padding: 4px 4px 4px 7px; background: rgba(255, 255, 255, .86); color: #111; font: 600 8px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; white-space: nowrap; pointer-events: none; user-select: none; -webkit-user-select: none; }
 @media (max-width: 599px) { .mark { right: 7px; bottom: 7px; padding: 3px 3px 3px 5px; font-size: 6.5px; letter-spacing: .24em; } }
@@ -696,7 +712,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .pd__arrow--prev { left: 12px; } .pd__arrow--next { right: 12px; }
 .pd__strip { display: flex; align-items: center; gap: 20px; padding: 0 clamp(20px, 3vw, 40px) 20px; }
 .pd__count { flex: none; min-width: 64px; font: 400 12px/1 var(--sans); letter-spacing: .1em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.pd__thumbs { position: relative; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 4px; }   /* 4 px: рамка активной миниатюры (1 + 2 px) не обрезается */
+.pd__thumbs { position: relative; display: flex; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: none; padding: 4px; }   /* 4 px: рамка активной миниатюры (1 + 2 px) не обрезается */
 .pd__thumbs::-webkit-scrollbar { display: none; }
 .pd__thumb { position: relative; flex: none; width: 52px; height: 64px; overflow: hidden; background: var(--paper); opacity: .55; transition: opacity 300ms; }
 .pd__thumb.is-studio { background: var(--studio); }
@@ -716,6 +732,21 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .pd__facts dd { font: 400 14px/1.55 var(--sans); color: var(--ink); font-variant-numeric: tabular-nums; }
 .pd__facts dd small { display: block; font-size: 12px; color: var(--ink-2); }
 .pd__made { font: 400 13px/1.6 var(--sans); color: var(--ink-2); letter-spacing: .01em; }
+/* заказ: количество, ткань (коллекция → цвета), размер, комментарий — строками под линиями, как факты */
+.pd__order { display: grid; max-width: 420px; border-top: 1px solid var(--line); }
+.pd__row { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 16px; align-items: start; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.pd__row > .pd__lbl { padding-top: 15px; }
+.pd__row > .qty { justify-self: start; }
+.pd__lbl { font: 500 10px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
+.pd__row .fld { border-bottom-color: transparent; }
+.pd__row .fld:focus { border-bottom-color: var(--ink); }
+.pd__field { display: grid; gap: 10px; min-width: 0; padding-bottom: 4px; }
+.sw { display: flex; flex-wrap: wrap; gap: 6px; }
+.sw__b { position: relative; width: 44px; height: 44px; background: var(--c, var(--paper-2)); }
+.sw__b img { width: 100%; height: 100%; object-fit: cover; }
+.sw__b[aria-pressed="true"] { outline: 1px solid var(--ink); outline-offset: 2px; }
+.pd__fabv { font: 400 13px/1.5 var(--sans); color: var(--ink-2); }
+.pd__incart { display: flex; flex-wrap: wrap; align-items: center; gap: 0 18px; max-width: 420px; margin-top: -6px; font: 400 13px/1.6 var(--sans); color: var(--ink-2); }
 .pd__actions { display: grid; gap: 10px; margin-top: 4px; max-width: 420px; }
 .pd__actions [aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .pd__actions [aria-pressed="true"] .ico { fill: currentColor; }
@@ -741,17 +772,19 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   .pd__arrow { display: none; }
   .pd__strip { padding: 0 16px 16px; }
   .pd__info { padding: 36px var(--pad) calc(48px + env(safe-area-inset-bottom)); justify-content: flex-start; }
-  .pd__actions, .pd__more { max-width: none; }
+  .pd__actions, .pd__more, .pd__order, .pd__incart { max-width: none; }
   .pd__close { top: 8px; right: 8px; }
-  /* «Узнать цену» всегда на экране — над фото, названием и открытым «Подробнее»: полоса внизу окна (порядок в DOM прежний);
-     «В подборку» — квадрат с сердцем (подпись остаётся для чтения с экрана) */
+  /* «Добавить в корзину» всегда на экране — полоса внизу окна (порядок в DOM прежний);
+     «Узнать цену» — квадрат со значком WhatsApp (подпись остаётся для чтения с экрана) */
   .pd__info { padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
   .pd__actions { position: fixed; left: 0; right: 0; bottom: 0; z-index: 4; grid-template-columns: minmax(0, 1fr) 52px; gap: 8px; margin: 0; padding: 10px var(--pad) calc(10px + env(safe-area-inset-bottom)); background: var(--paper); border-top: 1px solid var(--line); }
   .pd .toast { bottom: calc(86px + env(safe-area-inset-bottom)); }
-  .pd__actions [data-pd-sl] { padding: 0; }
-  .pd__actions [data-pd-wa] { padding: 0 16px; gap: 10px; }
-  .pd__actions [data-pd-sl] span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .pd__actions [data-pd-wa] { padding: 0; }
+  .pd__actions [data-pd-add] { padding: 0 16px; gap: 10px; }
+  .pd__actions [data-pd-wa] > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
+@media (max-width: 599px) { .pd__row { grid-template-columns: 92px minmax(0, 1fr); gap: 12px; } }
+@media (max-width: 359px) { .pd__facts > div { grid-template-columns: 92px minmax(0, 1fr); gap: 12px; } }   /* «2740 × 1090 × 760 мм» — без выхода за край на 320 px */
 @media (max-width: 389px) { .pd__wa-tail { display: none; } }   /* узкий телефон: «Узнать цену» + значок WhatsApp — в одну строку */
 
 /* лайтбокс работ */
@@ -780,8 +813,14 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .fz__cap .lb__title { font: 300 clamp(24px, 2vw, 30px)/1.2 var(--serif); letter-spacing: .005em; text-transform: none; }
 .fz__cap .lb__piece { font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
 .fz__wa { grid-column: 2; grid-row: 1 / span 3; }
+.fz__btns { grid-column: 2; grid-row: 1 / span 3; display: grid; gap: 8px; }
+.fz__btns .fz__wa { grid-column: auto; grid-row: auto; }
+.fz__cart[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 @media (max-width: 599px) {
   .fz__wa { grid-column: 1; grid-row: 4; width: 100%; margin-top: 10px; }
+  .fz__btns { grid-column: 1; grid-row: 4; margin-top: 10px; }
+  .fz__btns .btn { width: 100%; min-height: 48px; }
+  .fz__btns .fz__wa { margin-top: 0; }
   .fz__cap { gap: 2px; }
   .fz__cap .lb__count { grid-row: 3; }   /* цвет, коллекция, «02 / 14», кнопка */
   .fz .lb__stage { padding-inline: var(--pad); }   /* левый край квадрата — по подписи */
@@ -807,6 +846,44 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .sl__list .icon-btn .ico { width: 16px; height: 16px; }
 .sl__empty { flex: 1; padding: 40px 28px; font: 400 14px/1.7 var(--sans); color: var(--ink-2); }
 .sl__foot { display: grid; gap: 4px; justify-items: center; padding: 20px 28px calc(20px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
+
+/* корзина — та же панель: список и поля прокручиваются, кнопка отправки — внизу */
+.cart__body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; }
+.cart .sl__list { flex: none; overflow: visible; }
+.cart .sl__list li { position: relative; grid-template-columns: 56px minmax(0, 1fr); align-items: start; }
+.cart__main { display: grid; gap: 2px; min-width: 0; }
+.cart__main .sl__t { padding-right: 40px; }
+.cart__meta { display: grid; }
+.cart__meta .sl__m { grid-column: auto; }
+.cart__meta .sl__m:first-child { padding-right: 32px; }   /* мимо «×» */
+.cart__ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; margin-top: 10px; }
+.cart__nb { font-size: 10px; }
+.cart__nf { margin-top: 4px; }
+.cart .sl__list .cart__rm { position: absolute; top: 4px; right: -12px; }
+.sl__img.is-fabric { height: 56px; }
+.cart .sl__empty { display: grid; gap: 20px; align-content: start; justify-items: start; }
+.cart__form { display: grid; gap: 6px; padding: 28px 28px 32px; }
+.cart__form-t { color: var(--ink); }
+.cart__f { display: grid; }
+.cart__f .pd__lbl { padding-top: 12px; }
+.cart__note, .cart__split { justify-self: start; font: 400 12px/1.5 var(--sans); color: var(--ink-2); }
+.cart__note { margin-bottom: 8px; }
+.cart__split { margin-bottom: 6px; }
+.cart__sends { display: grid; gap: 8px; width: 100%; }
+.cart__sends .btn--fill.is-sent { background: transparent; color: var(--ink); }
+.cart__after { display: grid; gap: 6px; width: 100%; padding-top: 12px; }
+.cart__after-t { font: 400 14px/1.5 var(--sans); }
+.cart__after-b { display: flex; align-items: center; gap: 20px; }
+.cart__after-b .btn { min-height: 44px; }
+.cart__after:not([hidden]) ~ .sl__clear { display: none; }
+@media (max-width: 599px) {
+  .sl__head { padding-left: var(--pad); }
+  .cart .sl__list, .cart__form, .cart .sl__empty { padding-inline: var(--pad); }
+  .sl__foot { padding-inline: var(--pad); }
+  .fz .toast { top: calc(64px + env(safe-area-inset-top)); bottom: auto; }   /* кнопки образца внизу не закрываем */
+}
+@media (max-width: 389px) { .cart__sends .btn { letter-spacing: .14em; padding: 0 12px; } }
+@media (max-width: 359px) { .cart__send-tail { display: none; } }   /* 320 px: «Отправить в WhatsApp» — в одну строку */
 
 /* тост */
 .toast { position: fixed; left: 0; right: 0; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 90; display: flex; align-items: center; gap: 18px; width: max-content; max-width: calc(100vw - 16px); margin-inline: auto; padding: 6px 8px 6px 20px; background: var(--ink); color: var(--paper); font: 400 13px/1.4 var(--sans); white-space: nowrap; }

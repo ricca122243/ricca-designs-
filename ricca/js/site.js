@@ -2,7 +2,7 @@
    Порядок: CONFIG → данные (js/catalog-data.js) → плитки каталога (число моделей, подписи, alt — из данных) → ссылки
    WhatsApp/телефон → вход (занавес, видео) → видео по экрану → появления → окна и адреса (#catalog/<категория>, #works/all,
    #item-<id>, #work-NN, #fabric-<коллекция>-<N>) → экран категории / тканей (библиотека js/fabrics-data.js) → окно изделия
-   → лайтбокс работ → ткань крупно → «Подборка» → меню → шапка и липкая плашка.
+   → лайтбокс работ → ткань крупно → корзина (данные — js/cart.js, RICCA_CART) → меню → шапка и липкая плашка.
    Новость ELUNA — карточка с луной на чистом CSS (css/site.css, .news), скрипт ей не нужен.
    Единственный владелец ссылок [data-wa] / [data-tel] — этот файл. */
 (() => {
@@ -91,13 +91,16 @@
     const ar = p.w / p.h, iw = Math.min(1, ar / frameAR), ih = Math.min(1, frameAR / ar);
     return Math.max(1, Math.min(fill / (p.box[0] * iw), Math.min(0.8, fill + 0.04) / (p.box[1] * ih), 2.2));
   };
-  // «Узнать цену»: модель, её строка и ссылка на окно изделия — менеджер сразу видит, о чём речь
+  // «Узнать цену»: модель, её строка и ссылка на окно изделия — менеджер сразу видит, о чём речь; выбрано в окне изделия
+  // количество, ткань, размер — тоже в сообщении («2 шт., ткань COCO, светло-серый, размер 260 × 95 см»)
   const itemUrl = (it) => (/^https?:$/.test(location.protocol) ? `${location.origin}${location.pathname}#item-${it.id}` : '');
-  const itemWa = (it) => {
+  const itemWa = (it, sel) => {
     const u = itemUrl(it);
-    return waUrl(`Здравствуйте! Интересует ${lcFirst(waLabelOf(it))}${it.subtitle ? ` — ${lcFirst(it.subtitle)}` : ''}. Подскажите, пожалуйста, цену и что нужно для расчёта.${u ? `\n${u}` : ''}`);
+    const s = sel ? [sel.qty > 1 ? `${sel.qty} шт.` : '', sel.fabric ? `ткань ${[sel.fabric.collection, sel.fabric.colour].filter(Boolean).join(', ')}` : '', sel.size ? `размер ${sel.size}` : '', sel.note || ''].filter(Boolean).join(', ') : '';
+    return waUrl(`Здравствуйте! Интересует ${lcFirst(waLabelOf(it))}${it.subtitle ? ` — ${lcFirst(it.subtitle)}` : ''}.${s ? ` ${s.replace(/^./, (c) => c.toUpperCase())}.` : ''} Подскажите, пожалуйста, цену и что нужно для расчёта.${u ? `\n${u}` : ''}`);
   };
-  const slOf = (it) => ({ id: `item-${it.id}`, title: labelOf(it), meta: it.subtitle || catLabel(it.category) });
+  // корзина (js/cart.js): нет модуля — кнопки корзины прячутся, остальное работает
+  const RC = window.RICCA_CART || null;
 
   /* ---------- Плитки каталога: число моделей (или образцов) и вторая строка подписи — из данных; так же строка под заголовком
      «Каталог». Числа не пишем руками: добавили модель в js/catalog-data.js — плитка и строка обновились сами ---------- */
@@ -529,7 +532,9 @@
     };
   })();
 
-  /* ---------- Окно изделия: все фото (свайп, стрелки, миниатюры, ←/→), одна строка, WhatsApp, «В подборку» ---------- */
+  /* ---------- Окно изделия: все фото (свайп, стрелки, миниатюры, ←/→), одна строка; заказ — количество, ткань из библиотеки
+     (коллекция → цвет, или «подберём вместе»), размер (у моделей с несколькими размерами в каталоге — выбор из них или «свой»),
+     пожелания → «Добавить в корзину»; «Узнать цену» в WhatsApp ---------- */
   const PD = (() => {
     const dlg = $('#product');
     const stage = $('[data-pd-stage]', dlg), frame = $('[data-pd-frame]', dlg), img = $('[data-pd-img]', dlg), gallery = $('.pd__gallery', dlg);
@@ -537,8 +542,86 @@
     const catEl = $('[data-pd-cat]', dlg), title = $('[data-pd-title]', dlg), sub = $('[data-pd-sub]', dlg);
     const desc = $('[data-pd-desc]', dlg), chips = $('[data-pd-chips]', dlg), passport = $('[data-pd-passport]', dlg), more = $('[data-pd-more]', dlg);
     const facts = $('[data-pd-facts]', dlg);
-    const wa = $('[data-pd-wa]', dlg), slBtn = $('[data-pd-sl]', dlg);
+    const wa = $('[data-pd-wa]', dlg), addBtn = $('[data-pd-add]', dlg), inCart = $('[data-pd-incart]', dlg), order = $('[data-pd-order]', dlg);
+    const qtyN = $('[data-pd-qty-n]', dlg), qtyB = $$('[data-pd-qty]', dlg), fabSel = $('[data-pd-fab]', dlg), swBox = $('[data-pd-sw]', dlg), fabV = $('[data-pd-fabv]', dlg);
+    const sizeIn = $('[data-pd-size]', dlg), noteIn = $('[data-pd-note]', dlg), sizeSel = $('[data-pd-sizes]', dlg);
+    const OWN = '__own';   // «Свой размер» в списке размеров
+    let sizes = [];        // размеры модели из каталога: ['2740 × 1090 × 760 мм', '2940 × 1090 × 760 мм'] — список, если их два и больше
     let cur = null, idx = 0, thumbs = [];
+    /* заказ: sel — что выбрано сейчас; ткань — коллекция из библиотеки и цвет (номер в коллекции) */
+    const sel = { qty: 1, col: '', k: -1 };
+    if (FLIB.length) fabSel.insertAdjacentHTML('beforeend', FLIB.map((t) => `<optgroup label="${esc(t.title)}">${t.collections.map((c) => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join('')}</optgroup>`).join(''));
+    else fabSel.closest('.pd__row').hidden = true;
+    if (!RC) { order.hidden = true; addBtn.hidden = true; }
+    const fabOf = () => {
+      const x = sel.col && FCOL.get(sel.col);
+      if (!x) return null;
+      const k = x.c.colours[sel.k];
+      return k ? { collection: fabWaName(x.c, k), colour: k.name.toLowerCase(), kind: fabKind(x.c), id: `${x.c.id}-${sel.k + 1}` } : { collection: x.c.title, colour: '', kind: fabKind(x.c) };
+    };
+    const sizeNow = () => (sizes.length > 1 && sizeSel.value !== OWN ? sizeSel.value : sizeIn.value.replace(/\s+/g, ' ').trim());
+    const selNow = () => ({ qty: sel.qty, fabric: fabOf(), size: sizeNow(), note: noteIn.value.trim() });
+    function paintSize() {
+      const list = sizes.length > 1;
+      sizeSel.closest('.sel').hidden = !list;
+      sizeIn.hidden = list && sizeSel.value !== OWN;
+      sizeIn.closest('.pd__row').querySelector('.pd__lbl').setAttribute('for', list ? 'pd-sizes' : 'pd-size');
+    }
+    function paintQty() {
+      qtyN.textContent = `${sel.qty}\u00a0шт.`;
+      qtyB.forEach((b) => b.setAttribute('aria-disabled', String(+b.dataset.pdQty < 0 ? sel.qty <= 1 : sel.qty >= ((RC && RC.MAX_QTY) || 20))));
+    }
+    function paintFab() {
+      const x = sel.col && FCOL.get(sel.col);
+      fabSel.value = x ? sel.col : '';
+      swBox.hidden = !x;
+      if (x && swBox.dataset.col !== sel.col) {
+        swBox.dataset.col = sel.col;
+        swBox.innerHTML = x.c.colours.map((k, j) => `<button class="sw__b" type="button" data-sw="${j}" role="radio" aria-checked="false" tabindex="-1" aria-label="${esc(`${k.name}${k.finish ? `, ${k.finish}` : ''}`)}" title="${esc(k.name)}"${/^#[0-9a-f]{3,8}$/i.test(k.hex || '') ? ` style="--c:${k.hex}"` : ''}>`
+          + `<img src="${esc(k.src240 || k.src450 || k.src900)}" width="240" height="240" alt="" loading="lazy" decoding="async"></button>`).join('');
+      }
+      // цвета — группа радиокнопок: одна остановка Tab (выбранный цвет или первый), ←/→/↑/↓ — соседние
+      const bs = $$('.sw__b', swBox), on = bs.find((b) => +b.dataset.sw === sel.k);
+      bs.forEach((b) => { b.setAttribute('aria-checked', String(b === on)); b.tabIndex = b === (on || bs[0]) ? 0 : -1; });
+      const f = fabOf();
+      fabV.hidden = !x;
+      if (x) fabV.innerHTML = f && f.colour ? typo(`${f.collection} · ${f.colour}`) : 'Выберите цвет&nbsp;— или оставьте выбор нам';
+    }
+    function paintWa() { if (cur) wa.href = itemWa(cur, selNow()); }
+    // «В корзине: 2 шт.» под кнопкой — если эта модель уже в корзине (с любой тканью)
+    function syncCart() {
+      if (!RC || !cur) return;
+      const n = RC.list().filter((x) => x.kind === 'catalog' && x.id === cur.id).reduce((s2, x) => s2 + x.qty, 0);
+      inCart.hidden = !n;
+      if (n) inCart.innerHTML = `<span>В&nbsp;корзине: ${n}&nbsp;шт.</span><button class="caps-link" type="button" data-open-cart>Открыть корзину</button>`;
+    }
+    function resetOrder() { sel.qty = 1; sel.col = ''; sel.k = -1; sizeIn.value = ''; noteIn.value = ''; sizeSel.selectedIndex = 0; paintQty(); paintFab(); paintSize(); }
+    qtyB.forEach((b) => b.addEventListener('click', () => {
+      if (b.getAttribute('aria-disabled') === 'true') return;
+      sel.qty = Math.max(1, Math.min((RC && RC.MAX_QTY) || 20, sel.qty + +b.dataset.pdQty)); paintQty(); paintWa();
+    }));
+    fabSel.addEventListener('change', () => { sel.col = fabSel.value; sel.k = -1; paintFab(); paintWa(); });
+    swBox.addEventListener('click', (e) => { const b = e.target.closest('[data-sw]'); if (!b) return; sel.k = +b.dataset.sw === sel.k ? -1 : +b.dataset.sw; paintFab(); paintWa(); });
+    swBox.addEventListener('keydown', (e) => {
+      const b = e.target.closest('[data-sw]'), d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!b || !d) return;
+      e.preventDefault();
+      const bs = $$('.sw__b', swBox), n = (bs.indexOf(b) + d + bs.length) % bs.length;
+      sel.k = n; paintFab(); paintWa(); bs[n].focus();
+    });
+    sizeIn.addEventListener('input', paintWa); noteIn.addEventListener('input', paintWa);
+    sizeSel.addEventListener('change', () => { paintSize(); paintWa(); if (sizeSel.value === OWN) sizeIn.focus(); });
+    addBtn.addEventListener('click', () => {
+      if (!RC || !cur) return;
+      const s2 = selNow(), p = cur.photos[0];
+      const was = RC.count().lines;
+      const uid = RC.add({ kind: 'catalog', id: cur.id, title: labelOf(cur), reading: cur.reading || '', subtitle: cur.subtitle || catLabel(cur.category),
+        qty: s2.qty, size: s2.size, fabric: s2.fabric, note: s2.note, link: RC.abs(`#item-${cur.id}`), thumb: p ? (p.src600 || p.src) : '' });
+      if (!uid) { CART.say(`В корзине уже ${RC.MAX_LINES} позиций — отправьте заявку, затем добавьте ещё`, true); return; }
+      const line = RC.list().find((x) => x.uid === uid);
+      CART.say(RC.count().lines > was ? `Добавлено: ${labelOf(cur)} — ${s2.qty}\u00a0шт.` : `${labelOf(cur)}: теперь ${line ? line.qty : s2.qty}\u00a0шт. в корзине`, true);
+    });
+    if (RC) RC.onChange(syncCart);
     function layout() {
       const p = cur && cur.photos[idx];
       if (!p) return;
@@ -594,15 +677,19 @@
         return m ? `${typo(m[1])}<small>ширина × глубина × высота</small>` : typo(clean(v));
       };
       facts.innerHTML = top.map(([k, v]) => `<div><dt>${k}</dt><dd>${fact(k, v)}</dd></div>`).join('');
+      // несколько размеров в каталоге («2740 × 1090 × 760 мм и 2940 × 1090 × 760 мм») — выбор из них под «Размер» или «Свой размер»
+      const dm = hasDims && /^Ш × Г × В:\s*(.+)$/.exec(clean(it.sizes));
+      sizes = dm ? dm[1].split(/\s+и\s+|;\s*/).map((v) => v.trim()).filter((v) => /\d/.test(v)).map((v) => (/мм$/.test(v) ? v : `${v} мм`)) : [];
+      sizeSel.innerHTML = sizes.length > 1 ? sizes.map((v) => `<option value="${esc(v)}">${esc(v)}</option>`).join('') + `<option value="${OWN}">Свой размер</option>` : '';
       facts.hidden = !top.length;
       const rows = [['Размеры', hasDims ? '' : it.sizes], [wood ? 'Материал' : 'Ткань и&nbsp;кожа', it.materials], ['Наполнение', it.filling], ['Срок', it.lead]].filter((r) => r[1]);
       passport.innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${typo(v)}</dd></div>`).join('');
       passport.hidden = !rows.length;
       more.open = false; more.hidden = !rows.length && !it.description && !(it.options || []).length;
+      resetOrder();
       wa.href = itemWa(it);
       wa.setAttribute('aria-label', `Узнать цену в WhatsApp: ${labelOf(it)}`);
-      const sl = slOf(it);
-      slBtn.dataset.slId = sl.id; slBtn.dataset.slTitle = sl.title; slBtn.dataset.slMeta = sl.meta;
+      addBtn.setAttribute('aria-label', `Добавить в корзину: ${labelOf(it)}`);
       const n = it.photos.length;
       thumbs = it.photos.map((p, j) => {
         const b = document.createElement('button');
@@ -614,13 +701,13 @@
       });
       thumbsBox.replaceChildren(...thumbs);
       thumbsBox.hidden = n < 2; prev.hidden = next.hidden = n < 2;
-      SL.sync();
+      syncCart();
     }
     prev.addEventListener('click', () => show(idx - 1));
     next.addEventListener('click', () => show(idx + 1));
     dlg.addEventListener('keydown', (e) => {
       if (!cur || cur.photos.length < 2 || e.altKey || e.metaKey || e.ctrlKey) return;
-      if (e.target.closest('summary, a, .pd__actions')) return;
+      if (e.target.closest('summary, a, input, textarea, select, .pd__actions, .pd__order, .pd__incart')) return;
       if (e.key === 'ArrowLeft') { e.preventDefault(); show(idx - 1); } else if (e.key === 'ArrowRight') { e.preventDefault(); show(idx + 1); } else return;
       if (e.target.classList && e.target.classList.contains('pd__thumb') && thumbs[idx]) thumbs[idx].focus();
     });
@@ -692,14 +779,39 @@
   })();
 
   /* ---------- Ткань крупно: образец 900 px (нет — 450), цвет, коллекция; ←/→, свайп и стрелки — соседние цвета коллекции;
-     «Хочу эту ткань» — WhatsApp «Интересует ткань RIVER, цвет молочный.» и ссылка на этот образец ---------- */
+     «Хочу эту ткань» — WhatsApp «Интересует ткань RIVER, цвет молочный.» и ссылка на этот образец;
+     «В корзину — эта ткань» — строка корзины kind 'fabric' (уже в корзине — кнопка «Ткань в корзине» открывает корзину) ---------- */
   const FZ = (() => {
     const dlg = $('#fabric');
     if (!dlg) return { open() {}, close() {} };
     const stage = $('[data-fz-stage]', dlg), frame = $('[data-fz-frame]', dlg), img = $('[data-fz-img]', dlg);
     const title = $('[data-fz-title]', dlg), piece = $('[data-fz-piece]', dlg), wa = $('[data-fz-wa]', dlg), count = $('[data-fz-count]', dlg);
-    const steps = $$('[data-fz-step]', dlg);
+    const steps = $$('[data-fz-step]', dlg), cartBtn = $('[data-fz-cart]', dlg);
     let cur = null, idx = 0;
+    const fzId = () => (cur ? `${cur.c.id}-${idx + 1}` : '');
+    const fzIn = () => !!(RC && cur && RC.list().some((x) => x.kind === 'fabric' && x.id === fzId()));
+    function syncCart() {
+      if (!cartBtn || !cur) return;
+      const on = fzIn(), k = list()[idx];
+      cartBtn.setAttribute('aria-pressed', String(on));
+      cartBtn.lastChild.textContent = on ? 'Ткань в\u00a0корзине' : 'В\u00a0корзину\u00a0— эта ткань';
+      cartBtn.setAttribute('aria-label', on ? 'Ткань в корзине — открыть корзину' : `В корзину — ткань ${cur.c.title}, ${k ? k.name.toLowerCase() : ''}`);
+    }
+    if (cartBtn && !RC) cartBtn.hidden = true;
+    if (cartBtn && RC) {
+      RC.onChange(syncCart);
+      cartBtn.addEventListener('click', () => {
+        if (!cur) return;
+        if (fzIn()) { CART.open(cartBtn); return; }
+        const c = cur.c, k = list()[idx];
+        if (!k) return;
+        const name = fabWaName(c, k), colour = k.name.toLowerCase();
+        const uid = RC.add({ kind: 'fabric', id: fzId(), title: `Ткань ${name}, ${colour}`, subtitle: [fabKind(c), k.finish].filter(Boolean).join(', '),
+          qty: 1, fabric: { collection: name, colour, kind: fabKind(c), id: fzId() }, link: RC.abs(`#fabric-${fzId()}`), thumb: k.src240 || k.src450 || '' });
+        if (!uid) { CART.say(`В корзине уже ${RC.MAX_LINES} позиций — отправьте заявку, затем добавьте ещё`, true); return; }
+        CART.say(`Ткань в корзине: ${c.title}, ${colour}`, true);
+      });
+    }
     const list = () => (cur ? cur.c.colours : []);
     function layout() {
       const k = list()[idx];
@@ -733,6 +845,7 @@
       wa.setAttribute('aria-label', `Хочу эту ткань: ${c.title}, ${k.name.toLowerCase()} — написать в WhatsApp`);
       count.innerHTML = ks.length > 1 ? `<span aria-hidden="true">${pad2(idx + 1)} / ${pad2(ks.length)}</span><span class="sr-only">Цвет ${idx + 1} из ${ks.length}</span>` : '';
       steps.forEach((b) => { b.hidden = ks.length < 2; });
+      syncCart();
       const nx = ks[(idx + 1) % ks.length];
       if (nx && nx !== k) { const pre = new Image(); pre.src = nx.src900 || nx.src450; }
     }
@@ -762,91 +875,212 @@
     };
   })();
 
-  /* ---------- «Подборка»: список → одно сообщение WhatsApp (localStorage ricca-shortlist-v2, до 12 позиций) ---------- */
-  const SL = (() => {
-    const KEY = 'ricca-shortlist-v2';
-    const dlg = $('#shortlist'), list = $('#sl-list'), empty = $('#sl-empty'), foot = $('#sl-foot'), send = $('#sl-send'), nEl = $('#sl-n');
-    const openBtn = $('#sl-open'), countEl = $('#sl-count'), menuBtn = $('[data-open-sl]'), menuN = $('[data-sl-n]');
+  /* ---------- Корзина: строки из js/cart.js (RICCA_CART) → заявка в WhatsApp одним сообщением (длинная — по частям).
+     Строка: фото, название, строка модели, ткань, размер, количество (−/+), комментарий, «Убрать». Ниже — имя, город и
+     комментарий к заказу (по желанию; помнятся в этом браузере, ricca-cart-contact-v1). После отправки — «Очистить корзину?»
+     (сама не очищается). «Очистить» — с «Вернуть» в тосте ---------- */
+  const CART = (() => {
+    const dlg = $('#cart');
+    const openBtn = $('#cart-open'), countEl = $('#cart-count'), menuBtn = $('[data-open-cart]', $('#menu')), menuN = $('[data-cart-mn]');
+    const viewBtn = $('#view [data-open-cart]');   // значок корзины в полосе экрана категории
     const toast = $('#toast'), toastText = $('#toast-text'), toastOpen = $('#toast-open');
-    // только изделия, которые есть в каталоге сейчас; название и строка — по текущим данным (и при загрузке, и из другой вкладки)
-    const load = (raw) => (Array.isArray(raw) ? raw : []).filter((x) => x && /^item-/.test(x.id) && ITEM.has(x.id.slice(5))).slice(0, 12)
-      .map((x) => slOf(ITEM.get(x.id.slice(5))));
-    let items = load(store.get(KEY, []));
-    const has = (id) => items.some((x) => x.id === id);
-    function sync() {
-      const n = items.length;
-      openBtn.hidden = n === 0; countEl.textContent = n;
-      openBtn.setAttribute('aria-label', n ? `Подборка: ${n} ${plural3(n, ['позиция', 'позиции', 'позиций'])}` : 'Подборка, пусто');
-      if (menuBtn) { menuBtn.hidden = n === 0; menuN.textContent = n ? `· ${n}` : ''; }
-      nEl.textContent = n ? ` · ${n}` : '';
-      $$('[data-sl-id]').forEach((b) => {
-        const on = has(b.dataset.slId);
-        b.setAttribute('aria-pressed', String(on));
-        const t = $('span', b);
-        if (t) t.textContent = on ? 'В подборке' : 'В подборку';
+    let toastT = 0, toastFn = null, toastBy = null;
+    function say(text, withOpen, label, fn) {
+      if (document.activeElement && document.activeElement !== toastOpen && document.activeElement !== document.body) toastBy = document.activeElement;
+      const open = $$('dialog[open]');
+      (open.length ? open[open.length - 1] : document.body).append(toast);
+      toastText.textContent = text;
+      toastOpen.hidden = !withOpen;
+      toastOpen.textContent = label || 'Открыть корзину';
+      toastFn = fn || null;
+      toast.hidden = false; clearTimeout(toastT);
+      toastT = setTimeout(() => { toast.hidden = true; }, fn ? 6000 : 3400);
+    }
+    const hideToast = () => { clearTimeout(toastT); toast.hidden = true; document.body.append(toast); };
+    if (!RC || !dlg) {
+      [openBtn, menuBtn, viewBtn].forEach((b) => { if (b) b.hidden = true; });
+      return { say() {}, open() {}, close() {} };
+    }
+    const list = $('[data-cart-list]', dlg), empty = $('[data-cart-empty]', dlg), form = $('[data-cart-form]', dlg), foot = $('[data-cart-foot]', dlg);
+    const nEl = $('[data-cart-n]', dlg), sends = $('[data-cart-sends]', dlg), split = $('[data-cart-split]', dlg), after = $('[data-cart-after]', dlg);
+    const CKEY = 'ricca-cart-contact-v1';
+    const contact = Object.assign({ name: '', city: '', comment: '' }, store.get(CKEY, {}));
+    ['name', 'city', 'comment'].forEach((k) => { if (form.elements[k]) form.elements[k].value = String(contact[k] || ''); });
+    const MAXQ = RC.MAX_QTY;
+    const rows = new Map();     // uid → { li, … } — строки не пересобираются: фокус и набор текста не сбиваются
+    let sent = new Set(), lastMsg = '', lastN = null;
+    const items = (n) => `${n} ${plural3(n, ['предмет', 'предмета', 'предметов'])}`;
+    function thumbOf(x) {
+      if (x.kind === 'catalog' && ITEM.has(x.id)) {
+        const p = ITEM.get(x.id).photos[0];
+        return { src: p.src600 || p.src, w: p.w, h: p.h, studio: !!p.studio, z: p.studio ? fitZoom(p, 0.8) : 1 };
+      }
+      if (x.kind === 'fabric' && x.fabric && x.fabric.id) {
+        const m = /^(.+)-(\d+)$/.exec(x.fabric.id), f = m && FCOL.get(m[1]), k = f && f.c.colours[+m[2] - 1];
+        if (k) return { src: k.src240 || k.src450, w: 240, h: 240, fabric: true, z: 1 };
+      }
+      return x.thumb ? { src: x.thumb, w: 600, h: 750, z: 1 } : null;
+    }
+    function metaOf(x) {
+      const m = [];
+      if (x.kind === 'catalog') m.push((ITEM.get(x.id) || {}).subtitle || x.subtitle);
+      else if (x.subtitle) m.push(x.subtitle);
+      if (x.kind !== 'fabric') m.push(x.fabric ? `Ткань: ${[x.fabric.collection, x.fabric.colour || 'цвет не выбран'].filter(Boolean).join(', ')}` : 'Ткань: подберём вместе');
+      if (x.size) m.push(`Размер: ${x.size}`);
+      return m.filter(Boolean);
+    }
+    function makeRow(x) {
+      const li = document.createElement('li');
+      li.className = 'cart__li';
+      li.innerHTML = `<span class="sl__img" aria-hidden="true"></span>`
+        + `<div class="cart__main"><p class="sl__t" data-t></p><div class="cart__meta" data-m></div>`
+        + `<div class="cart__ctl"><div class="qty qty--s" role="group" data-qg>`
+        + `<button class="qty__b" type="button" data-q="-1"><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg></button>`
+        + `<output class="qty__n" data-qn aria-live="polite"></output>`
+        + `<button class="qty__b" type="button" data-q="1"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></button></div>`
+        + `<button class="caps-link cart__nb" type="button" data-nb aria-expanded="false" aria-controls="cn-${x.uid}">Комментарий</button></div>`
+        + `<div class="cart__nf" id="cn-${x.uid}" hidden><label class="sr-only" for="cnt-${x.uid}"></label><textarea class="fld" id="cnt-${x.uid}" rows="2" maxlength="300" placeholder="Размер, механизм, пожелания"></textarea></div></div>`
+        + `<button class="icon-btn cart__rm" type="button" data-rm><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>`;
+      const r = { li, uid: x.uid, img: $('.sl__img', li), t: $('[data-t]', li), m: $('[data-m]', li), qn: $('[data-qn]', li), qg: $('[data-qg]', li),
+        minus: $('[data-q="-1"]', li), plus: $('[data-q="1"]', li), nb: $('[data-nb]', li), nf: $('.cart__nf', li), ta: $('textarea', li), rm: $('[data-rm]', li), thumb: null };
+      r.qg.hidden = x.kind === 'fabric';   // у ткани нет количества — «интересует»
+      r.minus.addEventListener('click', () => { const y = cur(r.uid); if (y && y.qty > 1) RC.update(r.uid, { qty: y.qty - 1 }); });
+      r.plus.addEventListener('click', () => { const y = cur(r.uid); if (y && y.qty < MAXQ) RC.update(r.uid, { qty: y.qty + 1 }); });
+      r.nb.addEventListener('click', () => {
+        const open = r.nf.hidden;
+        r.nf.hidden = !open; r.nb.setAttribute('aria-expanded', String(open));
+        if (open) r.ta.focus();
       });
+      r.ta.addEventListener('input', () => RC.update(r.uid, { note: r.ta.value }));
+      r.rm.addEventListener('click', () => {
+        const i = Array.prototype.indexOf.call(list.children, li);
+        RC.remove(r.uid);
+        const li2 = list.children[Math.min(i, list.children.length - 1)];
+        (li2 ? $('[data-rm]', li2) : $('#cart-title')).focus();
+      });
+      return r;
     }
-    function thumbOf(id) {
-      const it = ITEM.get(id.slice(5)), p = it && it.photos[0];
-      return p ? { src: p.src600 || p.src, w: p.w, h: p.h, studio: !!p.studio, z: p.studio ? fitZoom(p, 0.8) : 1 } : null;
-    }
-    function render() {
-      list.replaceChildren(...items.map((x) => {
-        const li = document.createElement('li');
-        const th = thumbOf(x.id), fig = document.createElement('span');
-        fig.className = `sl__img${th && th.studio ? ' is-studio' : ''}`; fig.setAttribute('aria-hidden', 'true');
+    const cur = (uid) => RC.list().find((y) => y.uid === uid);
+    function paintRow(r, x) {
+      const th = thumbOf(x), key = th ? th.src : '';
+      if (r.thumb !== key) {
+        r.thumb = key;
+        r.img.className = `sl__img${th && th.studio ? ' is-studio' : ''}${th && th.fabric ? ' is-fabric' : ''}`;
+        r.img.replaceChildren();
         if (th) {
           const im = document.createElement('img');
           im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; im.width = th.w || 600; im.height = th.h || 750; im.src = th.src;
           if (th.z !== 1) im.style.setProperty('--z', th.z.toFixed(3));
-          fig.append(im);
+          r.img.append(im);
         }
-        const t = document.createElement('span'); t.className = 'sl__t'; t.textContent = x.title;
-        const m = document.createElement('span'); m.className = 'sl__m'; m.textContent = x.meta || '';
-        const b = document.createElement('button'); b.className = 'icon-btn'; b.type = 'button'; b.setAttribute('aria-label', `Убрать: ${x.title}`);
-        b.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-close"/></svg>';
-        b.addEventListener('click', () => {
-          const i = Array.prototype.indexOf.call(list.children, li);
-          remove(x.id);
-          const li2 = list.children[Math.min(i, list.children.length - 1)];
-          (li2 ? $('button', li2) : $('[data-close]', dlg)).focus();
+      }
+      r.t.textContent = x.title;
+      r.m.innerHTML = metaOf(x).map((t) => `<p class="sl__m">${typo(t)}</p>`).join('');
+      r.qn.textContent = `${x.qty} шт.`;
+      r.qg.setAttribute('aria-label', `Количество: ${x.title}`);
+      r.minus.setAttribute('aria-label', `Меньше: ${x.title}`); r.plus.setAttribute('aria-label', `Больше: ${x.title}`);
+      r.minus.setAttribute('aria-disabled', String(x.qty <= 1)); r.plus.setAttribute('aria-disabled', String(x.qty >= MAXQ));
+      r.rm.setAttribute('aria-label', `Убрать из корзины: ${x.title}`);
+      $('label', r.nf).textContent = `Комментарий к позиции: ${x.title}`;
+      if (document.activeElement !== r.ta && r.ta.value !== x.note) r.ta.value = x.note;
+      if (x.note && r.nf.hidden && document.activeElement !== r.nb) { r.nf.hidden = false; r.nb.setAttribute('aria-expanded', 'true'); }
+    }
+    // одна кнопка отправки; длинная заявка (несколько частей) — та же кнопка идёт по частям: «Отправить часть 2 из 3»,
+    // над ней — «Отправлено: 1 из 3». Подвал не растёт с числом частей (на телефоне с клавиатурой форме нужно место)
+    function paintSends() {
+      const ps = RC.parts(contact);
+      const key = ps.join('\u0000');
+      if (key !== lastMsg) { lastMsg = key; sent = new Set(); after.hidden = true; }
+      const n = ps.length, done = sent.size;
+      split.hidden = n < 2;
+      if (n > 1) split.innerHTML = typo(done ? `Отправлено: ${Math.min(done, n)} из ${n}. Нажмите ещё раз — следующая часть.` : `Заявка длинная — она уйдёт ${n} сообщениями. Нажмите кнопку ${n} ${plural3(n, ['раз', 'раза', 'раз'])}, по очереди.`);
+      let a = $('a', sends);
+      if (!a) {
+        a = document.createElement('a');
+        a.className = 'btn btn--fill btn--wide'; a.target = '_blank'; a.rel = 'noopener';
+        a.addEventListener('click', () => {
+          sent.add(+a.dataset.part);
+          // href меняем после этого щелчка — иначе этот же щелчок открыл бы уже следующую часть
+          setTimeout(() => {
+            paintSends();
+            if (sent.size >= RC.parts(contact).length) { after.hidden = false; requestAnimationFrame(() => $('.cart__after-t', after).focus({ preventScroll: false })); }
+          });
         });
-        li.append(fig, t, m, b);
-        return li;
-      }));
-      empty.hidden = items.length > 0;
-      foot.hidden = items.length === 0;
-      send.href = waUrl(`Здравствуйте! Моя подборка на сайте RICCA DESIGNS:\n${items.map((x) => ITEM.get(x.id.slice(5))).filter(Boolean).map((it, i) => { const x = slOf(it); return `${i + 1}. ${waLabelOf(it)}${x.meta ? ` · ${x.meta}` : ''}`; }).join('\n')}\nРасскажите, пожалуйста, подробнее и помогите с выбором.`);
-      sync();
+        sends.replaceChildren(a);
+      }
+      const all = done >= n, k = all ? n - 1 : Math.min(done, n - 1);
+      a.dataset.part = k;
+      a.href = RC.waUrl(Object.assign({ part: k }, contact));
+      a.classList.toggle('is-sent', all);
+      const label = n === 1
+        ? (all ? 'Открыть WhatsApp ещё раз' : 'Отправить<span class="cart__send-tail"> заявку</span> в&nbsp;WhatsApp')
+        : (all ? `Открыть часть ${n} из&nbsp;${n} ещё раз` : `Отправить часть ${k + 1} из&nbsp;${n}`);
+      a.innerHTML = `<svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span>${label}</span><span class="sr-only"> (откроется в&nbsp;WhatsApp)</span>`;
     }
-    let toastT = 0;
-    function say(text, withOpen) {
-      const host = $('dialog[open]:last-of-type') || document.body;
-      const open = $$('dialog[open]');
-      (open.length ? open[open.length - 1] : host).append(toast);
-      toastText.textContent = text; toastOpen.hidden = !withOpen;
-      toast.hidden = false; clearTimeout(toastT);
-      toastT = setTimeout(() => { toast.hidden = true; }, 3400);
+    function render() {
+      const all = RC.list(), c = RC.count();
+      const seen = new Set();
+      // порядок — как в корзине; строку переносим, только если она не на своём месте: перенос узла снимает с него фокус
+      let at = list.firstChild;
+      all.forEach((x) => {
+        let r = rows.get(x.uid);
+        if (!r) { r = makeRow(x); rows.set(x.uid, r); }
+        paintRow(r, x); seen.add(x.uid);
+        if (r.li !== at) list.insertBefore(r.li, at); else at = at.nextSibling;
+      });
+      rows.forEach((r, uid) => { if (!seen.has(uid)) { r.li.remove(); rows.delete(uid); } });
+      const has = all.length > 0;
+      empty.hidden = has; form.hidden = !has; foot.hidden = !has; list.hidden = !has;
+      nEl.textContent = has ? ` · ${c.items}` : '';
+      // шапка и меню: значок с числом предметов
+      countEl.hidden = !has; countEl.textContent = c.items > 99 ? '99+' : c.items;
+      openBtn.setAttribute('aria-label', has ? `Корзина: ${items(c.items).replace(' ', ' ')}` : 'Корзина, пусто');
+      if (menuN) menuN.textContent = has ? `· ${c.items}` : '';
+      $$('[data-cart-vn]').forEach((e) => { e.hidden = !has; e.textContent = c.items > 99 ? '99+' : c.items; });
+      if (viewBtn) viewBtn.setAttribute('aria-label', openBtn.getAttribute('aria-label'));
+      if (has) paintSends();
+      // число изменилось — шапку с корзиной показываем (после окна изделия она могла быть спрятана прокруткой)
+      if (lastN != null && c.items !== lastN) { const h = $('#hdr'); if (h) h.classList.remove('is-hidden'); }
+      lastN = c.items;
+      // корзину очистили или строку убрали в другой вкладке — фокус не теряется в окне
+      const ae = document.activeElement;
+      if (dlg.open && (!dlg.contains(ae) || ae.closest('[hidden]'))) $('#cart-title').focus({ preventScroll: true });
     }
-    function remove(id) { items = items.filter((x) => x.id !== id); store.set(KEY, items); render(); }
-    function toggle(x) {
-      if (has(x.id)) { remove(x.id); say('Убрано из подборки', false); return; }
-      if (items.length >= 12) { say('Максимум 12 моделей', true); return; }
-      items.push(x); store.set(KEY, items); render();
-      say('Добавлено в подборку', true);
-    }
-    document.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-sl-id]');
-      if (b) toggle({ id: b.dataset.slId, title: b.dataset.slTitle, meta: b.dataset.slMeta || '' });
+    form.addEventListener('input', (e) => {
+      const k = e.target.name;
+      if (!k || !(k in contact)) return;
+      contact[k] = e.target.value; store.set(CKEY, contact); paintSends();
     });
-    const openSL = (opener) => { clearTimeout(toastT); toast.hidden = true; document.body.append(toast); showDlg(dlg, opener); };
-    openBtn.addEventListener('click', () => openSL(openBtn));
-    toastOpen.addEventListener('click', () => openSL(document.activeElement));
-    if (menuBtn) menuBtn.addEventListener('click', () => { hideDlg($('#menu'), false); openSL(openBtn); });
-    $('#sl-clear').addEventListener('click', () => { items = []; store.set(KEY, items); render(); $('[data-close]', dlg).focus(); });
-    window.addEventListener('storage', (e) => { if (e.key === KEY) { items = load(store.get(KEY, [])); render(); } });
+    form.addEventListener('submit', (e) => e.preventDefault());
+    function clearAll(focus) {
+      const snap = RC.list();
+      if (!snap.length) return;
+      RC.clear();
+      say('Корзина очищена', true, 'Вернуть', () => { RC.clear(); snap.forEach((x) => RC.add(x)); say('Корзина возвращена', false); });
+      if (focus) $('#cart-title').focus();
+    }
+    $('[data-cart-clear]', dlg).addEventListener('click', () => clearAll(true));
+    $('[data-cart-clear-yes]', dlg).addEventListener('click', () => { clearAll(true); });
+    $('[data-cart-keep]', dlg).addEventListener('click', () => { after.hidden = true; const a = $('a', sends); if (a) a.focus(); });
+    $('[data-cart-browse]', dlg).addEventListener('click', (e) => {
+      e.preventDefault();
+      hideDlg(dlg, false);
+      if ($$('dialog[open]').some((d) => d !== dlg)) return;   // каталог уже открыт под корзиной
+      const el = document.getElementById('catalog');
+      if (el) requestAnimationFrame(() => el.scrollIntoView({ block: 'start' }));
+    });
+    const open = (opener) => { hideToast(); render(); showDlg(dlg, opener); requestAnimationFrame(() => $('#cart-title').focus({ preventScroll: true })); };
+    openBtn.addEventListener('click', () => open(openBtn));
+    toastOpen.addEventListener('click', () => {
+      if (toastFn) { const fn = toastFn; toastFn = null; hideToast(); fn(); return; }
+      open(toastBy && document.contains(toastBy) && toastBy.offsetParent ? toastBy : openBtn);
+    });
+    if (menuBtn) menuBtn.addEventListener('click', () => { hideDlg($('#menu'), false); open(openBtn); });
+    // «Открыть корзину» из окна изделия («В корзине: 2 шт.») и из других мест
+    document.addEventListener('click', (e) => { const b = e.target.closest('[data-open-cart]'); if (b && b !== menuBtn) open(b); });
+    RC.onChange(render);
     render();
-    return { sync, close: () => hideDlg(dlg) };
+    return { say, open, close: () => hideDlg(dlg) };
   })();
 
   /* ---------- Меню (телефон и планшет) ---------- */
@@ -857,27 +1091,26 @@
     if (a) { clearTimeout(menu._hideT); menu.classList.remove('is-in'); menu.close(); lock(); }   // сразу, чтобы прокрутка к разделу сработала
   });
 
-  /* ---------- Закрытие уровней: ✕, Esc, щелчок мимо панели «Подборки» ---------- */
+  /* ---------- Закрытие уровней: ✕, Esc, щелчок мимо панели корзины ---------- */
   const closers = {
     view: () => R.closeTo(View.parentHash()),
     product: () => R.closeTo(View.isOpen() ? View.hash() : '#catalog'),
     lightbox: () => R.closeTo(View.isOpen() ? View.hash() : '#works'),
     fabric: () => R.closeTo(View.isOpen() ? View.hash() : '#catalog/fabrics'),
-    shortlist: () => SL.close(),
+    cart: () => CART.close(),
     menu: () => hideDlg(menu)
   };
   $$('dialog').forEach((d) => {
     d.addEventListener('cancel', (e) => { e.preventDefault(); if (closers[d.id]) closers[d.id](); });
     d.addEventListener('click', (e) => {
       if (e.target.closest('[data-close]')) { e.preventDefault(); if (closers[d.id]) closers[d.id](); }
-      else if (e.target === d && d.id === 'shortlist') closers.shortlist();
+      else if (e.target === d && d.id === 'cart') closers.cart();
     });
   });
 
   /* ---------- Переходы: плитка → категория, модель → изделие, кадр → лайтбокс ---------- */
   document.addEventListener('click', (e) => {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    if (e.target.closest('[data-sl-id]')) return;
     const it = e.target.closest('[data-item]');
     if (it && ITEM.has(it.dataset.item)) { e.preventDefault(); R.go(`#item-${it.dataset.item}`, it); return; }
     const wk = e.target.closest('[data-work]');

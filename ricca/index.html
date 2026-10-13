@@ -61,6 +61,8 @@
   <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3Z"/><path d="M9.3 8.6c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4l.7 1.7c.1.2 0 .4-.1.5l-.5.6c-.1.1-.2.3 0 .5a6 6 0 0 0 2.8 2.6c.2.1.4.1.5 0l.7-.8c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3 0 .3 0 .9-.3 1.3-.3.4-1.1.9-1.6.9-.6 0-1.6-.1-3.5-1.3a9 9 0 0 1-3.2-3.6c-.6-1-.6-1.8-.6-2.1 0-.5.3-1 .5-1.3Z"/></symbol>
   <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r=".9" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.4"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5.5 8.5h13l-1 12h-11Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.8a4.3 4.3 0 0 1 7.5 2.5c0 5.6-7.5 10.2-7.5 10.2Z"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
   <symbol id="i-arrow-ne" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
@@ -97,8 +99,8 @@
       <a href="https://wa.me/77084802047" data-wa="general">WhatsApp</a>
     </nav>
     <div class="hdr__tools">
-      <button class="icon-btn hdr__sl" type="button" id="sl-open" aria-haspopup="dialog" aria-label="Подборка, пусто" hidden>
-        <svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg><span class="hdr__count" id="sl-count" aria-hidden="true">0</span>
+      <button class="icon-btn hdr__sl" type="button" id="cart-open" aria-haspopup="dialog" aria-label="Корзина, пусто">
+        <svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span class="hdr__count" id="cart-count" aria-hidden="true" hidden>0</span>
       </button>
       <button class="icon-btn hdr__menu" type="button" id="menu-open" aria-haspopup="dialog" aria-label="Меню">
         <svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg>
@@ -212,7 +214,7 @@
       </a></li>
     </ul>
     <div class="cat__foot rv">
-      <p class="cat__hint">Отмечайте модели <svg class="ico cat__heart" aria-hidden="true"><use href="#i-heart"/></svg><span class="sr-only">сердечком</span>&nbsp;— и&nbsp;отправьте подборку в&nbsp;WhatsApp одним сообщением.</p>
+      <p class="cat__hint">Складывайте модели и&nbsp;ткани в&nbsp;корзину <svg class="ico cat__heart" aria-hidden="true"><use href="#i-bag"/></svg>&nbsp;— и&nbsp;отправьте заявку в&nbsp;WhatsApp одним сообщением.</p>
       <a class="caps-link cat__fab" href="#catalog/fabrics">Ткани: больше 1000&nbsp;цветов<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
   </div>
@@ -339,7 +341,7 @@
       <div class="qa rv"><h3 class="qa__q">Можно изменить размер?</h3><p class="qa__a">Да, адаптируем модели под проект. Пришлите размеры комнаты в&nbsp;WhatsApp.</p></div>
       <div class="qa rv"><h3 class="qa__q">Сделаете по&nbsp;моему эскизу?</h3><p class="qa__a">Да, делаем индивидуальные изделия. Пришлите эскиз или фото.</p></div>
       <div class="qa rv"><h3 class="qa__q">Какие есть механизмы?</h3><p class="qa__a">Раскладной&nbsp;— у&nbsp;части диванов, подъёмный&nbsp;— у&nbsp;большинства кроватей. Точно&nbsp;— в&nbsp;карточке модели.</p></div>
-      <div class="qa rv"><h3 class="qa__q">Сколько стоит?</h3><p class="qa__a">Зависит от&nbsp;модели, размера и&nbsp;обивки. Рассчитаем в&nbsp;WhatsApp: отправьте модель или «Подборку».</p></div>
+      <div class="qa rv"><h3 class="qa__q">Сколько стоит?</h3><p class="qa__a">Зависит от&nbsp;модели, размера и&nbsp;обивки. Рассчитаем в&nbsp;WhatsApp: отправьте модель или заявку из&nbsp;корзины.</p></div>
       <div class="qa rv"><h3 class="qa__q">Какие сроки?</h3><p class="qa__a">Называем после утверждения проекта и&nbsp;выбора ткани.</p></div>
       <div class="qa rv"><h3 class="qa__q">Доставка и&nbsp;гарантия?</h3><p class="qa__a">Доставляем по&nbsp;Казахстану. Гарантия&nbsp;— 3&nbsp;года.</p></div>
     </div>
@@ -462,7 +464,7 @@
     <a href="#faq">Вопросы</a>
     <a href="#showroom">Шоурум</a>
     <a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">ELUNA<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — сайт матрасов, откроется в&nbsp;новой вкладке</span></a>
-    <button class="menu__sl" type="button" data-open-sl hidden>Подборка <span data-sl-n></span></button>
+    <button class="menu__sl" type="button" data-open-cart>Корзина <span data-cart-mn></span></button>
   </nav>
   <div class="menu__foot wrap">
     <a class="btn btn--fill btn--wide" href="https://wa.me/77084802047" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Написать в&nbsp;WhatsApp</a>
@@ -489,7 +491,8 @@
 </dialog>
 
 <!-- Окно изделия: все фото (свайп, стрелки, миниатюры, ←/→); справа — название, тип, факты из js/catalog-data.js (габариты, механизм,
-     гарантия, доставка), «Размер и ткань — под заказ», WhatsApp и «В подборку»; описание и материалы — в «Подробнее» -->
+     гарантия, доставка), «Размер и ткань — под заказ»; заказ: количество, ткань из библиотеки (или «подберём в шоуруме»), размер,
+     комментарий → «Добавить в корзину» (js/cart.js); «Узнать цену» в WhatsApp; описание и материалы — в «Подробнее» -->
 <dialog class="pd" id="product" aria-labelledby="pd-title">
   <button class="icon-btn pd__close" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
   <div class="pd__in">
@@ -513,10 +516,37 @@
       <p class="pd__sub" data-pd-sub></p>
       <dl class="pd__facts" data-pd-facts aria-label="Характеристики"></dl>
       <p class="pd__made">Размер и&nbsp;ткань&nbsp;— под заказ.</p>
-      <div class="pd__actions">
-        <a class="btn btn--fill" data-pd-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span>Узнать цену<span class="pd__wa-tail"> в&nbsp;WhatsApp</span></span></a>
-        <button class="btn btn--line" type="button" data-pd-sl aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg><span>В&nbsp;подборку</span></button>
+      <div class="pd__order" data-pd-order role="group" aria-label="Заказ">
+        <div class="pd__row">
+          <span class="pd__lbl" id="pd-qty-l">Количество</span>
+          <div class="qty" role="group" aria-labelledby="pd-qty-l">
+            <button class="qty__b" type="button" data-pd-qty="-1" aria-label="Меньше"><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg></button>
+            <output class="qty__n" data-pd-qty-n aria-live="polite">1</output>
+            <button class="qty__b" type="button" data-pd-qty="1" aria-label="Больше"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></button>
+          </div>
+        </div>
+        <div class="pd__row">
+          <label class="pd__lbl" for="pd-fab">Ткань</label>
+          <div class="pd__field">
+            <span class="sel"><select class="fld" id="pd-fab" data-pd-fab><option value="">Подберём в&nbsp;шоуруме</option></select><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></span>
+            <div class="sw" data-pd-sw role="group" aria-label="Цвет ткани" hidden></div>
+            <p class="pd__fabv" data-pd-fabv aria-live="polite" hidden></p>
+          </div>
+        </div>
+        <div class="pd__row">
+          <label class="pd__lbl" for="pd-size">Размер</label>
+          <input class="fld" id="pd-size" data-pd-size type="text" maxlength="80" autocomplete="off" placeholder="Если знаете: 260 × 95 см">
+        </div>
+        <div class="pd__row">
+          <label class="pd__lbl" for="pd-note">Комментарий</label>
+          <textarea class="fld" id="pd-note" data-pd-note rows="2" maxlength="300" placeholder="Механизм, опоры, пожелания"></textarea>
+        </div>
       </div>
+      <div class="pd__actions">
+        <button class="btn btn--fill" type="button" data-pd-add><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span>Добавить в&nbsp;корзину</span></button>
+        <a class="btn btn--line" data-pd-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span>Узнать цену<span class="pd__wa-tail"> в&nbsp;WhatsApp</span></span></a>
+      </div>
+      <p class="pd__incart" data-pd-incart aria-live="polite" hidden></p>
       <details class="pd__more" data-pd-more>
         <summary>Подробнее<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary>
         <div class="pd__more-body">
@@ -560,23 +590,44 @@
     <figcaption class="lb__cap fz__cap">
       <h2 class="lb__title" id="fz-title" data-fz-title tabindex="-1" autofocus></h2>
       <p class="lb__piece" data-fz-piece></p>
-      <a class="btn btn--fill fz__wa" data-fz-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Хочу эту ткань</a>
+      <div class="fz__btns">
+        <a class="btn btn--fill fz__wa" data-fz-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Хочу эту ткань</a>
+        <button class="btn btn--line fz__cart" type="button" data-fz-cart><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg>В&nbsp;корзину&nbsp;— образец</button>
+      </div>
       <p class="lb__count" data-fz-count aria-live="polite"></p>
     </figcaption>
   </figure>
 </dialog>
 
-<!-- «Подборка»: список → одно сообщение WhatsApp (localStorage ricca-shortlist-v2) -->
-<dialog class="sl" id="shortlist" aria-labelledby="sl-title">
+<!-- Корзина: модели каталога, конструктора и образцы тканей → одна заявка в WhatsApp (js/cart.js, localStorage ricca-cart-v1).
+     Строки, количество и комментарии строит js/site.js; длинная заявка делится на части (кнопки «Часть 1 из N»). Цен нет. -->
+<dialog class="sl cart" id="cart" aria-labelledby="cart-title">
   <div class="sl__head">
-    <h2 class="sl__title" id="sl-title">Подборка<span id="sl-n"></span></h2>
-    <button class="icon-btn" type="button" data-close aria-label="Закрыть подборку"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <h2 class="sl__title" id="cart-title" tabindex="-1">Корзина<span data-cart-n></span></h2>
+    <button class="icon-btn" type="button" data-close aria-label="Закрыть корзину"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
   </div>
-  <ul class="sl__list" id="sl-list"></ul>
-  <p class="sl__empty" id="sl-empty">Пока пусто. Отмечайте модели в&nbsp;каталоге&nbsp;— и&nbsp;отправьте список одним сообщением.</p>
-  <div class="sl__foot" id="sl-foot">
-    <a class="btn btn--fill btn--wide" id="sl-send" href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Отправить в&nbsp;WhatsApp</a>
-    <button class="caps-link sl__clear" type="button" id="sl-clear">Очистить</button>
+  <div class="cart__body">
+    <ul class="sl__list cart__list" data-cart-list aria-label="Позиции в корзине"></ul>
+    <div class="sl__empty" data-cart-empty>
+      <p>Пока пусто. Складывайте модели из&nbsp;каталога и&nbsp;образцы тканей&nbsp;— и&nbsp;отправьте заявку одним сообщением в&nbsp;WhatsApp.</p>
+      <a class="caps-link" href="#catalog" data-cart-browse>Смотреть каталог<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    </div>
+    <form class="cart__form" data-cart-form novalidate>
+      <p class="pd__lbl cart__form-t">Для заявки&nbsp;— по&nbsp;желанию</p>
+      <div class="cart__f"><label class="pd__lbl" for="cart-name">Имя</label><input class="fld" id="cart-name" name="name" type="text" maxlength="80" autocomplete="name"></div>
+      <div class="cart__f"><label class="pd__lbl" for="cart-city">Город</label><input class="fld" id="cart-city" name="city" type="text" maxlength="80" autocomplete="address-level2" placeholder="Алматы"></div>
+      <div class="cart__f"><label class="pd__lbl" for="cart-comment">Комментарий к&nbsp;заказу</label><textarea class="fld" id="cart-comment" name="comment" rows="2" maxlength="600" placeholder="Сроки, адрес доставки, удобное время для связи"></textarea></div>
+    </form>
+  </div>
+  <div class="sl__foot cart__foot" data-cart-foot>
+    <p class="cart__note">Цены рассчитаем и&nbsp;ответим в&nbsp;WhatsApp.</p>
+    <p class="cart__split" data-cart-split hidden></p>
+    <div class="cart__sends" data-cart-sends></div>
+    <div class="cart__after" data-cart-after hidden>
+      <p class="cart__after-t" tabindex="-1">Заявка открыта в&nbsp;WhatsApp. Очистить корзину?</p>
+      <div class="cart__after-b"><button class="btn btn--line" type="button" data-cart-clear-yes>Очистить</button><button class="caps-link" type="button" data-cart-keep>Оставить</button></div>
+    </div>
+    <button class="caps-link sl__clear" type="button" data-cart-clear>Очистить</button>
   </div>
 </dialog>
 
@@ -584,6 +635,7 @@
 
 <script src="js/catalog-data.js" defer></script>
 <script src="js/fabrics-data.js" defer></script>
+<script src="js/cart.js" defer></script>
 <script src="js/site.js" defer></script>
 </body>
 </html>
