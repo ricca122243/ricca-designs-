@@ -57,7 +57,7 @@ const FORM = {
   modular: [row('modules', 'Модулей', null, { count: [2, 6] }), row('chaise', 'Шезлонг', () => ['none', 'left', 'right']), ROWS.arm('modular'), ROWS.backC(), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
   bed: [row('hbStyle', 'Изголовье', () => ['plain', 'channels', 'capitone', 'wings']), row('base', 'Основание', () => ['plinth', 'legs']),
     row('legFinish', 'Отделка ножек', () => [...WOOD, ...METAL], { when: (p) => p.base === 'legs' }), row('lift', 'Подъёмный механизм', () => [false, true]), ROWS.pipe()],
-  armchair: [row('form', 'Форма', () => ['classic', 'round']), ROWS.arm('armchair'), ROWS.look(), ROWS.backC(), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
+  armchair: [row('form', 'Форма', () => ['classic', 'round']), ROWS.arm('armchair'), ROWS.look(), { ...ROWS.backC(), when: (p) => p.form !== 'round' }, ROWS.legs(), ROWS.fin(), ROWS.pipe()],
   chair: [row('arms', 'Подлокотники', () => ['none', 'thin']), row('backShape', 'Спинка', () => ['straight', 'rounded']), ROWS.legs(['wood', 'metal']), ROWS.fin(), ROWS.pipe()],
   table: [row('shape', 'Форма', () => ['rect', 'round', 'oval']), row('top', 'Столешница', () => ['wood', 'stone']),
     row('topTone', 'Тон столешницы', (p) => (p.top === 'stone' ? STONE : WOOD)), row('base', 'Опора', () => ['four', 'pedestal']), ROWS.legs(['wood', 'metal']), ROWS.fin()],
@@ -105,6 +105,8 @@ function sideEffects(type, key, v, p) {
     p.legH = v === 'bench' ? 0.12 : (P.HIDDEN_LEG_H || 0.02); p.piping = v === 'round';
   }
   if (type === 'armchair' && key === 'form' && v === 'round' && p.armStyle === 'none') { p.armStyle = 'round'; p.armW = 0.22; }
+  /* округлое кресло — цельная оболочка, съёмных подушек спинки у него нет */
+  if (type === 'armchair' && key === 'form' && v === 'round') p.backCushions = 'fixed';
 }
 
 /* ═════════ состояние ═════════ */
@@ -529,7 +531,7 @@ async function initStage() {
   const real = $('#t-real');
   real.hidden = !(typeof stage.photoreal === 'function' && (stage.supportsPhotoreal === true || stage.photorealSupported === true));
   rebuild(quality());
-  if (stage.frame) stage.frame({ animate: false });
+  if (stage.frame && state.mode === 'model') stage.frame({ animate: false });
 }
 
 /* ═════════ фото и файлы ═════════ */
@@ -726,7 +728,7 @@ async function setMode(mode, { focus = false } = {}) {
     try { const api = await loadRoom(); if (state.mode === 'room' && api.enter) { api.enter(); syncRoomBar(); } } catch (e) { /* статус уже показан */ }
   } else {
     if (roomApi && roomApi.leave) roomApi.leave();
-    if (stage) { if (stage.setStudio) stage.setStudio(true); if (piece) stage.setObject(piece); setView(state.view); if (stage.frame) stage.frame({ animate: false }); updateDims(); }
+    if (stage) { if (stage.setStudio) stage.setStudio(true); if (piece) stage.setObject(piece); setView(state.view); if (stage.frame) stage.frame({ animate: false, reset: true }); updateDims(); }
     renderSummary();
     writeHash();
   }

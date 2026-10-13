@@ -243,13 +243,14 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   }
 
   /* ---------- виды ---------- */
-  function frame({ animate = true } = {}) {
+  function frame({ animate = true, reset = false } = {}) {
     if (view === '3d') {
-      const dir = camera === persp ? persp.position.clone().sub(controls.target).normalize() : dir3q();
+      const dir = camera === persp && !reset ? persp.position.clone().sub(controls.target).normalize() : dir3q();
       if (!isFinite(dir.x) || dir.lengthSq() < 0.5) dir.copy(dir3q());
       const fd = framingDist(dir);
       const to = { pos: center.clone().add(dir.multiplyScalar(fd)), target: center.clone(), fov: FOV };
-      if (animate && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, to.pos, to.target, FOV, 500, null);
+      const fromOk = [persp.position.x, persp.position.y, persp.position.z, controls.target.x].every(Number.isFinite);
+      if (animate && fromOk && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, to.pos, to.target, FOV, 500, null);
       else { persp.position.copy(to.pos); controls.target.copy(to.target); persp.fov = FOV; persp.updateProjectionMatrix(); controls.update(); }
       controls.minDistance = fd * 0.6; controls.maxDistance = fd * 2.5;
     } else {

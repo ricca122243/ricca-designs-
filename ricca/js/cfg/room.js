@@ -723,7 +723,8 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     stage.off('beforeRender', onBefore); stage.off('render', onRender);
     if (group.parent) group.parent.remove(group);
     const p = stage.camera, c = stage.controls;
-    if (saved) {
+    const ok = saved && [saved.pos.x, saved.pos.y, saved.pos.z, saved.target.x, saved.ctl.minDistance, saved.ctl.maxDistance].every(Number.isFinite);
+    if (ok) {
       Object.assign(c, saved.ctl);
       p.position.copy(saved.pos); c.target.copy(saved.target); p.fov = saved.fov; p.updateProjectionMatrix(); p.lookAt(c.target);
     }

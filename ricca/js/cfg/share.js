@@ -196,7 +196,7 @@ export function summaryLines(state, { dims = null } = {}) {
     if (t === 'armchair') { add('Форма', optLabel(t, 'form', p.form || 'classic')); add('Размер', `ширина ${fmtCm(p.w)} см, глубина ${fmtCm(p.d)} см, ${H}`); }
     add('Посадка', `высота ${fmtCm(p.seatH)} см, глубина ${fmtCm(p.seatD)} см`);
     add('Подлокотники', armsLine(t, p));
-    add('Спинка', `${backLook(t, p)}, ${optLabel(t, 'backCushions', p.backCushions)}`);
+    add('Спинка', `${backLook(t, p)}, ${optLabel(t, 'backCushions', t === 'armchair' && p.form === 'round' ? 'fixed' : p.backCushions)}`);
     if (t !== 'armchair' && p.seatCushions) add('Сиденье', p.seatCushions === 'single' ? 'одна подушка' : `по секциям (${seatSections(t, p)})`);
     add('Ножки', legsLine(t, p));
     add('Кант', p.piping ? 'есть' : 'нет');
