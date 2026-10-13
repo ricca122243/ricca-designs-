@@ -248,9 +248,9 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   }
   function renderSend() { $$('[data-room-send]').forEach((a) => { a.href = waHref(); }); }
   let statusT = 0;
-  function status(msg) {
+  function status(msg, ms = 3200) {
     const el = $('[data-room-status]'); if (!el) return;
-    el.textContent = msg; clearTimeout(statusT); if (msg) statusT = setTimeout(() => { el.textContent = ''; }, 3200);
+    el.textContent = msg; clearTimeout(statusT); if (msg) statusT = setTimeout(() => { el.textContent = ''; }, ms);
   }
 
   /* ═════════ стиль комнаты: стены, пол, ткани к ним ═════════ */
