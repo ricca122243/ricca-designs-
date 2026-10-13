@@ -993,7 +993,7 @@
       if (key !== lastMsg) { lastMsg = key; sent = new Set(); after.hidden = true; }
       const n = ps.length, done = sent.size;
       split.hidden = n < 2;
-      if (n > 1) split.innerHTML = typo(done ? `Отправлено: ${Math.min(done, n)} из ${n}. Нажмите ещё раз — следующая часть.` : `Заявка длинная — она уйдёт ${n} сообщениями. Нажмите кнопку ${n} ${plural3(n, ['раз', 'раза', 'раз'])}, по очереди.`);
+      if (n > 1) split.innerHTML = typo(done ? `Отправлено: ${Math.min(done, n)} из ${n}. Нажмите ещё раз — следующая часть.` : `Заявка длинная — она уйдёт ${n} сообщениями. Отправьте их по очереди этой кнопкой.`);
       let a = $('a', sends);
       if (!a) {
         a = document.createElement('a');
