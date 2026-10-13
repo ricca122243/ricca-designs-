@@ -1,14 +1,16 @@
 /* RICCA · конструктор — «Моя комната»: планировщик.
-   Комната W × L × H (пол — светлый дуб, стены 10 см с плинтусом, ближние к камере стены прячутся), мебель: «Мой вариант»
+   Комната W × L × H (стены 10 см с плинтусом, ближние к камере стены прячутся; цвет стен и пол — roomstyle.js), мебель: «Мой вариант»
    и быстрые предметы. Выбор и перетаскивание по полу (мышь и палец), поворот 15° / 90°, копия, удаление, «Изменить».
    Камера: обзор вокруг комнаты, «Облёт» (сам), «Взгляд из комнаты» (с высоты глаз 1,6 м), «Сбросить вид».
+   «Стиль комнаты»: стены и пол меняются сразу; «Ткани к вашей комнате» — 6 подсказок (roomstyle.js → suggestFabrics),
+   касание — ткань на выбранный предмет (у каждого предмета своя ткань).
    Состояние — localStorage (ricca.room.v1) и адрес #room=… Рисует тот же stage.js, студия выключена. */
 import * as THREE from 'three';
-import { summaryLines, cfgId } from './share.js';
+import { summaryLines, cfgId, fabricLine } from './share.js';
+import { WALLS, FLOORS, wallOf, floorOf, floorMaterial, suggestFabrics } from './roomstyle.js';
 
 const LIM = { W: [2, 12], L: [2, 12], H: [2.4, 4] };
 const WALL_T = 0.10, SKIRT_H = 0.06, SKIRT_T = 0.012, EYE_H = 1.6;
-const WALL_COLOR = '#EEEDE8';
 const QUICK = {
   sofa: {}, armchair: {}, chair: {}, pouf: {},
   table: { shape: 'rect', w: 1.8, d: 0.9 },
@@ -31,7 +33,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   const isHttp = /^https?:$/.test(location.protocol);
 
   /* ═════════ состояние ═════════ */
-  const room = { W: 4.5, L: 3.8, H: 2.7, items: [] };
+  const room = { W: 4.5, L: 3.8, H: 2.7, wall: 'milk', floor: 'oak', items: [] };
   let seq = 0, selected = null, editingId = null, active = false, gridOn = false;
   const nextId = () => `i${++seq}`;
   const dimsOf = (it) => { try { return engine.dims(it.type, it.params); } catch (e) { return { w: 1, d: 1, h: 1 }; } };
@@ -50,6 +52,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     if (!src) { try { const raw = localStorage.getItem(storageKey); if (raw) src = JSON.parse(raw); } catch (e) { src = null; } }
     if (!src || typeof src !== 'object') return;
     room.W = clamp(+src.W || 4.5, ...LIM.W); room.L = clamp(+src.L || 3.8, ...LIM.L); room.H = clamp(+src.H || 2.7, ...LIM.H);
+    room.wall = wallOf(src.wall).id; room.floor = floorOf(src.floor).id;
     room.items = (Array.isArray(src.items) ? src.items : []).slice(0, 40).map(normItem).filter(Boolean);
     room.items.forEach(clampItem);
   }
@@ -58,7 +61,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     clearTimeout(saveT);
     saveT = setTimeout(() => {
       try {
-        localStorage.setItem(storageKey, JSON.stringify({ v: 1, W: room.W, L: room.L, H: room.H,
+        localStorage.setItem(storageKey, JSON.stringify({ v: 1, W: room.W, L: room.L, H: room.H, wall: room.wall, floor: room.floor,
           items: room.items.map((it) => ({ type: it.type, params: it.params, fabricRef: fabrics.fabricRef(it.fabric), x: it.x, z: it.z, rot: it.rot, mine: it.mine || undefined })) }));
       } catch (e) { /* без localStorage — живём без него */ }
       if (active) { try { history.replaceState(null, '', '#room=' + encodeRoom()); } catch (e) { /* file:// */ } }
@@ -72,7 +75,8 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   /* сообщение в WhatsApp: размер комнаты, по строке на предмет; для «Моего варианта» — все выбранные параметры */
   function waText() {
     const fm = (m) => String(Math.round(m * 10) / 10).replace('.', ',');
-    const lines = [`Здравствуйте! План комнаты из конструктора RICCA: ${fm(room.W)} × ${fm(room.L)} м, потолок ${fm(room.H)} м`];
+    const lines = [`Здравствуйте! План комнаты из конструктора RICCA: ${fm(room.W)} × ${fm(room.L)} м, потолок ${fm(room.H)} м`,
+      `Стены — ${wallOf(room.wall).title.toLowerCase()}, пол — ${floorOf(room.floor).title.toLowerCase()}`];
     if (!room.items.length) lines.push('Мебель пока не расставлена.');
     room.items.forEach((it, i) => {
       const d = dimsOf(it);
@@ -84,7 +88,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
         try {
           summaryLines(st, { dims: d }).filter((r) => !['Количество', 'Пожелание'].includes(r.label)).forEach((r) => lines.push(`   ${r.label}: ${r.value}`));
         } catch (e) { /* */ }
-      } else lines.push(head);
+      } else { lines.push(head); if (it.fabric && it.type !== 'table') lines.push(`   Ткань: ${fabricLine(it.fabric)}`); }
     });
     const link = planLink(); if (link) lines.push(`План: ${link}`);
     lines.push('Рассчитайте, пожалуйста, стоимость.');
@@ -101,9 +105,9 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   const nodes = new Map();      // id → { node, piece, outline, tint }
   const walls = [];
   let floorMesh = null, gridLines = null;
-  const floorMat = has3D ? makeFloorMaterial(stage.renderer) : null;
-  const wallMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(WALL_COLOR), roughness: 0.95, metalness: 0 });
-  const skirtMat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#F7F6F2'), roughness: 0.6, metalness: 0 });
+  let floorMat = has3D ? floorMaterial(THREE, stage.renderer, room.floor) : null;
+  const wallMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(wallOf(room.wall).hex), roughness: 0.95, metalness: 0 });
+  const skirtMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(wallOf(room.wall).skirt), roughness: 0.6, metalness: 0 });
   const outlineMat = new THREE.LineBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.9, depthWrite: false });
   const tintMat = new THREE.MeshBasicMaterial({ color: 0xd2453a, transparent: true, opacity: 0.22, depthWrite: false, toneMapped: false });
   const noRay = () => {};
@@ -228,7 +232,9 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     const ul = $('[data-room-items]'); if (!ul) return;
     ul.innerHTML = room.items.map((it) => {
       const d = dimsOf(it);
-      return `<li><button type="button" data-room-item="${it.id}" aria-pressed="${selected === it.id}"><span>${esc(titleOf(it))}${it.mine ? ' <i class="rp__mine-tag">мой вариант</i>' : ''}</span><span class="rp__sz">${share.fmtCm(d.w)} × ${share.fmtCm(d.d)} см</span></button></li>`;
+      const f = it.type === 'table' ? null : it.fabric;
+      const fab = f ? `<span class="rp__fab"><span class="rp__fab-c" style="background-color:${esc(f.hex)};background-image:url('${esc(f.src240 || f.src450 || '')}')" aria-hidden="true"></span>${esc(f.collectionTitle)} · ${esc(f.colour)}</span>` : '';
+      return `<li><button type="button" data-room-item="${it.id}" aria-pressed="${selected === it.id}"><span><span>${esc(titleOf(it))}${it.mine ? ' <i class="rp__mine-tag">мой вариант</i>' : ''}</span>${fab}</span><span class="rp__sz">${share.fmtCm(d.w)} × ${share.fmtCm(d.d)} см</span></button></li>`;
     }).join('');
     const empty = $('[data-room-empty]'); if (empty) empty.hidden = room.items.length > 0;
   }
@@ -237,6 +243,62 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
   function status(msg) {
     const el = $('[data-room-status]'); if (!el) return;
     el.textContent = msg; clearTimeout(statusT); if (msg) statusT = setTimeout(() => { el.textContent = ''; }, 3200);
+  }
+
+  /* ═════════ стиль комнаты: стены, пол, ткани к ним ═════════ */
+  function applyStyle3D() {
+    if (!has3D) return;
+    const w = wallOf(room.wall);
+    wallMat.color.set(w.hex); skirtMat.color.set(w.skirt);
+    floorMat = floorMaterial(THREE, stage.renderer, room.floor);
+    if (floorMesh) floorMesh.material = floorMat;
+  }
+  const UPH = (it) => it && it.type !== 'table';
+  /* куда ляжет ткань из подсказки: выбранный предмет; ничего не выбрано — первый мягкий предмет */
+  const suggTarget = () => { const s = room.items.find((x) => x.id === selected); return UPH(s) ? s : (selected ? null : room.items.find(UPH) || null); };
+  let sugg = { picks: [], rule: '' };
+  function renderStyle() {
+    const wb = $('[data-room-walls]'), fb = $('[data-room-floors]');
+    if (wb) wb.innerHTML = WALLS.map((w) => `<button class="rs__b" type="button" role="radio" aria-checked="${w.id === room.wall}" data-room-wall="${w.id}"><span class="rs__c" style="background:${w.hex}" aria-hidden="true"></span>${esc(w.title)}</button>`).join('');
+    if (fb) fb.innerHTML = FLOORS.map((f) => `<button class="rs__b" type="button" role="radio" aria-checked="${f.id === room.floor}" data-room-floor="${f.id}"><span class="rs__c rs__c--${f.id}" style="background-color:${f.swatch}" aria-hidden="true"></span>${esc(f.title)}</button>`).join('');
+    try { sugg = suggestFabrics(fabrics.all ? fabrics.all() : [], room.wall, room.floor); } catch (e) { sugg = { picks: [], rule: '' }; }
+    const why = $('[data-room-why]'); if (why) why.textContent = sugg.rule;
+    const list = $('[data-room-sugg]');
+    if (list) list.innerHTML = sugg.picks.map(({ fabric: f, why: w }, i) => `<button class="rs__sw" type="button" data-room-sugg-i="${i}" title="${esc(`${f.collectionTitle} · ${f.colour} — ${w}`)}" aria-label="${esc(`${f.typeTitle} ${f.collectionTitle}, ${f.colour}: ${w}`)}">
+      <span class="rs__img" style="background-color:${esc(f.hex)};background-image:url('${esc(f.src240 || f.src450)}')" aria-hidden="true"></span>
+      <span class="rs__t" aria-hidden="true"><span class="rs__n">${esc(f.colour)}</span><span class="rs__k">${esc(f.collectionTitle)}</span><span class="rs__w">${esc(w)}</span></span></button>`).join('');
+    renderSuggTarget();
+  }
+  function renderSuggTarget() {
+    const el = $('[data-room-sugg-to]'); if (!el) return;
+    const t = suggTarget();
+    const on = t ? t.fabric : null;
+    $$('[data-room-sugg-i]').forEach((b) => { const f = sugg.picks[+b.dataset.roomSuggI]; b.setAttribute('aria-pressed', String(!!(on && f && on.collectionId === f.fabric.collectionId && on.slug === f.fabric.slug))); b.disabled = !t; });
+    el.textContent = t ? `Коснитесь ткани — она ляжет на: ${titleOf(t).toLowerCase()}` : (room.items.some(UPH) ? 'Выберите в комнате диван, кресло или другой мягкий предмет' : 'Добавьте мебель — и примерьте на ней ткань');
+  }
+  function setWall(id) {
+    if (!WALLS.some((w) => w.id === id) || id === room.wall) return;
+    room.wall = id; applyStyle3D(); renderStyle(); persist(); redraw();
+  }
+  function setFloor(id) {
+    if (!FLOORS.some((f) => f.id === id) || id === room.floor) return;
+    room.floor = id; applyStyle3D(); renderStyle(); persist(); redraw();
+  }
+  /* своя ткань у каждого предмета: меняем только материал ткани (без перестройки формы) */
+  function setItemFabric(id, fabric) {
+    const it = room.items.find((x) => x.id === id); if (!UPH(it) || !fabric) return;
+    it.fabric = fabric;
+    const n = nodes.get(id);
+    if (n && has3D) {
+      try {
+        if (engine.setMaterials && engine.fabricMaterial) {
+          const nf = engine.fabricMaterial({ hex: fabric.hex, kind: fabric.kind, src450: fabric.src450, collectionId: fabric.collectionId, finish: fabric.finish, quality: phone() ? 'low' : 'mid' });
+          engine.setMaterials(n.piece, { fabric: nf });
+        } else { dropNode(id); buildNode(it); if (selected === id) n.outline.visible = true; }
+      } catch (e) { dropNode(id); buildNode(it); }
+    }
+    renderItems(); select(id); persist(); redraw();
+    status(`${titleOf(it)}: ${fabric.collectionTitle} · ${fabric.colour}`);
   }
 
   /* панель инструментов над выбранным предметом */
@@ -273,6 +335,7 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     selected = id && room.items.some((x) => x.id === id) ? id : null;
     for (const [k, n] of nodes) n.outline.visible = k === selected;
     $$('[data-room-item]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.roomItem === selected)));
+    renderSuggTarget();
     placeBar(); if (has3D && active) stage.requestRender();
   }
   function addItem(spec, { quiet = false } = {}) {
@@ -654,6 +717,10 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
         else if (k === 'reset') setOrbit({ animate: true });
         return;
       }
+      const wl = e.target.closest('[data-room-wall]'); if (wl) { setWall(wl.dataset.roomWall); const nb = $(`[data-room-wall="${wl.dataset.roomWall}"]`); if (nb) nb.focus({ preventScroll: true }); return; }
+      const fl = e.target.closest('[data-room-floor]'); if (fl) { setFloor(fl.dataset.roomFloor); const nb = $(`[data-room-floor="${fl.dataset.roomFloor}"]`); if (nb) nb.focus({ preventScroll: true }); return; }
+      const sg = e.target.closest('[data-room-sugg-i]');
+      if (sg) { const p = sugg.picks[+sg.dataset.roomSuggI], t = suggTarget(); if (p && t) setItemFabric(t.id, p.fabric); return; }
       const g = e.target.closest('[data-room-grid]');
       if (g) { gridOn = !gridOn; g.setAttribute('aria-pressed', String(gridOn)); if (gridLines) gridLines.visible = gridOn; redraw(); return; }
       const send = e.target.closest('[data-room-send]');
@@ -740,14 +807,14 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
 
   /* ═════════ старт ═════════ */
   loadState();
-  if (has3D) { buildShell(); room.items.forEach(buildNode); updateTints(); }
-  bindPanel(); renderDims(); renderItems(); renderSend();
+  if (has3D) { applyStyle3D(); buildShell(); room.items.forEach(buildNode); updateTints(); }
+  bindPanel(); renderDims(); renderItems(); renderSend(); renderStyle();
 
   const api = {
     enter, leave, addItem, dispose,
     select, rotate, duplicate, remove, moveBy, edit,
     startTour, stopTour, enterEye, leaveEye, resetView: () => setOrbit({ animate: true }),
-    waText, waHref, encode: encodeRoom,
+    waText, waHref, encode: encodeRoom, setWall, setFloor, setItemFabric, get suggestions() { return sugg; },
     get room() { return room; }, get selected() { return selected; }, get mode() { return mode; },
     get group() { return group; },
     /* для проверок: экранная точка предмета */
@@ -759,42 +826,4 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     },
   };
   return api;
-}
-
-/* ═════════ пол: светлый дуб, доска 12 см, плитка 1,2 × 1,2 м (процедурно, бесшовно) ═════════ */
-function makeFloorMaterial(renderer) {
-  const S = 1024, rows = 10, rh = S / rows;
-  const c = document.createElement('canvas'); c.width = c.height = S;
-  const g = c.getContext('2d');
-  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  g.fillStyle = '#D6C3A3'; g.fillRect(0, 0, S, S);
-  const drawWrapped = (x, y, w, h, fill) => { g.fillStyle = fill; g.fillRect(x, y, w, h); if (x + w > S) g.fillRect(x - S, y, w, h); };
-  for (let r = 0; r < rows; r++) {
-    const y = r * rh;
-    let x = rnd() * S; const end = x + S;
-    while (x < end) {
-      const len = Math.min(end - x, 420 + rnd() * 480);
-      const l = 0.94 + rnd() * 0.1, warm = rnd() * 6 - 3;
-      const col = `rgb(${Math.round(216 * l + warm)}, ${Math.round(196 * l)}, ${Math.round(163 * l - warm)})`;
-      drawWrapped(x % S, y, len, rh, col);
-      /* волокна */
-      for (let k = 0; k < 26; k++) {
-        const yy = y + 2 + rnd() * (rh - 4), a = 0.025 + rnd() * 0.05, amp = 0.6 + rnd() * 1.6, ph = rnd() * 6.28;
-        g.strokeStyle = `rgba(110, 80, 45, ${a})`; g.lineWidth = 0.6 + rnd() * 1.1;
-        for (const off of [0, -S]) {
-          g.beginPath();
-          for (let t = 0; t <= len; t += 16) { const px = (x % S) + off + t; const py = yy + Math.sin(ph + t * 0.01) * amp; if (t === 0) g.moveTo(px, py); else g.lineTo(px, py); }
-          g.stroke();
-        }
-      }
-      /* стык торцов */
-      g.fillStyle = 'rgba(90, 66, 40, 0.35)'; g.fillRect(x % S, y, 1.2, rh);
-      x += len;
-    }
-    g.fillStyle = 'rgba(90, 66, 40, 0.32)'; g.fillRect(0, y, S, 1.4);
-  }
-  const tex = new THREE.CanvasTexture(c);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 4);
-  return new THREE.MeshStandardMaterial({ map: tex, roughness: 0.62, metalness: 0, envMapIntensity: 0.9 });
 }

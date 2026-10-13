@@ -161,8 +161,11 @@ function fabricMaps(kind, N) {
 
 /* фото образца → высокочастотная яркость, среднее = 1 − amp/2 (умножается на цвет; цвет компенсируется) */
 const swatchCache = new Map();
-function swatchDetail(src) {
-  if (swatchCache.has(src)) return swatchCache.get(src);
+/* сила детали из фото образца по виду ткани: у букле и шенилла рельеф петель и ворса — главное, у велюра и кожи — лёгкая неоднородность */
+const SWATCH_AMP = { boucle: 0.2, chenille: 0.12, corduroy: 0.12, matting: 0.1, velour: 0.06, suede: 0.05, leather: 0.04 };
+function swatchDetail(src, amp = 0.06) {
+  const ck = `${src}|${amp}`;
+  if (swatchCache.has(ck)) return swatchCache.get(ck);
   const p = new Promise((resolve) => {
     if (typeof Image === 'undefined' || typeof document === 'undefined') return resolve(null);
     const img = new Image();
@@ -181,17 +184,27 @@ function swatchDetail(src) {
         const blur = (src, r) => { const tmp = new Float32Array(N * N), out = new Float32Array(N * N), k = 1 / (2 * r + 1); for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let j = -r; j <= r; j++) s += src[y * N + rf(x + j)]; tmp[y * N + x] = s * k; } for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let j = -r; j <= r; j++) s += tmp[rf(y + j) * N + x]; out[y * N + x] = s * k; } return out; };
         const B = blur(blur(L, 10), 10);
         let sd = 0; for (let i = 0; i < N * N; i++) { const h = L[i] - B[i]; sd += h * h; } sd = Math.sqrt(sd / (N * N)) || 1;
-        const amp = 0.06, base = 1 - amp; // значения 0,88…1,0, среднее 0,94
+        const base = 1 - amp; // значения 1 − 2·amp…1, среднее 1 − amp (цвет компенсируется делением на среднее)
+        /* бесшовная плитка без зеркал: смешиваем образец с его копией, сдвинутой на полплитки (вес 0 у краёв, 1 ближе к середине),
+           дисперсию возвращаем делением на √(w² + (1 − w)²) — на изделии не видно ни швов, ни «калейдоскопа» */
+        const HP = new Float32Array(N * N); for (let i = 0; i < N * N; i++) HP[i] = (L[i] - B[i]) / sd;
+        const tent = (i) => 1 - Math.abs((2 * (i + 0.5)) / N - 1);
         const out = new Uint8Array(N * N * 4); let mean = 0;
-        for (let i = 0; i < N * N; i++) { const h = Math.max(-2, Math.min(2, (L[i] - B[i]) / sd)) / 2; const v = base + amp * h; const b = Math.round(Math.max(0, Math.min(1, v)) * 255); out[i * 4] = out[i * 4 + 1] = out[i * 4 + 2] = b; out[i * 4 + 3] = 255; mean += b / 255; }
-        const t = dataTex(out, N); t.wrapS = t.wrapT = THREE.MirroredRepeatWrapping; t.repeat.set(1 / SWATCH_TILE, 1 / SWATCH_TILE);
+        for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+          const i = y * N + x, w = Math.min(1, Math.min(tent(x), tent(y)) * 2.2);
+          const j = ((y + N / 2) % N) * N + ((x + N / 2) % N);
+          const hs = (w * HP[i] + (1 - w) * HP[j]) / Math.sqrt(w * w + (1 - w) * (1 - w));
+          const h = Math.max(-2, Math.min(2, hs)) / 2; const v = base + amp * h; const b = Math.round(Math.max(0, Math.min(1, v)) * 255);
+          out[i * 4] = out[i * 4 + 1] = out[i * 4 + 2] = b; out[i * 4 + 3] = 255; mean += b / 255;
+        }
+        const t = dataTex(out, N); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / SWATCH_TILE, 1 / SWATCH_TILE);
         resolve({ tex: t, mean: mean / (N * N) });
       } catch (e) { resolve(null); }
     };
     img.onerror = () => resolve(null);
     img.src = src;
   });
-  swatchCache.set(src, p);
+  swatchCache.set(ck, p);
   return p;
 }
 
@@ -205,18 +218,25 @@ const matCache = new Map();
 let defaultQuality = 'high';
 export function setTextureQuality(q) { defaultQuality = q; }
 
-export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null, quality, collectionId = '' } = {}) {
+/* экокожа: отделка цвета (js/fabrics-data.js → colours[].finish) меняет зерно и лак */
+const LEATHER_FINISH = {
+  'гладкая': { rough: 0.40, nScale: 0.12, clearcoat: 0.35, clearcoatRough: 0.28 },
+  'зернистая': { rough: 0.50, nScale: 0.48, clearcoat: 0.22, clearcoatRough: 0.38 },
+  'винтаж': { rough: 0.62, nScale: 0.30, clearcoat: 0.08, clearcoatRough: 0.55 },
+};
+export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null, quality, collectionId = '', finish = '' } = {}) {
   if (!KINDS.includes(kind)) kind = 'velour';
   const q = quality || defaultQuality;
   const N = q === 'high' ? 512 : 256;
-  const key = `${hex}|${kind}|${src450 || ''}|${N}|${collectionId === 'vintazh' ? 'v' : ''}`;
+  const fin = kind === 'leather' ? (LEATHER_FINISH[String(finish).toLowerCase()] ? String(finish).toLowerCase() : (collectionId === 'vintazh' ? 'винтаж' : '')) : '';
+  const key = `${hex}|${kind}|${src450 || ''}|${N}|${fin}`;
   if (matCache.has(key)) return matCache.get(key);
-  const k = KIND[kind];
+  const k = fin ? { ...KIND[kind], ...LEATHER_FINISH[fin] } : KIND[kind];
   const maps = fabricMaps(kind, N);
   const base = new THREE.Color(hex);
   const m = new THREE.MeshPhysicalMaterial({
     color: base.clone().multiplyScalar(1 / maps.albedoMean),
-    roughness: kind === 'leather' && collectionId === 'vintazh' ? 0.32 : k.rough,
+    roughness: k.rough,
     metalness: 0,
     sheen: k.sheen, sheenRoughness: k.sheenRough, sheenColor: lighten(base, k.sheenLift),
     normalMap: maps.normal, normalScale: new THREE.Vector2(k.nScale, k.nScale),
@@ -226,9 +246,9 @@ export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null
   /* одинаковый масштаб фактуры: UV в метрах → повтор = 1 / размер плитки */
   for (const t of [maps.normal, maps.rough, maps.albedo]) t.repeat.set(1 / k.tile, 1 / k.tile);
   m.name = `fabric-${kind}-${hex}`;
-  m.userData = { kind, hex, src450, baseColor: base.clone(), ready: Promise.resolve(m) };
+  m.userData = { kind, hex, src450, finish: fin, baseColor: base.clone(), ready: Promise.resolve(m) };
   if (src450) {
-    m.userData.ready = swatchDetail(src450).then((sw) => {
+    m.userData.ready = swatchDetail(src450, SWATCH_AMP[kind] || 0.06).then((sw) => {
       if (sw) { m.map = sw.tex; m.color.copy(base).multiplyScalar(1 / sw.mean); m.needsUpdate = true; notify(); }
       return m;
     });
@@ -388,7 +408,7 @@ export function materialSet(cfg = {}) {
   const p = normalize(type, cfg.params || {});
   const f = cfg.fabric || {};
   const kind = f.kind && KINDS.includes(f.kind) ? f.kind : kindOf(f.typeId, f.collectionId);
-  const fabric = fabricMaterial({ hex: f.hex || '#E9E4DA', kind, src450: f.src450 || null, quality: cfg.quality, collectionId: f.collectionId || '' });
+  const fabric = fabricMaterial({ hex: f.hex || '#E9E4DA', kind, src450: f.src450 || null, quality: cfg.quality, collectionId: f.collectionId || '', finish: f.finish || '' });
   let legs;
   const fin = p.legFinish;
   if (type === 'bed') legs = p.base === 'legs' ? woodMaterial(WOOD[fin] ? fin : 'oak') : metalMaterial('black');

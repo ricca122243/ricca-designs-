@@ -1,6 +1,10 @@
 /* RICCA · конструктор — библиотека тканей.
-   getLibrary(): window.RICCA_FABRIC_LIBRARY (js/fabrics-data.js), если он есть и в нём есть цвета; иначе запасная библиотека
-   js/cfg/fabrics-fallback.js (та же форма). Ссылка на ткань в адресе: «<typeId>/<collectionId>/<slug цвета>». */
+   getLibrary(): window.RICCA_FABRIC_LIBRARY (js/fabrics-data.js — та же библиотека, что на сайте в «Тканях»), если он есть
+   и в нём есть цвета; иначе запасная библиотека js/cfg/fabrics-fallback.js (та же форма).
+   Ссылки на ткань: в адресе конструктора — «f=<коллекция>:<N>» (N — номер цвета в коллекции с 1, как #fabric-<коллекция>-<N>
+   на сайте); внутри (localStorage, номер варианта, комната) — «<typeId>/<collectionId>/<slug цвета>».
+   Вид ткани для 3D (materials.js → KINDS) — по строке kind коллекции («велюр в рубчик» → рубчик, «букле» → букле…),
+   иначе по типу; у экокожи — ещё отделка цвета (finish: гладкая · зернистая · винтаж). */
 import FALLBACK from './fabrics-fallback.js';
 
 /* тип ткани → вид материала для 3D (materials.js → KINDS) */
@@ -12,9 +16,13 @@ const ORDER = ['velur', 'velvet', 'bukle', 'shenill', 'rogozhka', 'zamsha', 'eko
 const stemOf = (src) => String(src || '').split('/').pop().replace(/\.(webp|jpe?g|png|avif)$/i, '').replace(/-(450|900|600)$/, '');
 export const slugOf = (c) => (c && c.slug) || stemOf(c && (c.src450 || c.src900)).replace(/^\d+-/, '') || String((c && c.name) || '').toLowerCase();
 
+/* строка вида с карточки коллекции → вид материала */
+const KIND_BY_WORD = [[/рубчик|вельвет|кордюр/i, 'corduroy'], [/букле/i, 'boucle'], [/шенил/i, 'chenille'], [/рогожк/i, 'matting'],
+  [/замш|нубук/i, 'suede'], [/кож/i, 'leather'], [/велюр|бархат/i, 'velour']];
 export function kindOf(typeId, collection) {
   const k = collection && collection.kind;
   if (k && KINDS.includes(k)) return k;
+  if (k) { const hit = KIND_BY_WORD.find(([re]) => re.test(String(k))); if (hit) return hit[1]; }
   if (KIND_BY_TYPE[typeId]) return KIND_BY_TYPE[typeId];
   if (/vel.?vet|вельвет/i.test(String(typeId))) return 'corduroy';
   return 'velour';
@@ -37,8 +45,10 @@ export function getLibrary() {
         id: String(c.id), title: String(c.title || c.id), kind: kindOf(t.id, c), texture: c.texture || '',
         kindTitle: c.kind && !KINDS.includes(c.kind) ? String(c.kind) : '',                       // «микровелюр» (js/fabrics-data.js)
         facts: Array.isArray(c.facts) ? String(c.facts[0] || '') : String(c.facts || ''),           // одна строка
-        colours: (c.colours || []).filter((x) => x && x.src450 && /^#[0-9a-f]{6}$/i.test(x.hex || ''))
-          .map((x) => ({ name: String(x.name || ''), slug: slugOf(x), src450: x.src450, src900: x.src900 || x.src450, hex: x.hex.toUpperCase() })),
+        /* n — номер цвета в коллекции так же, как на сайте (#fabric-<коллекция>-<n>): js/site.js считает цвета с именем и фото */
+        colours: (c.colours || []).filter((x) => x && x.name && (x.src450 || x.src900)).map((x, i) => [x, i + 1])
+          .filter(([x]) => /^#[0-9a-f]{6}$/i.test(x.hex || ''))
+          .map(([x, n]) => { const s450 = x.src450 || x.src900; return { name: String(x.name || ''), slug: slugOf({ ...x, src450: s450 }), n, src240: x.src240 || s450, src450: s450, src900: x.src900 || s450, hex: x.hex.toUpperCase(), finish: x.finish ? String(x.finish) : '' }; }),
       })).filter((c) => c.colours.length),
     }))
     .filter((t) => t.collections.length)
@@ -51,8 +61,27 @@ export function getLibrary() {
 export function fabricOf(type, collection, colour) {
   return {
     typeId: type.id, typeTitle: type.title, collectionId: collection.id, collectionTitle: collection.title,
-    colour: colour.name, slug: colour.slug, hex: colour.hex, kind: collection.kind, src450: colour.src450, src900: colour.src900,
+    colour: colour.name, slug: colour.slug, n: colour.n, hex: colour.hex, kind: collection.kind, kindTitle: collection.kindTitle || '',
+    finish: colour.finish || '', src240: colour.src240 || colour.src450, src450: colour.src450, src900: colour.src900,
   };
+}
+
+/* короткая ссылка для адреса: «alba:12» (номер цвета как на сайте) ↔ ткань */
+export const fabricShort = (f) => (f && f.collectionId && f.n ? `${f.collectionId}:${f.n}` : '');
+export function findFabricShort(s, lib = getLibrary()) {
+  const m = /^([a-z0-9_-]+):(\d+)$/i.exec(String(s || '').trim()); if (!m) return null;
+  for (const t of lib.types) {
+    const c = t.collections.find((x) => x.id === m[1]); if (!c) continue;
+    const col = c.colours.find((x) => x.n === +m[2]);
+    return col ? fabricOf(t, c, col) : null;
+  }
+  return null;
+}
+/* все цвета библиотеки плоским списком (подсказки к комнате) */
+export function allFabrics(lib = getLibrary()) {
+  const out = [];
+  for (const t of lib.types) for (const c of t.collections) for (const col of c.colours) out.push(fabricOf(t, c, col));
+  return out;
 }
 
 export const fabricRef = (f) => (f && f.typeId ? `${f.typeId}/${f.collectionId}/${f.slug}` : '');

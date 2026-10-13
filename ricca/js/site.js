@@ -566,6 +566,7 @@
       sizeSel.closest('.sel').hidden = !list;
       sizeIn.hidden = list && sizeSel.value !== OWN;
       sizeIn.closest('.pd__row').querySelector('.pd__lbl').setAttribute('for', list ? 'pd-sizes' : 'pd-size');
+      if (list) sizeIn.setAttribute('aria-label', 'Свой размер'); else sizeIn.removeAttribute('aria-label');
     }
     function paintQty() {
       qtyN.textContent = `${sel.qty}\u00a0шт.`;
@@ -787,6 +788,7 @@
     const stage = $('[data-fz-stage]', dlg), frame = $('[data-fz-frame]', dlg), img = $('[data-fz-img]', dlg);
     const title = $('[data-fz-title]', dlg), piece = $('[data-fz-piece]', dlg), wa = $('[data-fz-wa]', dlg), count = $('[data-fz-count]', dlg);
     const steps = $$('[data-fz-step]', dlg), cartBtn = $('[data-fz-cart]', dlg);
+    const to3d = $('[data-fz-3d]', dlg);   // «Примерить на мебели в 3D» → configurator.html#f=<коллекция>:<N> (диван по умолчанию)
     let cur = null, idx = 0;
     const fzId = () => (cur ? `${cur.c.id}-${idx + 1}` : '');
     const fzIn = () => !!(RC && cur && RC.list().some((x) => x.kind === 'fabric' && x.id === fzId()));
@@ -843,6 +845,7 @@
       const u = /^https?:$/.test(location.protocol) ? `\n${location.origin}${location.pathname}#fabric-${c.id}-${idx + 1}` : '';
       wa.href = waUrl(`Здравствуйте! Интересует ткань ${fabWaName(c, k)}, цвет ${k.name.toLowerCase()}.${u}`);
       wa.setAttribute('aria-label', `Хочу эту ткань: ${c.title}, ${k.name.toLowerCase()} — написать в WhatsApp`);
+      if (to3d) { to3d.href = `configurator.html#f=${encodeURIComponent(c.id)}:${idx + 1}`; to3d.setAttribute('aria-label', `Примерить ткань ${c.title}, ${k.name.toLowerCase()} на мебели в 3D`); }
       count.innerHTML = ks.length > 1 ? `<span aria-hidden="true">${pad2(idx + 1)} / ${pad2(ks.length)}</span><span class="sr-only">Цвет ${idx + 1} из ${ks.length}</span>` : '';
       steps.forEach((b) => { b.hidden = ks.length < 2; });
       syncCart();
@@ -993,7 +996,7 @@
       if (key !== lastMsg) { lastMsg = key; sent = new Set(); after.hidden = true; }
       const n = ps.length, done = sent.size;
       split.hidden = n < 2;
-      if (n > 1) split.innerHTML = typo(done ? `Отправлено: ${Math.min(done, n)} из ${n}. Нажмите ещё раз — следующая часть.` : `Заявка длинная — она уйдёт ${n} сообщениями. Отправьте их по очереди этой кнопкой.`);
+      if (n > 1) split.innerHTML = typo(done >= n ? `Все ${n} ${plural3(n, ['часть', 'части', 'частей'])} открыты в WhatsApp.` : done ? `Отправлено: ${done} из ${n}. Нажмите ещё раз — следующая часть.` : `Заявка длинная — она уйдёт ${n} сообщениями. Отправьте их по очереди этой кнопкой.`);
       let a = $('a', sends);
       if (!a) {
         a = document.createElement('a');

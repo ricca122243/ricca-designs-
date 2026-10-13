@@ -239,7 +239,10 @@
         <li><span class="any__n" aria-hidden="true">02</span>Подберём размер и&nbsp;ткань</li>
         <li><span class="any__n" aria-hidden="true">03</span>Сошьём в&nbsp;ателье</li>
       </ol>
-      <a class="btn btn--fill any__btn" href="https://wa.me/77084802047" data-wa="photo"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Отправить фото в&nbsp;WhatsApp</a>
+      <div class="any__acts">
+        <a class="btn btn--fill any__btn" href="https://wa.me/77084802047" data-wa="photo"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Отправить фото в&nbsp;WhatsApp</a>
+        <a class="caps-link any__3d" href="configurator.html">Собрать онлайн в&nbsp;3D<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
     </div>
   </div>
 </section>
@@ -400,6 +403,7 @@
         <h2 class="foot__h" id="fc-2">Покупателям</h2>
         <ul role="list">
           <li><a href="#showroom">Шоурум в&nbsp;Алматы</a></li>
+          <li><a href="configurator.html">Собрать онлайн в&nbsp;3D</a></li>
           <li><a href="#faq">Доставка по&nbsp;РК</a></li>
           <li><a href="#faq">Гарантия 3&nbsp;года</a></li>
           <li><a href="https://wa.me/77084802047" data-wa="master">Написать мастеру</a></li>
@@ -477,7 +481,10 @@
 <dialog class="view" id="view" aria-labelledby="view-title">
   <div class="view__bar">
     <button class="view__back" type="button" data-close><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg><span data-view-back>Каталог</span></button>
-    <button class="icon-btn" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <span class="view__end">
+      <button class="icon-btn hdr__sl" type="button" data-open-cart aria-haspopup="dialog" aria-label="Корзина, пусто"><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span class="hdr__count" data-cart-vn aria-hidden="true" hidden>0</span></button>
+      <button class="icon-btn" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </span>
   </div>
   <div class="wrap view__body">
     <header class="view__head">
@@ -491,7 +498,7 @@
 </dialog>
 
 <!-- Окно изделия: все фото (свайп, стрелки, миниатюры, ←/→); справа — название, тип, факты из js/catalog-data.js (габариты, механизм,
-     гарантия, доставка), «Размер и ткань — под заказ»; заказ: количество, ткань из библиотеки (или «подберём в шоуруме»), размер,
+     гарантия, доставка), «Размер и ткань — под заказ»; заказ: количество, ткань из библиотеки (или «подберём вместе»), размер,
      комментарий → «Добавить в корзину» (js/cart.js); «Узнать цену» в WhatsApp; описание и материалы — в «Подробнее» -->
 <dialog class="pd" id="product" aria-labelledby="pd-title">
   <button class="icon-btn pd__close" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
@@ -521,25 +528,28 @@
           <span class="pd__lbl" id="pd-qty-l">Количество</span>
           <div class="qty" role="group" aria-labelledby="pd-qty-l">
             <button class="qty__b" type="button" data-pd-qty="-1" aria-label="Меньше"><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg></button>
-            <output class="qty__n" data-pd-qty-n aria-live="polite">1</output>
+            <output class="qty__n" data-pd-qty-n aria-live="polite">1&nbsp;шт.</output>
             <button class="qty__b" type="button" data-pd-qty="1" aria-label="Больше"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></button>
           </div>
         </div>
         <div class="pd__row">
           <label class="pd__lbl" for="pd-fab">Ткань</label>
           <div class="pd__field">
-            <span class="sel"><select class="fld" id="pd-fab" data-pd-fab><option value="">Подберём в&nbsp;шоуруме</option></select><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></span>
-            <div class="sw" data-pd-sw role="group" aria-label="Цвет ткани" hidden></div>
+            <span class="sel"><select class="fld" id="pd-fab" data-pd-fab><option value="">Подберём вместе</option></select><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></span>
+            <div class="sw" data-pd-sw role="radiogroup" aria-label="Цвет ткани" hidden></div>
             <p class="pd__fabv" data-pd-fabv aria-live="polite" hidden></p>
           </div>
         </div>
         <div class="pd__row">
           <label class="pd__lbl" for="pd-size">Размер</label>
-          <input class="fld" id="pd-size" data-pd-size type="text" maxlength="80" autocomplete="off" placeholder="Если знаете: 260 × 95 см">
+          <div class="pd__field pd__field--size">
+            <span class="sel" hidden><select class="fld" id="pd-sizes" data-pd-sizes></select><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></span>
+            <input class="fld" id="pd-size" data-pd-size type="text" maxlength="80" autocomplete="off" placeholder="Если знаете: 260 × 95 см">
+          </div>
         </div>
         <div class="pd__row">
-          <label class="pd__lbl" for="pd-note">Комментарий</label>
-          <textarea class="fld" id="pd-note" data-pd-note rows="2" maxlength="300" placeholder="Механизм, опоры, пожелания"></textarea>
+          <label class="pd__lbl" for="pd-note">Пожелания</label>
+          <textarea class="fld" id="pd-note" data-pd-note rows="2" maxlength="300" placeholder="Механизм, опоры, посадка"></textarea>
         </div>
       </div>
       <div class="pd__actions">
@@ -592,14 +602,16 @@
       <p class="lb__piece" data-fz-piece></p>
       <div class="fz__btns">
         <a class="btn btn--fill fz__wa" data-fz-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Хочу эту ткань</a>
-        <button class="btn btn--line fz__cart" type="button" data-fz-cart><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg>В&nbsp;корзину&nbsp;— образец</button>
+        <button class="btn btn--line fz__cart" type="button" data-fz-cart><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg>В&nbsp;корзину&nbsp;— эта ткань</button>
+        <!-- конструктор 3D с этой тканью: js/site.js ставит href = configurator.html#f=<коллекция>:<N> -->
+        <a class="caps-link fz__3d" data-fz-3d href="configurator.html">Примерить на&nbsp;мебели в&nbsp;3D<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
       <p class="lb__count" data-fz-count aria-live="polite"></p>
     </figcaption>
   </figure>
 </dialog>
 
-<!-- Корзина: модели каталога, конструктора и образцы тканей → одна заявка в WhatsApp (js/cart.js, localStorage ricca-cart-v1).
+<!-- Корзина: модели каталога, конструктора и ткани → одна заявка в WhatsApp (js/cart.js, localStorage ricca-cart-v1).
      Строки, количество и комментарии строит js/site.js; длинная заявка делится на части (кнопки «Часть 1 из N»). Цен нет. -->
 <dialog class="sl cart" id="cart" aria-labelledby="cart-title">
   <div class="sl__head">
@@ -609,14 +621,14 @@
   <div class="cart__body">
     <ul class="sl__list cart__list" data-cart-list aria-label="Позиции в корзине"></ul>
     <div class="sl__empty" data-cart-empty>
-      <p>Пока пусто. Складывайте модели из&nbsp;каталога и&nbsp;образцы тканей&nbsp;— и&nbsp;отправьте заявку одним сообщением в&nbsp;WhatsApp.</p>
+      <p>Пока пусто. Складывайте модели из&nbsp;каталога и&nbsp;ткани&nbsp;— и&nbsp;отправьте заявку одним сообщением в&nbsp;WhatsApp.</p>
       <a class="caps-link" href="#catalog" data-cart-browse>Смотреть каталог<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
     <form class="cart__form" data-cart-form novalidate>
       <p class="pd__lbl cart__form-t">Для заявки&nbsp;— по&nbsp;желанию</p>
       <div class="cart__f"><label class="pd__lbl" for="cart-name">Имя</label><input class="fld" id="cart-name" name="name" type="text" maxlength="80" autocomplete="name"></div>
-      <div class="cart__f"><label class="pd__lbl" for="cart-city">Город</label><input class="fld" id="cart-city" name="city" type="text" maxlength="80" autocomplete="address-level2" placeholder="Алматы"></div>
-      <div class="cart__f"><label class="pd__lbl" for="cart-comment">Комментарий к&nbsp;заказу</label><textarea class="fld" id="cart-comment" name="comment" rows="2" maxlength="600" placeholder="Сроки, адрес доставки, удобное время для связи"></textarea></div>
+      <div class="cart__f"><label class="pd__lbl" for="cart-city">Город</label><input class="fld" id="cart-city" name="city" type="text" maxlength="80" autocomplete="address-level2" placeholder="Например, Алматы"></div>
+      <div class="cart__f"><label class="pd__lbl" for="cart-comment">Комментарий к&nbsp;заказу</label><textarea class="fld" id="cart-comment" name="comment" rows="2" maxlength="300" placeholder="Сроки, адрес доставки, удобное время для связи"></textarea></div>
     </form>
   </div>
   <div class="sl__foot cart__foot" data-cart-foot>

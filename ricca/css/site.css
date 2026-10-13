@@ -134,6 +134,7 @@ textarea.fld { min-height: 64px; resize: vertical; }
 .hdr__count { position: absolute; top: 7px; right: 5px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 8px; background: currentColor; font: 600 9px/15px var(--sans); text-align: center; }
 .hdr .hdr__count { background: var(--ink); color: var(--paper); }
 .hdr.is-over .hdr__count, .hdr.is-dark .hdr__count { background: var(--on-noir); color: #111; }
+.view__bar .hdr__count { background: var(--ink); color: var(--paper); }
 .hdr__menu { display: none; }
 @media (max-width: 899px) {
   .hdr__nav { display: none; }
@@ -365,6 +366,9 @@ textarea.fld { min-height: 64px; resize: vertical; }
 @media (max-width: 599px) { .styles__list { font-size: 19px; } }
 @media (max-width: 599px) { .any__line { font-size: 21px; } .any__btn { width: 100%; } }
 @media (max-width: 389px) { .any__btn { gap: 10px; padding: 0 14px; letter-spacing: .12em; } }   /* 360: «Отправить фото в WhatsApp» — в одну строку */
+/* WhatsApp и тихая ссылка «Собрать онлайн в 3D» (configurator.html) — в строку; на телефоне ссылка под кнопкой */
+.any__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 36px; width: 100%; }
+@media (max-width: 599px) { .any__acts { gap: 8px 0; } }
 
 /* ==========================================================================
    4. КАК ЗАКАЗАТЬ — четыре шага под линиями
@@ -398,6 +402,7 @@ textarea.fld { min-height: 64px; resize: vertical; }
 .atelier__text .title { margin-bottom: 10px; }
 .atelier__lead { font: 300 24px/1.35 var(--serif); color: var(--ink); }
 .atelier__p { font: 400 14px/1.7 var(--sans); color: var(--ink-2); max-width: 40ch; }
+@media (min-width: 900px) { .atelier__p { max-width: 52ch; } }   /* в ширину строки «Полный цикл» — без узкой рваной колонки */
 .kit { display: flex; flex-wrap: wrap; gap: 24px clamp(40px, 5vw, 72px); margin: 22px 0 8px; }
 .kit > div { display: grid; gap: 6px; }
 .kit dt { font: 300 24px/1.15 var(--serif); color: var(--ink); }
@@ -576,6 +581,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .view { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .view__bar { position: sticky; top: 0; z-index: 5; height: var(--hdr); display: flex; align-items: center; justify-content: space-between; padding: 0 max(calc(var(--pad) - 10px), calc((100% - 1440px) / 2 - 10px)); background: var(--paper); border-bottom: 1px solid transparent; transition: border-color 300ms; }
 .view.is-scrolled .view__bar { border-color: var(--line); }
+.view__end { display: flex; align-items: center; }   /* корзина и ✕ — справа в полосе экрана категории */
 .view__back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; font: 500 11px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
 .view__back .ico { width: 16px; height: 16px; }
 .view__body { padding: clamp(56px, 7vw, 112px) 0 clamp(96px, 10vw, 160px); }
@@ -741,10 +747,11 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .pd__row .fld { border-bottom-color: transparent; }
 .pd__row .fld:focus { border-bottom-color: var(--ink); }
 .pd__field { display: grid; gap: 10px; min-width: 0; padding-bottom: 4px; }
+.pd__field--size { gap: 0; padding-bottom: 0; }   /* размеры из каталога списком; «Свой размер» — поле под ним */
 .sw { display: flex; flex-wrap: wrap; gap: 6px; }
 .sw__b { position: relative; width: 44px; height: 44px; background: var(--c, var(--paper-2)); }
 .sw__b img { width: 100%; height: 100%; object-fit: cover; }
-.sw__b[aria-pressed="true"] { outline: 1px solid var(--ink); outline-offset: 2px; }
+.sw__b[aria-checked="true"] { outline: 1px solid var(--ink); outline-offset: 2px; }
 .pd__fabv { font: 400 13px/1.5 var(--sans); color: var(--ink-2); }
 .pd__incart { display: flex; flex-wrap: wrap; align-items: center; gap: 0 18px; max-width: 420px; margin-top: -6px; font: 400 13px/1.6 var(--sans); color: var(--ink-2); }
 .pd__actions { display: grid; gap: 10px; margin-top: 4px; max-width: 420px; }
@@ -778,13 +785,14 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
      «Узнать цену» — квадрат со значком WhatsApp (подпись остаётся для чтения с экрана) */
   .pd__info { padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
   .pd__actions { position: fixed; left: 0; right: 0; bottom: 0; z-index: 4; grid-template-columns: minmax(0, 1fr) 52px; gap: 8px; margin: 0; padding: 10px var(--pad) calc(10px + env(safe-area-inset-bottom)); background: var(--paper); border-top: 1px solid var(--line); }
-  .pd .toast { bottom: calc(86px + env(safe-area-inset-bottom)); }
+  .pd .toast { top: calc(56px + env(safe-area-inset-top)); bottom: auto; }   /* сверху, под ✕: строку «В корзине…» и полосу не закрываем */
+  .pd { scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom)); }   /* поле в фокусе — над полосой «Добавить в корзину» */
   .pd__actions [data-pd-wa] { padding: 0; }
   .pd__actions [data-pd-add] { padding: 0 16px; gap: 10px; }
   .pd__actions [data-pd-wa] > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
-@media (max-width: 599px) { .pd__row { grid-template-columns: 92px minmax(0, 1fr); gap: 12px; } }
-@media (max-width: 359px) { .pd__facts > div { grid-template-columns: 92px minmax(0, 1fr); gap: 12px; } }   /* «2740 × 1090 × 760 мм» — без выхода за край на 320 px */
+@media (max-width: 899px) and (max-height: 520px) { .pd:has(.pd__order :is(input, textarea):focus) .pd__actions { display: none; } }   /* клавиатура открыта — полосу убираем */
+@media (max-width: 359px) { .pd__facts > div, .pd__row { grid-template-columns: 92px minmax(0, 1fr); gap: 12px; } }   /* «2740 × 1090 × 760 мм» — без выхода за край на 320 px */
 @media (max-width: 389px) { .pd__wa-tail { display: none; } }   /* узкий телефон: «Узнать цену» + значок WhatsApp — в одну строку */
 
 /* лайтбокс работ */
@@ -816,6 +824,8 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .fz__btns { grid-column: 2; grid-row: 1 / span 3; display: grid; gap: 8px; }
 .fz__btns .fz__wa { grid-column: auto; grid-row: auto; }
 .fz__cart[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.fz__3d { justify-self: center; margin-top: 2px; color: var(--ink-2); }   /* «Примерить на мебели в 3D» — тихая ссылка под кнопками */
+@media (hover: hover) { .fz__3d:hover { color: var(--ink); } }
 @media (max-width: 599px) {
   .fz__wa { grid-column: 1; grid-row: 4; width: 100%; margin-top: 10px; }
   .fz__btns { grid-column: 1; grid-row: 4; margin-top: 10px; }
@@ -869,7 +879,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .cart__note, .cart__split { justify-self: start; font: 400 12px/1.5 var(--sans); color: var(--ink-2); }
 .cart__note { margin-bottom: 8px; }
 .cart__split { margin-bottom: 6px; }
-.cart__sends { display: grid; gap: 8px; width: 100%; }
+.cart__sends { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; width: 100%; }
 .cart__sends .btn--fill.is-sent { background: transparent; color: var(--ink); }
 .cart__after { display: grid; gap: 6px; width: 100%; padding-top: 12px; }
 .cart__after-t { font: 400 14px/1.5 var(--sans); }
@@ -882,7 +892,8 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   .sl__foot { padding-inline: var(--pad); }
   .fz .toast { top: calc(64px + env(safe-area-inset-top)); bottom: auto; }   /* кнопки образца внизу не закрываем */
 }
-@media (max-width: 389px) { .cart__sends .btn { letter-spacing: .14em; padding: 0 12px; } }
+@media (max-width: 419px) { .cart__sends .btn { letter-spacing: .14em; padding: 0 12px; } }
+@media (max-height: 520px) { .cart:has(.cart__form :focus) .cart__foot { display: none; } }   /* клавиатура открыта — место форме */
 @media (max-width: 359px) { .cart__send-tail { display: none; } }   /* 320 px: «Отправить в WhatsApp» — в одну строку */
 
 /* тост */

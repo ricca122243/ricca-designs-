@@ -473,3 +473,39 @@ ul, ol { padding: 0; list-style: none; }
 .rp__sz { flex: none; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .rp__mine-tag { display: inline-block; margin-left: 6px; font: normal 500 9px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
 .ar__qrh { display: block; margin-bottom: 8px; font: 500 11px/1.3 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink); }
+
+/* ---------- ткани: отделка экокожи под названием цвета ---------- */
+.sw__f { display: block; margin-top: 2px; font-size: 9px; letter-spacing: .04em; color: var(--ink-2); }
+
+/* ---------- комната: стиль (стены, пол) и «Ткани к вашей комнате» (room.js → renderStyle) ---------- */
+.rs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.rs__b { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px 0 10px; border: 1px solid var(--line-2); font: 400 13px/1.2 var(--sans); color: var(--ink); transition: border-color 250ms var(--ease), background 250ms var(--ease), color 250ms var(--ease); }
+.rs__b[aria-checked="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.rs__c { flex: none; width: 18px; height: 18px; box-shadow: inset 0 0 0 1px rgba(17, 17, 17, .12); }
+.rs__b[aria-checked="true"] .rs__c { box-shadow: inset 0 0 0 1px rgba(250, 250, 248, .5); }
+.rs__c--oak { background-image: repeating-linear-gradient(0deg, rgba(90, 66, 40, .28) 0 1px, transparent 1px 6px); }
+.rs__c--darkoak { background-image: repeating-linear-gradient(0deg, rgba(25, 16, 9, .45) 0 1px, transparent 1px 6px); }
+.rs__c--marble { background-image: linear-gradient(135deg, transparent 45%, rgba(118, 112, 104, .35) 50%, transparent 56%); }
+@media (hover: hover) { .rs__b:not([aria-checked="true"]):hover { border-color: var(--ink); } }
+.rs-fab { padding-top: 20px; border-top: 1px solid var(--line); }
+.rs-fab__h { display: flex; align-items: baseline; gap: 10px; }
+.rs-fab__tag { padding: 3px 6px 2px; border: 1px solid var(--line-2); font-size: 8.5px; letter-spacing: .16em; color: var(--ink-2); }
+.rs-fab__why { margin-bottom: 14px; font: 400 12px/1.55 var(--sans); color: var(--ink-2); }
+.rs-fab__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; border-top: 1px solid var(--line); }
+.rs__sw { display: grid; grid-template-columns: 48px minmax(0, 1fr); align-items: center; gap: 12px; min-height: 68px; padding: 10px 0; border-bottom: 1px solid var(--line); text-align: left; }
+.rs__sw:disabled { opacity: .5; cursor: default; }
+.rs__img { display: block; width: 48px; height: 48px; background-size: cover; background-position: center; box-shadow: inset 0 0 0 1px rgba(17, 17, 17, .08); transition: box-shadow 250ms var(--ease); }
+.rs__sw[aria-pressed="true"] .rs__img { box-shadow: inset 0 0 0 2px var(--paper), 0 0 0 1px var(--ink); }
+.rs__t { display: grid; gap: 2px; min-width: 0; }
+.rs__n { font: 400 13px/1.3 var(--sans); color: var(--ink); }
+.rs__sw[aria-pressed="true"] .rs__n { font-weight: 500; }
+.rs__k { font: 500 9px/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.rs__w { font: 400 11px/1.35 var(--sans); color: var(--ink-2); }
+@media (hover: hover) { .rs__sw:not(:disabled):hover .rs__img { box-shadow: 0 0 0 1px var(--ink); } }
+@media (max-width: 380px) { .rs-fab__list { grid-template-columns: 1fr; } }
+.rs-fab__to { margin-top: 14px; font: 400 12px/1.5 var(--sans); color: var(--ink); }
+.rs-fab__fine { margin-top: 6px; font: 400 11px/1.55 var(--sans); color: var(--ink-2); }
+.rp__fab { display: flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 11.5px; color: var(--ink-2); }
+.rp__fab-c { flex: none; width: 14px; height: 14px; background-size: cover; background-position: center; box-shadow: inset 0 0 0 1px rgba(17, 17, 17, .1); }
+.rp__items button > span:first-child { display: grid; justify-items: start; }
+@media (max-width: 380px) { .rs__b { padding: 0 11px 0 8px; gap: 8px; font-size: 12.5px; } }

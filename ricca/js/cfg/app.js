@@ -6,7 +6,7 @@
 import * as F from './furniture3d.js'; import * as M from './materials.js'; import { createStage } from './stage.js'; import { validate } from './validate.js';
 
 import * as P from './params.js';
-import { getLibrary, findFabric, defaultFabric, fabricOf, fabricRef } from './fabrics.js';
+import { getLibrary, findFabric, defaultFabric, fabricOf, fabricRef, fabricShort, findFabricShort, allFabrics } from './fabrics.js';
 import { encodeCfg, decodeCfg, cfgId, waText, waSizeText, waUrl, summaryLines, titleOf, optLabel, backLook, fmtCm, toCm, encodeRoom, decodeRoom, roomText } from './share.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -135,7 +135,22 @@ function applyParams(type, params) {
 const curDims = () => { try { return P.dims(state.type, state.params); } catch (e) { return null; } };
 const id = () => cfgId({ type: state.type, params: state.params, fabric: state.type === 'table' ? null : state.fabric });
 const cfgState = () => ({ type: state.type, params: state.params, fabric: state.type === 'table' ? null : state.fabric, qty: state.qty, note: state.note });
-const variantLink = () => (isHttp ? `${location.origin}${location.pathname}#cfg=${encodeCfg(cfgState(), { defaults: P.DEFAULTS[state.type] })}` : '');
+/* адрес варианта: #cfg=<параметры>&f=<коллекция>:<N> (ткань — номером цвета, как на сайте #fabric-<коллекция>-<N>) */
+const hashOf = () => {
+  const s = cfgState(); const fs = fabricShort(s.fabric);
+  return `#cfg=${encodeCfg({ ...s, fabric: fs ? null : s.fabric }, { defaults: P.DEFAULTS[state.type] })}${fs ? `&f=${fs}` : ''}`;
+};
+const variantLink = () => (isHttp ? `${location.origin}${location.pathname}${hashOf()}` : '');
+/* «#cfg=…&f=alba:12», «#f=alba:12» (со страницы «Ткани»), «#room=…» → части */
+function parseHash(h) {
+  const out = { cfg: null, f: null, room: null };
+  String(h || '').replace(/^#/, '').split('&').forEach((part) => {
+    if (part.startsWith('cfg=')) out.cfg = part.slice(4);
+    else if (part.startsWith('f=')) { try { out.f = decodeURIComponent(part.slice(2)); } catch (e) { out.f = part.slice(2); } }
+    else if (part.startsWith('room=')) out.room = part.slice(5);
+  });
+  return out;
+}
 const hasErrors = () => state.errors.length > 0 || Object.keys(state.inputErr).length > 0;
 const firstError = () => Object.values(state.inputErr)[0] || state.errors[0] || '';
 
@@ -149,10 +164,21 @@ function fromCfgString(str) {
   qtyTouched = d.qty > 1;
   return true;
 }
+let arrivedFabric = null;         // ткань из ссылки «Примерить на мебели в 3D» (#f=…)
 function load() {
-  const h = location.hash;
-  if (h.startsWith('#cfg=') && fromCfgString(h.slice(5))) return 'hash';
-  if (h.startsWith('#room=')) state.mode = 'room';
+  const h = parseHash(location.hash);
+  const fab = h.f ? findFabricShort(h.f, lib) : null;
+  if (h.cfg && fromCfgString(h.cfg)) { if (fab) state.fabric = fab; return 'hash'; }
+  if (h.room) state.mode = 'room';
+  const src = loadStored();
+  if (fab) {
+    if (state.type === 'table') { applyParams('sofa', {}); state.qty = 1; }        // у стола ткани нет — показываем на диване
+    state.fabric = fab; arrivedFabric = fab;
+    return 'fabric';
+  }
+  return src;
+}
+function loadStored() {
   const raw = lsGet(LS.cfg);
   if (raw) {
     try {
@@ -176,7 +202,7 @@ function writeHash() {
   clearTimeout(hashT);
   hashT = setTimeout(() => {
     if (state.mode !== 'model') return;
-    lastHash = '#cfg=' + encodeCfg(cfgState(), { defaults: P.DEFAULTS[state.type] });
+    lastHash = hashOf();
     try { history.replaceState(null, '', lastHash); } catch (e) { /* file:// и т. п. */ }
   }, 300);
 }
@@ -364,8 +390,9 @@ function renderFabric() {
       ${c.kindTitle || c.facts ? `<span class="fab__col-f">${esc([cap(c.kindTitle), c.facts].filter(Boolean).join(' · '))}</span>` : ''}</button>`).join('');
   $('#fab-sw').innerHTML = col.colours.map((c) => {
     const on = f && f.typeId === t.id && f.collectionId === col.id && f.slug === c.slug;
-    return `<button class="sw" type="button" role="radio" aria-checked="${on}" data-fslug="${esc(c.slug)}" title="${esc(c.name)}">
-      <span class="sw__c" style="background-color:${c.hex};background-image:url('${esc(c.src450)}')"></span><span class="sw__n">${esc(c.name)}</span></button>`;
+    const nm = c.finish ? `${c.name}, ${c.finish}` : c.name;
+    return `<button class="sw" type="button" role="radio" aria-checked="${on}" data-fslug="${esc(c.slug)}" title="${esc(nm)}" aria-label="${esc(nm)}">
+      <span class="sw__c" style="background-color:${c.hex};background-image:url('${esc(c.src240 || c.src450)}')"></span><span class="sw__n" aria-hidden="true">${esc(c.name)}${c.finish ? `<span class="sw__f">${esc(c.finish)}</span>` : ''}</span></button>`;
   }).join('');
   renderFabricPreview();
 }
@@ -373,9 +400,9 @@ function renderFabricPreview() {
   const f = state.fabric; if (!f) return;
   const img = $('#fab-pv-img');
   if (img.dataset.src !== f.src900) { img.dataset.src = f.src900; img.src = f.src450; img.srcset = `${f.src450} 450w, ${f.src900} 900w`; img.sizes = '(min-width: 900px) 200px, 40vw'; }
-  img.alt = `${f.typeTitle} ${f.collectionTitle}, цвет «${f.colour}»`;
+  img.alt = `${f.typeTitle} ${f.collectionTitle}, цвет «${f.colour}»${f.finish ? `, ${f.finish}` : ''}`;
   $('#fab-pv-t').textContent = `${f.collectionTitle} · ${f.colour}`;
-  $('#fab-pv-f').textContent = f.typeTitle;
+  $('#fab-pv-f').textContent = [f.kindTitle && !/:/.test(f.kindTitle) ? cap(f.kindTitle) : f.typeTitle, f.finish].filter(Boolean).join(' · ');
 }
 function renderFabricVisibility() {
   const none = state.type === 'table';
@@ -485,7 +512,7 @@ function rebuild(q = quality()) {
 function applyFabric() {
   if (!stage || !piece || !mats) return;
   try {
-    const nf = M.fabricMaterial({ hex: state.fabric.hex, kind: state.fabric.kind, src450: state.fabric.src450, collectionId: state.fabric.collectionId, quality: quality() });
+    const nf = M.fabricMaterial({ hex: state.fabric.hex, kind: state.fabric.kind, src450: state.fabric.src450, collectionId: state.fabric.collectionId, finish: state.fabric.finish, quality: quality() });
     if (typeof F.setMaterials === 'function') F.setMaterials(piece, { fabric: nf });           // furniture3d.js: ткань + швы по userData.matKey
     else {
       const old = mats.fabric;
@@ -697,9 +724,9 @@ function loadRoom() {
   roomLoading = import('./room.js').then((m) => {
     roomApi = m.mountRoom({
       stage, panel: $('#room-panel'), viewport: $('#vp'),
-      engine: { build: F.build, disposePiece: F.disposePiece, materialSet: M.materialSet, fabricMaterial: M.fabricMaterial, normalize: P.normalize, dims: P.dims, parts: P.parts, labelOf: P.labelOf, DEFAULTS: P.DEFAULTS, TYPES: P.TYPES },
+      engine: { build: F.build, disposePiece: F.disposePiece, setMaterials: F.setMaterials, materialSet: M.materialSet, fabricMaterial: M.fabricMaterial, normalize: P.normalize, dims: P.dims, parts: P.parts, labelOf: P.labelOf, DEFAULTS: P.DEFAULTS, TYPES: P.TYPES },
       share: { encodeRoom, decodeRoom, roomText, waUrl, titleOf, fmtCm },
-      fabrics: { library: lib, findFabric, defaultFabric: () => defaultFabric(lib), fabricRef },
+      fabrics: { library: lib, findFabric, defaultFabric: () => defaultFabric(lib), fabricRef, all: () => allFabrics(lib) },
       getCurrent: () => ({ type: state.type, params: { ...state.params }, fabric: state.type === 'table' ? null : state.fabric }),
       onEdit: (item) => editFromRoom(item),
       initialHash: location.hash.startsWith('#room=') ? location.hash.slice(6) : null,
@@ -852,8 +879,14 @@ function bind() {
   window.addEventListener('hashchange', () => {
     const h = location.hash;
     if (h === lastHash) return;
-    if (h.startsWith('#cfg=') && fromCfgString(h.slice(5))) { syncTypes(); fabUI = { typeId: null, collectionId: null }; renderFabric(); setMode('model'); setState({}, { structural: true }); }
-    else if (h.startsWith('#room=')) setMode('room');
+    const ph = parseHash(h);
+    const fab = ph.f ? findFabricShort(ph.f, lib) : null;
+    if ((ph.cfg && fromCfgString(ph.cfg)) || fab) {
+      if (fab) { if (!ph.cfg && state.type === 'table') applyParams('sofa', {}); state.fabric = fab; }
+      syncTypes(); fabUI = { typeId: null, collectionId: null }; renderFabric(); setMode('model'); setState({}, { structural: true });
+      if (fab && !ph.cfg) { openStep(4); toast(`На модели: ${fab.collectionTitle} · ${fab.colour}`); }
+    }
+    else if (ph.room) setMode('room');
   });
 }
 
@@ -862,10 +895,18 @@ function init() {
   const src = load();
   renderTypes(); syncTypes(); renderFabricTabs(); renderFabric();
   renderForm(); renderSize(); renderFabricVisibility(); renderSummary(); renderHeads(); renderViewportSize();
-  state.step = src === 'hash' ? 5 : 1;
+  state.step = src === 'hash' ? 5 : src === 'fabric' ? 4 : 1;
   syncSteps();
   bind();
-  initStage().then(() => { if (state.mode === 'room') setMode('room'); });
+  initStage().then(() => {
+    if (state.mode === 'room') setMode('room');
+    if (arrivedFabric) toast(`На модели: ${arrivedFabric.collectionTitle} · ${arrivedFabric.colour}`);
+  });
+  /* пришли со страницы «Ткани» — сразу к шагу «Ткань» (на телефоне — под моделью, на компьютере — в колонке справа) */
+  if (src === 'fabric') {
+    if (mqPhone.matches) openStep(4);
+    else requestAnimationFrame(() => { const li = $('.step[data-step="4"]'); if (li) window.scrollTo({ top: Math.max(0, li.getBoundingClientRect().top + window.scrollY - $('#hdr').offsetHeight - 16), behavior: 'auto' }); });
+  }
   writeHash(); save();
   document.documentElement.classList.add('cfg-ready');
   /* для автоматических проверок (только с ?cfgtest в адресе) */

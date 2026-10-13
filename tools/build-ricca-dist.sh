@@ -28,6 +28,21 @@ if site_code | grep -E 'vendor/[A-Za-z0-9_.-]+\.js' >/dev/null; then   # без 
 else
   echo "vendor/ (GSAP) сайтом не используется — в архив не идёт"
 fi
+# Конструктор «Соберите свою мебель» (configurator.html): страница, её стили, ES-модули js/cfg/, three.js, model-viewer (только для AR),
+# QR-генератор и иконки img/cfg/. Ткани у него те же, что на сайте: js/fabrics-data.js (уже в js/) и образцы img/fabrics (по ссылкам ниже)
+cfg_page=0
+if [ -f "$SRC/configurator.html" ]; then
+  cfg_page=1
+  cp "$SRC/configurator.html" "$OUT/"
+  for f in $(grep -ohE 'href="css/[A-Za-z0-9_.-]+\.css"' "$SRC/configurator.html" | sed -e 's/^href="//' -e 's/"$//' | sort -u); do cp "$SRC/$f" "$OUT/$f"; done
+  mkdir -p "$OUT/js/cfg" && cp "$SRC"/js/cfg/*.js "$OUT/js/cfg/" && rm -f "$OUT"/js/cfg/_*.js   # _*.js — временные стенды проверок
+  mkdir -p "$OUT/vendor"
+  for v in three model-viewer qrcode; do
+    [ -d "$SRC/vendor/$v" ] || { echo "нет папки: vendor/$v"; exit 1; }
+    cp -r "$SRC/vendor/$v" "$OUT/vendor/"
+  done
+  mkdir -p "$OUT/img/cfg" && cp -r "$SRC/img/cfg/." "$OUT/img/cfg/"
+fi
 
 # Медиа и шрифты: копируем только файлы, на которые ссылаются html/css/js (включая srcset и data-атрибуты)
 # HTML берём без комментариев: в них лежат отключённые блоки (например, редакционный кадр, которого ещё нет)
@@ -41,6 +56,16 @@ for ref in $refs; do
   mkdir -p "$OUT/$(dirname "$ref")"
   cp "$SRC/$ref" "$OUT/$ref"
 done
+# Медиа и шрифты конструктора: ссылки из configurator.html и js/cfg/*.js (образцы тканей запасной библиотеки, шрифты чертежа, иконка)
+if [ "$cfg_page" -eq 1 ]; then
+  cfg_refs=$( (sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$SRC/configurator.html"; cat "$OUT"/js/cfg/*.js) \
+         | grep -ohE '(img|fonts)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2)' | sort -u)
+  for ref in $cfg_refs; do
+    [ -f "$SRC/$ref" ] || { echo "нет файла (конструктор): $ref"; exit 1; }
+    mkdir -p "$OUT/$(dirname "$ref")"
+    cp "$SRC/$ref" "$OUT/$ref"
+  done
+fi
 # Ткани (js/fabrics-data.js): образцы скопированы по ссылкам выше. Малую фактуру texture-160.webp js/site.js строит из
 # texture-600.webp заменой имени — в коде её пути нет, поэтому копируем её рядом с каждой texture-600 (иначе 404 на сайте)
 for ref in $refs; do
@@ -101,6 +126,11 @@ missing=0
 for ref in $( (sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$OUT"/index.html; cat "$OUT"/css/*.css) | grep -ohE '(img|video|fonts|css|js|vendor)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css|js)' | sed 's#^\.\./##' | sort -u); do
   [ -f "$OUT/$ref" ] || { echo "нет файла: $ref"; missing=1; }
 done
+if [ "$cfg_page" -eq 1 ]; then
+  for ref in $(sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$OUT"/configurator.html | grep -ohE '(img|fonts|css|js|vendor)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|css|js)' | sort -u); do
+    [ -f "$OUT/$ref" ] || { echo "нет файла (конструктор): $ref"; missing=1; }
+  done
+fi
 [ "$missing" -eq 0 ] || exit 1
 # Внутренние заметки (*.md: MANIFEST каталога и т. п.) в архив не попадают
 md_files=$(find "$OUT" -name '*.md')

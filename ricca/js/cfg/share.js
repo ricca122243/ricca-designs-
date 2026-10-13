@@ -172,7 +172,10 @@ function armsLine(type, p) {
 }
 export function fabricLine(f) {
   if (!f || !f.typeId) return 'подберём вместе';
-  return `${String(f.typeTitle || '').toLowerCase()} ${f.collectionTitle}, цвет «${f.colour}»`;
+  const type = String(f.typeTitle || '').toLowerCase();
+  /* «экокожа Экокожа» не пишем: у коллекции без своего имени — только тип; отделка экокожи — после цвета */
+  const name = String(f.collectionTitle || '').toLowerCase() === type ? type : `${type} ${f.collectionTitle}`.trim();
+  return `${name}, цвет «${f.colour}»${f.finish ? `, ${String(f.finish).toLowerCase()}` : ''}`;
 }
 
 /* строки итога — те же в «Итоге», в WhatsApp и в таблице чертежа: [{ label, value }]
@@ -259,9 +262,12 @@ export function waSizeText(state, { link = '', id = '' } = {}) {
     link && /^https?:/.test(link) ? `Вариант: ${link}` : ''].filter(Boolean).join('\n');
 }
 
-/* ---------- комната: #room=v1~W.450~L.380~H.270~i.sofa:0,-120,0[:pairs!…] ---------- */
+/* ---------- комната: #room=v1~W.450~L.380~H.270[~wc.graphite~fl.concrete]~i.sofa:0,-120,0[:pairs!…] ----------
+   wc — цвет стен, fl — пол (room.js → WALLS / FLOORS); по умолчанию (молочный, светлый дуб) не пишем */
 export function encodeRoom(room, { defaults = null } = {}) {
   const out = ['v1', `W.${toCm(room.W)}`, `L.${toCm(room.L)}`, `H.${toCm(room.H)}`];
+  if (room.wall && room.wall !== 'milk') out.push(`wc.${enc(room.wall)}`);
+  if (room.floor && room.floor !== 'oak') out.push(`fl.${enc(room.floor)}`);
   for (const it of room.items || []) {
     let s = `i.${it.type}:${toCm(it.x)},${toCm(it.z)},${Math.round(it.rot || 0)}`;
     if (it.params || it.fabric) {
@@ -281,6 +287,7 @@ export function decodeRoom(str, { defaults = null } = {}) {
     const i = p.indexOf('.'); if (i < 1) continue;
     const k = p.slice(0, i), v = p.slice(i + 1);
     if (k === 'W' || k === 'L' || k === 'H') { const n = parseFloat(v); if (n > 0) room[k] = n / 100; continue; }
+    if (k === 'wc' || k === 'fl') { const id = decodeURIComponent(v); if (/^[a-z]+$/.test(id)) room[k === 'wc' ? 'wall' : 'floor'] = id; continue; }
     if (k !== 'i') continue;
     const [type, pos = '', pairs = ''] = v.split(':');
     const [x = 0, z = 0, rot = 0] = pos.split(',').map((n) => parseFloat(n) || 0);

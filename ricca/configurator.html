@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="css/configurator.css">
 <script>document.documentElement.classList.replace('no-js', 'js');</script>
 <script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
-<script src="js/fabrics-data.js" defer></script>
+<script src="js/fabrics-data.js"></script>
 <script type="module" src="js/cfg/app.js"></script>
 </head>
 <body>
@@ -196,8 +196,22 @@
 <label class="rp__f"><span>Высота потолка</span><span class="rp__in"><input inputmode="decimal" autocomplete="off" data-room-dim="H" value="270"><i>см</i></span></label>
 </div>
 </section>
+<section class="rp" aria-labelledby="rp-style">
+<h2 class="rp__h" id="rp-style"><span class="step__n">02</span>Стиль комнаты</h2>
+<p class="opt__l" id="rs-wall">Стены</p>
+<div class="rs" role="radiogroup" aria-labelledby="rs-wall" data-room-walls></div>
+<p class="opt__l" id="rs-floor">Пол</p>
+<div class="rs" role="radiogroup" aria-labelledby="rs-floor" data-room-floors></div>
+<div class="rs-fab" role="group" aria-labelledby="rs-fab-h">
+<p class="opt__l rs-fab__h" id="rs-fab-h">Ткани к&nbsp;вашей комнате<span class="rs-fab__tag">Подсказка</span></p>
+<p class="rs-fab__why" data-room-why></p>
+<div class="rs-fab__list" data-room-sugg></div>
+<p class="rs-fab__to" data-room-sugg-to aria-live="polite"></p>
+<p class="rs-fab__fine">Это подсказка по&nbsp;тону и&nbsp;теплу, решать вам. Любую ткань из&nbsp;библиотеки можно выбрать в&nbsp;«Изменить» у&nbsp;предмета, образцы покажем в&nbsp;шоуруме.</p>
+</div>
+</section>
 <section class="rp" aria-labelledby="rp-add">
-<h2 class="rp__h" id="rp-add"><span class="step__n">02</span>Добавить</h2>
+<h2 class="rp__h" id="rp-add"><span class="step__n">03</span>Добавить</h2>
 <button class="btn btn--fill btn--wide rp__mine" type="button" data-room-add="current"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Мой вариант</button>
 <div class="rp__quick" role="group" aria-label="Быстро добавить">
 <button type="button" data-room-add="sofa"><svg aria-hidden="true"><use href="img/cfg/icons.svg#t-sofa"/></svg>Диван</button>
@@ -209,12 +223,12 @@
 </div>
 </section>
 <section class="rp" aria-labelledby="rp-items">
-<h2 class="rp__h" id="rp-items"><span class="step__n">03</span>В&nbsp;комнате</h2>
+<h2 class="rp__h" id="rp-items"><span class="step__n">04</span>В&nbsp;комнате</h2>
 <ul class="rp__items" role="list" data-room-items></ul>
 <p class="rp__empty" data-room-empty>Пока пусто&nbsp;— добавьте мебель. Двигайте её пальцем или мышью.</p>
 </section>
 <section class="rp" aria-labelledby="rp-cam">
-<h2 class="rp__h" id="rp-cam"><span class="step__n">04</span>Камера</h2>
+<h2 class="rp__h" id="rp-cam"><span class="step__n">05</span>Камера</h2>
 <div class="rp__cam">
 <button class="rp__cb" type="button" data-room-cam="tour" aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-tour"/></svg>Облёт</button>
 <button class="rp__cb" type="button" data-room-cam="eye" aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-eye"/></svg>Взгляд из&nbsp;комнаты</button>
