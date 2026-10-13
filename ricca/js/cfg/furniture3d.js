@@ -447,7 +447,7 @@ function tubeAlong(points, radius, quality, closed = true, dense = 1) {
     const i2 = (i + 1) % N;
     for (let j = 0; j < R; j++) {
       const a = i * (R + 1) + j, b = i2 * (R + 1) + j, c = i2 * (R + 1) + j + 1, d = i * (R + 1) + j + 1;
-      idx.push(a, b, d, b, c, d);
+      idx.push(a, d, b, b, d, c);
     }
   }
   const g = new THREE.BufferGeometry();
@@ -558,8 +558,12 @@ export function build(type, params, materials = {}, opts = {}) {
     return mesh;
   };
   const dense = pr.items.length > 40 ? 2 : pr.items.length > 24 ? 1.6 : 1;
+  const prof = opts.profile ? { geo: 0, tube: 0, merge: 0 } : null;
+  let _t = 0;
   for (const it of pr.items) {
+    if (prof) _t = performance.now();
     const geo = itemGeometry(it, quality, type, dense);
+    if (prof) prof.geo += performance.now() - _t;
     if (it.tiltX) fitTilted(geo, it);
     addMesh(geo, it.mat === 'legs' ? 'legs' : it.mat === 'top' ? 'top' : it.mat === 'mattress' ? 'mattress' : 'fabric', it);
     /* кант и швы */
@@ -598,6 +602,7 @@ export function build(type, params, materials = {}, opts = {}) {
     }
   }
   /* слияние по материалу, если мешей много (меньше draw calls) */
+  if (prof) _t = performance.now();
   if (meshes.length > 40) {
     const byMat = new Map();
     for (const m of meshes) {
@@ -620,7 +625,8 @@ export function build(type, params, materials = {}, opts = {}) {
       group.add(mesh);
     }
   } else meshes.forEach((m) => group.add(m));
-  group.userData = { type, params: p, dims: dimsOf(type, p), parts: pr, quality };
+  if (prof) { prof.merge = performance.now() - _t; group.userData.profile = prof; }
+  group.userData = { ...group.userData, type, params: p, dims: dimsOf(type, p), parts: pr, quality };
   return group;
 }
 
