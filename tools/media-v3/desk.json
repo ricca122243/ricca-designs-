@@ -1,5 +1,5 @@
-{"W":1600,"H":900,"fps":25,"fade":1.0,"t0":2.0,"shots":[
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-dimaro-kitchen.jpg","L":6.52,"a":[0.485,0.575,0.97],"b":[0.475,0.59,0.885]},
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/img/projects/p03-dining.webp","L":6.52,"a":[0.5,0.668,1.0],"b":[0.5,0.64,0.9875]},
-{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-barolo-bedroom-b.jpg","L":6.52,"a":[0.5,0.695,1.0],"b":[0.5,0.68,0.95]}
+{"W":1600,"H":900,"fps":25,"fade":1.6,"t0":2.0,"shots":[
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-dimaro-top.jpg","rotate":90,"grade":[0.65,0.97,1.03],"L":6.52,"a":[0.5,0.5,0.95],"b":[0.5,0.5,0.86]},
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-barolo-bedroom-b.jpg","grade":[0.65,0.97,1.03],"L":6.52,"a":[0.5,0.62,0.92],"b":[0.53,0.66,0.8]},
+{"type":"photo","src":"/home/user/ricca-designs-/ricca/content/client-photos/partner/LIKELY-dimaro-kitchen.jpg","grade":[0.65,0.97,1.03],"L":6.52,"a":[0.5,0.54,1.0],"b":[0.5,0.52,0.92]}
 ]}
