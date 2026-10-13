@@ -1,7 +1,8 @@
 /* RICCA DESIGNS — v4 «в меру» (10 октября, ночь). Ванильный JS без библиотек.
    Порядок: CONFIG → данные (js/catalog-data.js) → плитки каталога (число моделей, подписи, alt — из данных) → ссылки
    WhatsApp/телефон → вход (занавес, видео) → видео по экрану → появления → окна и адреса (#catalog/<категория>, #works/all,
-   #item-<id>, #work-NN) → экран категории → окно изделия → лайтбокс работ → «Подборка» → меню → шапка и липкая плашка.
+   #item-<id>, #work-NN, #fabric-<коллекция>-<N>) → экран категории / тканей (библиотека js/fabrics-data.js) → окно изделия
+   → лайтбокс работ → ткань крупно → «Подборка» → меню → шапка и липкая плашка.
    Новость ELUNA — карточка с луной на чистом CSS (css/site.css, .news), скрипт ей не нужен.
    Единственный владелец ссылок [data-wa] / [data-tel] — этот файл. */
 (() => {
@@ -20,7 +21,8 @@
       armchairs: 'Здравствуйте! Интересует кресло. Пришлите, пожалуйста, подборку.',
       chairs: 'Здравствуйте! Подберите, пожалуйста, стулья или обеденную группу. Комната и число мест: …',
       tables: 'Здравствуйте! Хочу подобрать стол к мягкой мебели. Пришлите, пожалуйста, варианты.',
-      fabrics: 'Здравствуйте! Хочу подобрать ткань. Пришлите, пожалуйста, подборку образцов.',
+      fabrics: 'Здравствуйте! Помогите подобрать ткань.',
+      photo: 'Здравствуйте! Хочу заказать мебель по фото.',
       projects: 'Здравствуйте! Хочу обсудить мебель для своей комнаты: гостиная / спальня / столовая / кабинет / другое. Размеры и фото пришлю следующим сообщением.',
       business: 'Здравствуйте! Хочу обсудить проект для бизнеса: отель / ресторан / апарт-комплекс / жилой проект / офис.',
       master: 'Здравствуйте! У меня вопрос к мастеру RICCA.'
@@ -53,6 +55,26 @@
   const ITEM = new Map(ITEMS.map((x) => [x.id, x]));
   const FABRICS = Array.isArray(window.RICCA_FABRICS) ? window.RICCA_FABRICS : [];
   const FABRIC_PHOTOS = Array.isArray(window.RICCA_FABRIC_PHOTOS) ? window.RICCA_FABRIC_PHOTOS : [];
+  /* Библиотека тканей (js/fabrics-data.js): типы → коллекции → цвета. Есть она — экран «Ткани» строится из неё
+     (вкладки по типам, коллекции, образцы, «Ткань крупно»); нет — старая сетка RICCA_FABRICS. FCOL: id коллекции → { t, c } */
+  const FLIB = ((window.RICCA_FABRIC_LIBRARY && Array.isArray(window.RICCA_FABRIC_LIBRARY.types)) ? window.RICCA_FABRIC_LIBRARY.types : [])
+    .filter((t) => t && t.id && t.title && Array.isArray(t.collections))
+    .map((t) => Object.assign({}, t, { collections: t.collections.filter((c) => c && c.id && c.title && Array.isArray(c.colours))
+      .map((c) => Object.assign({}, c, { colours: c.colours.filter((k) => k && k.name && (k.src450 || k.src900)) }))
+      .filter((c) => c.colours.length) }))
+    .filter((t) => t.collections.length);
+  const FCOL = new Map();
+  FLIB.forEach((t) => t.collections.forEach((c) => FCOL.set(c.id, { t, c })));
+  const fabKind = (c) => String(c.kind || '').split(':')[0].trim();   // «экокожа: зернистая, гладкая…» → «экокожа»
+  // название в WhatsApp: коллекция; если такое имя у двух коллекций (ALBA — микровелюр и экокожа) — с материалом; экокожа — с поверхностью
+  const fabWaName = (c, k) => {
+    let dup = 0;
+    FCOL.forEach((x) => { if (x.c.title === c.title) dup += 1; });
+    const extra = [dup > 1 ? fabKind(c) : '', k.finish || ''].filter(Boolean).join(', ');
+    return extra ? `${c.title} (${extra})` : c.title;
+  };
+  // цифры с карточек: «145 000», «30 °C», «320 г/м²» — без переноса внутри
+  const numNb = (h) => h.replace(/(\d) (?=\d{3}\b|°|г\/)/g, '$1&nbsp;');
   // название собирает js/catalog-data.js: name — «Диван Svira» (без названия — «Диван № 15»), short — «Svira» / «№ 15» для сетки
   const labelOf = (it) => it.name;
   // в тексте WhatsApp — название и один раз чтение кириллицей: «Диван Svira (Свира)», чтобы менеджер прочёл верно
@@ -79,6 +101,7 @@
   const countOf = (cat) => {
     const c = CATS[cat];
     if (!c || c.href) return '';
+    if (c.view === 'fabrics' && FCOL.size) return `${FCOL.size} ${plural3(FCOL.size, ['коллекция', 'коллекции', 'коллекций'])}`;
     if (c.view === 'fabrics') { const n = FABRICS.reduce((s, g) => s + ((g && g.items) || []).length, 0); return n ? `${n} ${plural3(n, ['образец', 'образца', 'образцов'])}` : ''; }
     const n = ITEMS.filter((i) => i.category === cat).length;
     return n ? `${n} ${plural3(n, ['модель', 'модели', 'моделей'])}` : '';
@@ -260,6 +283,7 @@
       if (h === 'works/all') return { works: true };
       if ((m = /^item-([a-z0-9-]+)$/.exec(h))) return { item: m[1] };
       if ((m = /^work-(\d+)$/.exec(h))) return { work: +m[1] - 1 };
+      if ((m = /^fabric-([a-z0-9-]+)-(\d+)$/.exec(h))) return { fab: m[1], fabN: +m[2] - 1 };
       return { anchor: h };
     },
     go(hash, opener) {
@@ -270,7 +294,7 @@
     replace(hash) { try { history.replaceState({ rd: R.depth() }, '', hash); } catch (_) { /* file:// */ } },
     // на плитки каталога: адрес #catalog, окна закрыты, раздел — в начале экрана
     toCatalog() {
-      R.replace('#catalog'); PD.close(false); LB.close(false); View.close(false);
+      R.replace('#catalog'); PD.close(false); LB.close(false); FZ.close(false); View.close(false);
       const el = document.getElementById('catalog');
       if (el) requestAnimationFrame(() => el.scrollIntoView({ block: 'start' }));
     },
@@ -303,11 +327,13 @@
         if (cat && CATS[cat] && !CATS[cat].href) { R.replace(`#catalog/${cat}`); return R.apply(false); }
         R.toCatalog(); return;
       }
+      // ткани такой нет (коллекцию убрали из js/fabrics-data.js) — экран «Ткани»
+      if (r.fab != null && !(FCOL.has(r.fab) && FCOL.get(r.fab).c.colours[r.fabN])) { R.replace('#catalog/fabrics'); return R.apply(false); }
       // уровень 1: категория / ткани / все работы
       if (r.cat) {
         const c = CATS[r.cat];
         if (!c || c.href) R.toCatalog();
-        else View.open(c.view === 'fabrics' ? { type: 'fabrics' } : { type: 'cat', cat: r.cat, sub: r.sub });
+        else View.open(c.view === 'fabrics' ? { type: 'fabrics', sub: r.sub } : { type: 'cat', cat: r.cat, sub: r.sub });
       } else if (r.works && WORKS.length) View.open({ type: 'works' });
       else if (r.works) R.toCatalog();
       else if (r.item && initial && ITEM.has(r.item)) {
@@ -316,11 +342,17 @@
         R.replace(`#catalog/${it.category}`);
         try { history.pushState({ rd: 1 }, '', `#item-${it.id}`); } catch (_) { /* */ }
         View.open({ type: 'cat', cat: it.category, sub: 'all' });
-      } else if (!r.item && r.work == null) View.close(false);
-      // уровень 2: изделие / фото работы
-      if (r.item && ITEM.has(r.item)) { LB.close(false); PD.open(r.item); }
-      else if (r.work != null && WORKS[r.work]) { PD.close(false); LB.open(r.work); }
-      else { PD.close(); LB.close(); }
+      } else if (r.fab != null && initial) {
+        // вход по ссылке на ткань: под окном — экран «Ткани»
+        R.replace('#catalog/fabrics');
+        try { history.pushState({ rd: 1 }, '', `#fabric-${r.fab}-${r.fabN + 1}`); } catch (_) { /* */ }
+        View.open({ type: 'fabrics', sub: 'all' });
+      } else if (!r.item && r.work == null && r.fab == null) View.close(false);
+      // уровень 2: изделие / фото работы / ткань крупно
+      if (r.item && ITEM.has(r.item)) { LB.close(false); FZ.close(false); PD.open(r.item); }
+      else if (r.work != null && WORKS[r.work]) { PD.close(false); FZ.close(false); LB.open(r.work); }
+      else if (r.fab != null) { PD.close(false); LB.close(false); FZ.open(r.fab, r.fabN); }
+      else { PD.close(); LB.close(); FZ.close(); }
       R.opener = null;
     }
   };
@@ -329,7 +361,7 @@
   const View = (() => {
     const dlg = $('#view');
     const title = $('#view-title'), nEl = $('[data-view-n]'), tabs = $('[data-view-tabs]'), content = $('[data-view-content]');
-    const back = $('[data-view-back]'), wa = $('[data-view-wa]'), waLabel = $('[data-view-wa-label]');
+    const back = $('[data-view-back]'), wa = $('[data-view-wa]'), waLabel = $('[data-view-wa-label]'), foot = $('[data-view-foot]');
     let key = null, spec = null;
     const mark = '<span class="mark" aria-hidden="true">RICCA DESIGNS</span>';
     // широкий предметный кадр (диван, кровать, стол на 4 : 3) — в сетке широкой рамки 5 : 4, а не узкой 4 : 5 с крошечным предметом
@@ -350,6 +382,7 @@
       const tall = list.filter((i) => !isWide(i)), wide = list.filter(isWide);
       const w4 = wide.length % 3 !== 0 && wide.length % 4 === 0;   // 8 или 4 широких — ровно по 4 в ряд, иначе по 3
       title.textContent = catLabel(cat);
+      tabs.classList.remove('is-fab'); if (foot) foot.hidden = false;
       nEl.innerHTML = subOf(cat);   // «12 моделей · Прямые, угловые, модульные, раскладные» — как на плитке
       back.textContent = 'Каталог';
       const tg = CATS[cat] && CATS[cat].tags;
@@ -361,7 +394,65 @@
       wa.href = waUrl(CONFIG.msg[cat] || CONFIG.msg.general);
       waLabel.innerHTML = 'Обсудить в&nbsp;WhatsApp';
     }
+    /* Ткани — библиотека: вкладки по типам (липкие; подсвечивают тип, который сейчас на экране), коллекция — название капителью,
+       материал и число цветов, факты с карточки одной строкой, фактура крупно (если есть), образцы квадратами с названием цвета.
+       Образец → «Ткань крупно» (#fabric-<коллекция>-<N>). В конце — шоурум и WhatsApp «Помогите подобрать ткань» */
+    let spyHold = 0;
+    function renderLibrary() {
+      title.textContent = 'Ткани';
+      nEl.innerHTML = typo('Популярные коллекции. Больше 50 коллекций и 1000 цветов — в шоуруме.');
+      back.textContent = 'Каталог';
+      tabs.classList.add('is-fab');
+      tabs.innerHTML = FLIB.map((t, i) => `<button type="button" data-ftype="${esc(t.id)}" aria-pressed="${i === 0}">${esc(t.title)}</button>`).join('');
+      tabs.hidden = FLIB.length < 2;
+      const kindLine = (c) => { const k = String(c.kind || '').trim(), n = c.colours.length; return `${typo(k.replace(/^./, (ch) => ch.toUpperCase()))}&nbsp;· ${n}&nbsp;${plural3(n, ['цвет', 'цвета', 'цветов'])}`; };
+      content.innerHTML = `<div class="fl">${FLIB.map((t) => `<section class="fl__type" id="fab-t-${esc(t.id)}" data-ftype="${esc(t.id)}" aria-labelledby="fl-t-${esc(t.id)}">`
+        + `<h3 class="fl__tt" id="fl-t-${esc(t.id)}">${esc(t.title)}</h3>`
+        + t.collections.map((c) => `<article class="fl__col" id="fab-${esc(c.id)}" aria-label="${esc(`${c.title}, ${fabKind(c)}`)}"><div class="fl__info">`
+          + `<h4 class="caps fl__name">${esc(c.title)}</h4><p class="fl__kind">${kindLine(c)}</p>`
+          + ((c.facts || []).length ? `<p class="fl__facts">${numNb(typo(c.facts.slice(0, 3).map((f) => lcFirst(f)).join(' · ').replace(/^./, (ch) => ch.toUpperCase())))}</p>` : '')
+          + (c.texture ? `<span class="fl__tex"><img src="${esc(c.texture)}" width="600" height="600" alt="${esc(`${c.title}: фактура ткани крупно`)}" loading="lazy" decoding="async"></span>` : '')
+          + `</div><ul class="fl__grid" role="list">${c.colours.map((k, j) => `<li><button class="fl__sw" type="button" data-fab="${esc(c.id)}" data-n="${j + 1}" aria-haspopup="dialog" aria-label="${esc(`${c.title}, ${k.name.toLowerCase()}${k.finish ? `, ${k.finish}` : ''}: открыть крупно`)}">`
+            + `<span class="fl__img"${/^#[0-9a-f]{3,8}$/i.test(k.hex || '') ? ` style="--c:${k.hex}"` : ''}><img src="${esc(k.src450 || k.src900)}" width="450" height="450" alt="" loading="lazy" decoding="async"></span>`
+            + `<span class="fl__cn" aria-hidden="true">${typo(k.name)}${k.finish ? `<small>${esc(k.finish)}</small>` : ''}</span></button></li>`).join('')}</ul></article>`).join('')
+        + '</section>').join('')}</div>`
+        + `<div class="fl__end"><p class="fl__end-line">${typo('Больше 50 коллекций и 1000 цветов — вживую в шоуруме на Навои, 208/2.')}</p>`
+        + `<div class="fl__end-btns"><a class="btn btn--fill" href="#showroom" data-to-showroom>Подобрать ткань в&nbsp;шоуруме</a>`
+        + `<a class="btn btn--line" href="${esc(waUrl(CONFIG.msg.fabrics))}" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Помогите подобрать ткань<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a></div></div>`;
+      if (foot) foot.hidden = true;
+      spyHold = 0;
+    }
+    // какая вкладка подсвечена: последний тип, чей заголовок уже под вкладками; в самом конце — последний тип
+    let spyRaf = 0;
+    function spy() {
+      spyRaf = 0;
+      if (!spec || spec.type !== 'fabrics' || !FCOL.size || tabs.hidden || Date.now() < spyHold) return;
+      const secs = $$('.fl__type', content);
+      if (!secs.length) return;
+      const lim = tabs.getBoundingClientRect().bottom + 56;
+      let cur = secs[0].dataset.ftype;
+      secs.forEach((x) => { if (x.getBoundingClientRect().top <= lim) cur = x.dataset.ftype; });
+      if (dlg.scrollTop + dlg.clientHeight >= dlg.scrollHeight - 4) cur = secs[secs.length - 1].dataset.ftype;
+      markTab(cur);
+    }
+    function markTab(id) {
+      let on = null;
+      $$('button', tabs).forEach((b) => { const y = b.dataset.ftype === id; b.setAttribute('aria-pressed', String(y)); if (y) on = b; });
+      if (on && tabs.scrollWidth > tabs.clientWidth + 2) {
+        const left = on.offsetLeft - (tabs.clientWidth - on.offsetWidth) / 2;
+        if (Math.abs(tabs.scrollLeft - left) > 4) tabs.scrollTo({ left, behavior: reduceMotion ? 'auto' : 'smooth' });
+      }
+    }
+    function toType(id, smooth) {
+      const sec = document.getElementById(`fab-t-${id}`);
+      if (!sec) return;
+      markTab(id);
+      spyHold = Date.now() + (smooth ? 900 : 120);
+      sec.scrollIntoView({ block: 'start', behavior: smooth && !reduceMotion ? 'smooth' : 'auto' });
+    }
     function renderFabrics() {
+      if (FCOL.size) { renderLibrary(); return; }
+      tabs.classList.remove('is-fab'); if (foot) foot.hidden = false;
       const n = FABRICS.reduce((s, g) => s + ((g && g.items) || []).length, 0);
       title.textContent = 'Ткани';
       nEl.innerHTML = `${subOf('fabrics')}. Образцы&nbsp;— в&nbsp;шоуруме`;
@@ -375,6 +466,7 @@
     }
     function renderWorks() {
       title.textContent = 'Наши работы';
+      tabs.classList.remove('is-fab'); if (foot) foot.hidden = false;
       nEl.textContent = `${WORKS.length} фото`;
       back.textContent = 'Назад';
       tabs.hidden = true; tabs.innerHTML = '';
@@ -393,12 +485,17 @@
       return sub;
     }
     tabs.addEventListener('click', (e) => {
+      const f = e.target.closest('button[data-ftype]');
+      if (f && spec && spec.type === 'fabrics') { toType(f.dataset.ftype, true); return; }
       const b = e.target.closest('button[data-sub]');
       if (!b || !spec || spec.type !== 'cat') return;
       const sub = setSub(b.dataset.sub);
       R.replace(`#catalog/${spec.cat}${sub !== 'all' ? `/${sub}` : ''}`);
     });
-    dlg.addEventListener('scroll', () => dlg.classList.toggle('is-scrolled', dlg.scrollTop > 8), { passive: true });
+    dlg.addEventListener('scroll', () => {
+      dlg.classList.toggle('is-scrolled', dlg.scrollTop > 8);
+      if (spec && spec.type === 'fabrics' && !spyRaf) spyRaf = requestAnimationFrame(spy);
+    }, { passive: true });
     return {
       isOpen: () => dlg.open,
       hash: () => (!spec ? '#catalog' : spec.type === 'works' ? '#works/all' : spec.type === 'fabrics' ? '#catalog/fabrics' : `#catalog/${spec.cat}${spec.sub && spec.sub !== 'all' ? `/${spec.sub}` : ''}`),
@@ -414,6 +511,7 @@
         const was = dlg.open;
         showDlg(dlg, R.opener);
         if (fresh) { dlg.scrollTop = 0; dlg.classList.remove('is-scrolled'); }   // закрытое окно не помнит прокрутку — сбрасываем после показа
+        if (fresh && s.type === 'fabrics' && s.sub && s.sub !== 'all') requestAnimationFrame(() => toType(s.sub, false));   // #catalog/fabrics/bukle
         if (!was || fresh) requestAnimationFrame(() => title.focus({ preventScroll: true }));
       },
       close(focus = true) { hideDlg(dlg, focus); }
@@ -582,6 +680,75 @@
     };
   })();
 
+  /* ---------- Ткань крупно: образец 900 px (нет — 450), цвет, коллекция; ←/→, свайп и стрелки — соседние цвета коллекции;
+     «Хочу эту ткань» — WhatsApp «Интересует ткань RIVER, цвет молочный.» и ссылка на этот образец ---------- */
+  const FZ = (() => {
+    const dlg = $('#fabric');
+    if (!dlg) return { open() {}, close() {} };
+    const stage = $('[data-fz-stage]', dlg), frame = $('[data-fz-frame]', dlg), img = $('[data-fz-img]', dlg);
+    const title = $('[data-fz-title]', dlg), piece = $('[data-fz-piece]', dlg), wa = $('[data-fz-wa]', dlg), count = $('[data-fz-count]', dlg);
+    const steps = $$('[data-fz-step]', dlg);
+    let cur = null, idx = 0;
+    const list = () => (cur ? cur.c.colours : []);
+    function layout() {
+      const k = list()[idx];
+      if (!k) return;
+      const cs = getComputedStyle(stage);
+      const sw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const sh = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      if (sw <= 0 || sh <= 0) return;
+      const side = Math.floor(Math.min(sw, sh, k.src900 ? 900 : 600));   // 450 px не растягиваем до 900
+      frame.style.width = frame.style.height = `${side}px`;
+    }
+    function show(i) {
+      const ks = list();
+      if (!ks.length) return;
+      idx = (i + ks.length) % ks.length;
+      const k = ks[idx], c = cur.c;
+      frame.style.setProperty('--c', /^#[0-9a-f]{3,8}$/i.test(k.hex || '') ? k.hex : '');
+      frame.classList.add('is-loading');
+      img.onload = () => frame.classList.remove('is-loading');
+      img.onerror = () => { if (k.src450 && img.getAttribute('src') !== k.src450) img.src = k.src450; else frame.classList.remove('is-loading'); };
+      img.alt = `Ткань ${c.title}, цвет ${k.name.toLowerCase()}${k.finish ? `, ${k.finish}` : ''}`;
+      img.src = k.src900 || k.src450;
+      if (img.complete && img.naturalWidth) frame.classList.remove('is-loading');
+      layout();
+      title.innerHTML = typo(k.name);
+      piece.innerHTML = typo(`${c.title} · ${[fabKind(c), k.finish].filter(Boolean).join(', ')}`);
+      const u = /^https?:$/.test(location.protocol) ? `\n${location.origin}${location.pathname}#fabric-${c.id}-${idx + 1}` : '';
+      wa.href = waUrl(`Здравствуйте! Интересует ткань ${fabWaName(c, k)}, цвет ${k.name.toLowerCase()}.${u}`);
+      wa.setAttribute('aria-label', `Хочу эту ткань: ${c.title}, ${k.name.toLowerCase()} — написать в WhatsApp`);
+      count.innerHTML = ks.length > 1 ? `<span aria-hidden="true">${pad2(idx + 1)} / ${pad2(ks.length)}</span><span class="sr-only">Цвет ${idx + 1} из ${ks.length}</span>` : '';
+      steps.forEach((b) => { b.hidden = ks.length < 2; });
+      const nx = ks[(idx + 1) % ks.length];
+      if (nx && nx !== k) { const pre = new Image(); pre.src = nx.src900 || nx.src450; }
+    }
+    const step = (d) => { show(idx + d); if (cur) R.replace(`#fabric-${cur.c.id}-${idx + 1}`); };
+    steps.forEach((b) => b.addEventListener('click', () => step(+b.dataset.fzStep)));
+    dlg.addEventListener('keydown', (e) => {
+      if (e.altKey || e.metaKey || e.ctrlKey || list().length < 2) return;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); } else if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+    });
+    let sx = null, sy = 0;
+    stage.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') { sx = e.clientX; sy = e.clientY; } });
+    stage.addEventListener('pointerup', (e) => { if (sx == null) return; const dx = e.clientX - sx, dy = e.clientY - sy; sx = null; if (list().length > 1 && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) step(dx < 0 ? 1 : -1); });
+    stage.addEventListener('pointercancel', () => { sx = null; });
+    if ('ResizeObserver' in window) new ResizeObserver(() => { if (dlg.open) layout(); }).observe(stage);
+    else window.addEventListener('resize', () => { if (dlg.open) layout(); });
+    return {
+      open(id, n) {
+        const x = FCOL.get(id);
+        if (!x) return;
+        const same = dlg.open && cur === x && idx === n;
+        cur = x;
+        showDlg(dlg, R.opener);
+        if (!same) show(n);
+        requestAnimationFrame(layout);
+      },
+      close(focus = true) { hideDlg(dlg, focus); }
+    };
+  })();
+
   /* ---------- «Подборка»: список → одно сообщение WhatsApp (localStorage ricca-shortlist-v2, до 12 позиций) ---------- */
   const SL = (() => {
     const KEY = 'ricca-shortlist-v2';
@@ -682,6 +849,7 @@
     view: () => R.closeTo(View.parentHash()),
     product: () => R.closeTo(View.isOpen() ? View.hash() : '#catalog'),
     lightbox: () => R.closeTo(View.isOpen() ? View.hash() : '#works'),
+    fabric: () => R.closeTo(View.isOpen() ? View.hash() : '#catalog/fabrics'),
     shortlist: () => SL.close(),
     menu: () => hideDlg(menu)
   };
@@ -701,6 +869,17 @@
     if (it && ITEM.has(it.dataset.item)) { e.preventDefault(); R.go(`#item-${it.dataset.item}`, it); return; }
     const wk = e.target.closest('[data-work]');
     if (wk && WORKS[+wk.dataset.work]) { e.preventDefault(); R.go(`#work-${pad2(+wk.dataset.work + 1)}`, wk); return; }
+    const fb = e.target.closest('[data-fab]');
+    if (fb && FCOL.has(fb.dataset.fab)) { e.preventDefault(); R.go(`#fabric-${fb.dataset.fab}-${+fb.dataset.n || 1}`, fb); return; }
+    // «Подобрать ткань в шоуруме» (экран «Ткани»): окна закрыть, к разделу «Шоурум»
+    const ts = e.target.closest('[data-to-showroom]');
+    if (ts) {
+      e.preventDefault();
+      R.replace('#showroom'); FZ.close(false); PD.close(false); View.close(false);
+      const el = document.getElementById('showroom');
+      if (el) requestAnimationFrame(() => el.scrollIntoView({ block: 'start' }));
+      return;
+    }
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
     const h = a.getAttribute('href');

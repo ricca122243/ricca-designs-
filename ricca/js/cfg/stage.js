@@ -1,0 +1,489 @@
+/* RICCA · конструктор — сцена: рендерер, студия (свет, пол, контактная тень, AO), камера и виды
+   «3D · Спереди · Сбоку · Сверху» (плавный переход в ортографию), размерные линии, снимки. Рендер по требованию. */
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { onMaterialUpdate } from './materials.js';
+
+const BG = '#F3F2EE';
+const FOV = 30;
+const AZ = THREE.MathUtils.degToRad(35), EL = THREE.MathUtils.degToRad(18);
+const DIRS = {
+  front: new THREE.Vector3(0, 0, 1),
+  side: new THREE.Vector3(-1, 0, 0),
+  top: new THREE.Vector3(0, 1, 0.0001).normalize(),
+};
+const dir3q = () => new THREE.Vector3(Math.sin(AZ) * Math.cos(EL), Math.sin(EL), Math.cos(AZ) * Math.cos(EL));
+const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const reduced = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isPhone = () => typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 900;
+
+export function createStage(container, { quality = 'auto', ao, antialias = true } = {}) {
+  const phone = quality === 'auto' ? isPhone() : quality === 'mid' || quality === 'low';
+  const Qv = quality === 'auto' ? (phone ? 'mid' : 'high') : quality;
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ antialias, alpha: false, powerPreference: 'high-performance', preserveDrawingBuffer: false });
+  } catch (e) { throw new Error('webgl'); }
+  if (!renderer.getContext()) throw new Error('webgl');
+  const dprCap = phone ? 1.5 : 2;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = 1.0;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.VSMShadowMap;
+  renderer.shadowMap.autoUpdate = false;
+  const canvas = renderer.domElement;
+  canvas.style.display = 'block'; canvas.style.width = '100%'; canvas.style.height = '100%'; canvas.style.touchAction = 'none';
+  container.appendChild(canvas);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(BG);
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
+  scene.environment = envRT.texture;
+  scene.environmentIntensity = 0.85;
+  pmrem.dispose();
+
+  const hemi = new THREE.HemisphereLight(0xfffaf2, 0xe8e4dc, 0.25);
+  scene.add(hemi);
+  const key = new THREE.DirectionalLight(0xffffff, 1.6);
+  key.castShadow = true;
+  key.shadow.mapSize.set(phone ? 1024 : 2048, phone ? 1024 : 2048);
+  key.shadow.radius = 6; key.shadow.blurSamples = 16; key.shadow.bias = -0.0005; key.shadow.normalBias = 0.01;
+  scene.add(key); scene.add(key.target);
+
+  /* студия: пол того же цвета, что фон (тень — ShadowMaterial), контактная тень */
+  const studio = new THREE.Group(); studio.name = 'studio';
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ color: 0x3a342c, opacity: 0.16, depthWrite: false }));
+  floor.receiveShadow = true; floor.renderOrder = 1; studio.add(floor);
+  scene.add(studio);
+  const contact = makeContactShadow(renderer);
+  studio.add(contact.plane);
+
+  const root = new THREE.Group(); root.name = 'content'; scene.add(root);
+
+  /* камеры */
+  const persp = new THREE.PerspectiveCamera(FOV, 1, 0.05, 200);
+  const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.05, 200);
+  let camera = persp;
+  persp.position.set(3, 1.5, 4);
+  const controls = new OrbitControls(persp, canvas);
+  controls.enableDamping = true; controls.dampingFactor = 0.08;
+  controls.minPolarAngle = THREE.MathUtils.degToRad(10); controls.maxPolarAngle = THREE.MathUtils.degToRad(88);
+  controls.enablePan = !phone; controls.screenSpacePanning = true;
+  controls.zoomSpeed = 0.8; controls.rotateSpeed = 0.7;
+
+  /* пост: RenderPass → GTAO → Output */
+  const aoMode = ao === false ? 'off' : phone ? 'idle' : 'always';
+  let composer = null, gtao = null, renderPass = null;
+  function ensureComposer() {
+    if (composer || aoMode === 'off') return composer;
+    const size = renderer.getSize(new THREE.Vector2()), pr = renderer.getPixelRatio();
+    composer = new EffectComposer(renderer);
+    renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
+    gtao = new GTAOPass(scene, camera, size.x * pr, size.y * pr);
+    gtao.output = GTAOPass.OUTPUT.Default;
+    gtao.blendIntensity = 1.0;
+    gtao.updateGtaoMaterial({ radius: 0.25, distanceExponent: 1, thickness: 1, scale: 1, samples: phone ? 8 : 16, distanceFallOff: 1 });
+    gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: phone ? 8 : 16 });
+    composer.addPass(gtao);
+    composer.addPass(new OutputPass());
+    return composer;
+  }
+  function setPassCamera(cam) {
+    if (!composer) return;
+    renderPass.camera = cam; gtao.camera = cam;
+    gtao.gtaoMaterial.defines.PERSPECTIVE_CAMERA = cam.isPerspectiveCamera ? 1 : 0; gtao.gtaoMaterial.needsUpdate = true;
+    if (gtao.pdMaterial.defines && 'PERSPECTIVE_CAMERA' in gtao.pdMaterial.defines) { gtao.pdMaterial.defines.PERSPECTIVE_CAMERA = cam.isPerspectiveCamera ? 1 : 0; gtao.pdMaterial.needsUpdate = true; }
+    gtao.setSize(gtao.width, gtao.height);
+  }
+
+  /* оверлей размеров (SVG поверх canvas) */
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const overlay = document.createElementNS(svgNS, 'svg');
+  overlay.setAttribute('class', 'cfg-dims');
+  Object.assign(overlay.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' });
+  if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
+  container.appendChild(overlay);
+  let dimList = null;
+
+  /* состояние */
+  const listeners = {};
+  const emit = (e, d) => (listeners[e] || []).forEach((fn) => fn(d));
+  let view = '3d';
+  let object = null, box = new THREE.Box3(), size = new THREE.Vector3(1, 1, 1), center = new THREE.Vector3(), lastRadius = 0;
+  let anim = null, raf = 0, idleT = 0, interacting = false, disposed = false, studioOn = true;
+  let W = 1, H = 1;
+
+  function resize() {
+    const r = container.getBoundingClientRect();
+    W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+    renderer.setSize(W, H, false);
+    persp.aspect = W / H; persp.updateProjectionMatrix();
+    fitOrtho();
+    if (composer) { composer.setSize(W, H); composer.setPixelRatio(renderer.getPixelRatio()); }
+    requestRender();
+  }
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
+  if (ro) ro.observe(container); else window.addEventListener('resize', resize);
+
+  const radius = () => Math.max(0.3, size.length() / 2);
+  const framingDist = () => (radius() * 1.25) / Math.sin(THREE.MathUtils.degToRad(FOV / 2)) * Math.max(1, 1 / Math.max(0.6, persp.aspect) * 0.9);
+  /* полувысота кадра для оси вида */
+  function orthoHalf(v) {
+    const ext = v === 'front' ? [size.x, size.y] : v === 'side' ? [size.z, size.y] : [size.x, size.z];
+    const aspect = W / H;
+    return Math.max(ext[1] / 2, ext[0] / 2 / aspect) * 1.18 + 0.03;
+  }
+  function viewTarget(v) { return v === 'top' ? new THREE.Vector3(center.x, 0, center.z) : center.clone(); }
+  function fitOrtho(half) {
+    const h = half || (view !== '3d' ? orthoHalf(view) : 1);
+    const a = W / H;
+    ortho.left = -h * a; ortho.right = h * a; ortho.top = h; ortho.bottom = -h; ortho.updateProjectionMatrix();
+  }
+  function useCamera(cam) {
+    if (camera === cam) return;
+    camera = cam; controls.object = cam; setPassCamera(cam);
+  }
+
+  /* ---------- рендер по требованию ---------- */
+  function requestRender() { if (!raf && !disposed) raf = requestAnimationFrame(tick); }
+  function tick(now) {
+    raf = 0;
+    let more = false;
+    if (anim) { more = stepAnim(now) || more; }
+    if (controls.enabled && !anim) { if (controls.update()) more = true; }
+    renderFrame(more);
+    if (more) requestRender();
+  }
+  function renderFrame(moving) {
+    if (studioOn && contact.dirty) contact.update(scene, root);
+    const useAO = aoMode === 'always' || (aoMode === 'idle' && !moving && !interacting);
+    if (useAO && ensureComposer()) {
+      if (renderPass.camera !== camera) setPassCamera(camera);
+      composer.render();
+    } else renderer.render(scene, camera);
+    if (aoMode === 'idle' && (moving || interacting)) { clearTimeout(idleT); idleT = setTimeout(() => { interacting = false; requestRender(); }, 160); }
+    if (dimList) drawDims();
+    emit('render');
+  }
+  controls.addEventListener('change', () => requestRender());
+  controls.addEventListener('start', () => { interacting = true; if (anim && anim.cancelable) anim = null; emit('interact'); });
+  controls.addEventListener('end', () => { requestRender(); });
+
+  /* ---------- объект ---------- */
+  function setObject(group) {
+    if (object) root.remove(object);
+    object = group;
+    if (group) root.add(group);
+    box.setFromObject(root);
+    if (box.isEmpty()) box.set(new THREE.Vector3(-0.5, 0, -0.5), new THREE.Vector3(0.5, 1, 0.5));
+    box.getSize(size); box.getCenter(center);
+    fitLight();
+    contact.fit(box); contact.dirty = true;
+    renderer.shadowMap.needsUpdate = true;
+    const r = radius();
+    if (!lastRadius || Math.abs(r - lastRadius) / lastRadius > 0.1) { lastRadius = r; frame({ animate: !!lastRadius && !reduced() }); }
+    else if (view !== '3d') fitOrtho();
+    requestRender();
+  }
+  function fitLight() {
+    const r = Math.max(1, radius() * 1.4);
+    /* ключевой свет: спереди-слева-сверху */
+    key.position.set(center.x - r * 1.1, r * 2.2, center.z + r * 1.6);
+    key.target.position.copy(center);
+    const cam = key.shadow.camera;
+    cam.left = -r; cam.right = r; cam.top = r; cam.bottom = -r; cam.near = 0.1; cam.far = r * 6;
+    cam.updateProjectionMatrix();
+  }
+
+  /* ---------- виды ---------- */
+  function frame({ animate = true } = {}) {
+    if (view === '3d') {
+      const dir = camera === persp ? persp.position.clone().sub(controls.target).normalize() : dir3q();
+      if (!isFinite(dir.x) || dir.lengthSq() < 0.5) dir.copy(dir3q());
+      const to = { pos: center.clone().add(dir.multiplyScalar(framingDist())), target: center.clone(), fov: FOV };
+      if (animate && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, to.pos, to.target, FOV, 500, null);
+      else { persp.position.copy(to.pos); controls.target.copy(to.target); persp.fov = FOV; persp.updateProjectionMatrix(); controls.update(); }
+      controls.minDistance = framingDist() * 0.6; controls.maxDistance = framingDist() * 2.5;
+    } else {
+      const t = viewTarget(view);
+      ortho.zoom = 1; fitOrtho();
+      ortho.position.copy(t).add(DIRS[view].clone().multiplyScalar(50)); ortho.lookAt(t);
+      controls.target.copy(t); controls.update();
+    }
+    emit('frame');
+    requestRender();
+  }
+
+  function setView(v, { animate = true } = {}) {
+    if (!['3d', 'front', 'side', 'top'].includes(v) || v === view) { if (v === view) frame({ animate }); return; }
+    const from = view; view = v;
+    const instant = !animate || reduced();
+    const T = viewTarget(v === '3d' ? 'front' : v);
+    if (v !== '3d') {
+      /* перспектива → наклон к оси с сужением угла (dolly-zoom) → ортография */
+      const half = orthoHalf(v);
+      const endDir = DIRS[v].clone();
+      if (from !== '3d') { /* из одного орто-вида в другой: через перспективу 6° */ enterPerspFromOrtho(); }
+      const startDir = persp.position.clone().sub(controls.target).normalize();
+      const startHalf = Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)) * persp.position.distanceTo(controls.target);
+      controls.enableRotate = false; controls.enablePan = true;
+      const finish = () => {
+        fitOrtho(half); ortho.zoom = 1;
+        ortho.position.copy(T).add(endDir.clone().multiplyScalar(50)); ortho.up.set(0, 1, 0); ortho.lookAt(T);
+        useCamera(ortho); controls.target.copy(T); controls.update(); emit('view', v); requestRender();
+      };
+      if (instant) { finish(); return; }
+      anim = { start: performance.now(), dur: 650, kind: 'toOrtho', startDir, endDir, startHalf, endHalf: half, t0: controls.target.clone(), t1: T, f0: persp.fov, f1: 6, done: finish, cancelable: false };
+      requestRender();
+    } else {
+      enterPerspFromOrtho();
+      controls.enableRotate = true; controls.enablePan = !phone;
+      const endDir = dir3q(), dist = framingDist();
+      const startDir = persp.position.clone().sub(controls.target).normalize();
+      const startHalf = Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)) * persp.position.distanceTo(controls.target);
+      const endHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * dist;
+      const finish = () => { emit('view', v); requestRender(); };
+      if (instant) { persp.fov = FOV; persp.updateProjectionMatrix(); persp.position.copy(center).add(endDir.multiplyScalar(dist)); controls.target.copy(center); controls.update(); finish(); return; }
+      anim = { start: performance.now(), dur: 650, kind: 'toPersp', startDir, endDir, startHalf, endHalf, t0: controls.target.clone(), t1: center.clone(), f0: persp.fov, f1: FOV, done: finish, cancelable: false };
+      requestRender();
+    }
+  }
+  /* из ортографии в узкую перспективу с тем же кадром */
+  function enterPerspFromOrtho() {
+    if (camera !== ortho) return;
+    const half = (ortho.top - ortho.bottom) / 2 / ortho.zoom;
+    const dir = ortho.position.clone().sub(controls.target).normalize();
+    persp.fov = 6; persp.updateProjectionMatrix();
+    const dist = half / Math.tan(THREE.MathUtils.degToRad(3));
+    persp.up.set(0, 1, 0);
+    persp.position.copy(controls.target).add(dir.multiplyScalar(dist));
+    persp.lookAt(controls.target);
+    useCamera(persp);
+  }
+  function slerpDir(a, b, t) {
+    const q = new THREE.Quaternion().setFromUnitVectors(a, b);
+    const qi = new THREE.Quaternion().slerp(q, t);
+    return a.clone().applyQuaternion(qi).normalize();
+  }
+  function stepAnim(now) {
+    const a = anim;
+    if (a.kind === 'move') {
+      const t = Math.min(1, (now - a.start) / a.dur), k = ease(t);
+      persp.position.lerpVectors(a.p0, a.p1, k); controls.target.lerpVectors(a.t0, a.t1, k);
+      persp.fov = a.f0 + (a.f1 - a.f0) * k; persp.updateProjectionMatrix(); persp.lookAt(controls.target);
+      if (t >= 1) { anim = null; controls.update(); if (a.done) a.done(); return false; }
+      return true;
+    }
+    const t = Math.min(1, (now - a.start) / a.dur), k = ease(t);
+    const dir = slerpDir(a.startDir, a.endDir, k);
+    const fov = a.f0 + (a.f1 - a.f0) * k;
+    const half = a.startHalf + (a.endHalf - a.startHalf) * k;
+    const tgt = a.t0.clone().lerp(a.t1, k);
+    persp.fov = fov; persp.updateProjectionMatrix();
+    const dist = half / Math.tan(THREE.MathUtils.degToRad(fov / 2));
+    persp.position.copy(tgt).add(dir.multiplyScalar(dist));
+    persp.up.set(0, 1, 0);
+    if (Math.abs(dir.y) > 0.999) persp.up.set(0, 0, -1);
+    persp.lookAt(tgt); controls.target.copy(tgt);
+    if (t >= 1) { anim = null; persp.up.set(0, 1, 0); a.done(); return false; }
+    return true;
+  }
+  function startAnim(p0, t0, f0, p1, t1, f1, dur, done) {
+    anim = { kind: 'move', start: performance.now(), dur, p0, t0, f0, p1, t1, f1, done, cancelable: true };
+    requestRender();
+  }
+
+  /* ---------- размеры (SVG) ---------- */
+  function setDims(list) { dimList = list && list.length ? list : null; if (!dimList) overlay.replaceChildren(); requestRender(); }
+  const fmt = (m) => { const v = Math.round(m * 1000) / 10; return (Number.isInteger(v) ? String(v) : String(v).replace('.', ',')); };
+  function toScreen(p) {
+    const v = new THREE.Vector3(p[0], p[1], p[2]).project(camera);
+    return [(v.x * 0.5 + 0.5) * W, (-v.y * 0.5 + 0.5) * H, v.z];
+  }
+  function drawDims() {
+    const frag = [];
+    const OFF = { 0: 34, 1: 22, 2: 12 };
+    const c = toScreen([center.x, center.y, center.z]);
+    for (const d of dimList) {
+      let a = toScreen(d.a), b = toScreen(d.b);
+      /* смещение наружу: перпендикуляр к линии, в сторону от центра */
+      let dx = b[0] - a[0], dy = b[1] - a[1]; const len = Math.hypot(dx, dy); if (len < 6) continue;
+      let nx = -dy / len, ny = dx / len;
+      const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+      if ((mx - c[0]) * nx + (my - c[1]) * ny < 0) { nx = -nx; ny = -ny; }
+      const off = OFF[d.tier] ?? 16;
+      const A = [a[0] + nx * off, a[1] + ny * off], B = [b[0] + nx * off, b[1] + ny * off];
+      frag.push(`<line x1="${a[0] + nx * 4}" y1="${a[1] + ny * 4}" x2="${A[0] + nx * 4}" y2="${A[1] + ny * 4}" />`);
+      frag.push(`<line x1="${b[0] + nx * 4}" y1="${b[1] + ny * 4}" x2="${B[0] + nx * 4}" y2="${B[1] + ny * 4}" />`);
+      frag.push(`<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" />`);
+      const tk = 4, ux = dx / len, uy = dy / len;
+      for (const P of [A, B]) frag.push(`<line x1="${P[0] - (ux + nx) * tk}" y1="${P[1] - (uy + ny) * tk}" x2="${P[0] + (ux + nx) * tk}" y2="${P[1] + (uy + ny) * tk}" />`);
+      let ang = (Math.atan2(dy, dx) * 180) / Math.PI; if (ang > 90) ang -= 180; if (ang < -90) ang += 180;
+      const tx = (A[0] + B[0]) / 2 + nx * 9, ty = (A[1] + B[1]) / 2 + ny * 9;
+      frag.push(`<text x="${tx}" y="${ty}" transform="rotate(${ang} ${tx} ${ty})">${fmt(d.value)}</text>`);
+    }
+    overlay.innerHTML = `<g fill="none" stroke="#111" stroke-width="0.9" stroke-linecap="round">${frag.filter((s) => s.startsWith('<line')).join('')}</g>` +
+      `<g fill="#111" stroke="#F3F2EE" stroke-width="3" paint-order="stroke" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="500" text-anchor="middle" dominant-baseline="middle" style="font-variant-numeric: tabular-nums; letter-spacing: .02em">${frag.filter((s) => s.startsWith('<text')).join('')}</g>`;
+  }
+
+  /* ---------- студия ---------- */
+  function setStudio(on) { studioOn = !!on; studio.visible = studioOn; scene.background = studioOn ? new THREE.Color(BG) : scene.background; requestRender(); }
+
+  /* ---------- снимок ---------- */
+  async function snapshot({ width = 2400, height = 1600, view: sv = '3q', watermark = true, background = BG } = {}) {
+    const prevSize = renderer.getSize(new THREE.Vector2()), prevPR = renderer.getPixelRatio();
+    const maxTex = renderer.capabilities.maxTextureSize || 4096;
+    const ss = Math.min(2, Math.floor(maxTex / Math.max(width, height) * 10) / 10) || 1;
+    const RW = Math.round(width * ss), RH = Math.round(height * ss);
+    let cam;
+    if (sv === '3q' || sv === '3d') {
+      cam = new THREE.PerspectiveCamera(FOV, RW / RH, 0.05, 200);
+      const r = radius();
+      const dist = (r * 1.12) / Math.sin(THREE.MathUtils.degToRad(FOV / 2)) * Math.max(1, (1 / (RW / RH)) * 1.2);
+      cam.position.copy(center).add(dir3q().multiplyScalar(dist)); cam.lookAt(center);
+    } else if (sv === 'current') {
+      cam = camera.clone(); if (cam.isPerspectiveCamera) { cam.aspect = RW / RH; } else { const h = (camera.top - camera.bottom) / 2 / camera.zoom; cam.left = -h * RW / RH; cam.right = h * RW / RH; cam.top = h; cam.bottom = -h; cam.zoom = 1; }
+      cam.updateProjectionMatrix();
+    } else {
+      cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.05, 200);
+      const savedW = W, savedH = H; W = RW; H = RH;
+      const h = orthoHalf(sv); W = savedW; H = savedH;
+      cam.left = -h * RW / RH; cam.right = h * RW / RH; cam.top = h; cam.bottom = -h; cam.updateProjectionMatrix();
+      const t = viewTarget(sv); cam.position.copy(t).add(DIRS[sv].clone().multiplyScalar(50)); cam.lookAt(t);
+    }
+    const prevBg = scene.background; scene.background = new THREE.Color(background);
+    const prevMap = key.shadow.mapSize.clone();
+    key.shadow.mapSize.set(4096, 4096); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; }
+    renderer.shadowMap.needsUpdate = true;
+    renderer.setPixelRatio(1); renderer.setSize(RW, RH, false);
+    const out = document.createElement('canvas'); out.width = width; out.height = height;
+    const g = out.getContext('2d');
+    try {
+      if (aoMode !== 'off' && ensureComposer()) {
+        composer.setPixelRatio(1); composer.setSize(RW, RH);
+        gtao.updateGtaoMaterial({ samples: 32 });
+        setPassCamera(cam); composer.render();
+      } else renderer.render(scene, cam);
+      g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+      g.drawImage(canvas, 0, 0, RW, RH, 0, 0, width, height);
+    } finally {
+      scene.background = prevBg;
+      key.shadow.mapSize.copy(prevMap); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; }
+      renderer.shadowMap.needsUpdate = true;
+      renderer.setPixelRatio(prevPR); renderer.setSize(prevSize.x, prevSize.y, false);
+      if (composer) { composer.setPixelRatio(prevPR); composer.setSize(prevSize.x, prevSize.y); gtao.updateGtaoMaterial({ samples: phone ? 8 : 16 }); setPassCamera(camera); }
+      requestRender();
+    }
+    if (watermark) {
+      const fs = Math.round(height * 0.02);
+      g.font = `500 ${fs}px Montserrat, 'Helvetica Neue', Arial, sans-serif`;
+      if ('letterSpacing' in g) g.letterSpacing = `${Math.round(fs * 0.28)}px`;
+      g.fillStyle = 'rgba(17,17,17,0.72)'; g.textBaseline = 'alphabetic';
+      g.fillText('RICCA DESIGNS', Math.round(height * 0.04), Math.round(height - height * 0.04));
+    }
+    return new Promise((res) => out.toBlob((b) => res(b), 'image/png'));
+  }
+
+  const offMat = onMaterialUpdate(() => requestRender());
+
+  const stage = {
+    renderer, scene, controls, canvas, root, studio, overlay,
+    get camera() { return camera; },
+    get view() { return view; },
+    get box() { return box.clone(); },
+    supportsPhotoreal: false,
+    setObject, setView, frame, setDims, setStudio, requestRender, snapshot, resize,
+    photoreal() { return null; },
+    on(e, fn) { (listeners[e] = listeners[e] || []).push(fn); return stage; },
+    off(e, fn) { listeners[e] = (listeners[e] || []).filter((f) => f !== fn); return stage; },
+    renderNow() { renderFrame(false); },
+    dispose() {
+      disposed = true; cancelAnimationFrame(raf); clearTimeout(idleT); offMat();
+      if (ro) ro.disconnect(); else window.removeEventListener('resize', resize);
+      controls.dispose(); contact.dispose(); envRT.dispose();
+      if (composer) composer.dispose();
+      renderer.dispose(); canvas.remove(); overlay.remove();
+    },
+  };
+  resize();
+  frame({ animate: false });
+  return stage;
+}
+
+/* ---------- контактная тень: глубина снизу → размытие → плоскость на полу ---------- */
+function makeContactShadow(renderer) {
+  const RES = 512, HEIGHT = 0.35, DARK = 1.4, OPACITY = 0.55;
+  const rt = new THREE.WebGLRenderTarget(RES, RES); rt.texture.generateMipmaps = false;
+  const rtB = new THREE.WebGLRenderTarget(RES, RES); rtB.texture.generateMipmaps = false;
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ map: rt.texture, transparent: true, opacity: OPACITY, depthWrite: false, toneMapped: false }));
+  plane.renderOrder = 2; plane.position.y = 0.001; plane.scale.y = -1; plane.name = 'contact-shadow';
+  plane.material.color.set(0x2a251f);
+  const cam = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0, HEIGHT);
+  cam.rotation.x = Math.PI / 2;
+  const depthMat = new THREE.MeshDepthMaterial();
+  depthMat.userData.darkness = { value: DARK };
+  depthMat.onBeforeCompile = (sh) => {
+    sh.uniforms.darkness = depthMat.userData.darkness;
+    sh.fragmentShader = `uniform float darkness;\n${sh.fragmentShader.replace('gl_FragColor = vec4( vec3( 1.0 - fragCoordZ ), opacity );', 'gl_FragColor = vec4( vec3( 0.0 ), ( 1.0 - fragCoordZ ) * darkness );')}`;
+  };
+  depthMat.depthTest = false; depthMat.depthWrite = false;
+  const blurMat = new THREE.ShaderMaterial({
+    uniforms: { tDiffuse: { value: null }, dir: { value: new THREE.Vector2() } },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+    fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 dir; varying vec2 vUv;
+      void main(){ vec4 s = vec4(0.0);
+        s += texture2D(tDiffuse, vUv - 4.0*dir) * 0.051; s += texture2D(tDiffuse, vUv - 3.0*dir) * 0.0918; s += texture2D(tDiffuse, vUv - 2.0*dir) * 0.12245;
+        s += texture2D(tDiffuse, vUv - 1.0*dir) * 0.1531; s += texture2D(tDiffuse, vUv) * 0.1633; s += texture2D(tDiffuse, vUv + 1.0*dir) * 0.1531;
+        s += texture2D(tDiffuse, vUv + 2.0*dir) * 0.12245; s += texture2D(tDiffuse, vUv + 3.0*dir) * 0.0918; s += texture2D(tDiffuse, vUv + 4.0*dir) * 0.051;
+        gl_FragColor = s; }`,
+    depthTest: false, depthWrite: false,
+  });
+  const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), blurMat);
+  const qcam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const qscene = new THREE.Scene(); qscene.add(quad);
+  let size = 1;
+  const blur = (amount) => {
+    blurMat.uniforms.tDiffuse.value = rt.texture; blurMat.uniforms.dir.value.set(amount / RES, 0);
+    renderer.setRenderTarget(rtB); renderer.render(qscene, qcam);
+    blurMat.uniforms.tDiffuse.value = rtB.texture; blurMat.uniforms.dir.value.set(0, amount / RES);
+    renderer.setRenderTarget(rt); renderer.render(qscene, qcam);
+  };
+  return {
+    plane, dirty: true,
+    fit(box) {
+      const s = Math.max(box.max.x - box.min.x, box.max.z - box.min.z) + 0.8;
+      size = s;
+      const cx = (box.min.x + box.max.x) / 2, cz = (box.min.z + box.max.z) / 2;
+      plane.scale.set(s, -1, s); plane.position.set(cx, 0.001, cz);
+      cam.left = -s / 2; cam.right = s / 2; cam.top = s / 2; cam.bottom = -s / 2; cam.updateProjectionMatrix();
+      cam.position.set(cx, 0, cz);
+    },
+    update(scene, root) {
+      this.dirty = false;
+      const bg = scene.background, env = scene.environment;
+      scene.background = null; scene.environment = null;
+      const vis = [];
+      scene.children.forEach((c) => { if (c !== root) { vis.push([c, c.visible]); c.visible = false; } });
+      scene.overrideMaterial = depthMat;
+      const prevClear = renderer.getClearAlpha(), prevCol = renderer.getClearColor(new THREE.Color());
+      renderer.setClearColor(0x000000, 0);
+      renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, cam);
+      scene.overrideMaterial = null;
+      blur(3.5); blur(1.4);
+      renderer.setRenderTarget(null);
+      renderer.setClearColor(prevCol, prevClear);
+      vis.forEach(([c, v]) => (c.visible = v));
+      scene.background = bg; scene.environment = env;
+    },
+    dispose() { rt.dispose(); rtB.dispose(); plane.geometry.dispose(); plane.material.dispose(); blurMat.dispose(); quad.geometry.dispose(); depthMat.dispose(); },
+  };
+}

@@ -200,7 +200,7 @@
       <li class="rv"><a class="tile" href="#catalog/fabrics" data-cat="fabrics">
         <span class="tile__img"><img src="img/catalog/cover-fabrics-600.webp" srcset="img/catalog/cover-fabrics-600.webp 600w, img/catalog/cover-fabrics.webp 1200w" sizes="(min-width: 1100px) 290px, (min-width: 600px) 46vw, 45vw" width="1200" height="1500" alt="Книга образцов тканей: от светло-серого до графитового" loading="lazy" decoding="async"><span class="mark" aria-hidden="true">RICCA DESIGNS</span></span>
         <span class="tile__cap"><span class="tile__name">Ткани</span></span>
-        <span class="tile__sub" data-tile-sub>Букле, твид, меланж&nbsp;— по&nbsp;цветам</span>
+        <span class="tile__sub" data-tile-sub>Велюр, букле, шенилл, замша, экокожа</span>
       </a></li>
       <li class="rv tiles__eluna"><a class="tile tile--ext" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener" data-cat="mattresses">
         <span class="tile__img is-night"><picture>
@@ -211,7 +211,27 @@
         <span class="tile__sub" data-tile-sub>Ортопедические, на&nbsp;своём сайте</span><span class="sr-only"> — сайт ELUNA, откроется в&nbsp;новой вкладке</span>
       </a></li>
     </ul>
-    <p class="cat__hint rv">Отмечайте модели <svg class="ico cat__heart" aria-hidden="true"><use href="#i-heart"/></svg><span class="sr-only">сердечком</span>&nbsp;— и&nbsp;отправьте подборку в&nbsp;WhatsApp одним сообщением.</p>
+    <div class="cat__foot rv">
+      <p class="cat__hint">Отмечайте модели <svg class="ico cat__heart" aria-hidden="true"><use href="#i-heart"/></svg><span class="sr-only">сердечком</span>&nbsp;— и&nbsp;отправьте подборку в&nbsp;WhatsApp одним сообщением.</p>
+      <a class="caps-link cat__fab" href="#catalog/fabrics">Ткани: больше 1000&nbsp;цветов<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ 3a. ЛЮБОЙ СТИЛЬ, ЛЮБАЯ МОДЕЛЬ (заказчик, 13 октября): каталог — примеры, шьём по фото, эскизу или дизайн-проекту.
+     Слева заголовок, справа строка, три коротких шага под тонкими линиями и WhatsApp «по фото»; телефон — столбиком ═════════ -->
+<section class="sec any" id="any" aria-labelledby="any-title">
+  <div class="wrap any__in">
+    <h2 class="title any__title rv" id="any-title">Любой стиль.<br> Любая модель.</h2>
+    <div class="any__side rv">
+      <p class="any__line">Каталог&nbsp;— это примеры. Сошьём по&nbsp;вашему фото, эскизу или <span class="nowrap">дизайн-проекту</span>&nbsp;— в&nbsp;нужном размере и&nbsp;ткани.</p>
+      <ol class="any__steps" role="list">
+        <li><span class="any__n" aria-hidden="true">01</span>Пришлите фото</li>
+        <li><span class="any__n" aria-hidden="true">02</span>Подберём размер и&nbsp;ткань</li>
+        <li><span class="any__n" aria-hidden="true">03</span>Сошьём в&nbsp;ателье</li>
+      </ol>
+      <a class="btn btn--fill any__btn" href="https://wa.me/77084802047" data-wa="photo"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Отправить фото в&nbsp;WhatsApp</a>
+    </div>
   </div>
 </section>
 
@@ -434,7 +454,7 @@
     </header>
     <div class="view__tabs" data-view-tabs role="group" aria-label="Тип" hidden></div>
     <div data-view-content></div>
-    <p class="view__foot"><a class="caps-link" data-view-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-view-wa-label>Обсудить в&nbsp;WhatsApp</span></a></p>
+    <p class="view__foot" data-view-foot><a class="caps-link" data-view-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-view-wa-label>Обсудить в&nbsp;WhatsApp</span></a></p>
   </div>
 </dialog>
 
@@ -497,6 +517,25 @@
   </figure>
 </dialog>
 
+<!-- Ткань крупно (экран «Ткани»): образец 900 px, цвет, коллекция; ←/→ и свайп — соседние цвета коллекции;
+     «Хочу эту ткань» — WhatsApp с коллекцией и цветом. Адрес #fabric-<коллекция>-<N>; содержимое — js/site.js (FZ) -->
+<dialog class="lb fz" id="fabric" aria-labelledby="fz-title">
+  <button class="icon-btn lb__close" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+  <figure class="lb__fig">
+    <div class="lb__stage" data-fz-stage>
+      <div class="fz__frame" data-fz-frame><img data-fz-img alt="" width="900" height="900"></div>
+      <button class="pd__arrow pd__arrow--prev" type="button" data-fz-step="-1" aria-label="Предыдущий цвет"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
+      <button class="pd__arrow pd__arrow--next" type="button" data-fz-step="1" aria-label="Следующий цвет"><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
+    </div>
+    <figcaption class="lb__cap fz__cap">
+      <h2 class="lb__title" id="fz-title" data-fz-title tabindex="-1" autofocus></h2>
+      <p class="lb__piece" data-fz-piece></p>
+      <a class="btn btn--fill fz__wa" data-fz-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Хочу эту ткань</a>
+      <p class="lb__count" data-fz-count aria-live="polite"></p>
+    </figcaption>
+  </figure>
+</dialog>
+
 <!-- «Подборка»: список → одно сообщение WhatsApp (localStorage ricca-shortlist-v2) -->
 <dialog class="sl" id="shortlist" aria-labelledby="sl-title">
   <div class="sl__head">
@@ -514,6 +553,7 @@
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__open" id="toast-open">Открыть</button></div>
 
 <script src="js/catalog-data.js" defer></script>
+<script src="js/fabrics-data.js" defer></script>
 <script src="js/site.js" defer></script>
 </body>
 </html>

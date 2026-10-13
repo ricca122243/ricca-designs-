@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>harness3d (temporary)</title>
+<link rel="stylesheet" href="../../css/fonts-v3.css">
+<style>html,body{margin:0;background:#F3F2EE}#v{width:960px;height:640px;position:relative}</style>
+<script type="importmap">{"imports":{"three":"../../vendor/three/build/three.module.js","three/addons/":"../../vendor/three/addons/"}}</script>
+</head><body><div id="v"></div>
+<script type="module">
+import * as THREE from 'three';
+import { build, dims, parts, triangleCount, disposePiece, setMaterials } from './furniture3d.js';
+import { materialSet, fabricMaterial } from './materials.js';
+import { createStage } from './stage.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const q = new URLSearchParams(location.search);
+const stage = createStage(document.getElementById('v'), { quality: 'high', ao: q.get('ao') !== '0' });
+window.stage = stage;
+let cur = null;
+window.show = async (c) => {
+  if (cur) disposePiece(cur);
+  const mats = materialSet({ type: c.type, params: c.params || {}, fabric: c.fabric || {} });
+  await mats.fabric.userData.ready;
+  const t0 = performance.now();
+  cur = build(c.type, c.params || {}, mats, { quality: c.quality || 'high' });
+  const ms = performance.now() - t0;
+  stage.setObject(cur);
+  stage.setView(c.view || '3d', { animate: false });
+  if (c.dims) stage.setDims(cur.userData.parts.dims.filter((d) => d.view === c.view)); else stage.setDims(null);
+  if (c.az !== undefined) { const t = stage.controls.target; const cam = stage.camera; const r = cam.position.distanceTo(t) * (c.zoom || 1); const az = c.az * Math.PI / 180, el = (c.el ?? 18) * Math.PI / 180; cam.position.set(t.x + r * Math.sin(az) * Math.cos(el), t.y + r * Math.sin(el), t.z + r * Math.cos(az) * Math.cos(el)); cam.lookAt(t); stage.controls.update(); }
+  stage.renderNow();
+  const url = stage.canvas.toDataURL('image/png');
+  const b = new THREE.Box3().setFromObject(cur), s = b.getSize(new THREE.Vector3());
+  const d = dims(c.type, c.params || {});
+  return { url, ms, tris: triangleCount(cur), box: [s.x, s.z, s.y], dims: [d.w, d.d, d.h], meshes: cur.children.length };
+};
+window.check = async (c) => {
+  const res = {};
+  for (const quality of ['high', 'mid', 'low']) {
+    const g = build(c.type, c.params || {}, {}, { quality });
+    const b = new THREE.Box3().setFromObject(g), s = b.getSize(new THREE.Vector3());
+    const d = dims(c.type, c.params || {});
+    /* «вывернутые» нормали: доля вершин, где нормаль смотрит к центру детали */
+    let inv = 0, tot = 0;
+    g.updateMatrixWorld(true);
+    g.traverse((m) => { if (!m.isMesh || m.userData.detail) return; const geo = m.geometry; geo.computeBoundingBox(); const cc = geo.boundingBox.getCenter(new THREE.Vector3()); const p = geo.attributes.position, n = geo.attributes.normal; const step = Math.max(1, Math.floor(p.count / 400)); for (let i = 0; i < p.count; i += step) { const v = new THREE.Vector3().fromBufferAttribute(p, i).sub(cc); const nn = new THREE.Vector3().fromBufferAttribute(n, i); if (v.lengthSq() > 1e-6) { tot++; if (v.dot(nn) < 0) inv++; } } });
+    res[quality] = { err: [Math.abs(s.x - d.w), Math.abs(s.z - d.d), Math.abs(s.y - d.h)].map((x) => +(x * 100).toFixed(2)), tris: Math.round(triangleCount(g)), inv: +(inv / tot).toFixed(3) };
+    if (quality === 'low') {
+      const glb = await new GLTFExporter().parseAsync(g, { binary: true, onlyVisible: true, maxTextureSize: 1024 });
+      const back = await new GLTFLoader().parseAsync(glb, '');
+      const bb = new THREE.Box3().setFromObject(back.scene).getSize(new THREE.Vector3());
+      res.glb = { bytes: glb.byteLength, err: [Math.abs(bb.x - d.w), Math.abs(bb.z - d.d), Math.abs(bb.y - d.h)].map((x) => +(x * 100).toFixed(2)) };
+    }
+    disposePiece(g);
+  }
+  return res;
+};
+window.patch = async (c) => {
+  if (cur) disposePiece(cur);
+  const m = fabricMaterial({ hex: c.hex, kind: c.kind, src450: c.src450 || null });
+  await m.userData.ready;
+  const g = new THREE.Group(); g.name = 'ricca-piece';
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.8), m);
+  const dir = new THREE.Vector3(Math.sin(35 * Math.PI / 180) * Math.cos(18 * Math.PI / 180), Math.sin(18 * Math.PI / 180), Math.cos(35 * Math.PI / 180) * Math.cos(18 * Math.PI / 180));
+  mesh.position.set(0, 0.5, 0); mesh.lookAt(dir.clone().add(mesh.position)); mesh.castShadow = mesh.receiveShadow = true;
+  /* UV в метрах, как у мебели */
+  const uv = mesh.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 0.8, uv.getY(i) * 0.8);
+  g.add(mesh); cur = g;
+  stage.setObject(g); stage.setView('3d', { animate: false }); stage.frame({ animate: false });
+  const t = stage.controls.target; stage.camera.position.copy(t).add(dir.multiplyScalar(3)); stage.camera.lookAt(t); stage.controls.update();
+  stage.renderNow();
+  const cv = document.createElement('canvas'); cv.width = stage.canvas.width; cv.height = stage.canvas.height;
+  const x = cv.getContext('2d'); x.drawImage(stage.canvas, 0, 0);
+  const W = cv.width, H = cv.height, d = x.getImageData(W / 2 - 30, H / 2 - 30, 60, 60).data;
+  let r = 0, gg = 0, b = 0; for (let i = 0; i < d.length; i += 4) { r += d[i]; gg += d[i + 1]; b += d[i + 2]; }
+  const n = d.length / 4; return [r / n, gg / n, b / n];
+};
+window.ready = true;
+</script></body></html>

@@ -270,6 +270,9 @@ ul, ol { padding: 0; list-style: none; }
 .tile__n { white-space: nowrap; }
 .cat__hint { margin-top: 56px; text-align: left; font: 400 13px/1.6 var(--sans); color: var(--ink-2); letter-spacing: .01em; }
 .cat__heart { display: inline-block; width: 14px; height: 14px; vertical-align: -2px; }
+/* под плитками: подсказка «Подборки» слева, тихая ссылка на ткани справа (телефон — одна под другой) */
+.cat__foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 40px; margin-top: 56px; }
+.cat__foot .cat__hint { margin-top: 0; }
 @media (hover: hover) {
   .tile:hover .tile__img img { transform: scale(1.03); }
   .tile:hover .tile__name { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
@@ -296,6 +299,7 @@ ul, ol { padding: 0; list-style: none; }
   .tile__n { display: block; color: var(--ink); }
   .tile__dot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .cat__hint { margin-top: 48px; font-size: 12px; text-wrap: pretty; }
+  .cat__foot { display: grid; justify-items: start; gap: 4px; margin-top: 48px; }
 }
 
 /* ==========================================================================
@@ -317,6 +321,27 @@ ul, ol { padding: 0; list-style: none; }
   .frame, .frame--a, .frame--b, .frame--c { flex: 0 0 78%; margin: 0; scroll-snap-align: start; }
   .frame__open img { aspect-ratio: 4 / 5; object-fit: cover; }
 }
+
+/* ==========================================================================
+   3a. ЛЮБОЙ СТИЛЬ, ЛЮБАЯ МОДЕЛЬ — заголовок слева; справа строка, три шага под тонкими линиями, WhatsApp «по фото»
+   ========================================================================== */
+.any__in { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: start; }
+.any__title { grid-column: 1 / span 5; }
+.any__side { grid-column: 7 / -1; display: grid; gap: 40px; justify-items: start; }
+.any__line { font: 300 clamp(22px, 1.8vw, 26px)/1.4 var(--serif); color: var(--ink); max-width: 34ch; text-wrap: pretty; font-variant-numeric: lining-nums; }
+.any__steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 24px; width: 100%; }
+.any__steps li { display: grid; align-content: start; gap: 12px; padding-top: 18px; border-top: 1px solid var(--line); font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
+.any__n { font: 300 20px/1 var(--serif); letter-spacing: 0; color: var(--ink); font-variant-numeric: lining-nums; }
+@media (max-width: 899px) {
+  .any__in { display: block; }
+  .any__side { margin-top: 28px; gap: 32px; }
+  .any__steps { grid-template-columns: minmax(0, 1fr); }
+  .any__steps li { grid-template-columns: 44px minmax(0, 1fr); align-items: baseline; gap: 0; padding: 16px 0 18px; }
+  .any__steps li:last-child { border-bottom: 1px solid var(--line); }
+  .any__n { font-size: 19px; }
+}
+@media (max-width: 599px) { .any__line { font-size: 21px; } .any__btn { width: 100%; } }
+@media (max-width: 389px) { .any__btn { gap: 10px; padding: 0 14px; letter-spacing: .12em; } }   /* 360: «Отправить фото в WhatsApp» — в одну строку */
 
 /* ==========================================================================
    4. КАК ЗАКАЗАТЬ — четыре шага под линиями
@@ -576,6 +601,50 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .fab__sw figcaption { font: 400 12px/1.5 var(--sans); color: var(--ink-2); }
 @media (max-width: 599px) { .fab__grid { gap: 28px 14px; } .fab__grid > li { flex-basis: calc((100% - 14px) / 2); } .fab__photos { gap: 14px; } }
 
+/* ткани — библиотека (js/fabrics-data.js): липкие вкладки по типам; коллекция — слева название, материал, факты и фактура,
+   справа образцы простыми квадратами (6 в ряд; планшет — 5, телефон — 4) с названием цвета */
+@media (min-width: 768px) {
+  .view__tabs.is-fab { position: sticky; top: var(--hdr); z-index: 4; margin-bottom: clamp(32px, 3.4vw, 48px); padding: 4px 0; background: var(--paper); }
+}
+.fl__type { scroll-margin-top: calc(var(--hdr) + 72px); }
+.fl__type + .fl__type { margin-top: clamp(72px, 7vw, 112px); }
+.fl__tt { margin-bottom: clamp(24px, 2.6vw, 40px); font: 300 clamp(26px, 2.2vw, 34px)/1.15 var(--serif); }
+.fl__col { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); column-gap: var(--gap); padding: 28px 0 clamp(48px, 4.4vw, 64px); border-top: 1px solid var(--line); }
+.fl__info { display: grid; align-content: start; gap: 8px; }
+.fl__kind { font: 400 13px/1.5 var(--sans); color: var(--ink); }
+.fl__facts { font: 400 12px/1.65 var(--sans); color: var(--ink-2); max-width: 36ch; }
+.fl__tex { display: block; width: min(100%, 200px); aspect-ratio: 1; margin-top: 16px; overflow: hidden; background: var(--paper-2); }
+.fl__tex img { width: 100%; height: 100%; object-fit: cover; }
+.fl__grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 24px clamp(10px, 1.2vw, 16px); }
+.fl__sw { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 10px; width: 100%; text-align: left; cursor: zoom-in; }
+.fl__img { display: block; aspect-ratio: 1; overflow: hidden; background: var(--c, var(--paper-2)); }
+.fl__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease); }
+.fl__cn { font: 400 12px/1.4 var(--sans); color: var(--ink-2); letter-spacing: .01em; hyphens: auto; -webkit-hyphens: auto; overflow-wrap: anywhere; }   /* «Терракотовый» на 360 — с переносом, не шире квадрата */
+.fl__cn small { display: block; font-size: 11px; }
+@media (hover: hover) {
+  .fl__sw:hover .fl__img img { transform: scale(1.04); }
+  .fl__sw:hover .fl__cn { color: var(--ink); }
+}
+.fl__end { display: grid; justify-items: center; gap: 28px; margin-top: clamp(40px, 4vw, 64px); padding-top: clamp(56px, 5vw, 80px); border-top: 1px solid var(--line); text-align: center; }
+.fl__end-line { max-width: 30ch; font: 300 clamp(22px, 1.8vw, 26px)/1.4 var(--serif); text-wrap: balance; font-variant-numeric: lining-nums; }
+.fl__end-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 16px; }
+@media (max-width: 1099px) {
+  .fl__col { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); }
+  .fl__grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .fl__type { scroll-margin-top: calc(var(--hdr) + 60px); }
+  .fl__col { grid-template-columns: minmax(0, 1fr); row-gap: 20px; padding: 22px 0 40px; }
+  .fl__info { grid-template-columns: minmax(0, 1fr) 72px; column-gap: 16px; row-gap: 6px; }
+  .fl__info > * { grid-column: 1; }
+  .fl__tex { grid-column: 2; grid-row: 1 / span 3; width: 72px; margin-top: 0; }
+  .fl__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 6px; }
+  .fl__sw { gap: 6px; }
+  .fl__cn { font-size: 10px; line-height: 1.35; letter-spacing: -.01em; }   /* «Терракотовый» целиком в квадрат 74 px (360) */
+  .fl__cn small { font-size: 10px; }
+  .fl__end-btns { display: grid; width: 100%; }
+}
+
 /* все работы — фото целиком, колонками */
 .wgal { columns: 3; column-gap: clamp(16px, 2.4vw, 40px); }
 .wgal li { break-inside: avoid; margin-bottom: clamp(40px, 4.4vw, 72px); }
@@ -679,6 +748,18 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   .lb__stage .pd__arrow { display: none; }
   .lb__cap { grid-template-columns: 1fr; }
   .lb__item { grid-column: 1; grid-row: auto; justify-self: start; }
+}
+
+/* ткань крупно — квадрат образца на подложке его цвета (пока грузится), подпись: цвет, коллекция, «Хочу эту ткань» */
+.fz__frame { position: relative; background: var(--c, var(--paper-2)); }
+.fz__frame img { width: 100%; height: 100%; object-fit: cover; transition: opacity 300ms var(--ease); }
+.fz__frame.is-loading img { opacity: 0; }
+.fz__cap .lb__title { font: 300 clamp(24px, 2vw, 30px)/1.2 var(--serif); letter-spacing: .005em; text-transform: none; }
+.fz__cap .lb__piece { font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
+.fz__wa { grid-column: 2; grid-row: 1 / span 3; }
+@media (max-width: 599px) {
+  .fz__wa { grid-column: 1; grid-row: auto; width: 100%; margin-top: 10px; }
+  .fz__cap { gap: 2px; }
 }
 
 /* подборка — панель справа (телефон — на весь экран) */
