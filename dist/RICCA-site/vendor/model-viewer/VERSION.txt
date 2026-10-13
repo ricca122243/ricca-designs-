@@ -1,0 +1,2 @@
+@google/model-viewer 4.3.1 (dist/model-viewer.min.js, bundled build incl. three.js), from npm, unmodified. BSD-3-Clause (LICENSE).
+Loaded lazily by js/cfg/ar.js only when the client opens «Посмотреть у себя дома».

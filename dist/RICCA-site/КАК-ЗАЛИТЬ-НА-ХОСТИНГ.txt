@@ -1,0 +1,10 @@
+RICCA DESIGNS — как залить сайт на хостинг
+
+Эта папка (RICCA-site) — готовый сайт целиком. Сервер и база данных не нужны.
+
+Netlify (как у сайта ELUNA):
+  app.netlify.com → Add new site → Deploy manually → перетащите папку RICCA-site.
+  Затем Domain management → Add domain → ваш домен → сделайте DNS-записи, которые покажет Netlify.
+
+Любой другой хостинг (ps.kz, hoster.kz и т. п.): загрузите СОДЕРЖИМОЕ этой папки в public_html (или www).
+Главная страница — index.html, конструктор — configurator.html.

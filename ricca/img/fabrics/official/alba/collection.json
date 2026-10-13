@@ -4,7 +4,7 @@
   {
    "code": "01",
    "name": "Альба / Alba 01",
-   "hex": "#bab2a6",
+   "hex": "#b9b2a6",
    "src1200": "img/fabrics/official/alba/01-1200.webp",
    "src600": "img/fabrics/official/alba/01-600.webp",
    "thumb": "img/fabrics/official/alba/01-160.webp"
@@ -68,7 +68,7 @@
   {
    "code": "09",
    "name": "Альба / Alba 09",
-   "hex": "#9c792e",
+   "hex": "#9b792e",
    "src1200": "img/fabrics/official/alba/09-1200.webp",
    "src600": "img/fabrics/official/alba/09-600.webp",
    "thumb": "img/fabrics/official/alba/09-160.webp"
@@ -76,7 +76,7 @@
   {
    "code": "10",
    "name": "Альба / Alba 10",
-   "hex": "#294949",
+   "hex": "#284949",
    "src1200": "img/fabrics/official/alba/10-1200.webp",
    "src600": "img/fabrics/official/alba/10-600.webp",
    "thumb": "img/fabrics/official/alba/10-160.webp"
@@ -100,7 +100,7 @@
   {
    "code": "13",
    "name": "Альба / Alba 13",
-   "hex": "#d0c9b6",
+   "hex": "#d0c8b6",
    "src1200": "img/fabrics/official/alba/13-1200.webp",
    "src600": "img/fabrics/official/alba/13-600.webp",
    "thumb": "img/fabrics/official/alba/13-160.webp"
@@ -108,7 +108,7 @@
   {
    "code": "14",
    "name": "Альба / Alba 14",
-   "hex": "#d5bfa5",
+   "hex": "#d4bfa5",
    "src1200": "img/fabrics/official/alba/14-1200.webp",
    "src600": "img/fabrics/official/alba/14-600.webp",
    "thumb": "img/fabrics/official/alba/14-160.webp"
@@ -116,7 +116,7 @@
   {
    "code": "15",
    "name": "Альба / Alba 15",
-   "hex": "#c1af98",
+   "hex": "#c0af98",
    "src1200": "img/fabrics/official/alba/15-1200.webp",
    "src600": "img/fabrics/official/alba/15-600.webp",
    "thumb": "img/fabrics/official/alba/15-160.webp"
@@ -140,7 +140,7 @@
   {
    "code": "18",
    "name": "Альба / Alba 18",
-   "hex": "#855238",
+   "hex": "#855237",
    "src1200": "img/fabrics/official/alba/18-1200.webp",
    "src600": "img/fabrics/official/alba/18-600.webp",
    "thumb": "img/fabrics/official/alba/18-160.webp"
@@ -148,7 +148,7 @@
   {
    "code": "19",
    "name": "Альба / Alba 19",
-   "hex": "#693932",
+   "hex": "#693831",
    "src1200": "img/fabrics/official/alba/19-1200.webp",
    "src600": "img/fabrics/official/alba/19-600.webp",
    "thumb": "img/fabrics/official/alba/19-160.webp"
@@ -164,7 +164,7 @@
   {
    "code": "21",
    "name": "Альба / Alba 21",
-   "hex": "#a27673",
+   "hex": "#a27572",
    "src1200": "img/fabrics/official/alba/21-1200.webp",
    "src600": "img/fabrics/official/alba/21-600.webp",
    "thumb": "img/fabrics/official/alba/21-160.webp"
@@ -181,40 +181,40 @@
  "heroes": [
   {
    "src": "img/fabrics/official/alba/hero-1-1600.webp",
-   "w": 1600,
-   "h": 1067
+   "w": 2000,
+   "h": 1333
   },
   {
    "src": "img/fabrics/official/alba/hero-2-1600.webp",
-   "w": 1600,
-   "h": 1067
+   "w": 2000,
+   "h": 1333
   },
   {
    "src": "img/fabrics/official/alba/hero-3-1600.webp",
-   "w": 1201,
-   "h": 1600
+   "w": 1501,
+   "h": 2000
   }
  ],
  "inuse": [
   {
    "src": "img/fabrics/official/alba/inuse-1-1200.webp",
-   "w": 900,
-   "h": 1200
+   "w": 1200,
+   "h": 1600
   },
   {
    "src": "img/fabrics/official/alba/inuse-2-1200.webp",
-   "w": 900,
-   "h": 1200
+   "w": 1200,
+   "h": 1600
   },
   {
    "src": "img/fabrics/official/alba/inuse-3-1200.webp",
-   "w": 900,
-   "h": 1200
+   "w": 1200,
+   "h": 1600
   },
   {
    "src": "img/fabrics/official/alba/inuse-4-1200.webp",
-   "w": 900,
-   "h": 1200
+   "w": 1200,
+   "h": 1600
   }
  ]
 }

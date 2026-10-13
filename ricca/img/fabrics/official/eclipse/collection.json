@@ -108,15 +108,15 @@
   },
   {
    "src": "img/fabrics/official/eclipse/hero-4-1600.webp",
-   "w": 1600,
-   "h": 1600
+   "w": 2000,
+   "h": 2000
   }
  ],
  "inuse": [
   {
    "src": "img/fabrics/official/eclipse/inuse-1-1200.webp",
-   "w": 1056,
-   "h": 1200
+   "w": 1089,
+   "h": 1238
   },
   {
    "src": "img/fabrics/official/eclipse/inuse-2-1200.webp",
@@ -125,8 +125,8 @@
   },
   {
    "src": "img/fabrics/official/eclipse/inuse-3-1200.webp",
-   "w": 1200,
-   "h": 1060
+   "w": 1600,
+   "h": 1413
   },
   {
    "src": "img/fabrics/official/eclipse/inuse-4-1200.webp",

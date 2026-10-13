@@ -1,4 +1,13 @@
 /*
+ * ФОТО — ТОЛЬКО ОФИЦИАЛЬНЫЕ, С САЙТОВ ПОСТАВЩИКОВ (img/fabrics/official/<коллекция>/; собирает tools/media-v3/build-fabrics-data.py).
+ * heroes — крупные планы/драпировка, inuse — фото «в изделии». Код цвета (code) — как у поставщика.
+ *
+ * ФОТО — ТОЛЬКО ОФИЦИАЛЬНЫЕ, С САЙТОВ ПОСТАВЩИКОВ (img/fabrics/official/<коллекция>/; собирает tools/media-v3/build-fabrics-data.py).
+ * heroes — крупные планы/драпировка, inuse — фото «в изделии». Код цвета (code) — как у поставщика.
+ *
+ * ФОТО — ТОЛЬКО ОФИЦИАЛЬНЫЕ, С САЙТОВ ПОСТАВЩИКОВ (img/fabrics/official/<коллекция>/; собирает tools/media-v3/build-fabrics-data.py).
+ * heroes — крупные планы/драпировка, inuse — фото «в изделии». Код цвета (code) — как у поставщика.
+ *
  * RICCA DESIGNS — ткани для раздела «Ткани» (только самые ходовые коллекции). Тот же файл читает конструктор 3D.
  *
  * Как показывается на сайте (js/site.js, экран «Ткани»): у каждой коллекции ОДНО большое квадратное фото выбранного цвета
@@ -23,7 +32,7 @@
  *
  * Как заменить фото (например, на качественные снимки поставщика) — без правки кода:
  *   1. Сделайте из снимка квадрат (обрезка по центру, ткань без рамок и подписей) и сохраните три размера .webp:
- *      900 × 900 (качество ~82), 450 × 450 и 240 × 240 — например, img/fabrics/velur/alba/12-molochnyy.webp, …-450.webp, …-240.webp.
+ *      900 × 900 (качество ~82), 450 × 450 и 240 × 240 — например, img/fabrics/official/<коллекция>/<код>-1200.webp, …-600.webp, …-160.webp (их делает tools/media-v3/official-fabrics.py).
  *      Можно положить файлы поверх старых с теми же именами — тогда этот файл менять не нужно вовсе.
  *   2. Если имена новые — у нужного цвета поменяйте src900, src450 и src240 (больше ничего).
  *   3. Если цвет на новом фото заметно другой — поправьте hex (средний цвет фото, например «#d8d2c6»).
@@ -54,382 +63,204 @@ window.RICCA_FABRIC_LIBRARY = {
           "title": "ALBA",
           "kind": "микровелюр",
           "facts": [
-            "Износостойкость 90 000 циклов",
-            "Для владельцев животных: меньше зацепов",
-            "Защитное покрытие от загрязнений"
+            "90 000 циклов",
+            "480 г/м.п.",
+            "ширина 140 см"
           ],
-          "texture": null,
-          "colours": [
+          "texture": "img/fabrics/official/alba/hero-1-1600.webp",
+          "heroes": [
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/velur/alba/12-molochnyy-240.webp",
-              "src450": "img/fabrics/velur/alba/12-molochnyy-450.webp",
-              "src900": "img/fabrics/velur/alba/12-molochnyy.webp",
-              "strip": "img/fabrics/velur/alba/12-molochnyy-strip.webp",
-              "hex": "#e1dacc"
+              "src": "img/fabrics/official/alba/hero-1-1600.webp",
+              "w": 2000,
+              "h": 1333
             },
             {
-              "name": "Сливочный",
-              "src240": "img/fabrics/velur/alba/13-slivochnyy-240.webp",
-              "src450": "img/fabrics/velur/alba/13-slivochnyy-450.webp",
-              "src900": "img/fabrics/velur/alba/13-slivochnyy.webp",
-              "strip": "img/fabrics/velur/alba/13-slivochnyy-strip.webp",
-              "hex": "#d8cfb8"
+              "src": "img/fabrics/official/alba/hero-2-1600.webp",
+              "w": 2000,
+              "h": 1333
             },
             {
-              "name": "Светло-бежевый",
-              "src240": "img/fabrics/velur/alba/01-svetlo-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/alba/01-svetlo-bezhevyy-450.webp",
-              "src900": "img/fabrics/velur/alba/01-svetlo-bezhevyy.webp",
-              "strip": "img/fabrics/velur/alba/01-svetlo-bezhevyy-strip.webp",
-              "hex": "#c5bead"
-            },
-            {
-              "name": "Ванильный",
-              "src240": "img/fabrics/velur/alba/14-vanilnyy-240.webp",
-              "src450": "img/fabrics/velur/alba/14-vanilnyy-450.webp",
-              "src900": "img/fabrics/velur/alba/14-vanilnyy.webp",
-              "strip": "img/fabrics/velur/alba/14-vanilnyy-strip.webp",
-              "hex": "#c9b999"
-            },
-            {
-              "name": "Серо-бежевый",
-              "src240": "img/fabrics/velur/alba/03-sero-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/alba/03-sero-bezhevyy-450.webp",
-              "src900": "img/fabrics/velur/alba/03-sero-bezhevyy.webp",
-              "strip": "img/fabrics/velur/alba/03-sero-bezhevyy-strip.webp",
-              "hex": "#bbb5aa"
-            },
-            {
-              "name": "Песочный",
-              "src240": "img/fabrics/velur/alba/15-pesochnyy-240.webp",
-              "src450": "img/fabrics/velur/alba/15-pesochnyy-450.webp",
-              "src900": "img/fabrics/velur/alba/15-pesochnyy.webp",
-              "strip": "img/fabrics/velur/alba/15-pesochnyy-strip.webp",
-              "hex": "#b8a98d"
-            },
-            {
-              "name": "Бежевый",
-              "src240": "img/fabrics/velur/alba/02-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/alba/02-bezhevyy-450.webp",
-              "src900": "img/fabrics/velur/alba/02-bezhevyy.webp",
-              "strip": "img/fabrics/velur/alba/02-bezhevyy-strip.webp",
-              "hex": "#b2a893"
-            },
-            {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/velur/alba/04-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/velur/alba/04-svetlo-seryy-450.webp",
-              "src900": "img/fabrics/velur/alba/04-svetlo-seryy.webp",
-              "strip": "img/fabrics/velur/alba/04-svetlo-seryy-strip.webp",
-              "hex": "#a19d95"
-            },
-            {
-              "name": "Серый",
-              "src240": "img/fabrics/velur/alba/05-seryy-240.webp",
-              "src450": "img/fabrics/velur/alba/05-seryy-450.webp",
-              "src900": "img/fabrics/velur/alba/05-seryy.webp",
-              "strip": "img/fabrics/velur/alba/05-seryy-strip.webp",
-              "hex": "#777571"
-            },
-            {
-              "name": "Капучино",
-              "src240": "img/fabrics/velur/alba/22-kapuchino-240.webp",
-              "src450": "img/fabrics/velur/alba/22-kapuchino-450.webp",
-              "src900": "img/fabrics/velur/alba/22-kapuchino.webp",
-              "strip": "img/fabrics/velur/alba/22-kapuchino-strip.webp",
-              "hex": "#755e4c"
-            },
-            {
-              "name": "Графит",
-              "src240": "img/fabrics/velur/alba/06-grafit-240.webp",
-              "src450": "img/fabrics/velur/alba/06-grafit-450.webp",
-              "src900": "img/fabrics/velur/alba/06-grafit.webp",
-              "strip": "img/fabrics/velur/alba/06-grafit-strip.webp",
-              "hex": "#403a35"
-            },
-            {
-              "name": "Коричневый",
-              "src240": "img/fabrics/velur/alba/07-korichnevyy-240.webp",
-              "src450": "img/fabrics/velur/alba/07-korichnevyy-450.webp",
-              "src900": "img/fabrics/velur/alba/07-korichnevyy.webp",
-              "strip": "img/fabrics/velur/alba/07-korichnevyy-strip.webp",
-              "hex": "#413323"
-            },
-            {
-              "name": "Тёмный шоколад",
-              "src240": "img/fabrics/velur/alba/08-temnyy-shokolad-240.webp",
-              "src450": "img/fabrics/velur/alba/08-temnyy-shokolad-450.webp",
-              "src900": "img/fabrics/velur/alba/08-temnyy-shokolad.webp",
-              "strip": "img/fabrics/velur/alba/08-temnyy-shokolad-strip.webp",
-              "hex": "#2a2016"
-            },
-            {
-              "name": "Горчичный",
-              "src240": "img/fabrics/velur/alba/09-gorchichnyy-240.webp",
-              "src450": "img/fabrics/velur/alba/09-gorchichnyy-450.webp",
-              "src900": "img/fabrics/velur/alba/09-gorchichnyy.webp",
-              "strip": "img/fabrics/velur/alba/09-gorchichnyy-strip.webp",
-              "hex": "#9a7a35"
-            },
-            {
-              "name": "Шалфей",
-              "src240": "img/fabrics/velur/alba/16-shalfey-240.webp",
-              "src450": "img/fabrics/velur/alba/16-shalfey-450.webp",
-              "src900": "img/fabrics/velur/alba/16-shalfey.webp",
-              "strip": "img/fabrics/velur/alba/16-shalfey-strip.webp",
-              "hex": "#968f6f"
-            },
-            {
-              "name": "Оливковый",
-              "src240": "img/fabrics/velur/alba/17-olivkovyy-240.webp",
-              "src450": "img/fabrics/velur/alba/17-olivkovyy-450.webp",
-              "src900": "img/fabrics/velur/alba/17-olivkovyy.webp",
-              "strip": "img/fabrics/velur/alba/17-olivkovyy-strip.webp",
-              "hex": "#4b4d38"
-            },
-            {
-              "name": "Карамель",
-              "src240": "img/fabrics/velur/alba/18-karamel-240.webp",
-              "src450": "img/fabrics/velur/alba/18-karamel-450.webp",
-              "src900": "img/fabrics/velur/alba/18-karamel.webp",
-              "strip": "img/fabrics/velur/alba/18-karamel-strip.webp",
-              "hex": "#7f4b25"
-            },
-            {
-              "name": "Каштановый",
-              "src240": "img/fabrics/velur/alba/19-kashtanovyy-240.webp",
-              "src450": "img/fabrics/velur/alba/19-kashtanovyy-450.webp",
-              "src900": "img/fabrics/velur/alba/19-kashtanovyy.webp",
-              "strip": "img/fabrics/velur/alba/19-kashtanovyy-strip.webp",
-              "hex": "#4f2010"
-            },
-            {
-              "name": "Красный",
-              "src240": "img/fabrics/velur/alba/20-krasnyy-240.webp",
-              "src450": "img/fabrics/velur/alba/20-krasnyy-450.webp",
-              "src900": "img/fabrics/velur/alba/20-krasnyy.webp",
-              "strip": "img/fabrics/velur/alba/20-krasnyy-strip.webp",
-              "hex": "#7c221b"
-            },
-            {
-              "name": "Пудровый",
-              "src240": "img/fabrics/velur/alba/21-pudrovyy-240.webp",
-              "src450": "img/fabrics/velur/alba/21-pudrovyy-450.webp",
-              "src900": "img/fabrics/velur/alba/21-pudrovyy.webp",
-              "strip": "img/fabrics/velur/alba/21-pudrovyy-strip.webp",
-              "hex": "#ac8172"
-            },
-            {
-              "name": "Морская волна",
-              "src240": "img/fabrics/velur/alba/10-morskaya-volna-240.webp",
-              "src450": "img/fabrics/velur/alba/10-morskaya-volna-450.webp",
-              "src900": "img/fabrics/velur/alba/10-morskaya-volna.webp",
-              "strip": "img/fabrics/velur/alba/10-morskaya-volna-strip.webp",
-              "hex": "#2d3f41"
-            },
-            {
-              "name": "Петроль",
-              "src240": "img/fabrics/velur/alba/11-petrol-240.webp",
-              "src450": "img/fabrics/velur/alba/11-petrol-450.webp",
-              "src900": "img/fabrics/velur/alba/11-petrol.webp",
-              "strip": "img/fabrics/velur/alba/11-petrol-strip.webp",
-              "hex": "#1f2b2f"
+              "src": "img/fabrics/official/alba/hero-3-1600.webp",
+              "w": 1501,
+              "h": 2000
             }
-          ]
-        },
-        {
-          "id": "kiton",
-          "title": "KITON",
-          "kind": "микровелюр",
-          "facts": [
-            "100 000 циклов по Мартиндейлу",
-            "Можно с животными",
-            "Легко чистить"
           ],
-          "texture": null,
+          "inuse": [
+            {
+              "src": "img/fabrics/official/alba/inuse-1-1200.webp",
+              "w": 1200,
+              "h": 1600
+            },
+            {
+              "src": "img/fabrics/official/alba/inuse-2-1200.webp",
+              "w": 1200,
+              "h": 1600
+            },
+            {
+              "src": "img/fabrics/official/alba/inuse-3-1200.webp",
+              "w": 1200,
+              "h": 1600
+            },
+            {
+              "src": "img/fabrics/official/alba/inuse-4-1200.webp",
+              "w": 1200,
+              "h": 1600
+            }
+          ],
           "colours": [
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/velur/kiton/07-molochnyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/07-molochnyy-450.webp",
-              "src900": "img/fabrics/velur/kiton/07-molochnyy.webp",
-              "strip": "img/fabrics/velur/kiton/07-molochnyy-strip.webp",
-              "hex": "#ebe5db"
+              "name": "№ 01",
+              "src900": "img/fabrics/official/alba/01-1200.webp",
+              "src450": "img/fabrics/official/alba/01-600.webp",
+              "src240": "img/fabrics/official/alba/01-160.webp",
+              "hex": "#b9b2a6"
             },
             {
-              "name": "Кремовый",
-              "src240": "img/fabrics/velur/kiton/08-kremovyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/08-kremovyy-450.webp",
-              "src900": "img/fabrics/velur/kiton/08-kremovyy.webp",
-              "strip": "img/fabrics/velur/kiton/08-kremovyy-strip.webp",
-              "hex": "#eddac2"
+              "name": "№ 02",
+              "src900": "img/fabrics/official/alba/02-1200.webp",
+              "src450": "img/fabrics/official/alba/02-600.webp",
+              "src240": "img/fabrics/official/alba/02-160.webp",
+              "hex": "#ada291"
             },
             {
-              "name": "Слоновая кость",
-              "src240": "img/fabrics/velur/kiton/19-slonovaya-kost-240.webp",
-              "src450": "img/fabrics/velur/kiton/19-slonovaya-kost-450.webp",
-              "src900": "img/fabrics/velur/kiton/19-slonovaya-kost.webp",
-              "strip": "img/fabrics/velur/kiton/19-slonovaya-kost-strip.webp",
-              "hex": "#ddd5c3"
+              "name": "№ 03",
+              "src900": "img/fabrics/official/alba/03-1200.webp",
+              "src450": "img/fabrics/official/alba/03-600.webp",
+              "src240": "img/fabrics/official/alba/03-160.webp",
+              "hex": "#a9a49c"
             },
             {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/velur/kiton/03-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/velur/kiton/03-svetlo-seryy-450.webp",
-              "src900": "img/fabrics/velur/kiton/03-svetlo-seryy.webp",
-              "strip": "img/fabrics/velur/kiton/03-svetlo-seryy-strip.webp",
-              "hex": "#b2b4b7"
+              "name": "№ 04",
+              "src900": "img/fabrics/official/alba/04-1200.webp",
+              "src450": "img/fabrics/official/alba/04-600.webp",
+              "src240": "img/fabrics/official/alba/04-160.webp",
+              "hex": "#868687"
             },
             {
-              "name": "Светло-бежевый",
-              "src240": "img/fabrics/velur/kiton/23-svetlo-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/23-svetlo-bezhevyy-450.webp",
-              "src900": "img/fabrics/velur/kiton/23-svetlo-bezhevyy.webp",
-              "strip": "img/fabrics/velur/kiton/23-svetlo-bezhevyy-strip.webp",
-              "hex": "#caaf98"
+              "name": "№ 05",
+              "src900": "img/fabrics/official/alba/05-1200.webp",
+              "src450": "img/fabrics/official/alba/05-600.webp",
+              "src240": "img/fabrics/official/alba/05-160.webp",
+              "hex": "#6b6c6e"
             },
             {
-              "name": "Серо-песочный",
-              "src240": "img/fabrics/velur/kiton/20-sero-pesochnyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/20-sero-pesochnyy-450.webp",
-              "src900": "img/fabrics/velur/kiton/20-sero-pesochnyy.webp",
-              "strip": "img/fabrics/velur/kiton/20-sero-pesochnyy-strip.webp",
-              "hex": "#b8ad97"
+              "name": "№ 06",
+              "src900": "img/fabrics/official/alba/06-1200.webp",
+              "src450": "img/fabrics/official/alba/06-600.webp",
+              "src240": "img/fabrics/official/alba/06-160.webp",
+              "hex": "#3f3f3f"
             },
             {
-              "name": "Пепельный",
-              "src240": "img/fabrics/velur/kiton/09-pepelnyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/09-pepelnyy-450.webp",
-              "src900": "img/fabrics/velur/kiton/09-pepelnyy.webp",
-              "strip": "img/fabrics/velur/kiton/09-pepelnyy-strip.webp",
-              "hex": "#b5a9a7"
+              "name": "№ 07",
+              "src900": "img/fabrics/official/alba/07-1200.webp",
+              "src450": "img/fabrics/official/alba/07-600.webp",
+              "src240": "img/fabrics/official/alba/07-160.webp",
+              "hex": "#493c33"
             },
             {
-              "name": "Бежевый",
-              "src240": "img/fabrics/velur/kiton/22-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/22-bezhevyy-450.webp",
-              "src900": "img/fabrics/velur/kiton/22-bezhevyy.webp",
-              "strip": "img/fabrics/velur/kiton/22-bezhevyy-strip.webp",
-              "hex": "#b69675"
+              "name": "№ 08",
+              "src900": "img/fabrics/official/alba/08-1200.webp",
+              "src450": "img/fabrics/official/alba/08-600.webp",
+              "src240": "img/fabrics/official/alba/08-160.webp",
+              "hex": "#413a36"
             },
             {
-              "name": "Капучино",
-              "src240": "img/fabrics/velur/kiton/24-kapuchino-240.webp",
-              "src450": "img/fabrics/velur/kiton/24-kapuchino-450.webp",
-              "src900": "img/fabrics/velur/kiton/24-kapuchino.webp",
-              "strip": "img/fabrics/velur/kiton/24-kapuchino-strip.webp",
-              "hex": "#a58d77"
+              "name": "№ 09",
+              "src900": "img/fabrics/official/alba/09-1200.webp",
+              "src450": "img/fabrics/official/alba/09-600.webp",
+              "src240": "img/fabrics/official/alba/09-160.webp",
+              "hex": "#9b792e"
             },
             {
-              "name": "Серо-коричневый",
-              "src240": "img/fabrics/velur/kiton/10-sero-korichnevyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/10-sero-korichnevyy-450.webp",
-              "src900": "img/fabrics/velur/kiton/10-sero-korichnevyy.webp",
-              "strip": "img/fabrics/velur/kiton/10-sero-korichnevyy-strip.webp",
-              "hex": "#8e837c"
+              "name": "№ 10",
+              "src900": "img/fabrics/official/alba/10-1200.webp",
+              "src450": "img/fabrics/official/alba/10-600.webp",
+              "src240": "img/fabrics/official/alba/10-160.webp",
+              "hex": "#284949"
             },
             {
-              "name": "Серый",
-              "src240": "img/fabrics/velur/kiton/11-seryy-240.webp",
-              "src450": "img/fabrics/velur/kiton/11-seryy-450.webp",
-              "src900": "img/fabrics/velur/kiton/11-seryy.webp",
-              "strip": "img/fabrics/velur/kiton/11-seryy-strip.webp",
-              "hex": "#5a5958"
+              "name": "№ 11",
+              "src900": "img/fabrics/official/alba/11-1200.webp",
+              "src450": "img/fabrics/official/alba/11-600.webp",
+              "src240": "img/fabrics/official/alba/11-160.webp",
+              "hex": "#27454b"
             },
             {
-              "name": "Тёмно-серо-коричневый",
-              "src240": "img/fabrics/velur/kiton/12-temno-sero-korichnevyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/12-temno-sero-korichnevyy-450.webp",
-              "strip": "img/fabrics/velur/kiton/12-temno-sero-korichnevyy-strip.webp",
-              "hex": "#4d4444"
+              "name": "№ 12",
+              "src900": "img/fabrics/official/alba/12-1200.webp",
+              "src450": "img/fabrics/official/alba/12-600.webp",
+              "src240": "img/fabrics/official/alba/12-160.webp",
+              "hex": "#dad4c7"
             },
             {
-              "name": "Мокко",
-              "src240": "img/fabrics/velur/kiton/25-mokko-240.webp",
-              "src450": "img/fabrics/velur/kiton/25-mokko-450.webp",
-              "src900": "img/fabrics/velur/kiton/25-mokko.webp",
-              "strip": "img/fabrics/velur/kiton/25-mokko-strip.webp",
-              "hex": "#4b3e32"
+              "name": "№ 13",
+              "src900": "img/fabrics/official/alba/13-1200.webp",
+              "src450": "img/fabrics/official/alba/13-600.webp",
+              "src240": "img/fabrics/official/alba/13-160.webp",
+              "hex": "#d0c8b6"
             },
             {
-              "name": "Графит",
-              "src240": "img/fabrics/velur/kiton/13-grafit-240.webp",
-              "src450": "img/fabrics/velur/kiton/13-grafit-450.webp",
-              "strip": "img/fabrics/velur/kiton/13-grafit-strip.webp",
-              "hex": "#2e2c2f"
+              "name": "№ 14",
+              "src900": "img/fabrics/official/alba/14-1200.webp",
+              "src450": "img/fabrics/official/alba/14-600.webp",
+              "src240": "img/fabrics/official/alba/14-160.webp",
+              "hex": "#d4bfa5"
             },
             {
-              "name": "Шоколадный",
-              "src240": "img/fabrics/velur/kiton/26-shokoladnyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/26-shokoladnyy-450.webp",
-              "strip": "img/fabrics/velur/kiton/26-shokoladnyy-strip.webp",
-              "hex": "#2c2118"
+              "name": "№ 15",
+              "src900": "img/fabrics/official/alba/15-1200.webp",
+              "src450": "img/fabrics/official/alba/15-600.webp",
+              "src240": "img/fabrics/official/alba/15-160.webp",
+              "hex": "#c0af98"
             },
             {
-              "name": "Охра",
-              "src240": "img/fabrics/velur/kiton/16-okhra-240.webp",
-              "src450": "img/fabrics/velur/kiton/16-okhra-450.webp",
-              "strip": "img/fabrics/velur/kiton/16-okhra-strip.webp",
-              "hex": "#c77f31"
+              "name": "№ 16",
+              "src900": "img/fabrics/official/alba/16-1200.webp",
+              "src450": "img/fabrics/official/alba/16-600.webp",
+              "src240": "img/fabrics/official/alba/16-160.webp",
+              "hex": "#8b8671"
             },
             {
-              "name": "Пыльная роза",
-              "src240": "img/fabrics/velur/kiton/14-pylnaya-roza-240.webp",
-              "src450": "img/fabrics/velur/kiton/14-pylnaya-roza-450.webp",
-              "strip": "img/fabrics/velur/kiton/14-pylnaya-roza-strip.webp",
-              "hex": "#ca8377"
+              "name": "№ 17",
+              "src900": "img/fabrics/official/alba/17-1200.webp",
+              "src450": "img/fabrics/official/alba/17-600.webp",
+              "src240": "img/fabrics/official/alba/17-160.webp",
+              "hex": "#474c3d"
             },
             {
-              "name": "Лавандовый",
-              "src240": "img/fabrics/velur/kiton/15-lavandovyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/15-lavandovyy-450.webp",
-              "strip": "img/fabrics/velur/kiton/15-lavandovyy-strip.webp",
-              "hex": "#786271"
+              "name": "№ 18",
+              "src900": "img/fabrics/official/alba/18-1200.webp",
+              "src450": "img/fabrics/official/alba/18-600.webp",
+              "src240": "img/fabrics/official/alba/18-160.webp",
+              "hex": "#855237"
             },
             {
-              "name": "Изумрудный",
-              "src240": "img/fabrics/velur/kiton/17-izumrudnyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/17-izumrudnyy-450.webp",
-              "strip": "img/fabrics/velur/kiton/17-izumrudnyy-strip.webp",
-              "hex": "#1d3c34"
+              "name": "№ 19",
+              "src900": "img/fabrics/official/alba/19-1200.webp",
+              "src450": "img/fabrics/official/alba/19-600.webp",
+              "src240": "img/fabrics/official/alba/19-160.webp",
+              "hex": "#693831"
             },
             {
-              "name": "Тёмно-зелёный",
-              "src240": "img/fabrics/velur/kiton/18-temno-zelenyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/18-temno-zelenyy-450.webp",
-              "strip": "img/fabrics/velur/kiton/18-temno-zelenyy-strip.webp",
-              "hex": "#212723"
+              "name": "№ 20",
+              "src900": "img/fabrics/official/alba/20-1200.webp",
+              "src450": "img/fabrics/official/alba/20-600.webp",
+              "src240": "img/fabrics/official/alba/20-160.webp",
+              "hex": "#76282d"
             },
             {
-              "name": "Серо-голубой",
-              "src240": "img/fabrics/velur/kiton/04-sero-goluboy-240.webp",
-              "src450": "img/fabrics/velur/kiton/04-sero-goluboy-450.webp",
-              "src900": "img/fabrics/velur/kiton/04-sero-goluboy.webp",
-              "strip": "img/fabrics/velur/kiton/04-sero-goluboy-strip.webp",
-              "hex": "#7f8490"
+              "name": "№ 21",
+              "src900": "img/fabrics/official/alba/21-1200.webp",
+              "src450": "img/fabrics/official/alba/21-600.webp",
+              "src240": "img/fabrics/official/alba/21-160.webp",
+              "hex": "#a27572"
             },
             {
-              "name": "Джинсовый",
-              "src240": "img/fabrics/velur/kiton/05-dzhinsovyy-240.webp",
-              "src450": "img/fabrics/velur/kiton/05-dzhinsovyy-450.webp",
-              "strip": "img/fabrics/velur/kiton/05-dzhinsovyy-strip.webp",
-              "hex": "#586176"
-            },
-            {
-              "name": "Петроль",
-              "src240": "img/fabrics/velur/kiton/02-petrol-240.webp",
-              "src450": "img/fabrics/velur/kiton/02-petrol-450.webp",
-              "src900": "img/fabrics/velur/kiton/02-petrol.webp",
-              "strip": "img/fabrics/velur/kiton/02-petrol-strip.webp",
-              "hex": "#264b5b"
-            },
-            {
-              "name": "Тёмно-синий",
-              "src240": "img/fabrics/velur/kiton/06-temno-siniy-240.webp",
-              "src450": "img/fabrics/velur/kiton/06-temno-siniy-450.webp",
-              "strip": "img/fabrics/velur/kiton/06-temno-siniy-strip.webp",
-              "hex": "#0a1323"
+              "name": "№ 22",
+              "src900": "img/fabrics/official/alba/22-1200.webp",
+              "src450": "img/fabrics/official/alba/22-600.webp",
+              "src240": "img/fabrics/official/alba/22-160.webp",
+              "hex": "#6f5c53"
             }
           ]
         },
@@ -438,226 +269,143 @@ window.RICCA_FABRIC_LIBRARY = {
           "title": "TORRENS PLAIN",
           "kind": "микровелюр",
           "facts": [
-            "Износостойкость 190 000 циклов",
-            "Для владельцев животных: меньше зацепов",
-            "Стирка 30 °C, химчистка"
+            "190 000 циклов",
+            "для владельцев животных",
+            "ширина 140 см"
           ],
-          "texture": "img/fabrics/velur/torrens-plain/texture-600.webp",
-          "colours": [
+          "texture": "img/fabrics/official/torrens-plain/hero-1-1600.webp",
+          "heroes": [
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/velur/torrens-plain/01-molochnyy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/01-molochnyy-450.webp",
-              "src900": "img/fabrics/velur/torrens-plain/01-molochnyy.webp",
-              "strip": "img/fabrics/velur/torrens-plain/01-molochnyy-strip.webp",
-              "hex": "#e9e5db"
+              "src": "img/fabrics/official/torrens-plain/hero-1-1600.webp",
+              "w": 2000,
+              "h": 1334
             },
             {
-              "name": "Светло-бежевый",
-              "src240": "img/fabrics/velur/torrens-plain/02-svetlo-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/02-svetlo-bezhevyy-450.webp",
-              "src900": "img/fabrics/velur/torrens-plain/02-svetlo-bezhevyy.webp",
-              "strip": "img/fabrics/velur/torrens-plain/02-svetlo-bezhevyy-strip.webp",
-              "hex": "#dad0bd"
+              "src": "img/fabrics/official/torrens-plain/hero-2-1600.webp",
+              "w": 2000,
+              "h": 1334
             },
             {
-              "name": "Жемчужный",
-              "src240": "img/fabrics/velur/torrens-plain/09-zhemchuzhnyy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/09-zhemchuzhnyy-450.webp",
-              "src900": "img/fabrics/velur/torrens-plain/09-zhemchuzhnyy.webp",
-              "strip": "img/fabrics/velur/torrens-plain/09-zhemchuzhnyy-strip.webp",
-              "hex": "#d3cbbe"
-            },
-            {
-              "name": "Льняной",
-              "src240": "img/fabrics/velur/torrens-plain/10-lnyanoy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/10-lnyanoy-450.webp",
-              "src900": "img/fabrics/velur/torrens-plain/10-lnyanoy.webp",
-              "strip": "img/fabrics/velur/torrens-plain/10-lnyanoy-strip.webp",
-              "hex": "#cbbfaf"
-            },
-            {
-              "name": "Песочный",
-              "src240": "img/fabrics/velur/torrens-plain/03-pesochnyy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/03-pesochnyy-450.webp",
-              "src900": "img/fabrics/velur/torrens-plain/03-pesochnyy.webp",
-              "strip": "img/fabrics/velur/torrens-plain/03-pesochnyy-strip.webp",
-              "hex": "#cbbca3"
-            },
-            {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/velur/torrens-plain/08-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/08-svetlo-seryy-450.webp",
-              "src900": "img/fabrics/velur/torrens-plain/08-svetlo-seryy.webp",
-              "strip": "img/fabrics/velur/torrens-plain/08-svetlo-seryy-strip.webp",
-              "hex": "#aca8a2"
-            },
-            {
-              "name": "Серо-бежевый",
-              "src240": "img/fabrics/velur/torrens-plain/04-sero-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/04-sero-bezhevyy-450.webp",
-              "strip": "img/fabrics/velur/torrens-plain/04-sero-bezhevyy-strip.webp",
-              "hex": "#a79886"
-            },
-            {
-              "name": "Кофейный",
-              "src240": "img/fabrics/velur/torrens-plain/05-kofeynyy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/05-kofeynyy-450.webp",
-              "src900": "img/fabrics/velur/torrens-plain/05-kofeynyy.webp",
-              "strip": "img/fabrics/velur/torrens-plain/05-kofeynyy-strip.webp",
-              "hex": "#846d58"
-            },
-            {
-              "name": "Серо-коричневый",
-              "src240": "img/fabrics/velur/torrens-plain/12-sero-korichnevyy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/12-sero-korichnevyy-450.webp",
-              "src900": "img/fabrics/velur/torrens-plain/12-sero-korichnevyy.webp",
-              "strip": "img/fabrics/velur/torrens-plain/12-sero-korichnevyy-strip.webp",
-              "hex": "#675d59"
-            },
-            {
-              "name": "Тёмно-серый",
-              "src240": "img/fabrics/velur/torrens-plain/11-temno-seryy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/11-temno-seryy-450.webp",
-              "src900": "img/fabrics/velur/torrens-plain/11-temno-seryy.webp",
-              "strip": "img/fabrics/velur/torrens-plain/11-temno-seryy-strip.webp",
-              "hex": "#615953"
-            },
-            {
-              "name": "Графит",
-              "src240": "img/fabrics/velur/torrens-plain/13-grafit-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/13-grafit-450.webp",
-              "strip": "img/fabrics/velur/torrens-plain/13-grafit-strip.webp",
-              "hex": "#494950"
-            },
-            {
-              "name": "Оливковый",
-              "src240": "img/fabrics/velur/torrens-plain/07-olivkovyy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/07-olivkovyy-450.webp",
-              "strip": "img/fabrics/velur/torrens-plain/07-olivkovyy-strip.webp",
-              "hex": "#665f4c"
-            },
-            {
-              "name": "Кирпичный",
-              "src240": "img/fabrics/velur/torrens-plain/06-kirpichnyy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/06-kirpichnyy-450.webp",
-              "strip": "img/fabrics/velur/torrens-plain/06-kirpichnyy-strip.webp",
-              "hex": "#5f3934"
-            },
-            {
-              "name": "Серо-голубой",
-              "src240": "img/fabrics/velur/torrens-plain/14-sero-goluboy-240.webp",
-              "src450": "img/fabrics/velur/torrens-plain/14-sero-goluboy-450.webp",
-              "src900": "img/fabrics/velur/torrens-plain/14-sero-goluboy.webp",
-              "strip": "img/fabrics/velur/torrens-plain/14-sero-goluboy-strip.webp",
-              "hex": "#8e97a7"
+              "src": "img/fabrics/official/torrens-plain/hero-3-1600.webp",
+              "w": 2000,
+              "h": 1334
             }
-          ]
-        },
-        {
-          "id": "beauty",
-          "title": "BEAUTY",
-          "kind": "велюр в рубчик",
-          "facts": [
-            "Износостойкость 100 000 циклов",
-            "Плотность 320 г/м²",
-            "Подходит для вакуумной упаковки"
           ],
-          "texture": "img/fabrics/velur/beauty/texture-600.webp",
+          "inuse": [
+            {
+              "src": "img/fabrics/official/torrens-plain/inuse-1-1200.webp",
+              "w": 1200,
+              "h": 1600
+            },
+            {
+              "src": "img/fabrics/official/torrens-plain/inuse-2-1200.webp",
+              "w": 1200,
+              "h": 1600
+            },
+            {
+              "src": "img/fabrics/official/torrens-plain/inuse-3-1200.webp",
+              "w": 1200,
+              "h": 1600
+            }
+          ],
           "colours": [
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/velur/beauty/15-molochnyy-240.webp",
-              "src450": "img/fabrics/velur/beauty/15-molochnyy-450.webp",
-              "src900": "img/fabrics/velur/beauty/15-molochnyy.webp",
-              "strip": "img/fabrics/velur/beauty/15-molochnyy-strip.webp",
-              "hex": "#e3dac4"
+              "name": "№ 01",
+              "src900": "img/fabrics/official/torrens-plain/01-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/01-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/01-160.webp",
+              "hex": "#dfdbd1"
             },
             {
-              "name": "Ванильный",
-              "src240": "img/fabrics/velur/beauty/14-vanilnyy-240.webp",
-              "src450": "img/fabrics/velur/beauty/14-vanilnyy-450.webp",
-              "strip": "img/fabrics/velur/beauty/14-vanilnyy-strip.webp",
-              "hex": "#e3cfac"
+              "name": "№ 02",
+              "src900": "img/fabrics/official/torrens-plain/02-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/02-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/02-160.webp",
+              "hex": "#bfb9af"
             },
             {
-              "name": "Серебристый",
-              "src240": "img/fabrics/velur/beauty/08-serebristyy-240.webp",
-              "src450": "img/fabrics/velur/beauty/08-serebristyy-450.webp",
-              "src900": "img/fabrics/velur/beauty/08-serebristyy.webp",
-              "strip": "img/fabrics/velur/beauty/08-serebristyy-strip.webp",
-              "hex": "#d0cdc9"
+              "name": "№ 03",
+              "src900": "img/fabrics/official/torrens-plain/03-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/03-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/03-160.webp",
+              "hex": "#b7afa2"
             },
             {
-              "name": "Кремовый",
-              "src240": "img/fabrics/velur/beauty/11-kremovyy-240.webp",
-              "src450": "img/fabrics/velur/beauty/11-kremovyy-450.webp",
-              "src900": "img/fabrics/velur/beauty/11-kremovyy.webp",
-              "strip": "img/fabrics/velur/beauty/11-kremovyy-strip.webp",
-              "hex": "#d0c3a3"
+              "name": "№ 04",
+              "src900": "img/fabrics/official/torrens-plain/04-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/04-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/04-160.webp",
+              "hex": "#93887c"
             },
             {
-              "name": "Серо-бежевый",
-              "src240": "img/fabrics/velur/beauty/13-sero-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/beauty/13-sero-bezhevyy-450.webp",
-              "src900": "img/fabrics/velur/beauty/13-sero-bezhevyy.webp",
-              "strip": "img/fabrics/velur/beauty/13-sero-bezhevyy-strip.webp",
-              "hex": "#baaa92"
+              "name": "№ 05",
+              "src900": "img/fabrics/official/torrens-plain/05-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/05-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/05-160.webp",
+              "hex": "#7b6e60"
             },
             {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/velur/beauty/04-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/velur/beauty/04-svetlo-seryy-450.webp",
-              "src900": "img/fabrics/velur/beauty/04-svetlo-seryy.webp",
-              "strip": "img/fabrics/velur/beauty/04-svetlo-seryy-strip.webp",
-              "hex": "#949186"
+              "name": "№ 06",
+              "src900": "img/fabrics/official/torrens-plain/06-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/06-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/06-160.webp",
+              "hex": "#654743"
             },
             {
-              "name": "Серый",
-              "src240": "img/fabrics/velur/beauty/03-seryy-240.webp",
-              "src450": "img/fabrics/velur/beauty/03-seryy-450.webp",
-              "src900": "img/fabrics/velur/beauty/03-seryy.webp",
-              "strip": "img/fabrics/velur/beauty/03-seryy-strip.webp",
-              "hex": "#89837b"
+              "name": "№ 07",
+              "src900": "img/fabrics/official/torrens-plain/07-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/07-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/07-160.webp",
+              "hex": "#5a5948"
             },
             {
-              "name": "Светлый серо-зелёный",
-              "src240": "img/fabrics/velur/beauty/07-svetlyy-sero-zelenyy-240.webp",
-              "src450": "img/fabrics/velur/beauty/07-svetlyy-sero-zelenyy-450.webp",
-              "src900": "img/fabrics/velur/beauty/07-svetlyy-sero-zelenyy.webp",
-              "strip": "img/fabrics/velur/beauty/07-svetlyy-sero-zelenyy-strip.webp",
-              "hex": "#b4b3a6"
+              "name": "№ 08",
+              "src900": "img/fabrics/official/torrens-plain/08-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/08-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/08-160.webp",
+              "hex": "#868888"
             },
             {
-              "name": "Серо-зелёный",
-              "src240": "img/fabrics/velur/beauty/06-sero-zelenyy-240.webp",
-              "src450": "img/fabrics/velur/beauty/06-sero-zelenyy-450.webp",
-              "src900": "img/fabrics/velur/beauty/06-sero-zelenyy.webp",
-              "strip": "img/fabrics/velur/beauty/06-sero-zelenyy-strip.webp",
-              "hex": "#888c7b"
+              "name": "№ 09",
+              "src900": "img/fabrics/official/torrens-plain/09-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/09-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/09-160.webp",
+              "hex": "#afaba4"
             },
             {
-              "name": "Тёмно-зелёный",
-              "src240": "img/fabrics/velur/beauty/05-temno-zelenyy-240.webp",
-              "src450": "img/fabrics/velur/beauty/05-temno-zelenyy-450.webp",
-              "src900": "img/fabrics/velur/beauty/05-temno-zelenyy.webp",
-              "strip": "img/fabrics/velur/beauty/05-temno-zelenyy-strip.webp",
-              "hex": "#26342c"
+              "name": "№ 10",
+              "src900": "img/fabrics/official/torrens-plain/10-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/10-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/10-160.webp",
+              "hex": "#aea7a1"
             },
             {
-              "name": "Терракотовый",
-              "src240": "img/fabrics/velur/beauty/10-terrakotovyy-240.webp",
-              "src450": "img/fabrics/velur/beauty/10-terrakotovyy-450.webp",
-              "strip": "img/fabrics/velur/beauty/10-terrakotovyy-strip.webp",
-              "hex": "#743d23"
+              "name": "№ 11",
+              "src900": "img/fabrics/official/torrens-plain/11-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/11-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/11-160.webp",
+              "hex": "#656360"
             },
             {
-              "name": "Синий",
-              "src240": "img/fabrics/velur/beauty/09-siniy-240.webp",
-              "src450": "img/fabrics/velur/beauty/09-siniy-450.webp",
-              "src900": "img/fabrics/velur/beauty/09-siniy.webp",
-              "strip": "img/fabrics/velur/beauty/09-siniy-strip.webp",
-              "hex": "#2f3957"
+              "name": "№ 12",
+              "src900": "img/fabrics/official/torrens-plain/12-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/12-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/12-160.webp",
+              "hex": "#625b58"
+            },
+            {
+              "name": "№ 13",
+              "src900": "img/fabrics/official/torrens-plain/13-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/13-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/13-160.webp",
+              "hex": "#474b50"
+            },
+            {
+              "name": "№ 14",
+              "src900": "img/fabrics/official/torrens-plain/14-1200.webp",
+              "src450": "img/fabrics/official/torrens-plain/14-600.webp",
+              "src240": "img/fabrics/official/torrens-plain/14-160.webp",
+              "hex": "#7b8f9d"
             }
           ]
         },
@@ -666,247 +414,440 @@ window.RICCA_FABRIC_LIBRARY = {
           "title": "TORRENS",
           "kind": "микровелюр с муаром",
           "facts": [
-            "Износостойкость 190 000 циклов",
-            "Муар скрывает следы эксплуатации",
-            "Для владельцев животных: меньше зацепов"
+            "190 000 циклов",
+            "муар скрывает следы",
+            "для владельцев животных"
           ],
-          "texture": "img/fabrics/velur/torrens/texture-600.webp",
+          "texture": "img/fabrics/official/torrens/hero-1-1600.webp",
+          "heroes": [
+            {
+              "src": "img/fabrics/official/torrens/hero-1-1600.webp",
+              "w": 2000,
+              "h": 1334
+            },
+            {
+              "src": "img/fabrics/official/torrens/hero-2-1600.webp",
+              "w": 2000,
+              "h": 1334
+            },
+            {
+              "src": "img/fabrics/official/torrens/hero-3-1600.webp",
+              "w": 2000,
+              "h": 1334
+            }
+          ],
+          "inuse": [
+            {
+              "src": "img/fabrics/official/torrens/inuse-1-1200.webp",
+              "w": 1200,
+              "h": 1600
+            },
+            {
+              "src": "img/fabrics/official/torrens/inuse-2-1200.webp",
+              "w": 1200,
+              "h": 1600
+            },
+            {
+              "src": "img/fabrics/official/torrens/inuse-3-1200.webp",
+              "w": 1200,
+              "h": 1600
+            },
+            {
+              "src": "img/fabrics/official/torrens/inuse-4-1200.webp",
+              "w": 1200,
+              "h": 1600
+            }
+          ],
           "colours": [
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/velur/torrens/01-molochnyy-240.webp",
-              "src450": "img/fabrics/velur/torrens/01-molochnyy-450.webp",
-              "src900": "img/fabrics/velur/torrens/01-molochnyy.webp",
-              "strip": "img/fabrics/velur/torrens/01-molochnyy-strip.webp",
-              "hex": "#e3e1d6"
+              "name": "№ 01",
+              "src900": "img/fabrics/official/torrens/01-1200.webp",
+              "src450": "img/fabrics/official/torrens/01-600.webp",
+              "src240": "img/fabrics/official/torrens/01-160.webp",
+              "hex": "#e0ddd6"
             },
             {
-              "name": "Льняной",
-              "src240": "img/fabrics/velur/torrens/09-lnyanoy-240.webp",
-              "src450": "img/fabrics/velur/torrens/09-lnyanoy-450.webp",
-              "src900": "img/fabrics/velur/torrens/09-lnyanoy.webp",
-              "strip": "img/fabrics/velur/torrens/09-lnyanoy-strip.webp",
-              "hex": "#d4ccc0"
+              "name": "№ 02",
+              "src900": "img/fabrics/official/torrens/02-1200.webp",
+              "src450": "img/fabrics/official/torrens/02-600.webp",
+              "src240": "img/fabrics/official/torrens/02-160.webp",
+              "hex": "#c6c0b5"
             },
             {
-              "name": "Кремовый",
-              "src240": "img/fabrics/velur/torrens/02-kremovyy-240.webp",
-              "src450": "img/fabrics/velur/torrens/02-kremovyy-450.webp",
-              "src900": "img/fabrics/velur/torrens/02-kremovyy.webp",
-              "strip": "img/fabrics/velur/torrens/02-kremovyy-strip.webp",
-              "hex": "#d5cab9"
+              "name": "№ 03",
+              "src900": "img/fabrics/official/torrens/03-1200.webp",
+              "src450": "img/fabrics/official/torrens/03-600.webp",
+              "src240": "img/fabrics/official/torrens/03-160.webp",
+              "hex": "#ada598"
             },
             {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/velur/torrens/08-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/velur/torrens/08-svetlo-seryy-450.webp",
-              "src900": "img/fabrics/velur/torrens/08-svetlo-seryy.webp",
-              "strip": "img/fabrics/velur/torrens/08-svetlo-seryy-strip.webp",
-              "hex": "#c4c0bc"
+              "name": "№ 04",
+              "src900": "img/fabrics/official/torrens/04-1200.webp",
+              "src450": "img/fabrics/official/torrens/04-600.webp",
+              "src240": "img/fabrics/official/torrens/04-160.webp",
+              "hex": "#8e8377"
             },
             {
-              "name": "Бежевый",
-              "src240": "img/fabrics/velur/torrens/10-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/torrens/10-bezhevyy-450.webp",
-              "src900": "img/fabrics/velur/torrens/10-bezhevyy.webp",
-              "strip": "img/fabrics/velur/torrens/10-bezhevyy-strip.webp",
-              "hex": "#cabfb0"
+              "name": "№ 05",
+              "src900": "img/fabrics/official/torrens/05-1200.webp",
+              "src450": "img/fabrics/official/torrens/05-600.webp",
+              "src240": "img/fabrics/official/torrens/05-160.webp",
+              "hex": "#847668"
             },
             {
-              "name": "Песочный",
-              "src240": "img/fabrics/velur/torrens/03-pesochnyy-240.webp",
-              "src450": "img/fabrics/velur/torrens/03-pesochnyy-450.webp",
-              "src900": "img/fabrics/velur/torrens/03-pesochnyy.webp",
-              "strip": "img/fabrics/velur/torrens/03-pesochnyy-strip.webp",
-              "hex": "#c1b69f"
+              "name": "№ 06",
+              "src900": "img/fabrics/official/torrens/06-1200.webp",
+              "src450": "img/fabrics/official/torrens/06-600.webp",
+              "src240": "img/fabrics/official/torrens/06-160.webp",
+              "hex": "#6d4e4b"
             },
             {
-              "name": "Серо-бежевый",
-              "src240": "img/fabrics/velur/torrens/04-sero-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/torrens/04-sero-bezhevyy-450.webp",
-              "src900": "img/fabrics/velur/torrens/04-sero-bezhevyy.webp",
-              "strip": "img/fabrics/velur/torrens/04-sero-bezhevyy-strip.webp",
-              "hex": "#a79c8b"
+              "name": "№ 07",
+              "src900": "img/fabrics/official/torrens/07-1200.webp",
+              "src450": "img/fabrics/official/torrens/07-600.webp",
+              "src240": "img/fabrics/official/torrens/07-160.webp",
+              "hex": "#5b5c4d"
             },
             {
-              "name": "Мокко",
-              "src240": "img/fabrics/velur/torrens/05-mokko-240.webp",
-              "src450": "img/fabrics/velur/torrens/05-mokko-450.webp",
-              "src900": "img/fabrics/velur/torrens/05-mokko.webp",
-              "strip": "img/fabrics/velur/torrens/05-mokko-strip.webp",
-              "hex": "#867460"
+              "name": "№ 08",
+              "src900": "img/fabrics/official/torrens/08-1200.webp",
+              "src450": "img/fabrics/official/torrens/08-600.webp",
+              "src240": "img/fabrics/official/torrens/08-160.webp",
+              "hex": "#8a8e90"
             },
             {
-              "name": "Серый",
-              "src240": "img/fabrics/velur/torrens/11-seryy-240.webp",
-              "src450": "img/fabrics/velur/torrens/11-seryy-450.webp",
-              "src900": "img/fabrics/velur/torrens/11-seryy.webp",
-              "strip": "img/fabrics/velur/torrens/11-seryy-strip.webp",
-              "hex": "#77726b"
+              "name": "№ 09",
+              "src900": "img/fabrics/official/torrens/09-1200.webp",
+              "src450": "img/fabrics/official/torrens/09-600.webp",
+              "src240": "img/fabrics/official/torrens/09-160.webp",
+              "hex": "#b3aea7"
             },
             {
-              "name": "Серо-коричневый",
-              "src240": "img/fabrics/velur/torrens/12-sero-korichnevyy-240.webp",
-              "src450": "img/fabrics/velur/torrens/12-sero-korichnevyy-450.webp",
-              "src900": "img/fabrics/velur/torrens/12-sero-korichnevyy.webp",
-              "strip": "img/fabrics/velur/torrens/12-sero-korichnevyy-strip.webp",
-              "hex": "#716962"
+              "name": "№ 10",
+              "src900": "img/fabrics/official/torrens/10-1200.webp",
+              "src450": "img/fabrics/official/torrens/10-600.webp",
+              "src240": "img/fabrics/official/torrens/10-160.webp",
+              "hex": "#b1aaa2"
             },
             {
-              "name": "Графит",
-              "src240": "img/fabrics/velur/torrens/13-grafit-240.webp",
-              "src450": "img/fabrics/velur/torrens/13-grafit-450.webp",
-              "src900": "img/fabrics/velur/torrens/13-grafit.webp",
-              "strip": "img/fabrics/velur/torrens/13-grafit-strip.webp",
-              "hex": "#5a5a5b"
+              "name": "№ 11",
+              "src900": "img/fabrics/official/torrens/11-1200.webp",
+              "src450": "img/fabrics/official/torrens/11-600.webp",
+              "src240": "img/fabrics/official/torrens/11-160.webp",
+              "hex": "#696865"
             },
             {
-              "name": "Оливковый",
-              "src240": "img/fabrics/velur/torrens/07-olivkovyy-240.webp",
-              "src450": "img/fabrics/velur/torrens/07-olivkovyy-450.webp",
-              "src900": "img/fabrics/velur/torrens/07-olivkovyy.webp",
-              "strip": "img/fabrics/velur/torrens/07-olivkovyy-strip.webp",
-              "hex": "#656152"
+              "name": "№ 12",
+              "src900": "img/fabrics/official/torrens/12-1200.webp",
+              "src450": "img/fabrics/official/torrens/12-600.webp",
+              "src240": "img/fabrics/official/torrens/12-160.webp",
+              "hex": "#67615e"
             },
             {
-              "name": "Винный",
-              "src240": "img/fabrics/velur/torrens/06-vinnyy-240.webp",
-              "src450": "img/fabrics/velur/torrens/06-vinnyy-450.webp",
-              "src900": "img/fabrics/velur/torrens/06-vinnyy.webp",
-              "strip": "img/fabrics/velur/torrens/06-vinnyy-strip.webp",
-              "hex": "#694c47"
+              "name": "№ 13",
+              "src900": "img/fabrics/official/torrens/13-1200.webp",
+              "src450": "img/fabrics/official/torrens/13-600.webp",
+              "src240": "img/fabrics/official/torrens/13-160.webp",
+              "hex": "#41474c"
             },
             {
-              "name": "Серо-голубой",
-              "src240": "img/fabrics/velur/torrens/14-sero-goluboy-240.webp",
-              "src450": "img/fabrics/velur/torrens/14-sero-goluboy-450.webp",
-              "src900": "img/fabrics/velur/torrens/14-sero-goluboy.webp",
-              "strip": "img/fabrics/velur/torrens/14-sero-goluboy-strip.webp",
-              "hex": "#97a0aa"
+              "name": "№ 14",
+              "src900": "img/fabrics/official/torrens/14-1200.webp",
+              "src450": "img/fabrics/official/torrens/14-600.webp",
+              "src240": "img/fabrics/official/torrens/14-160.webp",
+              "hex": "#798e9c"
             }
           ]
         },
         {
-          "id": "river",
-          "title": "RIVER",
+          "id": "eclipse",
+          "title": "ECLIPSE",
           "kind": "велюр",
           "facts": [
-            "145 000 циклов по Мартиндейлу",
-            "Можно с животными",
-            "Легко чистить"
+            "75 000 циклов",
+            "440 г/м²",
+            "ширина 142 см"
           ],
-          "texture": "img/fabrics/velur/river/texture-600.webp",
+          "texture": "img/fabrics/official/eclipse/hero-1-1600.webp",
+          "heroes": [
+            {
+              "src": "img/fabrics/official/eclipse/hero-1-1600.webp",
+              "w": 1012,
+              "h": 1157
+            },
+            {
+              "src": "img/fabrics/official/eclipse/hero-2-1600.webp",
+              "w": 1013,
+              "h": 1424
+            },
+            {
+              "src": "img/fabrics/official/eclipse/hero-3-1600.webp",
+              "w": 855,
+              "h": 1084
+            },
+            {
+              "src": "img/fabrics/official/eclipse/hero-4-1600.webp",
+              "w": 2000,
+              "h": 2000
+            }
+          ],
+          "inuse": [
+            {
+              "src": "img/fabrics/official/eclipse/inuse-1-1200.webp",
+              "w": 1089,
+              "h": 1238
+            },
+            {
+              "src": "img/fabrics/official/eclipse/inuse-2-1200.webp",
+              "w": 757,
+              "h": 1166
+            },
+            {
+              "src": "img/fabrics/official/eclipse/inuse-3-1200.webp",
+              "w": 1600,
+              "h": 1413
+            },
+            {
+              "src": "img/fabrics/official/eclipse/inuse-4-1200.webp",
+              "w": 825,
+              "h": 900
+            }
+          ],
           "colours": [
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/velur/river/01-molochnyy-240.webp",
-              "src450": "img/fabrics/velur/river/01-molochnyy-450.webp",
-              "src900": "img/fabrics/velur/river/01-molochnyy.webp",
-              "strip": "img/fabrics/velur/river/01-molochnyy-strip.webp",
-              "hex": "#ebe6db"
+              "name": "№ 100",
+              "src900": "img/fabrics/official/eclipse/100-1200.webp",
+              "src450": "img/fabrics/official/eclipse/100-600.webp",
+              "src240": "img/fabrics/official/eclipse/100-160.webp",
+              "hex": "#dddbd6"
             },
             {
-              "name": "Бежевый",
-              "src240": "img/fabrics/velur/river/02-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/river/02-bezhevyy-450.webp",
-              "src900": "img/fabrics/velur/river/02-bezhevyy.webp",
-              "strip": "img/fabrics/velur/river/02-bezhevyy-strip.webp",
-              "hex": "#bead9f"
+              "name": "№ 150",
+              "src900": "img/fabrics/official/eclipse/150-1200.webp",
+              "src450": "img/fabrics/official/eclipse/150-600.webp",
+              "src240": "img/fabrics/official/eclipse/150-160.webp",
+              "hex": "#d1c1a9"
             },
             {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/velur/river/11-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/velur/river/11-svetlo-seryy-450.webp",
-              "src900": "img/fabrics/velur/river/11-svetlo-seryy.webp",
-              "strip": "img/fabrics/velur/river/11-svetlo-seryy-strip.webp",
-              "hex": "#aeadb1"
+              "name": "№ 290",
+              "src900": "img/fabrics/official/eclipse/290-1200.webp",
+              "src450": "img/fabrics/official/eclipse/290-600.webp",
+              "src240": "img/fabrics/official/eclipse/290-160.webp",
+              "hex": "#9d8f83"
             },
             {
-              "name": "Серо-бежевый",
-              "src240": "img/fabrics/velur/river/03-sero-bezhevyy-240.webp",
-              "src450": "img/fabrics/velur/river/03-sero-bezhevyy-450.webp",
-              "src900": "img/fabrics/velur/river/03-sero-bezhevyy.webp",
-              "strip": "img/fabrics/velur/river/03-sero-bezhevyy-strip.webp",
-              "hex": "#b8a79c"
+              "name": "№ 520",
+              "src900": "img/fabrics/official/eclipse/520-1200.webp",
+              "src450": "img/fabrics/official/eclipse/520-600.webp",
+              "src240": "img/fabrics/official/eclipse/520-160.webp",
+              "hex": "#cc964a"
             },
             {
-              "name": "Серый",
-              "src240": "img/fabrics/velur/river/12-seryy-240.webp",
-              "src450": "img/fabrics/velur/river/12-seryy-450.webp",
-              "src900": "img/fabrics/velur/river/12-seryy.webp",
-              "strip": "img/fabrics/velur/river/12-seryy-strip.webp",
-              "hex": "#7c7c7e"
+              "name": "№ 690",
+              "src900": "img/fabrics/official/eclipse/690-1200.webp",
+              "src450": "img/fabrics/official/eclipse/690-600.webp",
+              "src240": "img/fabrics/official/eclipse/690-160.webp",
+              "hex": "#bacdc5"
             },
             {
-              "name": "Тёмно-серый",
-              "src240": "img/fabrics/velur/river/13-temno-seryy-240.webp",
-              "src450": "img/fabrics/velur/river/13-temno-seryy-450.webp",
-              "src900": "img/fabrics/velur/river/13-temno-seryy.webp",
-              "strip": "img/fabrics/velur/river/13-temno-seryy-strip.webp",
-              "hex": "#454343"
+              "name": "№ 694",
+              "src900": "img/fabrics/official/eclipse/694-1200.webp",
+              "src450": "img/fabrics/official/eclipse/694-600.webp",
+              "src240": "img/fabrics/official/eclipse/694-160.webp",
+              "hex": "#697b63"
             },
             {
-              "name": "Шоколадный",
-              "src240": "img/fabrics/velur/river/04-shokoladnyy-240.webp",
-              "src450": "img/fabrics/velur/river/04-shokoladnyy-450.webp",
-              "src900": "img/fabrics/velur/river/04-shokoladnyy.webp",
-              "strip": "img/fabrics/velur/river/04-shokoladnyy-strip.webp",
-              "hex": "#4a392f"
+              "name": "№ 795",
+              "src900": "img/fabrics/official/eclipse/795-1200.webp",
+              "src450": "img/fabrics/official/eclipse/795-600.webp",
+              "src240": "img/fabrics/official/eclipse/795-160.webp",
+              "hex": "#426179"
             },
             {
-              "name": "Графит",
-              "src240": "img/fabrics/velur/river/14-grafit-240.webp",
-              "src450": "img/fabrics/velur/river/14-grafit-450.webp",
-              "src900": "img/fabrics/velur/river/14-grafit.webp",
-              "strip": "img/fabrics/velur/river/14-grafit-strip.webp",
-              "hex": "#19191e"
+              "name": "№ 924",
+              "src900": "img/fabrics/official/eclipse/924-1200.webp",
+              "src450": "img/fabrics/official/eclipse/924-600.webp",
+              "src240": "img/fabrics/official/eclipse/924-160.webp",
+              "hex": "#a1988d"
             },
             {
-              "name": "Горчичный",
-              "src240": "img/fabrics/velur/river/07-gorchichnyy-240.webp",
-              "src450": "img/fabrics/velur/river/07-gorchichnyy-450.webp",
-              "strip": "img/fabrics/velur/river/07-gorchichnyy-strip.webp",
-              "hex": "#ce8333"
+              "name": "№ 986",
+              "src900": "img/fabrics/official/eclipse/986-1200.webp",
+              "src450": "img/fabrics/official/eclipse/986-600.webp",
+              "src240": "img/fabrics/official/eclipse/986-160.webp",
+              "hex": "#696869"
             },
             {
-              "name": "Оливково-горчичный",
-              "src240": "img/fabrics/velur/river/08-olivkovo-gorchichnyy-240.webp",
-              "src450": "img/fabrics/velur/river/08-olivkovo-gorchichnyy-450.webp",
-              "src900": "img/fabrics/velur/river/08-olivkovo-gorchichnyy.webp",
-              "strip": "img/fabrics/velur/river/08-olivkovo-gorchichnyy-strip.webp",
-              "hex": "#8b6c2e"
+              "name": "№ 990",
+              "src900": "img/fabrics/official/eclipse/990-1200.webp",
+              "src450": "img/fabrics/official/eclipse/990-600.webp",
+              "src240": "img/fabrics/official/eclipse/990-160.webp",
+              "hex": "#c0bfc0"
             },
             {
-              "name": "Тёмно-оливковый",
-              "src240": "img/fabrics/velur/river/09-temno-olivkovyy-240.webp",
-              "src450": "img/fabrics/velur/river/09-temno-olivkovyy-450.webp",
-              "src900": "img/fabrics/velur/river/09-temno-olivkovyy.webp",
-              "strip": "img/fabrics/velur/river/09-temno-olivkovyy-strip.webp",
-              "hex": "#37351e"
+              "name": "№ 993",
+              "src900": "img/fabrics/official/eclipse/993-1200.webp",
+              "src450": "img/fabrics/official/eclipse/993-600.webp",
+              "src240": "img/fabrics/official/eclipse/993-160.webp",
+              "hex": "#939390"
+            }
+          ]
+        },
+        {
+          "id": "beauty",
+          "title": "BEAUTY",
+          "kind": "велюр в рубчик",
+          "facts": [
+            "100 000 циклов",
+            "320 г/м²",
+            "для вакуумной упаковки"
+          ],
+          "texture": "img/fabrics/official/beauty/hero-1-1600.webp",
+          "heroes": [
+            {
+              "src": "img/fabrics/official/beauty/hero-1-1600.webp",
+              "w": 1506,
+              "h": 2000
             },
             {
-              "name": "Терракотовый",
-              "src240": "img/fabrics/velur/river/06-terrakotovyy-240.webp",
-              "src450": "img/fabrics/velur/river/06-terrakotovyy-450.webp",
-              "src900": "img/fabrics/velur/river/06-terrakotovyy.webp",
-              "strip": "img/fabrics/velur/river/06-terrakotovyy-strip.webp",
-              "hex": "#a15326"
+              "src": "img/fabrics/official/beauty/hero-2-1600.webp",
+              "w": 1506,
+              "h": 2000
             },
             {
-              "name": "Пыльно-розовый",
-              "src240": "img/fabrics/velur/river/05-pylno-rozovyy-240.webp",
-              "src450": "img/fabrics/velur/river/05-pylno-rozovyy-450.webp",
-              "src900": "img/fabrics/velur/river/05-pylno-rozovyy.webp",
-              "strip": "img/fabrics/velur/river/05-pylno-rozovyy-strip.webp",
-              "hex": "#ac7c6f"
+              "src": "img/fabrics/official/beauty/hero-3-1600.webp",
+              "w": 1506,
+              "h": 2000
             },
             {
-              "name": "Тёмно-синий",
-              "src240": "img/fabrics/velur/river/10-temno-siniy-240.webp",
-              "src450": "img/fabrics/velur/river/10-temno-siniy-450.webp",
-              "src900": "img/fabrics/velur/river/10-temno-siniy.webp",
-              "strip": "img/fabrics/velur/river/10-temno-siniy-strip.webp",
-              "hex": "#172135"
+              "src": "img/fabrics/official/beauty/hero-4-1600.webp",
+              "w": 1506,
+              "h": 2000
+            },
+            {
+              "src": "img/fabrics/official/beauty/hero-5-1600.webp",
+              "w": 1506,
+              "h": 2000
+            },
+            {
+              "src": "img/fabrics/official/beauty/hero-6-1600.webp",
+              "w": 1506,
+              "h": 2000
+            }
+          ],
+          "inuse": [],
+          "colours": [
+            {
+              "name": "№ 012",
+              "src900": "img/fabrics/official/beauty/012-1200.webp",
+              "src450": "img/fabrics/official/beauty/012-600.webp",
+              "src240": "img/fabrics/official/beauty/012-160.webp",
+              "hex": "#a1a09f"
+            },
+            {
+              "name": "№ 007",
+              "src900": "img/fabrics/official/beauty/007-1200.webp",
+              "src450": "img/fabrics/official/beauty/007-600.webp",
+              "src240": "img/fabrics/official/beauty/007-160.webp",
+              "hex": "#c5bfb5"
+            },
+            {
+              "name": "№ 003",
+              "src900": "img/fabrics/official/beauty/003-1200.webp",
+              "src450": "img/fabrics/official/beauty/003-600.webp",
+              "src240": "img/fabrics/official/beauty/003-160.webp",
+              "hex": "#ccbfae"
+            },
+            {
+              "name": "№ 013",
+              "src900": "img/fabrics/official/beauty/013-1200.webp",
+              "src450": "img/fabrics/official/beauty/013-600.webp",
+              "src240": "img/fabrics/official/beauty/013-160.webp",
+              "hex": "#a09287"
+            },
+            {
+              "name": "№ 014",
+              "src900": "img/fabrics/official/beauty/014-1200.webp",
+              "src450": "img/fabrics/official/beauty/014-600.webp",
+              "src240": "img/fabrics/official/beauty/014-160.webp",
+              "hex": "#736051"
+            },
+            {
+              "name": "№ 006",
+              "src900": "img/fabrics/official/beauty/006-1200.webp",
+              "src450": "img/fabrics/official/beauty/006-600.webp",
+              "src240": "img/fabrics/official/beauty/006-160.webp",
+              "hex": "#a39787"
+            },
+            {
+              "name": "№ 016",
+              "src900": "img/fabrics/official/beauty/016-1200.webp",
+              "src450": "img/fabrics/official/beauty/016-600.webp",
+              "src240": "img/fabrics/official/beauty/016-160.webp",
+              "hex": "#60321b"
+            },
+            {
+              "name": "№ 015",
+              "src900": "img/fabrics/official/beauty/015-1200.webp",
+              "src450": "img/fabrics/official/beauty/015-600.webp",
+              "src240": "img/fabrics/official/beauty/015-160.webp",
+              "hex": "#273852"
+            },
+            {
+              "name": "№ 004",
+              "src900": "img/fabrics/official/beauty/004-1200.webp",
+              "src450": "img/fabrics/official/beauty/004-600.webp",
+              "src240": "img/fabrics/official/beauty/004-160.webp",
+              "hex": "#a0a0a2"
+            },
+            {
+              "name": "№ 008",
+              "src900": "img/fabrics/official/beauty/008-1200.webp",
+              "src450": "img/fabrics/official/beauty/008-600.webp",
+              "src240": "img/fabrics/official/beauty/008-160.webp",
+              "hex": "#888883"
+            },
+            {
+              "name": "№ 017",
+              "src900": "img/fabrics/official/beauty/017-1200.webp",
+              "src450": "img/fabrics/official/beauty/017-600.webp",
+              "src240": "img/fabrics/official/beauty/017-160.webp",
+              "hex": "#6a6e62"
+            },
+            {
+              "name": "№ 002",
+              "src900": "img/fabrics/official/beauty/002-1200.webp",
+              "src450": "img/fabrics/official/beauty/002-600.webp",
+              "src240": "img/fabrics/official/beauty/002-160.webp",
+              "hex": "#223b35"
+            },
+            {
+              "name": "№ 009",
+              "src900": "img/fabrics/official/beauty/009-1200.webp",
+              "src450": "img/fabrics/official/beauty/009-600.webp",
+              "src240": "img/fabrics/official/beauty/009-160.webp",
+              "hex": "#726f6a"
+            },
+            {
+              "name": "№ 005",
+              "src900": "img/fabrics/official/beauty/005-1200.webp",
+              "src450": "img/fabrics/official/beauty/005-600.webp",
+              "src240": "img/fabrics/official/beauty/005-160.webp",
+              "hex": "#625c5a"
+            },
+            {
+              "name": "№ 010",
+              "src900": "img/fabrics/official/beauty/010-1200.webp",
+              "src450": "img/fabrics/official/beauty/010-600.webp",
+              "src240": "img/fabrics/official/beauty/010-160.webp",
+              "hex": "#2a2c30"
+            },
+            {
+              "name": "№ 018",
+              "src900": "img/fabrics/official/beauty/018-1200.webp",
+              "src450": "img/fabrics/official/beauty/018-600.webp",
+              "src240": "img/fabrics/official/beauty/018-160.webp",
+              "hex": "#1a1d20"
             }
           ]
         }
@@ -921,139 +862,354 @@ window.RICCA_FABRIC_LIBRARY = {
           "title": "COCO",
           "kind": "букле",
           "facts": [
-            "Износостойкость 65 000 циклов",
-            "Плотность 480 г/м²",
-            "Лёгкая чистка и уход"
+            "65 000 циклов",
+            "480 г/м²",
+            "ширина 142 см"
           ],
-          "texture": "img/fabrics/bukle/coco/texture-600.webp",
+          "texture": "img/fabrics/official/coco/hero-1-1600.webp",
+          "heroes": [
+            {
+              "src": "img/fabrics/official/coco/hero-1-1600.webp",
+              "w": 2000,
+              "h": 2000
+            },
+            {
+              "src": "img/fabrics/official/coco/hero-2-1600.webp",
+              "w": 1920,
+              "h": 1080
+            },
+            {
+              "src": "img/fabrics/official/coco/hero-3-1600.webp",
+              "w": 1920,
+              "h": 1080
+            }
+          ],
+          "inuse": [
+            {
+              "src": "img/fabrics/official/coco/inuse-1-1200.webp",
+              "w": 1600,
+              "h": 900
+            },
+            {
+              "src": "img/fabrics/official/coco/inuse-2-1200.webp",
+              "w": 1600,
+              "h": 900
+            },
+            {
+              "src": "img/fabrics/official/coco/inuse-3-1200.webp",
+              "w": 1600,
+              "h": 900
+            },
+            {
+              "src": "img/fabrics/official/coco/inuse-4-1200.webp",
+              "w": 1600,
+              "h": 900
+            }
+          ],
           "colours": [
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/bukle/coco/01-molochnyy-240.webp",
-              "src450": "img/fabrics/bukle/coco/01-molochnyy-450.webp",
-              "src900": "img/fabrics/bukle/coco/01-molochnyy.webp",
-              "strip": "img/fabrics/bukle/coco/01-molochnyy-strip.webp",
-              "hex": "#ece8e3"
+              "name": "№ 000",
+              "src900": "img/fabrics/official/coco/000-1200.webp",
+              "src450": "img/fabrics/official/coco/000-600.webp",
+              "src240": "img/fabrics/official/coco/000-160.webp",
+              "hex": "#f5f1ea"
             },
             {
-              "name": "Кремовый",
-              "src240": "img/fabrics/bukle/coco/02-kremovyy-240.webp",
-              "src450": "img/fabrics/bukle/coco/02-kremovyy-450.webp",
-              "src900": "img/fabrics/bukle/coco/02-kremovyy.webp",
-              "strip": "img/fabrics/bukle/coco/02-kremovyy-strip.webp",
-              "hex": "#e7dfc5"
+              "name": "№ 110",
+              "src900": "img/fabrics/official/coco/110-1200.webp",
+              "src450": "img/fabrics/official/coco/110-600.webp",
+              "src240": "img/fabrics/official/coco/110-160.webp",
+              "hex": "#efe6d4"
             },
             {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/bukle/coco/09-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/bukle/coco/09-svetlo-seryy-450.webp",
-              "src900": "img/fabrics/bukle/coco/09-svetlo-seryy.webp",
-              "strip": "img/fabrics/bukle/coco/09-svetlo-seryy-strip.webp",
-              "hex": "#abaaa6"
+              "name": "№ 238",
+              "src900": "img/fabrics/official/coco/238-1200.webp",
+              "src450": "img/fabrics/official/coco/238-600.webp",
+              "src240": "img/fabrics/official/coco/238-160.webp",
+              "hex": "#6a5959"
             },
             {
-              "name": "Серо-бежевый",
-              "src240": "img/fabrics/bukle/coco/03-sero-bezhevyy-240.webp",
-              "src450": "img/fabrics/bukle/coco/03-sero-bezhevyy-450.webp",
-              "src900": "img/fabrics/bukle/coco/03-sero-bezhevyy.webp",
-              "strip": "img/fabrics/bukle/coco/03-sero-bezhevyy-strip.webp",
-              "hex": "#ad9979"
+              "name": "№ 260",
+              "src900": "img/fabrics/official/coco/260-1200.webp",
+              "src450": "img/fabrics/official/coco/260-600.webp",
+              "src240": "img/fabrics/official/coco/260-160.webp",
+              "hex": "#baa188"
             },
             {
-              "name": "Серый",
-              "src240": "img/fabrics/bukle/coco/10-seryy-240.webp",
-              "src450": "img/fabrics/bukle/coco/10-seryy-450.webp",
-              "src900": "img/fabrics/bukle/coco/10-seryy.webp",
-              "strip": "img/fabrics/bukle/coco/10-seryy-strip.webp",
-              "hex": "#908e8c"
+              "name": "№ 380",
+              "src900": "img/fabrics/official/coco/380-1200.webp",
+              "src450": "img/fabrics/official/coco/380-600.webp",
+              "src240": "img/fabrics/official/coco/380-160.webp",
+              "hex": "#773341"
             },
             {
-              "name": "Тёмно-серый",
-              "src240": "img/fabrics/bukle/coco/11-temno-seryy-240.webp",
-              "src450": "img/fabrics/bukle/coco/11-temno-seryy-450.webp",
-              "src900": "img/fabrics/bukle/coco/11-temno-seryy.webp",
-              "strip": "img/fabrics/bukle/coco/11-temno-seryy-strip.webp",
-              "hex": "#676a6f"
+              "name": "№ 422",
+              "src900": "img/fabrics/official/coco/422-1200.webp",
+              "src450": "img/fabrics/official/coco/422-600.webp",
+              "src240": "img/fabrics/official/coco/422-160.webp",
+              "hex": "#d5793f"
             },
             {
-              "name": "Шоколадный",
-              "src240": "img/fabrics/bukle/coco/12-shokoladnyy-240.webp",
-              "src450": "img/fabrics/bukle/coco/12-shokoladnyy-450.webp",
-              "src900": "img/fabrics/bukle/coco/12-shokoladnyy.webp",
-              "strip": "img/fabrics/bukle/coco/12-shokoladnyy-strip.webp",
-              "hex": "#3f3939"
+              "name": "№ 523",
+              "src900": "img/fabrics/official/coco/523-1200.webp",
+              "src450": "img/fabrics/official/coco/523-600.webp",
+              "src240": "img/fabrics/official/coco/523-160.webp",
+              "hex": "#b37833"
             },
             {
-              "name": "Горчичный",
-              "src240": "img/fabrics/bukle/coco/04-gorchichnyy-240.webp",
-              "src450": "img/fabrics/bukle/coco/04-gorchichnyy-450.webp",
-              "src900": "img/fabrics/bukle/coco/04-gorchichnyy.webp",
-              "strip": "img/fabrics/bukle/coco/04-gorchichnyy-strip.webp",
-              "hex": "#cda043"
+              "name": "№ 540",
+              "src900": "img/fabrics/official/coco/540-1200.webp",
+              "src450": "img/fabrics/official/coco/540-600.webp",
+              "src240": "img/fabrics/official/coco/540-160.webp",
+              "hex": "#dfaa56"
             },
             {
-              "name": "Тёмно-горчичный",
-              "src240": "img/fabrics/bukle/coco/05-temno-gorchichnyy-240.webp",
-              "src450": "img/fabrics/bukle/coco/05-temno-gorchichnyy-450.webp",
-              "src900": "img/fabrics/bukle/coco/05-temno-gorchichnyy.webp",
-              "strip": "img/fabrics/bukle/coco/05-temno-gorchichnyy-strip.webp",
-              "hex": "#9c7733"
+              "name": "№ 610",
+              "src900": "img/fabrics/official/coco/610-1200.webp",
+              "src450": "img/fabrics/official/coco/610-600.webp",
+              "src240": "img/fabrics/official/coco/610-160.webp",
+              "hex": "#d3c17c"
             },
             {
-              "name": "Фисташковый",
-              "src240": "img/fabrics/bukle/coco/07-fistashkovyy-240.webp",
-              "src450": "img/fabrics/bukle/coco/07-fistashkovyy-450.webp",
-              "src900": "img/fabrics/bukle/coco/07-fistashkovyy.webp",
-              "strip": "img/fabrics/bukle/coco/07-fistashkovyy-strip.webp",
-              "hex": "#c7bf7b"
+              "name": "№ 694",
+              "src900": "img/fabrics/official/coco/694-1200.webp",
+              "src450": "img/fabrics/official/coco/694-600.webp",
+              "src240": "img/fabrics/official/coco/694-160.webp",
+              "hex": "#96ada2"
             },
             {
-              "name": "Терракотовый",
-              "src240": "img/fabrics/bukle/coco/06-terrakotovyy-240.webp",
-              "src450": "img/fabrics/bukle/coco/06-terrakotovyy-450.webp",
-              "src900": "img/fabrics/bukle/coco/06-terrakotovyy.webp",
-              "strip": "img/fabrics/bukle/coco/06-terrakotovyy-strip.webp",
-              "hex": "#bb783c"
+              "name": "№ 698",
+              "src900": "img/fabrics/official/coco/698-1200.webp",
+              "src450": "img/fabrics/official/coco/698-600.webp",
+              "src240": "img/fabrics/official/coco/698-160.webp",
+              "hex": "#45544c"
             },
             {
-              "name": "Серо-зелёный",
-              "src240": "img/fabrics/bukle/coco/08-sero-zelenyy-240.webp",
-              "src450": "img/fabrics/bukle/coco/08-sero-zelenyy-450.webp",
-              "src900": "img/fabrics/bukle/coco/08-sero-zelenyy.webp",
-              "strip": "img/fabrics/bukle/coco/08-sero-zelenyy-strip.webp",
-              "hex": "#85978e"
+              "name": "№ 761",
+              "src900": "img/fabrics/official/coco/761-1200.webp",
+              "src450": "img/fabrics/official/coco/761-600.webp",
+              "src240": "img/fabrics/official/coco/761-160.webp",
+              "hex": "#416a7a"
             },
             {
-              "name": "Тёмно-зелёный",
-              "src240": "img/fabrics/bukle/coco/13-temno-zelenyy-240.webp",
-              "src450": "img/fabrics/bukle/coco/13-temno-zelenyy-450.webp",
-              "src900": "img/fabrics/bukle/coco/13-temno-zelenyy.webp",
-              "strip": "img/fabrics/bukle/coco/13-temno-zelenyy-strip.webp",
-              "hex": "#2a312f"
+              "name": "№ 785",
+              "src900": "img/fabrics/official/coco/785-1200.webp",
+              "src450": "img/fabrics/official/coco/785-600.webp",
+              "src240": "img/fabrics/official/coco/785-160.webp",
+              "hex": "#3e506d"
             },
             {
-              "name": "Петроль",
-              "src240": "img/fabrics/bukle/coco/14-petrol-240.webp",
-              "src450": "img/fabrics/bukle/coco/14-petrol-450.webp",
-              "src900": "img/fabrics/bukle/coco/14-petrol.webp",
-              "strip": "img/fabrics/bukle/coco/14-petrol-strip.webp",
-              "hex": "#2e4861"
+              "name": "№ 904",
+              "src900": "img/fabrics/official/coco/904-1200.webp",
+              "src450": "img/fabrics/official/coco/904-600.webp",
+              "src240": "img/fabrics/official/coco/904-160.webp",
+              "hex": "#a59e9c"
             },
             {
-              "name": "Синий",
-              "src240": "img/fabrics/bukle/coco/15-siniy-240.webp",
-              "src450": "img/fabrics/bukle/coco/15-siniy-450.webp",
-              "src900": "img/fabrics/bukle/coco/15-siniy.webp",
-              "strip": "img/fabrics/bukle/coco/15-siniy-strip.webp",
-              "hex": "#313e5c"
+              "name": "№ 992",
+              "src900": "img/fabrics/official/coco/992-1200.webp",
+              "src450": "img/fabrics/official/coco/992-600.webp",
+              "src240": "img/fabrics/official/coco/992-160.webp",
+              "hex": "#c4bfbb"
             },
             {
-              "name": "Бордовый",
-              "src240": "img/fabrics/bukle/coco/16-bordovyy-240.webp",
-              "src450": "img/fabrics/bukle/coco/16-bordovyy-450.webp",
-              "src900": "img/fabrics/bukle/coco/16-bordovyy.webp",
-              "strip": "img/fabrics/bukle/coco/16-bordovyy-strip.webp",
-              "hex": "#37151d"
+              "name": "№ 999",
+              "src900": "img/fabrics/official/coco/999-1200.webp",
+              "src450": "img/fabrics/official/coco/999-600.webp",
+              "src240": "img/fabrics/official/coco/999-160.webp",
+              "hex": "#717275"
+            }
+          ]
+        },
+        {
+          "id": "noble",
+          "title": "NOBLE",
+          "kind": "букле",
+          "facts": [
+            "65 000 циклов",
+            "630 г/м²",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/noble/hero-1-1600.webp",
+          "heroes": [
+            {
+              "src": "img/fabrics/official/noble/hero-1-1600.webp",
+              "w": 1200,
+              "h": 1200
+            },
+            {
+              "src": "img/fabrics/official/noble/hero-2-1600.webp",
+              "w": 2000,
+              "h": 1125
+            },
+            {
+              "src": "img/fabrics/official/noble/hero-3-1600.webp",
+              "w": 2000,
+              "h": 1126
+            },
+            {
+              "src": "img/fabrics/official/noble/hero-4-1600.webp",
+              "w": 2000,
+              "h": 1125
+            }
+          ],
+          "inuse": [
+            {
+              "src": "img/fabrics/official/noble/inuse-1-1200.webp",
+              "w": 1600,
+              "h": 901
+            },
+            {
+              "src": "img/fabrics/official/noble/inuse-2-1200.webp",
+              "w": 1600,
+              "h": 901
+            },
+            {
+              "src": "img/fabrics/official/noble/inuse-3-1200.webp",
+              "w": 1600,
+              "h": 901
+            }
+          ],
+          "colours": [
+            {
+              "name": "№ 000",
+              "src900": "img/fabrics/official/noble/000-1200.webp",
+              "src450": "img/fabrics/official/noble/000-600.webp",
+              "src240": "img/fabrics/official/noble/000-160.webp",
+              "hex": "#d9d5ca"
+            },
+            {
+              "name": "№ 010",
+              "src900": "img/fabrics/official/noble/010-1200.webp",
+              "src450": "img/fabrics/official/noble/010-600.webp",
+              "src240": "img/fabrics/official/noble/010-160.webp",
+              "hex": "#d6d1c4"
+            },
+            {
+              "name": "№ 110",
+              "src900": "img/fabrics/official/noble/110-1200.webp",
+              "src450": "img/fabrics/official/noble/110-600.webp",
+              "src240": "img/fabrics/official/noble/110-160.webp",
+              "hex": "#c6b59e"
+            },
+            {
+              "name": "№ 161",
+              "src900": "img/fabrics/official/noble/161-1200.webp",
+              "src450": "img/fabrics/official/noble/161-600.webp",
+              "src240": "img/fabrics/official/noble/161-160.webp",
+              "hex": "#a8987f"
+            },
+            {
+              "name": "№ 229",
+              "src900": "img/fabrics/official/noble/229-1200.webp",
+              "src450": "img/fabrics/official/noble/229-600.webp",
+              "src240": "img/fabrics/official/noble/229-160.webp",
+              "hex": "#303535"
+            },
+            {
+              "name": "№ 230",
+              "src900": "img/fabrics/official/noble/230-1200.webp",
+              "src450": "img/fabrics/official/noble/230-600.webp",
+              "src240": "img/fabrics/official/noble/230-160.webp",
+              "hex": "#7e7370"
+            },
+            {
+              "name": "№ 250",
+              "src900": "img/fabrics/official/noble/250-1200.webp",
+              "src450": "img/fabrics/official/noble/250-600.webp",
+              "src240": "img/fabrics/official/noble/250-160.webp",
+              "hex": "#7f4f26"
+            },
+            {
+              "name": "№ 260",
+              "src900": "img/fabrics/official/noble/260-1200.webp",
+              "src450": "img/fabrics/official/noble/260-600.webp",
+              "src240": "img/fabrics/official/noble/260-160.webp",
+              "hex": "#a79382"
+            },
+            {
+              "name": "№ 420",
+              "src900": "img/fabrics/official/noble/420-1200.webp",
+              "src450": "img/fabrics/official/noble/420-600.webp",
+              "src240": "img/fabrics/official/noble/420-160.webp",
+              "hex": "#b0937c"
+            },
+            {
+              "name": "№ 551",
+              "src900": "img/fabrics/official/noble/551-1200.webp",
+              "src450": "img/fabrics/official/noble/551-600.webp",
+              "src240": "img/fabrics/official/noble/551-160.webp",
+              "hex": "#a67f32"
+            },
+            {
+              "name": "№ 610",
+              "src900": "img/fabrics/official/noble/610-1200.webp",
+              "src450": "img/fabrics/official/noble/610-600.webp",
+              "src240": "img/fabrics/official/noble/610-160.webp",
+              "hex": "#a59a63"
+            },
+            {
+              "name": "№ 624",
+              "src900": "img/fabrics/official/noble/624-1200.webp",
+              "src450": "img/fabrics/official/noble/624-600.webp",
+              "src240": "img/fabrics/official/noble/624-160.webp",
+              "hex": "#5d6540"
+            },
+            {
+              "name": "№ 669",
+              "src900": "img/fabrics/official/noble/669-1200.webp",
+              "src450": "img/fabrics/official/noble/669-600.webp",
+              "src240": "img/fabrics/official/noble/669-160.webp",
+              "hex": "#213627"
+            },
+            {
+              "name": "№ 754",
+              "src900": "img/fabrics/official/noble/754-1200.webp",
+              "src450": "img/fabrics/official/noble/754-600.webp",
+              "src240": "img/fabrics/official/noble/754-160.webp",
+              "hex": "#435e63"
+            },
+            {
+              "name": "№ 758",
+              "src900": "img/fabrics/official/noble/758-1200.webp",
+              "src450": "img/fabrics/official/noble/758-600.webp",
+              "src240": "img/fabrics/official/noble/758-160.webp",
+              "hex": "#203949"
+            },
+            {
+              "name": "№ 786",
+              "src900": "img/fabrics/official/noble/786-1200.webp",
+              "src450": "img/fabrics/official/noble/786-600.webp",
+              "src240": "img/fabrics/official/noble/786-160.webp",
+              "hex": "#233151"
+            },
+            {
+              "name": "№ 793",
+              "src900": "img/fabrics/official/noble/793-1200.webp",
+              "src450": "img/fabrics/official/noble/793-600.webp",
+              "src240": "img/fabrics/official/noble/793-160.webp",
+              "hex": "#708281"
+            },
+            {
+              "name": "№ 870",
+              "src900": "img/fabrics/official/noble/870-1200.webp",
+              "src450": "img/fabrics/official/noble/870-600.webp",
+              "src240": "img/fabrics/official/noble/870-160.webp",
+              "hex": "#78616f"
+            },
+            {
+              "name": "№ 981",
+              "src900": "img/fabrics/official/noble/981-1200.webp",
+              "src450": "img/fabrics/official/noble/981-600.webp",
+              "src240": "img/fabrics/official/noble/981-160.webp",
+              "hex": "#635f65"
+            },
+            {
+              "name": "№ 996",
+              "src900": "img/fabrics/official/noble/996-1200.webp",
+              "src450": "img/fabrics/official/noble/996-600.webp",
+              "src240": "img/fabrics/official/noble/996-160.webp",
+              "hex": "#6c7171"
             }
           ]
         },
@@ -1062,211 +1218,122 @@ window.RICCA_FABRIC_LIBRARY = {
           "title": "PIQUE",
           "kind": "букле",
           "facts": [
-            "Износостойкость 50 000 циклов",
-            "Плотность 500 г/м²",
-            "Для любых форм мебели"
+            "50 000 циклов",
+            "500 г/м²",
+            "для любых форм мебели"
           ],
-          "texture": "img/fabrics/bukle/pique/texture-600.webp",
-          "colours": [
+          "texture": "img/fabrics/official/pique/hero-1-1600.webp",
+          "heroes": [
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/bukle/pique/01-molochnyy-240.webp",
-              "src450": "img/fabrics/bukle/pique/01-molochnyy-450.webp",
-              "strip": "img/fabrics/bukle/pique/01-molochnyy-strip.webp",
-              "hex": "#e2dbce"
+              "src": "img/fabrics/official/pique/hero-1-1600.webp",
+              "w": 2000,
+              "h": 1334
             },
             {
-              "name": "Кремовый",
-              "src240": "img/fabrics/bukle/pique/02-kremovyy-240.webp",
-              "src450": "img/fabrics/bukle/pique/02-kremovyy-450.webp",
-              "strip": "img/fabrics/bukle/pique/02-kremovyy-strip.webp",
-              "hex": "#e0d4bd"
-            },
-            {
-              "name": "Светло-серо-бежевый",
-              "src240": "img/fabrics/bukle/pique/10-svetlo-sero-bezhevyy-240.webp",
-              "src450": "img/fabrics/bukle/pique/10-svetlo-sero-bezhevyy-450.webp",
-              "src900": "img/fabrics/bukle/pique/10-svetlo-sero-bezhevyy.webp",
-              "strip": "img/fabrics/bukle/pique/10-svetlo-sero-bezhevyy-strip.webp",
-              "hex": "#bdbaaa"
-            },
-            {
-              "name": "Песочный",
-              "src240": "img/fabrics/bukle/pique/03-pesochnyy-240.webp",
-              "src450": "img/fabrics/bukle/pique/03-pesochnyy-450.webp",
-              "strip": "img/fabrics/bukle/pique/03-pesochnyy-strip.webp",
-              "hex": "#b3a68e"
-            },
-            {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/bukle/pique/04-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/bukle/pique/04-svetlo-seryy-450.webp",
-              "strip": "img/fabrics/bukle/pique/04-svetlo-seryy-strip.webp",
-              "hex": "#a79d91"
-            },
-            {
-              "name": "Серый",
-              "src240": "img/fabrics/bukle/pique/11-seryy-240.webp",
-              "src450": "img/fabrics/bukle/pique/11-seryy-450.webp",
-              "src900": "img/fabrics/bukle/pique/11-seryy.webp",
-              "strip": "img/fabrics/bukle/pique/11-seryy-strip.webp",
-              "hex": "#94928a"
-            },
-            {
-              "name": "Тёмно-бежевый",
-              "src240": "img/fabrics/bukle/pique/06-temno-bezhevyy-240.webp",
-              "src450": "img/fabrics/bukle/pique/06-temno-bezhevyy-450.webp",
-              "src900": "img/fabrics/bukle/pique/06-temno-bezhevyy.webp",
-              "strip": "img/fabrics/bukle/pique/06-temno-bezhevyy-strip.webp",
-              "hex": "#9b8b74"
-            },
-            {
-              "name": "Тёмно-серый",
-              "src240": "img/fabrics/bukle/pique/12-temno-seryy-240.webp",
-              "src450": "img/fabrics/bukle/pique/12-temno-seryy-450.webp",
-              "src900": "img/fabrics/bukle/pique/12-temno-seryy.webp",
-              "strip": "img/fabrics/bukle/pique/12-temno-seryy-strip.webp",
-              "hex": "#736f6a"
-            },
-            {
-              "name": "Серо-коричневый",
-              "src240": "img/fabrics/bukle/pique/05-sero-korichnevyy-240.webp",
-              "src450": "img/fabrics/bukle/pique/05-sero-korichnevyy-450.webp",
-              "src900": "img/fabrics/bukle/pique/05-sero-korichnevyy.webp",
-              "strip": "img/fabrics/bukle/pique/05-sero-korichnevyy-strip.webp",
-              "hex": "#6c6659"
-            },
-            {
-              "name": "Графитовый",
-              "src240": "img/fabrics/bukle/pique/13-grafitovyy-240.webp",
-              "src450": "img/fabrics/bukle/pique/13-grafitovyy-450.webp",
-              "src900": "img/fabrics/bukle/pique/13-grafitovyy.webp",
-              "strip": "img/fabrics/bukle/pique/13-grafitovyy-strip.webp",
-              "hex": "#656663"
-            },
-            {
-              "name": "Антрацит",
-              "src240": "img/fabrics/bukle/pique/14-antratsit-240.webp",
-              "src450": "img/fabrics/bukle/pique/14-antratsit-450.webp",
-              "src900": "img/fabrics/bukle/pique/14-antratsit.webp",
-              "strip": "img/fabrics/bukle/pique/14-antratsit-strip.webp",
-              "hex": "#464644"
-            },
-            {
-              "name": "Шалфейный",
-              "src240": "img/fabrics/bukle/pique/07-shalfeynyy-240.webp",
-              "src450": "img/fabrics/bukle/pique/07-shalfeynyy-450.webp",
-              "strip": "img/fabrics/bukle/pique/07-shalfeynyy-strip.webp",
-              "hex": "#7b7a66"
-            },
-            {
-              "name": "Бутылочно-зелёный",
-              "src240": "img/fabrics/bukle/pique/08-butylochno-zelenyy-240.webp",
-              "src450": "img/fabrics/bukle/pique/08-butylochno-zelenyy-450.webp",
-              "src900": "img/fabrics/bukle/pique/08-butylochno-zelenyy.webp",
-              "strip": "img/fabrics/bukle/pique/08-butylochno-zelenyy-strip.webp",
-              "hex": "#455250"
-            },
-            {
-              "name": "Синий",
-              "src240": "img/fabrics/bukle/pique/09-siniy-240.webp",
-              "src450": "img/fabrics/bukle/pique/09-siniy-450.webp",
-              "src900": "img/fabrics/bukle/pique/09-siniy.webp",
-              "strip": "img/fabrics/bukle/pique/09-siniy-strip.webp",
-              "hex": "#38455b"
+              "src": "img/fabrics/official/pique/hero-2-1600.webp",
+              "w": 2000,
+              "h": 1334
             }
-          ]
-        },
-        {
-          "id": "historiya",
-          "title": "HISTORIYA",
-          "kind": "букле",
-          "facts": [
-            "Более 100 000 циклов по Мартиндейлу",
-            "Плотность 540 г/м²",
-            "Антивандальная"
           ],
-          "texture": "img/fabrics/bukle/historiya/texture-600.webp",
+          "inuse": [],
           "colours": [
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/bukle/historiya/10-molochnyy-240.webp",
-              "src450": "img/fabrics/bukle/historiya/10-molochnyy-450.webp",
-              "src900": "img/fabrics/bukle/historiya/10-molochnyy.webp",
-              "strip": "img/fabrics/bukle/historiya/10-molochnyy-strip.webp",
-              "hex": "#bcbab4"
+              "name": "№ 001",
+              "src900": "img/fabrics/official/pique/001-1200.webp",
+              "src450": "img/fabrics/official/pique/001-600.webp",
+              "src240": "img/fabrics/official/pique/001-160.webp",
+              "hex": "#adaca3"
             },
             {
-              "name": "Кремовый",
-              "src240": "img/fabrics/bukle/historiya/09-kremovyy-240.webp",
-              "src450": "img/fabrics/bukle/historiya/09-kremovyy-450.webp",
-              "src900": "img/fabrics/bukle/historiya/09-kremovyy.webp",
-              "strip": "img/fabrics/bukle/historiya/09-kremovyy-strip.webp",
-              "hex": "#c0bcb1"
+              "name": "№ 002",
+              "src900": "img/fabrics/official/pique/002-1200.webp",
+              "src450": "img/fabrics/official/pique/002-600.webp",
+              "src240": "img/fabrics/official/pique/002-160.webp",
+              "hex": "#a4a094"
             },
             {
-              "name": "Серо-бежевый",
-              "src240": "img/fabrics/bukle/historiya/08-sero-bezhevyy-240.webp",
-              "src450": "img/fabrics/bukle/historiya/08-sero-bezhevyy-450.webp",
-              "src900": "img/fabrics/bukle/historiya/08-sero-bezhevyy.webp",
-              "strip": "img/fabrics/bukle/historiya/08-sero-bezhevyy-strip.webp",
-              "hex": "#aba598"
+              "name": "№ 003",
+              "src900": "img/fabrics/official/pique/003-1200.webp",
+              "src450": "img/fabrics/official/pique/003-600.webp",
+              "src240": "img/fabrics/official/pique/003-160.webp",
+              "hex": "#9e9283"
             },
             {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/bukle/historiya/03-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/bukle/historiya/03-svetlo-seryy-450.webp",
-              "src900": "img/fabrics/bukle/historiya/03-svetlo-seryy.webp",
-              "strip": "img/fabrics/bukle/historiya/03-svetlo-seryy-strip.webp",
-              "hex": "#979896"
+              "name": "№ 004",
+              "src900": "img/fabrics/official/pique/004-1200.webp",
+              "src450": "img/fabrics/official/pique/004-600.webp",
+              "src240": "img/fabrics/official/pique/004-160.webp",
+              "hex": "#8e8c83"
             },
             {
-              "name": "Тёмно-серый",
-              "src240": "img/fabrics/bukle/historiya/02-temno-seryy-240.webp",
-              "src450": "img/fabrics/bukle/historiya/02-temno-seryy-450.webp",
-              "src900": "img/fabrics/bukle/historiya/02-temno-seryy.webp",
-              "strip": "img/fabrics/bukle/historiya/02-temno-seryy-strip.webp",
-              "hex": "#696a6b"
+              "name": "№ 005",
+              "src900": "img/fabrics/official/pique/005-1200.webp",
+              "src450": "img/fabrics/official/pique/005-600.webp",
+              "src240": "img/fabrics/official/pique/005-160.webp",
+              "hex": "#5c584f"
             },
             {
-              "name": "Горчичный",
-              "src240": "img/fabrics/bukle/historiya/06-gorchichnyy-240.webp",
-              "src450": "img/fabrics/bukle/historiya/06-gorchichnyy-450.webp",
-              "src900": "img/fabrics/bukle/historiya/06-gorchichnyy.webp",
-              "strip": "img/fabrics/bukle/historiya/06-gorchichnyy-strip.webp",
-              "hex": "#8d7a59"
+              "name": "№ 006",
+              "src900": "img/fabrics/official/pique/006-1200.webp",
+              "src450": "img/fabrics/official/pique/006-600.webp",
+              "src240": "img/fabrics/official/pique/006-160.webp",
+              "hex": "#75695d"
             },
             {
-              "name": "Терракота",
-              "src240": "img/fabrics/bukle/historiya/05-terrakota-240.webp",
-              "src450": "img/fabrics/bukle/historiya/05-terrakota-450.webp",
-              "src900": "img/fabrics/bukle/historiya/05-terrakota.webp",
-              "strip": "img/fabrics/bukle/historiya/05-terrakota-strip.webp",
-              "hex": "#61544d"
+              "name": "№ 007",
+              "src900": "img/fabrics/official/pique/007-1200.webp",
+              "src450": "img/fabrics/official/pique/007-600.webp",
+              "src240": "img/fabrics/official/pique/007-160.webp",
+              "hex": "#7b796a"
             },
             {
-              "name": "Серо-зелёный",
-              "src240": "img/fabrics/bukle/historiya/07-sero-zelenyy-240.webp",
-              "src450": "img/fabrics/bukle/historiya/07-sero-zelenyy-450.webp",
-              "src900": "img/fabrics/bukle/historiya/07-sero-zelenyy.webp",
-              "strip": "img/fabrics/bukle/historiya/07-sero-zelenyy-strip.webp",
-              "hex": "#858177"
+              "name": "№ 008",
+              "src900": "img/fabrics/official/pique/008-1200.webp",
+              "src450": "img/fabrics/official/pique/008-600.webp",
+              "src240": "img/fabrics/official/pique/008-160.webp",
+              "hex": "#43554f"
             },
             {
-              "name": "Серо-оливковый",
-              "src240": "img/fabrics/bukle/historiya/04-sero-olivkovyy-240.webp",
-              "src450": "img/fabrics/bukle/historiya/04-sero-olivkovyy-450.webp",
-              "src900": "img/fabrics/bukle/historiya/04-sero-olivkovyy.webp",
-              "strip": "img/fabrics/bukle/historiya/04-sero-olivkovyy-strip.webp",
-              "hex": "#696760"
+              "name": "№ 009",
+              "src900": "img/fabrics/official/pique/009-1200.webp",
+              "src450": "img/fabrics/official/pique/009-600.webp",
+              "src240": "img/fabrics/official/pique/009-160.webp",
+              "hex": "#364957"
             },
             {
-              "name": "Тёмно-синий",
-              "src240": "img/fabrics/bukle/historiya/01-temno-siniy-240.webp",
-              "src450": "img/fabrics/bukle/historiya/01-temno-siniy-450.webp",
-              "src900": "img/fabrics/bukle/historiya/01-temno-siniy.webp",
-              "strip": "img/fabrics/bukle/historiya/01-temno-siniy-strip.webp",
-              "hex": "#24272e"
+              "name": "№ 010",
+              "src900": "img/fabrics/official/pique/010-1200.webp",
+              "src450": "img/fabrics/official/pique/010-600.webp",
+              "src240": "img/fabrics/official/pique/010-160.webp",
+              "hex": "#9e9c91"
+            },
+            {
+              "name": "№ 011",
+              "src900": "img/fabrics/official/pique/011-1200.webp",
+              "src450": "img/fabrics/official/pique/011-600.webp",
+              "src240": "img/fabrics/official/pique/011-160.webp",
+              "hex": "#979594"
+            },
+            {
+              "name": "№ 012",
+              "src900": "img/fabrics/official/pique/012-1200.webp",
+              "src450": "img/fabrics/official/pique/012-600.webp",
+              "src240": "img/fabrics/official/pique/012-160.webp",
+              "hex": "#6e6d69"
+            },
+            {
+              "name": "№ 013",
+              "src900": "img/fabrics/official/pique/013-1200.webp",
+              "src450": "img/fabrics/official/pique/013-600.webp",
+              "src240": "img/fabrics/official/pique/013-160.webp",
+              "hex": "#5c5e5e"
+            },
+            {
+              "name": "№ 014",
+              "src900": "img/fabrics/official/pique/014-1200.webp",
+              "src450": "img/fabrics/official/pique/014-600.webp",
+              "src240": "img/fabrics/official/pique/014-160.webp",
+              "hex": "#474b4b"
             }
           ]
         }
@@ -1281,155 +1348,178 @@ window.RICCA_FABRIC_LIBRARY = {
           "title": "LUCKY",
           "kind": "шенилл",
           "facts": [
-            "Износостойкость 100 000 циклов",
-            "Плотность 420 г/м²",
-            "Для любых форм мебели"
+            "100 000 циклов",
+            "420 г/м²",
+            "для любых форм мебели"
           ],
-          "texture": "img/fabrics/shenill/lucky/texture-600.webp",
+          "texture": "img/fabrics/official/lucky/hero-1-1600.webp",
+          "heroes": [
+            {
+              "src": "img/fabrics/official/lucky/hero-1-1600.webp",
+              "w": 2000,
+              "h": 1334
+            },
+            {
+              "src": "img/fabrics/official/lucky/hero-2-1600.webp",
+              "w": 2000,
+              "h": 1334
+            }
+          ],
+          "inuse": [],
           "colours": [
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/shenill/lucky/01-molochnyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/01-molochnyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/01-molochnyy.webp",
-              "strip": "img/fabrics/shenill/lucky/01-molochnyy-strip.webp",
-              "hex": "#f7eed6"
+              "name": "№ 002",
+              "src900": "img/fabrics/official/lucky/002-1200.webp",
+              "src450": "img/fabrics/official/lucky/002-600.webp",
+              "src240": "img/fabrics/official/lucky/002-160.webp",
+              "hex": "#cec8c0"
             },
             {
-              "name": "Кремовый",
-              "src240": "img/fabrics/shenill/lucky/02-kremovyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/02-kremovyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/02-kremovyy.webp",
-              "strip": "img/fabrics/shenill/lucky/02-kremovyy-strip.webp",
-              "hex": "#d6c9b3"
+              "name": "№ 003",
+              "src900": "img/fabrics/official/lucky/003-1200.webp",
+              "src450": "img/fabrics/official/lucky/003-600.webp",
+              "src240": "img/fabrics/official/lucky/003-160.webp",
+              "hex": "#988f89"
             },
             {
-              "name": "Светло-песочный",
-              "src240": "img/fabrics/shenill/lucky/03-svetlo-pesochnyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/03-svetlo-pesochnyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/03-svetlo-pesochnyy.webp",
-              "strip": "img/fabrics/shenill/lucky/03-svetlo-pesochnyy-strip.webp",
-              "hex": "#c4b399"
+              "name": "№ 021",
+              "src900": "img/fabrics/official/lucky/021-1200.webp",
+              "src450": "img/fabrics/official/lucky/021-600.webp",
+              "src240": "img/fabrics/official/lucky/021-160.webp",
+              "hex": "#a79588"
             },
             {
-              "name": "Песочный",
-              "src240": "img/fabrics/shenill/lucky/04-pesochnyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/04-pesochnyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/04-pesochnyy.webp",
-              "strip": "img/fabrics/shenill/lucky/04-pesochnyy-strip.webp",
-              "hex": "#b19c7e"
+              "name": "№ 023",
+              "src900": "img/fabrics/official/lucky/023-1200.webp",
+              "src450": "img/fabrics/official/lucky/023-600.webp",
+              "src240": "img/fabrics/official/lucky/023-160.webp",
+              "hex": "#a89181"
             },
             {
-              "name": "Серо-бежевый",
-              "src240": "img/fabrics/shenill/lucky/06-sero-bezhevyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/06-sero-bezhevyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/06-sero-bezhevyy.webp",
-              "strip": "img/fabrics/shenill/lucky/06-sero-bezhevyy-strip.webp",
-              "hex": "#968979"
+              "name": "№ 022",
+              "src900": "img/fabrics/official/lucky/022-1200.webp",
+              "src450": "img/fabrics/official/lucky/022-600.webp",
+              "src240": "img/fabrics/official/lucky/022-160.webp",
+              "hex": "#8a7667"
             },
             {
-              "name": "Тёмно-бежевый",
-              "src240": "img/fabrics/shenill/lucky/05-temno-bezhevyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/05-temno-bezhevyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/05-temno-bezhevyy.webp",
-              "strip": "img/fabrics/shenill/lucky/05-temno-bezhevyy-strip.webp",
-              "hex": "#8e7c66"
+              "name": "№ 004",
+              "src900": "img/fabrics/official/lucky/004-1200.webp",
+              "src450": "img/fabrics/official/lucky/004-600.webp",
+              "src240": "img/fabrics/official/lucky/004-160.webp",
+              "hex": "#928780"
             },
             {
-              "name": "Серый",
-              "src240": "img/fabrics/shenill/lucky/19-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/19-svetlo-seryy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/19-svetlo-seryy.webp",
-              "strip": "img/fabrics/shenill/lucky/19-svetlo-seryy-strip.webp",
-              "hex": "#787672"
+              "name": "№ 005",
+              "src900": "img/fabrics/official/lucky/005-1200.webp",
+              "src450": "img/fabrics/official/lucky/005-600.webp",
+              "src240": "img/fabrics/official/lucky/005-160.webp",
+              "hex": "#453a34"
             },
             {
-              "name": "Стальной",
-              "src240": "img/fabrics/shenill/lucky/15-stalnoy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/15-stalnoy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/15-stalnoy.webp",
-              "strip": "img/fabrics/shenill/lucky/15-stalnoy-strip.webp",
-              "hex": "#494a4a"
+              "name": "№ 006",
+              "src900": "img/fabrics/official/lucky/006-1200.webp",
+              "src450": "img/fabrics/official/lucky/006-600.webp",
+              "src240": "img/fabrics/official/lucky/006-160.webp",
+              "hex": "#363232"
             },
             {
-              "name": "Коричневый",
-              "src240": "img/fabrics/shenill/lucky/07-korichnevyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/07-korichnevyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/07-korichnevyy.webp",
-              "strip": "img/fabrics/shenill/lucky/07-korichnevyy-strip.webp",
-              "hex": "#3a2c20"
+              "name": "№ 007",
+              "src900": "img/fabrics/official/lucky/007-1200.webp",
+              "src450": "img/fabrics/official/lucky/007-600.webp",
+              "src240": "img/fabrics/official/lucky/007-160.webp",
+              "hex": "#92958a"
             },
             {
-              "name": "Графит",
-              "src240": "img/fabrics/shenill/lucky/21-temno-seryy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/21-temno-seryy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/21-temno-seryy.webp",
-              "strip": "img/fabrics/shenill/lucky/21-temno-seryy-strip.webp",
-              "hex": "#272725"
+              "name": "№ 009",
+              "src900": "img/fabrics/official/lucky/009-1200.webp",
+              "src450": "img/fabrics/official/lucky/009-600.webp",
+              "src240": "img/fabrics/official/lucky/009-160.webp",
+              "hex": "#252b25"
             },
             {
-              "name": "Пудровый",
-              "src240": "img/fabrics/shenill/lucky/18-pudrovyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/18-pudrovyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/18-pudrovyy.webp",
-              "strip": "img/fabrics/shenill/lucky/18-pudrovyy-strip.webp",
-              "hex": "#bc9d8f"
+              "name": "№ 008",
+              "src900": "img/fabrics/official/lucky/008-1200.webp",
+              "src450": "img/fabrics/official/lucky/008-600.webp",
+              "src240": "img/fabrics/official/lucky/008-160.webp",
+              "hex": "#3b382c"
             },
             {
-              "name": "Рыжий",
-              "src240": "img/fabrics/shenill/lucky/12-ryzhiy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/12-ryzhiy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/12-ryzhiy.webp",
-              "strip": "img/fabrics/shenill/lucky/12-ryzhiy-strip.webp",
-              "hex": "#814e1e"
+              "name": "№ 010",
+              "src900": "img/fabrics/official/lucky/010-1200.webp",
+              "src450": "img/fabrics/official/lucky/010-600.webp",
+              "src240": "img/fabrics/official/lucky/010-160.webp",
+              "hex": "#8b5830"
             },
             {
-              "name": "Кирпичный",
-              "src240": "img/fabrics/shenill/lucky/13-kirpichnyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/13-kirpichnyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/13-kirpichnyy.webp",
-              "strip": "img/fabrics/shenill/lucky/13-kirpichnyy-strip.webp",
-              "hex": "#53221d"
+              "name": "№ 011",
+              "src900": "img/fabrics/official/lucky/011-1200.webp",
+              "src450": "img/fabrics/official/lucky/011-600.webp",
+              "src240": "img/fabrics/official/lucky/011-160.webp",
+              "hex": "#64393b"
             },
             {
-              "name": "Шалфейный",
-              "src240": "img/fabrics/shenill/lucky/09-shalfeynyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/09-shalfeynyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/09-shalfeynyy.webp",
-              "strip": "img/fabrics/shenill/lucky/09-shalfeynyy-strip.webp",
-              "hex": "#9c9b86"
+              "name": "№ 012",
+              "src900": "img/fabrics/official/lucky/012-1200.webp",
+              "src450": "img/fabrics/official/lucky/012-600.webp",
+              "src240": "img/fabrics/official/lucky/012-160.webp",
+              "hex": "#184a56"
             },
             {
-              "name": "Оливковый",
-              "src240": "img/fabrics/shenill/lucky/11-olivkovyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/11-olivkovyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/11-olivkovyy.webp",
-              "strip": "img/fabrics/shenill/lucky/11-olivkovyy-strip.webp",
-              "hex": "#323224"
+              "name": "№ 013",
+              "src900": "img/fabrics/official/lucky/013-1200.webp",
+              "src450": "img/fabrics/official/lucky/013-600.webp",
+              "src240": "img/fabrics/official/lucky/013-160.webp",
+              "hex": "#3f4145"
             },
             {
-              "name": "Тёмно-зелёный",
-              "src240": "img/fabrics/shenill/lucky/10-temno-zelenyy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/10-temno-zelenyy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/10-temno-zelenyy.webp",
-              "strip": "img/fabrics/shenill/lucky/10-temno-zelenyy-strip.webp",
-              "hex": "#20241d"
+              "name": "№ 014",
+              "src900": "img/fabrics/official/lucky/014-1200.webp",
+              "src450": "img/fabrics/official/lucky/014-600.webp",
+              "src240": "img/fabrics/official/lucky/014-160.webp",
+              "hex": "#484a4d"
             },
             {
-              "name": "Морская волна",
-              "src240": "img/fabrics/shenill/lucky/14-morskaya-volna-240.webp",
-              "src450": "img/fabrics/shenill/lucky/14-morskaya-volna-450.webp",
-              "src900": "img/fabrics/shenill/lucky/14-morskaya-volna.webp",
-              "strip": "img/fabrics/shenill/lucky/14-morskaya-volna-strip.webp",
-              "hex": "#1c313c"
+              "name": "№ 015",
+              "src900": "img/fabrics/official/lucky/015-1200.webp",
+              "src450": "img/fabrics/official/lucky/015-600.webp",
+              "src240": "img/fabrics/official/lucky/015-160.webp",
+              "hex": "#394753"
             },
             {
-              "name": "Тёмно-синий",
-              "src240": "img/fabrics/shenill/lucky/17-temno-siniy-240.webp",
-              "src450": "img/fabrics/shenill/lucky/17-temno-siniy-450.webp",
-              "src900": "img/fabrics/shenill/lucky/17-temno-siniy.webp",
-              "strip": "img/fabrics/shenill/lucky/17-temno-siniy-strip.webp",
-              "hex": "#252a31"
+              "name": "№ 020",
+              "src900": "img/fabrics/official/lucky/020-1200.webp",
+              "src450": "img/fabrics/official/lucky/020-600.webp",
+              "src240": "img/fabrics/official/lucky/020-160.webp",
+              "hex": "#ae918e"
+            },
+            {
+              "name": "№ 016",
+              "src900": "img/fabrics/official/lucky/016-1200.webp",
+              "src450": "img/fabrics/official/lucky/016-600.webp",
+              "src240": "img/fabrics/official/lucky/016-160.webp",
+              "hex": "#7a7e84"
+            },
+            {
+              "name": "№ 017",
+              "src900": "img/fabrics/official/lucky/017-1200.webp",
+              "src450": "img/fabrics/official/lucky/017-600.webp",
+              "src240": "img/fabrics/official/lucky/017-160.webp",
+              "hex": "#575c5f"
+            },
+            {
+              "name": "№ 018",
+              "src900": "img/fabrics/official/lucky/018-1200.webp",
+              "src450": "img/fabrics/official/lucky/018-600.webp",
+              "src240": "img/fabrics/official/lucky/018-160.webp",
+              "hex": "#303132"
+            },
+            {
+              "name": "№ 019",
+              "src900": "img/fabrics/official/lucky/019-1200.webp",
+              "src450": "img/fabrics/official/lucky/019-600.webp",
+              "src240": "img/fabrics/official/lucky/019-160.webp",
+              "hex": "#2a2e30"
             }
           ]
         },
@@ -1438,146 +1528,195 @@ window.RICCA_FABRIC_LIBRARY = {
           "title": "MOLLY",
           "kind": "шенилл",
           "facts": [
-            "Износостойкость 80 000 циклов",
-            "Плотность 430 г/м²",
-            "Дышащий материал"
+            "80 000 циклов",
+            "430 г/м²",
+            "дышащий материал"
           ],
-          "texture": "img/fabrics/shenill/molly/texture-600.webp",
+          "texture": "img/fabrics/official/molly/hero-1-1600.webp",
+          "heroes": [
+            {
+              "src": "img/fabrics/official/molly/hero-1-1600.webp",
+              "w": 2000,
+              "h": 1334
+            },
+            {
+              "src": "img/fabrics/official/molly/hero-2-1600.webp",
+              "w": 2000,
+              "h": 1334
+            },
+            {
+              "src": "img/fabrics/official/molly/hero-3-1600.webp",
+              "w": 2000,
+              "h": 1334
+            },
+            {
+              "src": "img/fabrics/official/molly/hero-4-1600.webp",
+              "w": 2000,
+              "h": 1334
+            }
+          ],
+          "inuse": [],
           "colours": [
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/shenill/molly/02-molochnyy-240.webp",
-              "src450": "img/fabrics/shenill/molly/02-molochnyy-450.webp",
-              "src900": "img/fabrics/shenill/molly/02-molochnyy.webp",
-              "strip": "img/fabrics/shenill/molly/02-molochnyy-strip.webp",
-              "hex": "#ddd6bf"
+              "name": "№ FL 100",
+              "src900": "img/fabrics/official/molly/FL100-1200.webp",
+              "src450": "img/fabrics/official/molly/FL100-600.webp",
+              "src240": "img/fabrics/official/molly/FL100-160.webp",
+              "hex": "#9b887a"
             },
             {
-              "name": "Кремовый",
-              "src240": "img/fabrics/shenill/molly/03-kremovyy-240.webp",
-              "src450": "img/fabrics/shenill/molly/03-kremovyy-450.webp",
-              "src900": "img/fabrics/shenill/molly/03-kremovyy.webp",
-              "strip": "img/fabrics/shenill/molly/03-kremovyy-strip.webp",
-              "hex": "#cdbfa6"
+              "name": "№ 006",
+              "src900": "img/fabrics/official/molly/006-1200.webp",
+              "src450": "img/fabrics/official/molly/006-600.webp",
+              "src240": "img/fabrics/official/molly/006-160.webp",
+              "hex": "#aeaaa3"
             },
             {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/shenill/molly/17-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/shenill/molly/17-svetlo-seryy-450.webp",
-              "src900": "img/fabrics/shenill/molly/17-svetlo-seryy.webp",
-              "strip": "img/fabrics/shenill/molly/17-svetlo-seryy-strip.webp",
-              "hex": "#c1bdb9"
+              "name": "№ 004",
+              "src900": "img/fabrics/official/molly/004-1200.webp",
+              "src450": "img/fabrics/official/molly/004-600.webp",
+              "src240": "img/fabrics/official/molly/004-160.webp",
+              "hex": "#a89d92"
             },
             {
-              "name": "Песочный",
-              "src240": "img/fabrics/shenill/molly/04-pesochnyy-240.webp",
-              "src450": "img/fabrics/shenill/molly/04-pesochnyy-450.webp",
-              "src900": "img/fabrics/shenill/molly/04-pesochnyy.webp",
-              "strip": "img/fabrics/shenill/molly/04-pesochnyy-strip.webp",
-              "hex": "#b9ab96"
+              "name": "№ 003",
+              "src900": "img/fabrics/official/molly/003-1200.webp",
+              "src450": "img/fabrics/official/molly/003-600.webp",
+              "src240": "img/fabrics/official/molly/003-160.webp",
+              "hex": "#bbaea4"
             },
             {
-              "name": "Серо-бежевый",
-              "src240": "img/fabrics/shenill/molly/18-sero-bezhevyy-240.webp",
-              "src450": "img/fabrics/shenill/molly/18-sero-bezhevyy-450.webp",
-              "src900": "img/fabrics/shenill/molly/18-sero-bezhevyy.webp",
-              "strip": "img/fabrics/shenill/molly/18-sero-bezhevyy-strip.webp",
-              "hex": "#b1aaa5"
+              "name": "№ 002",
+              "src900": "img/fabrics/official/molly/002-1200.webp",
+              "src450": "img/fabrics/official/molly/002-600.webp",
+              "src240": "img/fabrics/official/molly/002-160.webp",
+              "hex": "#766151"
             },
             {
-              "name": "Серый",
-              "src240": "img/fabrics/shenill/molly/16-seryy-240.webp",
-              "src450": "img/fabrics/shenill/molly/16-seryy-450.webp",
-              "src900": "img/fabrics/shenill/molly/16-seryy.webp",
-              "strip": "img/fabrics/shenill/molly/16-seryy-strip.webp",
-              "hex": "#9a9893"
+              "name": "№ 001",
+              "src900": "img/fabrics/official/molly/001-1200.webp",
+              "src450": "img/fabrics/official/molly/001-600.webp",
+              "src240": "img/fabrics/official/molly/001-160.webp",
+              "hex": "#594b43"
             },
             {
-              "name": "Хаки",
-              "src240": "img/fabrics/shenill/molly/05-khaki-240.webp",
-              "src450": "img/fabrics/shenill/molly/05-khaki-450.webp",
-              "src900": "img/fabrics/shenill/molly/05-khaki.webp",
-              "strip": "img/fabrics/shenill/molly/05-khaki-strip.webp",
-              "hex": "#92836b"
+              "name": "№ 013",
+              "src900": "img/fabrics/official/molly/013-1200.webp",
+              "src450": "img/fabrics/official/molly/013-600.webp",
+              "src240": "img/fabrics/official/molly/013-160.webp",
+              "hex": "#4f2a1a"
             },
             {
-              "name": "Тёмно-серый",
-              "src240": "img/fabrics/shenill/molly/20-temno-seryy-240.webp",
-              "src450": "img/fabrics/shenill/molly/20-temno-seryy-450.webp",
-              "src900": "img/fabrics/shenill/molly/20-temno-seryy.webp",
-              "strip": "img/fabrics/shenill/molly/20-temno-seryy-strip.webp",
-              "hex": "#736f6c"
+              "name": "№ FL 200",
+              "src900": "img/fabrics/official/molly/FL200-1200.webp",
+              "src450": "img/fabrics/official/molly/FL200-600.webp",
+              "src240": "img/fabrics/official/molly/FL200-160.webp",
+              "hex": "#8d837f"
             },
             {
-              "name": "Серо-оливковый",
-              "src240": "img/fabrics/shenill/molly/06-sero-olivkovyy-240.webp",
-              "src450": "img/fabrics/shenill/molly/06-sero-olivkovyy-450.webp",
-              "src900": "img/fabrics/shenill/molly/06-sero-olivkovyy.webp",
-              "strip": "img/fabrics/shenill/molly/06-sero-olivkovyy-strip.webp",
-              "hex": "#726759"
+              "name": "№ 012",
+              "src900": "img/fabrics/official/molly/012-1200.webp",
+              "src450": "img/fabrics/official/molly/012-600.webp",
+              "src240": "img/fabrics/official/molly/012-160.webp",
+              "hex": "#813223"
             },
             {
-              "name": "Графит",
-              "src240": "img/fabrics/shenill/molly/21-grafit-240.webp",
-              "src450": "img/fabrics/shenill/molly/21-grafit-450.webp",
-              "src900": "img/fabrics/shenill/molly/21-grafit.webp",
-              "strip": "img/fabrics/shenill/molly/21-grafit-strip.webp",
-              "hex": "#605c59"
+              "name": "№ 010",
+              "src900": "img/fabrics/official/molly/010-1200.webp",
+              "src450": "img/fabrics/official/molly/010-600.webp",
+              "src240": "img/fabrics/official/molly/010-160.webp",
+              "hex": "#926560"
             },
             {
-              "name": "Горчичный",
-              "src240": "img/fabrics/shenill/molly/11-gorchichnyy-240.webp",
-              "src450": "img/fabrics/shenill/molly/11-gorchichnyy-450.webp",
-              "strip": "img/fabrics/shenill/molly/11-gorchichnyy-strip.webp",
-              "hex": "#c18d38"
+              "name": "№ 015",
+              "src900": "img/fabrics/official/molly/015-1200.webp",
+              "src450": "img/fabrics/official/molly/015-600.webp",
+              "src240": "img/fabrics/official/molly/015-160.webp",
+              "hex": "#b07c32"
             },
             {
-              "name": "Рыже-коричневый",
-              "src240": "img/fabrics/shenill/molly/07-ryzhe-korichnevyy-240.webp",
-              "src450": "img/fabrics/shenill/molly/07-ryzhe-korichnevyy-450.webp",
-              "src900": "img/fabrics/shenill/molly/07-ryzhe-korichnevyy.webp",
-              "strip": "img/fabrics/shenill/molly/07-ryzhe-korichnevyy-strip.webp",
-              "hex": "#754932"
+              "name": "№ 018",
+              "src900": "img/fabrics/official/molly/018-1200.webp",
+              "src450": "img/fabrics/official/molly/018-600.webp",
+              "src240": "img/fabrics/official/molly/018-160.webp",
+              "hex": "#242e3b"
             },
             {
-              "name": "Терракотовый",
-              "src240": "img/fabrics/shenill/molly/09-terrakotovyy-240.webp",
-              "src450": "img/fabrics/shenill/molly/09-terrakotovyy-450.webp",
-              "src900": "img/fabrics/shenill/molly/09-terrakotovyy.webp",
-              "strip": "img/fabrics/shenill/molly/09-terrakotovyy-strip.webp",
-              "hex": "#89402e"
+              "name": "№ 016",
+              "src900": "img/fabrics/official/molly/016-1200.webp",
+              "src450": "img/fabrics/official/molly/016-600.webp",
+              "src240": "img/fabrics/official/molly/016-160.webp",
+              "hex": "#393328"
             },
             {
-              "name": "Пыльно-розовый",
-              "src240": "img/fabrics/shenill/molly/10-pylno-rozovyy-240.webp",
-              "src450": "img/fabrics/shenill/molly/10-pylno-rozovyy-450.webp",
-              "src900": "img/fabrics/shenill/molly/10-pylno-rozovyy.webp",
-              "strip": "img/fabrics/shenill/molly/10-pylno-rozovyy-strip.webp",
-              "hex": "#a9796d"
+              "name": "№ 017",
+              "src900": "img/fabrics/official/molly/017-1200.webp",
+              "src450": "img/fabrics/official/molly/017-600.webp",
+              "src240": "img/fabrics/official/molly/017-160.webp",
+              "hex": "#273732"
             },
             {
-              "name": "Тёмно-оливковый",
-              "src240": "img/fabrics/shenill/molly/13-temno-olivkovyy-240.webp",
-              "src450": "img/fabrics/shenill/molly/13-temno-olivkovyy-450.webp",
-              "src900": "img/fabrics/shenill/molly/13-temno-olivkovyy.webp",
-              "strip": "img/fabrics/shenill/molly/13-temno-olivkovyy-strip.webp",
-              "hex": "#383428"
+              "name": "№ FL 300",
+              "src900": "img/fabrics/official/molly/FL300-1200.webp",
+              "src450": "img/fabrics/official/molly/FL300-600.webp",
+              "src240": "img/fabrics/official/molly/FL300-160.webp",
+              "hex": "#7e7e79"
             },
             {
-              "name": "Тёмно-зелёный",
-              "src240": "img/fabrics/shenill/molly/14-temno-zelenyy-240.webp",
-              "src450": "img/fabrics/shenill/molly/14-temno-zelenyy-450.webp",
-              "src900": "img/fabrics/shenill/molly/14-temno-zelenyy.webp",
-              "strip": "img/fabrics/shenill/molly/14-temno-zelenyy-strip.webp",
-              "hex": "#36403d"
+              "name": "№ 023",
+              "src900": "img/fabrics/official/molly/023-1200.webp",
+              "src450": "img/fabrics/official/molly/023-600.webp",
+              "src240": "img/fabrics/official/molly/023-160.webp",
+              "hex": "#a7a39e"
             },
             {
-              "name": "Тёмно-синий",
-              "src240": "img/fabrics/shenill/molly/12-temno-siniy-240.webp",
-              "src450": "img/fabrics/shenill/molly/12-temno-siniy-450.webp",
-              "src900": "img/fabrics/shenill/molly/12-temno-siniy.webp",
-              "strip": "img/fabrics/shenill/molly/12-temno-siniy-strip.webp",
-              "hex": "#1e202f"
+              "name": "№ 027",
+              "src900": "img/fabrics/official/molly/027-1200.webp",
+              "src450": "img/fabrics/official/molly/027-600.webp",
+              "src240": "img/fabrics/official/molly/027-160.webp",
+              "hex": "#9b9a99"
+            },
+            {
+              "name": "№ 024",
+              "src900": "img/fabrics/official/molly/024-1200.webp",
+              "src450": "img/fabrics/official/molly/024-600.webp",
+              "src240": "img/fabrics/official/molly/024-160.webp",
+              "hex": "#938985"
+            },
+            {
+              "name": "№ 028",
+              "src900": "img/fabrics/official/molly/028-1200.webp",
+              "src450": "img/fabrics/official/molly/028-600.webp",
+              "src240": "img/fabrics/official/molly/028-160.webp",
+              "hex": "#8f8681"
+            },
+            {
+              "name": "№ 022",
+              "src900": "img/fabrics/official/molly/022-1200.webp",
+              "src450": "img/fabrics/official/molly/022-600.webp",
+              "src240": "img/fabrics/official/molly/022-160.webp",
+              "hex": "#75706e"
+            },
+            {
+              "name": "№ 021",
+              "src900": "img/fabrics/official/molly/021-1200.webp",
+              "src450": "img/fabrics/official/molly/021-600.webp",
+              "src240": "img/fabrics/official/molly/021-160.webp",
+              "hex": "#56514d"
+            },
+            {
+              "name": "№ 030",
+              "src900": "img/fabrics/official/molly/030-1200.webp",
+              "src450": "img/fabrics/official/molly/030-600.webp",
+              "src240": "img/fabrics/official/molly/030-160.webp",
+              "hex": "#4f4a48"
+            },
+            {
+              "name": "№ FL 400",
+              "src900": "img/fabrics/official/molly/FL400-1200.webp",
+              "src450": "img/fabrics/official/molly/FL400-600.webp",
+              "src240": "img/fabrics/official/molly/FL400-160.webp",
+              "hex": "#827a76"
             }
           ]
         },
@@ -1586,398 +1725,134 @@ window.RICCA_FABRIC_LIBRARY = {
           "title": "САМБИЯ",
           "kind": "шенилл",
           "facts": [
-            "Износостойкость 70 000 циклов",
-            "Вес 460 г/м.п.",
-            "Простой уход: мыльный раствор"
+            "70 000 циклов",
+            "простой уход: мыльный раствор",
+            "ширина 140 см"
           ],
-          "texture": "img/fabrics/shenill/sambia/texture-600.webp",
-          "colours": [
+          "texture": "img/fabrics/official/sambia/hero-1-1600.webp",
+          "heroes": [
             {
-              "name": "Слоновая кость",
-              "src240": "img/fabrics/shenill/sambia/07-slonovaya-kost-240.webp",
-              "src450": "img/fabrics/shenill/sambia/07-slonovaya-kost-450.webp",
-              "src900": "img/fabrics/shenill/sambia/07-slonovaya-kost.webp",
-              "strip": "img/fabrics/shenill/sambia/07-slonovaya-kost-strip.webp",
-              "hex": "#f2eedf"
+              "src": "img/fabrics/official/sambia/hero-1-1600.webp",
+              "w": 2000,
+              "h": 1333
             },
             {
-              "name": "Молочный",
-              "src240": "img/fabrics/shenill/sambia/01-molochnyy-240.webp",
-              "src450": "img/fabrics/shenill/sambia/01-molochnyy-450.webp",
-              "src900": "img/fabrics/shenill/sambia/01-molochnyy.webp",
-              "strip": "img/fabrics/shenill/sambia/01-molochnyy-strip.webp",
-              "hex": "#e3e1db"
+              "src": "img/fabrics/official/sambia/hero-2-1600.webp",
+              "w": 2000,
+              "h": 1333
             },
             {
-              "name": "Кремовый",
-              "src240": "img/fabrics/shenill/sambia/08-kremovyy-240.webp",
-              "src450": "img/fabrics/shenill/sambia/08-kremovyy-450.webp",
-              "src900": "img/fabrics/shenill/sambia/08-kremovyy.webp",
-              "strip": "img/fabrics/shenill/sambia/08-kremovyy-strip.webp",
-              "hex": "#ddd4c3"
-            },
-            {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/shenill/sambia/02-svetlo-seryy-240.webp",
-              "src450": "img/fabrics/shenill/sambia/02-svetlo-seryy-450.webp",
-              "src900": "img/fabrics/shenill/sambia/02-svetlo-seryy.webp",
-              "strip": "img/fabrics/shenill/sambia/02-svetlo-seryy-strip.webp",
-              "hex": "#c8c6c0"
-            },
-            {
-              "name": "Серо-бежевый",
-              "src240": "img/fabrics/shenill/sambia/09-sero-bezhevyy-240.webp",
-              "src450": "img/fabrics/shenill/sambia/09-sero-bezhevyy-450.webp",
-              "src900": "img/fabrics/shenill/sambia/09-sero-bezhevyy.webp",
-              "strip": "img/fabrics/shenill/sambia/09-sero-bezhevyy-strip.webp",
-              "hex": "#9c9182"
-            },
-            {
-              "name": "Серый",
-              "src240": "img/fabrics/shenill/sambia/03-seryy-240.webp",
-              "src450": "img/fabrics/shenill/sambia/03-seryy-450.webp",
-              "src900": "img/fabrics/shenill/sambia/03-seryy.webp",
-              "strip": "img/fabrics/shenill/sambia/03-seryy-strip.webp",
-              "hex": "#90918f"
-            },
-            {
-              "name": "Тёплый серый",
-              "src240": "img/fabrics/shenill/sambia/04-teplyy-seryy-240.webp",
-              "src450": "img/fabrics/shenill/sambia/04-teplyy-seryy-450.webp",
-              "src900": "img/fabrics/shenill/sambia/04-teplyy-seryy.webp",
-              "strip": "img/fabrics/shenill/sambia/04-teplyy-seryy-strip.webp",
-              "hex": "#87877f"
-            },
-            {
-              "name": "Тёмно-серый",
-              "src240": "img/fabrics/shenill/sambia/05-temno-seryy-240.webp",
-              "src450": "img/fabrics/shenill/sambia/05-temno-seryy-450.webp",
-              "src900": "img/fabrics/shenill/sambia/05-temno-seryy.webp",
-              "strip": "img/fabrics/shenill/sambia/05-temno-seryy-strip.webp",
-              "hex": "#454642"
-            },
-            {
-              "name": "Графит",
-              "src240": "img/fabrics/shenill/sambia/06-grafit-240.webp",
-              "src450": "img/fabrics/shenill/sambia/06-grafit-450.webp",
-              "src900": "img/fabrics/shenill/sambia/06-grafit.webp",
-              "strip": "img/fabrics/shenill/sambia/06-grafit-strip.webp",
-              "hex": "#3d3a35"
-            },
-            {
-              "name": "Карамель",
-              "src240": "img/fabrics/shenill/sambia/10-karamel-240.webp",
-              "src450": "img/fabrics/shenill/sambia/10-karamel-450.webp",
-              "src900": "img/fabrics/shenill/sambia/10-karamel.webp",
-              "strip": "img/fabrics/shenill/sambia/10-karamel-strip.webp",
-              "hex": "#b37d57"
-            },
-            {
-              "name": "Кирпичный",
-              "src240": "img/fabrics/shenill/sambia/11-kirpichnyy-240.webp",
-              "src450": "img/fabrics/shenill/sambia/11-kirpichnyy-450.webp",
-              "src900": "img/fabrics/shenill/sambia/11-kirpichnyy.webp",
-              "strip": "img/fabrics/shenill/sambia/11-kirpichnyy-strip.webp",
-              "hex": "#663a2c"
-            },
-            {
-              "name": "Оливковый",
-              "src240": "img/fabrics/shenill/sambia/12-olivkovyy-240.webp",
-              "src450": "img/fabrics/shenill/sambia/12-olivkovyy-450.webp",
-              "src900": "img/fabrics/shenill/sambia/12-olivkovyy.webp",
-              "strip": "img/fabrics/shenill/sambia/12-olivkovyy-strip.webp",
-              "hex": "#434938"
+              "src": "img/fabrics/official/sambia/hero-3-1600.webp",
+              "w": 2000,
+              "h": 1125
             }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "zamsha",
-      "title": "Замша",
-      "collections": [
-        {
-          "id": "timeless",
-          "title": "TIMELESS",
-          "kind": "искусственная замша",
-          "facts": [
-            "40 000 циклов по Мартиндейлу",
-            "Не мнётся и не деформируется",
-            "Оттенок меняется по направлению ворса"
           ],
-          "texture": null,
-          "colours": [
+          "inuse": [
             {
-              "name": "Жемчужный",
-              "src240": "img/fabrics/zamsha/timeless/001-zhemchuzhnyj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/001-zhemchuzhnyj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/001-zhemchuzhnyj.webp",
-              "hex": "#c3bdb4"
+              "src": "img/fabrics/official/sambia/inuse-1-1200.webp",
+              "w": 1066,
+              "h": 1600
             },
             {
-              "name": "Бежевый",
-              "src240": "img/fabrics/zamsha/timeless/039-bezhevyj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/039-bezhevyj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/039-bezhevyj.webp",
-              "strip": "img/fabrics/zamsha/timeless/039-bezhevyj-strip.webp",
-              "hex": "#bba98d"
+              "src": "img/fabrics/official/sambia/inuse-2-1200.webp",
+              "w": 1200,
+              "h": 1600
             },
             {
-              "name": "Льняной",
-              "src240": "img/fabrics/zamsha/timeless/038-lnyanoj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/038-lnyanoj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/038-lnyanoj.webp",
-              "strip": "img/fabrics/zamsha/timeless/038-lnyanoj-strip.webp",
-              "hex": "#b1a18f"
+              "src": "img/fabrics/official/sambia/inuse-3-1200.webp",
+              "w": 1200,
+              "h": 1600
             },
             {
-              "name": "Светло-серый",
-              "src240": "img/fabrics/zamsha/timeless/523-svetlo-seryj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/523-svetlo-seryj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/523-svetlo-seryj.webp",
-              "strip": "img/fabrics/zamsha/timeless/523-svetlo-seryj-strip.webp",
-              "hex": "#8c8a80"
-            },
-            {
-              "name": "Серый",
-              "src240": "img/fabrics/zamsha/timeless/522-seryj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/522-seryj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/522-seryj.webp",
-              "strip": "img/fabrics/zamsha/timeless/522-seryj-strip.webp",
-              "hex": "#7e7b75"
-            },
-            {
-              "name": "Серо-голубой",
-              "src240": "img/fabrics/zamsha/timeless/028-sero-goluboj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/028-sero-goluboj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/028-sero-goluboj.webp",
-              "strip": "img/fabrics/zamsha/timeless/028-sero-goluboj-strip.webp",
-              "hex": "#757877"
-            },
-            {
-              "name": "Тауп",
-              "src240": "img/fabrics/zamsha/timeless/004-taup-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/004-taup-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/004-taup.webp",
-              "strip": "img/fabrics/zamsha/timeless/004-taup-strip.webp",
-              "hex": "#796e63"
-            },
-            {
-              "name": "Хаки",
-              "src240": "img/fabrics/zamsha/timeless/005-haki-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/005-haki-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/005-haki.webp",
-              "strip": "img/fabrics/zamsha/timeless/005-haki-strip.webp",
-              "hex": "#786852"
-            },
-            {
-              "name": "Тёмно-серый",
-              "src240": "img/fabrics/zamsha/timeless/524-temno-seryj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/524-temno-seryj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/524-temno-seryj.webp",
-              "strip": "img/fabrics/zamsha/timeless/524-temno-seryj-strip.webp",
-              "hex": "#625d5b"
-            },
-            {
-              "name": "Табачный",
-              "src240": "img/fabrics/zamsha/timeless/009-tabachnyj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/009-tabachnyj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/009-tabachnyj.webp",
-              "strip": "img/fabrics/zamsha/timeless/009-tabachnyj-strip.webp",
-              "hex": "#695c4b"
-            },
-            {
-              "name": "Мокрый асфальт",
-              "src240": "img/fabrics/zamsha/timeless/101-mokryj-asfalt-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/101-mokryj-asfalt-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/101-mokryj-asfalt.webp",
-              "strip": "img/fabrics/zamsha/timeless/101-mokryj-asfalt-strip.webp",
-              "hex": "#43474c"
-            },
-            {
-              "name": "Антрацит",
-              "src240": "img/fabrics/zamsha/timeless/518-antracit-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/518-antracit-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/518-antracit.webp",
-              "strip": "img/fabrics/zamsha/timeless/518-antracit-strip.webp",
-              "hex": "#242625"
-            },
-            {
-              "name": "Песочный",
-              "src240": "img/fabrics/zamsha/timeless/037-peschanyj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/037-peschanyj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/037-peschanyj.webp",
-              "strip": "img/fabrics/zamsha/timeless/037-peschanyj-strip.webp",
-              "hex": "#a88e6b"
-            },
-            {
-              "name": "Карамельный",
-              "src240": "img/fabrics/zamsha/timeless/006-karamelnyj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/006-karamelnyj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/006-karamelnyj.webp",
-              "strip": "img/fabrics/zamsha/timeless/006-karamelnyj-strip.webp",
-              "hex": "#7f6242"
-            },
-            {
-              "name": "Корица",
-              "src240": "img/fabrics/zamsha/timeless/020-korica-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/020-korica-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/020-korica.webp",
-              "strip": "img/fabrics/zamsha/timeless/020-korica-strip.webp",
-              "hex": "#7c4f35"
-            },
-            {
-              "name": "Какао",
-              "src240": "img/fabrics/zamsha/timeless/021-kakao-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/021-kakao-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/021-kakao.webp",
-              "strip": "img/fabrics/zamsha/timeless/021-kakao-strip.webp",
-              "hex": "#816759"
-            },
-            {
-              "name": "Мокко",
-              "src240": "img/fabrics/zamsha/timeless/633-mokko-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/633-mokko-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/633-mokko.webp",
-              "strip": "img/fabrics/zamsha/timeless/633-mokko-strip.webp",
-              "hex": "#654f4c"
-            },
-            {
-              "name": "Шоколадный",
-              "src240": "img/fabrics/zamsha/timeless/008-shokoladnyj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/008-shokoladnyj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/008-shokoladnyj.webp",
-              "strip": "img/fabrics/zamsha/timeless/008-shokoladnyj-strip.webp",
-              "hex": "#32261b"
-            },
-            {
-              "name": "Пудровый",
-              "src240": "img/fabrics/zamsha/timeless/032-pudrovyj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/032-pudrovyj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/032-pudrovyj.webp",
-              "strip": "img/fabrics/zamsha/timeless/032-pudrovyj-strip.webp",
-              "hex": "#b5a08f"
-            },
-            {
-              "name": "Сливовый",
-              "src240": "img/fabrics/zamsha/timeless/608-slivovyj-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/608-slivovyj-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/608-slivovyj.webp",
-              "strip": "img/fabrics/zamsha/timeless/608-slivovyj-strip.webp",
-              "hex": "#5e4c51"
-            },
-            {
-              "name": "Терракота",
-              "src240": "img/fabrics/zamsha/timeless/035-terrakota-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/035-terrakota-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/035-terrakota.webp",
-              "strip": "img/fabrics/zamsha/timeless/035-terrakota-strip.webp",
-              "hex": "#963628"
-            },
-            {
-              "name": "Шалфей",
-              "src240": "img/fabrics/zamsha/timeless/033-shalfej-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/033-shalfej-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/033-shalfej.webp",
-              "strip": "img/fabrics/zamsha/timeless/033-shalfej-strip.webp",
-              "hex": "#9a9e8c"
-            },
-            {
-              "name": "Аквамарин",
-              "src240": "img/fabrics/zamsha/timeless/034-akvamarin-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/034-akvamarin-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/034-akvamarin.webp",
-              "strip": "img/fabrics/zamsha/timeless/034-akvamarin-strip.webp",
-              "hex": "#85aaaf"
-            },
-            {
-              "name": "Морская волна",
-              "src240": "img/fabrics/zamsha/timeless/040-morskaya-volna-240.webp",
-              "src450": "img/fabrics/zamsha/timeless/040-morskaya-volna-450.webp",
-              "src900": "img/fabrics/zamsha/timeless/040-morskaya-volna.webp",
-              "strip": "img/fabrics/zamsha/timeless/040-morskaya-volna-strip.webp",
-              "hex": "#4e5b60"
+              "src": "img/fabrics/official/sambia/inuse-4-1200.webp",
+              "w": 1200,
+              "h": 1600
             }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ekokozha",
-      "title": "Экокожа",
-      "collections": [
-        {
-          "id": "ekokozha-alba",
-          "title": "Экокожа",
-          "kind": "экокожа: зернистая, гладкая, винтаж",
-          "facts": [
-            "Образцы — в шоуруме"
           ],
-          "texture": null,
           "colours": [
             {
-              "name": "Слоновая кость",
-              "finish": "гладкая",
-              "src240": "img/fabrics/ekokozha/gladkaya/slonovaya-kost-240.webp",
-              "src450": "img/fabrics/ekokozha/gladkaya/slonovaya-kost-450.webp",
-              "src900": "img/fabrics/ekokozha/gladkaya/slonovaya-kost.webp",
-              "hex": "#c7c2b2"
+              "name": "№ 01",
+              "src900": "img/fabrics/official/sambia/01-1200.webp",
+              "src450": "img/fabrics/official/sambia/01-600.webp",
+              "src240": "img/fabrics/official/sambia/01-160.webp",
+              "hex": "#d9dfdf"
             },
             {
-              "name": "Кремовый",
-              "finish": "винтаж",
-              "src240": "img/fabrics/ekokozha/vintazh/krem-240.webp",
-              "src450": "img/fabrics/ekokozha/vintazh/krem-450.webp",
-              "src900": "img/fabrics/ekokozha/vintazh/krem.webp",
-              "hex": "#b9b5a5"
+              "name": "№ 02",
+              "src900": "img/fabrics/official/sambia/02-1200.webp",
+              "src450": "img/fabrics/official/sambia/02-600.webp",
+              "src240": "img/fabrics/official/sambia/02-160.webp",
+              "hex": "#a3a9ae"
             },
             {
-              "name": "Светло-бежевый",
-              "finish": "зернистая",
-              "src240": "img/fabrics/ekokozha/zernistaya/slivochnaya-2-240.webp",
-              "src450": "img/fabrics/ekokozha/zernistaya/slivochnaya-2-450.webp",
-              "src900": "img/fabrics/ekokozha/zernistaya/slivochnaya-2.webp",
-              "hex": "#bcac92"
+              "name": "№ 03",
+              "src900": "img/fabrics/official/sambia/03-1200.webp",
+              "src450": "img/fabrics/official/sambia/03-600.webp",
+              "src240": "img/fabrics/official/sambia/03-160.webp",
+              "hex": "#7a848a"
             },
             {
-              "name": "Бежевый",
-              "finish": "гладкая",
-              "src240": "img/fabrics/ekokozha/gladkaya/bezhevaya-240.webp",
-              "src450": "img/fabrics/ekokozha/gladkaya/bezhevaya-450.webp",
-              "src900": "img/fabrics/ekokozha/gladkaya/bezhevaya.webp",
-              "hex": "#b4a897"
+              "name": "№ 04",
+              "src900": "img/fabrics/official/sambia/04-1200.webp",
+              "src450": "img/fabrics/official/sambia/04-600.webp",
+              "src240": "img/fabrics/official/sambia/04-160.webp",
+              "hex": "#666c6d"
             },
             {
-              "name": "Мокко",
-              "finish": "зернистая",
-              "src240": "img/fabrics/ekokozha/zernistaya/mokko-240.webp",
-              "src450": "img/fabrics/ekokozha/zernistaya/mokko-450.webp",
-              "src900": "img/fabrics/ekokozha/zernistaya/mokko.webp",
-              "hex": "#856957"
+              "name": "№ 05",
+              "src900": "img/fabrics/official/sambia/05-1200.webp",
+              "src450": "img/fabrics/official/sambia/05-600.webp",
+              "src240": "img/fabrics/official/sambia/05-160.webp",
+              "hex": "#393e3f"
             },
             {
-              "name": "Графит",
-              "finish": "винтаж",
-              "src240": "img/fabrics/ekokozha/vintazh/grafit-240.webp",
-              "src450": "img/fabrics/ekokozha/vintazh/grafit-450.webp",
-              "src900": "img/fabrics/ekokozha/vintazh/grafit.webp",
-              "hex": "#796c64"
+              "name": "№ 06",
+              "src900": "img/fabrics/official/sambia/06-1200.webp",
+              "src450": "img/fabrics/official/sambia/06-600.webp",
+              "src240": "img/fabrics/official/sambia/06-160.webp",
+              "hex": "#444442"
             },
             {
-              "name": "Коралловый",
-              "finish": "зернистая",
-              "src240": "img/fabrics/ekokozha/zernistaya/korall-240.webp",
-              "src450": "img/fabrics/ekokozha/zernistaya/korall-450.webp",
-              "src900": "img/fabrics/ekokozha/zernistaya/korall.webp",
-              "hex": "#b65d56"
+              "name": "№ 07",
+              "src900": "img/fabrics/official/sambia/07-1200.webp",
+              "src450": "img/fabrics/official/sambia/07-600.webp",
+              "src240": "img/fabrics/official/sambia/07-160.webp",
+              "hex": "#dbdfd9"
             },
             {
-              "name": "Красный",
-              "finish": "зернистая",
-              "src240": "img/fabrics/ekokozha/zernistaya/krasnaya-240.webp",
-              "src450": "img/fabrics/ekokozha/zernistaya/krasnaya-450.webp",
-              "src900": "img/fabrics/ekokozha/zernistaya/krasnaya.webp",
-              "hex": "#c7493c"
+              "name": "№ 08",
+              "src900": "img/fabrics/official/sambia/08-1200.webp",
+              "src450": "img/fabrics/official/sambia/08-600.webp",
+              "src240": "img/fabrics/official/sambia/08-160.webp",
+              "hex": "#c5c5c0"
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/sambia/09-1200.webp",
+              "src450": "img/fabrics/official/sambia/09-600.webp",
+              "src240": "img/fabrics/official/sambia/09-160.webp",
+              "hex": "#84817d"
+            },
+            {
+              "name": "№ 10",
+              "src900": "img/fabrics/official/sambia/10-1200.webp",
+              "src450": "img/fabrics/official/sambia/10-600.webp",
+              "src240": "img/fabrics/official/sambia/10-160.webp",
+              "hex": "#915939"
+            },
+            {
+              "name": "№ 11",
+              "src900": "img/fabrics/official/sambia/11-1200.webp",
+              "src450": "img/fabrics/official/sambia/11-600.webp",
+              "src240": "img/fabrics/official/sambia/11-160.webp",
+              "hex": "#512d24"
+            },
+            {
+              "name": "№ 12",
+              "src900": "img/fabrics/official/sambia/12-1200.webp",
+              "src450": "img/fabrics/official/sambia/12-600.webp",
+              "src240": "img/fabrics/official/sambia/12-160.webp",
+              "hex": "#323c2c"
             }
           ]
         }

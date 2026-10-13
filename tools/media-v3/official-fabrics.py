@@ -2,7 +2,7 @@
 
 Вход:  ricca/content/fabrics/_official/<коллекция>/COLOURS.json (+ colours/, texture/, in-use/, SPECS.md)
 Выход: ricca/img/fabrics/official/<коллекция>/
-       <код>-1200.webp, -600.webp — квадрат из центра фото цвета (видна фактура, не «плоский прямоугольник»)
+       <код>-1200.webp (1400 px, максимум качества), -600.webp (700 px) — квадрат из центра фото цвета (видна фактура, не «плоский прямоугольник»)
        <код>-160.webp             — миниатюра для кнопки цвета
        hero-N-1600.webp           — крупные планы / драпировка (главное фото коллекции)
        inuse-N-1200.webp          — фото «в изделии / в интерьере»
@@ -56,11 +56,11 @@ def build(coll):
             continue
         im = ImageOps.exif_transpose(Image.open(f)).convert('RGB')
         # кадр: чем больше исходник, тем меньшую долю берём, чтобы фактура читалась примерно 1:1
-        frac = max(0.28, min(0.9, 1500 / min(im.size)))
+        frac = max(0.4, min(0.9, 1800 / min(im.size)))
         sq = square_center(im, frac)
         code = str(c.get('code', len(colours) + 1)).strip().replace('/', '-').replace(' ', '-')
-        save(sq, f'{out}/{code}-1200.webp', 1200, 76)
-        save(sq, f'{out}/{code}-600.webp', 600, 78)
+        save(sq, f'{out}/{code}-1200.webp', 1400, 90)
+        save(sq, f'{out}/{code}-600.webp', 700, 88)
         save(square_center(im, 0.5), f'{out}/{code}-160.webp', 160, 80)
         colours.append({'code': code, 'name': c.get('name', code), 'hex': hexof(sq),
                         'src1200': f'img/fabrics/official/{coll}/{code}-1200.webp',
@@ -68,13 +68,13 @@ def build(coll):
                         'thumb': f'img/fabrics/official/{coll}/{code}-160.webp'})
     heroes = []
     for i, f in enumerate(sorted(glob.glob(os.path.join(src, 'texture', '*'))), 1):
-        im = fit_long(ImageOps.exif_transpose(Image.open(f)).convert('RGB'), 1600)
-        p = f'{out}/hero-{i}-1600.webp'; save(im, p, q=82)
+        im = fit_long(ImageOps.exif_transpose(Image.open(f)).convert('RGB'), 2000)
+        p = f'{out}/hero-{i}-1600.webp'; save(im, p, q=90)
         heroes.append({'src': f'img/fabrics/official/{coll}/hero-{i}-1600.webp', 'w': im.width, 'h': im.height})
     inuse = []
     for i, f in enumerate(sorted(glob.glob(os.path.join(src, 'in-use', '*'))), 1):
-        im = fit_long(ImageOps.exif_transpose(Image.open(f)).convert('RGB'), 1200)
-        p = f'{out}/inuse-{i}-1200.webp'; save(im, p, q=82)
+        im = fit_long(ImageOps.exif_transpose(Image.open(f)).convert('RGB'), 1600)
+        p = f'{out}/inuse-{i}-1200.webp'; save(im, p, q=90)
         inuse.append({'src': f'img/fabrics/official/{coll}/inuse-{i}-1200.webp', 'w': im.width, 'h': im.height})
     data = {'id': coll, 'colours': colours, 'heroes': heroes, 'inuse': inuse}
     json.dump(data, open(f'{out}/collection.json', 'w'), ensure_ascii=False, indent=1)

@@ -4,7 +4,7 @@
   {
    "code": "01",
    "name": "Самбия / Sambia 01",
-   "hex": "#dadfdf",
+   "hex": "#d9dfdf",
    "src1200": "img/fabrics/official/sambia/01-1200.webp",
    "src600": "img/fabrics/official/sambia/01-600.webp",
    "thumb": "img/fabrics/official/sambia/01-160.webp"
@@ -12,7 +12,7 @@
   {
    "code": "02",
    "name": "Самбия / Sambia 02",
-   "hex": "#a3aaae",
+   "hex": "#a3a9ae",
    "src1200": "img/fabrics/official/sambia/02-1200.webp",
    "src600": "img/fabrics/official/sambia/02-600.webp",
    "thumb": "img/fabrics/official/sambia/02-160.webp"
@@ -20,7 +20,7 @@
   {
    "code": "03",
    "name": "Самбия / Sambia 03",
-   "hex": "#7a858a",
+   "hex": "#7a848a",
    "src1200": "img/fabrics/official/sambia/03-1200.webp",
    "src600": "img/fabrics/official/sambia/03-600.webp",
    "thumb": "img/fabrics/official/sambia/03-160.webp"
@@ -28,7 +28,7 @@
   {
    "code": "04",
    "name": "Самбия / Sambia 04",
-   "hex": "#676c6e",
+   "hex": "#666c6d",
    "src1200": "img/fabrics/official/sambia/04-1200.webp",
    "src600": "img/fabrics/official/sambia/04-600.webp",
    "thumb": "img/fabrics/official/sambia/04-160.webp"
@@ -36,7 +36,7 @@
   {
    "code": "05",
    "name": "Самбия / Sambia 05",
-   "hex": "#3a3e40",
+   "hex": "#393e3f",
    "src1200": "img/fabrics/official/sambia/05-1200.webp",
    "src600": "img/fabrics/official/sambia/05-600.webp",
    "thumb": "img/fabrics/official/sambia/05-160.webp"
@@ -44,7 +44,7 @@
   {
    "code": "06",
    "name": "Самбия / Sambia 06",
-   "hex": "#454443",
+   "hex": "#444442",
    "src1200": "img/fabrics/official/sambia/06-1200.webp",
    "src600": "img/fabrics/official/sambia/06-600.webp",
    "thumb": "img/fabrics/official/sambia/06-160.webp"
@@ -52,7 +52,7 @@
   {
    "code": "07",
    "name": "Самбия / Sambia 07",
-   "hex": "#dcdfd9",
+   "hex": "#dbdfd9",
    "src1200": "img/fabrics/official/sambia/07-1200.webp",
    "src600": "img/fabrics/official/sambia/07-600.webp",
    "thumb": "img/fabrics/official/sambia/07-160.webp"
@@ -60,7 +60,7 @@
   {
    "code": "08",
    "name": "Самбия / Sambia 08",
-   "hex": "#c5c5c1",
+   "hex": "#c5c5c0",
    "src1200": "img/fabrics/official/sambia/08-1200.webp",
    "src600": "img/fabrics/official/sambia/08-600.webp",
    "thumb": "img/fabrics/official/sambia/08-160.webp"
@@ -68,7 +68,7 @@
   {
    "code": "09",
    "name": "Самбия / Sambia 09",
-   "hex": "#85827e",
+   "hex": "#84817d",
    "src1200": "img/fabrics/official/sambia/09-1200.webp",
    "src600": "img/fabrics/official/sambia/09-600.webp",
    "thumb": "img/fabrics/official/sambia/09-160.webp"
@@ -76,7 +76,7 @@
   {
    "code": "10",
    "name": "Самбия / Sambia 10",
-   "hex": "#925a3a",
+   "hex": "#915939",
    "src1200": "img/fabrics/official/sambia/10-1200.webp",
    "src600": "img/fabrics/official/sambia/10-600.webp",
    "thumb": "img/fabrics/official/sambia/10-160.webp"
@@ -92,7 +92,7 @@
   {
    "code": "12",
    "name": "Самбия / Sambia 12",
-   "hex": "#333d2d",
+   "hex": "#323c2c",
    "src1200": "img/fabrics/official/sambia/12-1200.webp",
    "src600": "img/fabrics/official/sambia/12-600.webp",
    "thumb": "img/fabrics/official/sambia/12-160.webp"
@@ -101,40 +101,40 @@
  "heroes": [
   {
    "src": "img/fabrics/official/sambia/hero-1-1600.webp",
-   "w": 1600,
-   "h": 1067
+   "w": 2000,
+   "h": 1333
   },
   {
    "src": "img/fabrics/official/sambia/hero-2-1600.webp",
-   "w": 1600,
-   "h": 1067
+   "w": 2000,
+   "h": 1333
   },
   {
    "src": "img/fabrics/official/sambia/hero-3-1600.webp",
-   "w": 1600,
-   "h": 900
+   "w": 2000,
+   "h": 1125
   }
  ],
  "inuse": [
   {
    "src": "img/fabrics/official/sambia/inuse-1-1200.webp",
-   "w": 800,
-   "h": 1200
+   "w": 1066,
+   "h": 1600
   },
   {
    "src": "img/fabrics/official/sambia/inuse-2-1200.webp",
-   "w": 900,
-   "h": 1200
+   "w": 1200,
+   "h": 1600
   },
   {
    "src": "img/fabrics/official/sambia/inuse-3-1200.webp",
-   "w": 900,
-   "h": 1200
+   "w": 1200,
+   "h": 1600
   },
   {
    "src": "img/fabrics/official/sambia/inuse-4-1200.webp",
-   "w": 900,
-   "h": 1200
+   "w": 1200,
+   "h": 1600
   }
  ]
 }

@@ -1,0 +1,130 @@
+{
+ "id": "pique",
+ "colours": [
+  {
+   "code": "001",
+   "name": "PIQUE 001",
+   "hex": "#adaca3",
+   "src1200": "img/fabrics/official/pique/001-1200.webp",
+   "src600": "img/fabrics/official/pique/001-600.webp",
+   "thumb": "img/fabrics/official/pique/001-160.webp"
+  },
+  {
+   "code": "002",
+   "name": "PIQUE 002",
+   "hex": "#a4a094",
+   "src1200": "img/fabrics/official/pique/002-1200.webp",
+   "src600": "img/fabrics/official/pique/002-600.webp",
+   "thumb": "img/fabrics/official/pique/002-160.webp"
+  },
+  {
+   "code": "003",
+   "name": "PIQUE 003",
+   "hex": "#9e9283",
+   "src1200": "img/fabrics/official/pique/003-1200.webp",
+   "src600": "img/fabrics/official/pique/003-600.webp",
+   "thumb": "img/fabrics/official/pique/003-160.webp"
+  },
+  {
+   "code": "004",
+   "name": "PIQUE 004",
+   "hex": "#8e8c83",
+   "src1200": "img/fabrics/official/pique/004-1200.webp",
+   "src600": "img/fabrics/official/pique/004-600.webp",
+   "thumb": "img/fabrics/official/pique/004-160.webp"
+  },
+  {
+   "code": "005",
+   "name": "PIQUE 005",
+   "hex": "#5c584f",
+   "src1200": "img/fabrics/official/pique/005-1200.webp",
+   "src600": "img/fabrics/official/pique/005-600.webp",
+   "thumb": "img/fabrics/official/pique/005-160.webp"
+  },
+  {
+   "code": "006",
+   "name": "PIQUE 006",
+   "hex": "#75695d",
+   "src1200": "img/fabrics/official/pique/006-1200.webp",
+   "src600": "img/fabrics/official/pique/006-600.webp",
+   "thumb": "img/fabrics/official/pique/006-160.webp"
+  },
+  {
+   "code": "007",
+   "name": "PIQUE 007",
+   "hex": "#7b796a",
+   "src1200": "img/fabrics/official/pique/007-1200.webp",
+   "src600": "img/fabrics/official/pique/007-600.webp",
+   "thumb": "img/fabrics/official/pique/007-160.webp"
+  },
+  {
+   "code": "008",
+   "name": "PIQUE 008",
+   "hex": "#43554f",
+   "src1200": "img/fabrics/official/pique/008-1200.webp",
+   "src600": "img/fabrics/official/pique/008-600.webp",
+   "thumb": "img/fabrics/official/pique/008-160.webp"
+  },
+  {
+   "code": "009",
+   "name": "PIQUE 009",
+   "hex": "#364957",
+   "src1200": "img/fabrics/official/pique/009-1200.webp",
+   "src600": "img/fabrics/official/pique/009-600.webp",
+   "thumb": "img/fabrics/official/pique/009-160.webp"
+  },
+  {
+   "code": "010",
+   "name": "PIQUE 010",
+   "hex": "#9e9c91",
+   "src1200": "img/fabrics/official/pique/010-1200.webp",
+   "src600": "img/fabrics/official/pique/010-600.webp",
+   "thumb": "img/fabrics/official/pique/010-160.webp"
+  },
+  {
+   "code": "011",
+   "name": "PIQUE 011",
+   "hex": "#979594",
+   "src1200": "img/fabrics/official/pique/011-1200.webp",
+   "src600": "img/fabrics/official/pique/011-600.webp",
+   "thumb": "img/fabrics/official/pique/011-160.webp"
+  },
+  {
+   "code": "012",
+   "name": "PIQUE 012",
+   "hex": "#6e6d69",
+   "src1200": "img/fabrics/official/pique/012-1200.webp",
+   "src600": "img/fabrics/official/pique/012-600.webp",
+   "thumb": "img/fabrics/official/pique/012-160.webp"
+  },
+  {
+   "code": "013",
+   "name": "PIQUE 013",
+   "hex": "#5c5e5e",
+   "src1200": "img/fabrics/official/pique/013-1200.webp",
+   "src600": "img/fabrics/official/pique/013-600.webp",
+   "thumb": "img/fabrics/official/pique/013-160.webp"
+  },
+  {
+   "code": "014",
+   "name": "PIQUE 014",
+   "hex": "#474b4b",
+   "src1200": "img/fabrics/official/pique/014-1200.webp",
+   "src600": "img/fabrics/official/pique/014-600.webp",
+   "thumb": "img/fabrics/official/pique/014-160.webp"
+  }
+ ],
+ "heroes": [
+  {
+   "src": "img/fabrics/official/pique/hero-1-1600.webp",
+   "w": 2000,
+   "h": 1334
+  },
+  {
+   "src": "img/fabrics/official/pique/hero-2-1600.webp",
+   "w": 2000,
+   "h": 1334
+  }
+ ],
+ "inuse": []
+}

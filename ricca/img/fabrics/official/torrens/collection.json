@@ -4,7 +4,7 @@
   {
    "code": "01",
    "name": "Торренс / Torrens 01",
-   "hex": "#e1ded6",
+   "hex": "#e0ddd6",
    "src1200": "img/fabrics/official/torrens/01-1200.webp",
    "src600": "img/fabrics/official/torrens/01-600.webp",
    "thumb": "img/fabrics/official/torrens/01-160.webp"
@@ -20,7 +20,7 @@
   {
    "code": "03",
    "name": "Торренс / Torrens 03",
-   "hex": "#ada698",
+   "hex": "#ada598",
    "src1200": "img/fabrics/official/torrens/03-1200.webp",
    "src600": "img/fabrics/official/torrens/03-600.webp",
    "thumb": "img/fabrics/official/torrens/03-160.webp"
@@ -28,7 +28,7 @@
   {
    "code": "04",
    "name": "Торренс / Torrens 04",
-   "hex": "#8f8477",
+   "hex": "#8e8377",
    "src1200": "img/fabrics/official/torrens/04-1200.webp",
    "src600": "img/fabrics/official/torrens/04-600.webp",
    "thumb": "img/fabrics/official/torrens/04-160.webp"
@@ -60,7 +60,7 @@
   {
    "code": "08",
    "name": "Торренс / Torrens 08",
-   "hex": "#8a8f90",
+   "hex": "#8a8e90",
    "src1200": "img/fabrics/official/torrens/08-1200.webp",
    "src600": "img/fabrics/official/torrens/08-600.webp",
    "thumb": "img/fabrics/official/torrens/08-160.webp"
@@ -76,7 +76,7 @@
   {
    "code": "10",
    "name": "Торренс / Torrens 10",
-   "hex": "#b1aaa1",
+   "hex": "#b1aaa2",
    "src1200": "img/fabrics/official/torrens/10-1200.webp",
    "src600": "img/fabrics/official/torrens/10-600.webp",
    "thumb": "img/fabrics/official/torrens/10-160.webp"
@@ -84,7 +84,7 @@
   {
    "code": "11",
    "name": "Торренс / Torrens 11",
-   "hex": "#6a6866",
+   "hex": "#696865",
    "src1200": "img/fabrics/official/torrens/11-1200.webp",
    "src600": "img/fabrics/official/torrens/11-600.webp",
    "thumb": "img/fabrics/official/torrens/11-160.webp"
@@ -108,7 +108,7 @@
   {
    "code": "14",
    "name": "Торренс / Torrens 14",
-   "hex": "#7a8f9c",
+   "hex": "#798e9c",
    "src1200": "img/fabrics/official/torrens/14-1200.webp",
    "src600": "img/fabrics/official/torrens/14-600.webp",
    "thumb": "img/fabrics/official/torrens/14-160.webp"
@@ -117,40 +117,40 @@
  "heroes": [
   {
    "src": "img/fabrics/official/torrens/hero-1-1600.webp",
-   "w": 1600,
-   "h": 1067
+   "w": 2000,
+   "h": 1334
   },
   {
    "src": "img/fabrics/official/torrens/hero-2-1600.webp",
-   "w": 1600,
-   "h": 1067
+   "w": 2000,
+   "h": 1334
   },
   {
    "src": "img/fabrics/official/torrens/hero-3-1600.webp",
-   "w": 1600,
-   "h": 1067
+   "w": 2000,
+   "h": 1334
   }
  ],
  "inuse": [
   {
    "src": "img/fabrics/official/torrens/inuse-1-1200.webp",
-   "w": 900,
-   "h": 1200
+   "w": 1200,
+   "h": 1600
   },
   {
    "src": "img/fabrics/official/torrens/inuse-2-1200.webp",
-   "w": 900,
-   "h": 1200
+   "w": 1200,
+   "h": 1600
   },
   {
    "src": "img/fabrics/official/torrens/inuse-3-1200.webp",
-   "w": 900,
-   "h": 1200
+   "w": 1200,
+   "h": 1600
   },
   {
    "src": "img/fabrics/official/torrens/inuse-4-1200.webp",
-   "w": 900,
-   "h": 1200
+   "w": 1200,
+   "h": 1600
   }
  ]
 }
