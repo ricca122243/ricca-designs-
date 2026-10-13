@@ -1,0 +1,268 @@
+{
+ "id": "timeless",
+ "colours": [
+  {
+   "code": "01",
+   "name": "Таймлесс 01 (светл.)",
+   "hex": "#ecefec",
+   "src1200": "img/fabrics/official/timeless/01-1200.webp",
+   "src600": "img/fabrics/official/timeless/01-600.webp",
+   "thumb": "img/fabrics/official/timeless/01-160.webp"
+  },
+  {
+   "code": "04",
+   "name": "Таймлесс 04",
+   "hex": "#a4a197",
+   "src1200": "img/fabrics/official/timeless/04-1200.webp",
+   "src600": "img/fabrics/official/timeless/04-600.webp",
+   "thumb": "img/fabrics/official/timeless/04-160.webp"
+  },
+  {
+   "code": "05",
+   "name": "Таймлесс 05 (светл.коричн)",
+   "hex": "#a89a88",
+   "src1200": "img/fabrics/official/timeless/05-1200.webp",
+   "src600": "img/fabrics/official/timeless/05-600.webp",
+   "thumb": "img/fabrics/official/timeless/05-160.webp"
+  },
+  {
+   "code": "06",
+   "name": "Таймлесс 06 (карамельн.)",
+   "hex": "#cca982",
+   "src1200": "img/fabrics/official/timeless/06-1200.webp",
+   "src600": "img/fabrics/official/timeless/06-600.webp",
+   "thumb": "img/fabrics/official/timeless/06-160.webp"
+  },
+  {
+   "code": "08",
+   "name": "Таймлесс 08 (молочн.шоколад)",
+   "hex": "#67564b",
+   "src1200": "img/fabrics/official/timeless/08-1200.webp",
+   "src600": "img/fabrics/official/timeless/08-600.webp",
+   "thumb": "img/fabrics/official/timeless/08-160.webp"
+  },
+  {
+   "code": "09",
+   "name": "Таймлесс 09 (дымчато-коричн.)",
+   "hex": "#938779",
+   "src1200": "img/fabrics/official/timeless/09-1200.webp",
+   "src600": "img/fabrics/official/timeless/09-600.webp",
+   "thumb": "img/fabrics/official/timeless/09-160.webp"
+  },
+  {
+   "code": "101",
+   "name": "Таймлесс 101 (серо-голуб.)",
+   "hex": "#6c828e",
+   "src1200": "img/fabrics/official/timeless/101-1200.webp",
+   "src600": "img/fabrics/official/timeless/101-600.webp",
+   "thumb": "img/fabrics/official/timeless/101-160.webp"
+  },
+  {
+   "code": "20",
+   "name": "Таймлесс 20 (светл.коричн)",
+   "hex": "#d79d7c",
+   "src1200": "img/fabrics/official/timeless/20-1200.webp",
+   "src600": "img/fabrics/official/timeless/20-600.webp",
+   "thumb": "img/fabrics/official/timeless/20-160.webp"
+  },
+  {
+   "code": "21",
+   "name": "Таймлесс 21 (пыльн.роза)",
+   "hex": "#b6958d",
+   "src1200": "img/fabrics/official/timeless/21-1200.webp",
+   "src600": "img/fabrics/official/timeless/21-600.webp",
+   "thumb": "img/fabrics/official/timeless/21-160.webp"
+  },
+  {
+   "code": "221",
+   "name": "Таймлесс 221 (коричн.)",
+   "hex": "#553f37",
+   "src1200": "img/fabrics/official/timeless/221-1200.webp",
+   "src600": "img/fabrics/official/timeless/221-600.webp",
+   "thumb": "img/fabrics/official/timeless/221-160.webp"
+  },
+  {
+   "code": "27",
+   "name": "Таймлесс 27",
+   "hex": "#1f4f94",
+   "src1200": "img/fabrics/official/timeless/27-1200.webp",
+   "src600": "img/fabrics/official/timeless/27-600.webp",
+   "thumb": "img/fabrics/official/timeless/27-160.webp"
+  },
+  {
+   "code": "28",
+   "name": "Таймлесс 28",
+   "hex": "#b6c3cc",
+   "src1200": "img/fabrics/official/timeless/28-1200.webp",
+   "src600": "img/fabrics/official/timeless/28-600.webp",
+   "thumb": "img/fabrics/official/timeless/28-160.webp"
+  },
+  {
+   "code": "30",
+   "name": "Таймлесс 30 (черн.)",
+   "hex": "#394550",
+   "src1200": "img/fabrics/official/timeless/30-1200.webp",
+   "src600": "img/fabrics/official/timeless/30-600.webp",
+   "thumb": "img/fabrics/official/timeless/30-160.webp"
+  },
+  {
+   "code": "32",
+   "name": "Таймлесс 32 (розов.пудра)",
+   "hex": "#e2d2cb",
+   "src1200": "img/fabrics/official/timeless/32-1200.webp",
+   "src600": "img/fabrics/official/timeless/32-600.webp",
+   "thumb": "img/fabrics/official/timeless/32-160.webp"
+  },
+  {
+   "code": "33",
+   "name": "Таймлесс 33 (зелено-фисташков.)",
+   "hex": "#cbdbd0",
+   "src1200": "img/fabrics/official/timeless/33-1200.webp",
+   "src600": "img/fabrics/official/timeless/33-600.webp",
+   "thumb": "img/fabrics/official/timeless/33-160.webp"
+  },
+  {
+   "code": "34",
+   "name": "Таймлесс 34 (нежно-бирюз.)",
+   "hex": "#a5e1e6",
+   "src1200": "img/fabrics/official/timeless/34-1200.webp",
+   "src600": "img/fabrics/official/timeless/34-600.webp",
+   "thumb": "img/fabrics/official/timeless/34-160.webp"
+  },
+  {
+   "code": "35",
+   "name": "Таймлесс 35 (красн.)",
+   "hex": "#db5249",
+   "src1200": "img/fabrics/official/timeless/35-1200.webp",
+   "src600": "img/fabrics/official/timeless/35-600.webp",
+   "thumb": "img/fabrics/official/timeless/35-160.webp"
+  },
+  {
+   "code": "37",
+   "name": "Таймлесс 37",
+   "hex": "#d2bda2",
+   "src1200": "img/fabrics/official/timeless/37-1200.webp",
+   "src600": "img/fabrics/official/timeless/37-600.webp",
+   "thumb": "img/fabrics/official/timeless/37-160.webp"
+  },
+  {
+   "code": "38",
+   "name": "Таймлесс 38 (крем.)",
+   "hex": "#dcd7ca",
+   "src1200": "img/fabrics/official/timeless/38-1200.webp",
+   "src600": "img/fabrics/official/timeless/38-600.webp",
+   "thumb": "img/fabrics/official/timeless/38-160.webp"
+  },
+  {
+   "code": "39",
+   "name": "Таймлесс 39 (сливочн.)",
+   "hex": "#e0d8c4",
+   "src1200": "img/fabrics/official/timeless/39-1200.webp",
+   "src600": "img/fabrics/official/timeless/39-600.webp",
+   "thumb": "img/fabrics/official/timeless/39-160.webp"
+  },
+  {
+   "code": "40",
+   "name": "Таймлесс 40",
+   "hex": "#84b1be",
+   "src1200": "img/fabrics/official/timeless/40-1200.webp",
+   "src600": "img/fabrics/official/timeless/40-600.webp",
+   "thumb": "img/fabrics/official/timeless/40-160.webp"
+  },
+  {
+   "code": "517",
+   "name": "Таймлесс 517",
+   "hex": "#657480",
+   "src1200": "img/fabrics/official/timeless/517-1200.webp",
+   "src600": "img/fabrics/official/timeless/517-600.webp",
+   "thumb": "img/fabrics/official/timeless/517-160.webp"
+  },
+  {
+   "code": "518",
+   "name": "Таймлесс 518",
+   "hex": "#64737c",
+   "src1200": "img/fabrics/official/timeless/518-1200.webp",
+   "src600": "img/fabrics/official/timeless/518-600.webp",
+   "thumb": "img/fabrics/official/timeless/518-160.webp"
+  },
+  {
+   "code": "522",
+   "name": "Таймлесс 522",
+   "hex": "#bdc0c5",
+   "src1200": "img/fabrics/official/timeless/522-1200.webp",
+   "src600": "img/fabrics/official/timeless/522-600.webp",
+   "thumb": "img/fabrics/official/timeless/522-160.webp"
+  },
+  {
+   "code": "523",
+   "name": "Таймлесс 523",
+   "hex": "#c8cbcc",
+   "src1200": "img/fabrics/official/timeless/523-1200.webp",
+   "src600": "img/fabrics/official/timeless/523-600.webp",
+   "thumb": "img/fabrics/official/timeless/523-160.webp"
+  },
+  {
+   "code": "524",
+   "name": "Таймлесс 524",
+   "hex": "#abb1b4",
+   "src1200": "img/fabrics/official/timeless/524-1200.webp",
+   "src600": "img/fabrics/official/timeless/524-600.webp",
+   "thumb": "img/fabrics/official/timeless/524-160.webp"
+  },
+  {
+   "code": "608",
+   "name": "Таймлесс 608",
+   "hex": "#b29caf",
+   "src1200": "img/fabrics/official/timeless/608-1200.webp",
+   "src600": "img/fabrics/official/timeless/608-600.webp",
+   "thumb": "img/fabrics/official/timeless/608-160.webp"
+  },
+  {
+   "code": "633",
+   "name": "Таймлесс 633",
+   "hex": "#ac8d94",
+   "src1200": "img/fabrics/official/timeless/633-1200.webp",
+   "src600": "img/fabrics/official/timeless/633-600.webp",
+   "thumb": "img/fabrics/official/timeless/633-160.webp"
+  }
+ ],
+ "heroes": [
+  {
+   "src": "img/fabrics/official/timeless/hero-1-1600.webp",
+   "w": 1944,
+   "h": 1296
+  },
+  {
+   "src": "img/fabrics/official/timeless/hero-2-1600.webp",
+   "w": 1944,
+   "h": 1296
+  },
+  {
+   "src": "img/fabrics/official/timeless/hero-3-1600.webp",
+   "w": 1944,
+   "h": 1296
+  }
+ ],
+ "inuse": [
+  {
+   "src": "img/fabrics/official/timeless/inuse-1-1200.webp",
+   "w": 1600,
+   "h": 1066
+  },
+  {
+   "src": "img/fabrics/official/timeless/inuse-2-1200.webp",
+   "w": 1600,
+   "h": 1066
+  },
+  {
+   "src": "img/fabrics/official/timeless/inuse-3-1200.webp",
+   "w": 1600,
+   "h": 1066
+  },
+  {
+   "src": "img/fabrics/official/timeless/inuse-4-1200.webp",
+   "w": 1600,
+   "h": 1066
+  }
+ ]
+}

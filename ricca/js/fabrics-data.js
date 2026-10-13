@@ -1,12 +1,7 @@
 /*
  * ФОТО — ТОЛЬКО ОФИЦИАЛЬНЫЕ, С САЙТОВ ПОСТАВЩИКОВ (img/fabrics/official/<коллекция>/; собирает tools/media-v3/build-fabrics-data.py).
- * heroes — крупные планы/драпировка, inuse — фото «в изделии». Код цвета (code) — как у поставщика.
- *
- * ФОТО — ТОЛЬКО ОФИЦИАЛЬНЫЕ, С САЙТОВ ПОСТАВЩИКОВ (img/fabrics/official/<коллекция>/; собирает tools/media-v3/build-fabrics-data.py).
- * heroes — крупные планы/драпировка, inuse — фото «в изделии». Код цвета (code) — как у поставщика.
- *
- * ФОТО — ТОЛЬКО ОФИЦИАЛЬНЫЕ, С САЙТОВ ПОСТАВЩИКОВ (img/fabrics/official/<коллекция>/; собирает tools/media-v3/build-fabrics-data.py).
- * heroes — крупные планы/драпировка, inuse — фото «в изделии». Код цвета (code) — как у поставщика.
+ * Крупные планы и фото «в изделии» поставщика сюда не выводятся (на части — названия поставщика, люди, чужие интерьеры).
+ * Код цвета (code) — как у поставщика.
  *
  * RICCA DESIGNS — ткани для раздела «Ткани» (только самые ходовые коллекции). Тот же файл читает конструктор 3D.
  *
@@ -20,7 +15,7 @@
  *     id       — короткое латинское имя (без пробелов), title — название коллекции,
  *     kind     — одна строка о материале («микровелюр», «букле»…),
  *     facts    — 2–3 коротких факта (до 8 слов), ТОЛЬКО то, что напечатано на карточке образца,
- *     texture  — крупный план ткани (img/fabrics/<тип>/<коллекция>/texture-600.webp) или null (на экране «Ткани» сейчас не показывается),
+ *     texture  — простое фото ткани без надписей (сейчас — первый цвет коллекции) или null; на экране «Ткани» не показывается,
  *     colours  — цвета: name (простое русское название, без повторов в коллекции), finish — поверхность (только у экокожи),
  *                src900 — ГЛАВНОЕ фото, квадрат 900 × 900 (большое фото коллекции),
  *                src450 — квадрат 450 × 450 (запасное большое фото; образец в конструкторе),
@@ -32,7 +27,7 @@
  *
  * Как заменить фото (например, на качественные снимки поставщика) — без правки кода:
  *   1. Сделайте из снимка квадрат (обрезка по центру, ткань без рамок и подписей) и сохраните три размера .webp:
- *      900 × 900 (качество ~82), 450 × 450 и 240 × 240 — например, img/fabrics/official/<коллекция>/<код>-1200.webp, …-600.webp, …-160.webp (их делает tools/media-v3/official-fabrics.py).
+ *      1160 × 1160 (качество ~78, до 250 КБ), 450 × 450 и 240 × 240 — например, img/fabrics/official/<коллекция>/<код>-1200.webp, …-600.webp, …-160.webp (их делает tools/media-v3/official-fabrics.py).
  *      Можно положить файлы поверх старых с теми же именами — тогда этот файл менять не нужно вовсе.
  *   2. Если имена новые — у нужного цвета поменяйте src900, src450 и src240 (больше ничего).
  *   3. Если цвет на новом фото заметно другой — поправьте hex (средний цвет фото, например «#d8d2c6»).
@@ -67,46 +62,7 @@ window.RICCA_FABRIC_LIBRARY = {
             "480 г/м.п.",
             "ширина 140 см"
           ],
-          "texture": "img/fabrics/official/alba/hero-1-1600.webp",
-          "heroes": [
-            {
-              "src": "img/fabrics/official/alba/hero-1-1600.webp",
-              "w": 2000,
-              "h": 1333
-            },
-            {
-              "src": "img/fabrics/official/alba/hero-2-1600.webp",
-              "w": 2000,
-              "h": 1333
-            },
-            {
-              "src": "img/fabrics/official/alba/hero-3-1600.webp",
-              "w": 1501,
-              "h": 2000
-            }
-          ],
-          "inuse": [
-            {
-              "src": "img/fabrics/official/alba/inuse-1-1200.webp",
-              "w": 1200,
-              "h": 1600
-            },
-            {
-              "src": "img/fabrics/official/alba/inuse-2-1200.webp",
-              "w": 1200,
-              "h": 1600
-            },
-            {
-              "src": "img/fabrics/official/alba/inuse-3-1200.webp",
-              "w": 1200,
-              "h": 1600
-            },
-            {
-              "src": "img/fabrics/official/alba/inuse-4-1200.webp",
-              "w": 1200,
-              "h": 1600
-            }
-          ],
+          "texture": "img/fabrics/official/alba/01-1200.webp",
           "colours": [
             {
               "name": "№ 01",
@@ -270,44 +226,9 @@ window.RICCA_FABRIC_LIBRARY = {
           "kind": "микровелюр",
           "facts": [
             "190 000 циклов",
-            "для владельцев животных",
             "ширина 140 см"
           ],
-          "texture": "img/fabrics/official/torrens-plain/hero-1-1600.webp",
-          "heroes": [
-            {
-              "src": "img/fabrics/official/torrens-plain/hero-1-1600.webp",
-              "w": 2000,
-              "h": 1334
-            },
-            {
-              "src": "img/fabrics/official/torrens-plain/hero-2-1600.webp",
-              "w": 2000,
-              "h": 1334
-            },
-            {
-              "src": "img/fabrics/official/torrens-plain/hero-3-1600.webp",
-              "w": 2000,
-              "h": 1334
-            }
-          ],
-          "inuse": [
-            {
-              "src": "img/fabrics/official/torrens-plain/inuse-1-1200.webp",
-              "w": 1200,
-              "h": 1600
-            },
-            {
-              "src": "img/fabrics/official/torrens-plain/inuse-2-1200.webp",
-              "w": 1200,
-              "h": 1600
-            },
-            {
-              "src": "img/fabrics/official/torrens-plain/inuse-3-1200.webp",
-              "w": 1200,
-              "h": 1600
-            }
-          ],
+          "texture": "img/fabrics/official/torrens-plain/01-1200.webp",
           "colours": [
             {
               "name": "№ 01",
@@ -415,49 +336,9 @@ window.RICCA_FABRIC_LIBRARY = {
           "kind": "микровелюр с муаром",
           "facts": [
             "190 000 циклов",
-            "муар скрывает следы",
-            "для владельцев животных"
+            "ширина 140 см"
           ],
-          "texture": "img/fabrics/official/torrens/hero-1-1600.webp",
-          "heroes": [
-            {
-              "src": "img/fabrics/official/torrens/hero-1-1600.webp",
-              "w": 2000,
-              "h": 1334
-            },
-            {
-              "src": "img/fabrics/official/torrens/hero-2-1600.webp",
-              "w": 2000,
-              "h": 1334
-            },
-            {
-              "src": "img/fabrics/official/torrens/hero-3-1600.webp",
-              "w": 2000,
-              "h": 1334
-            }
-          ],
-          "inuse": [
-            {
-              "src": "img/fabrics/official/torrens/inuse-1-1200.webp",
-              "w": 1200,
-              "h": 1600
-            },
-            {
-              "src": "img/fabrics/official/torrens/inuse-2-1200.webp",
-              "w": 1200,
-              "h": 1600
-            },
-            {
-              "src": "img/fabrics/official/torrens/inuse-3-1200.webp",
-              "w": 1200,
-              "h": 1600
-            },
-            {
-              "src": "img/fabrics/official/torrens/inuse-4-1200.webp",
-              "w": 1200,
-              "h": 1600
-            }
-          ],
+          "texture": "img/fabrics/official/torrens/01-1200.webp",
           "colours": [
             {
               "name": "№ 01",
@@ -568,51 +449,7 @@ window.RICCA_FABRIC_LIBRARY = {
             "440 г/м²",
             "ширина 142 см"
           ],
-          "texture": "img/fabrics/official/eclipse/hero-1-1600.webp",
-          "heroes": [
-            {
-              "src": "img/fabrics/official/eclipse/hero-1-1600.webp",
-              "w": 1012,
-              "h": 1157
-            },
-            {
-              "src": "img/fabrics/official/eclipse/hero-2-1600.webp",
-              "w": 1013,
-              "h": 1424
-            },
-            {
-              "src": "img/fabrics/official/eclipse/hero-3-1600.webp",
-              "w": 855,
-              "h": 1084
-            },
-            {
-              "src": "img/fabrics/official/eclipse/hero-4-1600.webp",
-              "w": 2000,
-              "h": 2000
-            }
-          ],
-          "inuse": [
-            {
-              "src": "img/fabrics/official/eclipse/inuse-1-1200.webp",
-              "w": 1089,
-              "h": 1238
-            },
-            {
-              "src": "img/fabrics/official/eclipse/inuse-2-1200.webp",
-              "w": 757,
-              "h": 1166
-            },
-            {
-              "src": "img/fabrics/official/eclipse/inuse-3-1200.webp",
-              "w": 1600,
-              "h": 1413
-            },
-            {
-              "src": "img/fabrics/official/eclipse/inuse-4-1200.webp",
-              "w": 825,
-              "h": 900
-            }
-          ],
+          "texture": "img/fabrics/official/eclipse/100-1200.webp",
           "colours": [
             {
               "name": "№ 100",
@@ -702,40 +539,7 @@ window.RICCA_FABRIC_LIBRARY = {
             "320 г/м²",
             "для вакуумной упаковки"
           ],
-          "texture": "img/fabrics/official/beauty/hero-1-1600.webp",
-          "heroes": [
-            {
-              "src": "img/fabrics/official/beauty/hero-1-1600.webp",
-              "w": 1506,
-              "h": 2000
-            },
-            {
-              "src": "img/fabrics/official/beauty/hero-2-1600.webp",
-              "w": 1506,
-              "h": 2000
-            },
-            {
-              "src": "img/fabrics/official/beauty/hero-3-1600.webp",
-              "w": 1506,
-              "h": 2000
-            },
-            {
-              "src": "img/fabrics/official/beauty/hero-4-1600.webp",
-              "w": 1506,
-              "h": 2000
-            },
-            {
-              "src": "img/fabrics/official/beauty/hero-5-1600.webp",
-              "w": 1506,
-              "h": 2000
-            },
-            {
-              "src": "img/fabrics/official/beauty/hero-6-1600.webp",
-              "w": 1506,
-              "h": 2000
-            }
-          ],
-          "inuse": [],
+          "texture": "img/fabrics/official/beauty/012-1200.webp",
           "colours": [
             {
               "name": "№ 012",
@@ -866,46 +670,7 @@ window.RICCA_FABRIC_LIBRARY = {
             "480 г/м²",
             "ширина 142 см"
           ],
-          "texture": "img/fabrics/official/coco/hero-1-1600.webp",
-          "heroes": [
-            {
-              "src": "img/fabrics/official/coco/hero-1-1600.webp",
-              "w": 2000,
-              "h": 2000
-            },
-            {
-              "src": "img/fabrics/official/coco/hero-2-1600.webp",
-              "w": 1920,
-              "h": 1080
-            },
-            {
-              "src": "img/fabrics/official/coco/hero-3-1600.webp",
-              "w": 1920,
-              "h": 1080
-            }
-          ],
-          "inuse": [
-            {
-              "src": "img/fabrics/official/coco/inuse-1-1200.webp",
-              "w": 1600,
-              "h": 900
-            },
-            {
-              "src": "img/fabrics/official/coco/inuse-2-1200.webp",
-              "w": 1600,
-              "h": 900
-            },
-            {
-              "src": "img/fabrics/official/coco/inuse-3-1200.webp",
-              "w": 1600,
-              "h": 900
-            },
-            {
-              "src": "img/fabrics/official/coco/inuse-4-1200.webp",
-              "w": 1600,
-              "h": 900
-            }
-          ],
+          "texture": "img/fabrics/official/coco/000-1200.webp",
           "colours": [
             {
               "name": "№ 000",
@@ -1030,46 +795,7 @@ window.RICCA_FABRIC_LIBRARY = {
             "630 г/м²",
             "ширина 140 см"
           ],
-          "texture": "img/fabrics/official/noble/hero-1-1600.webp",
-          "heroes": [
-            {
-              "src": "img/fabrics/official/noble/hero-1-1600.webp",
-              "w": 1200,
-              "h": 1200
-            },
-            {
-              "src": "img/fabrics/official/noble/hero-2-1600.webp",
-              "w": 2000,
-              "h": 1125
-            },
-            {
-              "src": "img/fabrics/official/noble/hero-3-1600.webp",
-              "w": 2000,
-              "h": 1126
-            },
-            {
-              "src": "img/fabrics/official/noble/hero-4-1600.webp",
-              "w": 2000,
-              "h": 1125
-            }
-          ],
-          "inuse": [
-            {
-              "src": "img/fabrics/official/noble/inuse-1-1200.webp",
-              "w": 1600,
-              "h": 901
-            },
-            {
-              "src": "img/fabrics/official/noble/inuse-2-1200.webp",
-              "w": 1600,
-              "h": 901
-            },
-            {
-              "src": "img/fabrics/official/noble/inuse-3-1200.webp",
-              "w": 1600,
-              "h": 901
-            }
-          ],
+          "texture": "img/fabrics/official/noble/000-1200.webp",
           "colours": [
             {
               "name": "№ 000",
@@ -1219,23 +945,9 @@ window.RICCA_FABRIC_LIBRARY = {
           "kind": "букле",
           "facts": [
             "50 000 циклов",
-            "500 г/м²",
-            "для любых форм мебели"
+            "500 г/м²"
           ],
-          "texture": "img/fabrics/official/pique/hero-1-1600.webp",
-          "heroes": [
-            {
-              "src": "img/fabrics/official/pique/hero-1-1600.webp",
-              "w": 2000,
-              "h": 1334
-            },
-            {
-              "src": "img/fabrics/official/pique/hero-2-1600.webp",
-              "w": 2000,
-              "h": 1334
-            }
-          ],
-          "inuse": [],
+          "texture": "img/fabrics/official/pique/001-1200.webp",
           "colours": [
             {
               "name": "№ 001",
@@ -1349,23 +1061,9 @@ window.RICCA_FABRIC_LIBRARY = {
           "kind": "шенилл",
           "facts": [
             "100 000 циклов",
-            "420 г/м²",
-            "для любых форм мебели"
+            "420 г/м²"
           ],
-          "texture": "img/fabrics/official/lucky/hero-1-1600.webp",
-          "heroes": [
-            {
-              "src": "img/fabrics/official/lucky/hero-1-1600.webp",
-              "w": 2000,
-              "h": 1334
-            },
-            {
-              "src": "img/fabrics/official/lucky/hero-2-1600.webp",
-              "w": 2000,
-              "h": 1334
-            }
-          ],
-          "inuse": [],
+          "texture": "img/fabrics/official/lucky/002-1200.webp",
           "colours": [
             {
               "name": "№ 002",
@@ -1529,33 +1227,9 @@ window.RICCA_FABRIC_LIBRARY = {
           "kind": "шенилл",
           "facts": [
             "80 000 циклов",
-            "430 г/м²",
-            "дышащий материал"
+            "430 г/м²"
           ],
-          "texture": "img/fabrics/official/molly/hero-1-1600.webp",
-          "heroes": [
-            {
-              "src": "img/fabrics/official/molly/hero-1-1600.webp",
-              "w": 2000,
-              "h": 1334
-            },
-            {
-              "src": "img/fabrics/official/molly/hero-2-1600.webp",
-              "w": 2000,
-              "h": 1334
-            },
-            {
-              "src": "img/fabrics/official/molly/hero-3-1600.webp",
-              "w": 2000,
-              "h": 1334
-            },
-            {
-              "src": "img/fabrics/official/molly/hero-4-1600.webp",
-              "w": 2000,
-              "h": 1334
-            }
-          ],
-          "inuse": [],
+          "texture": "img/fabrics/official/molly/FL100-1200.webp",
           "colours": [
             {
               "name": "№ FL 100",
@@ -1726,49 +1400,10 @@ window.RICCA_FABRIC_LIBRARY = {
           "kind": "шенилл",
           "facts": [
             "70 000 циклов",
-            "простой уход: мыльный раствор",
-            "ширина 140 см"
+            "ширина 140 см",
+            "чистка: мыльный раствор"
           ],
-          "texture": "img/fabrics/official/sambia/hero-1-1600.webp",
-          "heroes": [
-            {
-              "src": "img/fabrics/official/sambia/hero-1-1600.webp",
-              "w": 2000,
-              "h": 1333
-            },
-            {
-              "src": "img/fabrics/official/sambia/hero-2-1600.webp",
-              "w": 2000,
-              "h": 1333
-            },
-            {
-              "src": "img/fabrics/official/sambia/hero-3-1600.webp",
-              "w": 2000,
-              "h": 1125
-            }
-          ],
-          "inuse": [
-            {
-              "src": "img/fabrics/official/sambia/inuse-1-1200.webp",
-              "w": 1066,
-              "h": 1600
-            },
-            {
-              "src": "img/fabrics/official/sambia/inuse-2-1200.webp",
-              "w": 1200,
-              "h": 1600
-            },
-            {
-              "src": "img/fabrics/official/sambia/inuse-3-1200.webp",
-              "w": 1200,
-              "h": 1600
-            },
-            {
-              "src": "img/fabrics/official/sambia/inuse-4-1200.webp",
-              "w": 1200,
-              "h": 1600
-            }
-          ],
+          "texture": "img/fabrics/official/sambia/01-1200.webp",
           "colours": [
             {
               "name": "№ 01",
@@ -1853,6 +1488,221 @@ window.RICCA_FABRIC_LIBRARY = {
               "src450": "img/fabrics/official/sambia/12-600.webp",
               "src240": "img/fabrics/official/sambia/12-160.webp",
               "hex": "#323c2c"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "zamsha",
+      "title": "Замша",
+      "collections": [
+        {
+          "id": "timeless",
+          "title": "TIMELESS",
+          "kind": "искусственная замша",
+          "facts": [
+            "40 000 циклов",
+            "330 г/м²",
+            "ширина 142 см"
+          ],
+          "texture": "img/fabrics/official/timeless/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/timeless/01-1200.webp",
+              "src450": "img/fabrics/official/timeless/01-600.webp",
+              "src240": "img/fabrics/official/timeless/01-160.webp",
+              "hex": "#ecefec"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/timeless/04-1200.webp",
+              "src450": "img/fabrics/official/timeless/04-600.webp",
+              "src240": "img/fabrics/official/timeless/04-160.webp",
+              "hex": "#a4a197"
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/timeless/05-1200.webp",
+              "src450": "img/fabrics/official/timeless/05-600.webp",
+              "src240": "img/fabrics/official/timeless/05-160.webp",
+              "hex": "#a89a88"
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/timeless/06-1200.webp",
+              "src450": "img/fabrics/official/timeless/06-600.webp",
+              "src240": "img/fabrics/official/timeless/06-160.webp",
+              "hex": "#cca982"
+            },
+            {
+              "name": "№ 08",
+              "src900": "img/fabrics/official/timeless/08-1200.webp",
+              "src450": "img/fabrics/official/timeless/08-600.webp",
+              "src240": "img/fabrics/official/timeless/08-160.webp",
+              "hex": "#67564b"
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/timeless/09-1200.webp",
+              "src450": "img/fabrics/official/timeless/09-600.webp",
+              "src240": "img/fabrics/official/timeless/09-160.webp",
+              "hex": "#938779"
+            },
+            {
+              "name": "№ 101",
+              "src900": "img/fabrics/official/timeless/101-1200.webp",
+              "src450": "img/fabrics/official/timeless/101-600.webp",
+              "src240": "img/fabrics/official/timeless/101-160.webp",
+              "hex": "#6c828e"
+            },
+            {
+              "name": "№ 20",
+              "src900": "img/fabrics/official/timeless/20-1200.webp",
+              "src450": "img/fabrics/official/timeless/20-600.webp",
+              "src240": "img/fabrics/official/timeless/20-160.webp",
+              "hex": "#d79d7c"
+            },
+            {
+              "name": "№ 21",
+              "src900": "img/fabrics/official/timeless/21-1200.webp",
+              "src450": "img/fabrics/official/timeless/21-600.webp",
+              "src240": "img/fabrics/official/timeless/21-160.webp",
+              "hex": "#b6958d"
+            },
+            {
+              "name": "№ 221",
+              "src900": "img/fabrics/official/timeless/221-1200.webp",
+              "src450": "img/fabrics/official/timeless/221-600.webp",
+              "src240": "img/fabrics/official/timeless/221-160.webp",
+              "hex": "#553f37"
+            },
+            {
+              "name": "№ 27",
+              "src900": "img/fabrics/official/timeless/27-1200.webp",
+              "src450": "img/fabrics/official/timeless/27-600.webp",
+              "src240": "img/fabrics/official/timeless/27-160.webp",
+              "hex": "#1f4f94"
+            },
+            {
+              "name": "№ 28",
+              "src900": "img/fabrics/official/timeless/28-1200.webp",
+              "src450": "img/fabrics/official/timeless/28-600.webp",
+              "src240": "img/fabrics/official/timeless/28-160.webp",
+              "hex": "#b6c3cc"
+            },
+            {
+              "name": "№ 30",
+              "src900": "img/fabrics/official/timeless/30-1200.webp",
+              "src450": "img/fabrics/official/timeless/30-600.webp",
+              "src240": "img/fabrics/official/timeless/30-160.webp",
+              "hex": "#394550"
+            },
+            {
+              "name": "№ 32",
+              "src900": "img/fabrics/official/timeless/32-1200.webp",
+              "src450": "img/fabrics/official/timeless/32-600.webp",
+              "src240": "img/fabrics/official/timeless/32-160.webp",
+              "hex": "#e2d2cb"
+            },
+            {
+              "name": "№ 33",
+              "src900": "img/fabrics/official/timeless/33-1200.webp",
+              "src450": "img/fabrics/official/timeless/33-600.webp",
+              "src240": "img/fabrics/official/timeless/33-160.webp",
+              "hex": "#cbdbd0"
+            },
+            {
+              "name": "№ 34",
+              "src900": "img/fabrics/official/timeless/34-1200.webp",
+              "src450": "img/fabrics/official/timeless/34-600.webp",
+              "src240": "img/fabrics/official/timeless/34-160.webp",
+              "hex": "#a5e1e6"
+            },
+            {
+              "name": "№ 35",
+              "src900": "img/fabrics/official/timeless/35-1200.webp",
+              "src450": "img/fabrics/official/timeless/35-600.webp",
+              "src240": "img/fabrics/official/timeless/35-160.webp",
+              "hex": "#db5249"
+            },
+            {
+              "name": "№ 37",
+              "src900": "img/fabrics/official/timeless/37-1200.webp",
+              "src450": "img/fabrics/official/timeless/37-600.webp",
+              "src240": "img/fabrics/official/timeless/37-160.webp",
+              "hex": "#d2bda2"
+            },
+            {
+              "name": "№ 38",
+              "src900": "img/fabrics/official/timeless/38-1200.webp",
+              "src450": "img/fabrics/official/timeless/38-600.webp",
+              "src240": "img/fabrics/official/timeless/38-160.webp",
+              "hex": "#dcd7ca"
+            },
+            {
+              "name": "№ 39",
+              "src900": "img/fabrics/official/timeless/39-1200.webp",
+              "src450": "img/fabrics/official/timeless/39-600.webp",
+              "src240": "img/fabrics/official/timeless/39-160.webp",
+              "hex": "#e0d8c4"
+            },
+            {
+              "name": "№ 40",
+              "src900": "img/fabrics/official/timeless/40-1200.webp",
+              "src450": "img/fabrics/official/timeless/40-600.webp",
+              "src240": "img/fabrics/official/timeless/40-160.webp",
+              "hex": "#84b1be"
+            },
+            {
+              "name": "№ 517",
+              "src900": "img/fabrics/official/timeless/517-1200.webp",
+              "src450": "img/fabrics/official/timeless/517-600.webp",
+              "src240": "img/fabrics/official/timeless/517-160.webp",
+              "hex": "#657480"
+            },
+            {
+              "name": "№ 518",
+              "src900": "img/fabrics/official/timeless/518-1200.webp",
+              "src450": "img/fabrics/official/timeless/518-600.webp",
+              "src240": "img/fabrics/official/timeless/518-160.webp",
+              "hex": "#64737c"
+            },
+            {
+              "name": "№ 522",
+              "src900": "img/fabrics/official/timeless/522-1200.webp",
+              "src450": "img/fabrics/official/timeless/522-600.webp",
+              "src240": "img/fabrics/official/timeless/522-160.webp",
+              "hex": "#bdc0c5"
+            },
+            {
+              "name": "№ 523",
+              "src900": "img/fabrics/official/timeless/523-1200.webp",
+              "src450": "img/fabrics/official/timeless/523-600.webp",
+              "src240": "img/fabrics/official/timeless/523-160.webp",
+              "hex": "#c8cbcc"
+            },
+            {
+              "name": "№ 524",
+              "src900": "img/fabrics/official/timeless/524-1200.webp",
+              "src450": "img/fabrics/official/timeless/524-600.webp",
+              "src240": "img/fabrics/official/timeless/524-160.webp",
+              "hex": "#abb1b4"
+            },
+            {
+              "name": "№ 608",
+              "src900": "img/fabrics/official/timeless/608-1200.webp",
+              "src450": "img/fabrics/official/timeless/608-600.webp",
+              "src240": "img/fabrics/official/timeless/608-160.webp",
+              "hex": "#b29caf"
+            },
+            {
+              "name": "№ 633",
+              "src900": "img/fabrics/official/timeless/633-1200.webp",
+              "src450": "img/fabrics/official/timeless/633-600.webp",
+              "src240": "img/fabrics/official/timeless/633-160.webp",
+              "hex": "#ac8d94"
             }
           ]
         }
