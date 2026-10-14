@@ -156,7 +156,7 @@ function softBox(sx, sy, sz, o = {}) {
   const tuft = o.tufting;
   /* плотность стяжки: не мельче q.tuft и не больше ~30 тыс. вершин на две большие грани */
   const tArea = tuft ? (o.tuftFace === 'y' ? sx * sz : sx * sy) : 0;
-  const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 5000 : o.quality === 'mid' ? 8000 : 15000))) : q.sp;
+  const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 3500 : o.quality === 'mid' ? 6000 : 10000))) : q.sp;
   const deformed = crown || crownBack || bulge || tuft || o.sag || o.pillow || o.ripple || o.slump || (o.taper && o.taper !== 1);
   const sp = (deformed ? q.sp : q.flat) * (o.dense || 1);
   const tf = o.tuftFace || 'z';
@@ -588,7 +588,7 @@ function tubeAlong(points, radius, quality, closed = true, dense = 1) {
 const NEUTRAL = {};
 function neutral(key) {
   if (NEUTRAL[key]) return NEUTRAL[key];
-  const c = { fabric: '#E6E1D8', legs: '#2B2B2B', top: '#C8A57A', mattress: '#F2F1EC', decor: '#EDEBE6', throw: '#C7C3BC', support: '#1A1A1A' }[key] || '#cccccc';
+  const c = { fabric: '#E6E1D8', legs: '#2B2B2B', top: '#C8A57A', mattress: '#F2F1EC', decor: '#EDEBE6', throw: '#C7C3BC', tape: '#4A4A4C', support: '#1A1A1A' }[key] || '#cccccc';
   NEUTRAL[key] = new THREE.MeshPhysicalMaterial({ color: c, roughness: key === 'legs' ? 0.4 : key === 'support' ? 0.6 : key === 'decor' || key === 'throw' ? 0.95 : 0.85, metalness: key === 'legs' ? 0.8 : 0 });
   if (key === 'throw') { NEUTRAL[key].sheen = 0.6; NEUTRAL[key].sheenRoughness = 0.7; NEUTRAL[key].sheenColor = new THREE.Color('#E8E6E2'); }
   if (key === 'decor') { NEUTRAL[key].sheen = 0.4; NEUTRAL[key].sheenRoughness = 0.8; NEUTRAL[key].sheenColor = new THREE.Color('#FFFFFF'); }
@@ -658,9 +658,12 @@ function itemGeometry(it, quality, type, dense = 1) {
     if (it.decorKind === 'pillow') {
       /* подушка: набитая, кромки почти эллипс (скругление ≈ половина толщины), слегка осевшая */
       o.crown = Math.min(it.crown || 0.03, it.sy * 0.3); o.crownP = 1.8; o.rx = o.rz = Math.min(it.r, it.sx * 0.2); o.rTop = it.sy * 0.42; o.rBottom = it.sy * 0.42; o.bulge = 0.012; o.slump = 0.04;
+    } else if (it.roll) {
+      /* отворот покрывала: мягкий валик вдоль кромки */
+      o.rTop = o.rBottom = it.sy * 0.48; o.rz = it.sz * 0.48; o.rx = Math.min(0.04, it.sx * 0.1); o.crown = 0; o.bulge = 0.004; o.slump = 0.03;
     } else {
       /* покрывало: ткань лежит складками — мягкие волны по верху, скруглённый свисающий край */
-      o.crown = Math.min(it.crown || 0.02, it.sy * 0.35); o.crownP = 1.6; o.rx = o.rz = it.r; o.rTop = Math.min(it.r, it.sy * 0.4); o.rBottom = Math.min(0.015, it.sy * 0.3); o.bulge = 0.004; o.ripple = Math.min(0.012, it.sy * 0.18); o.dense = (o.dense || 1) * 0.6;
+      o.crown = Math.min(it.crown || 0.02, it.sy * 0.35); o.crownP = 1.6; o.rx = o.rz = it.r; o.rTop = Math.min(it.r, it.sy * 0.45); o.rBottom = Math.min(0.02, it.sy * 0.3); o.bulge = 0.006; o.ripple = Math.min(0.014, it.sy * 0.16); o.dense = (o.dense || 1) * 0.8;
     }
   }
   if (cushion === false && it.softBack) { o.rTop = 0.08; o.rx = 0.055; o.rz = Math.min(0.07, it.sz * 0.4); o.crown = Math.max(it.crown || 0.02, 0.03); o.crownP = 2.3; o.crownFace = 'z'; o.bulge = 0.008; o.seams = it.piping ? undefined : [['z', 1]]; }
@@ -717,7 +720,7 @@ export function build(type, params, materials = {}, opts = {}) {
   const M = {
     fabric: materials.fabric || neutral('fabric'), legs: materials.legs || neutral('legs'),
     top: materials.top || neutral('top'), mattress: materials.mattress || neutral('mattress'),
-    decor: materials.decor || neutral('decor'), throw: neutral('throw'), support: neutral('support'),
+    decor: materials.decor || neutral('decor'), throw: neutral('throw'), tape: materials.tape || neutral('tape'), support: neutral('support'),
   };
   const seamM = seamMaterial(M.fabric) || M.fabric;
   const pipeM = pipingMaterial(M.fabric) || M.fabric;
@@ -747,12 +750,12 @@ export function build(type, params, materials = {}, opts = {}) {
     /* покрывало — серо-бежевый лён (не белое на белом матрасе: кровать читается объёмом, как на фото работ) */
     const mk = it.decorKind === 'duvet' ? 'throw' : it.mat;
     addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support'].includes(mk) ? mk : 'fabric', it, it.decor ? { decor: true } : null);
-    /* кант и швы */
-    const pipeMat = it.mat === 'mattress' ? 'mattress' : 'fabric';
+    /* кант и швы (у матраса — тёмная лента по верхней кромке; нижняя скрыта в раме) */
+    const pipeMat = it.mat === 'mattress' ? 'tape' : 'fabric';
     if (geo.userData.edgeLoop && (it.piping || it.seam) && quality !== 'low') {
       const axis = it.role === 'back' && it.cushion ? 'z' : it.role === 'headboard' ? 'z' : 'y';
-      const pr2 = it.piping ? 0.004 : 0.0016;
-      const loops = it.role === 'headboard' ? [1] : [1, -1];
+      const pr2 = it.piping ? (it.mat === 'mattress' ? 0.005 : 0.004) : 0.0016;
+      const loops = it.role === 'headboard' || it.role === 'mattress' ? [1] : [1, -1];
       for (const sgn of loops) {
         const tg = tubeAlong(geo.userData.edgeLoop(axis, sgn), pr2, quality, true, dense);
         if (tg && geo.userData.fitMatrix) tg.applyMatrix4(geo.userData.fitMatrix);
@@ -769,7 +772,7 @@ export function build(type, params, materials = {}, opts = {}) {
     }
     /* пуговицы стяжки */
     if (it.tufting === 'capitone' && geo.userData.buttons && geo.userData.buttons.length) {
-      const bg = new THREE.SphereGeometry(0.009, quality === 'low' ? 6 : 8, quality === 'low' ? 4 : 6);
+      const bg = new THREE.SphereGeometry(0.009, quality === 'low' ? 6 : 7, quality === 'low' ? 3 : 4);
       bg.scale(1, 1, 0.55);
       const list = [];
       for (const [bx, by] of geo.userData.buttons) {

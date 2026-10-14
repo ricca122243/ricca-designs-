@@ -11,7 +11,7 @@ export const KINDS = ['velour', 'corduroy', 'boucle', 'chenille', 'matting', 'su
 const KIND = {
   velour: { rough: 0.9, sheen: 0.9, sheenRough: 0.38, sheenLift: 0.22, nScale: 0.20, tile: 0.06 },
   corduroy: { rough: 0.84, sheen: 0.9, sheenRough: 0.35, sheenLift: 0.20, nScale: 1.0, tile: 0.04 },
-  boucle: { rough: 0.97, sheen: 0.18, sheenRough: 0.80, sheenLift: 0.08, nScale: 1.0, tile: 0.08 },   // рельеф петель — в основном с фото (swatchAlbedo)
+  boucle: { rough: 0.97, sheen: 0.2, sheenRough: 0.85, sheenLift: 0.08, nScale: 0.55, tile: 0.08 },   // рельеф петель — в основном с фото (swatchAlbedo)
   chenille: { rough: 0.88, sheen: 0.6, sheenRough: 0.50, sheenLift: 0.15, nScale: 0.5, tile: 0.06 },
   matting: { rough: 0.92, sheen: 0.15, sheenRough: 0.70, sheenLift: 0.05, nScale: 0.6, tile: 0.05 },
   suede: { rough: 0.9, sheen: 0.45, sheenRough: 0.65, sheenLift: 0.12, nScale: 0.15, tile: 0.06 },
@@ -198,7 +198,7 @@ function albedoPixels(d, N, flat) {
   const smooth = flat < 1 / 24, M = [0, 0, 0];
   if (smooth) { for (let i = 0; i < N * N; i++) { M[0] += d[i * 4]; M[1] += d[i * 4 + 1]; M[2] += d[i * 4 + 2]; } M[0] /= N * N; M[1] /= N * N; M[2] /= N * N; }
   for (let i = 0; i < N * N; i++) {
-    if (smooth) { const t = Math.max(0.7, Math.min(1.3, L[i] / B[i])); F[i * 3] = M[0] * t; F[i * 3 + 1] = M[1] * t; F[i * 3 + 2] = M[2] * t; continue; }
+    if (smooth) { const t = Math.max(0.86, Math.min(1.14, L[i] / B2[i])); F[i * 3] = M[0] * t; F[i * 3 + 1] = M[1] * t; F[i * 3 + 2] = M[2] * t; continue; }
     const k = Math.max(0.6, Math.min(1.6, Lm / B[i])) * Math.max(0.85, Math.min(1.18, B[i] / B2[i])) ;
     F[i * 3] = d[i * 4] * k; F[i * 3 + 1] = d[i * 4 + 1] * k; F[i * 3 + 2] = d[i * 4 + 2] * k;
   }
@@ -324,7 +324,7 @@ const UPH_FRAG = `
     float g = exp(-(sd * sd) / (we * we));
     uphDark = UPH_SEAM_DARK * g * mix(0.45, 1.0, vis);
     float rw = max(0.0035, fw);
-    uphH += vis * (0.0012 * exp(-pow((ad - 0.0048) / rw, 2.0)) - 0.0014 * exp(-(sd * sd) / (w * w)));
+    uphH += vis * (0.0007 * exp(-pow((ad - 0.0048) / rw, 2.0)) - 0.0012 * exp(-(sd * sd) / (w * w)));
 #ifndef UPH_LITE
     float tl = length(vSeam.zw);
     if (tl > 0.05) {
@@ -388,10 +388,10 @@ export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null
     roughnessMap: maps.rough, map: maps.albedo,
   });
   if (kind === 'leather') { m.clearcoat = k.clearcoat; m.clearcoatRoughness = k.clearcoatRough; m.specularIntensity = k.specular; }
-  else m.specularIntensity = kind === 'velour' || kind === 'suede' ? 0.2 : 0.3;   // ткань не бликует как пластик: свет даёт ворс (sheen)
+  else m.specularIntensity = kind === 'velour' || kind === 'suede' ? 0.2 : kind === 'boucle' ? 0.2 : 0.3;   // ткань не бликует как пластик: свет даёт ворс (sheen)
   /* одинаковый масштаб фактуры: UV в метрах → повтор = 1 / размер плитки */
   for (const t of [maps.normal, maps.rough, maps.albedo]) t.repeat.set(1 / k.tile, 1 / k.tile);
-  upholstery(m, { lite: q !== 'high', dark: kind === 'leather' ? 0.45 : kind === 'boucle' ? 0.28 : 0.36 });
+  upholstery(m, { lite: q !== 'high', dark: kind === 'leather' ? 0.42 : kind === 'boucle' ? 0.22 : 0.3 });
   m.name = `fabric-${kind}-${hex}`;
   m.userData = { kind, hex, src450, finish: fin, baseColor: base.clone(), ready: Promise.resolve(m) };
   /* ткань на модели — настоящее фото образца (цвет, плетение, рисунок), а не заливка цветом: заказчик «ткань в 3D не видна» */
@@ -529,9 +529,17 @@ export function mattressMaterial() {
   }
   const { nrm } = heightToTextures(H, N, 2.2, 0.9, 0);
   const normal = dataTex(nrm, N); normal.repeat.set(1 / 0.24, 1 / 0.24);
-  mattressMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#F3F2EE'), roughness: 0.92, sheen: 0.25, sheenRoughness: 0.85, sheenColor: new THREE.Color('#FFFFFF'), normalMap: normal, normalScale: new THREE.Vector2(0.22, 0.22), specularIntensity: 0.3 });
+  mattressMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#F3F2EE'), roughness: 0.92, sheen: 0.25, sheenRoughness: 0.85, sheenColor: new THREE.Color('#FFFFFF'), normalMap: normal, normalScale: new THREE.Vector2(0.38, 0.38), specularIntensity: 0.3 });
   mattressMat.name = 'mattress'; mattressMat.userData = { kind: 'mattress' };
   return mattressMat;
+}
+/* кант матраса: тканевая лента (тёмно-серая, как на матрасах в работах ателье) */
+let tapeMat = null;
+export function tapeMaterial() {
+  if (tapeMat) return tapeMat;
+  tapeMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#4A4A4C'), roughness: 0.85, sheen: 0.3, sheenRoughness: 0.7, sheenColor: new THREE.Color('#9A9A9C'), specularIntensity: 0.3 });
+  tapeMat.name = 'mattress-tape'; tapeMat.userData = { kind: 'tape' };
+  return tapeMat;
 }
 
 /* набор материалов для build(): cfg = { type, params, fabric: { hex, kind, src450, typeId, collectionId } } */
@@ -547,5 +555,5 @@ export function materialSet(cfg = {}) {
   else if (p.legs === 'metal') legs = metalMaterial(METAL[fin] ? fin : 'black');
   else if (p.legs === 'wood') legs = woodMaterial(WOOD[fin] ? fin : 'oak');
   else legs = metalMaterial('black');
-  return { fabric, legs, top: null, mattress: mattressMaterial() };
+  return { fabric, legs, top: null, mattress: mattressMaterial(), tape: tapeMaterial() };
 }
