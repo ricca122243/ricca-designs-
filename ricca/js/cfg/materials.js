@@ -224,14 +224,18 @@ function swatchPixels(d, N, flat, o) {
     const k = Math.max(0.6, Math.min(1.6, Lm / B[i])) * Math.max(0.85, Math.min(1.18, B[i] / B2[i]));
     F[i * 3] = d[i * 4] * k; F[i * 3 + 1] = d[i * 4 + 1] * k; F[i * 3 + 2] = d[i * 4 + 2] * k;
   }
-  /* бесшовность: смешивание с копией, сдвинутой на полплитки (и цвет, и высота) */
+  /* бесшовность: смешивание с копией, сдвинутой на полплитки (и цвет, и высота). Веса нормированы на √(w²+(1−w)²):
+     обычное линейное смешивание двух некоррелированных фактур гасит контраст петель у кромки плитки — на диване
+     читалась «клетка» с шагом плитки. Среднее смешивается линейно, отклонения — с сохранением дисперсии */
   const tent = (i) => 1 - Math.abs((2 * (i + 0.5)) / N - 1);
+  const Fm = [0, 0, 0]; for (let i = 0; i < N * N; i++) { Fm[0] += F[i * 3]; Fm[1] += F[i * 3 + 1]; Fm[2] += F[i * 3 + 2]; } Fm[0] /= N * N; Fm[1] /= N * N; Fm[2] /= N * N;
   const alb = new Uint8Array(N * N * 4), H = new Float32Array(N * N);
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-    const i = y * N + x, w = Math.min(1, Math.min(tent(x), tent(y)) * 2.2), j = ((y + N / 2) % N) * N + ((x + N / 2) % N);
-    for (let ch = 0; ch < 3; ch++) alb[i * 4 + ch] = Math.max(0, Math.min(255, Math.round(w * F[i * 3 + ch] + (1 - w) * F[j * 3 + ch])));
+    const i = y * N + x, w = Math.min(1, Math.min(tent(x), tent(y)) * 3), j = ((y + N / 2) % N) * N + ((x + N / 2) % N);
+    const v = 1 - w, k = 1 / Math.sqrt(w * w + v * v);
+    for (let ch = 0; ch < 3; ch++) alb[i * 4 + ch] = Math.max(0, Math.min(255, Math.round(Fm[ch] + k * (w * (F[i * 3 + ch] - Fm[ch]) + v * (F[j * 3 + ch] - Fm[ch])))));
     alb[i * 4 + 3] = 255;
-    H[i] = w * Hp[i] + (1 - w) * Hp[j];
+    H[i] = k * (w * Hp[i] + v * Hp[j]);
   }
   if (!o || !o.procH) return { alb };
   /* высота: фото (нормировано по СКО) + процедурный слой (ворс, зерно) */
