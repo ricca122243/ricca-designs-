@@ -14,7 +14,7 @@ const BG = '#F2F3F5';
    верх подушек — цвет образца, фронты и бока на 15–25 % темнее — объём читается, а не «плоская заливка» */
 /* ключевой — большое мягкое «окно» слева-сверху (чуть тёплый), заполнение со стороны камеры холоднее и слабее,
    контровой справа-сзади отделяет силуэт от светлого фона (на фото интерьеров — свет из окна за диваном) */
-const LIGHT = { env: 0.42, hemi: 0.3, key: 1.4, fill: 0.34, rim: 0.4, exposure: 0.96, kx: -1.2, ky: 1.9, kz: 1.5, keyColor: 0xfff6ec, fillColor: 0xeef2f8, rimColor: 0xffffff };   // холодный светлый фон сайта (--paper-2)
+const LIGHT = { env: 0.42, hemi: 0.26, key: 1.5, fill: 0.28, rim: 0.42, exposure: 0.98, kx: -1.2, ky: 1.9, kz: 1.5, keyColor: 0xfff6ec, fillColor: 0xeef2f8, rimColor: 0xffffff };   // холодный светлый фон сайта (--paper-2)
 /* ключевой с высоты ~45°: фронты и бока получают 60–75 % света верха (на фото ателье фронт лишь чуть темнее верха,
    а не «чёрный»), заполнение со стороны камеры 0,34 — тень в складках остаётся за AO и контактной тенью */
 const FOV = 30;
@@ -97,7 +97,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
 
   /* студия: пол того же цвета, что фон (тень — ShadowMaterial), контактная тень */
   const studio = new THREE.Group(); studio.name = 'studio';
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ color: 0x2f3338, opacity: 0.11, depthWrite: false }));
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ color: 0x2f3338, opacity: 0.15, depthWrite: false }));
   floor.receiveShadow = true; floor.renderOrder = 1; studio.add(floor);
   scene.add(studio);
   const contact = makeContactShadow(renderer);

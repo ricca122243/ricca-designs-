@@ -74,7 +74,8 @@ function fabricHeight(kind, N) {
     for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
       const u = x / N, v = y / N;
       let h = fbm(u * P, v * P, P, 3, 3);
-      if (kind === 'velour') h += 0.35 * tnoise(u * 6, v * 160, 6, 9) + 0.25 * fbm(u * 8, v * 8, 8, 5, 3); // направленный ворс + «пятна» примятого ворса
+      /* велюр: очень слабый направленный ворс (линии не должны читаться как вельвет) + «пятна» примятого ворса */
+      if (kind === 'velour') h += 0.12 * tnoise(u * 6, v * 160, 6, 9) + 0.4 * fbm(u * 6, v * 6, 6, 5, 3);
       H[y * N + x] = h;
     }
   } else if (kind === 'corduroy') {
@@ -384,7 +385,7 @@ const UPH_FRAG = `
     if (tl > 0.05) {
       float s = dot(vFabUv, vSeam.zw / tl);
       float fs = fwidth(s);
-      float amp = smoothstep(0.012, 0.004, fs) * exp(-ad / 0.014) * smoothstep(0.002, 0.007, ad);
+      float amp = smoothstep(0.1, 0.9, tl) * smoothstep(0.012, 0.004, fs) * exp(-ad / 0.014) * smoothstep(0.002, 0.007, ad);
       float wr = sin(s * 285.0 + 5.0 * uphNoise(vec2(s * 14.0, 2.7)));
       uphH += 0.0009 * amp * wr * (0.35 + 0.65 * uphNoise(vec2(s * 22.0, 7.1)));
     }
@@ -579,6 +580,36 @@ export function metalMaterial(finish = 'black') {
   if (envTex) m.envMap = envTex;
   m.name = 'metal-' + finish; m.userData = { kind: 'metal', finish };
   metalCache.set(finish, m);
+  return m;
+}
+
+/* ---------- декор кровати: покрывало (лён) и подушки (хлопок) — плетение + мягкие складки ткани, иначе «пластик» ---------- */
+const decorCache = new Map();
+export function decorMaterial(kind = 'decor') {
+  if (decorCache.has(kind)) return decorCache.get(kind);
+  const N = defaultQuality === 'high' ? 512 : 256, key = 'decorTex' + N;
+  let t = texCache.get(key);
+  if (!t) {
+    /* плитка 30 см: нить ~1,2 мм (250 на плитку) + складки 5–30 см (fbm, 5 октав) */
+    const H = new Float32Array(N * N);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const u = x / N, v = y / N;
+      const thread = Math.pow(Math.max(Math.abs(Math.sin(Math.PI * u * 250)), Math.abs(Math.sin(Math.PI * v * 250))), 0.7);
+      H[y * N + x] = 0.16 * thread + 1.0 * fbm(u * 3, v * 3, 3, 91, 5) + 0.3 * fbm(u * 9, v * 9, 9, 97, 3);
+    }
+    const { nrm, rgh } = heightToTextures(H, N, 1.3, 0.92, 0.05);
+    t = { normal: dataTex(nrm, N), rough: dataTex(rgh, N) };
+    for (const tx of [t.normal, t.rough]) tx.repeat.set(1 / 0.3, 1 / 0.3);
+    texCache.set(key, t);
+  }
+  const throwK = kind === 'throw';
+  const m = new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color(throwK ? '#C9C4BB' : '#EEECE7'), roughness: 1, metalness: 0, roughnessMap: t.rough,
+    normalMap: t.normal, normalScale: new THREE.Vector2(throwK ? 0.75 : 0.55, throwK ? 0.75 : 0.55),
+    sheen: throwK ? 0.5 : 0.35, sheenRoughness: 0.75, sheenColor: new THREE.Color(throwK ? '#E9E6E0' : '#FFFFFF'), specularIntensity: 0.2,
+  });
+  m.name = 'decor-' + kind; m.userData = { kind };
+  decorCache.set(kind, m);
   return m;
 }
 

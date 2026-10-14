@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { parts, normalize, dims as dimsOf } from './params.js';
-import { seamMaterial, pipingMaterial } from './materials.js';
+import { seamMaterial, pipingMaterial, decorMaterial } from './materials.js';
 
 export { TYPES, OPTIONS, RANGES, DEFAULTS, PRESETS, normalize, parts, dims, labelOf, rangeOf, itemBounds } from './params.js';
 
@@ -95,7 +95,7 @@ function makeSeamer(Hx, Hy, Hz, R, seams) {
       e[k] = r[k] > 1e-6 ? dd / r[k] : 0;
     }
     const l = Math.hypot(e[0], e[1], e[2]) || 1;
-    let best = Infinity, bt0 = 0, bt1 = 0, bt2 = 0;
+    let best = Infinity, bt0 = 0, bt1 = 0, bt2 = 0, bax = -1;
     for (const [a, s] of seams) {
       const ai = AX.indexOf(a);
       const cosT = Math.max(-1, Math.min(1, (s * e[ai]) / l)), th = Math.acos(cosT);
@@ -109,7 +109,7 @@ function makeSeamer(Hx, Hy, Hz, R, seams) {
       else flat = s > 0 ? I[ai][1] - c[ai] : c[ai] - I[ai][0];
       const d = rr * Math.abs(th - Q4) + Math.max(0, flat);
       if (d < best) {
-        best = d;
+        best = d; bax = ai;
         /* направление шва: ось шва × направление «наружу» (к ближайшей кромке) */
         let ox = ai === 0 ? 0 : e[0], oy = ai === 1 ? 0 : e[1], oz = ai === 2 ? 0 : e[2];
         if (Math.hypot(ox, oy, oz) < 1e-6) {
@@ -125,7 +125,14 @@ function makeSeamer(Hx, Hy, Hz, R, seams) {
     const U = uvAx[0], V = uvAx[1];
     let tu = bt0 * U[0] + bt1 * U[1] + bt2 * U[2], tv = bt0 * V[0] + bt1 * V[1] + bt2 * V[2];
     const tl = Math.hypot(tu, tv) || 1; tu /= tl; tv /= tl;
-    out[0] = Math.min(best, 1); out[1] = tu; out[2] = tv;
+    /* на угловом скруглении направление шва крутится вокруг угла — натяжные складки шейдера расходились «веером»;
+       длина вектора направления = вес (1 на прямой, 0 в углу), шейдер гасит складки по нему */
+    let w = 1;
+    if (bax >= 0) {
+      const k1 = (bax + 1) % 3, k2 = (bax + 2) % 3, a = Math.abs(e[k1]), b = Math.abs(e[k2]), mx = Math.max(a, b);
+      if (mx > 1e-6) w = 1 - smooth(0.12, 0.55, Math.min(a, b) / mx);
+    }
+    out[0] = Math.min(best, 1); out[1] = tu * w; out[2] = tv * w;
   };
 }
 /* нулевые атрибуты шва и контактного затенения для деталей без них (один шейдер ткани на всё изделие) */
@@ -294,6 +301,8 @@ function makeDisplacer(s) {
     if (taper !== 1) { const t = (P.y + Hy) / (2 * Hy); const k = taper + (1 - taper) * t; P.x *= k; P.z *= k; }
     /* подушка спинки: к верху тоньше (наполнитель оседает вниз), толщина у низа — полная */
     if (pillow && cf === 'z') { const t = (P.y + Hy) / (2 * Hy); P.z *= 1 - pillow * Math.pow(smooth(0.25, 1.0, t), 1.3); }
+    /* декоративная подушка (лежит плашмя, толщина по Y): к дальнему краю (+Z, после поворота — верх) тоньше */
+    if (pillow && cf === 'y') { const t = (P.z + Hz) / (2 * Hz); P.y *= 1 - pillow * Math.pow(smooth(0.25, 1.0, t), 1.3); }
     if (crown) {
       if (cf === 'y' && N.y > 0.2) {
         const u = Math.abs(P.x) / Hx, v = Math.abs(P.z) / Hz;
@@ -302,6 +311,11 @@ function makeDisplacer(s) {
         const u = Math.abs(P.x) / Hx, v = Math.abs(P.y) / Hy;
         P.z += crown * cprof(u) * cprof(v) * smooth(0.2, 0.95, N.z);
       }
+    }
+    /* подушка-«линза»: вторая выпуклость снизу — у кромки тонкий шов, в середине полная толщина */
+    if (crownBottom && N.y < -0.2) {
+      const u = Math.abs(P.x) / Hx, v = Math.abs(P.z) / Hz;
+      P.y -= crownBottom * cprof(u) * cprof(v) * smooth(0.2, 0.95, -N.y);
     }
     if (crownBack && N.z < -0.2) {
       const u = Math.abs(P.x) / Hx, v = Math.abs(P.y) / Hy;
@@ -326,12 +340,24 @@ function makeDisplacer(s) {
       const w = 1 - smooth(0.5, 0.9, Math.abs(N.y));
       P.x += Math.sign(N.x) * Math.abs(N.x) * (k - 1) * Hx * w; P.z += Math.sign(N.z) * Math.abs(N.z) * (k - 1) * Hz * w;
     }
-    /* покрывало: длинные мягкие складки поперёк (амплитуда внутри габарита — базовый бокс уменьшен на crown) */
-    if (ripple && N.y > 0.2) {
+    /* покрывало: крупные мягкие складки поперёк кровати (ткань «брошена»), край в плане — волной, а не линейкой */
+    if (ripple) {
       const x = P.x, z = P.z;
-      const f = Math.sin(x * 9.5 + 0.8 * Math.sin(z * 4.0 + 1.3)) * 0.6 + Math.sin(x * 23.0 + z * 5.0 + 0.5) * 0.25 + Math.sin(z * 14.0 - x * 3.0) * 0.15;
-      const edge = (1 - Math.pow(Math.min(1, Math.abs(x) / Hx), 6)) * (1 - Math.pow(Math.min(1, Math.abs(z) / Hz), 6));
-      P.y += ripple * f * edge * smooth(0.2, 0.95, N.y);
+      if (N.y > 0.2) {
+        const f = Math.sin(x * 7.5 + 0.9 * Math.sin(z * 3.5 + 1.3)) * 0.55 + Math.sin(z * 9.0 + x * 2.5 + 0.5) * 0.3 + Math.sin(x * 19.0 + z * 6.0 - 1.1) * 0.15;
+        const edge = (1 - Math.pow(Math.min(1, Math.abs(x) / Hx), 8)) * (1 - Math.pow(Math.min(1, Math.abs(z) / Hz), 8));
+        P.y += ripple * f * edge * smooth(0.2, 0.95, N.y);
+      }
+      /* волна кромки (только по положению — без разрывов между гранями) */
+      const ex = Math.pow(Math.min(1, Math.abs(x) / Hx), 3), ez = Math.pow(Math.max(0, z / Hz), 3);
+      P.x += Math.sign(x) * ripple * 0.9 * ex * Math.sin(z * 6.5 + 1.0 + Math.sin(z * 2.1));
+      P.z += ripple * 0.9 * ez * Math.sin(x * 5.0 + 2.0 + Math.sin(x * 1.7));
+    }
+    /* покрывало свисает: за кромкой матраса (x — боковины, +z — изножье) ткань уходит вниз мягкой дугой */
+    if (drape) {
+      const ex = drape.x ? Math.max(0, Math.abs(P.x) - (Hx - drape.x)) / drape.x : 0, ez = drape.z ? Math.max(0, P.z - (Hz - drape.z)) / drape.z : 0;
+      const e = Math.min(1, Math.hypot(ex, ez));
+      if (e > 0) P.y -= drape.drop * Math.pow(e, 1.8);
     }
     if (tuftFn) {
       if (tuft === 'channels' && tf === 'z' && N.z > 0.3) {
@@ -351,7 +377,10 @@ function makeDisplacer(s) {
 function softCyl(sx, sy, sz, o = {}) {
   const q = Q[o.quality] || Q.high;
   const crown = o.crown || 0;
-  const A = sx / 2, B = sz / 2, Hh = (sy - crown) / 2;
+  /* «бочка» (barrel): бок чуть выпуклый посередине высоты; базовый радиус уменьшен — деталь ровно в габарите */
+  const bar = o.barrel || 0;
+  const A = sx / 2 / (1 + bar), B = sz / 2 / (1 + bar), Hh = (sy - crown) / 2;
+  const barrel = (y) => 1 + bar * Math.sin(Math.PI * Math.min(1, Math.max(0, (y + Hh) / (2 * Hh))));
   const rT = Math.min(o.rTop ?? 0.02, Hh, Math.min(A, B) * 0.9), rB = Math.min(o.rBottom ?? 0.015, Hh, Math.min(A, B) * 0.9);
   const per = Math.PI * (3 * (A + B) - Math.sqrt((3 * A + B) * (A + 3 * B)));
   const tuft = o.tufting;
@@ -403,7 +432,7 @@ function softCyl(sx, sy, sz, o = {}) {
     ringStart.push(positions.length / 3);
     for (let s = 0; s <= nSeg; s++) {
       const ph = (s / nSeg) * Math.PI * 2;
-      const ax = Math.max(0, A - dl), bz = Math.max(0, B - dl);
+      const bs = barrel(y), ax = Math.max(0, A - dl) * bs, bz = Math.max(0, B - dl) * bs;
       let x = ax * Math.cos(ph), z = bz * Math.sin(ph), yy = y;
       /* «купол» — по положению на скруглении, а не по зоне UV: иначе продублированная строка на стыке UV расходится и даёт щели-точки */
       if (crown && y > Hh - rT - 1e-9) { const u = Math.hypot(x / A, z / B); yy += crown * Math.max(0, 1 - u * u) * (dl >= rT ? 1 : smooth(0, rT, dl)); }
@@ -433,8 +462,8 @@ function softCyl(sx, sy, sz, o = {}) {
   geo.userData.edgeLoop = (axis, sign) => {
     const y = sign > 0 ? Hh - rT + rT * Math.SQRT1_2 : -Hh + rB - rB * Math.SQRT1_2;
     const dl = sign > 0 ? rT - rT * Math.SQRT1_2 : rB - rB * Math.SQRT1_2;
-    const pts = [];
-    for (let s = 0; s < nSeg; s++) { const ph = (s / nSeg) * Math.PI * 2; pts.push(new THREE.Vector3((A - dl) * Math.cos(ph), y + (crown ? -crown / 2 : 0), (B - dl) * Math.sin(ph))); }
+    const pts = [], bs = barrel(y);
+    for (let s = 0; s < nSeg; s++) { const ph = (s / nSeg) * Math.PI * 2; pts.push(new THREE.Vector3((A - dl) * bs * Math.cos(ph), y + (crown ? -crown / 2 : 0), (B - dl) * bs * Math.sin(ph))); }
     return pts;
   };
   geo.userData.buttons = btn.map(([x, z]) => [x, z]);
@@ -494,7 +523,8 @@ function shellGeometry(it, quality) {
       if (j > 0) v += Math.hypot(x - px, y - py, z - pz);
       px = x; py = y; pz = z;
       positions.push(x, y, z);
-      uvs.push(th * ((A - rho) + (B - rho)) / 2 + ext, v);
+      /* u — по средней линии стенки (одна на всё кольцо): иначе на полукруглом верхе ρ меняется вдоль профиля и фактура «косит» полосами */
+      uvs.push(th * (am + bm) / 2 + ext, v);
     }
   });
   for (let r = 0; r < rings.length - 1; r++) for (let j = 0; j < L - 1; j++) {
@@ -616,6 +646,7 @@ function tubeAlong(points, radius, quality, closed = true, dense = 1) {
 const NEUTRAL = {};
 function neutral(key) {
   if (NEUTRAL[key]) return NEUTRAL[key];
+  if (key === 'throw' || key === 'decor') { NEUTRAL[key] = decorMaterial(key); return NEUTRAL[key]; }   // лён / хлопок с плетением и складками
   const c = { fabric: '#E6E1D8', legs: '#2B2B2B', top: '#C8A57A', mattress: '#F2F1EC', decor: '#EDEBE6', throw: '#C7C3BC', tape: '#4A4A4C', support: '#1A1A1A' }[key] || '#cccccc';
   NEUTRAL[key] = new THREE.MeshPhysicalMaterial({ color: c, roughness: key === 'legs' ? 0.4 : key === 'support' ? 0.6 : key === 'decor' || key === 'throw' ? 0.95 : 0.85, metalness: key === 'legs' ? 0.8 : 0 });
   if (key === 'throw') { NEUTRAL[key].sheen = 0.6; NEUTRAL[key].sheenRoughness = 0.7; NEUTRAL[key].sheenColor = new THREE.Color('#E8E6E2'); }
@@ -631,6 +662,7 @@ function itemGeometry(it, quality, type, dense = 1) {
     const isTop = it.role === 'top', base = it.id.startsWith('pbase');
     return softCyl(it.sx, it.sy, it.sz, {
       quality, crown: cushion ? Math.max(it.crown || 0, 0.018) : it.crown || 0, tufting: it.tufting,
+      barrel: cushion && type === 'pouf' ? 0.022 : 0,   // круглый пуф: бок слегка «бочкой», как набитый, а не как труба
       seams: cushion && it.seam && !it.piping && quality !== 'low',
       rTop: isTop ? it.r : base ? 0.008 : it.r || 0.02, rBottom: isTop ? it.r * 0.6 : base ? 0.004 : it.rBottom || Math.min(0.02, it.r || 0.02),
     });
@@ -657,19 +689,25 @@ function itemGeometry(it, quality, type, dense = 1) {
     /* «набитая» подушка: кромка-«буллнос» (скругление верха ~ 45 % толщины), низ мягче, угол в плане ~8 см */
     o.rx = o.rz = Math.min(0.085, it.sx * 0.2, it.sz * 0.2); o.rTop = Math.min(0.07, it.sy * 0.46); o.rBottom = Math.min(0.045, it.sy * 0.3);
     /* задняя (и у углового блока — боковая) кромка уходит под подушку спинки: скругление там малое, без «щели-V» между подушками */
-    if (type !== 'pouf') { o.rzBack = 0.025; if (it.id.startsWith('seat-c')) o.rxBack = 0.025; }
+    if (type !== 'pouf') {
+      o.rzBack = 0.025; if (it.id.startsWith('seat-c')) o.rxBack = 0.025;
+      /* контакт: низ подушки на раме, тыл под подушкой спинки (у углового блока — и бок) */
+      o.occ = [['y', -1, 0, 0.05, 0.7], ['z', -1, 0, 0.09, 0.55]]; if (it.id.startsWith('seat-c')) o.occ.push(['x', -1, 0, 0.09, 0.55]);
+    } else o.occ = [['y', -1, 0, 0.03, 0.35]];
     if (it.seam) seams([['y', 1], ['y', -1]]);
   }
   if (cushion && it.role === 'back') {
     /* подушка спинки: пухлая, к верху тоньше, обе стороны выпуклые, очень мягкий верх */
     o.crown = Math.max(it.crown || 0.02, Math.min(0.055, it.sz * 0.3)); o.crownBack = Math.min(0.02, it.sz * 0.1); o.crownP = 2.4; o.crownFace = 'z'; o.bulge = 0.014; o.pillow = 0.2;
     o.rx = Math.min(0.1, it.sx * 0.2); o.rTop = Math.min(0.09, it.sy * 0.25); o.rBottom = Math.min(0.035, it.sz * 0.2); o.rz = Math.min(0.09, it.sz * 0.42);
+    o.occ = [['y', -1, 0, 0.07, 0.65], ['z', -1, 0, 0.05, 0.45]];   // лежит на сиденье, тылом к спинке
     if (it.seam) seams([['z', 1], ['z', -1]]);
   }
   if (!cushion && it.role === 'back') {
     o.rTop = Math.min(0.1, it.sz * 0.48); o.rx = Math.min(0.045, it.sx * 0.2); o.rz = Math.min(0.09, it.sz * 0.48); o.rBottom = 0.015;
     if (it.crown) { o.crown = it.sz > 0.15 ? 0.03 : it.crown; o.crownP = 2.6; o.crownFace = 'z'; o.bulge = 0.008; }
     if (it.sz > 0.15) seams([['z', 1]]);
+    o.occ = [['y', -1, 0, 0.05, 0.5]];   // низ цельной спинки у подушки сиденья
   }
   if (it.backShape === 'rounded') { o.rx = Math.min(it.sx * 0.25, 0.12); o.rTop = o.rx; o.rz = Math.min(0.025, it.sz * 0.45); o.rBottom = 0.02; }
   if (it.role === 'headboard') {
@@ -684,14 +722,19 @@ function itemGeometry(it, quality, type, dense = 1) {
   if (it.role === 'top') { o.rx = o.rz = it.rPlan || 0.012; o.rTop = it.r; o.rBottom = it.r * 0.6; }
   if (it.role === 'decor') {
     if (it.decorKind === 'pillow') {
-      /* подушка: набитая, кромки почти эллипс (скругление ≈ половина толщины), слегка осевшая */
-      o.crown = Math.min(it.crown || 0.03, it.sy * 0.3); o.crownP = 1.8; o.rx = o.rz = Math.min(it.r, it.sx * 0.2); o.rTop = it.sy * 0.42; o.rBottom = it.sy * 0.42; o.bulge = 0.012; o.slump = 0.04;
+      /* подушка-«линза»: тонкий шов по кромке, набитая середина с обеих сторон, углы-«ушки» тонкие; прислонена к изголовью
+         (rotX в params.js) — к верху тоньше, наполнитель внизу */
+      const cr = it.sy * 0.43;
+      o.crown = cr; o.crownBottom = cr; o.crownP = 1.5; o.rx = o.rz = Math.min(0.04, it.sx * 0.1); o.rTop = o.rBottom = Math.min(0.01, (it.sy - 2 * cr) * 0.45); o.bulge = 0; o.slump = 0; o.pillow = 0.3;
+      o.occ = [['z', -1, 0, 0.08, 0.5]];   // нижняя кромка (−Z до поворота) лежит на матрасе
     } else if (it.roll) {
-      /* отворот покрывала: мягкий валик вдоль кромки */
+      /* отворот покрывала: мягкий валик вдоль кромки, к боковинам чуть провисает */
       o.rTop = o.rBottom = it.sy * 0.48; o.rz = it.sz * 0.48; o.rx = Math.min(0.04, it.sx * 0.1); o.crown = 0; o.bulge = 0.004; o.slump = 0.03;
+      o.drape = it.drape || null; o.occ = [['y', -1, 0, 0.04, 0.45]];
     } else {
-      /* покрывало: ткань лежит складками — мягкие волны по верху, скруглённый свисающий край */
-      o.crown = Math.min(it.crown || 0.02, it.sy * 0.35); o.crownP = 1.6; o.rx = o.rz = it.r; o.rTop = Math.min(it.r, it.sy * 0.45); o.rBottom = Math.min(0.02, it.sy * 0.3); o.bulge = 0.006; o.ripple = Math.min(0.014, it.sy * 0.16); o.dense = (o.dense || 1) * 0.8;
+      /* покрывало: толстое, брошено на матрас — крупные мягкие складки, волнистая кромка, свисает за боковины и изножье */
+      o.crown = Math.min(it.crown || 0.02, it.sy * 0.35); o.crownP = 1.6; o.rx = o.rz = it.r; o.rTop = Math.min(it.r, it.sy * 0.45); o.rBottom = Math.min(0.02, it.sy * 0.3); o.bulge = 0.006; o.ripple = Math.min(0.026, it.sy * 0.33); o.dense = (o.dense || 1) * 0.75;
+      o.drape = it.drape || null;
     }
   }
   if (cushion === false && it.softBack) { o.rTop = 0.08; o.rx = 0.055; o.rz = Math.min(0.07, it.sz * 0.4); o.crown = Math.max(it.crown || 0.02, 0.03); o.crownP = 2.3; o.crownFace = 'z'; o.bulge = 0.008; o.seams = it.piping ? undefined : [['z', 1]]; }
@@ -702,7 +745,10 @@ function itemGeometry(it, quality, type, dense = 1) {
     o.rTop = Math.min(big ? 0.045 : 0.035, it.sy * 0.4); o.rBottom = Math.min(big ? 0.035 : 0.02, it.sy * 0.3);
     o.rx = o.rz = Math.max(r, soft ? (big ? 0.06 : 0.04) : r); o.bulge = soft && type !== 'bed' && it.sy > 0.12 ? 0.008 : 0;
     if (type === 'bed') { o.rx = o.rz = 0.02; o.rTop = 0.012; }
+    else o.occ = [['y', 1, 0, 0.035, 0.55]];   // верхняя кромка рамы — под свесом подушки сиденья
   }
+  if (it.role === 'mattress') o.occ = [['y', -1, 0, 0.14, 0.3]];   // низ матраса в раме, у царги темнее
+  if (it.role === 'plinth') o.occ = [['y', 1, 0, 0.025, 0.5]];
   if (it.role === 'rail') {
     /* царга кровати: мягкий «валик» — верх скруглён почти на всю толщину (NUBO), бока слегка выпуклые */
     o.rTop = Math.min(0.06, it.sy * 0.42, Math.min(it.sx, it.sz) * 0.48); o.rBottom = Math.min(0.03, it.sy * 0.2); o.rx = o.rz = Math.min(0.045, it.sx * 0.45, it.sz * 0.45); o.crown = 0.006; o.crownP = 2.6; o.bulge = 0.008;
@@ -762,8 +808,8 @@ export function build(type, params, materials = {}, opts = {}) {
     mesh.position.set(it.x, it.y, it.z);
     mesh.rotation.order = 'YXZ';
     mesh.rotation.y = it.rotY || 0;
-    /* наклон назад: верх уходит в −Z (локально) */
-    mesh.rotation.x = 0; // наклон уже в геометрии (fitTilted)
+    /* наклон назад (tiltX) уже в геометрии (fitTilted); rotX — только у декора (подушка, прислонённая к изголовью) */
+    mesh.rotation.x = it.rotX || 0;
     meshes.push(mesh);
     return mesh;
   };
@@ -828,8 +874,8 @@ export function build(type, params, materials = {}, opts = {}) {
     }
     for (const [kk, e] of byMat) {
       const [k, det] = kk.split('|');
-      const attrs = ['position', 'normal', 'uv', 'seam'];
-      e.geos.forEach((g) => { for (const n of Object.keys(g.attributes)) if (!attrs.includes(n)) g.deleteAttribute(n); if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]); });
+      const attrs = ['position', 'normal', 'uv', 'seam', 'occ'];
+      e.geos.forEach((g) => { ensureSeamAttr(g); for (const n of Object.keys(g.attributes)) if (!attrs.includes(n)) g.deleteAttribute(n); if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]); });
       const merged = mergeGeometries(e.geos, false);
       e.geos.forEach((g) => g.dispose());
       const mesh = new THREE.Mesh(merged, k === 'seam' ? seamM : k === 'piping' ? pipeM : M[k] || M.fabric);
