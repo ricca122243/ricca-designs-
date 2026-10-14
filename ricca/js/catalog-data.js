@@ -134,6 +134,7 @@ window.RICCA_CATALOG_CATEGORIES = {
   tables: { label: 'Столы', cover: 'img/catalog/cover-tables', viz: true,
     coverAlt: 'Визуализация: чёрный обеденный стол, ветка в стеклянной вазе, подвесной светильник',
     desc: 'Обеденные: круглые, прямоугольные' },
+  works: { label: 'Наши работы', view: 'works', desc: 'Реальные изделия ателье' },   /* лучшие фото работ (js/works-data.js, js/site.js BEST_WORKS) */
   fabrics: { label: 'Ткани', cover: 'img/catalog/cover-fabrics', view: 'fabrics',
     coverAlt: 'Книга образцов тканей: от светло-серого до графитового',
     desc: 'Велюр, букле, шенилл' },   /* число коллекций сайт считает по js/fabrics-data.js */
@@ -141,7 +142,7 @@ window.RICCA_CATALOG_CATEGORIES = {
     coverAlt: 'Постер ELUNA «Мы убирали всё лишнее — пока не осталась тишина»: матрас на звёздном небе',
     desc: 'Ортопедические, на своём сайте' }
 };
-window.RICCA_CATALOG_ORDER = ['sofas', 'beds', 'armchairs', 'fabrics', 'mattresses'];   /* столов и стульев нет — только мягкая мебель (владелец, 13 октября) */
+window.RICCA_CATALOG_ORDER = ['sofas', 'beds', 'armchairs', 'works', 'fabrics', 'mattresses'];   /* столов и стульев нет — только мягкая мебель (владелец, 13 октября) */
 
 window.RICCA_CATALOG = [
 

@@ -680,7 +680,7 @@ text{font-family:${FONT};fill:${INK}}
   /* ателье и контакт */
   W(`<text x="${tb.x0 + 2}" y="${n2(r2 + 3.6)}" style="font-size:1.95px;font-weight:500">RICCA DESIGNS — ателье мягкой мебели, Алматы</text>`);
   W(`<text x="${tb.x0 + 2}" y="${n2(r2 + 6.6)}" style="font-size:1.85px;font-weight:400">ул. Алишера Навои, 208/2 · шоурум</text>`);
-  W(`<text x="${tb.x0 + 2}" y="${n2(r3 + 3.7)}" style="font-size:2.1px;font-weight:600">+7 (708) 480-20-47</text>`);
+  W(`<text x="${tb.x0 + 2}" y="${n2(r3 + 3.7)}" style="font-size:2.1px;font-weight:600">+7 (707) 955-08-08</text>`);
   W(`<text x="${tb.x0 + 2}" y="${n2(r3 + 6.9)}" style="font-size:1.75px;font-weight:400;fill:#444">WhatsApp · номер схемы ${esc(id)} указывайте в переписке</text>`);
   W('</g>');
 

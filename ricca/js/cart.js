@@ -63,7 +63,7 @@
   'use strict';
   if (window.RICCA_CART) return;
 
-  const WA = '77084802047';            // номер WhatsApp — тот же, что CONFIG.wa в js/site.js
+  const WA = '77079550808';            // номер WhatsApp — тот же, что CONFIG.wa в js/site.js
   const KEY = 'ricca-cart-v1';
   const OLD = 'ricca-shortlist-v2';    // прежняя «Подборка» — переносится один раз
   const MAX_LINES = 30, MAX_QTY = 20;

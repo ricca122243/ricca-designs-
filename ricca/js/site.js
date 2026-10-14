@@ -11,8 +11,8 @@
 
   /* ---------- CONFIG: номера и готовые тексты WhatsApp — менять здесь ---------- */
   const CONFIG = {
-    wa: '77084802047',
-    tel: { main: '+77084802047', orders: '+77079550808' },
+    wa: '77079550808',
+    tel: { main: '+77079550808', orders: '+77084802047' },
     msg: {
       general: 'Здравствуйте! Хочу узнать о мебели RICCA на заказ.',
       question: 'Здравствуйте! У меня вопрос по мебели RICCA.',
@@ -142,7 +142,12 @@
     .filter((w) => w && w.id && w.title && KINDS[w.cat] && Array.isArray(w.photos))
     .map((w) => Object.assign({}, w, { photos: w.photos.filter((p) => p && p.src && p.src800 && p.w && p.h) }))
     .filter((w) => w.photos.length);
-  const WORK = new Map(WORKS.map((w) => [w.id, w]));
+  // модели каталога на белом фоне (js/models-data.js) — те же карточки и то же окно, что у работ
+  const MODELS = (Array.isArray(window.RICCA_MODELS) ? window.RICCA_MODELS : []).filter((w) => w && w.id && KINDS[w.cat] && Array.isArray(w.photos) && w.photos.length);
+  const WORK = new Map([...WORKS, ...MODELS].map((w) => [w.id, w]));
+  // экран «Наши работы»: только лучшие кадры реальных изделий (по решению владельца: остальные снимки не в стиле сайта)
+  const BEST_WORKS = ['C_tjlDdgnmn', 'DdAJz7PiC61', 'DGy-8O2Ilbr', 'C9h3Txai1KF', 'DJU1WlUuBh8', 'DGgipIMx6ma', 'DaSUDdwDKly', 'DGlGyYrND3R', 'C7E_JvdoXM-', 'C0EZbsnoxni', 'DKkV-ORIobz', 'C1Ur3ZXIE3f'];
+  const BEST = BEST_WORKS.map((id) => WORKS.find((w) => w.id === id)).filter(Boolean);
   const SMALL = window.matchMedia('(max-width: 767px)');   // телефон: только файлы 800 px (так же — ткани, FC_PHONE)
   const p800 = (p) => ({ w: p.w800 || p.w, h: p.h800 || p.h });
   // <picture>: телефон — один файл 800 px; от 768 px — srcset 800 / 1600 по ширине рамки (sizes)
@@ -153,18 +158,18 @@
       + `<img src="${esc(p.src800)}" width="${s.w}" height="${s.h}" alt="" loading="${eager ? 'eager' : 'lazy'}" decoding="async"></picture>`;
   };
   // карточка работы: фото 4 : 5 (cover), под ним название и ткань — ссылка #work-<id> (открывает окно работы)
-  const workCard = (w, n, sizes, eager, withSub = true) => `<li><a class="wk__a" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
+  const workCard = (w, n, sizes, eager, withSub = true) => `<li><a class="wk__a${w.model ? ' wk__a--model' : ''}" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
     + `<span class="wk__img">${workPic(w.photos[n] || w.photos[0], sizes, eager)}</span>`
     + `<span class="wk__t">${typo(w.title)}</span>${withSub && w.sub ? `<span class="wk__s">${typo(w.sub)}</span>` : ''}</a></li>`;
   // обложки плиток каталога: реальное фото вместо линейного рисунка; рисунок — в DRAW (миниатюра заявки «по вашему проекту»)
   const DRAW = {};
   $$('.tile[data-cat]').forEach((a) => {
-    const cat = a.dataset.cat, box = $('.tile__img--draw', a), w = WORKS.find((x) => x.cat === cat);
+    const cat = a.dataset.cat, box = $('.tile__img--draw', a), w = MODELS.find((x) => x.cat === cat) || WORKS.find((x) => x.cat === cat);
     if (!box || !w || !KINDS[cat]) return;
     const svg = $('.draw', box);
     if (svg) DRAW[cat] = svg.cloneNode(true);
     box.classList.remove('tile__img--draw');
-    box.classList.add('tile__img--photo');
+    box.classList.add('tile__img--photo'); if (w.model) box.classList.add('tile__img--model');
     box.innerHTML = workPic(w.photos[0], '(min-width: 1100px) 30vw, 46vw', false);
   });
   // плитка «Ткани»: 8 настоящих образцов из библиотеки — по два из каждого типа (разные по светлоте), остальное — первыми типами
@@ -340,24 +345,6 @@
   if (!reduceMotion) {
     // вход — свой ролик ателье (video/production*); телефон — лёгкая версия. Прежний ролик из рендеров фабрики снят 13 октября
   }
-  /* вход: смена кадров реальных работ (img/hero) каждые 6 с, подпись и ссылка на работу; reduced motion — один кадр;
-     на невидимом входе (прокрутили ниже, другая вкладка) не крутим */
-  (() => {
-    const slides = $$('.hero__slide'), cap = $('[data-hero-cap]'), capN = $('[data-hero-n]'), capT = $('[data-hero-t]');
-    if (slides.length < 2 || reduceMotion) return;
-    let i = 0, t = 0, seen = true;
-    const show = (n) => {
-      slides[i].classList.remove('is-on'); i = (n + slides.length) % slides.length; slides[i].classList.add('is-on');
-      const img = $('img', slides[i]); if (img && img.loading === 'lazy') img.loading = 'eager';
-      const nx = $('img', slides[(i + 1) % slides.length]); if (nx && nx.loading === 'lazy') nx.loading = 'eager';   // следующий — заранее
-      if (capN) capN.textContent = `${pad2(i + 1)} / ${pad2(slides.length)}`;
-      if (capT) capT.textContent = slides[i].dataset.cap || '';
-      if (cap) cap.href = `#work-${slides[i].dataset.work}`;
-    };
-    const tick = () => { if (seen && !document.hidden) show(i + 1); t = setTimeout(tick, 6000); };
-    t = setTimeout(tick, 6000);
-    if (hasIO) new IntersectionObserver((es) => { seen = es[es.length - 1].isIntersecting; }, { threshold: 0.05 }).observe($('.hero'));
-  })();
   // ролик ателье: телефон — своя лёгкая версия (data-src-phone). Reduced motion — не играет сам: постер и ▶, ролик — по нажатию
   $$('[data-autovideo]').forEach((box) => {
     const v = $('video', box);
@@ -480,14 +467,14 @@
       }
       // работы такой нет (убрали из выборки) или старая ссылка #work-NN — каталог; прежние «Все работы» (#works/all) — экран «Диваны»
       if (r.work != null && !WORK.has(r.work)) { R.toCatalog(); return; }
-      if (r.works) { R.replace(WORKS.length ? '#catalog/sofas' : '#catalog'); return R.apply(false); }
+      if (r.works) { R.replace(BEST.length ? '#catalog/works' : '#catalog'); return R.apply(false); }
       // ткани такой нет (коллекцию убрали из js/fabrics-data.js) — экран «Ткани»
       if (r.fab != null && !(FCOL.has(r.fab) && FCOL.get(r.fab).c.colours[r.fabN])) { R.replace('#catalog/fabrics'); return R.apply(false); }
       // уровень 1: категория / ткани / все работы; #fabric-<коллекция>-<N> — экран «Ткани» на этой коллекции с цветом N
       if (r.cat) {
         const c = CATS[r.cat];
         if (!c || c.href) R.toCatalog();
-        else View.open(c.view === 'fabrics' ? { type: 'fabrics', sub: r.sub } : { type: 'cat', cat: r.cat, sub: r.sub });
+        else View.open(c.view === 'fabrics' ? { type: 'fabrics', sub: r.sub } : c.view === 'works' ? { type: 'works' } : { type: 'cat', cat: r.cat, sub: r.sub });
       } else if (r.fab != null) View.open({ type: 'fabrics', sub: 'all', fab: r.fab, fabN: r.fabN });
       else if (r.work && initial) {
         // вход по ссылке на работу (#work-<id> из WhatsApp или Instagram): под окном — её категория, «Закрыть» ведёт к остальным работам
@@ -522,13 +509,13 @@
     const GRID_SIZES = '(min-width: 1440px) 440px, (min-width: 768px) 30vw, 46vw';
     function renderCat(cat) {
       const k = KINDS[cat] || { verb: `Шьём: ${lcFirst(catLabel(cat))}`, what: [], wa: lcFirst(catLabel(cat)), title: catLabel(cat) };
-      const ws = WORKS.filter((w) => w.cat === cat);
+      const ws = MODELS.filter((w) => w.cat === cat);
       title.innerHTML = typo(k.label || catLabel(cat));
       tabs.classList.remove('is-fab'); tabs.innerHTML = ''; tabs.hidden = true;
       if (foot) foot.hidden = true;   // WhatsApp — среди трёх действий
-      nEl.innerHTML = ws.length ? `${ws.length}&nbsp;${plural3(ws.length, ['работа', 'работы', 'работ'])} ателье` : '';
+      nEl.innerHTML = ws.length ? `${ws.length}&nbsp;${plural3(ws.length, ['модель', 'модели', 'моделей'])}` : '';
       back.textContent = 'Каталог';
-      content.innerHTML = (ws.length ? `<ul class="wk" role="list" aria-label="${esc(`Работы ателье: ${k.label || catLabel(cat)}`.replace(/\u00a0/g, ' '))}">${ws.map((w, i) => workCard(w, 0, GRID_SIZES, i < 4)).join('')}</ul>` : '')
+      content.innerHTML = (ws.length ? `<ul class="wk" role="list" aria-label="${esc(`Модели: ${k.label || catLabel(cat)}`.replace(/\u00a0/g, ' '))}">${ws.map((w, i) => workCard(w, 0, GRID_SIZES, i < 4)).join('')}</ul>` : '')
         + `<section class="kind${ws.length ? ' kind--after' : ''}" aria-labelledby="kind-t">`
         + '<div class="kind__side">'
         + '<h3 class="label kind__t" id="kind-t">На&nbsp;заказ</h3>'
@@ -542,6 +529,15 @@
         + '<p class="kind__note">Цену рассчитаем и&nbsp;ответим в&nbsp;WhatsApp.</p>'
         + '</div></section>';
       syncKind();
+    }
+    // «Наши работы»: сетка лучших реальных изделий ателье
+    function renderWorks() {
+      title.textContent = 'Наши работы';
+      tabs.classList.remove('is-fab'); tabs.innerHTML = ''; tabs.hidden = true;
+      if (foot) foot.hidden = true;
+      nEl.innerHTML = typo('Реальные изделия ателье — сшиты по проектам клиентов.');
+      back.textContent = 'Каталог';
+      content.innerHTML = `<ul class="wk" role="list" aria-label="Работы ателье">${BEST.map((w, i) => workCard(w, 0, GRID_SIZES, i < 4)).join('')}</ul>`;
     }
     // «В корзину — заявка»: уже в корзине — кнопка открывает корзину
     function syncKind() {
@@ -856,7 +852,7 @@
         const fresh = k !== key || !dlg.open;
         if (k !== key) {
           spec = Object.assign({}, s); key = k;
-          if (s.type === 'cat') renderCat(s.cat); else renderFabrics();
+          if (s.type === 'cat') renderCat(s.cat); else if (s.type === 'works') renderWorks(); else renderFabrics();
         }
         if (s.type === 'cat') setSub(s.sub || 'all');
         const was = dlg.open;
@@ -1156,7 +1152,7 @@
       waT.textContent = `Хочу ${want(w)}`;
       wa.setAttribute('aria-label', `Хочу ${want(w)}: ${label(w)} — написать в WhatsApp`);
       t3.href = `configurator.html#cfg=v1~t.${encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}`;
-      ig.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`;
+      ig.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; ig.hidden = !!w.model;   // у моделей каталога поста нет
       const many = w.photos.length > 1;
       arrows.forEach((b) => { b.hidden = !many; });
       count.hidden = !many;

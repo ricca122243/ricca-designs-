@@ -147,54 +147,27 @@ textarea.fld { min-height: 64px; resize: vertical; }
 }
 
 /* ==========================================================================
-   1. ВХОД — реальные работы ателье на весь экран (кадры img/hero, смена — js/site.js)
+   1. ВХОД — белый минимализм: заголовок слева, изделие на белом фоне справа
    ========================================================================== */
-.hero { position: relative; height: 100vh; height: 100svh; min-height: 560px; max-height: 1100px; overflow: hidden; background: var(--ink); color: #fff; isolation: isolate; }
-.hero__slides { position: absolute; inset: 0; z-index: -2; margin: 0; padding: 0; list-style: none; }
-.hero__slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1400ms var(--ease-io); }
-.hero__slide.is-on { opacity: 1; }
-.hero__slide picture { display: contents; }
-.hero__slide img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform 7000ms linear; }
-.hero__slide.is-on img { transform: scale(1); }   /* тихое движение кадра, пока он на экране */
-/* тень — у краёв, чтобы белая шапка, заголовок и кнопки читались на светлых фото (≥ 4,5 : 1) */
-.hero__shade { position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background:
-    linear-gradient(to bottom, rgba(0,0,0,.42) 0, rgba(0,0,0,.3) 70px, rgba(0,0,0,0) 220px),
-    linear-gradient(to top, rgba(0,0,0,.66) 0, rgba(0,0,0,.52) 160px, rgba(0,0,0,.22) 340px, rgba(0,0,0,0) 520px); }
-.hdr.is-over .logo, .hdr.is-over .hdr__nav a { text-shadow: 0 0 14px rgba(0,0,0,.35); }
-.hdr.is-over .logo__mono { filter: drop-shadow(0 0 10px rgba(0,0,0,.3)); }
-.hero__foot { position: absolute; left: 0; right: 0; bottom: max(40px, env(safe-area-inset-bottom)); margin-inline: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
-.hero__text { display: grid; gap: 18px; justify-items: start; max-width: 640px; text-shadow: 0 1px 24px rgba(0,0,0,.25); }
-.hero__eye { font: 500 11px/1.5 var(--sans); letter-spacing: .3em; text-transform: uppercase; opacity: .92; }
-.hero__title { font: 300 clamp(44px, 6vw, 84px)/1.02 var(--serif); letter-spacing: -.005em; text-wrap: balance; }
-.hero__sub { max-width: 34ch; font: 400 clamp(14px, 1.1vw, 16px)/1.6 var(--sans); letter-spacing: .01em; opacity: .92; text-wrap: pretty; }
+.hero { position: relative; min-height: calc(100svh - 0px); display: flex; align-items: center; padding: calc(var(--hdr) + 24px) 0 48px; background: var(--paper); color: var(--ink); }
+.hero__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; gap: clamp(32px, 5vw, 80px); width: 100%; }
+.hero__text { display: grid; gap: 20px; justify-items: start; }
+.hero__eye { font: 500 11px/1.5 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--ink-2); }
+.hero__title { font: 300 clamp(44px, 5.6vw, 80px)/1.02 var(--serif); letter-spacing: -.005em; text-wrap: balance; }
+.hero__sub { max-width: 34ch; font: 400 clamp(14px, 1.1vw, 16px)/1.6 var(--sans); color: var(--ink-2); text-wrap: pretty; }
 .hero__btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
-.btn--white { background: #fff; color: var(--ink); border-color: #fff; }
-.btn--glass { background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.7); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-@media (hover: hover) { .btn--white:hover { background: var(--paper-2); border-color: var(--paper-2); } .btn--glass:hover { background: rgba(255,255,255,.18); border-color: #fff; } }
-/* подпись кадра: номер и название работы — ведёт на неё (#work-<id>) */
-.hero__cap { display: grid; gap: 6px; justify-items: end; text-align: right; min-height: 44px; align-content: end; color: #fff; }
-.hero__cap-n { font: 500 10px/1.5 var(--sans); letter-spacing: .24em; text-transform: uppercase; opacity: .75; font-variant-numeric: tabular-nums; }
-.hero__cap-t { font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,.5); padding-bottom: 3px; transition: border-color 300ms var(--ease); }
-@media (hover: hover) { .hero__cap:hover .hero__cap-t { border-color: #fff; } }
-.vbtn { display: inline-grid; place-items: center; width: 44px; height: 44px; color: #fff; position: relative; }
-.vbtn::before { content: ''; position: absolute; inset: 8px; border: 1px solid rgba(255,255,255,.55); border-radius: 50%; background: rgba(0, 0, 0, .45); transition: border-color 300ms; }
-.vbtn .ico { width: 12px; height: 12px; stroke-width: 1.5; }
-.vbtn .ico--play { fill: currentColor; stroke: none; width: 11px; height: 11px; margin-left: 2px; }
-.vbtn .ico--play, .vbtn[aria-pressed="true"] .ico--pause { display: none; }
-.vbtn[aria-pressed="true"] .ico--play { display: block; }
-@media (hover: hover) { .vbtn:hover::before { border-color: #fff; } }
-@media (max-width: 767px) {
-  .hero { max-height: none; }
-  .hero__foot { flex-direction: column; align-items: stretch; gap: 22px; bottom: max(28px, env(safe-area-inset-bottom)); }
-  .hero__text { gap: 14px; }
-  .hero__title { font-size: clamp(40px, 12vw, 52px); }
-  .hero__sub { font-size: 14px; max-width: 30ch; }
-  .hero__btns { width: 100%; }
-  .hero__btns .btn { flex: 1 1 0; padding-inline: 16px; }
-  .hero__cap { justify-items: start; text-align: left; min-height: 0; }
+.hero__pic { display: block; }
+.hero__pic img { display: block; width: 100%; height: auto; transition: transform 1200ms var(--ease); }
+@media (hover: hover) { .hero__pic:hover img { transform: scale(1.02); } }
+.hdr.is-over { background: transparent; border-color: transparent; color: var(--ink); }
+.hdr.is-over .hdr__count { background: var(--ink); color: var(--paper); }
+@media (max-width: 899px) {
+  .hero { min-height: 0; padding-bottom: 24px; }
+  .hero__grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .hero__pic { order: -1; margin-inline: -8px; }
+  .hero__title { font-size: clamp(38px, 11vw, 52px); }
+  .hero__btns { width: 100%; } .hero__btns .btn { flex: 1 1 0; padding-inline: 16px; }
 }
-@media (max-width: 359px) { .hero__title { font-size: 36px; } }
 }
 
 /* ==========================================================================
@@ -379,6 +352,9 @@ textarea.fld { min-height: 64px; resize: vertical; }
 .wk__img { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--paper-2); }
 .wk__img picture { display: contents; }
 .wk__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1400ms var(--ease); }
+/* модели каталога на белом фоне — целиком, без обрезки */
+.wk__a--model .wk__img, .tile__img--model { background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+.wk__a--model .wk__img img, .tile__img--model img { object-fit: contain; padding: 6%; box-sizing: border-box; }
 .wk__t { margin-top: 14px; font: 500 11px/1.5 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--ink); text-wrap: balance; }
 .wk__s { margin-top: 2px; font: 400 12px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .01em; }
 @media (hover: hover) {
@@ -1045,11 +1021,11 @@ dialog .toast { position: fixed; }
 @media (max-width: 599px) { .curtain__lock { gap: 16px; } .curtain__lock .logo__mono { width: 50px; } .curtain__lock .logo__rule { height: 32px; } .curtain__lock .logo__name { font-size: 20px; } .curtain__lock .logo__sub { font-size: 7.5px; } }
 @keyframes curtain { from { transform: translateY(0); } to { transform: translateY(-101%); } }
 @keyframes cword { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.intro .hero__slides { animation: heroin 1000ms 850ms var(--ease) both; }
+.intro .hero__pic { animation: heroin 1000ms 850ms var(--ease) both; }
 @keyframes heroin { from { transform: scale(1.06); } to { transform: none; } }
 .intro .hdr__row { animation: up 400ms 1150ms var(--ease) both; }
 .intro .hero__text { animation: up 500ms 1200ms var(--ease) both; }
-.intro .hero__cap { animation: fade 300ms 1400ms var(--ease) both; }
+
 @keyframes up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 

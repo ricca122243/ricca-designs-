@@ -23,8 +23,7 @@
 <link rel="icon" href="img/v3/favicon-v3-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="img/v3/favicon-v3-180.png">
 <!-- первый кадр входа (реальная работа ателье) = LCP: грузится первым; телефон — портрет, компьютер — ландшафт -->
-<link rel="preload" as="image" href="img/hero/DdAJz7PiC61-2-p.webp" media="(max-aspect-ratio: 1/1)" fetchpriority="high">
-<link rel="preload" as="image" href="img/hero/DdAJz7PiC61-2-l.webp" media="(min-aspect-ratio: 1/1)" fetchpriority="high">
+<link rel="preload" as="image" href="img/catalog/p-sofa-19-600.webp" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts-v3.css">
@@ -50,7 +49,7 @@
 })(document);
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FurnitureStore","@id":"https://ricca-designs.kz/#ricca","name":"RICCA DESIGNS","description":"Ателье мягкой мебели в Алматы: диваны, кровати и кресла на заказ.","url":"https://ricca-designs.kz/","image":"https://ricca-designs.kz/img/v3/og-image-v3.jpg","telephone":"+77084802047","email":"hello@ricca-designs.kz","address":{"@type":"PostalAddress","streetAddress":"ул. Алишера Навои, 208/2 (ЖК «Шахристан»)","addressLocality":"Алматы","addressCountry":"KZ"},"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"10:00","closes":"20:00"},"hasMap":"https://go.2gis.com/1SUmO","sameAs":["https://instagram.com/ricca.designs","https://go.2gis.com/1SUmO"],"brand":{"@type":"Brand","name":"RICCA DESIGNS"},"areaServed":[{"@type":"Country","name":"Kazakhstan"},"Worldwide"],"contactPoint":[{"@type":"ContactPoint","telephone":"+77084802047","contactType":"customer service","availableLanguage":"ru"},{"@type":"ContactPoint","telephone":"+77079550808","contactType":"sales","availableLanguage":"ru"}]}
+{"@context":"https://schema.org","@type":"FurnitureStore","@id":"https://ricca-designs.kz/#ricca","name":"RICCA DESIGNS","description":"Ателье мягкой мебели в Алматы: диваны, кровати и кресла на заказ.","url":"https://ricca-designs.kz/","image":"https://ricca-designs.kz/img/v3/og-image-v3.jpg","telephone":"+77079550808","email":"hello@ricca-designs.kz","address":{"@type":"PostalAddress","streetAddress":"ул. Алишера Навои, 208/2 (ЖК «Шахристан»)","addressLocality":"Алматы","addressCountry":"KZ"},"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"10:00","closes":"20:00"},"hasMap":"https://go.2gis.com/1SUmO","sameAs":["https://instagram.com/ricca.designs","https://go.2gis.com/1SUmO"],"brand":{"@type":"Brand","name":"RICCA DESIGNS"},"areaServed":[{"@type":"Country","name":"Kazakhstan"},"Worldwide"],"contactPoint":[{"@type":"ContactPoint","telephone":"+77079550808","contactType":"customer service","availableLanguage":"ru"},{"@type":"ContactPoint","telephone":"+77084802047","contactType":"sales","availableLanguage":"ru"}]}
 </script>
 </head>
 <body>
@@ -96,7 +95,7 @@
       <a href="#atelier">Ателье</a>
       <a href="#business">Для бизнеса</a>
       <a href="#showroom">Шоурум</a>
-      <a href="https://wa.me/77084802047" data-wa="general">WhatsApp</a>
+      <a href="https://wa.me/77079550808" data-wa="general">WhatsApp</a>
     </nav>
     <div class="hdr__tools">
       <button class="icon-btn hdr__sl" type="button" id="cart-open" aria-haspopup="dialog" aria-label="Корзина, пусто">
@@ -111,41 +110,22 @@
 
 <main id="main">
 
-<!-- ═════════ 1. ВХОД: реальные работы ателье (Instagram @ricca.designs; кадры — tools/media-v3/hero-photos.py → img/hero/).
-     Фото на весь экран, медленная смена четырёх кадров (js/site.js, 6 с; reduced motion — один кадр), крупный заголовок антиквой,
-     две кнопки. Компьютер — ландшафтный кадр 16 : 10 (-l), телефон — портретный 9 : 16 (-p). Подпись кадра справа внизу ведёт на работу.
-     Прежний ролик ателье (шлифовка, 13 октября: «обложка видео странная») остался в разделе «Ателье». ═════════ -->
+<!-- ═════════ 1. ВХОД: белый минимализм (решение владельца 14 октября: фото интерьеров «не в стиль», обложка со сменой кадров — «старо»).
+     Слева — заголовок антиквой и две кнопки, справа — одно изделие на белом фоне (модель каталога, img/catalog/p-*). ═════════ -->
 <section class="hero" id="top">
-  <ul class="hero__slides" role="list" aria-hidden="true">
-    <li class="hero__slide is-on" data-work="DdAJz7PiC61" data-cap="Кровать с панельным изголовьем"><picture>
-      <source media="(min-aspect-ratio: 1/1)" srcset="img/hero/DdAJz7PiC61-2-l.webp" width="1440" height="900">
-      <img src="img/hero/DdAJz7PiC61-2-p.webp" width="900" height="1600" alt="" fetchpriority="high" decoding="async">
-    </picture></li>
-    <li class="hero__slide" data-work="C_tjlDdgnmn" data-cap="Диван Klint · шенилл"><picture>
-      <source media="(min-aspect-ratio: 1/1)" srcset="img/hero/C_tjlDdgnmn-4-l.webp" width="1440" height="900">
-      <img src="img/hero/C_tjlDdgnmn-4-p.webp" width="900" height="1600" alt="" loading="lazy" decoding="async">
-    </picture></li>
-    <li class="hero__slide" data-work="C7E_JvdoXM-" data-cap="Угловой модульный диван"><picture>
-      <source media="(min-aspect-ratio: 1/1)" srcset="img/hero/C7E_JvdoXM--1-l.webp" width="1440" height="900">
-      <img src="img/hero/C7E_JvdoXM--1-p.webp" width="899" height="1600" alt="" loading="lazy" decoding="async">
-    </picture></li>
-    <li class="hero__slide" data-work="C9h3Txai1KF" data-cap="Угловой диван · букле"><picture>
-      <source media="(min-aspect-ratio: 1/1)" srcset="img/hero/C9h3Txai1KF-1-l.webp" width="1920" height="1200">
-      <img src="img/hero/C9h3Txai1KF-1-p.webp" width="900" height="1600" alt="" loading="lazy" decoding="async">
-    </picture></li>
-  </ul>
-  <div class="hero__shade" aria-hidden="true"></div>
-  <div class="wrap hero__foot">
+  <div class="wrap hero__grid">
     <div class="hero__text">
       <p class="hero__eye">RICCA DESIGNS&nbsp;· Алматы</p>
       <h1 class="hero__title">Мягкая мебель<br>на&nbsp;заказ</h1>
       <p class="hero__sub">Диваны, кровати и&nbsp;кресла — по&nbsp;вашему фото, эскизу или проекту. Своё ателье.</p>
       <div class="hero__btns">
-        <a class="btn btn--white" href="#catalog">Смотреть работы</a>
-        <a class="btn btn--glass" href="https://wa.me/77084802047" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
+        <a class="btn btn--fill" href="#catalog">Каталог</a>
+        <a class="btn btn--line" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
       </div>
     </div>
-    <a class="hero__cap" href="#work-DdAJz7PiC61" data-hero-cap><span class="hero__cap-n" data-hero-n>01 / 04</span><span class="hero__cap-t" data-hero-t>Кровать с панельным изголовьем</span><span class="sr-only"> — открыть работу</span></a>
+    <a class="hero__pic" href="#work-m-sofa-19" aria-label="Диван — открыть модель">
+      <img src="img/catalog/p-sofa-19-600.webp" srcset="img/catalog/p-sofa-19-600.webp 600w, img/catalog/p-sofa-19.webp 1200w" sizes="(min-width: 900px) 56vw, 100vw" width="1200" height="900" alt="Диван в светлом букле на белом фоне" fetchpriority="high" decoding="async">
+    </a>
   </div>
 </section>
 
@@ -238,7 +218,7 @@
       <div class="works__nav">
         <button class="works__step" type="button" data-works-step="-1" aria-label="Листать работы назад"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
         <button class="works__step" type="button" data-works-step="1" aria-label="Листать работы вперёд"><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
-        <a class="caps-link works__all" href="#catalog/sofas">Все работы<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="caps-link works__all" href="#catalog/works">Все работы<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
     </header>
     <ul class="works__strip rv" data-works-row role="list" aria-label="Работы ателье"></ul>
@@ -265,7 +245,7 @@
         <li><span class="any__n" aria-hidden="true">03</span>Сошьём в&nbsp;ателье</li>
       </ol>
       <div class="any__acts">
-        <a class="btn btn--fill any__btn" href="https://wa.me/77084802047" data-wa="photo"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Отправить фото в&nbsp;WhatsApp</a>
+        <a class="btn btn--fill any__btn" href="https://wa.me/77079550808" data-wa="photo"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Отправить фото в&nbsp;WhatsApp</a>
         <a class="caps-link any__3d" href="configurator.html">Собрать онлайн в&nbsp;3D<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
     </div>
@@ -282,7 +262,7 @@
       <li class="step rv"><span class="step__n" aria-hidden="true">03</span><div class="step__body"><h3 class="step__t">Производство</h3><p class="step__p">В&nbsp;нашем ателье, после утверждения проекта.</p></div></li>
       <li class="step rv"><span class="step__n" aria-hidden="true">04</span><div class="step__body"><h3 class="step__t">Доставка</h3><p class="step__p">Привозим по&nbsp;Казахстану; в&nbsp;другие страны&nbsp;— рассчитаем под ваш адрес.</p></div></li>
     </ol>
-    <p class="proc__cta rv"><a class="btn btn--line" href="https://wa.me/77084802047" data-wa="projects"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Обсудить в&nbsp;WhatsApp</a></p>
+    <p class="proc__cta rv"><a class="btn btn--line" href="https://wa.me/77079550808" data-wa="projects"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Обсудить в&nbsp;WhatsApp</a></p>
   </div>
 </section>
 
@@ -297,7 +277,7 @@
       </div>
       <div class="geo__b rv">
         <p class="geo__line">Шьём в&nbsp;Алматы&nbsp;— принимаем заказы из&nbsp;любой страны. Доставку и&nbsp;сроки рассчитаем под&nbsp;ваш адрес.</p>
-        <a class="btn btn--line" href="https://wa.me/77084802047" data-wa="abroad"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Заказать из&nbsp;другой страны<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a>
+        <a class="btn btn--line" href="https://wa.me/77079550808" data-wa="abroad"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Заказать из&nbsp;другой страны<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a>
       </div>
     </div>
     <figure class="geo__map" aria-hidden="true">
@@ -355,7 +335,7 @@
         <div><dt>SCM</dt><dd>станки, Италия</dd></div>
         <div><dt>Dürkopp&nbsp;Adler</dt><dd>станки, Германия</dd></div>
       </dl>
-      <a class="caps-link" href="https://wa.me/77084802047" data-wa="master">Написать мастеру<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <a class="caps-link" href="https://wa.me/77079550808" data-wa="master">Написать мастеру<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
     <figure class="atelier__film rv" data-autovideo>
       <video muted playsinline loop preload="none" data-poster="video/production-poster.webp" width="478" height="850" data-src="video/production" data-src-phone="video/production-phone" disablepictureinpicture aria-label="Видео: как мы делаем мебель — каркас, раскрой, пошив, обивка и сборка"></video>
@@ -378,7 +358,7 @@
         <li>Сопровождение от&nbsp;идеи до&nbsp;монтажа</li>
         <li>Доставка по&nbsp;Казахстану и&nbsp;за&nbsp;рубеж</li>
       </ul>
-      <a class="btn btn--noir" href="https://wa.me/77084802047" data-wa="business"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Обсудить проект</a>
+      <a class="btn btn--noir" href="https://wa.me/77079550808" data-wa="business"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Обсудить проект</a>
     </div>
     <!-- Дизайнерам и архитекторам (13 октября): только факты — работа по проекту, ткани, размеры. Без партнёрских программ и скидок -->
     <div class="biz__pro rv">
@@ -390,7 +370,7 @@
           <li>Изготовим по&nbsp;размерам проекта</li>
           <li>Образцы&nbsp;— в&nbsp;шоуруме на&nbsp;Навои</li>
         </ul>
-        <a class="btn btn--noir" href="https://wa.me/77084802047" data-wa="designer"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Написать по&nbsp;проекту</a>
+        <a class="btn btn--noir" href="https://wa.me/77079550808" data-wa="designer"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Написать по&nbsp;проекту</a>
       </div>
     </div>
   </div>
@@ -422,11 +402,11 @@
     </div>
     <div class="showroom__b rv">
       <ul class="tels" role="list">
-        <li><a href="tel:+77084802047" data-tel="main"><span class="tels__n">+7&nbsp;(708)&nbsp;480-20-47</span><span class="tels__k">· WhatsApp</span></a></li>
-        <li><a href="tel:+77079550808" data-tel="orders"><span class="tels__n">+7&nbsp;(707)&nbsp;955-08-08</span><span class="tels__k">· отдел заказов</span></a></li>
+        <li><a href="tel:+77079550808" data-tel="main"><span class="tels__n">+7&nbsp;(707)&nbsp;955-08-08</span><span class="tels__k">· WhatsApp</span></a></li>
+        <li><a href="tel:+77084802047" data-tel="orders"><span class="tels__n">+7&nbsp;(708)&nbsp;480-20-47</span><span class="tels__k">· отдел заказов</span></a></li>
       </ul>
       <div class="actions">
-        <a class="btn btn--fill" href="https://wa.me/77084802047" data-wa="showroom"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Записаться на&nbsp;визит</a>
+        <a class="btn btn--fill" href="https://wa.me/77079550808" data-wa="showroom"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Записаться на&nbsp;визит</a>
         <a class="btn btn--line" href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">Маршрут в&nbsp;2ГИС<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a>
       </div>
       <a class="caps-link showroom__rev" href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">Отзывы в&nbsp;2ГИС<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a>
@@ -464,7 +444,7 @@
           <li><a href="configurator.html">Собрать онлайн в&nbsp;3D</a></li>
           <li><a href="#faq">Доставка по&nbsp;РК</a></li>
           <li><a href="#faq">Гарантия 3&nbsp;года</a></li>
-          <li><a href="https://wa.me/77084802047" data-wa="master">Написать мастеру</a></li>
+          <li><a href="https://wa.me/77079550808" data-wa="master">Написать мастеру</a></li>
           <li><a href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">Отзывы 2ГИС<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
         </ul>
       </nav>
@@ -481,8 +461,8 @@
       <div class="foot__contacts">
         <h2 class="sr-only">Контакты</h2>
         <dl>
-          <div><dt>Основной / WhatsApp</dt><dd class="foot__gold"><a href="tel:+77084802047" data-tel="main">+7&nbsp;(708)&nbsp;480-20-47</a></dd></div>
-          <div><dt>Отдел заказов</dt><dd><a href="tel:+77079550808" data-tel="orders">+7&nbsp;(707)&nbsp;955-08-08</a></dd></div>
+          <div><dt>Основной / WhatsApp</dt><dd class="foot__gold"><a href="tel:+77079550808" data-tel="main">+7&nbsp;(707)&nbsp;955-08-08</a></dd></div>
+          <div><dt>Отдел заказов</dt><dd><a href="tel:+77084802047" data-tel="orders">+7&nbsp;(708)&nbsp;480-20-47</a></dd></div>
           <div><dt>Email</dt><dd><a href="mailto:hello@ricca-designs.kz">hello@ricca-designs.kz</a></dd></div>
           <div><dt>Instagram</dt><dd><a href="https://instagram.com/ricca.designs" target="_blank" rel="noopener">@ricca.designs<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></dd></div>
           <div><dt>Адрес шоурума</dt><dd><a href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener">ул.&nbsp;Алишера Навои,&nbsp;208/2<span class="sr-only"> (2ГИС, откроется в&nbsp;новой вкладке)</span></a></dd></div>
@@ -491,11 +471,11 @@
       </div>
     </div>
     <div class="foot__bottom">
-      <a class="btn btn--noir foot__ask" href="https://wa.me/77084802047" data-wa="question">Задать вопрос</a>
+      <a class="btn btn--noir foot__ask" href="https://wa.me/77079550808" data-wa="question">Задать вопрос</a>
       <div class="social">
         <a href="https://instagram.com/ricca.designs" target="_blank" rel="noopener" aria-label="Instagram @ricca.designs (откроется в новой вкладке)"><svg class="ico" aria-hidden="true"><use href="#i-instagram"/></svg></a>
         <a href="https://go.2gis.com/1SUmO" target="_blank" rel="noopener" aria-label="Шоурум в 2ГИС (откроется в новой вкладке)"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg></a>
-        <a href="https://wa.me/77084802047" data-wa="general" aria-label="Написать в WhatsApp"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
+        <a href="https://wa.me/77079550808" data-wa="general" aria-label="Написать в WhatsApp"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
       </div>
       <p class="foot__copy">© 2026 RICCA&nbsp;DESIGNS · Алматы</p>
       <!-- TODO (заказчик): юридическая строка (ТОО/ИП, БИН) -->
@@ -505,7 +485,7 @@
 
 <!-- Липкая плашка телефона: после входа; прячется у шоурума и подвала, в меню и окнах; над «Для бизнеса» — чёрная -->
 <div class="mbar" id="mbar" aria-hidden="true">
-  <a class="btn" href="https://wa.me/77084802047" data-wa="general" tabindex="-1"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
+  <a class="btn" href="https://wa.me/77079550808" data-wa="general" tabindex="-1"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
   <a class="btn" href="#showroom" tabindex="-1">Шоурум</a>
 </div>
 
@@ -529,8 +509,8 @@
     <button class="menu__sl" type="button" data-open-cart>Корзина <span data-cart-mn></span></button>
   </nav>
   <div class="menu__foot wrap">
-    <a class="btn btn--fill btn--wide" href="https://wa.me/77084802047" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Написать в&nbsp;WhatsApp</a>
-    <a class="menu__tel" href="tel:+77084802047" data-tel="main">+7&nbsp;(708)&nbsp;480-20-47</a>
+    <a class="btn btn--fill btn--wide" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Написать в&nbsp;WhatsApp</a>
+    <a class="menu__tel" href="tel:+77079550808" data-tel="main">+7&nbsp;(707)&nbsp;955-08-08</a>
   </div>
 </dialog>
 
@@ -551,7 +531,7 @@
     </header>
     <div class="view__tabs" data-view-tabs role="group" aria-label="Тип" hidden></div>
     <div data-view-content></div>
-    <p class="view__foot" data-view-foot><a class="caps-link" data-view-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-view-wa-label>Обсудить в&nbsp;WhatsApp</span></a></p>
+    <p class="view__foot" data-view-foot><a class="caps-link" data-view-wa href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-view-wa-label>Обсудить в&nbsp;WhatsApp</span></a></p>
   </div>
 </dialog>
 
@@ -612,7 +592,7 @@
       </div>
       <div class="pd__actions">
         <button class="btn btn--fill" type="button" data-pd-add><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span>Добавить в&nbsp;корзину</span></button>
-        <a class="btn btn--line" data-pd-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span>Узнать цену<span class="pd__wa-tail"> в&nbsp;WhatsApp</span></span></a>
+        <a class="btn btn--line" data-pd-wa href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span>Узнать цену<span class="pd__wa-tail"> в&nbsp;WhatsApp</span></span></a>
       </div>
       <p class="pd__incart" data-pd-incart aria-live="polite" hidden></p>
       <details class="pd__more" data-pd-more>
@@ -644,7 +624,7 @@
         <p class="lb__count" data-lb-count aria-live="polite"></p>
       </div>
       <div class="lb__acts">
-        <a class="btn btn--fill" data-lb-wa href="https://wa.me/77084802047" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-lb-wa-t>Хочу такой</span><span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a>
+        <a class="btn btn--fill" data-lb-wa href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-lb-wa-t>Хочу такой</span><span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a>
         <button class="btn btn--line" type="button" data-lb-cart aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span>В&nbsp;корзину</span></button>
         <a class="caps-link lb__3d" data-lb-3d href="configurator.html">Собрать похожий в&nbsp;3D<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         <a class="lb__ig" data-lb-ig href="https://instagram.com/ricca.designs" target="_blank" rel="noopener">Смотреть в&nbsp;Instagram<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a>
@@ -689,6 +669,7 @@
 
 <script src="js/catalog-data.js" defer></script>
 <script src="js/works-data.js" defer></script>
+<script src="js/models-data.js" defer></script>
 <script src="js/fabrics-data.js" defer></script>
 <script src="js/cart.js" defer></script>
 <script src="js/site.js" defer></script>

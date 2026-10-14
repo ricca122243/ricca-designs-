@@ -569,15 +569,22 @@ function partsBed(p) {
   /* для вида (decor: не в габарите, чертеже и списке): одеяло и две подушки у изголовья */
   {
     const mx0 = fx0 + p.frameT + 0.004, mx1 = fx1 - p.frameT - 0.004, mz1 = L - p.frameT - 0.004, mw = mx1 - mx0, ml = mz1 - hbT;
-    /* покрывало: толстое, со складками, у изголовья — отворот-валик (как на фото кроватей ателье) */
-    const dz0 = mz1 - ml * 0.6;
-    add(box('duvet', 'decor', 'decor', mx0 - 0.015, mx1 + 0.015, mTop - 0.004, mTop + 0.085, dz0, mz1 + 0.015, { r: 0.04, crown: 0.025, decor: true, decorKind: 'duvet' }));
-    add(box('duvet-fold', 'decor', 'decor', mx0 - 0.02, mx1 + 0.02, mTop + 0.03, mTop + 0.145, dz0 - 0.02, dz0 + 0.17, { r: 0.05, decor: true, decorKind: 'duvet', roll: true }));
-    const pw = Math.min(0.7, mw / 2 - 0.04), pz0 = hbT + 0.04;
+    /* покрывало: толстое, брошено на матрас со складками, свисает за боковины и изножье (furniture3d: drape),
+       у изголовья — отворот-валик (как на фото кроватей ателье) */
+    const dz0 = mz1 - ml * 0.6, ov = 0.16, ovz = 0.10;
+    add(box('duvet', 'decor', 'decor', mx0 - ov, mx1 + ov, mTop - 0.004, mTop + 0.078, dz0, mz1 + ovz, { r: 0.035, crown: 0.025, decor: true, decorKind: 'duvet', drape: { x: ov + 0.01, z: ovz + 0.01, drop: 0.105 } }));
+    add(box('duvet-fold', 'decor', 'decor', mx0 - 0.03, mx1 + 0.03, mTop + 0.03, mTop + 0.14, dz0 - 0.02, dz0 + 0.17, { r: 0.05, decor: true, decorKind: 'duvet', roll: true, drape: { x: 0.14, z: 0, drop: 0.035 } }));
+    /* подушки прислонены к изголовью (как в съёмке ателье): «линза» 70 × 50 × 17 см, наклон 20° от вертикали;
+       нижняя кромка на матрасе, верхняя касается изголовья. rotX — поворот меша (декор; не входит в габарит) */
+    const pw = Math.min(0.7, mw / 2 - 0.04), ph = 0.50, pt = 0.17, lean = 0.35, rotX = -(Math.PI / 2 + lean);
+    const c = Math.cos(rotX), s = Math.sin(rotX);
+    let yMin = Infinity, zMin = Infinity;
+    for (const yy of [-pt / 2, pt / 2]) for (const zz of [-ph / 2, ph / 2]) { yMin = Math.min(yMin, yy * c - zz * s); zMin = Math.min(zMin, yy * s + zz * c); }
+    const pcy = mTop - yMin - 0.012, pcz = hbT + 0.006 - zMin;
     for (const [i, cx] of [[1, (mx0 + mx1) / 2 - mw / 4], [2, (mx0 + mx1) / 2 + mw / 4]]) {
       if (mw < 1.2 && i === 2) break;
       const x = mw < 1.2 ? (mx0 + mx1) / 2 : cx;
-      add({ ...box(`pillow-${i}`, 'decor', 'decor', x - pw / 2, x + pw / 2, mTop, mTop + 0.19, pz0, pz0 + 0.46, { r: 0.08, crown: 0.05, decor: true, decorKind: 'pillow' }) });
+      add({ ...box(`pillow-${i}`, 'decor', 'decor', x - pw / 2, x + pw / 2, 0, pt, 0, ph, { r: 0.03, decor: true, decorKind: 'pillow' }), y: pcy, z: pcz, rotX });
     }
   }
   if (p.base === 'plinth') add(box('plinth', 'plinth', 'fabric', fx0 + 0.05, fx1 - 0.05, 0, p.legH, hbT + 0.04, L - 0.05, { r: 0.01 }));
@@ -630,6 +637,17 @@ function partsArmchair(p) {
     /* подушка — ровно «глубина сиденья» от фронта */
     const sx = W - 2 * t + 0.03, seatZ0 = d - p.seatD;
     add(cyl('seat-1', 'seat', 'fabric', W / 2, (seatZ0 + d) / 2, sx, p.seatD, yF, p.seatH, { r: 0.04, crown: 0.012, cushion: true, piping: !!p.piping, seam: true, frontFlat: false }));
+    /* подушка спинки — квадратная, стоит на сиденье и прислонена к оболочке (как у округлого кресла ателье);
+       внутри габарита: верх ниже кромки оболочки, задние углы не заходят за внутреннюю стенку эллипса */
+    {
+      const bpW = Math.min(0.50, sx - 0.04), ai = W / 2 - t, bi = B - t;
+      const xr = Math.min(bpW / 2, ai * 0.98), zWall = zc - bi * Math.sqrt(Math.max(0, 1 - (xr / ai) * (xr / ai)));
+      const z0 = zWall + 0.012, y0 = p.seatH - 0.012, y1 = p.h - 0.015;
+      if (y1 - y0 > 0.2 && d - z0 > 0.45) {
+        const tc = tiltedCushion(y0, y1, z0, z0 + 0.215, 0.28);
+        add({ ...box('backc', 'back', 'fabric', W / 2 - bpW / 2, W / 2 + bpW / 2, 0, tc.sy, 0, tc.t, { r: 0.05, crown: 0.03, cushion: true, piping: !!p.piping, seam: true }), y: (y0 + y1) / 2, z: z0 + 0.215 / 2, tiltX: tc.a });
+      }
+    }
     legsFor({ legs: p.legs }, legH, [{ x0: W * 0.16, x1: W * 0.84, z0: 0.06, z1: d - 0.16 }], add);
     /* спереди оболочка заканчивается торцами на угле open/2: боковина и проём — там, где они есть на самом деле */
     const A = W / 2, sn = Math.sin(open / 2), zEnd = zc + (B - t / 2) * Math.cos(open / 2);

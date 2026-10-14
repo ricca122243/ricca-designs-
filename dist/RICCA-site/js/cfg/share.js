@@ -4,7 +4,7 @@
 
 import { parts as partsOf, DEFAULTS as PDEF } from './params.js';
 
-export const WA_NUMBER = '77084802047';                     // как в js/site.js (CONFIG.wa)
+export const WA_NUMBER = '77079550808';                     // как в js/site.js (CONFIG.wa)
 export const waUrl = (text) => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
 
 /* короткие ключи адреса ↔ параметры (1:1) */
