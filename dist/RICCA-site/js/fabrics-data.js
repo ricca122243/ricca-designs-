@@ -688,7 +688,13 @@ window.RICCA_FABRIC_LIBRARY = {
               "src450": "img/fabrics/ricca/03-600.webp",
               "src240": "img/fabrics/ricca/03-160.webp",
               "hex": "#36382b"
-            }
+            },
+            {"name": "Молочный", "src900": "img/fabrics/ricca/04-1200.webp", "src450": "img/fabrics/ricca/04-600.webp", "src240": "img/fabrics/ricca/04-160.webp", "hex": "#d8d3c8"},
+            {"name": "Серо-бежевый", "src900": "img/fabrics/ricca/05-1200.webp", "src450": "img/fabrics/ricca/05-600.webp", "src240": "img/fabrics/ricca/05-160.webp", "hex": "#8e8a85"},
+            {"name": "Медный меланж", "src900": "img/fabrics/ricca/06-1200.webp", "src450": "img/fabrics/ricca/06-600.webp", "src240": "img/fabrics/ricca/06-160.webp", "hex": "#473529"},
+            {"name": "Чёрно-бежевая полоса", "src900": "img/fabrics/ricca/07-1200.webp", "src450": "img/fabrics/ricca/07-600.webp", "src240": "img/fabrics/ricca/07-160.webp", "hex": "#6b6054"},
+            {"name": "Светло-серый меланж", "src900": "img/fabrics/ricca/08-1200.webp", "src450": "img/fabrics/ricca/08-600.webp", "src240": "img/fabrics/ricca/08-160.webp", "hex": "#a7a39f"},
+            {"name": "Тёмно-синий", "src900": "img/fabrics/ricca/09-1200.webp", "src450": "img/fabrics/ricca/09-600.webp", "src240": "img/fabrics/ricca/09-160.webp", "hex": "#1d222a"}
           ]
         },
         {

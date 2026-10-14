@@ -129,6 +129,11 @@
     'Угловой · раскладной': 'Corner · sofa bed', 'С поясничной подушкой · на металлической базе': 'With a lumbar cushion · on a metal base',
     'На тонких ножках · велюр': 'On slim legs · velour', 'С высокой спинкой · меланжевое букле': 'With a tall back · mélange bouclé',
     'Округлое · на основании-диске, букле': 'Rounded · on a disc base, bouclé', 'Мягкое основание · низкое изголовье': 'Upholstered base · low headboard',
+    'Угловой · на конусных ножках': 'Corner · on tapered legs', 'Мягкое основание · присборенная обивка': 'Upholstered base · gathered upholstery',
+    'Тонкое изголовье с кантом · на металлических ножках': 'Slim piped headboard · on metal legs', 'Обволакивающее изголовье · цоколь': 'Wraparound headboard · plinth',
+    'Скруглённое изголовье · кожа': 'Rounded headboard · leather', 'Букле · на высоких металлических ножках': 'Bouclé · on tall metal legs',
+    'Модульный · угловой, со столиком': 'Modular · corner, with a side table', 'Кушетка · модуль без спинки': 'Daybed · backless module',
+    'Модульный · скруглённые секции': 'Modular · rounded sections',
   };
   const CAT_LABELS = { 'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла': 'Armchairs', 'Стулья': 'Chairs', 'Столы': 'Tables', 'Наши работы': 'Our works', 'Ткани': 'Fabrics', 'Матрасы ELUNA': 'ELUNA mattresses' };
   const CAT_DESCS = {
@@ -141,7 +146,8 @@
     'букле': 'bouclé', 'велюр': 'velour', 'велюр в рубчик': 'ribbed velour', 'искусственная замша': 'faux suede', 'микровелюр': 'microvelour',
     'микровелюр с муаром': 'microvelour with moiré', 'шенилл': 'chenille',
   };
-  const COLOURS = { 'Серый меланж': 'Grey mélange', 'Графит': 'Graphite', 'Тёмно-зелёный': 'Dark green' };   // цвета коллекции RICCA
+  const COLOURS = { 'Серый меланж': 'Grey mélange', 'Графит': 'Graphite', 'Тёмно-зелёный': 'Dark green', 'Молочный': 'Milk white', 'Серо-бежевый': 'Greige',
+    'Медный меланж': 'Copper mélange', 'Чёрно-бежевая полоса': 'Black and beige stripe', 'Светло-серый меланж': 'Light grey mélange', 'Тёмно-синий': 'Navy' };   // цвета коллекции RICCA
   const sub = (s) => String(s || '').split(', ').map((p) => p.split(' и ').map((w) => WORDS[w] || w).join(' and ')).join(', ');
   const modelTitle = (t) => {
     const m = /^(Диван|Кресло|Кровать) (.+)$/.exec(t || '');
