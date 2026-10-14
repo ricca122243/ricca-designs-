@@ -61,6 +61,17 @@
 */
 (() => {
   'use strict';
+
+  /* ---------- Перевод (английская страница /en): js/lang-en.js задаёт window.RICCA_T — словарь «русская строка → перевод».
+     tr('строка') — обычная строка; tr`строка ${x}` — шаблон: ключ — части шаблона через {}, в переводе {0}, {1}… — подстановки.
+     Нет словаря (русская страница) или ключа — возвращается русский текст как есть ---------- */
+  const T = window.RICCA_T || null;
+  const tr = (s, ...v) => {
+    if (typeof s === 'string') return T && T[s] !== undefined ? T[s] : s;
+    const k = s.join('{}'), x = T && T[k];
+    if (x === undefined) return s.reduce((a, p, i) => a + p + (i < v.length ? v[i] : ''), '');
+    return x.replace(/\{(\d+)\}/g, (m, i) => v[+i]);
+  };
   if (window.RICCA_CART) return;
 
   const WA = '77079550808';            // номер WhatsApp — тот же, что CONFIG.wa в js/site.js
@@ -173,7 +184,7 @@
   window.addEventListener('storage', (e) => { if (e.key === KEY || e.key === null) { items = load(); emit(); } });
 
   /* ---------- Текст заявки ---------- */
-  const plural3 = (n, f) => f[n % 10 === 1 && n % 100 !== 11 ? 0 : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2)];
+  const plural3 = (n, f) => T ? (n === 1 ? tr(f[0]) : tr(f[2])) : f[n % 10 === 1 && n % 100 !== 11 ? 0 : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2)];
   const enc = (t) => encodeURIComponent(t).length;
   const lcFirst = (t) => t.replace(/^([«"(]*)(.)/, (m, q, c) => q + c.toLowerCase());
   // строка позиции: «1. Диван Svira (Свира) — 2 шт. · ткань COCO, светло-серый · размер 260 × 95 × 82 см · комментарий»;
@@ -181,26 +192,26 @@
   function lineOf(x, n, short) {
     const name = `${x.title}${x.reading ? ` (${x.reading})` : ''}`;
     const f = x.fabric;
-    const fab = f ? `ткань ${[f.collection, f.colour || 'цвет не выбран'].filter(Boolean).join(', ')}` : 'ткань — подобрать вместе';
+    const fab = f ? tr`ткань ${[f.collection, f.colour || tr('цвет не выбран')].filter(Boolean).join(', ')}` : tr('ткань — подобрать вместе');
     const parts = [];
     if (x.kind === 'custom' && x.subtitle) parts.push(lcFirst(x.subtitle));
     if (x.kind !== 'fabric') parts.push(fab);
-    if (x.size) parts.push(`размер ${x.size}`);
+    if (x.size) parts.push(tr`размер ${x.size}`);
     const note = x.note.replace(/\s*\n\s*/g, '; ');
     if (note) parts.push(note);
-    const qty = x.kind === 'fabric' ? ' — интересует' : ` — ${x.qty} шт.`;
+    const qty = x.kind === 'fabric' ? tr(' — интересует') : tr` — ${x.qty} шт.`;
     let s = `${n}. ${name}${qty}${parts.length ? ` · ${parts.join(' · ')}` : ''}`;
     // ссылка: длинную (конструктор) при делении на части не шлём — менеджер попросит; каталог и ткани — короткие, остаются
     if (x.link && !(short && x.link.length > 300)) s += `\n${x.link}`;
-    else if (x.link) s += '\n(ссылку на конфигурацию пришлю отдельно)';
+    else if (x.link) s += tr('\n(ссылку на конфигурацию пришлю отдельно)');
     return s;
   }
   function contactOf(o) {
     const rows = [];
     const name = str(o.name, 80), city = str(o.city, 80), comment = txt(o.comment, 300);
-    if (name) rows.push(`Имя: ${name}`);
-    if (city) rows.push(`Город: ${city}`);
-    if (comment) rows.push(`Комментарий: ${comment}`);
+    if (name) rows.push(tr`Имя: ${name}`);
+    if (city) rows.push(tr`Город: ${city}`);
+    if (comment) rows.push(tr`Комментарий: ${comment}`);
     return rows.join('\n');
   }
   // «Итого: 2 предмета мебели и 1 ткань.» — ткани считаем отдельно (у ткани нет количества)
@@ -208,10 +219,10 @@
     const furn = items.filter((x) => x.kind !== 'fabric').reduce((s, x) => s + x.qty, 0);
     const fab = items.filter((x) => x.kind === 'fabric').length;
     const t = [
-      furn ? `${furn} ${plural3(furn, ['предмет', 'предмета', 'предметов'])} мебели` : '',
+      furn ? tr`${furn} ${plural3(furn, ['предмет', 'предмета', 'предметов'])} мебели` : '',
       fab ? `${fab} ${plural3(fab, ['ткань', 'ткани', 'тканей'])}` : ''
-    ].filter(Boolean).join(' и ');
-    return `Итого: ${t}.`;
+    ].filter(Boolean).join(tr(' и '));
+    return tr`Итого: ${t}.`;
   }
   // обрезать t (с «…») так, чтобы ссылка на t + fixed уложилась в URL_MAX; fixed не трогаем
   function fitEnc(t, fixed) {
@@ -223,8 +234,8 @@
   function build(o) {
     o = o || {};
     if (!items.length) return [];
-    const head = 'Здравствуйте! Заявка с сайта RICCA DESIGNS:';
-    const ask = 'Рассчитайте, пожалуйста, стоимость.';
+    const head = tr('Здравствуйте! Заявка с сайта RICCA DESIGNS:');
+    const ask = tr('Рассчитайте, пожалуйста, стоимость.');
     const contact = contactOf(o);
     const bottom = `\n\n${ask}\n\n${[contact, footOf()].filter(Boolean).join('\n')}`;
     const full = `${head}\n\n${items.map((x, i) => lineOf(x, i + 1, false)).join('\n')}${bottom}`;
@@ -236,10 +247,10 @@
     const LIM = URL_MAX - 30;
     const fits = (t) => enc(t) <= LIM;
     const lines = items.map((x, i) => lineOf(x, i + 1, true));
-    const topOf = (k) => (k === 0 ? `${head.replace(/:$/, ' (часть 1 из §):')}\n` : `Продолжение заявки с сайта RICCA DESIGNS (часть ${k + 1} из §):\n`);
+    const topOf = (k) => (k === 0 ? `${head.replace(/:$/, tr(' (часть 1 из §):'))}\n` : tr`Продолжение заявки с сайта RICCA DESIGNS (часть ${k + 1} из §):\n`);
     const tailOf = (rest, k, n) => {
-      const where = n - k > 2 ? `в следующих сообщениях (части ${k + 2}–${n})` : 'в следующем сообщении';
-      return rest > 0 ? `\n\nЕщё ${rest} ${plural3(rest, ['позиция', 'позиции', 'позиций'])} — ${where}.` : `\n\nОкончание — ${where}.`;
+      const where = n - k > 2 ? tr`в следующих сообщениях (части ${k + 2}–${n})` : tr('в следующем сообщении');
+      return rest > 0 ? tr`\n\nЕщё ${rest} ${plural3(rest, ['позиция', 'позиции', 'позиций'])} — ${where}.` : tr`\n\nОкончание — ${where}.`;
     };
     const longTail = (rest) => tailOf(Math.max(rest, 1), 0, 99);   // запас под самую длинную концовку
     const pk = [];   // { body, end } — end: номер строки после части
@@ -267,7 +278,7 @@
   }
   const parts = (o) => build(o);
   function message(o) { const p = build(o); return p[Math.max(0, Math.min(p.length - 1, (o && +o.part) || 0))] || ''; }
-  const waUrl = (o) => `https://wa.me/${WA}?text=${encodeURIComponent(message(o) || 'Здравствуйте! Хочу узнать о мебели RICCA на заказ.')}`;
+  const waUrl = (o) => `https://wa.me/${WA}?text=${encodeURIComponent(message(o) || tr('Здравствуйте! Хочу узнать о мебели RICCA на заказ.'))}`;
 
   window.RICCA_CART = Object.freeze({
     add, update, remove, clear, list, count, onChange, message, parts, waUrl, abs,

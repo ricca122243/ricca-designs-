@@ -13,7 +13,7 @@ DIST=${DIST:-dist}
 OUT=$DIST/RICCA-site
 rm -rf "$OUT" "$DIST/RICCA-site.zip" && mkdir -p "$OUT"
 
-cp "$SRC/index.html" "$OUT/"
+cp "$SRC/index.html" "$SRC/en.html" "$OUT/"   # en.html — английская версия (/en, см. _redirects)
 cp tools/hosting/*.txt "$OUT/"   # инструкция для заказчика: как залить на хостинг
 # Стили — только подключённые из index.html (в css/ лежат и старые файлы, например fonts-eluna.css прежней главы ELUNA)
 css_links=$(grep -ohE 'href="css/[A-Za-z0-9_.-]+\.css"' "$SRC/index.html" | sed -e 's/^href="//' -e 's/"$//' | sort -u)
@@ -137,12 +137,13 @@ cp tools/dist-extra/robots.txt tools/dist-extra/.htaccess tools/dist-extra/_head
 # robots.txt и карта сайта — свои, для домена ricca.design (заменяют общий robots.txt)
 cp tools/ricca-extra/robots.txt tools/ricca-extra/sitemap.xml "$OUT/"
 cp tools/ricca-extra/_headers "$OUT/"   # свои правила кэша вместо общих ELUNA (там стили хранились 7 дней)
+cp tools/ricca-extra/_redirects "$OUT/"  # /en → en.html
 # Файл подтверждения Google Search Console — не удалять, иначе подтверждение слетит
 cp tools/ricca-extra/google731f803f39486a1a.html "$OUT/"
 
 # Проверка: все локальные ссылки существуют
 missing=0
-for ref in $( (sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$OUT"/index.html; cat "$OUT"/css/*.css) | grep -ohE '(img|video|fonts|css|js|vendor)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css|js)' | sed 's#^\.\./##' | sort -u); do
+for ref in $( (sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$OUT"/index.html "$OUT"/en.html; cat "$OUT"/css/*.css) | grep -ohE '(img|video|fonts|css|js|vendor)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css|js)' | sed 's#^\.\./##' | sort -u); do
   [ -f "$OUT/$ref" ] || { echo "нет файла: $ref"; missing=1; }
 done
 if [ "$cfg_page" -eq 1 ]; then
@@ -161,7 +162,7 @@ extras=$(find "$OUT/img/fabrics" -type f \( -name 'hero-*' -o -name 'inuse-*' \)
 # Метка версии ?v=… у стилей и скриптов: меняется вместе с их содержимым, поэтому браузер, сохранивший прежние
 # файлы, после обновления сайта точно возьмёт новые (иначе — новая страница со старыми стилями)
 ver=$(cat "$OUT"/css/*.css "$OUT"/js/*.js "$OUT"/js/cfg/*.js 2>/dev/null | md5sum | cut -c1-10)
-for page in "$OUT"/index.html "$OUT"/configurator.html; do
+for page in "$OUT"/index.html "$OUT"/en.html "$OUT"/configurator.html; do
   [ -f "$page" ] || continue
   sed -i -E "s#((href|src)=\"(css|js)/[A-Za-z0-9_./-]+\.(css|js))\"#\1?v=$ver\"#g" "$page"
 done

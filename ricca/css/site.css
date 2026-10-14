@@ -130,6 +130,14 @@ textarea.fld { min-height: 64px; resize: vertical; }
 .hdr__nav a { position: relative; display: inline-flex; align-items: center; min-height: 44px; font: 500 11px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
 .hdr__nav a::after { content: ''; position: absolute; left: 0; right: .2em; bottom: 12px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform 500ms var(--ease); }
 @media (hover: hover) { .hdr__nav a:hover::after { transform: scaleX(1); } }
+/* переключатель языка RU / EN — в шапке последним пунктом, в меню телефона — строкой */
+.hdr__lang { padding-left: clamp(16px, 2vw, 28px); border-left: 1px solid var(--line); }
+.menu__lang { margin-top: 12px; font: 500 12px/1 var(--sans) !important; letter-spacing: .24em; text-transform: uppercase; }
+/* английская страница: «No. 01» вместо «№ 01»; заголовок обложки длиннее («Upholstered furniture») — кегль меньше */
+html[lang="en"] .sec h2.title[id$="-title"]::before { content: "No. " counter(sec, decimal-leading-zero); content: "No. " counter(sec, decimal-leading-zero) / ""; }
+html[lang="en"] .hero { --hfs: clamp(36px, 9.3vw, 150px); }
+html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 1.3); }   /* кегль меньше, диван тот же — строки дальше друг от друга */
+@media (max-width: 899px) { html[lang="en"] .hero { --hfs: clamp(30px, 9.1vw, 120px); } html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 3.4); } }
 .hdr__tools { display: flex; align-items: center; margin-right: -10px; }
 .hdr__count { position: absolute; top: 7px; right: 5px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 8px; background: currentColor; font: 600 9px/15px var(--sans); text-align: center; }
 .hdr .hdr__count { background: var(--ink); color: var(--paper); }
