@@ -1578,8 +1578,8 @@ window.RICCA_CATALOG = [
     subtitle: "Модульный · низкий, с шезлонгом",
     photos: [
       {"src": "img/catalog/p-sofa-33.webp", "src600": "img/catalog/p-sofa-33-600.webp", "alt": "Низкий модульный диван с шезлонгом в сером меланже — на светлом фоне", "studio": true, "box": [0.74, 0.391], "w": 1200, "h": 900},
-      {"src": "img/catalog/p-sofa-33-2.webp", "src600": "img/catalog/p-sofa-33-2-600.webp", "alt": "Диван Grava с другой стороны — на светлом фоне", "studio": true, "box": [0.384, 0.76], "w": 1200, "h": 900},
-      {"src": "img/catalog/p-sofa-33-2-2.webp", "src600": "img/catalog/p-sofa-33-2-2-600.webp", "alt": "Диван Grava, шезлонг справа — на светлом фоне", "studio": true, "box": [0.74, 0.288], "w": 1200, "h": 900}
+      {"src": "img/catalog/p-sofa-33-2.webp", "src600": "img/catalog/p-sofa-33-2-600.webp", "alt": "Диван Grava с другой стороны — на светлом фоне", "studio": true, "box": [0.74, 0.341], "w": 1200, "h": 900},
+      {"src": "img/catalog/p-sofa-33-2-2.webp", "src600": "img/catalog/p-sofa-33-2-2-600.webp", "alt": "Диван Grava, шезлонг справа — на светлом фоне", "studio": true, "box": [0.74, 0.357], "w": 1200, "h": 900}
     ],
     description: "Низкий модульный диван с широким шезлонгом и секцией-кушеткой: мягкие подушки спинки в тон, кант по краям. Показан в сером меланже.",
     options: ["Модульный", "Шезлонг слева или справа", "Ткань или кожа"],
