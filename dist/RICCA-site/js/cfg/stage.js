@@ -9,7 +9,14 @@ import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { onMaterialUpdate, setEnvMap } from './materials.js';
 
-const BG = '#F3F2EE';
+const BG = '#F2F3F5';
+/* студийный свет «как на фото интерьера»: окружение и заполнение слабее, ключевой — сильнее и сбоку-сверху:
+   верх подушек — цвет образца, фронты и бока на 15–25 % темнее — объём читается, а не «плоская заливка» */
+/* ключевой — большое мягкое «окно» слева-сверху (чуть тёплый), заполнение со стороны камеры холоднее и слабее,
+   контровой справа-сзади отделяет силуэт от светлого фона (на фото интерьеров — свет из окна за диваном) */
+const LIGHT = { env: 0.42, hemi: 0.3, key: 1.4, fill: 0.34, rim: 0.4, exposure: 0.96, kx: -1.2, ky: 1.9, kz: 1.5, keyColor: 0xfff6ec, fillColor: 0xeef2f8, rimColor: 0xffffff };   // холодный светлый фон сайта (--paper-2)
+/* ключевой с высоты ~45°: фронты и бока получают 60–75 % света верха (на фото ателье фронт лишь чуть темнее верха,
+   а не «чёрный»), заполнение со стороны камеры 0,34 — тень в складках остаётся за AO и контактной тенью */
 const FOV = 30;
 const AZ = THREE.MathUtils.degToRad(35), EL = THREE.MathUtils.degToRad(18), EL_PLAN = THREE.MathUtils.degToRad(25);
 /* шов 1,6 мм рисуем только когда он не тоньше 1,2 px (иначе — «пунктир» из-за алиасинга) */
@@ -56,7 +63,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   renderer.setPixelRatio(dprFull);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
-  renderer.toneMappingExposure = 0.9; // подобрано по ΔE2000 образцов (§8.3): среднее 0,7
+  renderer.toneMappingExposure = LIGHT.exposure; // верх подушки ≈ цвет образца (ΔL* ≤ 2, SP/real3d/lum.mjs)
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.VSMShadowMap;
   renderer.shadowMap.autoUpdate = false;   // тени пересчитываем только в покое: при облёте камерой они не меняются (renderFrame)
@@ -70,24 +77,27 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   const pmrem = new THREE.PMREMGenerator(renderer);
   const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
   scene.environment = envRT.texture;
-  scene.environmentIntensity = 0.55;
+  scene.environmentIntensity = LIGHT.env;
   pmrem.dispose();
   setEnvMap(envRT.texture);                 // металлу — своя сила отражений (materials.js)
 
-  const hemi = new THREE.HemisphereLight(0xfffaf2, 0xe8e4dc, 0.25);
+  const hemi = new THREE.HemisphereLight(0xffffff, 0xc8ccd2, LIGHT.hemi);
   scene.add(hemi);
-  const key = new THREE.DirectionalLight(0xffffff, 1.1);
+  const key = new THREE.DirectionalLight(LIGHT.keyColor, LIGHT.key);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   key.shadow.radius = 12; key.shadow.blurSamples = 24; key.shadow.bias = -0.0005; key.shadow.normalBias = 0.01;
   scene.add(key); scene.add(key.target);
   /* мягкий заполняющий свет со стороны камеры (без тени): бок, повёрнутый к зрителю, не проваливается в плоскую тень */
-  const fill = new THREE.DirectionalLight(0xffffff, 0.22);
+  const fill = new THREE.DirectionalLight(LIGHT.fillColor, LIGHT.fill);
   scene.add(fill); scene.add(fill.target);
+  /* контровой: сзади-справа, чуть сверху — светлая кромка на спинке и подлокотнике, без тени */
+  const rim = new THREE.DirectionalLight(LIGHT.rimColor, LIGHT.rim);
+  scene.add(rim); scene.add(rim.target);
 
   /* студия: пол того же цвета, что фон (тень — ShadowMaterial), контактная тень */
   const studio = new THREE.Group(); studio.name = 'studio';
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ color: 0x3a342c, opacity: 0.11, depthWrite: false }));
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ color: 0x2f3338, opacity: 0.11, depthWrite: false }));
   floor.receiveShadow = true; floor.renderOrder = 1; studio.add(floor);
   scene.add(studio);
   const contact = makeContactShadow(renderer);
@@ -107,7 +117,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   controls.zoomSpeed = 0.8; controls.rotateSpeed = 0.7;
 
   /* пост: RenderPass → GTAO → Output */
-  const aoMode = ao === false ? 'off' : 'idle';   // AO — в покое (и на компьютере): при вращении кадр лёгкий, после — полный
+  /* AO (GTAO + шумоподавление) на телефоне — самое тяжёлое: один кадр после каждого поворота «подвисал»; там его нет —
+     объём дают контактная тень и мягкий свет. Компьютер — AO в покое: при вращении кадр лёгкий, после — полный */
+  const aoMode = ao === false || phone ? 'off' : 'idle';
   let composer = null, gtao = null, renderPass = null;
   function ensureComposer() {
     if (composer || aoMode === 'off') return composer;
@@ -120,8 +132,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     gtao = new GTAOPass(scene, camera, size.x * pr, size.y * pr);
     gtao.output = GTAOPass.OUTPUT.Default;
     /* мягкое AO: малый радиус и сильнее шумоподавление — без «дымки» под ножками и шума в щели спинка/сиденье */
-    gtao.blendIntensity = 0.85;
-    gtao.updateGtaoMaterial({ radius: 0.15, distanceExponent: 2, thickness: 0.6, scale: 0.9, samples: phone ? 12 : 24, distanceFallOff: 0.6 });
+    gtao.blendIntensity = 0.9;
+    gtao.updateGtaoMaterial({ radius: 0.18, distanceExponent: 2, thickness: 0.7, scale: 1.0, samples: phone ? 12 : 24, distanceFallOff: 0.6 });
     gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 10, rings: 4, samples: phone ? 12 : 24 });
     composer.addPass(gtao);
     composer.addPass(new OutputPass());
@@ -150,6 +162,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   let view = '3d';
   let object = null, box = new THREE.Box3(), size = new THREE.Vector3(1, 1, 1), center = new THREE.Vector3(), lastRadius = 0;
   let anim = null, raf = 0, idleT = 0, interacting = false, disposed = false, studioOn = true;
+  let shadowDirty = true;   // тени пересчитываем только когда изменилась сама сцена (не камера и не ткань)
   let W = 1, H = 1;
 
   function resize() {
@@ -228,7 +241,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     if (studioOn && contact.dirty) contact.update(scene, root);
     const still = !moving && !interacting;
     const useAO = aoMode === 'always' || (aoMode === 'idle' && still);
-    if (still) renderer.shadowMap.needsUpdate = true;
+    if (still && shadowDirty) { renderer.shadowMap.needsUpdate = true; shadowDirty = false; }
     const pr = still || useAO ? dprFull : dprMove;
     if (renderer.getPixelRatio() !== pr) renderer.setPixelRatio(pr);
     if (useAO && ensureComposer()) {
@@ -255,7 +268,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     box.getSize(size); box.getCenter(center);
     fitLight();
     contact.fit(box); contact.dirty = true;
-    renderer.shadowMap.needsUpdate = true;
+    shadowDirty = true;
     const r = radius();
     if (!reframe) { /* комната: камерой управляет room.js */ }
     else if (!lastRadius || Math.abs(r - lastRadius) / lastRadius > 0.1) { const first = !lastRadius; lastRadius = r; frame({ animate: !first && !reduced() }); }
@@ -265,10 +278,12 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   function fitLight() {
     const r = Math.max(1, radius() * 1.4);
     /* ключевой свет: высоко, спереди-слева — короткая мягкая тень под изделием, без «плиты» сбоку */
-    key.position.set(center.x - r * 0.45, r * 3.6, center.z + r * 0.9);
+    key.position.set(center.x + r * LIGHT.kx, r * LIGHT.ky, center.z + r * LIGHT.kz);
     key.target.position.copy(center);
     fill.position.copy(center).add(dirAt(AZ + THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(25)).multiplyScalar(r * 3));
     fill.target.position.copy(center);
+    rim.position.copy(center).add(dirAt(AZ + Math.PI - THREE.MathUtils.degToRad(40), THREE.MathUtils.degToRad(32)).multiplyScalar(r * 3));
+    rim.target.position.copy(center);
     const cam = key.shadow.camera;
     cam.left = -r; cam.right = r; cam.top = r; cam.bottom = -r; cam.near = 0.1; cam.far = r * 6;
     cam.updateProjectionMatrix();
@@ -445,7 +460,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       }
     }
     overlay.innerHTML = `<g fill="none" stroke="#111" stroke-width="0.8" stroke-linecap="round">${L.join('')}</g>` +
-      `<g fill="#111" stroke="#F3F2EE" stroke-width="3" paint-order="stroke" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="500" text-anchor="middle" dominant-baseline="middle" style="font-variant-numeric: tabular-nums; letter-spacing: .02em">${T.join('')}</g>`;
+      `<g fill="#111" stroke="${BG}" stroke-width="3" paint-order="stroke" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="500" text-anchor="middle" dominant-baseline="middle" style="font-variant-numeric: tabular-nums; letter-spacing: .02em">${T.join('')}</g>`;
   }
 
   /* ---------- студия ---------- */
@@ -519,7 +534,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     get view() { return view; },
     get box() { return box.clone(); },
     supportsPhotoreal: false,
-    setObject, setView, frame, setDims, setStudio, requestRender, snapshot, resize,
+    setObject, setView, frame, setDims, setStudio, snapshot, resize,
+    /* снаружи (комната двигает мебель): сцена могла измениться — тени пересчитать; markShadows=false — только перерисовать */
+    requestRender: (markShadows = true) => { if (markShadows) shadowDirty = true; requestRender(); },
     cancelAnim() { anim = null; },
     /* крупный план точки (например, подушки сиденья — видна фактура ткани) с того же направления */
     closeUp(target, dist = 0.9, { animate = true } = {}) {
@@ -560,7 +577,7 @@ function makeContactShadow(renderer) {
   const rtB = new THREE.WebGLRenderTarget(RES, RES); rtB.texture.generateMipmaps = false;
   const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ map: rt.texture, transparent: true, opacity: OPACITY, depthWrite: false, toneMapped: false }));
   plane.renderOrder = 2; plane.position.y = 0.001; plane.scale.y = -1; plane.name = 'contact-shadow';
-  plane.material.color.set(0x2a251f);
+  plane.material.color.set(0x24272c);
   const cam = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0, HEIGHT);
   cam.rotation.x = Math.PI / 2;
   const depthMat = new THREE.MeshDepthMaterial();

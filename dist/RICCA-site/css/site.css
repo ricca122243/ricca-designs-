@@ -147,27 +147,36 @@ textarea.fld { min-height: 64px; resize: vertical; }
 }
 
 /* ==========================================================================
-   1. ВХОД — видео на весь экран
+   1. ВХОД — реальные работы ателье на весь экран (кадры img/hero, смена — js/site.js)
    ========================================================================== */
-.hero { position: relative; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden; background: var(--ink); color: #fff; isolation: isolate; }
-.hero__media { position: absolute; inset: 0; z-index: -2; }
-.hero__media picture, .hero__poster, .hero__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.hero__poster, .hero__video { transform: scale(1.02); }   /* у части кадров ролика ателье тёмная строка по краю */
-.hero__video { opacity: 0; transition: opacity 700ms var(--ease); }
-.hero__video.is-on { opacity: 1; }
-/* тень — только у краёв, чтобы белая шапка и строка читались на светлых кадрах (≥ 4,5 : 1) */
+.hero { position: relative; height: 100vh; height: 100svh; min-height: 560px; max-height: 1100px; overflow: hidden; background: var(--ink); color: #fff; isolation: isolate; }
+.hero__slides { position: absolute; inset: 0; z-index: -2; margin: 0; padding: 0; list-style: none; }
+.hero__slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1400ms var(--ease-io); }
+.hero__slide.is-on { opacity: 1; }
+.hero__slide picture { display: contents; }
+.hero__slide img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform 7000ms linear; }
+.hero__slide.is-on img { transform: scale(1); }   /* тихое движение кадра, пока он на экране */
+/* тень — у краёв, чтобы белая шапка, заголовок и кнопки читались на светлых фото (≥ 4,5 : 1) */
 .hero__shade { position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
-    linear-gradient(to bottom, rgba(0,0,0,.52) 0, rgba(0,0,0,.48) 50px, rgba(0,0,0,.2) 120px, rgba(0,0,0,0) 210px),
-    linear-gradient(to top, rgba(0,0,0,.55) 0, rgba(0,0,0,.5) 70px, rgba(0,0,0,.2) 160px, rgba(0,0,0,0) 280px); }
+    linear-gradient(to bottom, rgba(0,0,0,.42) 0, rgba(0,0,0,.3) 70px, rgba(0,0,0,0) 220px),
+    linear-gradient(to top, rgba(0,0,0,.66) 0, rgba(0,0,0,.52) 160px, rgba(0,0,0,.22) 340px, rgba(0,0,0,0) 520px); }
 .hdr.is-over .logo, .hdr.is-over .hdr__nav a { text-shadow: 0 0 14px rgba(0,0,0,.35); }
 .hdr.is-over .logo__mono { filter: drop-shadow(0 0 10px rgba(0,0,0,.3)); }
-.hero__foot { position: absolute; left: 0; right: 0; bottom: max(32px, env(safe-area-inset-bottom)); margin-inline: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
-.hero__line { font: 500 11px/1.5 var(--sans); letter-spacing: .3em; text-transform: uppercase; text-shadow: 0 0 18px rgba(0,0,0,.25); padding-bottom: 14px; white-space: nowrap; }
-.hero__cue { position: absolute; left: 50%; bottom: -8px; width: 44px; height: 72px; margin-left: -22px; display: grid; justify-items: center; align-items: end; }
-.hero__cue-line { position: relative; width: 1px; height: 52px; background: rgba(255,255,255,.35); overflow: hidden; }
-.hero__cue-line::after { content: ''; position: absolute; left: 0; top: 0; width: 1px; height: 18px; background: #fff; animation: cue 2.4s var(--ease-io) infinite; }
-@keyframes cue { 0% { transform: translateY(-18px); } 70%, 100% { transform: translateY(52px); } }
+.hero__foot { position: absolute; left: 0; right: 0; bottom: max(40px, env(safe-area-inset-bottom)); margin-inline: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
+.hero__text { display: grid; gap: 18px; justify-items: start; max-width: 640px; text-shadow: 0 1px 24px rgba(0,0,0,.25); }
+.hero__eye { font: 500 11px/1.5 var(--sans); letter-spacing: .3em; text-transform: uppercase; opacity: .92; }
+.hero__title { font: 300 clamp(44px, 6vw, 84px)/1.02 var(--serif); letter-spacing: -.005em; text-wrap: balance; }
+.hero__sub { max-width: 34ch; font: 400 clamp(14px, 1.1vw, 16px)/1.6 var(--sans); letter-spacing: .01em; opacity: .92; text-wrap: pretty; }
+.hero__btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+.btn--white { background: #fff; color: var(--ink); border-color: #fff; }
+.btn--glass { background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.7); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+@media (hover: hover) { .btn--white:hover { background: var(--paper-2); border-color: var(--paper-2); } .btn--glass:hover { background: rgba(255,255,255,.18); border-color: #fff; } }
+/* подпись кадра: номер и название работы — ведёт на неё (#work-<id>) */
+.hero__cap { display: grid; gap: 6px; justify-items: end; text-align: right; min-height: 44px; align-content: end; color: #fff; }
+.hero__cap-n { font: 500 10px/1.5 var(--sans); letter-spacing: .24em; text-transform: uppercase; opacity: .75; font-variant-numeric: tabular-nums; }
+.hero__cap-t { font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,.5); padding-bottom: 3px; transition: border-color 300ms var(--ease); }
+@media (hover: hover) { .hero__cap:hover .hero__cap-t { border-color: #fff; } }
 .vbtn { display: inline-grid; place-items: center; width: 44px; height: 44px; color: #fff; position: relative; }
 .vbtn::before { content: ''; position: absolute; inset: 8px; border: 1px solid rgba(255,255,255,.55); border-radius: 50%; background: rgba(0, 0, 0, .45); transition: border-color 300ms; }
 .vbtn .ico { width: 12px; height: 12px; stroke-width: 1.5; }
@@ -175,27 +184,17 @@ textarea.fld { min-height: 64px; resize: vertical; }
 .vbtn .ico--play, .vbtn[aria-pressed="true"] .ico--pause { display: none; }
 .vbtn[aria-pressed="true"] .ico--play { display: block; }
 @media (hover: hover) { .vbtn:hover::before { border-color: #fff; } }
-.hero__toggle { flex: none; margin-right: -10px; margin-bottom: 2px; }
-@media (max-width: 599px) {
-  .hero__foot { gap: 12px; }
-  .hero__line { letter-spacing: .26em; }
-  .hero__cue { display: none; }   /* на телефоне строка и пауза уже занимают низ кадра — линия резала мебель */
+@media (max-width: 767px) {
+  .hero { max-height: none; }
+  .hero__foot { flex-direction: column; align-items: stretch; gap: 22px; bottom: max(28px, env(safe-area-inset-bottom)); }
+  .hero__text { gap: 14px; }
+  .hero__title { font-size: clamp(40px, 12vw, 52px); }
+  .hero__sub { font-size: 14px; max-width: 30ch; }
+  .hero__btns { width: 100%; }
+  .hero__btns .btn { flex: 1 1 0; padding-inline: 16px; }
+  .hero__cap { justify-items: start; text-align: left; min-height: 0; }
 }
-@media (max-width: 359px) { .hero__line { font-size: 10px; letter-spacing: .2em; } }
-/* Компьютер (горизонтальный экран): свой ролик ателье — 478 × 850, на 16 : 9 во всю ширину он мылится. Белый первый экран в две
-   колонки: слева одна строка антиквой, справа ролик в прямоугольной рамке 9 : 16 высотой в экран под шапкой; низ строки — по низу рамки.
-   Шапка над входом — обычная (чёрный текст на белом), без прозрачного режима. Тот же media, что у источника ролика в js/site.js */
-@media (min-width: 900px) and (min-aspect-ratio: 4/5) {
-  .hero { --hb: clamp(24px, 3.4vh, 40px); --fh: min(calc(100svh - var(--hdr) - var(--hb) - 16px), 1000px); background: var(--paper); color: var(--ink); }
-  .hero__media { inset: auto; right: max(var(--pad), (100% - 1440px) / 2); bottom: var(--hb); width: calc(var(--fh) * 9 / 16); height: var(--fh); background: var(--paper-2); overflow: hidden; }
-  .hero__shade, .hero__cue { display: none; }
-  .hero__foot { bottom: var(--hb); align-items: flex-end; }
-  .hero__line { max-width: 11em; padding-bottom: 0; white-space: normal; text-shadow: none; font: 300 clamp(32px, 3vw, 44px)/1.12 var(--serif); letter-spacing: .005em; text-transform: none; color: var(--ink); text-wrap: balance; }
-  .hero__toggle { position: absolute; right: 4px; bottom: 4px; margin: 0; }
-  .hdr.is-over { background: var(--paper); border-color: transparent; color: var(--ink); }
-  .hdr.is-over .logo, .hdr.is-over .hdr__nav a { text-shadow: none; }
-  .hdr.is-over .logo__mono { filter: none; }
-  .hdr.is-over .hdr__count { background: var(--ink); color: var(--paper); }
+@media (max-width: 359px) { .hero__title { font-size: 36px; } }
 }
 
 /* ==========================================================================
@@ -241,12 +240,7 @@ textarea.fld { min-height: 64px; resize: vertical; }
   background: transparent; border: 1px solid var(--line); color: var(--ink); text-decoration: none; transition: border-color 600ms var(--ease); }
 .news:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .news__sky { position: relative; align-self: stretch; min-height: var(--sky, 128px); background: #070707; overflow: hidden; }
-.news__glow, .news__moon { position: absolute; left: 50%; top: 50%; width: 84px; height: 84px; margin: -42px 0 0 -42px; border-radius: 50%; }
-.news__glow { box-shadow: 0 0 26px 4px rgba(232, 236, 242, .16); animation: nw-glow 12s ease-in-out infinite alternate; transition: box-shadow 600ms var(--ease); }
-.news__moon { overflow: hidden; animation: nw-sway 40s ease-in-out infinite alternate; }
-.news__moon img { display: block; width: 100%; height: 100%; transform-origin: 100% 50%; transform: scale(1.15); }   /* затемнённый левый край файла уходит за круг */
-.news__moon::after { content: ''; position: absolute; inset: -1px; border-radius: 50%; box-shadow: inset 30px 0 18px -2px rgba(7, 7, 7, .92);
-  animation: nw-phase 20s ease-in-out infinite alternate, nw-unsway 40s ease-in-out infinite alternate; }
+.news__sky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; }
 .news__txt { display: grid; justify-items: start; gap: 6px; padding: 16px 24px; min-width: 0; }
 .news__eye { font: 500 10px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
 .news__line { font: 400 13px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .01em; text-wrap: balance; }
@@ -257,10 +251,8 @@ textarea.fld { min-height: 64px; resize: vertical; }
   .news:hover .news__glow { box-shadow: 0 0 30px 7px rgba(232, 236, 242, .26); }
   .news:hover .news__go .ico { transform: translate(2px, -2px); }
 }
-@keyframes nw-sway { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
 @keyframes nw-unsway { from { transform: rotate(6deg); } to { transform: rotate(-6deg); } }   /* свет фазы не качается вместе с диском */
 @keyframes nw-phase { to { box-shadow: inset 14px 0 16px -2px rgba(7, 7, 7, .78); } }
-@keyframes nw-glow { from { opacity: .4; } to { opacity: 1; } }
 @keyframes nw-phase-s { to { box-shadow: inset 11px 0 13px -2px rgba(7, 7, 7, .78); } }
 @media (max-width: 599px) {
   .news { width: 100%; --sky: 104px; }
@@ -302,6 +294,11 @@ textarea.fld { min-height: 64px; resize: vertical; }
 .draw .draw__ln { fill: none; }
 /* «Ткани»: веер образцов в настоящих цветах коллекций; при наведении веер чуть раскрывается */
 .draw .draw__sw { stroke-width: 1; transform-box: view-box; transform-origin: 200px 386px; transform: rotate(var(--a, 0deg)); transition: transform 900ms var(--ease); }
+/* «Ткани»: мозаика настоящих тканей (официальные фото коллекций, js/site.js) — 4 × 2 в широкой плитке 2 : 1, 2 × 2 в квадратной и 4 : 5 */
+.tile__img--mosaic { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 2px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+.tile__img--mosaic img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease); }
+.tile__img--mosaic img:nth-child(n+9) { display: none; }
+@media (max-width: 1099px) { .tile__img--mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tile__img--mosaic img:nth-child(n+5) { display: none; } }
 .tile__img picture { display: contents; }
 .tile__img--photo { background: var(--paper-2); }   /* обложка — реальная работа ателье (js/works-data.js), до загрузки — светлая подложка */
 .tile__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease); }
@@ -1048,11 +1045,11 @@ dialog .toast { position: fixed; }
 @media (max-width: 599px) { .curtain__lock { gap: 16px; } .curtain__lock .logo__mono { width: 50px; } .curtain__lock .logo__rule { height: 32px; } .curtain__lock .logo__name { font-size: 20px; } .curtain__lock .logo__sub { font-size: 7.5px; } }
 @keyframes curtain { from { transform: translateY(0); } to { transform: translateY(-101%); } }
 @keyframes cword { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.intro .hero__media { animation: heroin 1000ms 850ms var(--ease) both; }
+.intro .hero__slides { animation: heroin 1000ms 850ms var(--ease) both; }
 @keyframes heroin { from { transform: scale(1.06); } to { transform: none; } }
 .intro .hdr__row { animation: up 400ms 1150ms var(--ease) both; }
-.intro .hero__line { animation: up 400ms 1200ms var(--ease) both; }
-.intro .hero__cue, .intro .hero__toggle { animation: fade 300ms 1300ms var(--ease) both; }
+.intro .hero__text { animation: up 500ms 1200ms var(--ease) both; }
+.intro .hero__cap { animation: fade 300ms 1400ms var(--ease) both; }
 @keyframes up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 

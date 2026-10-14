@@ -94,7 +94,12 @@ function exportable(group, maxSize) {
     return nm;
   };
   const root = group.clone(true);                 // те же геометрии, свои Object3D
-  root.traverse((o) => { if (o.isMesh) o.material = Array.isArray(o.material) ? o.material.map(convMat) : convMat(o.material); });
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    o.material = Array.isArray(o.material) ? o.material.map(convMat) : convMat(o.material);
+    /* атрибут швов (шейдер конструктора) в AR не нужен — без него GLB легче */
+    if (o.geometry && o.geometry.attributes.seam) { const g = o.geometry.clone(); g.deleteAttribute('seam'); o.geometry = g; made.push(g); }
+  });
   root.updateMatrixWorld(true);
   return { root, dispose: () => made.forEach((x) => x.dispose && x.dispose()) };
 }

@@ -7,7 +7,9 @@ ricca/content/instagram/*.jpg (+ MANIFEST.json), пишет:
   ricca/img/works/<shortcode>-<N>-800.webp   — длинная сторона 800 (меньше — как есть), q86
   ricca/js/works-data.js                      — window.RICCA_WORKS (фото: src, src800, w, h — размер src, w800/h800 — размер src800),
                                                 window.RICCA_WORKS_STRIP (лента главной: [id, индекс фото])
-Фото — как есть: только уменьшение (без перекраски и правок). Метаданные (EXIF/GPS/XMP/ICC) не пишутся.
+Фото проявляются под сайт (tools/media-v3/photo_grade.py): баланс белого по светлым нейтральным участкам, экспозиция, мягкий
+контраст, резкость после уменьшения — как при проявке у фотографа; мебель, её цвет и форма не меняются, ничего не дорисовывается.
+Метаданные (EXIF/GPS/XMP/ICC) не пишутся.
 Повторный запуск безопасен: готовые файлы новее исходника не перекодируются (--force — перекодировать всё),
 файлы img/works/*.webp, которых больше нет в выборке, удаляются.
 
@@ -19,6 +21,9 @@ import os
 import sys
 
 from PIL import Image, ImageCms, ImageOps
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from photo_grade import grade, resize_sharp  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 SEL = os.path.join(ROOT, 'tools', 'media-v3', 'works-selection.json')
@@ -53,7 +58,10 @@ def to_srgb(im):
 
 
 def fit(w, h, long_side):
-    k = min(1.0, long_side / max(w, h))
+    """Размер под длинную сторону. Мелкие кадры (обложки видео, < 1000 px) для -1600 увеличиваем до 1200, не больше."""
+    k = long_side / max(w, h)
+    if k > 1:
+        k = min(k, 1200 / max(w, h)) if max(w, h) < 1000 else 1.0
     return max(1, round(w * k)), max(1, round(h * k))
 
 
@@ -92,9 +100,9 @@ def main():
                 keep.add(name)
                 if FORCE or not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
                     if im is None:
-                        im = to_srgb(ImageOps.exif_transpose(Image.open(src)))
+                        im = grade(to_srgb(ImageOps.exif_transpose(Image.open(src))))
                     size = fit(im.width, im.height, long_side)
-                    out = im if size == im.size else im.resize(size, Image.LANCZOS)
+                    out = resize_sharp(im, size)
                     # без exif / icc / xmp: Pillow пишет в WebP только то, что передано явно
                     out.save(dst, 'WEBP', quality=q, method=6)
                 with Image.open(dst) as chk:

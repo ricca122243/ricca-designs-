@@ -125,7 +125,7 @@ export const PRESETS = {
   pouf: [{ label: 'Ø 45', params: { form: 'round', w: 0.45, d: 0.45 } }, { label: 'Ø 55', params: { form: 'round', w: 0.55, d: 0.55 } }, { label: 'Банкетка 140', params: { form: 'bench', w: 1.40, d: 0.45 } }],
 };
 
-const BSINK = 0.03; // подушки спинки утоплены в сиденье на 3 см
+const BSINK = 0.05; // подушки спинки утоплены в сиденье на 5 см (лежат на подушке сиденья, без щели под ними)
 const SOFA_FAMILY = new Set(['sofa', 'corner', 'ushape', 'modular']);
 const bool = (v) => v === true || v === 'true' || v === 1 || v === '1';
 
@@ -569,12 +569,15 @@ function partsBed(p) {
   /* для вида (decor: не в габарите, чертеже и списке): одеяло и две подушки у изголовья */
   {
     const mx0 = fx0 + p.frameT + 0.004, mx1 = fx1 - p.frameT - 0.004, mz1 = L - p.frameT - 0.004, mw = mx1 - mx0, ml = mz1 - hbT;
-    add(box('duvet', 'decor', 'decor', mx0 - 0.01, mx1 + 0.01, mTop - 0.004, mTop + 0.06, mz1 - ml * 0.62, mz1 + 0.01, { r: 0.03, crown: 0.02, decor: true, decorKind: 'duvet' }));
+    /* покрывало: толстое, со складками, у изголовья — отворот-валик (как на фото кроватей ателье) */
+    const dz0 = mz1 - ml * 0.6;
+    add(box('duvet', 'decor', 'decor', mx0 - 0.015, mx1 + 0.015, mTop - 0.004, mTop + 0.085, dz0, mz1 + 0.015, { r: 0.04, crown: 0.025, decor: true, decorKind: 'duvet' }));
+    add(box('duvet-fold', 'decor', 'decor', mx0 - 0.02, mx1 + 0.02, mTop + 0.03, mTop + 0.145, dz0 - 0.02, dz0 + 0.17, { r: 0.05, decor: true, decorKind: 'duvet', roll: true }));
     const pw = Math.min(0.7, mw / 2 - 0.04), pz0 = hbT + 0.04;
     for (const [i, cx] of [[1, (mx0 + mx1) / 2 - mw / 4], [2, (mx0 + mx1) / 2 + mw / 4]]) {
       if (mw < 1.2 && i === 2) break;
       const x = mw < 1.2 ? (mx0 + mx1) / 2 : cx;
-      add({ ...box(`pillow-${i}`, 'decor', 'decor', x - pw / 2, x + pw / 2, mTop, mTop + 0.14, pz0, pz0 + 0.42, { r: 0.06, crown: 0.05, decor: true, decorKind: 'pillow' }) });
+      add({ ...box(`pillow-${i}`, 'decor', 'decor', x - pw / 2, x + pw / 2, mTop, mTop + 0.19, pz0, pz0 + 0.46, { r: 0.08, crown: 0.05, decor: true, decorKind: 'pillow' }) });
     }
   }
   if (p.base === 'plinth') add(box('plinth', 'plinth', 'fabric', fx0 + 0.05, fx1 - 0.05, 0, p.legH, hbT + 0.04, L - 0.05, { r: 0.01 }));

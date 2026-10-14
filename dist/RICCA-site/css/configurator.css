@@ -21,7 +21,7 @@
   /* свои */
   --on-noir: #F5F6F8;
   --on-noir-2: #A6A9AF;
-  --studio: #F3F2EE;                         /* фон окна 3D = фон студии в stage.js */
+  --studio: #F2F3F5;                         /* фон окна 3D = фон студии в stage.js (холодный, как --paper-2) */
   --pad: clamp(20px, 5.2vw, 80px);
   --gap: clamp(32px, 4vw, 72px);
   --vp-h: calc(100vh - var(--hdr) - 32px);

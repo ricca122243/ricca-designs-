@@ -571,7 +571,7 @@ function applyFabric() {
       });
     }
     mats = { ...mats, fabric: nf };
-    if (state.mode === 'model') stage.requestRender();
+    if (state.mode === 'model') stage.requestRender(false);   // сменилась только ткань: тени те же
   } catch (e) { console.error('fabric', e); rebuild(); }
 }
 function dimsForView(view) {

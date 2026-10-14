@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Первый экран сайта — реальные работы ателье (Instagram @ricca.designs, ricca/content/instagram/, в git не входит).
 Для каждого кадра из HERO: ricca/img/hero/<shortcode>-<N>-l.webp (ландшафт 16 : 10 для компьютера, ширина до 1920)
-и -p.webp (портрет 9 : 16 для телефона, высота до 1600). Кадр — центр по фокусу (fx, fy — доли ширины/высоты). Фото как есть:
-только кадрирование и уменьшение, метаданные не пишутся. Запуск из корня: python3 tools/media-v3/hero-photos.py
+и -p.webp (портрет 9 : 16 для телефона, высота до 1600). Кадр — центр по фокусу (fx, fy — доли ширины/высоты). Фото проявляются под сайт (photo_grade.py:
+баланс белого, экспозиция, резкость; мебель не меняется), кадрируются и уменьшаются; метаданные не пишутся. Запуск из корня: python3 tools/media-v3/hero-photos.py
 """
-import glob, os
+import glob, os, sys
 from PIL import Image, ImageOps
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from photo_grade import grade, resize_sharp  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 SRC = os.path.join(ROOT, 'ricca', 'content', 'instagram')
@@ -25,14 +28,14 @@ def crop(im, ratio, fx, fy):
 
 def fit(im, w=None, h=None):
     k = min(w / im.width if w else 9, h / im.height if h else 9, 1)
-    return im if k >= 1 else im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
+    return resize_sharp(im, (round(im.width * k), round(im.height * k)))
 
 
 os.makedirs(OUT, exist_ok=True)
 for sc, n, fx, fy in HERO:
     f = glob.glob(os.path.join(SRC, f'*-{sc}-{n}.jpg'))
     if not f: print('нет исходника', sc, n); continue
-    im = ImageOps.exif_transpose(Image.open(f[0])).convert('RGB')
+    im = grade(ImageOps.exif_transpose(Image.open(f[0])).convert('RGB'))
     fit(crop(im, 16 / 10, fx, fy), w=1920).save(f'{OUT}/{sc}-{n}-l.webp', 'WEBP', quality=86, method=6)
     fit(crop(im, 9 / 16, fx, fy), h=1600).save(f'{OUT}/{sc}-{n}-p.webp', 'WEBP', quality=86, method=6)
     print(sc, n, Image.open(f'{OUT}/{sc}-{n}-l.webp').size, Image.open(f'{OUT}/{sc}-{n}-p.webp').size)
