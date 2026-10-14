@@ -180,7 +180,8 @@
     const picks = [];
     FLIB.forEach((t) => { const c = t.collections[0]; if (!c) return; const ks = c.colours.filter((k) => k.src240).slice().sort((a, b) => lum(b.hex) - lum(a.hex)); if (!ks.length) return; picks.push([c, ks[Math.floor(ks.length * 0.25)]]); if (ks.length > 2) picks.push([c, ks[Math.floor(ks.length * 0.75)]]); });
     FLIB.forEach((t) => t.collections.slice(1).forEach((c) => { if (picks.length < 8 && c.colours[0]) picks.push([c, c.colours[Math.floor(c.colours.length / 2)]]); }));
-    box.innerHTML = picks.slice(0, 8).map(([c, k]) => `<img src="${esc(k.src240 || k.src450)}" width="160" height="160" alt="" loading="lazy" decoding="async">`).join('');
+    // srcset: на экранах 2x–3x плитка 155 px берёт файл 700 px (src450 → *-600.webp), а не 160 (src240 → *-160.webp) — иначе образец мыльный
+    box.innerHTML = picks.slice(0, 8).map(([c, k]) => `<img src="${esc(k.src240 || k.src450)}"${k.src240 && k.src450 ? ` srcset="${esc(k.src240)} 160w, ${esc(k.src450)} 700w" sizes="160px"` : ''} width="160" height="160" alt="" loading="lazy" decoding="async">`).join('');
   })();
   // лента «Наши работы» на главной: кадры из RICCA_WORKS_STRIP ([id, номер фото]); нет списка — первые фото первых работ
   (() => {
@@ -1094,9 +1095,10 @@
     const waOf = (w) => { const u = link(w); return waUrl(`Здравствуйте! Хочу ${want(w)} же: ${lcFirst(w.title)}${w.sub ? ` (${w.sub})` : ''}. Подскажите, пожалуйста, цену и что нужно для расчёта.${u ? `\n${u}` : ''}`); };
     const label = (w) => `${w.title}${w.sub ? `, ${w.sub}` : ''}`;
     const inCart = (w) => !!(RC && RC.list().some((x) => x.kind === 'catalog' && x.id === w.id));
-    // файл под рамку: телефон — всегда 800 px; компьютер — 1600, если 800 px мало для рамки на этом экране
+    // файл под рамку: 1600, если 800 px мало для рамки на этом экране (телефон с плотностью 3x — тоже: владелец 14 окт.,
+    // «качество фото хуже стало» — 800 px на экране 1170 px выглядели мыльно); иначе 800
     const fileOf = (p) => {
-      if (SMALL.matches || p.w <= p800(p).w) return p.src800;
+      if (p.w <= p800(p).w) return p.src800;
       const fw = frame.getBoundingClientRect().width || stage.clientWidth;
       return fw * (window.devicePixelRatio || 1) > p800(p).w * 1.08 ? p.src : p.src800;
     };
