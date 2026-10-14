@@ -191,7 +191,8 @@ const PHOTO_RELIEF = {
 const PHOTO_TILE = { boucle: 0.22, chenille: 0.2, matting: 0.18, corduroy: 0.18, velour: 0.25, suede: 0.25, leather: 0.22 };
 /* радиус «выравнивания света» (доля плитки): у гладких тканей (велюр, замша, кожа) на фото — складки, их убираем сильнее;
    у букле, шенилла, рогожки крупные петли и плетение — часть ткани, их оставляем */
-const PHOTO_FLAT = { boucle: 1 / 10, chenille: 1 / 12, matting: 1 / 12, corduroy: 1 / 16, velour: 1 / 32, suede: 1 / 32, leather: 1 / 32 };
+/* фактурные — окно 1/16 плитки (~1,4 см): остаточный градиент света крупнее этого давал «клетку» на диване (стык копий плитки) */
+const PHOTO_FLAT = { boucle: 1 / 16, chenille: 1 / 16, matting: 1 / 16, corduroy: 1 / 18, velour: 1 / 32, suede: 1 / 32, leather: 1 / 32 };
 const albedoCache = new Map();
 /* расчёт плитки по пикселям (d — RGBA N×N) → { alb, nrm, rgh } (RGBA N×N каждая). Чистая функция: выполняется в фоновом
    потоке (Worker), чтобы выбор ткани не «замораживал» страницу (на телефоне это было 0,5–2 с на каждое нажатие).
@@ -597,7 +598,8 @@ export function decorMaterial(kind = 'decor') {
       const thread = Math.pow(Math.max(Math.abs(Math.sin(Math.PI * u * 250)), Math.abs(Math.sin(Math.PI * v * 250))), 0.7);
       H[y * N + x] = 0.16 * thread + 1.0 * fbm(u * 3, v * 3, 3, 91, 5) + 0.3 * fbm(u * 9, v * 9, 9, 97, 3);
     }
-    const { nrm, rgh } = heightToTextures(H, N, 1.3, 0.92, 0.05);
+    /* сила 9: градиент по пикселю у складок масштаба 10 см мал — иначе рельефа не видно */
+    const { nrm, rgh } = heightToTextures(H, N, 9, 0.92, 0.05);
     t = { normal: dataTex(nrm, N), rough: dataTex(rgh, N) };
     for (const tx of [t.normal, t.rough]) tx.repeat.set(1 / 0.3, 1 / 0.3);
     texCache.set(key, t);

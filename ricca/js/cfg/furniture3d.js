@@ -724,8 +724,8 @@ function itemGeometry(it, quality, type, dense = 1) {
     if (it.decorKind === 'pillow') {
       /* подушка-«линза»: тонкий шов по кромке, набитая середина с обеих сторон, углы-«ушки» тонкие; прислонена к изголовью
          (rotX в params.js) — к верху тоньше, наполнитель внизу */
-      const cr = it.sy * 0.43;
-      o.crown = cr; o.crownBottom = cr; o.crownP = 1.5; o.rx = o.rz = Math.min(0.04, it.sx * 0.1); o.rTop = o.rBottom = Math.min(0.01, (it.sy - 2 * cr) * 0.45); o.bulge = 0; o.slump = 0; o.pillow = 0.3;
+      const cr = it.sy * 0.465;
+      o.crown = cr; o.crownBottom = cr; o.crownP = 1.3; o.rx = o.rz = Math.min(0.04, it.sx * 0.1); o.rTop = o.rBottom = Math.min(0.01, (it.sy - 2 * cr) * 0.45); o.bulge = 0; o.slump = 0; o.pillow = 0.3;
       o.occ = [['z', -1, 0, 0.08, 0.5]];   // нижняя кромка (−Z до поворота) лежит на матрасе
     } else if (it.roll) {
       /* отворот покрывала: мягкий валик вдоль кромки, к боковинам чуть провисает */
