@@ -1,0 +1,16 @@
+# RICCA DESIGNS — заголовки для Netlify.
+# Стили и скрипты браузер каждый раз сверяет с сервером (ответ 304, если файл не менялся): после обновления сайта
+# никто не увидит новую страницу со старыми стилями. В index.html и configurator.html к ним ещё и дописывается ?v=…
+/css/*
+  Cache-Control: public, max-age=0, must-revalidate
+/js/*
+  Cache-Control: public, max-age=0, must-revalidate
+/vendor/*
+  Cache-Control: public, max-age=0, must-revalidate
+# Фото и ролики могут заменяться под тем же именем — храним сутки
+/img/*
+  Cache-Control: public, max-age=86400
+/video/*
+  Cache-Control: public, max-age=86400
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable

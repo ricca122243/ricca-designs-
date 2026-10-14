@@ -136,6 +136,7 @@ fi
 cp tools/dist-extra/robots.txt tools/dist-extra/.htaccess tools/dist-extra/_headers "$OUT/" 2>/dev/null || true
 # robots.txt и карта сайта — свои, для домена ricca.design (заменяют общий robots.txt)
 cp tools/ricca-extra/robots.txt tools/ricca-extra/sitemap.xml "$OUT/"
+cp tools/ricca-extra/_headers "$OUT/"   # свои правила кэша вместо общих ELUNA (там стили хранились 7 дней)
 # Файл подтверждения Google Search Console — не удалять, иначе подтверждение слетит
 cp tools/ricca-extra/google731f803f39486a1a.html "$OUT/"
 
@@ -156,6 +157,14 @@ md_files=$(find "$OUT" -name '*.md')
 # Фото поставщиков с их названиями / людьми / чужими интерьерами в сборку попасть не должны
 extras=$(find "$OUT/img/fabrics" -type f \( -name 'hero-*' -o -name 'inuse-*' \) 2>/dev/null || true)
 [ -z "$extras" ] || { echo "в сборку попали фото поставщиков hero-/inuse-: $extras"; exit 1; }
+
+# Метка версии ?v=… у стилей и скриптов: меняется вместе с их содержимым, поэтому браузер, сохранивший прежние
+# файлы, после обновления сайта точно возьмёт новые (иначе — новая страница со старыми стилями)
+ver=$(cat "$OUT"/css/*.css "$OUT"/js/*.js "$OUT"/js/cfg/*.js 2>/dev/null | md5sum | cut -c1-10)
+for page in "$OUT"/index.html "$OUT"/configurator.html; do
+  [ -f "$page" ] || continue
+  sed -i -E "s#((href|src)=\"(css|js)/[A-Za-z0-9_./-]+\.(css|js))\"#\1?v=$ver\"#g" "$page"
+done
 
 (cd "$DIST" && zip -qr -X RICCA-site.zip RICCA-site)
 echo "Готово: $OUT ($(du -sh "$OUT" | cut -f1)), $DIST/RICCA-site.zip ($(du -h "$DIST/RICCA-site.zip" | cut -f1)). Загружать только эту папку (или zip), не ricca/"
