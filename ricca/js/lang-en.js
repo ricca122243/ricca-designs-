@@ -122,6 +122,13 @@
     'Округлое, на основании-диске': 'Rounded, on a disc base', 'Округлый · пыльно-розовый шенилл': 'Rounded · dusty pink chenille', 'Подлокотники-валики': 'Bolster armrests',
     'Прямой': 'Straight', 'Прямой · два размера': 'Straight · two sizes', 'Прямой · раскладной': 'Straight · sofa bed', 'С подъёмным механизмом': 'With a lift-up mechanism',
     'С подъёмным механизмом или без': 'With or without a lift-up mechanism', 'С шезлонгом или прямой': 'With a chaise or straight',
+    // новые модели 14 октября
+    'Модульный · низкий, с шезлонгом': 'Modular · low, with a chaise', 'Угловой · на чёрных ножках': 'Corner · on black legs',
+    'Модульный · с шезлонгом, букле': 'Modular · with a chaise, bouclé', 'Округлый · из трёх секций': 'Rounded · three sections',
+    'Прямой · на металлической базе': 'Straight · on a metal base', 'Прямой · раскладной, с подголовниками': 'Straight · sofa bed, with headrests',
+    'Угловой · раскладной': 'Corner · sofa bed', 'С поясничной подушкой · на металлической базе': 'With a lumbar cushion · on a metal base',
+    'На тонких ножках · велюр': 'On slim legs · velour', 'С высокой спинкой · меланжевое букле': 'With a tall back · mélange bouclé',
+    'Округлое · на основании-диске, букле': 'Rounded · on a disc base, bouclé', 'Мягкое основание · низкое изголовье': 'Upholstered base · low headboard',
   };
   const CAT_LABELS = { 'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла': 'Armchairs', 'Стулья': 'Chairs', 'Столы': 'Tables', 'Наши работы': 'Our works', 'Ткани': 'Fabrics', 'Матрасы ELUNA': 'ELUNA mattresses' };
   const CAT_DESCS = {
@@ -134,6 +141,7 @@
     'букле': 'bouclé', 'велюр': 'velour', 'велюр в рубчик': 'ribbed velour', 'искусственная замша': 'faux suede', 'микровелюр': 'microvelour',
     'микровелюр с муаром': 'microvelour with moiré', 'шенилл': 'chenille',
   };
+  const COLOURS = { 'Серый меланж': 'Grey mélange', 'Графит': 'Graphite', 'Тёмно-зелёный': 'Dark green' };   // цвета коллекции RICCA
   const sub = (s) => String(s || '').split(', ').map((p) => p.split(' и ').map((w) => WORDS[w] || w).join(' and ')).join(', ');
   const modelTitle = (t) => {
     const m = /^(Диван|Кресло|Кровать) (.+)$/.exec(t || '');
@@ -158,6 +166,7 @@
       if (c.kind) c.kind = c.kind.split(': ').map((k) => FAB_KINDS[k] || k).join(': ');
       if (c.totalNote) c.totalNote = 'More than 50 collections and 1,000 colours — in the showroom';
       if (Array.isArray(c.facts)) c.facts = c.facts.map(fact);
+      (c.colours || []).forEach((k) => { k.name = COLOURS[k.name] || k.name; });
     });
   });
   document.documentElement.lang = 'en';

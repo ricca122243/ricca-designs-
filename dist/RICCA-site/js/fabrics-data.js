@@ -662,6 +662,36 @@ window.RICCA_FABRIC_LIBRARY = {
       "title": "Букле",
       "collections": [
         {
+          "id": "ricca",
+          "title": "RICCA",
+          "kind": "букле",
+          "facts": [],
+          "texture": "img/fabrics/ricca/01-1200.webp",
+          "colours": [
+            {
+              "name": "Серый меланж",
+              "src900": "img/fabrics/ricca/01-1200.webp",
+              "src450": "img/fabrics/ricca/01-600.webp",
+              "src240": "img/fabrics/ricca/01-160.webp",
+              "hex": "#8d8b84"
+            },
+            {
+              "name": "Графит",
+              "src900": "img/fabrics/ricca/02-1200.webp",
+              "src450": "img/fabrics/ricca/02-600.webp",
+              "src240": "img/fabrics/ricca/02-160.webp",
+              "hex": "#212121"
+            },
+            {
+              "name": "Тёмно-зелёный",
+              "src900": "img/fabrics/ricca/03-1200.webp",
+              "src450": "img/fabrics/ricca/03-600.webp",
+              "src240": "img/fabrics/ricca/03-160.webp",
+              "hex": "#36382b"
+            }
+          ]
+        },
+        {
           "id": "coco",
           "title": "COCO",
           "kind": "букле",

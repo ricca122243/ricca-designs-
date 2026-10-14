@@ -15,7 +15,7 @@
   const T = window.RICCA_T || null;
   const tr = (s, ...v) => {
     if (typeof s === 'string') return T && T[s] !== undefined ? T[s] : s;
-    const k = s.join('{}'), x = T && T[k];
+    const k = s.join('{}'), x = T ? T[k] : undefined;   // без словаря (русская страница) — всегда исходный текст
     if (x === undefined) return s.reduce((a, p, i) => a + p + (i < v.length ? v[i] : ''), '');
     return x.replace(/\{(\d+)\}/g, (m, i) => v[+i]);
   };
