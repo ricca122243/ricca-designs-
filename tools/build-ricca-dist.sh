@@ -134,6 +134,8 @@ fi
 
 # Служебные файлы хостинга — те же, что у ELUNA
 cp tools/dist-extra/robots.txt tools/dist-extra/.htaccess tools/dist-extra/_headers "$OUT/" 2>/dev/null || true
+# robots.txt и карта сайта — свои, для домена ricca.design (заменяют общий robots.txt)
+cp tools/ricca-extra/robots.txt tools/ricca-extra/sitemap.xml "$OUT/"
 
 # Проверка: все локальные ссылки существуют
 missing=0

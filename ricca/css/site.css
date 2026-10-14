@@ -150,7 +150,7 @@ textarea.fld { min-height: 64px; resize: vertical; }
    1. ВХОД — белый минимализм: заголовок слева, изделие на белом фоне справа
    ========================================================================== */
 .hero { position: relative; min-height: calc(100svh - 0px); display: flex; align-items: center; padding: calc(var(--hdr) + 24px) 0 48px; background: var(--paper); color: var(--ink); }
-.hero__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; gap: clamp(32px, 5vw, 80px); width: 100%; }
+.hero__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; gap: clamp(32px, 5vw, 80px); }
 .hero__text { display: grid; gap: 20px; justify-items: start; }
 .hero__eye { font: 500 11px/1.5 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--ink-2); }
 .hero__title { font: 300 clamp(44px, 5.6vw, 80px)/1.02 var(--serif); letter-spacing: -.005em; text-wrap: balance; }
