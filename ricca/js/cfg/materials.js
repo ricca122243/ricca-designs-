@@ -166,10 +166,22 @@ function fabricMaps(kind, N) {
   const albAmp = { boucle: 0.28, chenille: 0.12, corduroy: 0.14, matting: 0.10, velour: 0.06, suede: 0.05, leather: 0.05 }[kind] || 0.06;
   for (let i = 0; i < H.length; i++) { const h = (H[i] - mn) / (mx - mn || 1); const v = 1 - albAmp + albAmp * h; const b = Math.round(v * 255); alb[i * 4] = b; alb[i * 4 + 1] = b; alb[i * 4 + 2] = b; alb[i * 4 + 3] = 255; }
   let mean = 0; for (let i = 0; i < H.length; i++) mean += alb[i * 4] / 255; mean /= H.length;
-  const out = { normal: dataTex(nrm, N), rough: dataTex(rgh, N), albedo: dataTex(alb, N), albedoMean: mean };
+  const out = { normal: dataTex(nrm, N), rough: dataTex(rgh, N), albedo: dataTex(alb, N), albedoMean: mean, H, N };
   texCache.set(key, out);
   return out;
 }
+/* рельеф из фото образца (swatchPixels): вес фото / процедурного слоя, сила нормалей, шероховатость по высоте.
+   Фактурные ткани — рельеф в основном с фото (петли, узелки, плетение совпадают с рисунком цвета);
+   гладкие (велюр, замша, кожа) — в основном процедурный ворс/зерно, с фото лишь мелкое зерно */
+const PHOTO_RELIEF = {
+  boucle: { wPhoto: 1.0, wProc: 0.3, strength: 2.4, roughBase: 0.95, roughVar: 0.12 },
+  chenille: { wPhoto: 1.0, wProc: 0.45, strength: 1.7, roughBase: 0.88, roughVar: 0.12 },
+  matting: { wPhoto: 1.0, wProc: 0.5, strength: 2.0, roughBase: 0.92, roughVar: 0.08 },
+  corduroy: { wPhoto: 0.6, wProc: 1.0, strength: 2.4, roughBase: 0.84, roughVar: 0.1 },
+  velour: { wPhoto: 0.35, wProc: 1.0, strength: 0.8, roughBase: 0.9, roughVar: 0.06 },
+  suede: { wPhoto: 0.3, wProc: 1.0, strength: 0.6, roughBase: 0.9, roughVar: 0.05 },
+  leather: { wPhoto: 0.5, wProc: 1.0, strength: 1.3, roughBase: 0.5, roughVar: 0.15 },
+};
 
 /* фото образца → цветная бесшовная плитка (albedo, sRGB). Официальные фото — крупный план со складками и студийным светом:
    свет и складки убираем (делим на сильно размытую яркость — остаётся ровная ткань своего цвета), края сшиваем смешиванием
@@ -180,51 +192,87 @@ const PHOTO_TILE = { boucle: 0.22, chenille: 0.2, matting: 0.18, corduroy: 0.18,
    у букле, шенилла, рогожки крупные петли и плетение — часть ткани, их оставляем */
 const PHOTO_FLAT = { boucle: 1 / 10, chenille: 1 / 12, matting: 1 / 12, corduroy: 1 / 16, velour: 1 / 32, suede: 1 / 32, leather: 1 / 32 };
 const albedoCache = new Map();
-/* расчёт плитки по пикселям (d — RGBA N×N) → RGBA N×N. Чистая функция: выполняется в фоновом потоке (Worker), чтобы выбор ткани
-   не «замораживал» страницу (на телефоне это было 0,5–2 с на каждое нажатие) */
-function albedoPixels(d, N, flat) {
+/* расчёт плитки по пикселям (d — RGBA N×N) → { alb, nrm, rgh } (RGBA N×N каждая). Чистая функция: выполняется в фоновом
+   потоке (Worker), чтобы выбор ткани не «замораживал» страницу (на телефоне это было 0,5–2 с на каждое нажатие).
+   Рельеф (карта нормалей и шероховатость) считается ИЗ ТОГО ЖЕ ФОТО: мелкомасштабная яркость ≈ высота (петли букле, узелки
+   шенилла, плетение рогожки на свету светлее) + процедурный ворс/зерно (o.procH, плитка повторяется o.rep раз) —
+   так рельеф совпадает с рисунком цвета, и петли читаются как петли, а не как «апельсиновая корка» поверх фото.
+   o = { procH: Float32Array M×M, M, rep, wPhoto, wProc, strength, roughBase, roughVar } (без o — только альбедо) */
+function swatchPixels(d, N, flat, o) {
   const L = new Float32Array(N * N);
   let Lm = 0; for (let i = 0; i < N * N; i++) { L[i] = 0.2126 * d[i * 4] + 0.7152 * d[i * 4 + 1] + 0.0722 * d[i * 4 + 2] + 1; Lm += L[i]; }
   Lm /= N * N;
   const rf = (i) => (i < 0 ? -i - 1 : i >= N ? 2 * N - i - 1 : i);
   const blur = (a, r) => { const tmp = new Float32Array(N * N), out = new Float32Array(N * N), k = 1 / (2 * r + 1); for (let y = 0; y < N; y++) { let s = 0; for (let j = -r; j <= r; j++) s += a[y * N + rf(j)]; for (let x = 0; x < N; x++) { tmp[y * N + x] = s * k; s += a[y * N + rf(x + r + 1)] - a[y * N + rf(x - r)]; } } for (let x = 0; x < N; x++) { let s = 0; for (let j = -r; j <= r; j++) s += tmp[rf(j) * N + x]; for (let y = 0; y < N; y++) { out[y * N + x] = s * k; s += tmp[rf(y + r + 1) * N + x] - tmp[rf(y - r) * N + x]; } } return out; };
   const r = Math.max(2, Math.round(N * flat)), B = blur(blur(L, r), r);   // свет и складки (низкие частоты)
+  /* гладкие ткани (велюр, замша, кожа): в складках у них меняется и оттенок (ворс ложится по-разному) — цвет берём средний
+     по всему фото, с фото — только самое мелкое зерно (≤ 1,5 мм: окно N/160), иначе рёбра складок фото ложатся на диван
+     диагональными «царапинами» */
+  const smooth = flat < 1 / 24, M = [0, 0, 0];
   /* складки среднего масштаба (ребро «вихря» на фото образца ~1 см) у фактурных тканей: вторая, более узкая выравнивающая
      маска — остаётся только плетение/петли (≤ 5 мм); сила ограничена, чтобы не «стереть» рисунок ткани */
-  const r2 = Math.max(2, Math.round(N / 56)), B2 = blur(blur(L, r2), r2);
-  const F = new Float32Array(N * N * 3);
-  /* гладкие ткани (велюр, замша, кожа): в складках у них меняется и оттенок (ворс ложится по-разному) — цвет берём средний
-     по всему фото, с фото — только фактура поверхности (яркость мелкого масштаба) */
-  const smooth = flat < 1 / 24, M = [0, 0, 0];
+  const r2 = Math.max(2, Math.round(N / (smooth ? 160 : 56))), B2 = blur(blur(L, r2), r2);
+  const F = new Float32Array(N * N * 3), Hp = new Float32Array(N * N);
   if (smooth) { for (let i = 0; i < N * N; i++) { M[0] += d[i * 4]; M[1] += d[i * 4 + 1]; M[2] += d[i * 4 + 2]; } M[0] /= N * N; M[1] /= N * N; M[2] /= N * N; }
+  const lim = smooth ? 0.07 : 0.3;
   for (let i = 0; i < N * N; i++) {
-    if (smooth) { const t = Math.max(0.86, Math.min(1.14, L[i] / B2[i])); F[i * 3] = M[0] * t; F[i * 3 + 1] = M[1] * t; F[i * 3 + 2] = M[2] * t; continue; }
-    const k = Math.max(0.6, Math.min(1.6, Lm / B[i])) * Math.max(0.85, Math.min(1.18, B[i] / B2[i])) ;
+    const q = L[i] / B2[i];
+    Hp[i] = Math.max(-0.5, Math.min(0.5, q - 1));
+    if (smooth) { const t = Math.max(1 - lim, Math.min(1 + lim, q)); F[i * 3] = M[0] * t; F[i * 3 + 1] = M[1] * t; F[i * 3 + 2] = M[2] * t; continue; }
+    const k = Math.max(0.6, Math.min(1.6, Lm / B[i])) * Math.max(0.85, Math.min(1.18, B[i] / B2[i]));
     F[i * 3] = d[i * 4] * k; F[i * 3 + 1] = d[i * 4 + 1] * k; F[i * 3 + 2] = d[i * 4 + 2] * k;
   }
+  /* бесшовность: смешивание с копией, сдвинутой на полплитки (и цвет, и высота) */
   const tent = (i) => 1 - Math.abs((2 * (i + 0.5)) / N - 1);
-  const out = new Uint8Array(N * N * 4);
+  const alb = new Uint8Array(N * N * 4), H = new Float32Array(N * N);
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const i = y * N + x, w = Math.min(1, Math.min(tent(x), tent(y)) * 2.2), j = ((y + N / 2) % N) * N + ((x + N / 2) % N);
-    for (let ch = 0; ch < 3; ch++) out[i * 4 + ch] = Math.max(0, Math.min(255, Math.round(w * F[i * 3 + ch] + (1 - w) * F[j * 3 + ch])));
-    out[i * 4 + 3] = 255;
+    for (let ch = 0; ch < 3; ch++) alb[i * 4 + ch] = Math.max(0, Math.min(255, Math.round(w * F[i * 3 + ch] + (1 - w) * F[j * 3 + ch])));
+    alb[i * 4 + 3] = 255;
+    H[i] = w * Hp[i] + (1 - w) * Hp[j];
   }
-  return out;
+  if (!o || !o.procH) return { alb };
+  /* высота: фото (нормировано по СКО) + процедурный слой (ворс, зерно) */
+  let s2 = 0; for (let i = 0; i < N * N; i++) s2 += H[i] * H[i]; const rmsP = Math.sqrt(s2 / (N * N)) || 1;
+  const P = o.procH, Mq = o.M, rep = Math.max(1, Math.round(o.rep || 1));
+  let pm = 0; for (let i = 0; i < P.length; i++) pm += P[i]; pm /= P.length;
+  let q2 = 0; for (let i = 0; i < P.length; i++) q2 += (P[i] - pm) * (P[i] - pm); const rmsQ = Math.sqrt(q2 / P.length) || 1;
+  const wP = o.wPhoto / rmsP, wQ = o.wProc / rmsQ;
+  const Hc = new Float32Array(N * N);
+  for (let y = 0; y < N; y++) { const py = Math.floor((y * rep * Mq) / N) % Mq; for (let x = 0; x < N; x++) { const px = Math.floor((x * rep * Mq) / N) % Mq; Hc[y * N + x] = wP * H[y * N + x] + wQ * (P[py * Mq + px] - pm); } }
+  /* нормали из градиента высоты (размах ≈ 4 СКО), шероховатость: вершины петель чуть глаже, впадины матовее */
+  const at = (x, y) => Hc[((y + N) % N) * N + ((x + N) % N)];
+  const nrm = new Uint8Array(N * N * 4), rgh = new Uint8Array(N * N * 4), st = o.strength || 1, rb = o.roughBase ?? 0.9, rv = o.roughVar || 0;
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const dx = (at(x + 1, y) - at(x - 1, y)) / 4, dy = (at(x, y + 1) - at(x, y - 1)) / 4;
+    let nx = -dx * st, ny = dy * st, nz = 1; const l = Math.hypot(nx, ny, nz); nx /= l; ny /= l; nz /= l;
+    const i = (y * N + x) * 4;
+    nrm[i] = (nx * 0.5 + 0.5) * 255; nrm[i + 1] = (ny * 0.5 + 0.5) * 255; nrm[i + 2] = (nz * 0.5 + 0.5) * 255; nrm[i + 3] = 255;
+    const h = Math.max(-1, Math.min(1, Hc[y * N + x] / 2));
+    const rr = Math.min(1, Math.max(0, rb - h * rv));
+    rgh[i] = 255; rgh[i + 1] = rr * 255; rgh[i + 2] = 255; rgh[i + 3] = 255;
+  }
+  return { alb, nrm, rgh };
 }
 let albWorker = null, albSeq = 0;
 const albJobs = new Map();
-function albedoAsync(d, N, flat) {
+function swatchAsync(d, N, flat, o) {
   if (!albWorker && typeof Worker !== 'undefined' && typeof Blob !== 'undefined') {
     try {
-      const code = `${albedoPixels.toString()}\nonmessage = (e) => { const { id, buf, N, flat } = e.data; const out = albedoPixels(new Uint8ClampedArray(buf), N, flat); postMessage({ id, buf: out.buffer }, [out.buffer]); };`;
+      const code = `${swatchPixels.toString()}\nonmessage = (e) => { const { id, buf, N, flat, o } = e.data; if (o && o.proc) o.procH = new Float32Array(o.proc); const out = swatchPixels(new Uint8ClampedArray(buf), N, flat, o); const tr = [out.alb.buffer]; if (out.nrm) tr.push(out.nrm.buffer, out.rgh.buffer); postMessage({ id, alb: out.alb.buffer, nrm: out.nrm ? out.nrm.buffer : null, rgh: out.rgh ? out.rgh.buffer : null }, tr); };`;
       albWorker = new Worker(URL.createObjectURL(new Blob([code], { type: 'text/javascript' })));
-      albWorker.onmessage = (e) => { const j = albJobs.get(e.data.id); albJobs.delete(e.data.id); if (j) j(new Uint8Array(e.data.buf)); };
+      albWorker.onmessage = (e) => { const j = albJobs.get(e.data.id); albJobs.delete(e.data.id); if (j) j({ alb: new Uint8Array(e.data.alb), nrm: e.data.nrm ? new Uint8Array(e.data.nrm) : null, rgh: e.data.rgh ? new Uint8Array(e.data.rgh) : null }); };
       albWorker.onerror = () => { albWorker = false; albJobs.forEach((j) => j(null)); albJobs.clear(); };
     } catch (e) { albWorker = false; }
   }
-  if (!albWorker) return Promise.resolve(albedoPixels(d, N, flat));   // без Worker — как раньше, в основном потоке
-  return new Promise((res) => { const id = ++albSeq; albJobs.set(id, res); const buf = d.buffer.slice(0); albWorker.postMessage({ id, buf, N, flat }, [buf]); })
-    .then((out) => out || albedoPixels(d, N, flat));
+  if (!albWorker) return Promise.resolve(swatchPixels(d, N, flat, o));   // без Worker — как раньше, в основном потоке
+  return new Promise((res) => {
+    const id = ++albSeq; albJobs.set(id, res);
+    const buf = d.buffer.slice(0), tr = [buf];
+    let oo = null;
+    if (o && o.procH) { const proc = o.procH.buffer.slice(0); tr.push(proc); oo = { M: o.M, rep: o.rep, wPhoto: o.wPhoto, wProc: o.wProc, strength: o.strength, roughBase: o.roughBase, roughVar: o.roughVar, proc }; }
+    albWorker.postMessage({ id, buf, N, flat, o: oo }, tr);
+  }).then((out) => out || swatchPixels(d, N, flat, o));
 }
 /* «энергия складок» по уменьшенной копии фото (64 px — мелкая фактура усредняется, остаются складки и вихри):
    среднее квадрата градиента яркости в окне. Кандидаты: центр 70 % (с предпочтением — меньше повторов) и 9 окон по 45 % */
@@ -258,8 +306,9 @@ function flattestWindow(img, cw, chh) {
     return best;
   } catch (e) { return centre; }
 }
-function swatchAlbedo(src, tile = 0.16, N = 384, flat = 1 / 10) {
-  const ck = `${src}|${tile}|${N}|${flat}`;
+/* relief = { procH, M, rep, wPhoto, wProc, strength, roughBase, roughVar, key } — рельеф из фото (см. swatchPixels) */
+function swatchAlbedo(src, tile = 0.16, N = 384, flat = 1 / 10, relief = null) {
+  const ck = `${src}|${tile}|${N}|${flat}|${relief ? relief.key : ''}`;
   if (albedoCache.has(ck)) return albedoCache.get(ck);
   const p = new Promise((resolve) => {
     if (typeof Image === 'undefined' || typeof document === 'undefined') return resolve(null);
@@ -277,9 +326,11 @@ function swatchAlbedo(src, tile = 0.16, N = 384, flat = 1 / 10) {
         g.drawImage(img, (cw - m) / 2 + win.x * m, (chh - m) / 2 + win.y * m, cs, cs, 0, 0, N, N);
         const d = g.getImageData(0, 0, N, N).data;
         const tl = tile * (win.f / 0.7);
-        albedoAsync(d, N, flat).then((out) => {
-          const t = dataTex(out, N, true); t.repeat.set(1 / tl, 1 / tl);
-          resolve({ tex: t });
+        swatchAsync(d, N, flat, relief).then((out) => {
+          const t = dataTex(out.alb, N, true); t.repeat.set(1 / tl, 1 / tl);
+          const res = { tex: t };
+          if (out.nrm) { res.nrm = dataTex(out.nrm, N); res.rgh = dataTex(out.rgh, N); res.nrm.repeat.set(1 / tl, 1 / tl); res.rgh.repeat.set(1 / tl, 1 / tl); }
+          resolve(res);
         }).catch(() => resolve(null));
       } catch (e) { resolve(null); }
     };
@@ -300,9 +351,12 @@ const notify = () => listeners.forEach((fn) => { try { fn(); } catch (e) { /* no
    Здесь: тонкая тень шва (сглажена по fwidth — не мерцает и тает, когда тоньше пикселя), валик припуска по обе стороны,
    натяжные складки поперёк шва у самой кромки и очень слабая «неидеальность» натяжения ткани по всей поверхности.
    Рельеф — производные высоты в экранном пространстве (как bump map, но без текстуры). На телефоне (lite) — только шов. */
-const UPH_VERT_PARS = 'attribute vec4 seam;\nvarying vec4 vSeam;\nvarying vec2 vFabUv;\n';
+/* occ (float, 0…1) — «контактное» затенение, записанное в вершины furniture3d.js: низ подушки у основания, тыл подушки
+   сиденья под спинкой, верх рамы под подушкой — объём читается и на телефоне (там нет AO) */
+const UPH_VERT_PARS = 'attribute vec4 seam;\nattribute float occ;\nvarying vec4 vSeam;\nvarying vec2 vFabUv;\nvarying float vOcc;\n';
 const UPH_FRAG_PARS = `varying vec4 vSeam;
 varying vec2 vFabUv;
+varying float vOcc;
 float uphHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float uphNoise(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
   return mix(mix(uphHash(i), uphHash(i + vec2(1.0, 0.0)), u.x), mix(uphHash(i + vec2(0.0, 1.0)), uphHash(i + vec2(1.0, 1.0)), u.x), u.y); }
@@ -347,10 +401,11 @@ const UPH_FRAG = `
 function upholstery(m, { lite = false, dark = 0.36, width = 0.0022 } = {}) {
   m.onBeforeCompile = (sh) => {
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\n' + UPH_VERT_PARS)
-      .replace('#include <uv_vertex>', '#include <uv_vertex>\nvSeam = seam;\nvFabUv = uv;');
+      .replace('#include <uv_vertex>', '#include <uv_vertex>\nvSeam = seam;\nvFabUv = uv;\nvOcc = occ;');
     sh.fragmentShader = (lite ? '#define UPH_LITE\n' : '') + `#define UPH_SEAM_W ${width.toFixed(4)}\n#define UPH_SEAM_DARK ${dark.toFixed(3)}\n` +
       sh.fragmentShader.replace('#include <common>', '#include <common>\n' + UPH_FRAG_PARS)
-        .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + UPH_FRAG);
+        .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + UPH_FRAG)
+        .replace('#include <aomap_fragment>', '#include <aomap_fragment>\n{ float uphAO = 1.0 - 0.6 * clamp(vOcc, 0.0, 1.0); reflectedLight.indirectDiffuse *= uphAO; reflectedLight.directDiffuse *= uphAO; reflectedLight.directSpecular *= uphAO; reflectedLight.indirectSpecular *= uphAO; }');
   };
   m.customProgramCacheKey = () => `ricca-uph-${lite ? 1 : 0}-${dark}-${width}`;
   return m;
@@ -394,10 +449,18 @@ export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null
   upholstery(m, { lite: q !== 'high', dark: kind === 'leather' ? 0.42 : kind === 'boucle' ? 0.22 : 0.3 });
   m.name = `fabric-${kind}-${hex}`;
   m.userData = { kind, hex, src450, finish: fin, baseColor: base.clone(), ready: Promise.resolve(m) };
-  /* ткань на модели — настоящее фото образца (цвет, плетение, рисунок), а не заливка цветом: заказчик «ткань в 3D не видна» */
+  /* ткань на модели — настоящее фото образца (цвет, плетение, рисунок), а не заливка цветом: заказчик «ткань в 3D не видна».
+     Рельеф тоже из фото (+ процедурный ворс) — петли и плетение совпадают с рисунком цвета */
   if (photo) {
-    m.userData.ready = swatchAlbedo(photo, PHOTO_TILE[kind] || 0.16, PN, PHOTO_FLAT[kind] || 1 / 10).then((sw) => {
-      if (sw) { m.map = sw.tex; m.color.setRGB(1, 1, 1); m.needsUpdate = true; notify(); }
+    const rel = PHOTO_RELIEF[kind] || PHOTO_RELIEF.velour, ptile = PHOTO_TILE[kind] || 0.16;
+    const relief = { ...rel, procH: maps.H, M: maps.N, rep: Math.max(1, Math.round(ptile / k.tile)), key: `${kind}${fin}|${N}` };
+    if (kind === 'leather') { relief.roughBase = k.rough; relief.strength *= k.nScale / 0.6; }
+    m.userData.ready = swatchAlbedo(photo, ptile, PN, PHOTO_FLAT[kind] || 1 / 10, relief).then((sw) => {
+      if (sw) {
+        m.map = sw.tex; m.color.setRGB(1, 1, 1);
+        if (sw.nrm) { m.normalMap = sw.nrm; m.roughnessMap = sw.rgh; m.normalScale.set(1, 1); }
+        m.needsUpdate = true; notify();
+      }
       return m;
     });
   }
@@ -413,25 +476,31 @@ export function seamMaterial(fabric) {
   const s = fabric.clone();
   s.color = fabric.color.clone().multiplyScalar(0.9);
   if (s.sheenColor) s.sheenColor = fabric.sheenColor.clone().multiplyScalar(0.9);
-  s.roughness = Math.min(1, fabric.roughness + 0.05);
+  s.roughness = 1;
   s.normalMap = null; s.roughnessMap = null;   // фото ткани остаётся (иначе при белом цвете материала шов был бы белым)
+  /* строчка — матовая нитка: без блика ворса вдоль трубки (на велюре шов блестел «как винил») */
+  s.sheen = Math.min(0.3, fabric.sheen || 0); s.sheenRoughness = 0.9; s.specularIntensity = 0.1;
   s.name = fabric.name + '-seam';
   seamCache.set(fabric, s);
   if (fabric.userData && fabric.userData.ready) fabric.userData.ready.then(() => { s.map = fabric.map; s.color.copy(fabric.color).multiplyScalar(0.85); s.needsUpdate = true; });
   return s;
 }
 
-/* кант: та же ткань (цвет, фото, карта нормалей — не «пластиковая» трубка), рельеф вдвое мягче */
+/* кант: та же ткань (цвет, фото, карта нормалей — не «пластиковая» трубка), рельеф вдвое мягче, блик ворса слабее и шире */
 const pipeCache = new WeakMap();
 export function pipingMaterial(fabric) {
   if (!fabric) return null;
   if (pipeCache.has(fabric)) return pipeCache.get(fabric);
   const s = fabric.clone();
-  if (s.normalScale) s.normalScale = fabric.normalScale.clone().multiplyScalar(0.5); s.roughness = Math.min(1, fabric.roughness + 0.05);
-  s.sheenRoughness = Math.min(1, (fabric.sheenRoughness || 0.5) + 0.2);
+  if (s.normalScale) s.normalScale = fabric.normalScale.clone().multiplyScalar(0.5); s.roughness = Math.min(1, fabric.roughness + 0.08);
+  s.sheen = (fabric.sheen || 0) * 0.5; s.sheenRoughness = Math.min(1, (fabric.sheenRoughness || 0.5) + 0.35); s.specularIntensity = Math.min(fabric.specularIntensity || 0.3, 0.15);
   s.name = fabric.name + '-piping';
   pipeCache.set(fabric, s);
-  if (fabric.userData && fabric.userData.ready) fabric.userData.ready.then(() => { s.map = fabric.map; s.color.copy(fabric.color); s.needsUpdate = true; });
+  if (fabric.userData && fabric.userData.ready) fabric.userData.ready.then(() => {
+    s.map = fabric.map; s.color.copy(fabric.color);
+    if (fabric.normalMap) { s.normalMap = fabric.normalMap; s.roughnessMap = fabric.roughnessMap; s.normalScale.copy(fabric.normalScale).multiplyScalar(0.5); }
+    s.needsUpdate = true;
+  });
   return s;
 }
 

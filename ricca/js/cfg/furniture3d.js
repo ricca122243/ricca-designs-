@@ -128,11 +128,25 @@ function makeSeamer(Hx, Hy, Hz, R, seams) {
     out[0] = Math.min(best, 1); out[1] = tu; out[2] = tv;
   };
 }
-/* нулевой атрибут шва для деталей без швов (один шейдер ткани на всё изделие) */
+/* нулевые атрибуты шва и контактного затенения для деталей без них (один шейдер ткани на всё изделие) */
 function ensureSeamAttr(geo) {
-  if (!geo || geo.attributes.seam) return geo;
-  geo.setAttribute('seam', new THREE.BufferAttribute(new Float32Array(geo.attributes.position.count * 4), 4));
+  if (!geo) return geo;
+  const n = geo.attributes.position.count;
+  if (!geo.attributes.seam) geo.setAttribute('seam', new THREE.BufferAttribute(new Float32Array(n * 4), 4));
+  if (!geo.attributes.occ) geo.setAttribute('occ', new THREE.BufferAttribute(new Float32Array(n), 1));
   return geo;
+}
+/* контактное затенение (атрибут occ, 0…1): полосы у граней бокса — [ось, сторона (−1/+1) | 0 = «на координате», значение, ширина полосы, сила].
+   Подушка сидит на основании — её низ и тыл под спинкой темнее; верх рамы под свесом подушки; низ цельной спинки у сиденья */
+function occOf(bands, g, H) {
+  let occ = 0;
+  for (const [ax, side, val, band, k] of bands) {
+    const i = ax === 'x' ? 0 : ax === 'y' ? 1 : 2;
+    const d = side > 0 ? H[i] - g[i] : side < 0 ? g[i] + H[i] : Math.abs(g[i] - val);
+    const v = k * (1 - smooth(0, band, d));
+    if (v > occ) occ = v;
+  }
+  return occ;
 }
 
 /* ---------- мягкий бокс ---------- */
@@ -145,7 +159,8 @@ function softBox(sx, sy, sz, o = {}) {
   /* базовый бокс уменьшен на «купол» и выпуклость — после деформации деталь ровно в габарите */
   /* «оседание» (slump) раздвигает низ подушки — тоже учтено в уменьшении базового бокса: деталь строго в габарите */
   const slumpX = (o.slump || 0) * sx / 2, slumpZ = (o.slump || 0) * sz / 2;
-  const bx = sx - 2 * (bulge + slumpX), by = sy - (cf === 'y' ? crown : 0), bz = sz - 2 * (bulge + slumpZ) - (cf === 'z' ? crown + crownBack : 0);
+  const crownBottom = cf === 'y' ? o.crownBottom || 0 : 0;
+  const bx = sx - 2 * (bulge + slumpX), by = sy - (cf === 'y' ? crown + crownBottom : 0), bz = sz - 2 * (bulge + slumpZ) - (cf === 'z' ? crown + crownBack : 0);
   const Hx = bx / 2, Hy = by / 2, Hz = bz / 2;
   const lim = (r, h) => Math.max(0.0005, Math.min(r, h * 0.999));
   const rx = lim(o.rx ?? 0.02, Hx), rz = lim(o.rz ?? o.rx ?? 0.02, Hz);
@@ -164,22 +179,34 @@ function softBox(sx, sy, sz, o = {}) {
   /* каналы меняются только по X — по высоте хватает обычного шага */
   const Y = axisSamples(Hy, rB, rT, tuft === 'capitone' && tf === 'z' ? spTuft : sp, q.nq);
   const Z = axisSamples(Hz, rz, rz + (cf === 'z' ? 0 : 0), tuft && tf === 'y' ? spTuft : sp, q.nq);
-  const positions = [], normals = [], uvs = [], index = [], seamA = [];
-  const P = new THREE.Vector3(), N = new THREE.Vector3();
-  const yOff = cf === 'y' ? -crown / 2 : 0, zOff = cf === 'z' ? -(crown - crownBack) / 2 : 0;
-  const disp = makeDisplacer({ Hx, Hy, Hz, crown, crownBack, crownP: o.crownP || 2, cf, bulge, sag: o.sag || 0, tuft, tf, sx, sy, sz, taper: o.taper || 1, rT, pillow: o.pillow || 0, ripple: o.ripple || 0, slump: o.slump || 0 });
+  const positions = [], normals = [], uvs = [], index = [], seamA = [], occA = [];
+  const P = new THREE.Vector3(), N = new THREE.Vector3(), U = new THREE.Vector3();
+  const yOff = cf === 'y' ? (crownBottom - crown) / 2 : 0, zOff = cf === 'z' ? -(crown - crownBack) / 2 : 0;
+  const disp = makeDisplacer({ Hx, Hy, Hz, crown, crownBack, crownBottom, crownP: o.crownP || 2, cf, bulge, sag: o.sag || 0, tuft, tf, sx, sy, sz, taper: o.taper || 1, rT, pillow: o.pillow || 0, ripple: o.ripple || 0, slump: o.slump || 0, drape: o.drape || null });
   const seamer = o.seams && o.seams.length && o.quality !== 'low' ? makeSeamer(Hx, Hy, Hz, R, o.seams) : null;
   const sOut = [0, 0, 0];
+  const HH = [Hx, Hy, Hz], occB = o.occ && o.occ.length ? o.occ : null;
+  /* UV «развёрткой»: в зоне скругления — длина дуги (r·atan(d/r)), а не проекция: фактура на скруглённых рёбрах и углах
+     не сжимается и не расходится «веером» */
+  const RR3 = [R.x, R.y, R.z], II = [[-Hx + R.x[0], Hx - R.x[1]], [-Hy + R.y[0], Hy - R.y[1]], [-Hz + R.z[0], Hz - R.z[1]]];
+  const unroll = (g, out) => {
+    for (let k = 0; k < 3; k++) {
+      const c = Math.min(II[k][1], Math.max(II[k][0], g[k])), d = g[k] - c, r = d >= 0 ? RR3[k][1] : RR3[k][0];
+      out.setComponent(k, c + (r > 1e-6 ? r * Math.atan(d / r) : d));
+    }
+    return out;
+  };
   const face = (A, B, mk, uvf, flip, fname) => {
     const base = positions.length / 3;
     const uvAx = FACE_UV[fname];
     for (let j = 0; j < B.length; j++) for (let i = 0; i < A.length; i++) {
       const g = mk(A[i], B[j]);
       if (seamer) { seamer(g, uvAx, sOut); seamA.push(sOut[0], 1, sOut[1], sOut[2]); }
+      if (occB) occA.push(occOf(occB, g, HH));
       proj(g[0], g[1], g[2], P, N);
       disp(P, N);
       positions.push(P.x, P.y + yOff, P.z + zOff); normals.push(N.x, N.y, N.z);
-      const uv = uvf(P); uvs.push(uv[0], uv[1]);
+      const uv = uvf(unroll(g, U)); uvs.push(uv[0], uv[1]);
     }
     const W = A.length;
     for (let j = 0; j < B.length - 1; j++) for (let i = 0; i < W - 1; i++) {
@@ -198,6 +225,7 @@ function softBox(sx, sy, sz, o = {}) {
   geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
   geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
   if (seamer) geo.setAttribute('seam', new THREE.Float32BufferAttribute(seamA, 4));
+  if (occB) geo.setAttribute('occ', new THREE.Float32BufferAttribute(occA, 1));
   geo.setIndex(index);
   if (deformed) smoothNormalsByPosition(geo);
   /* линии кромки (для канта/шва): периметр грани на 45° скругления */
@@ -226,7 +254,7 @@ function softBox(sx, sy, sz, o = {}) {
 /* деформации: купол, выпуклость боков, прогиб у фронта, стяжка (каналы / капитоне), сужение ног */
 function makeDisplacer(s) {
   const { Hx, Hy, Hz, crown, cf, bulge, sag, tuft, tf, taper, sx, sy } = s;
-  const crownBack = s.crownBack || 0, cp = s.crownP || 2, pillow = s.pillow || 0, ripple = s.ripple || 0, slump = s.slump || 0;
+  const crownBack = s.crownBack || 0, crownBottom = s.crownBottom || 0, cp = s.crownP || 2, pillow = s.pillow || 0, ripple = s.ripple || 0, slump = s.slump || 0, drape = s.drape || null;
   /* профиль «купола»: 1 − |u|^p (p > 2 — полнее, «набитая» подушка с мягким спадом к кромке) */
   const cprof = (u) => 1 - Math.pow(Math.min(1, u), cp);
   const buttons = [];
