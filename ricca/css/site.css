@@ -11,7 +11,7 @@
   /* цвет: контраст текста ≥ 7 : 1, капитель ≥ 4,5 : 1 (проверено) */
   --paper: #FFFFFF;      /* страница — холодный белый (заказчик 13 окт.: «айвори слишком жёлтый») */
   --paper-2: #F2F3F5;    /* подложка фото, пока грузится */
-  --studio: #FFFFFF;     /* фон предметных рендеров — тот же, что в файлах и у страницы (tools/media-v3/studio-rekey.py): рамки не видны */
+  --studio: #FAFAF8;     /* фон предметных рендеров — тот же, что в файлах и у страницы (tools/media-v3/studio-rekey.py): рамки не видны */
   --ink: #0B0B0C;        /* текст 19,6 : 1 на --paper */
   --ink-2: #45474C;      /* второстепенный 9,4 : 1 на --paper */
   --line: #DADDE2;       /* волосяные линии: видны и на 1x (1,36 : 1), не спорят с текстом */
@@ -404,8 +404,10 @@ body { counter-reset: sec 1; }
 .wk__img picture { display: contents; }
 .wk__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1400ms var(--ease); }
 /* модели каталога на белом фоне — целиком, без обрезки */
-.wk__a--model .wk__img, .tile__img--model { background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
-.wk__a--model .wk__img img, .tile__img--model img { object-fit: contain; padding: 6%; box-sizing: border-box; }
+/* модели каталога: рамка повторяет кадр фото (4 : 3, фон страницы), фото заполняет рамку целиком — без пустоты вокруг;
+   поля вокруг изделия уже сделаны в самом фото (одинаковые у всех моделей) */
+.wk__a--model .wk__img, .tile__img--model { aspect-ratio: 4 / 3; background: var(--studio); box-shadow: inset 0 0 0 1px var(--line); }
+.wk__a--model .wk__img img, .tile__img--model img { object-fit: cover; }
 .wk__t { margin-top: 14px; font: 500 11px/1.5 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--ink); text-wrap: balance; }
 .wk__s { margin-top: 2px; font: 400 12px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .01em; }
 @media (hover: hover) {

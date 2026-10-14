@@ -146,16 +146,19 @@
     'Для отдыха: округлые, на цоколе': 'Lounge: rounded, on a plinth', 'Реальные изделия ателье': 'Real pieces by the atelier', 'Велюр, букле, шенилл': 'Velour, bouclé, chenille',
     'Ортопедические, на своём сайте': 'Orthopaedic, on their own website',
   };
-  const FAB_TYPES = { 'Велюр': 'Velour', 'Букле': 'Bouclé', 'Шенилл': 'Chenille', 'Замша': 'Suede', 'САМБИЯ': 'SAMBIA' };
+  const FAB_TYPES = { 'Велюр': 'Velour', 'Букле': 'Bouclé', 'Шенилл': 'Chenille', 'Замша': 'Suede', 'Экокожа': 'Faux leather', 'САМБИЯ': 'SAMBIA' };
   const FAB_KINDS = {
     'букле': 'bouclé', 'велюр': 'velour', 'велюр в рубчик': 'ribbed velour', 'искусственная замша': 'faux suede', 'микровелюр': 'microvelour',
     'микровелюр с муаром': 'microvelour with moiré', 'шенилл': 'chenille',
+    'экокожа': 'faux leather', 'зернистая': 'grained', 'гладкая': 'smooth', 'винтаж': 'vintage',
   };
   const COLOURS = { 'Серый меланж': 'Grey mélange', 'Графит': 'Graphite', 'Тёмно-зелёный': 'Dark green', 'Молочный': 'Milk white', 'Серо-бежевый': 'Greige',
     'Медный меланж': 'Copper mélange', 'Чёрно-бежевая полоса': 'Black and beige stripe', 'Светло-серый меланж': 'Light grey mélange', 'Тёмно-синий': 'Navy',
     'Серо-голубой меланж': 'Grey-blue mélange', 'Льняной': 'Linen', 'Дымчатый с розовой нитью': 'Smoky with pink thread', 'Песочный с белой нитью': 'Sand with white thread',
     'Серый твид': 'Grey tweed', 'Белый с чёрными пятнами': 'White with black spots', 'Чёрно-белый узор': 'Black and white pattern', 'Оливковый с розовым': 'Olive with pink',
-    'Чёрный с белыми пятнами': 'Black with white spots', 'Пыльная роза': 'Dusty rose', 'Морская волна': 'Teal', 'Чёрный': 'Black' };   // цвета коллекции RICCA
+    'Чёрный с белыми пятнами': 'Black with white spots', 'Пыльная роза': 'Dusty rose', 'Морская волна': 'Teal', 'Чёрный': 'Black',
+    'Красная': 'Red', 'Сливочная': 'Cream', 'Мокко': 'Mocha', 'Бордо': 'Burgundy', 'Коралловая': 'Coral', 'Оранжевая': 'Orange', 'Белая': 'White',
+    'Бежевая, гладкая': 'Beige, smooth', 'Слоновая кость, гладкая': 'Ivory, smooth', 'Графит, винтаж': 'Graphite, vintage', 'Крем, винтаж': 'Cream, vintage' };   // цвета коллекции RICCA
   const sub = (s) => String(s || '').split(', ').map((p) => p.split(' и ').map((w) => WORDS[w] || w).join(' and ')).join(', ');
   const modelTitle = (t) => {
     const m = /^(Диван|Кресло|Кровать) (.+)$/.exec(t || '');
@@ -164,7 +167,7 @@
     const no = /^№\s*(\d+)$/.exec(m[2]);
     return no ? `${kind.replace(/^./, (c) => c.toUpperCase())} No. ${no[1]}` : `${m[2]} ${kind}`;
   };
-  const FACTS = { 'для вакуумной упаковки': 'suitable for vacuum packing', 'чистка: мыльный раствор': 'cleaning: soapy water', 'чистка: сухая': 'cleaning: dry only',
+  const FACTS = { 'хлопок 30 %, полиуретан 70 %': 'cotton 30 %, polyurethane 70 %', 'морозостойкость −20 °C': 'frost-resistant to −20 °C', 'для вакуумной упаковки': 'suitable for vacuum packing', 'чистка: мыльный раствор': 'cleaning: soapy water', 'чистка: сухая': 'cleaning: dry only',
     'водоотталкивающая пропитка': 'water-repellent finish', 'легко чистится': 'easy to clean', 'антикоготь': 'claw-resistant', 'не выгорает': 'fade-resistant' };
   const fact = (f) => FACTS[String(f)] || String(f).replace(/^(\d[\d ]*) циклов$/, '$1 cycles').replace(/г\/м\.п\./, 'g/lm').replace(/г\/м²/, 'g/m²')
     .replace(/^ширина (\d+) см$/, 'width $1 cm').replace(/^плотность /, 'density ').replace(/^состав: /, 'composition: ');
@@ -177,7 +180,7 @@
     t.title = FAB_TYPES[t.title] || t.title;
     (t.collections || []).forEach((c) => {
       c.title = FAB_TYPES[c.title] || c.title;
-      if (c.kind) c.kind = c.kind.split(': ').map((k) => FAB_KINDS[k] || k).join(': ');
+      if (c.kind) c.kind = c.kind.split(': ').map((k) => k.split(', ').map((w) => FAB_KINDS[w] || w).join(', ')).join(': ');
       if (c.totalNote) c.totalNote = 'More than 50 collections and 1,000 colours — in the showroom';
       if (Array.isArray(c.facts)) c.facts = c.facts.map(fact);
       (c.colours || []).forEach((k) => { k.name = COLOURS[k.name] || k.name; });

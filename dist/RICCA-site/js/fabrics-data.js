@@ -1776,6 +1776,102 @@ window.RICCA_FABRIC_LIBRARY = {
           ]
         }
       ]
+    },
+    {
+      "id": "ekokozha",
+      "title": "Экокожа",
+      "collections": [
+        {
+          "id": "ricca-leather",
+          "title": "RICCA LEATHER",
+          "kind": "экокожа: зернистая, гладкая, винтаж",
+          "facts": [
+            "150 000 циклов",
+            "хлопок 30 %, полиуретан 70 %",
+            "морозостойкость −20 °C"
+          ],
+          "texture": "img/fabrics/ricca-leather/01-1200.webp",
+          "colours": [
+            {
+              "name": "Красная",
+              "src900": "img/fabrics/ricca-leather/01-1200.webp",
+              "src450": "img/fabrics/ricca-leather/01-600.webp",
+              "src240": "img/fabrics/ricca-leather/01-160.webp",
+              "hex": "#c24439"
+            },
+            {
+              "name": "Сливочная",
+              "src900": "img/fabrics/ricca-leather/02-1200.webp",
+              "src450": "img/fabrics/ricca-leather/02-600.webp",
+              "src240": "img/fabrics/ricca-leather/02-160.webp",
+              "hex": "#c8b692"
+            },
+            {
+              "name": "Мокко",
+              "src900": "img/fabrics/ricca-leather/03-1200.webp",
+              "src450": "img/fabrics/ricca-leather/03-600.webp",
+              "src240": "img/fabrics/ricca-leather/03-160.webp",
+              "hex": "#7e624f"
+            },
+            {
+              "name": "Бордо",
+              "src900": "img/fabrics/ricca-leather/04-1200.webp",
+              "src450": "img/fabrics/ricca-leather/04-600.webp",
+              "src240": "img/fabrics/ricca-leather/04-160.webp",
+              "hex": "#a2847c"
+            },
+            {
+              "name": "Коралловая",
+              "src900": "img/fabrics/ricca-leather/05-1200.webp",
+              "src450": "img/fabrics/ricca-leather/05-600.webp",
+              "src240": "img/fabrics/ricca-leather/05-160.webp",
+              "hex": "#c06b64"
+            },
+            {
+              "name": "Оранжевая",
+              "src900": "img/fabrics/ricca-leather/06-1200.webp",
+              "src450": "img/fabrics/ricca-leather/06-600.webp",
+              "src240": "img/fabrics/ricca-leather/06-160.webp",
+              "hex": "#bb4628"
+            },
+            {
+              "name": "Белая",
+              "src900": "img/fabrics/ricca-leather/07-1200.webp",
+              "src450": "img/fabrics/ricca-leather/07-600.webp",
+              "src240": "img/fabrics/ricca-leather/07-160.webp",
+              "hex": "#d0d1c9"
+            },
+            {
+              "name": "Бежевая, гладкая",
+              "src900": "img/fabrics/ricca-leather/08-1200.webp",
+              "src450": "img/fabrics/ricca-leather/08-600.webp",
+              "src240": "img/fabrics/ricca-leather/08-160.webp",
+              "hex": "#b3a796"
+            },
+            {
+              "name": "Слоновая кость, гладкая",
+              "src900": "img/fabrics/ricca-leather/09-1200.webp",
+              "src450": "img/fabrics/ricca-leather/09-600.webp",
+              "src240": "img/fabrics/ricca-leather/09-160.webp",
+              "hex": "#ccc7b8"
+            },
+            {
+              "name": "Графит, винтаж",
+              "src900": "img/fabrics/ricca-leather/10-1200.webp",
+              "src450": "img/fabrics/ricca-leather/10-600.webp",
+              "src240": "img/fabrics/ricca-leather/10-160.webp",
+              "hex": "#988b83"
+            },
+            {
+              "name": "Крем, винтаж",
+              "src900": "img/fabrics/ricca-leather/11-1200.webp",
+              "src450": "img/fabrics/ricca-leather/11-600.webp",
+              "src240": "img/fabrics/ricca-leather/11-160.webp",
+              "hex": "#d0ccbf"
+            }
+          ]
+        }
+      ]
     }
   ],
   "totalNote": "Больше 50 коллекций и 1000 цветов — в шоуруме"
