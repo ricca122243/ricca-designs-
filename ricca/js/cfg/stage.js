@@ -12,7 +12,9 @@ import { onMaterialUpdate, setEnvMap } from './materials.js';
 const BG = '#F2F3F5';
 /* студийный свет «как на фото интерьера»: окружение и заполнение слабее, ключевой — сильнее и сбоку-сверху:
    верх подушек — цвет образца, фронты и бока на 15–25 % темнее — объём читается, а не «плоская заливка» */
-const LIGHT = { env: 0.36, hemi: 0.34, key: 1.5, fill: 0.1, exposure: 0.98, kx: -0.8, ky: 2.9, kz: 1.0 };   // холодный светлый фон сайта (--paper-2)
+/* ключевой — большое мягкое «окно» слева-сверху (чуть тёплый), заполнение со стороны камеры холоднее и слабее,
+   контровой справа-сзади отделяет силуэт от светлого фона (на фото интерьеров — свет из окна за диваном) */
+const LIGHT = { env: 0.34, hemi: 0.3, key: 1.55, fill: 0.16, rim: 0.45, exposure: 0.98, kx: -1.0, ky: 2.6, kz: 1.1, keyColor: 0xfff7ee, fillColor: 0xeef2f8, rimColor: 0xffffff };   // холодный светлый фон сайта (--paper-2)
 const FOV = 30;
 const AZ = THREE.MathUtils.degToRad(35), EL = THREE.MathUtils.degToRad(18), EL_PLAN = THREE.MathUtils.degToRad(25);
 /* шов 1,6 мм рисуем только когда он не тоньше 1,2 px (иначе — «пунктир» из-за алиасинга) */
@@ -79,14 +81,17 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
 
   const hemi = new THREE.HemisphereLight(0xffffff, 0xc8ccd2, LIGHT.hemi);
   scene.add(hemi);
-  const key = new THREE.DirectionalLight(0xffffff, LIGHT.key);
+  const key = new THREE.DirectionalLight(LIGHT.keyColor, LIGHT.key);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   key.shadow.radius = 12; key.shadow.blurSamples = 24; key.shadow.bias = -0.0005; key.shadow.normalBias = 0.01;
   scene.add(key); scene.add(key.target);
   /* мягкий заполняющий свет со стороны камеры (без тени): бок, повёрнутый к зрителю, не проваливается в плоскую тень */
-  const fill = new THREE.DirectionalLight(0xffffff, LIGHT.fill);
+  const fill = new THREE.DirectionalLight(LIGHT.fillColor, LIGHT.fill);
   scene.add(fill); scene.add(fill.target);
+  /* контровой: сзади-справа, чуть сверху — светлая кромка на спинке и подлокотнике, без тени */
+  const rim = new THREE.DirectionalLight(LIGHT.rimColor, LIGHT.rim);
+  scene.add(rim); scene.add(rim.target);
 
   /* студия: пол того же цвета, что фон (тень — ShadowMaterial), контактная тень */
   const studio = new THREE.Group(); studio.name = 'studio';
@@ -125,8 +130,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     gtao = new GTAOPass(scene, camera, size.x * pr, size.y * pr);
     gtao.output = GTAOPass.OUTPUT.Default;
     /* мягкое AO: малый радиус и сильнее шумоподавление — без «дымки» под ножками и шума в щели спинка/сиденье */
-    gtao.blendIntensity = 0.85;
-    gtao.updateGtaoMaterial({ radius: 0.15, distanceExponent: 2, thickness: 0.6, scale: 0.9, samples: phone ? 12 : 24, distanceFallOff: 0.6 });
+    gtao.blendIntensity = 0.9;
+    gtao.updateGtaoMaterial({ radius: 0.18, distanceExponent: 2, thickness: 0.7, scale: 1.0, samples: phone ? 12 : 24, distanceFallOff: 0.6 });
     gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 10, rings: 4, samples: phone ? 12 : 24 });
     composer.addPass(gtao);
     composer.addPass(new OutputPass());
@@ -275,6 +280,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     key.target.position.copy(center);
     fill.position.copy(center).add(dirAt(AZ + THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(25)).multiplyScalar(r * 3));
     fill.target.position.copy(center);
+    rim.position.copy(center).add(dirAt(AZ + Math.PI - THREE.MathUtils.degToRad(40), THREE.MathUtils.degToRad(32)).multiplyScalar(r * 3));
+    rim.target.position.copy(center);
     const cam = key.shadow.camera;
     cam.left = -r; cam.right = r; cam.top = r; cam.bottom = -r; cam.near = 0.1; cam.far = r * 6;
     cam.updateProjectionMatrix();

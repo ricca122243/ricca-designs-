@@ -143,19 +143,21 @@ function softBox(sx, sy, sz, o = {}) {
   const cf = o.crownFace || 'y';
   const crownBack = cf === 'z' ? o.crownBack || 0 : 0;
   /* базовый бокс уменьшен на «купол» и выпуклость — после деформации деталь ровно в габарите */
-  const bx = sx - 2 * bulge, by = sy - (cf === 'y' ? crown : 0), bz = sz - 2 * bulge - (cf === 'z' ? crown + crownBack : 0);
+  /* «оседание» (slump) раздвигает низ подушки — тоже учтено в уменьшении базового бокса: деталь строго в габарите */
+  const slumpX = (o.slump || 0) * sx / 2, slumpZ = (o.slump || 0) * sz / 2;
+  const bx = sx - 2 * (bulge + slumpX), by = sy - (cf === 'y' ? crown : 0), bz = sz - 2 * (bulge + slumpZ) - (cf === 'z' ? crown + crownBack : 0);
   const Hx = bx / 2, Hy = by / 2, Hz = bz / 2;
   const lim = (r, h) => Math.max(0.0005, Math.min(r, h * 0.999));
   const rx = lim(o.rx ?? 0.02, Hx), rz = lim(o.rz ?? o.rx ?? 0.02, Hz);
   let rT = lim(o.rTop ?? 0.02, Hy), rB = lim(o.rBottom ?? 0.015, Hy);
   if (rT + rB > by * 0.999) { const k = (by * 0.999) / (rT + rB); rT *= k; rB *= k; }
-  const R = { x: [rx, rx], y: [rB, rT], z: [rz, rz] };
+  const R = { x: [o.rxBack != null ? lim(o.rxBack, Hx) : rx, rx], y: [rB, rT], z: [o.rzBack != null ? lim(o.rzBack, Hz) : rz, rz] };
   const proj = makeProjector(Hx, Hy, Hz, R);
   const tuft = o.tufting;
   /* плотность стяжки: не мельче q.tuft и не больше ~30 тыс. вершин на две большие грани */
   const tArea = tuft ? (o.tuftFace === 'y' ? sx * sz : sx * sy) : 0;
-  const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 6000 : o.quality === 'mid' ? 12000 : 24000))) : q.sp;
-  const deformed = crown || crownBack || bulge || tuft || o.sag || o.pillow || (o.taper && o.taper !== 1);
+  const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 5000 : o.quality === 'mid' ? 8000 : 15000))) : q.sp;
+  const deformed = crown || crownBack || bulge || tuft || o.sag || o.pillow || o.ripple || o.slump || (o.taper && o.taper !== 1);
   const sp = (deformed ? q.sp : q.flat) * (o.dense || 1);
   const tf = o.tuftFace || 'z';
   const X = axisSamples(Hx, rx, rx, tuft ? spTuft : sp, q.nq);
@@ -165,7 +167,7 @@ function softBox(sx, sy, sz, o = {}) {
   const positions = [], normals = [], uvs = [], index = [], seamA = [];
   const P = new THREE.Vector3(), N = new THREE.Vector3();
   const yOff = cf === 'y' ? -crown / 2 : 0, zOff = cf === 'z' ? -(crown - crownBack) / 2 : 0;
-  const disp = makeDisplacer({ Hx, Hy, Hz, crown, crownBack, crownP: o.crownP || 2, cf, bulge, sag: o.sag || 0, tuft, tf, sx, sy, sz, taper: o.taper || 1, rT, pillow: o.pillow || 0 });
+  const disp = makeDisplacer({ Hx, Hy, Hz, crown, crownBack, crownP: o.crownP || 2, cf, bulge, sag: o.sag || 0, tuft, tf, sx, sy, sz, taper: o.taper || 1, rT, pillow: o.pillow || 0, ripple: o.ripple || 0, slump: o.slump || 0 });
   const seamer = o.seams && o.seams.length && o.quality !== 'low' ? makeSeamer(Hx, Hy, Hz, R, o.seams) : null;
   const sOut = [0, 0, 0];
   const face = (A, B, mk, uvf, flip, fname) => {
@@ -224,7 +226,7 @@ function softBox(sx, sy, sz, o = {}) {
 /* деформации: купол, выпуклость боков, прогиб у фронта, стяжка (каналы / капитоне), сужение ног */
 function makeDisplacer(s) {
   const { Hx, Hy, Hz, crown, cf, bulge, sag, tuft, tf, taper, sx, sy } = s;
-  const crownBack = s.crownBack || 0, cp = s.crownP || 2, pillow = s.pillow || 0;
+  const crownBack = s.crownBack || 0, cp = s.crownP || 2, pillow = s.pillow || 0, ripple = s.ripple || 0, slump = s.slump || 0;
   /* профиль «купола»: 1 − |u|^p (p > 2 — полнее, «набитая» подушка с мягким спадом к кромке) */
   const cprof = (u) => 1 - Math.pow(Math.min(1, u), cp);
   const buttons = [];
@@ -287,7 +289,21 @@ function makeDisplacer(s) {
     if (sag && N.y > 0.2) {
       const z = (P.z + Hz) / (2 * Hz); // 0 у спинки, 1 у фронта
       const u = Math.min(1, Math.abs(P.x) / Hx);
-      P.y -= sag * smooth(0.45, 0.8, z) * (1 - smooth(0.92, 1.0, z)) * (1 - u * u) * smooth(0.2, 0.95, N.y);
+      /* где сидят: мягкая «чаша» ближе к середине глубины, к фронту подушка снова полная (валик кромки) */
+      P.y -= sag * smooth(0.3, 0.62, z) * (1 - smooth(0.8, 0.97, z)) * (1 - u * u * u) * smooth(0.2, 0.95, N.y);
+    }
+    /* съёмная подушка «осела»: нижняя кромка чуть шире верхней (наполнитель стекает вниз), верх мягче */
+    if (slump && Math.abs(N.y) < 0.9) {
+      const t = (P.y + Hy) / (2 * Hy); const k = 1 + slump * (1 - t) * (1 - t);
+      const w = 1 - smooth(0.5, 0.9, Math.abs(N.y));
+      P.x += Math.sign(N.x) * Math.abs(N.x) * (k - 1) * Hx * w; P.z += Math.sign(N.z) * Math.abs(N.z) * (k - 1) * Hz * w;
+    }
+    /* покрывало: длинные мягкие складки поперёк (амплитуда внутри габарита — базовый бокс уменьшен на crown) */
+    if (ripple && N.y > 0.2) {
+      const x = P.x, z = P.z;
+      const f = Math.sin(x * 9.5 + 0.8 * Math.sin(z * 4.0 + 1.3)) * 0.6 + Math.sin(x * 23.0 + z * 5.0 + 0.5) * 0.25 + Math.sin(z * 14.0 - x * 3.0) * 0.15;
+      const edge = (1 - Math.pow(Math.min(1, Math.abs(x) / Hx), 6)) * (1 - Math.pow(Math.min(1, Math.abs(z) / Hz), 6));
+      P.y += ripple * f * edge * smooth(0.2, 0.95, N.y);
     }
     if (tuftFn) {
       if (tuft === 'channels' && tf === 'z' && N.z > 0.3) {
@@ -492,6 +508,14 @@ function legGeometry(it, quality) {
   /* UV в метрах; волокна дерева — вдоль длины (U) */
   const uv = geo.attributes.uv, circ = Math.PI * it.sx;
   for (let i = 0; i < uv.count; i++) { const u = uv.getX(i), v = uv.getY(i); uv.setXY(i, v * it.sy, u * circ); }
+  /* металлическая ножка: пластина крепления под рамой (Ø 5 см, 5 мм) — ножка «растёт» из основания, а не воткнута в него */
+  if (it.legKind === 'metal' && it.sy >= 0.06 && !it.support) {
+    const plate = new THREE.CylinderGeometry(0.026, 0.028, 0.005, q.radial, 1, false);
+    plate.translate(0, it.sy / 2 - 0.0025, 0);
+    const puv = plate.attributes.uv; for (let i = 0; i < puv.count; i++) puv.setXY(i, puv.getX(i) * 0.16, puv.getY(i) * 0.02);
+    const merged = mergeGeometries([geo, plate], false); geo.dispose(); plate.dispose();
+    if (merged) geo = merged;
+  }
   return geo;
 }
 
@@ -590,52 +614,67 @@ function itemGeometry(it, quality, type, dense = 1) {
   const seams = (list) => { if (!it.piping) o.seams = list; };
   const soft = type !== 'pouf';
   if (it.role === 'arm') {
-    /* подлокотник: мягкое скругление верха (не «доска»), чуть выпуклые бока и верх, шов по передней панели */
-    if (it.armStyle === 'round') { o.rx = it.sx / 2; o.rTop = it.sx / 2; o.rz = 0.06; o.rBottom = 0.02; o.crown = 0.008; }
-    else if (it.armStyle === 'wide') { o.rx = 0.06; o.rz = 0.05; o.rTop = 0.07; o.rBottom = 0.02; o.crown = 0.01; o.crownP = 2.5; }
-    else { o.rx = Math.min(0.035, it.sx * 0.3); o.rz = 0.035; o.rTop = 0.045; o.rBottom = 0.015; o.crown = 0.005; }
-    o.bulge = it.sx > 0.15 ? 0.008 : 0.005;
+    /* подлокотник: мягкое скругление верха (не «доска»), чуть выпуклые бока и верх, шов по передней панели.
+       Тонкий (track) — верх почти полукруглый, как у Klint; широкий — «подушка» со скруглением 8–9 см, как у ARCO */
+    if (it.armStyle === 'round') { o.rx = it.sx / 2; o.rTop = it.sx / 2; o.rz = Math.min(0.08, it.sx / 2); o.rBottom = 0.025; o.crown = 0.008; }
+    else if (it.armStyle === 'wide') { o.rx = Math.min(0.08, it.sx * 0.4); o.rz = 0.07; o.rTop = Math.min(0.09, it.sx * 0.45); o.rBottom = 0.03; o.crown = 0.012; o.crownP = 2.6; }
+    else { o.rx = Math.min(0.045, it.sx * 0.42); o.rz = 0.04; o.rTop = Math.min(0.055, it.sx * 0.46); o.rBottom = 0.02; o.crown = 0.006; o.crownP = 2.4; }
+    o.bulge = it.sx > 0.15 ? 0.012 : 0.008;
     seams([['z', 1]]);
   }
   if (cushion && it.role === 'seat') {
     /* подушка сиденья: «набитый» купол, скругление кромки 5 см, выпуклая боковая лента, прогиб там, где сидят */
-    const cr = type === 'pouf' ? it.crown || 0.015 : 0.028;
-    o.crown = cr; o.crownP = 2.4; o.bulge = type === 'pouf' ? 0.008 : 0.012; o.sag = type === 'pouf' ? 0 : 0.008;
-    /* скругление в плане (rx, rz) больше, чем по высоте (rTop): мягкий «буллнос» фронта, угол в плане ~7 см */
-    o.rx = o.rz = Math.min(0.075, it.sx * 0.2, it.sz * 0.2); o.rTop = Math.max(r, 0.05); o.rBottom = Math.min(Math.max(r, 0.035), 0.035);
+    const cr = type === 'pouf' ? it.crown || 0.015 : 0.03;
+    o.crown = cr; o.crownP = 2.6; o.bulge = type === 'pouf' ? 0.008 : 0.016; o.sag = type === 'pouf' ? 0 : 0.011; o.slump = type === 'pouf' ? 0 : 0.03;
+    /* «набитая» подушка: кромка-«буллнос» (скругление верха ~ 45 % толщины), низ мягче, угол в плане ~8 см */
+    o.rx = o.rz = Math.min(0.085, it.sx * 0.2, it.sz * 0.2); o.rTop = Math.min(0.07, it.sy * 0.46); o.rBottom = Math.min(0.045, it.sy * 0.3);
+    /* задняя (и у углового блока — боковая) кромка уходит под подушку спинки: скругление там малое, без «щели-V» между подушками */
+    if (type !== 'pouf') { o.rzBack = 0.025; if (it.id.startsWith('seat-c')) o.rxBack = 0.025; }
     if (it.seam) seams([['y', 1], ['y', -1]]);
   }
   if (cushion && it.role === 'back') {
     /* подушка спинки: пухлая, к верху тоньше, обе стороны выпуклые, очень мягкий верх */
-    o.crown = Math.max(it.crown || 0.02, 0.04); o.crownBack = 0.015; o.crownP = 2.2; o.crownFace = 'z'; o.bulge = 0.01; o.pillow = 0.22;
-    o.rx = Math.min(0.09, it.sx * 0.2); o.rTop = 0.075; o.rBottom = 0.035; o.rz = Math.min(0.08, it.sz * 0.4);
+    o.crown = Math.max(it.crown || 0.02, Math.min(0.055, it.sz * 0.3)); o.crownBack = Math.min(0.02, it.sz * 0.1); o.crownP = 2.4; o.crownFace = 'z'; o.bulge = 0.014; o.pillow = 0.2;
+    o.rx = Math.min(0.1, it.sx * 0.2); o.rTop = Math.min(0.09, it.sy * 0.25); o.rBottom = Math.min(0.035, it.sz * 0.2); o.rz = Math.min(0.09, it.sz * 0.42);
     if (it.seam) seams([['z', 1], ['z', -1]]);
   }
   if (!cushion && it.role === 'back') {
-    o.rTop = Math.min(0.09, it.sz * 0.45); o.rx = 0.035; o.rz = Math.min(0.08, it.sz * 0.45);
-    if (it.crown) { o.crown = it.sz > 0.15 ? 0.025 : it.crown; o.crownP = 2.5; o.crownFace = 'z'; o.bulge = 0.006; }
+    o.rTop = Math.min(0.1, it.sz * 0.48); o.rx = Math.min(0.045, it.sx * 0.2); o.rz = Math.min(0.09, it.sz * 0.48); o.rBottom = 0.015;
+    if (it.crown) { o.crown = it.sz > 0.15 ? 0.03 : it.crown; o.crownP = 2.6; o.crownFace = 'z'; o.bulge = 0.008; }
     if (it.sz > 0.15) seams([['z', 1]]);
   }
   if (it.backShape === 'rounded') { o.rx = Math.min(it.sx * 0.25, 0.12); o.rTop = o.rx; o.rz = Math.min(0.025, it.sz * 0.45); o.rBottom = 0.02; }
   if (it.role === 'headboard') {
     /* изголовье: мягкая панель с выпуклым фронтом и швом-кантом по периметру фронта */
-    o.rx = it.wing ? 0.055 : 0.045; o.rTop = it.wing ? 0.065 : 0.055; o.rz = Math.min(0.04, it.sz * 0.4); o.rBottom = 0.01;
-    if (it.crown) { o.crown = it.tufting ? it.crown : 0.02; o.crownP = 2.5; o.crownFace = 'z'; }
+    o.rx = it.wing ? 0.06 : 0.05; o.rTop = it.wing ? 0.07 : 0.06; o.rz = Math.min(0.045, it.sz * 0.45); o.rBottom = 0.012;
+    if (it.crown) { o.crown = it.tufting ? it.crown : 0.025; o.crownP = 2.6; o.crownFace = 'z'; o.bulge = it.tufting ? 0 : 0.006; }
     if (it.tufting) { o.tufting = it.tufting; o.tuftFace = 'z'; }
     seams([['z', 1]]);
   }
-  if (it.role === 'mattress') { o.rx = o.rz = 0.05; o.rTop = 0.035; o.rBottom = 0.035; o.crown = it.crown || 0.008; o.bulge = 0.004; }
+  if (it.role === 'mattress') { o.rx = o.rz = 0.045; o.rTop = 0.03; o.rBottom = 0.03; o.crown = it.crown || 0.01; o.crownP = 3; o.bulge = 0.006; }
   if (it.role === 'seat' && it.tufting) { o.tufting = it.tufting; o.tuftFace = 'y'; }
   if (it.role === 'top') { o.rx = o.rz = it.rPlan || 0.012; o.rTop = it.r; o.rBottom = it.r * 0.6; }
-  if (it.role === 'decor') { o.crown = it.crown || 0.02; o.rx = o.rz = it.r; o.rTop = it.r; o.rBottom = 0.01; o.bulge = it.decorKind === 'pillow' ? 0.012 : 0.004; }
+  if (it.role === 'decor') {
+    if (it.decorKind === 'pillow') {
+      /* подушка: набитая, кромки почти эллипс (скругление ≈ половина толщины), слегка осевшая */
+      o.crown = Math.min(it.crown || 0.03, it.sy * 0.3); o.crownP = 1.8; o.rx = o.rz = Math.min(it.r, it.sx * 0.2); o.rTop = it.sy * 0.42; o.rBottom = it.sy * 0.42; o.bulge = 0.012; o.slump = 0.04;
+    } else {
+      /* покрывало: ткань лежит складками — мягкие волны по верху, скруглённый свисающий край */
+      o.crown = Math.min(it.crown || 0.02, it.sy * 0.35); o.crownP = 1.6; o.rx = o.rz = it.r; o.rTop = Math.min(it.r, it.sy * 0.4); o.rBottom = Math.min(0.015, it.sy * 0.3); o.bulge = 0.004; o.ripple = Math.min(0.012, it.sy * 0.18); o.dense = (o.dense || 1) * 0.6;
+    }
+  }
   if (cushion === false && it.softBack) { o.rTop = 0.08; o.rx = 0.055; o.rz = Math.min(0.07, it.sz * 0.4); o.crown = Math.max(it.crown || 0.02, 0.03); o.crownP = 2.3; o.crownFace = 'z'; o.bulge = 0.008; o.seams = it.piping ? undefined : [['z', 1]]; }
-  if (it.role === 'plinth') { o.rx = o.rz = 0.01; o.rTop = 0.004; o.rBottom = 0.004; }
+  if (it.role === 'plinth') { o.rx = o.rz = 0.012; o.rTop = 0.006; o.rBottom = 0.004; }
   if (it.role === 'frame') {
     /* основание под подушками: мягкая обивка, чуть выпуклый фронт */
-    o.rTop = Math.min(0.03, it.sy * 0.4); o.rBottom = 0.012; o.rx = o.rz = Math.max(r, soft ? 0.03 : r); o.bulge = soft && type !== 'bed' && it.sy > 0.12 ? 0.005 : 0;
+    const big = type === 'modular' || (type !== 'bed' && it.sy > 0.2);   // низкие «плиты» модульных — скругление 6 см, как у ARCO
+    o.rTop = Math.min(big ? 0.045 : 0.035, it.sy * 0.4); o.rBottom = Math.min(big ? 0.035 : 0.02, it.sy * 0.3);
+    o.rx = o.rz = Math.max(r, soft ? (big ? 0.06 : 0.04) : r); o.bulge = soft && type !== 'bed' && it.sy > 0.12 ? 0.008 : 0;
+    if (type === 'bed') { o.rx = o.rz = 0.02; o.rTop = 0.012; }
   }
   if (it.role === 'rail') {
-    o.rTop = Math.min(0.035, it.sy * 0.4); o.rBottom = 0.012; o.rx = o.rz = Math.min(0.03, it.sx * 0.4, it.sz * 0.4); o.crown = 0.004; o.bulge = 0.005;
+    /* царга кровати: мягкий «валик» — верх скруглён почти на всю толщину (NUBO), бока слегка выпуклые */
+    o.rTop = Math.min(0.06, it.sy * 0.42, Math.min(it.sx, it.sz) * 0.48); o.rBottom = Math.min(0.03, it.sy * 0.2); o.rx = o.rz = Math.min(0.045, it.sx * 0.45, it.sz * 0.45); o.crown = 0.006; o.crownP = 2.6; o.bulge = 0.008;
     seams([['y', 1]]);
   }
   return softBox(it.sx, it.sy, it.sz, o);
