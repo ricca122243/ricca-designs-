@@ -62,6 +62,7 @@
 <div class="modes" role="tablist" aria-label="Режим">
 <button class="modes__tab" type="button" role="tab" id="tab-model" aria-controls="steps" aria-selected="true" data-mode-tab="model">Модель</button>
 <button class="modes__tab" type="button" role="tab" id="tab-room" aria-controls="room-panel" aria-selected="false" tabindex="-1" data-mode-tab="room">Моя комната</button>
+<button class="modes__tab" type="button" role="tab" id="tab-photo" aria-controls="photo-panel" aria-selected="false" tabindex="-1" data-mode-tab="photo">Фото комнаты</button>
 </div>
 </section>
 
@@ -70,6 +71,17 @@
 
 <div class="vp" id="vp">
 <div class="vp__stage" id="stage" aria-label="Трёхмерная модель — тяните, чтобы повернуть" role="img" tabindex="0"></div>
+<div class="vp__photo" id="photo-host" hidden></div>
+<div class="vp__phe" id="ph-empty" hidden>
+<svg class="vp__phe-ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-camera"/></svg>
+<p class="vp__phe-t">Сфотографируйте комнату&nbsp;— и&nbsp;ваш вариант встанет в&nbsp;неё</p>
+<p class="vp__phe-s">В&nbsp;кадре должен быть виден пол, куда встанет мебель</p>
+<div class="vp__phe-b">
+<button class="btn btn--fill" type="button" data-ph-pick="camera"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-camera"/></svg>Сфотографировать</button>
+<button class="btn btn--line" type="button" data-ph-pick="gallery"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-download"/></svg>Выбрать фото</button>
+</div>
+<p class="vp__phe-d" id="ph-desk-note">Удобнее с&nbsp;телефона: откройте этот вариант по&nbsp;коду, <button class="vp__phe-link" type="button" id="ph-qr">показать код</button></p>
+</div>
 <div class="vp__ph" id="vp-ph" aria-hidden="true">
 <svg class="vp__ph-ico" id="vp-ph-ico"><use href="img/cfg/icons.svg#t-sofa"/></svg>
 <p class="vp__ph-msg" id="vp-ph-msg" hidden></p>
@@ -246,6 +258,46 @@
 <p class="sum__fine">Это схема для&nbsp;подбора формы, размера и&nbsp;ткани; детали согласуем с&nbsp;мастером.</p>
 </div>
 <p class="rp__status" data-room-status role="status" aria-live="polite"></p>
+</div>
+
+<div class="panel panel--room panel--photo" id="photo-panel" role="tabpanel" aria-labelledby="tab-photo" hidden>
+<input class="sr-only" type="file" id="ph-file" accept="image/*" tabindex="-1" aria-hidden="true">
+<section class="rp" aria-labelledby="pp-photo">
+<h2 class="rp__h" id="pp-photo"><span class="step__n">01</span>Фото комнаты</h2>
+<p class="pp__lead">Снимите комнату с&nbsp;того места, откуда на&nbsp;неё обычно смотрят: телефон на&nbsp;уровне груди, в&nbsp;кадре&nbsp;— пол и&nbsp;стена. Фото остаётся у&nbsp;вас на&nbsp;телефоне и&nbsp;никуда не&nbsp;отправляется.</p>
+<div class="pp__pick">
+<button class="btn btn--fill" type="button" data-ph-pick="camera"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-camera"/></svg>Сфотографировать</button>
+<button class="btn btn--line" type="button" data-ph-pick="gallery"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-download"/></svg>Выбрать фото</button>
+</div>
+</section>
+<section class="rp" aria-labelledby="pp-model">
+<h2 class="rp__h" id="pp-model"><span class="step__n">02</span>Мебель</h2>
+<p class="pp__model" id="ph-model"></p>
+<div class="rp__cam">
+<button class="rp__cb" type="button" data-ph-edit="2"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-edit"/></svg>Форма и&nbsp;размер</button>
+<button class="rp__cb" type="button" data-ph-edit="4"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-spark"/></svg>Другая ткань</button>
+</div>
+</section>
+<section class="rp" aria-labelledby="pp-place">
+<h2 class="rp__h" id="pp-place"><span class="step__n">03</span>Положение</h2>
+<div class="rp__cam">
+<button class="rp__cb" type="button" data-ph-rot="-15" data-ph-need disabled><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-rotl"/></svg>Повернуть влево</button>
+<button class="rp__cb" type="button" data-ph-rot="15" data-ph-need disabled><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-rotr"/></svg>Повернуть вправо</button>
+<button class="rp__cb" type="button" data-ph-dist="0.4" data-ph-need disabled><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-plus"/></svg>Ближе</button>
+<button class="rp__cb" type="button" data-ph-dist="-0.4" data-ph-need disabled><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-minus"/></svg>Дальше</button>
+</div>
+<label class="pp__rng"><span>Высота съёмки <b id="ph-eye-v">140&nbsp;см</b></span><input type="range" id="ph-eye" min="70" max="200" step="5" value="140" data-ph-need disabled></label>
+<label class="pp__rng"><span>Наклон телефона <b id="ph-tilt-v">8°</b></span><input type="range" id="ph-tilt" min="-5" max="35" step="1" value="8" data-ph-need disabled></label>
+<p class="sum__fine">Если мебель будто висит в&nbsp;воздухе или тонет в&nbsp;полу&nbsp;— подвиньте эти два ползунка. На&nbsp;фото мебель можно тянуть пальцем по&nbsp;полу, двумя пальцами&nbsp;— поворачивать и&nbsp;приближать.</p>
+<button class="caps-link pp__center" type="button" data-ph-center data-ph-need disabled>Поставить по&nbsp;центру</button>
+</section>
+<div class="rp__acts">
+<button class="btn btn--fill btn--wide" type="button" id="ph-wa" data-ph-need disabled><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Отправить фото в&nbsp;WhatsApp</button>
+<button class="btn btn--line btn--wide pp__save" type="button" id="ph-save" data-ph-need disabled><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-download"/></svg>Сохранить фото</button>
+<button class="caps-link pp__ar" type="button" id="ph-ar"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-ar"/></svg>Вживую через камеру (AR)</button>
+<p class="sum__fine">Это примерка для&nbsp;подбора формы, размера и&nbsp;ткани; детали согласуем с&nbsp;мастером.</p>
+</div>
+<p class="rp__status" data-ph-status role="status" aria-live="polite"></p>
 </div>
 </div>
 </main>

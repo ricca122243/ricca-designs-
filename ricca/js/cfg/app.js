@@ -15,7 +15,7 @@ function loadEngine() {
   if (!engineP) engineP = Promise.all([import('./furniture3d.js'), import('./materials.js'), import('./stage.js')]).then(([f, m, st]) => { F = f; M = m; return { F: f, M: m, createStage: st.createStage }; });
   return engineP;
 }
-const engineApi = () => ({ build: F.build, disposePiece: F.disposePiece, setMaterials: F.setMaterials, materialSet: M.materialSet, fabricMaterial: M.fabricMaterial, normalize: P.normalize, dims: P.dims, parts: P.parts, labelOf: P.labelOf, DEFAULTS: P.DEFAULTS, TYPES: P.TYPES });
+const engineApi = () => ({ build: F.build, disposePiece: F.disposePiece, setMaterials: F.setMaterials, materialSet: M.materialSet, fabricMaterial: M.fabricMaterial, onMaterialUpdate: M.onMaterialUpdate, normalize: P.normalize, dims: P.dims, parts: P.parts, labelOf: P.labelOf, DEFAULTS: P.DEFAULTS, TYPES: P.TYPES });
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -553,6 +553,7 @@ function rebuild(q = quality()) {
     if (state.mode === 'model') stage.setObject(g);
     if (old && old !== g) F.disposePiece(old);
     updateDims();
+    if (state.mode === 'photo' && photoApi) photoApi.refresh();
   } catch (e) { console.error('3D', e); }
 }
 /* цвет ткани — без перестройки: заменить материал у всех тканевых деталей */
@@ -572,6 +573,7 @@ function applyFabric() {
     }
     mats = { ...mats, fabric: nf };
     if (state.mode === 'model') stage.requestRender(false);   // сменилась только ткань: тени те же
+    if (state.mode === 'photo' && photoApi) photoApi.refresh();
   } catch (e) { console.error('fabric', e); rebuild(); }
 }
 function dimsForView(view) {
@@ -864,16 +866,26 @@ function loadRoom() {
   });
   return roomLoading;
 }
+const MODES = ['model', 'room', 'photo'];
 async function setMode(mode, { focus = false } = {}) {
-  if (mode === state.mode && roomApi) return;
-  state.mode = mode;
-  const room = mode === 'room';
+  if (mode === state.mode && (mode === 'photo' ? photoApi : roomApi)) return;
+  const prev = state.mode; state.mode = mode;
+  const room = mode === 'room', photo = mode === 'photo', model = mode === 'model';
   $('#main').dataset.mode = mode;
   $$('[data-mode-tab]').forEach((b) => { const on = b.dataset.modeTab === mode; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; });
-  $('#steps').hidden = room; $('#room-panel').hidden = !room;
-  $('.vp__views').hidden = room; $('#t-dims').hidden = room; $('#vp-size').hidden = room;
+  $('#steps').hidden = !model; $('#room-panel').hidden = !room; $('#photo-panel').hidden = !photo;
+  $('.vp__views').hidden = !model; $('#t-dims').hidden = !model; $('#vp-size').hidden = !model;
+  $('#photo-host').hidden = !photo; $('#ph-empty').hidden = !photo || !!(photoApi && photoApi.hasPhoto);
   if (focus) $(`[data-mode-tab="${mode}"]`).focus();
-  if (room) {
+  if (prev === 'photo' && photoApi && photoApi.leave) photoApi.leave();
+  if (prev === 'room' && !room && roomApi && roomApi.leave) roomApi.leave();
+  if (photo) {
+    updateDims(); renderFabChip(); syncBar(); syncPhotoUI();
+    try {
+      const api = await loadPhoto();
+      if (state.mode === 'photo') { api.enter(); syncPhotoUI(); }
+    } catch (e) { /* статус уже показан */ }
+  } else if (room) {
     updateDims();
     renderFabChip(); syncBar();
     try {
@@ -890,6 +902,93 @@ async function setMode(mode, { focus = false } = {}) {
     if (stage) { if (stage.setStudio) stage.setStudio(true); if (piece) stage.setObject(piece); setView(state.view); if (stage.frame) stage.frame({ animate: false, reset: true }); updateDims(); }
     renderSummary(); renderFabChip(); syncBar();
     writeHash();
+  }
+}
+/* ═════════ «Фото комнаты» (js/cfg/photo.js, лениво) ═════════ */
+let photoApi = null, photoLoading = null, photoBusy = false;
+function photoStatus(msg, ms = 0) {
+  const el = $('[data-ph-status]'); if (!el) return;
+  el.textContent = msg; clearTimeout(photoStatus.t);
+  if (ms) photoStatus.t = setTimeout(() => { el.textContent = ''; }, ms);
+}
+function loadPhoto() {
+  if (photoApi) return Promise.resolve(photoApi);
+  if (photoLoading) return photoLoading;
+  photoLoading = Promise.all([import('./photo.js'), loadEngine(), stageReady]).then(([m]) => {
+    photoApi = m.mountPhoto({
+      host: $('#photo-host'), engine: engineApi(),
+      getCurrent: () => ({ type: state.type, params: { ...state.params }, fabric: state.fabric }),
+      onChange: () => syncPhotoUI(),
+    });
+    return photoApi;
+  }).catch((e) => {
+    console.warn('photo', e); photoLoading = null;
+    photoStatus(e && e.message === 'webgl' ? 'В этом браузере 3D не работает — попробуйте другой браузер.' : 'Режим «Фото комнаты» не загрузился. Обновите страницу.');
+    throw e;
+  });
+  return photoLoading;
+}
+function syncPhotoUI() {
+  const has = !!(photoApi && photoApi.hasPhoto);
+  $('#ph-empty').hidden = state.mode !== 'photo' || has;
+  $$('[data-ph-need]').forEach((b) => { b.disabled = !has || photoBusy; });
+  const f = state.fabric;
+  $('#ph-model').textContent = `${titleOf(state.type, state.params)} · ${fmtCm(P.dims(state.type, state.params).w)} см · ${state.fabricLost || !f ? 'ткань подберём вместе' : `${f.collectionTitle} · ${f.colour}`}`;
+  if (has) {
+    const st = photoApi.state;
+    $('#ph-eye').value = Math.round(st.eye * 100); $('#ph-eye-v').textContent = `${Math.round(st.eye * 100)} см`;
+    $('#ph-tilt').value = Math.round(st.tilt); $('#ph-tilt-v').textContent = `${Math.round(st.tilt)}°`;
+  }
+  const phone = isPhoneDevice();
+  $('#ph-desk-note').hidden = phone || !isHttp;
+  $$('[data-ph-pick="camera"]').forEach((b) => { b.hidden = !phone; });
+}
+function photoPick(how) {
+  const inp = $('#ph-file');
+  if (how === 'camera') inp.setAttribute('capture', 'environment'); else inp.removeAttribute('capture');
+  inp.value = ''; inp.click();
+}
+async function photoChosen(file) {
+  if (!file) return;
+  photoBusy = true; syncPhotoUI(); photoStatus('Готовим фото…');
+  try {
+    const api = await loadPhoto();
+    await api.setPhoto(file);
+    photoStatus('');
+    if (state.mode !== 'photo') await setMode('photo'); else api.enter();
+  } catch (e) { console.warn('photo', e); photoStatus('Не удалось открыть фото. Попробуйте другое.'); }
+  photoBusy = false; syncPhotoUI();
+}
+async function photoShot() {
+  if (!photoApi || !photoApi.hasPhoto) return null;
+  photoBusy = true; syncPhotoUI();
+  try { return await photoApi.snapshot({ watermark: true }); }
+  catch (e) { console.error(e); toast('Не получилось сделать снимок'); return null; }
+  finally { photoBusy = false; syncPhotoUI(); }
+}
+async function photoSave() {
+  const blob = await photoShot(); if (!blob) return;
+  const r = await shareOrDownload(blob, `ricca-${id()}-v-komnate.jpg`, { title: 'RICCA DESIGNS' });
+  if (r === 'downloaded') toast('Фото сохранено');
+}
+/* в WhatsApp: на телефоне — через «Поделиться» (там выбирают WhatsApp), на компьютере — файл сохраняется, открывается чат с текстом */
+async function photoSend() {
+  const blob = await photoShot(); if (!blob) return;
+  const text = `${waText(cfgState(), { link: variantLink(), id: id() })}\nПримерка в моей комнате — фото во вложении.`;
+  const file = new File([blob], `ricca-${id()}-v-komnate.jpg`, { type: 'image/jpeg' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: 'RICCA DESIGNS', text }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  download(blob, file.name);
+  toast('Фото сохранено — прикрепите его в чате', 4200);
+  window.open(waUrl(text), '_blank', 'noopener');
+}
+/* «У себя дома»: всегда — в «Фото комнаты» (работает на любом телефоне); живая камера (AR) — кнопкой внутри */
+async function openHome() {
+  await setMode('photo');
+  if (mqPhone.matches) {
+    const vp = $('#vp'), hdr = $('#hdr').offsetHeight;
+    requestAnimationFrame(() => { const top = vp.getBoundingClientRect().top + window.scrollY - hdr; window.scrollTo({ top: Math.max(0, top), behavior: reduced ? 'auto' : 'smooth' }); });
   }
 }
 /* в комнате нижняя кнопка «В WhatsApp» отправляет план комнаты (размер + предметы + параметры «Моего варианта») */
@@ -966,10 +1065,22 @@ function bind() {
   $('#note').addEventListener('input', (e) => { state.note = e.target.value.slice(0, 300); setState({}, { rebuild: false }); });
   $('#qty').addEventListener('change', (e) => { const q = parseInt(e.target.value, 10); qtyTouched = true; setState({ qty: Math.max(1, Math.min(99, Number.isFinite(q) ? q : state.qty)) }, { rebuild: false }); });
   $$('[data-qty]').forEach((b) => b.addEventListener('click', () => { qtyTouched = true; setState({ qty: Math.max(1, Math.min(99, state.qty + (+b.dataset.qty))) }, { rebuild: false }); }));
-  for (const a of [$('#wa-send'), $('#bar-wa')]) a.addEventListener('click', (e) => { if (state.mode === 'room' && a.id === 'bar-wa') return; if (hasErrors()) { e.preventDefault(); openStep(3); const f = $('#flds .has-err .fld__i'); if (f) f.focus(); } });
+  for (const a of [$('#wa-send'), $('#bar-wa')]) a.addEventListener('click', (e) => { if (state.mode === 'room' && a.id === 'bar-wa') return; if (state.mode === 'photo' && a.id === 'bar-wa') { e.preventDefault(); if (photoApi && photoApi.hasPhoto) photoSend(); else photoPick(isPhoneDevice() ? 'camera' : 'gallery'); return; } if (hasErrors()) { e.preventDefault(); openStep(3); const f = $('#flds .has-err .fld__i'); if (f) f.focus(); } });
 
   $('#b-drawing').addEventListener('click', openDrawing);
-  $('#b-ar').addEventListener('click', openAR); $('#bar-ar').addEventListener('click', openAR);
+  $('#b-ar').addEventListener('click', openHome); $('#bar-ar').addEventListener('click', openHome);
+  $('#ph-ar').addEventListener('click', openAR); $('#ph-qr').addEventListener('click', openAR);
+  $('#ph-file').addEventListener('change', (e) => photoChosen(e.target.files && e.target.files[0]));
+  document.addEventListener('click', (e) => {
+    const pick = e.target.closest('[data-ph-pick]'); if (pick) return photoPick(pick.dataset.phPick);
+    const rot = e.target.closest('[data-ph-rot]'); if (rot && photoApi) return photoApi.rotate(+rot.dataset.phRot);
+    const dist = e.target.closest('[data-ph-dist]'); if (dist && photoApi) return photoApi.closer(+dist.dataset.phDist);
+    const edit = e.target.closest('[data-ph-edit]'); if (edit) return setMode('model').then(() => openStep(+edit.dataset.phEdit));
+    if (e.target.closest('[data-ph-center]') && photoApi) photoApi.center();
+  });
+  $('#ph-eye').addEventListener('input', (e) => { if (photoApi) { photoApi.set('eye', +e.target.value / 100); $('#ph-eye-v').textContent = `${e.target.value} см`; } });
+  $('#ph-tilt').addEventListener('input', (e) => { if (photoApi) { photoApi.set('tilt', +e.target.value); $('#ph-tilt-v').textContent = `${e.target.value}°`; } });
+  $('#ph-save').addEventListener('click', photoSave); $('#ph-wa').addEventListener('click', photoSend);
   $('#bar-next').addEventListener('click', () => { const n = +$('#bar-next').dataset.goto; if (n) openStep(n); });
   $('#ar-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(variantLink()); toast('Ссылка скопирована'); } catch (e) { toast('Скопируйте адрес из строки браузера'); } });
   $('#dd-open').addEventListener('click', openDrawingFull);
@@ -996,14 +1107,14 @@ function bind() {
     const n = bs[(i + (e.key === 'ArrowRight' ? 1 : -1) + bs.length) % bs.length]; setView(n.dataset.view); n.focus();
   });
   $('#t-dims').addEventListener('click', () => { state.showDims = !state.showDims; $('#t-dims').setAttribute('aria-pressed', String(state.showDims)); updateDims(); });
-  $('#t-photo').addEventListener('click', savePhoto);
-  $('#t-frame').addEventListener('click', () => { if (state.mode === 'room' && roomApi) { roomApi.resetView(); return; } if (stage && stage.frame) stage.frame({ animate: !reduced }); });
+  $('#t-photo').addEventListener('click', () => (state.mode === 'photo' ? photoSave() : savePhoto()));
+  $('#t-frame').addEventListener('click', () => { if (state.mode === 'photo' && photoApi) { photoApi.reset(); syncPhotoUI(); return; } if (state.mode === 'room' && roomApi) { roomApi.resetView(); return; } if (stage && stage.frame) stage.frame({ animate: !reduced }); });
   $('#t-real').addEventListener('click', photoreal);
   $('#vp-pt-cancel').addEventListener('click', () => { if (ptAbort) ptAbort.abort(); $('#vp-pt').hidden = true; $('#vp-pt-cancel').textContent = 'Отменить'; });
   $('#vp-pt-save').addEventListener('click', async () => { if (ptBlob) await shareOrDownload(ptBlob, `ricca-${id()}-foto.png`); $('#vp-pt').hidden = true; $('#vp-pt-cancel').textContent = 'Отменить'; });
 
   $$('[data-mode-tab]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.modeTab)));
-  $('.modes').addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') setMode(state.mode === 'model' ? 'room' : 'model', { focus: true }); });
+  $('.modes').addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') setMode(MODES[(MODES.indexOf(state.mode) + (e.key === 'ArrowRight' ? 1 : MODES.length - 1)) % MODES.length], { focus: true }); });
 
   $$('.step__head').forEach((b) => b.addEventListener('click', () => {
     if (!mqPhone.matches) return;
@@ -1063,6 +1174,6 @@ function init() {
   writeHash(); save();
   document.documentElement.classList.add('cfg-ready');
   /* для автоматических проверок (только с ?cfgtest в адресе) */
-  if (/[?&]cfgtest\b/.test(location.search)) window.__cfg = { state, get F() { return F; }, get M() { return M; }, P, get stage() { return stage; }, get piece() { return piece; }, get room() { return roomApi; }, get ar() { return arSession; }, setOption, setSize, setType, setFabric, setView, rebuild };
+  if (/[?&]cfgtest\b/.test(location.search)) window.__cfg = { state, get F() { return F; }, get M() { return M; }, P, get stage() { return stage; }, get piece() { return piece; }, get room() { return roomApi; }, get photo() { return photoApi; }, get ar() { return arSession; }, setOption, setSize, setType, setFabric, setView, rebuild };
 }
 init();
