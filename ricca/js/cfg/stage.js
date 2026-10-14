@@ -9,7 +9,10 @@ import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { onMaterialUpdate, setEnvMap } from './materials.js';
 
-const BG = '#F3F2EE';
+const BG = '#F2F3F5';
+/* студийный свет «как на фото интерьера»: окружение и заполнение слабее, ключевой — сильнее и сбоку-сверху:
+   верх подушек — цвет образца, фронты и бока на 15–25 % темнее — объём читается, а не «плоская заливка» */
+const LIGHT = { env: 0.36, hemi: 0.34, key: 1.5, fill: 0.1, exposure: 0.98, kx: -0.8, ky: 2.9, kz: 1.0 };   // холодный светлый фон сайта (--paper-2)
 const FOV = 30;
 const AZ = THREE.MathUtils.degToRad(35), EL = THREE.MathUtils.degToRad(18), EL_PLAN = THREE.MathUtils.degToRad(25);
 /* шов 1,6 мм рисуем только когда он не тоньше 1,2 px (иначе — «пунктир» из-за алиасинга) */
@@ -56,7 +59,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   renderer.setPixelRatio(dprFull);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
-  renderer.toneMappingExposure = 0.9; // подобрано по ΔE2000 образцов (§8.3): среднее 0,7
+  renderer.toneMappingExposure = LIGHT.exposure; // верх подушки ≈ цвет образца (ΔL* ≤ 2, SP/real3d/lum.mjs)
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.VSMShadowMap;
   renderer.shadowMap.autoUpdate = false;   // тени пересчитываем только в покое: при облёте камерой они не меняются (renderFrame)
@@ -70,24 +73,24 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   const pmrem = new THREE.PMREMGenerator(renderer);
   const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
   scene.environment = envRT.texture;
-  scene.environmentIntensity = 0.55;
+  scene.environmentIntensity = LIGHT.env;
   pmrem.dispose();
   setEnvMap(envRT.texture);                 // металлу — своя сила отражений (materials.js)
 
-  const hemi = new THREE.HemisphereLight(0xfffaf2, 0xe8e4dc, 0.25);
+  const hemi = new THREE.HemisphereLight(0xffffff, 0xc8ccd2, LIGHT.hemi);
   scene.add(hemi);
-  const key = new THREE.DirectionalLight(0xffffff, 1.1);
+  const key = new THREE.DirectionalLight(0xffffff, LIGHT.key);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   key.shadow.radius = 12; key.shadow.blurSamples = 24; key.shadow.bias = -0.0005; key.shadow.normalBias = 0.01;
   scene.add(key); scene.add(key.target);
   /* мягкий заполняющий свет со стороны камеры (без тени): бок, повёрнутый к зрителю, не проваливается в плоскую тень */
-  const fill = new THREE.DirectionalLight(0xffffff, 0.22);
+  const fill = new THREE.DirectionalLight(0xffffff, LIGHT.fill);
   scene.add(fill); scene.add(fill.target);
 
   /* студия: пол того же цвета, что фон (тень — ShadowMaterial), контактная тень */
   const studio = new THREE.Group(); studio.name = 'studio';
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ color: 0x3a342c, opacity: 0.11, depthWrite: false }));
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ color: 0x2f3338, opacity: 0.11, depthWrite: false }));
   floor.receiveShadow = true; floor.renderOrder = 1; studio.add(floor);
   scene.add(studio);
   const contact = makeContactShadow(renderer);
@@ -107,7 +110,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   controls.zoomSpeed = 0.8; controls.rotateSpeed = 0.7;
 
   /* пост: RenderPass → GTAO → Output */
-  const aoMode = ao === false ? 'off' : 'idle';   // AO — в покое (и на компьютере): при вращении кадр лёгкий, после — полный
+  /* AO (GTAO + шумоподавление) на телефоне — самое тяжёлое: один кадр после каждого поворота «подвисал»; там его нет —
+     объём дают контактная тень и мягкий свет. Компьютер — AO в покое: при вращении кадр лёгкий, после — полный */
+  const aoMode = ao === false || phone ? 'off' : 'idle';
   let composer = null, gtao = null, renderPass = null;
   function ensureComposer() {
     if (composer || aoMode === 'off') return composer;
@@ -266,7 +271,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   function fitLight() {
     const r = Math.max(1, radius() * 1.4);
     /* ключевой свет: высоко, спереди-слева — короткая мягкая тень под изделием, без «плиты» сбоку */
-    key.position.set(center.x - r * 0.45, r * 3.6, center.z + r * 0.9);
+    key.position.set(center.x + r * LIGHT.kx, r * LIGHT.ky, center.z + r * LIGHT.kz);
     key.target.position.copy(center);
     fill.position.copy(center).add(dirAt(AZ + THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(25)).multiplyScalar(r * 3));
     fill.target.position.copy(center);
@@ -446,7 +451,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       }
     }
     overlay.innerHTML = `<g fill="none" stroke="#111" stroke-width="0.8" stroke-linecap="round">${L.join('')}</g>` +
-      `<g fill="#111" stroke="#F3F2EE" stroke-width="3" paint-order="stroke" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="500" text-anchor="middle" dominant-baseline="middle" style="font-variant-numeric: tabular-nums; letter-spacing: .02em">${T.join('')}</g>`;
+      `<g fill="#111" stroke="${BG}" stroke-width="3" paint-order="stroke" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="500" text-anchor="middle" dominant-baseline="middle" style="font-variant-numeric: tabular-nums; letter-spacing: .02em">${T.join('')}</g>`;
   }
 
   /* ---------- студия ---------- */
@@ -563,7 +568,7 @@ function makeContactShadow(renderer) {
   const rtB = new THREE.WebGLRenderTarget(RES, RES); rtB.texture.generateMipmaps = false;
   const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ map: rt.texture, transparent: true, opacity: OPACITY, depthWrite: false, toneMapped: false }));
   plane.renderOrder = 2; plane.position.y = 0.001; plane.scale.y = -1; plane.name = 'contact-shadow';
-  plane.material.color.set(0x2a251f);
+  plane.material.color.set(0x24272c);
   const cam = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0, HEIGHT);
   cam.rotation.x = Math.PI / 2;
   const depthMat = new THREE.MeshDepthMaterial();

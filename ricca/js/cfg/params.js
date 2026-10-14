@@ -125,7 +125,7 @@ export const PRESETS = {
   pouf: [{ label: 'Ø 45', params: { form: 'round', w: 0.45, d: 0.45 } }, { label: 'Ø 55', params: { form: 'round', w: 0.55, d: 0.55 } }, { label: 'Банкетка 140', params: { form: 'bench', w: 1.40, d: 0.45 } }],
 };
 
-const BSINK = 0.03; // подушки спинки утоплены в сиденье на 3 см
+const BSINK = 0.05; // подушки спинки утоплены в сиденье на 5 см (лежат на подушке сиденья, без щели под ними)
 const SOFA_FAMILY = new Set(['sofa', 'corner', 'ushape', 'modular']);
 const bool = (v) => v === true || v === 'true' || v === 1 || v === '1';
 
