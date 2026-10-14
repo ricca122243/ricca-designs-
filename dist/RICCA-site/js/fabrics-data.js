@@ -73,7 +73,8 @@ window.RICCA_FABRIC_LIBRARY = {
               "src450": "img/fabrics/ricca-velour/02-600.webp",
               "src240": "img/fabrics/ricca-velour/02-160.webp",
               "hex": "#597781"
-            }
+            },
+            {"name": "Чёрный", "src900": "img/fabrics/ricca-velour/03-1200.webp", "src450": "img/fabrics/ricca-velour/03-600.webp", "src240": "img/fabrics/ricca-velour/03-160.webp", "hex": "#212322"}
           ]
         },
         {

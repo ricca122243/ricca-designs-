@@ -136,6 +136,8 @@
     'Модульный · скруглённые секции': 'Modular · rounded sections',
     'Модульный · шерпа': 'Modular · sherpa', 'Скруглённый край · на конусных ножках': 'Rounded end · on tapered legs',
     'Угловой · округлая секция и кушетка': 'Corner · rounded section and daybed', 'Широкое · букле, на металлических ножках': 'Wide · bouclé, on metal legs',
+    'Модульный · с валиками, дугой или прямой': 'Modular · with bolsters, curved or straight', 'Прямой · двухместный, на чёрных ножках': 'Straight · two-seater, on black legs',
+    'С кантом · на тонких металлических ножках': 'Piped · on slim metal legs',
   };
   const CAT_LABELS = { 'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла': 'Armchairs', 'Стулья': 'Chairs', 'Столы': 'Tables', 'Наши работы': 'Our works', 'Ткани': 'Fabrics', 'Матрасы ELUNA': 'ELUNA mattresses' };
   const CAT_DESCS = {
@@ -152,7 +154,7 @@
     'Медный меланж': 'Copper mélange', 'Чёрно-бежевая полоса': 'Black and beige stripe', 'Светло-серый меланж': 'Light grey mélange', 'Тёмно-синий': 'Navy',
     'Серо-голубой меланж': 'Grey-blue mélange', 'Льняной': 'Linen', 'Дымчатый с розовой нитью': 'Smoky with pink thread', 'Песочный с белой нитью': 'Sand with white thread',
     'Серый твид': 'Grey tweed', 'Белый с чёрными пятнами': 'White with black spots', 'Чёрно-белый узор': 'Black and white pattern', 'Оливковый с розовым': 'Olive with pink',
-    'Чёрный с белыми пятнами': 'Black with white spots', 'Пыльная роза': 'Dusty rose', 'Морская волна': 'Teal' };   // цвета коллекции RICCA
+    'Чёрный с белыми пятнами': 'Black with white spots', 'Пыльная роза': 'Dusty rose', 'Морская волна': 'Teal', 'Чёрный': 'Black' };   // цвета коллекции RICCA
   const sub = (s) => String(s || '').split(', ').map((p) => p.split(' и ').map((w) => WORDS[w] || w).join(' and ')).join(', ');
   const modelTitle = (t) => {
     const m = /^(Диван|Кресло|Кровать) (.+)$/.exec(t || '');
