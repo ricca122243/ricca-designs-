@@ -134,6 +134,8 @@
     'Скруглённое изголовье · кожа': 'Rounded headboard · leather', 'Букле · на высоких металлических ножках': 'Bouclé · on tall metal legs',
     'Модульный · угловой, со столиком': 'Modular · corner, with a side table', 'Кушетка · модуль без спинки': 'Daybed · backless module',
     'Модульный · скруглённые секции': 'Modular · rounded sections',
+    'Модульный · шерпа': 'Modular · sherpa', 'Скруглённый край · на конусных ножках': 'Rounded end · on tapered legs',
+    'Угловой · округлая секция и кушетка': 'Corner · rounded section and daybed', 'Широкое · букле, на металлических ножках': 'Wide · bouclé, on metal legs',
   };
   const CAT_LABELS = { 'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла': 'Armchairs', 'Стулья': 'Chairs', 'Столы': 'Tables', 'Наши работы': 'Our works', 'Ткани': 'Fabrics', 'Матрасы ELUNA': 'ELUNA mattresses' };
   const CAT_DESCS = {
@@ -147,7 +149,10 @@
     'микровелюр с муаром': 'microvelour with moiré', 'шенилл': 'chenille',
   };
   const COLOURS = { 'Серый меланж': 'Grey mélange', 'Графит': 'Graphite', 'Тёмно-зелёный': 'Dark green', 'Молочный': 'Milk white', 'Серо-бежевый': 'Greige',
-    'Медный меланж': 'Copper mélange', 'Чёрно-бежевая полоса': 'Black and beige stripe', 'Светло-серый меланж': 'Light grey mélange', 'Тёмно-синий': 'Navy' };   // цвета коллекции RICCA
+    'Медный меланж': 'Copper mélange', 'Чёрно-бежевая полоса': 'Black and beige stripe', 'Светло-серый меланж': 'Light grey mélange', 'Тёмно-синий': 'Navy',
+    'Серо-голубой меланж': 'Grey-blue mélange', 'Льняной': 'Linen', 'Дымчатый с розовой нитью': 'Smoky with pink thread', 'Песочный с белой нитью': 'Sand with white thread',
+    'Серый твид': 'Grey tweed', 'Белый с чёрными пятнами': 'White with black spots', 'Чёрно-белый узор': 'Black and white pattern', 'Оливковый с розовым': 'Olive with pink',
+    'Чёрный с белыми пятнами': 'Black with white spots', 'Пыльная роза': 'Dusty rose', 'Морская волна': 'Teal' };   // цвета коллекции RICCA
   const sub = (s) => String(s || '').split(', ').map((p) => p.split(' и ').map((w) => WORDS[w] || w).join(' and ')).join(', ');
   const modelTitle = (t) => {
     const m = /^(Диван|Кресло|Кровать) (.+)$/.exec(t || '');
