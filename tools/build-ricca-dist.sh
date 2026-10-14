@@ -136,6 +136,8 @@ fi
 cp tools/dist-extra/robots.txt tools/dist-extra/.htaccess tools/dist-extra/_headers "$OUT/" 2>/dev/null || true
 # robots.txt и карта сайта — свои, для домена ricca.design (заменяют общий robots.txt)
 cp tools/ricca-extra/robots.txt tools/ricca-extra/sitemap.xml "$OUT/"
+# Файл подтверждения Google Search Console — не удалять, иначе подтверждение слетит
+cp tools/ricca-extra/google731f803f39486a1a.html "$OUT/"
 
 # Проверка: все локальные ссылки существуют
 missing=0
