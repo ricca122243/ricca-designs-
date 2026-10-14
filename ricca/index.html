@@ -21,8 +21,8 @@
 <link rel="icon" href="img/v3/favicon-v3.svg" type="image/svg+xml">
 <link rel="icon" href="img/v3/favicon-v3-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="img/v3/favicon-v3-180.png">
-<!-- первый кадр входа (реальная работа ателье) = LCP: грузится первым; телефон — портрет, компьютер — ландшафт -->
-<link rel="preload" as="image" href="img/catalog/p-sofa-19-600.webp" fetchpriority="high">
+<!-- диван первого экрана = LCP: грузится первым -->
+<link rel="preload" as="image" href="img/v3/hero-sofa-cut.webp" imagesrcset="img/v3/hero-sofa-cut-720.webp 720w, img/v3/hero-sofa-cut.webp 992w" imagesizes="(min-width: 900px) 60vw, 100vw" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts-v3.css">
@@ -109,23 +109,35 @@
 
 <main id="main">
 
-<!-- ═════════ 1. ВХОД: белый минимализм (решение владельца 14 октября: фото интерьеров «не в стиль», обложка со сменой кадров — «старо»).
-     Слева — заголовок антиквой и две кнопки, справа — одно изделие на белом фоне (модель каталога, img/catalog/p-*). ═════════ -->
+<!-- ═════════ 1. ВХОД: обложка-журнал на белом (решение владельца 14 октября — белый минимализм, одно изделие, без фото интерьеров
+     и без смены кадров). Крупная антиква в две строки, диван (вырезан из фото модели, img/v3/hero-sofa-cut*) стоит ПЕРЕД буквами;
+     строки поднимаются из-под маски, диван выезжает с тенью; мышь даёт глубину, прокрутка разводит строки. Внизу — бегущая строка. ═════════ -->
 <section class="hero" id="top">
-  <div class="wrap hero__grid">
-    <div class="hero__text">
-      <p class="hero__eye">RICCA DESIGNS&nbsp;· Алматы</p>
-      <h1 class="hero__title">Мягкая мебель<br>на&nbsp;заказ</h1>
+  <div class="wrap hero__stage">
+    <p class="hero__eye"><span class="hero__no">№&nbsp;01</span>RICCA DESIGNS&nbsp;· Алматы</p>
+    <div class="hero__cover">
+      <h1 class="hero__title">
+        <span class="hero__ln hero__ln--1"><span>Мягкая мебель</span></span>
+        <span class="hero__ln hero__ln--2"><span>на&nbsp;заказ</span></span>
+      </h1>
+      <a class="hero__pic" href="#work-m-sofa-19" aria-label="Диван Rasma — открыть модель">
+        <span class="hero__floor" aria-hidden="true"></span>
+        <img src="img/v3/hero-sofa-cut.webp" srcset="img/v3/hero-sofa-cut-720.webp 720w, img/v3/hero-sofa-cut.webp 992w" sizes="(min-width: 900px) 60vw, 100vw" width="992" height="308" alt="Диван Rasma в светлом букле" fetchpriority="high" decoding="async">
+      </a>
+    </div>
+    <div class="hero__foot">
       <p class="hero__sub">Диваны, кровати и&nbsp;кресла — по&nbsp;вашему фото, эскизу или проекту. Своё ателье.</p>
       <div class="hero__btns">
         <a class="btn btn--fill" href="#catalog">Каталог</a>
         <a class="btn btn--line" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
       </div>
+      <p class="hero__cap"><span>Диван Rasma · букле</span><span>в&nbsp;любом размере и&nbsp;ткани</span></p>
     </div>
-    <a class="hero__pic" href="#work-m-sofa-19" aria-label="Диван — открыть модель">
-      <img src="img/catalog/p-sofa-19-600.webp" srcset="img/catalog/p-sofa-19-600.webp 600w, img/catalog/p-sofa-19.webp 1200w" sizes="(min-width: 900px) 56vw, 100vw" width="1200" height="900" alt="Диван в светлом букле на белом фоне" fetchpriority="high" decoding="async">
-    </a>
   </div>
+  <div class="hero__run" aria-hidden="true"><div class="hero__track">
+    <span>Диваны</span><span>Кровати</span><span>Кресла</span><span>Пуфы и&nbsp;банкетки</span><span>Любой размер</span><span>Любая ткань</span><span>Своё ателье в&nbsp;Алматы</span><span>Матрасы ELUNA</span>
+    <span>Диваны</span><span>Кровати</span><span>Кресла</span><span>Пуфы и&nbsp;банкетки</span><span>Любой размер</span><span>Любая ткань</span><span>Своё ателье в&nbsp;Алматы</span><span>Матрасы ELUNA</span>
+  </div></div>
 </section>
 
 <!-- ═════════ 2. ВСТУПЛЕНИЕ + НОВОСТИ + ФАКТЫ. Слева — одна фраза о том, что мы делаем; справа — небольшая карточка-новость ELUNA

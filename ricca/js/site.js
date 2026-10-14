@@ -1483,7 +1483,8 @@
     raf = requestAnimationFrame(() => {
       raf = 0;
       const y = window.scrollY, heroH = hero.offsetHeight;
-      const over = y < heroH - hdr.offsetHeight;
+      // шапка прозрачна только в самом верху: обложка белая, а диван при прокрутке уходит вверх — под шапкой ему нужен фон
+      const over = y < 8;
       hdr.classList.toggle('is-over', over);
       // над чёрной полосой «Для бизнеса» и подвалом шапка тоже чёрная — без белой полосы поперёк: чёрная, как только полоса
       // зашла под шапку (а не с середины шапки — иначе на 30 px прокрутки белая полоса висит над чёрным)
@@ -1499,6 +1500,28 @@
   window.addEventListener('resize', onScroll, { passive: true });
   hdr.addEventListener('focusin', () => hdr.classList.remove('is-hidden'));
   onScroll();
+
+  /* ---------- Обложка: глубина от мыши (--mx/--my) и разлёт строк при прокрутке (--sy); при reduced-motion — ничего ---------- */
+  (function heroFx() {
+    if (!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    let tx = 0, ty = 0, cx = 0, cy = 0, sy = -1, fr = 0;
+    function tick() {
+      fr = 0;
+      cx += (tx - cx) * 0.08; cy += (ty - cy) * 0.08;
+      const s = Math.min(1, Math.max(0, window.scrollY / hero.offsetHeight));
+      if (s !== sy) { sy = s; hero.style.setProperty('--sy', s.toFixed(4)); }
+      hero.style.setProperty('--mx', cx.toFixed(4)); hero.style.setProperty('--my', cy.toFixed(4));
+      if (Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002) fr = requestAnimationFrame(tick);
+    }
+    const kick = () => { if (!fr) fr = requestAnimationFrame(tick); };
+    if (fine) {
+      hero.addEventListener('pointermove', (e) => { tx = e.clientX / window.innerWidth * 2 - 1; ty = e.clientY / window.innerHeight * 2 - 1; kick(); });
+      hero.addEventListener('pointerleave', () => { tx = 0; ty = 0; kick(); });
+    }
+    window.addEventListener('scroll', () => { if (sy < 1 || window.scrollY < hero.offsetHeight) kick(); }, { passive: true });
+    kick();
+  })();
 
   /* ---------- Старт: окно по адресу (#catalog/sofas, #item-…, #work-<id>) ---------- */
   R.apply(true);
