@@ -1372,7 +1372,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-14",
     glb: "models3d/armchair-14.glb",
-    cfg: "t.armchair~f.classic~as.wide~h.100~lg.wood~lf.oak",
+    cfg: "t.armchair~f.classic~as.wide~h.100~lg.metal~lf.black",
     category: "armchairs",
     tags: [],
     type: "Кресло",

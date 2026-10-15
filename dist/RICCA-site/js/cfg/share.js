@@ -189,6 +189,7 @@ export function summaryLines(state, { dims = null } = {}) {
   const t = state.type, p = state.params || {};
   const L = [];
   const add = (label, value) => { if (value !== undefined && value !== null && value !== '') L.push({ label, value }); };
+  if (state.model) add('Модель', `${state.model} (точная 3D-модель, как на фото)`);
   const H = `высота ${fmtCm(p.h)} см`;
   if (t === 'sofa') add('Размер', `ширина ${fmtCm(p.w)} см, глубина ${fmtCm(p.d)} см, ${H}`);
   if (t === 'corner' || t === 'ushape') add('Размер', `${fmtCm(p.w)} × ${fmtCm(p.l)} см, глубина ${fmtCm(p.d)} см, ${H}`);

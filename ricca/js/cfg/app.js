@@ -142,20 +142,22 @@ function applyParams(type, params) {
 const curDims = () => { try { return P.dims(state.type, state.params); } catch (e) { return null; } };
 const shownFabric = () => (state.fabricLost ? null : state.fabric);
 const id = () => cfgId({ type: state.type, params: state.params, fabric: shownFabric() });
-const cfgState = () => ({ type: state.type, params: state.params, fabric: shownFabric(), qty: state.qty, note: state.note });
+const cfgState = () => ({ type: state.type, params: state.params, fabric: shownFabric(), qty: state.qty, note: state.note, model: exactName() });
 /* адрес варианта: #cfg=<параметры>&f=<коллекция>:<N> (ткань — номером цвета, как на сайте #fabric-<коллекция>-<N>) */
 const hashOf = () => {
   const s = cfgState(); const fs = fabricShort(s.fabric);   // ткань, которой нет в библиотеке, в адрес не пишем
-  return `#cfg=${encodeCfg({ ...s, fabric: fs ? null : s.fabric }, { defaults: P.DEFAULTS[state.type] })}${fs ? `&f=${fs}` : ''}`;
+  const m = activeModel && catalogModels().some((x) => x.id === activeModel && x.glb) ? `&m=${encodeURIComponent(activeModel)}` : '';
+  return `#cfg=${encodeCfg({ ...s, fabric: fs ? null : s.fabric }, { defaults: P.DEFAULTS[state.type] })}${fs ? `&f=${fs}` : ''}${m}`;
 };
 const variantLink = () => (isHttp ? `${location.origin}${location.pathname}${hashOf()}` : '');
 /* «#cfg=…&f=alba:12», «#f=alba:12» (со страницы «Ткани»), «#room=…» → части */
 function parseHash(h) {
-  const out = { cfg: null, f: null, room: null };
+  const out = { cfg: null, f: null, room: null, m: null };
   String(h || '').replace(/^#/, '').split('&').forEach((part) => {
     if (part.startsWith('cfg=')) out.cfg = part.slice(4);
     else if (part.startsWith('f=')) { try { out.f = decodeURIComponent(part.slice(2)); } catch (e) { out.f = part.slice(2); } }
     else if (part.startsWith('room=')) out.room = part.slice(5);
+    else if (part.startsWith('m=')) out.m = part.slice(2);
   });
   return out;
 }
@@ -174,11 +176,12 @@ function fromCfgString(str) {
   qtyTouched = d.qty > 1;
   return true;
 }
-let arrivedFabric = null;         // ткань из ссылки «Примерить на мебели в 3D» (#f=…)
+let arrivedFabric = null, pendingModel = null;   // точная модель из адреса (&m=…)         // ткань из ссылки «Примерить на мебели в 3D» (#f=…)
 function load() {
   const h = parseHash(location.hash);
   const fab = h.f ? findFabricShort(h.f, lib) : null;
   const lost = !!h.f && !fab;
+  if (h.m) pendingModel = h.m;
   if (h.cfg && fromCfgString(h.cfg)) {
     if (fab) { state.fabric = fab; state.fabricLost = false; }
     if (lost) { state.fabricLost = true; pendingToast = MSG_FAB_LOST; return 'fabric'; }
@@ -265,11 +268,15 @@ async function loadExactGroup(m) {
   if (!src) { src = (await new GLTFLoader().loadAsync(m.glb)).scene; exactCache.set(m.glb, src); }
   const g = src.clone(true);
   const box = new THREE.Box3().setFromObject(g), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
-  const d = curDims() || { w: 2.2, d: 1 };
+  /* базовые размеры — из рецепта модели (не из текущих параметров): текущие могут быть уже изменены клиентом */
+  let d = null;
+  try { const rc = decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }); d = P.dims(rc.type, runValidate(rc.type, rc.params).params); } catch (e) { d = curDims(); }
+  d = d || { w: 2.2, d: 1, h: 0.8 };
   /* масштаб: наибольший горизонтальный размер модели = наибольший из рецепта (ширина или глубина, в метрах) —
      так и широкий диван, и глубокое узкое кресло получают реальные пропорции */
   const k = Math.max(d.w || 0, d.d || 0, 0.5) / Math.max(size.x, size.z, 0.01);
   const wrap = new THREE.Group(); wrap.name = `exact:${m.id}`;
+  wrap.userData.base = { w: size.x * k, d: size.z * k, h: size.y * k, rw: d.w, rd: d.d, rh: d.h };   // размеры модели и рецепта в метрах
   g.scale.setScalar(k); g.position.set(-c.x * k, -box.min.y * k, -c.z * k); wrap.add(g);
   g.traverse((o) => {
     if (!o.isMesh) return;
@@ -293,6 +300,11 @@ function prepExactGeo(THREE, geo, k) {
   if (!geo.attributes.occ) geo.setAttribute('occ', new THREE.BufferAttribute(new Float32Array(n), 1));
 }
 function dropExact() { activeModel = null; exact = null; exactLoading = null; renderModels(); }
+const EXACT_ROWS = new Set(['legs', 'legFinish']);   // что можно менять у точной модели в «Форме»
+const isExact = () => !!(activeModel && catalogModels().some((m) => m.id === activeModel && m.glb));
+const exactName = () => { const m = activeModel && catalogModels().find((x) => x.id === activeModel && x.glb); return m ? modelName(m) : ''; };
+/* «Собрать из деталей»: клиент хочет другую форму — переходим на модель из деталей с теми же параметрами */
+function exactOff() { dropExact(); renderForm(); renderHeads(); setState({}, { structural: true }); toast('Теперь модель собрана из деталей — меняйте форму', 3200); }
 function useExact(m) {
   if (!m.glb) { exact = null; return; }
   const my = exactLoading = loadExactGroup(m).then((g) => {
@@ -319,9 +331,9 @@ function applyModel(mid) {
   state.inputErr = {};
   applyParams(d.type, d.params);
   activeModel = mid; exact = null; useExact(m);
-  syncTypes(); setState({}, { structural: true });
+  syncTypes(); setState({}, { structural: true }); renderForm(); renderHeads();
   if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced }));
-  toast(m.glb ? `${modelName(m)}: точная модель. Ткань меняется; форма и размер — соберутся из деталей` : `Собрано по мотивам: ${modelName(m)}. Меняйте что угодно`, 4200);
+  toast(m.glb ? `${modelName(m)}: точная модель, как на фото. Меняйте размеры, ткань и ножки` : `Собрано по мотивам: ${modelName(m)}. Меняйте что угодно`, 4200);
   const b = $(`[data-model="${CSS.escape(mid)}"]`); if (b) b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
 }
 function syncTypes() {
@@ -353,22 +365,26 @@ function formKey() {
 function renderForm() {
   lastFormKey = formKey();
   const p = state.params, t = state.type;
+  const ex = isExact();
   const html = (FORM[t] || []).filter((r) => !r.when || r.when(p)).map((r) => {
+    const off = ex && !EXACT_ROWS.has(r.key) ? ' disabled' : '';
     if (r.count) {
       const v = p[r.key];
       return `<div class="opt" data-row="${r.key}"><p class="opt__l" id="ol-${r.key}">${esc(r.label)}</p>
         <div class="num num--sm" role="group" aria-labelledby="ol-${r.key}">
-          <button class="num__b" type="button" data-count="${r.key}" data-d="-1" aria-label="Меньше" ${v <= r.count[0] ? 'disabled' : ''}>${ico('i-minus')}</button>
+          <button class="num__b" type="button" data-count="${r.key}" data-d="-1" aria-label="Меньше" ${v <= r.count[0] || off ? 'disabled' : ''}>${ico('i-minus')}</button>
           <output class="num__o" aria-live="polite">${v}</output>
-          <button class="num__b" type="button" data-count="${r.key}" data-d="1" aria-label="Больше" ${v >= r.count[1] ? 'disabled' : ''}>${ico('i-plus')}</button>
+          <button class="num__b" type="button" data-count="${r.key}" data-d="1" aria-label="Больше" ${v >= r.count[1] || off ? 'disabled' : ''}>${ico('i-plus')}</button>
         </div></div>`;
     }
     const cur = r.get ? r.get(p, t) : p[r.key];
     const vals = r.values(p);
     return `<div class="opt" data-row="${r.key}"><p class="opt__l" id="ol-${r.key}">${esc(r.label)}</p>
-      <div class="chips" role="radiogroup" aria-labelledby="ol-${r.key}">${vals.map((v) => `<button class="chip" type="button" role="radio" aria-checked="${String(v) === String(cur)}" data-opt="${r.key}" data-v="${esc(String(v))}">${esc(chipLabel(t, r.key, v))}</button>`).join('')}</div></div>`;
+      <div class="chips" role="radiogroup" aria-labelledby="ol-${r.key}">${vals.map((v) => `<button class="chip" type="button" role="radio" aria-checked="${String(v) === String(cur)}" data-opt="${r.key}" data-v="${esc(String(v))}"${off}>${esc(chipLabel(t, r.key, v))}</button>`).join('')}</div></div>`;
   }).join('');
-  $('#opts').innerHTML = html;
+  const note = ex ? `<div class="xn"><p class="xn__t">${esc(exactName())} — точная модель, как на фото. Размеры, ткань и ножки меняются; форма — нет.</p>
+    <button class="caps-link xn__b" type="button" data-exact-off>Собрать из деталей и менять форму<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>` : '';
+  $('#opts').innerHTML = note + html;
 }
 function setOption(key, raw) {
   const t = state.type;
@@ -380,7 +396,7 @@ function setOption(key, raw) {
   if (key !== 'backLook') p[key] = v;
   sideEffects(t, key, v, p);
   state.inputErr = {};
-  if (activeModel) dropExact();
+  if (isExact() && !EXACT_ROWS.has(key)) return;   // у точной модели форму не меняем (кнопка «Собрать из деталей»)
   applyParams(t, p);
   const focusSel = `[data-opt="${key}"][data-v="${CSS.escape(raw)}"]`;
   setState({}, { structural: true });
@@ -388,7 +404,6 @@ function setOption(key, raw) {
 }
 function setCount(key, d) {
   const row0 = (FORM[state.type] || []).find((r) => r.key === key); if (!row0) return;
-  if (activeModel) dropExact();
   const v = Math.max(row0.count[0], Math.min(row0.count[1], (state.params[key] || row0.count[0]) + d));
   if (v === state.params[key]) return;
   applyParams(state.type, { ...state.params, [key]: v });
@@ -461,7 +476,6 @@ function parseCm(s) {
 }
 function setSize(key, cmVal, { drag = false } = {}) {
   if (!Number.isFinite(cmVal)) { delete state.inputErr[key]; syncSize(true); return; }
-  if (activeModel && Math.abs((state.params[key] || 0) - cmVal / 100) > 0.0005) dropExact();
   const cand = { ...state.params, [key]: cmVal / 100 };
   const r = runValidate(state.type, cand);
   if (r.errors.length) {
@@ -565,7 +579,7 @@ function renderHeads() {
   const p = state.params, d = curDims();
   const set = (n, v) => { const el = $(`[data-step-val="${n}"]`); if (el) el.textContent = v; };
   set(1, (P.TYPES.find((t) => t.id === state.type) || {}).title || '');
-  set(2, titleOf(state.type, p) === ((P.TYPES.find((t) => t.id === state.type) || {}).title) ? formHint() : titleOf(state.type, p));
+  set(2, isExact() ? `Как на фото: ${exactName().replace(/^\S+\s/, '')}` : titleOf(state.type, p) === ((P.TYPES.find((t) => t.id === state.type) || {}).title) ? formHint() : titleOf(state.type, p));
   set(3, d ? `${fmtCm(d.w)} × ${fmtCm(d.d)} × ${fmtCm(d.h)} см` : '');
   set(4, state.fabricLost ? 'подберём вместе' : state.fabric ? `${state.fabric.collectionTitle} · ${state.fabric.colour}` : '');
   set(5, id());
@@ -645,7 +659,12 @@ function rebuild(q = quality()) {
     mats = M.materialSet(cfg);
     const ex = exact && exact.id === activeModel ? exact.group : null;
     const g = ex || F.build(state.type, state.params, mats, { quality: q });
-    if (ex) F.setMaterials(ex, mats);
+    if (ex) {
+      F.setMaterials(ex, mats);
+      /* размеры клиента: модель растягивается по осям относительно размеров рецепта (форма — как на фото) */
+      const b = ex.userData.base, cd = curDims();
+      if (b && cd) ex.scale.set(cd.w / (b.rw || cd.w) || 1, cd.h / (b.rh || cd.h) || 1, cd.d / (b.rd || cd.d) || 1);
+    }
     const old = piece; piece = g;
     if (state.mode === 'model') stage.setObject(g);
     if (old && old !== g && !(old.name || '').startsWith('exact:')) F.disposePiece(old);
@@ -1114,11 +1133,12 @@ function bind() {
   $('#opts').addEventListener('click', (e) => {
     const c = e.target.closest('[data-opt]'); if (c) return setOption(c.dataset.opt, c.dataset.v);
     const n = e.target.closest('[data-count]'); if (n) setCount(n.dataset.count, +n.dataset.d);
+    if (e.target.closest('[data-exact-off]')) exactOff();
   });
   $('#presets').addEventListener('click', (e) => {
     const b = e.target.closest('[data-preset]'); if (!b) return;
     const pr = (P.PRESETS[state.type] || [])[+b.dataset.preset]; if (!pr) return;
-    state.inputErr = {}; if (activeModel) dropExact(); applyParams(state.type, { ...state.params, ...pr.params });
+    state.inputErr = {}; applyParams(state.type, { ...state.params, ...pr.params });
     setState({}, { structural: true });
     const nb = $(`[data-preset="${b.dataset.preset}"]`); if (nb) nb.focus({ preventScroll: true });
   });
@@ -1259,7 +1279,8 @@ function init() {
     const l = document.createElement('link'); l.rel = 'modulepreload'; l.href = new URL(u, import.meta.url).href; document.head.appendChild(l);
   }
   stageReady = new Promise((res) => requestAnimationFrame(() => setTimeout(res, 0))).then(initStage).then(() => {
-    if (src === 'hash') matchModel();
+    if (pendingModel && catalogModels().some((m) => m.id === pendingModel && m.glb && decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }).type === state.type)) { activeModel = pendingModel; useExact(catalogModels().find((m) => m.id === pendingModel)); renderModels(); }
+    else if (src === 'hash') matchModel();
     if (state.mode === 'room') setMode('room');
     if (pendingToast) toast(pendingToast, 5000);
     else if (arrivedFabric) toast(`На модели: ${arrivedFabric.collectionTitle} · ${arrivedFabric.colour}`, 4000);
