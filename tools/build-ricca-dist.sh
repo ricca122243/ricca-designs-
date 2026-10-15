@@ -43,6 +43,8 @@ if [ -f "$SRC/configurator.html" ]; then
     cp -r "$SRC/vendor/$v" "$OUT/vendor/"
   done
   mkdir -p "$OUT/img/cfg" && cp -r "$SRC/img/cfg/." "$OUT/img/cfg/"
+  # точные 3D-модели каталога (js/catalog-data.js → glb)
+  [ -d "$SRC/models3d" ] && mkdir -p "$OUT/models3d" && cp -r "$SRC/models3d/." "$OUT/models3d/"
 fi
 
 # Медиа и шрифты: копируем только файлы, на которые ссылаются html/css/js (включая srcset и data-атрибуты)

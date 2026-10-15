@@ -168,10 +168,12 @@ export function mountPhoto({ host, engine, getCurrent, onChange } = {}) {
     const cur = getCurrent();
     try {
       const mats = engine.materialSet({ type: cur.type, params: cur.params, fabric: cur.fabric, quality: 'mid' });
-      const g = engine.build(cur.type, cur.params, mats, { quality: 'mid' });
+      const ex = engine.exact ? engine.exact() : null;
+      const g = ex ? ex.clone(true) : engine.build(cur.type, cur.params, mats, { quality: 'mid' });
+      if (ex && engine.setMaterials) engine.setMaterials(g, mats);
       const d = engine.dims(cur.type, cur.params);
       const old = piece; setPiece(g, d);
-      if (old && old !== g && engine.disposePiece) engine.disposePiece(old);
+      if (old && old !== g && engine.disposePiece && !(old.name || '').startsWith('exact:')) engine.disposePiece(old);
       Object.values(mats).forEach((m) => { if (m && m.userData && m.userData.ready) m.userData.ready.then(render).catch(() => {}); });
     } catch (e) { console.warn('photo: модель', e); }
   }

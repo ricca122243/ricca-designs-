@@ -658,7 +658,7 @@ export function materialSet(cfg = {}) {
   let legs;
   const fin = p.legFinish;
   if (type === 'bed') legs = p.base === 'legs' ? woodMaterial(WOOD[fin] ? fin : 'oak') : metalMaterial('black');
-  else if (p.legs === 'metal') legs = metalMaterial(METAL[fin] ? fin : 'black');
+  else if (p.legs === 'metal' || p.legs === 'disc') legs = metalMaterial(METAL[fin] ? fin : 'black');
   else if (p.legs === 'wood') legs = woodMaterial(WOOD[fin] ? fin : 'oak');
   else legs = metalMaterial('black');
   return { fabric, legs, top: null, mattress: mattressMaterial(), tape: tapeMaterial() };

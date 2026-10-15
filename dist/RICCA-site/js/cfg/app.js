@@ -15,7 +15,7 @@ function loadEngine() {
   if (!engineP) engineP = Promise.all([import('./furniture3d.js'), import('./materials.js'), import('./stage.js')]).then(([f, m, st]) => { F = f; M = m; return { F: f, M: m, createStage: st.createStage }; });
   return engineP;
 }
-const engineApi = () => ({ build: F.build, disposePiece: F.disposePiece, setMaterials: F.setMaterials, materialSet: M.materialSet, fabricMaterial: M.fabricMaterial, onMaterialUpdate: M.onMaterialUpdate, normalize: P.normalize, dims: P.dims, parts: P.parts, labelOf: P.labelOf, DEFAULTS: P.DEFAULTS, TYPES: P.TYPES });
+const engineApi = () => ({ exact: () => (exact && exact.id === activeModel ? exact.group : null), build: F.build, disposePiece: F.disposePiece, setMaterials: F.setMaterials, materialSet: M.materialSet, fabricMaterial: M.fabricMaterial, onMaterialUpdate: M.onMaterialUpdate, normalize: P.normalize, dims: P.dims, parts: P.parts, labelOf: P.labelOf, DEFAULTS: P.DEFAULTS, TYPES: P.TYPES });
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -250,9 +250,63 @@ function renderModels() {
   if (!list.length) { box.innerHTML = ''; return; }
   box.innerHTML = `<p class="models__l" id="models-l">По мотивам моделей каталога</p><div class="models__row" role="group" aria-labelledby="models-l">${list.map((m) => {
     const ph = m.photos.find((x) => x.studio) || m.photos[0];
-    return `<button class="model" type="button" data-model="${esc(m.id)}" aria-pressed="${m.id === activeModel}" title="${esc(m.subtitle || '')}">
+    return `<button class="model${m.glb ? ' model--exact' : ''}" type="button" data-model="${esc(m.id)}" aria-pressed="${m.id === activeModel}" title="${esc(m.subtitle || '')}">
       <span class="model__img"><img src="${esc(ph.src600 || ph.src)}" alt="" loading="lazy" decoding="async" width="600" height="450"></span><span class="model__t">${esc(modelName(m))}</span></button>`;
   }).join('')}</div>`;
+}
+/* ═════════ точная 3D-модель из каталога (models3d/<id>.glb — сделана из фото) ═════════
+   Показывается вместо собранной из деталей, пока форму и размер не меняют (ткань и ножки меняются: детали fabric / legs). */
+let exact = null, exactLoading = null;
+const exactCache = new Map();
+async function loadExactGroup(m) {
+  const [THREE, { GLTFLoader }] = await Promise.all([import('three'), import('three/addons/loaders/GLTFLoader.js')]);
+  let src = exactCache.get(m.glb);
+  if (!src) { src = (await new GLTFLoader().loadAsync(m.glb)).scene; exactCache.set(m.glb, src); }
+  const g = src.clone(true);
+  const box = new THREE.Box3().setFromObject(g), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+  const d = curDims() || { w: 2.2 };
+  const k = (d.w || 2.2) / Math.max(size.x, 0.01);          // ширина — как в рецепте (размеры — в метрах)
+  const wrap = new THREE.Group(); wrap.name = `exact:${m.id}`;
+  g.scale.setScalar(k); g.position.set(-c.x * k, -box.min.y * k, -c.z * k); wrap.add(g);
+  g.traverse((o) => {
+    if (!o.isMesh) return;
+    const legs = /legs/.test(o.name) || (o.parent && /legs/.test(o.parent.name));
+    o.userData.matKey = legs ? 'legs' : 'fabric'; o.castShadow = true; o.receiveShadow = !legs;
+    o.geometry = o.geometry.clone(); prepExactGeo(THREE, o.geometry, k);
+  });
+  return wrap;
+}
+/* UV для ткани — проекция по осям в метрах (как у деталей конструктора: фактура одного масштаба), атрибуты швов — пустые */
+function prepExactGeo(THREE, geo, k) {
+  if (!geo.attributes.normal) geo.computeVertexNormals();   // в файле только вершины и грани — нормали считаем здесь (сетка склеена → гладкие)
+  const pos = geo.attributes.position, nrm = geo.attributes.normal, n = pos.count, uv = new Float32Array(n * 2);
+  for (let i = 0; i < n; i++) {
+    const x = pos.getX(i) * k, y = pos.getY(i) * k, z = pos.getZ(i) * k;
+    const nx = nrm ? Math.abs(nrm.getX(i)) : 0, ny = nrm ? Math.abs(nrm.getY(i)) : 1, nz = nrm ? Math.abs(nrm.getZ(i)) : 0;
+    if (ny >= nx && ny >= nz) { uv[i * 2] = x; uv[i * 2 + 1] = z; } else if (nx >= nz) { uv[i * 2] = z; uv[i * 2 + 1] = y; } else { uv[i * 2] = x; uv[i * 2 + 1] = y; }
+  }
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  if (!geo.attributes.seam) geo.setAttribute('seam', new THREE.BufferAttribute(new Float32Array(n * 4), 4));
+  if (!geo.attributes.occ) geo.setAttribute('occ', new THREE.BufferAttribute(new Float32Array(n), 1));
+}
+function dropExact() { activeModel = null; exact = null; exactLoading = null; renderModels(); }
+function useExact(m) {
+  if (!m.glb) { exact = null; return; }
+  const my = exactLoading = loadExactGroup(m).then((g) => {
+    if (exactLoading !== my || activeModel !== m.id) return;
+    exact = { id: m.id, group: g }; rebuild(); if (photoApi && state.mode === 'photo') photoApi.refresh();
+    if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced }));
+  }).catch((e) => { console.warn('exact', e); if (exactLoading === my) toast('Точная модель не загрузилась — показана собранная из деталей'); });
+}
+/* ссылка «Собрать похожий в 3D» с сайта: если параметры совпадают с рецептом модели — показать её точную модель */
+function matchModel() {
+  const mine = encodeCfg({ type: state.type, params: state.params }, { defaults: P.DEFAULTS[state.type], withNote: false, withQty: false });
+  for (const m of catalogModels()) {
+    if (!m.glb) continue;
+    const d = decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }); if (d.type !== state.type) continue;
+    const r = runValidate(d.type, d.params);
+    if (encodeCfg({ type: d.type, params: r.params }, { defaults: P.DEFAULTS[d.type], withNote: false, withQty: false }) === mine) { activeModel = m.id; useExact(m); renderModels(); return; }
+  }
 }
 function applyModel(mid) {
   const m = catalogModels().find((x) => x.id === mid); if (!m) return;
@@ -261,10 +315,10 @@ function applyModel(mid) {
   memo[state.type] = state.params;
   state.inputErr = {};
   applyParams(d.type, d.params);
-  activeModel = mid;
+  activeModel = mid; exact = null; useExact(m);
   syncTypes(); setState({}, { structural: true });
   if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced }));
-  toast(`Собрано по мотивам: ${modelName(m)}. Меняйте что угодно`, 3600);
+  toast(m.glb ? `${modelName(m)}: точная модель. Ткань меняется; форма и размер — соберутся из деталей` : `Собрано по мотивам: ${modelName(m)}. Меняйте что угодно`, 4200);
   const b = $(`[data-model="${CSS.escape(mid)}"]`); if (b) b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
 }
 function syncTypes() {
@@ -276,7 +330,7 @@ function syncTypes() {
 }
 function setType(type) {
   if (type === state.type) return;
-  activeModel = null;
+  dropExact();
   memo[state.type] = state.params;
   state.inputErr = {};
   applyParams(type, memo[type] || {});
@@ -323,6 +377,7 @@ function setOption(key, raw) {
   if (key !== 'backLook') p[key] = v;
   sideEffects(t, key, v, p);
   state.inputErr = {};
+  if (activeModel) dropExact();
   applyParams(t, p);
   const focusSel = `[data-opt="${key}"][data-v="${CSS.escape(raw)}"]`;
   setState({}, { structural: true });
@@ -330,6 +385,7 @@ function setOption(key, raw) {
 }
 function setCount(key, d) {
   const row0 = (FORM[state.type] || []).find((r) => r.key === key); if (!row0) return;
+  if (activeModel) dropExact();
   const v = Math.max(row0.count[0], Math.min(row0.count[1], (state.params[key] || row0.count[0]) + d));
   if (v === state.params[key]) return;
   applyParams(state.type, { ...state.params, [key]: v });
@@ -402,6 +458,7 @@ function parseCm(s) {
 }
 function setSize(key, cmVal, { drag = false } = {}) {
   if (!Number.isFinite(cmVal)) { delete state.inputErr[key]; syncSize(true); return; }
+  if (activeModel && Math.abs((state.params[key] || 0) - cmVal / 100) > 0.0005) dropExact();
   const cand = { ...state.params, [key]: cmVal / 100 };
   const r = runValidate(state.type, cand);
   if (r.errors.length) {
@@ -583,10 +640,12 @@ function rebuild(q = quality()) {
   try {
     const cfg = { type: state.type, params: state.params, fabric: state.fabric, quality: q };
     mats = M.materialSet(cfg);
-    const g = F.build(state.type, state.params, mats, { quality: q });
+    const ex = exact && exact.id === activeModel ? exact.group : null;
+    const g = ex || F.build(state.type, state.params, mats, { quality: q });
+    if (ex) F.setMaterials(ex, mats);
     const old = piece; piece = g;
     if (state.mode === 'model') stage.setObject(g);
-    if (old && old !== g) F.disposePiece(old);
+    if (old && old !== g && !(old.name || '').startsWith('exact:')) F.disposePiece(old);
     updateDims();
     if (state.mode === 'photo' && photoApi) photoApi.refresh();
   } catch (e) { console.error('3D', e); }
@@ -1056,7 +1115,7 @@ function bind() {
   $('#presets').addEventListener('click', (e) => {
     const b = e.target.closest('[data-preset]'); if (!b) return;
     const pr = (P.PRESETS[state.type] || [])[+b.dataset.preset]; if (!pr) return;
-    state.inputErr = {}; applyParams(state.type, { ...state.params, ...pr.params });
+    state.inputErr = {}; if (activeModel) dropExact(); applyParams(state.type, { ...state.params, ...pr.params });
     setState({}, { structural: true });
     const nb = $(`[data-preset="${b.dataset.preset}"]`); if (nb) nb.focus({ preventScroll: true });
   });
@@ -1197,6 +1256,7 @@ function init() {
     const l = document.createElement('link'); l.rel = 'modulepreload'; l.href = new URL(u, import.meta.url).href; document.head.appendChild(l);
   }
   stageReady = new Promise((res) => requestAnimationFrame(() => setTimeout(res, 0))).then(initStage).then(() => {
+    if (src === 'hash') matchModel();
     if (state.mode === 'room') setMode('room');
     if (pendingToast) toast(pendingToast, 5000);
     else if (arrivedFabric) toast(`На модели: ${arrivedFabric.collectionTitle} · ${arrivedFabric.colour}`, 4000);
