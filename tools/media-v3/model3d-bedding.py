@@ -21,7 +21,14 @@ ymax = V[:, 1].max(); xmax = np.abs(V[:, 0]).max(); zmax = V[:, 2].max()
 zf = np.percentile(c[c[:, 1] > ymax - 0.04, 2], 98)                       # передняя плоскость изголовья
 front = (N[:, 1] > 0.85) & (c[:, 2] > zmax - 0.05) & (c[:, 1] < ymax * 0.6)
 rail = np.percentile(c[front, 1], 30)                                      # верх бортика рамы спереди
-bed = (c[:, 1] > rail + 0.008) & (c[:, 2] > zf + 0.008) & (np.abs(c[:, 0]) < xmax - 0.03)
+# ширина постели — по верху матраса в середине кровати (у изголовья «с ушками» боковины выходят вперёд — их не трогаем)
+mtop = (N[:, 1] > 0.85) & (c[:, 1] > rail + 0.03) & (c[:, 2] > zf + 0.2) & (c[:, 2] < zmax - 0.1)
+xin = np.percentile(np.abs(c[mtop, 0]), 99) if mtop.sum() > 50 else xmax - 0.03
+lim = min(xmax - 0.03, xin + 0.025)
+# у изголовья (до 25 % длины от него) — не шире матраса: там «ушки»; дальше одеяло свисает по бокам — до рамы
+bed = (c[:, 1] > rail + 0.008) & (c[:, 2] > zf + 0.008) & (np.abs(c[:, 0]) < xmax - 0.03) & ((c[:, 2] > zf + 0.25) | (np.abs(c[:, 0]) < lim))
+# внутренняя сторона «ушек»: грани у самого края ширины, смотрящие вбок, — это обивка, не постель
+bed &= ~((c[:, 2] < zf + 0.25) & (np.abs(c[:, 0]) > lim - 0.045) & (np.abs(N[:, 0]) > 0.6))
 # одиночные «островки» на границе: грань постели, у которой все соседи — обивка (и наоборот), переклассифицируем
 adj = g.face_adjacency
 for _ in range(2):
@@ -38,4 +45,4 @@ out.add_geometry(part(~bed), node_name='fabric', geom_name='fabric')
 if 'legs' in sc.geometry: out.add_geometry(sc.geometry['legs'], node_name='legs', geom_name='legs')
 out.add_geometry(part(bed), node_name='bedding', geom_name='bedding')
 out.export(dst, include_normals=True)
-print(f'{src}: бортик y={rail:.3f}, изголовье z={zf:.3f}; постель {bed.sum()} из {len(F)} граней → {dst}')
+print(f'{src}: бортик y={rail:.3f}, изголовье z={zf:.3f}, ширина постели у изголовья ±{lim:.3f} из ±{xmax:.3f}; постель {bed.sum()} из {len(F)} граней → {dst}')
