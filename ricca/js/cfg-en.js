@@ -10,6 +10,7 @@
   window.RICCA_CFG_LANG = EN ? 'en' : 'ru';
   if (!EN) return;
   document.documentElement.lang = 'en';
+  { const mf = document.querySelector('link[rel="manifest"]'); if (mf) mf.setAttribute('href', '/en.webmanifest'); }   // «приложение» на английском
 
   const FR = {
     /* страница */

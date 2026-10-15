@@ -49,6 +49,12 @@
     if (l !== page) location.href = target(l);
   });
 
+  /* «приложение»: сайт можно добавить на главный экран; фоновый помощник /sw.js ускоряет повторные заходы и показывает
+     страницу «Нет интернета» без связи. Регистрируем после загрузки страницы, чтобы не мешать первому показу */
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => { /* без помощника сайт работает как обычно */ }); });
+  }
+
   /* защита фото и видео от «Сохранить как…» и перетаскивания (3D-окно конструктора не трогаем) */
   const guard = (e) => { const t = e.target; if (t && t.closest && t.closest('img, picture, video')) e.preventDefault(); };
   document.addEventListener('contextmenu', guard);

@@ -118,6 +118,7 @@ reps = [
  ('<link rel="canonical" href="https://ricca.design/">', '<link rel="canonical" href="https://ricca.design/en">'),
  ('<meta property="og:locale" content="ru_RU">', '<meta property="og:locale" content="en_US">\n<meta property="og:locale:alternate" content="ru_RU">'),
  ('<meta property="og:url" content="https://ricca.design/">', '<meta property="og:url" content="https://ricca.design/en">'),
+ ('<link rel="manifest" href="/manifest.webmanifest">', '<link rel="manifest" href="/en.webmanifest">'),
  ('№&nbsp;01', 'No.&nbsp;01'),
  ('<script src="js/cart.js" defer></script>', '<script src="js/lang-en.js" defer></script>\n<script src="js/cart.js" defer></script>'),
  ('<a class="hdr__lang" href="/en" hreflang="en" lang="en" aria-label="English version">EN</a>', '<a class="hdr__lang" href="/" hreflang="ru" lang="ru" aria-label="Русская версия">RU</a>'),

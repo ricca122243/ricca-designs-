@@ -32,3 +32,13 @@
   X-Permitted-Cross-Domain-Policies: none
 /.well-known/security.txt
   Content-Type: text/plain; charset=utf-8
+# «Приложение»: фоновый помощник и описание браузер всегда сверяет с сервером — обновление сайта доходит до телефонов сразу
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+  Service-Worker-Allowed: /
+/manifest.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
+  Cache-Control: public, max-age=0, must-revalidate
+/en.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
+  Cache-Control: public, max-age=0, must-revalidate

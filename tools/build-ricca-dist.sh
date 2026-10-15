@@ -153,6 +153,9 @@ cp tools/dist-extra/robots.txt tools/dist-extra/.htaccess tools/dist-extra/_head
 cp tools/ricca-extra/robots.txt tools/ricca-extra/sitemap.xml "$OUT/"
 cp tools/ricca-extra/_headers "$OUT/"   # свои правила кэша вместо общих ELUNA (там стили хранились 7 дней)
 cp tools/ricca-extra/_redirects "$OUT/"  # /en → en.html, /en/configurator → configurator.html
+# «Приложение» (PWA): описание для телефона, фоновый помощник, страница «Нет интернета», значки
+cp "$SRC/manifest.webmanifest" "$SRC/en.webmanifest" "$SRC/sw.js" "$SRC/offline.html" "$OUT/"
+mkdir -p "$OUT/img/pwa" && cp "$SRC"/img/pwa/*.png "$OUT/img/pwa/"
 mkdir -p "$OUT/.well-known" && cp tools/ricca-extra/security.txt "$OUT/.well-known/security.txt"   # куда писать о найденной уязвимости
 # Файл подтверждения Google Search Console — не удалять, иначе подтверждение слетит
 cp tools/ricca-extra/google731f803f39486a1a.html "$OUT/"
