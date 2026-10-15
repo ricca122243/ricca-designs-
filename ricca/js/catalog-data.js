@@ -973,9 +973,9 @@ window.RICCA_CATALOG = [
     type: "Стул",
     subtitle: "Опоры-панели",
     photos: [
-      {"src": "img/catalog/p-chair-01.webp", "src600": "img/catalog/p-chair-01-600.webp", "alt": "Стул: мягкие сиденье и спинка в светлой ткани на каркасе с широкими опорами — на светлом фоне", "studio": true, "box": [0.321, 0.351], "w": 1200, "h": 1500},
-      {"src": "img/catalog/p-chair-01-2.webp", "src600": "img/catalog/p-chair-01-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.266, 0.333], "w": 1200, "h": 1500},
-      {"src": "img/catalog/p-chair-01-3.webp", "src600": "img/catalog/p-chair-01-3-600.webp", "alt": "Стул, вид сбоку — на светлом фоне", "studio": true, "box": [0.294, 0.348], "w": 1200, "h": 1500}
+      {"src": "img/catalog/p-chair-01-1800.webp", "src600": "img/catalog/p-chair-01-600.webp", "alt": "Стул: мягкие сиденье и спинка в светлой ткани на каркасе с широкими опорами — на светлом фоне", "studio": true, "box": [0.321, 0.351], "w": 1800, "h": 2250},
+      {"src": "img/catalog/p-chair-01-2-1800.webp", "src600": "img/catalog/p-chair-01-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.266, 0.333], "w": 1800, "h": 2250},
+      {"src": "img/catalog/p-chair-01-3-1800.webp", "src600": "img/catalog/p-chair-01-3-600.webp", "alt": "Стул, вид сбоку — на светлом фоне", "studio": true, "box": [0.294, 0.348], "w": 1800, "h": 2250}
     ],
     description: "Мягкие сиденье и спинка в светлой ткани на каркасе с широкими плоскими опорами.",
     options: ["Обеденный", "В пару к столу"],
@@ -994,8 +994,8 @@ window.RICCA_CATALOG = [
     type: "Стул",
     subtitle: "С подлокотниками",
     photos: [
-      {"src": "img/catalog/p-chair-02.webp", "src600": "img/catalog/p-chair-02-600.webp", "alt": "Стул: сиденье и спинка-валик в рыжей ткани между боковинами-панелями — на светлом фоне", "studio": true, "box": [0.359, 0.299], "w": 1200, "h": 1500},
-      {"src": "img/catalog/p-chair-02-2.webp", "src600": "img/catalog/p-chair-02-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.296, 0.277], "w": 1200, "h": 1500}
+      {"src": "img/catalog/p-chair-02-1800.webp", "src600": "img/catalog/p-chair-02-600.webp", "alt": "Стул: сиденье и спинка-валик в рыжей ткани между боковинами-панелями — на светлом фоне", "studio": true, "box": [0.359, 0.299], "w": 1800, "h": 2250},
+      {"src": "img/catalog/p-chair-02-2-1800.webp", "src600": "img/catalog/p-chair-02-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.296, 0.277], "w": 1800, "h": 2250}
     ],
     description: "Мягкие сиденье и спинка-валик в рыжей ткани между боковинами-панелями.",
     options: ["Обеденный", "В пару к столу"],
@@ -1014,8 +1014,8 @@ window.RICCA_CATALOG = [
     type: "Стул",
     subtitle: "С подлокотниками",
     photos: [
-      {"src": "img/catalog/p-chair-03.webp", "src600": "img/catalog/p-chair-03-600.webp", "alt": "Стул: серые подушки на тонком металлическом каркасе, боковины коньячного цвета — на светлом фоне", "studio": true, "box": [0.368, 0.339], "w": 1200, "h": 1500},
-      {"src": "img/catalog/p-chair-03-2.webp", "src600": "img/catalog/p-chair-03-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.268, 0.302], "w": 1200, "h": 1500}
+      {"src": "img/catalog/p-chair-03-1800.webp", "src600": "img/catalog/p-chair-03-600.webp", "alt": "Стул: серые подушки на тонком металлическом каркасе, боковины коньячного цвета — на светлом фоне", "studio": true, "box": [0.368, 0.339], "w": 1800, "h": 2250},
+      {"src": "img/catalog/p-chair-03-2-1800.webp", "src600": "img/catalog/p-chair-03-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.268, 0.302], "w": 1800, "h": 2250}
     ],
     description: "Мягкие подушки в серой ткани на тонком металлическом каркасе, боковины коньячного цвета.",
     options: ["Обеденный", "В пару к столу"],
@@ -1034,8 +1034,8 @@ window.RICCA_CATALOG = [
     type: "Стул",
     subtitle: "На чёрном каркасе",
     photos: [
-      {"src": "img/catalog/p-chair-04.webp", "src600": "img/catalog/p-chair-04-600.webp", "alt": "Стул: светлые мягкие сиденье и спинка на чёрном каркасе — на светлом фоне", "studio": true, "box": [0.34, 0.343], "w": 1200, "h": 1500},
-      {"src": "img/catalog/p-chair-04-2.webp", "src600": "img/catalog/p-chair-04-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.302, 0.32], "w": 1200, "h": 1500}
+      {"src": "img/catalog/p-chair-04-1800.webp", "src600": "img/catalog/p-chair-04-600.webp", "alt": "Стул: светлые мягкие сиденье и спинка на чёрном каркасе — на светлом фоне", "studio": true, "box": [0.34, 0.343], "w": 1800, "h": 2250},
+      {"src": "img/catalog/p-chair-04-2-1800.webp", "src600": "img/catalog/p-chair-04-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.302, 0.32], "w": 1800, "h": 2250}
     ],
     description: "Мягкие сиденье и спинка в светлой ткани на чёрном каркасе, подлокотники с металлическими накладками.",
     options: ["Обеденный", "В пару к столу"],
@@ -1054,8 +1054,8 @@ window.RICCA_CATALOG = [
     type: "Стул",
     subtitle: "Строгие линии",
     photos: [
-      {"src": "img/catalog/p-chair-05.webp", "src600": "img/catalog/p-chair-05-600.webp", "alt": "Стул: серые сиденье и спинка на чёрном каркасе с тонкими подлокотниками — на светлом фоне", "studio": true, "box": [0.332, 0.346], "w": 1200, "h": 1500},
-      {"src": "img/catalog/p-chair-05-2.webp", "src600": "img/catalog/p-chair-05-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.257, 0.309], "w": 1200, "h": 1500}
+      {"src": "img/catalog/p-chair-05-1800.webp", "src600": "img/catalog/p-chair-05-600.webp", "alt": "Стул: серые сиденье и спинка на чёрном каркасе с тонкими подлокотниками — на светлом фоне", "studio": true, "box": [0.332, 0.346], "w": 1800, "h": 2250},
+      {"src": "img/catalog/p-chair-05-2-1800.webp", "src600": "img/catalog/p-chair-05-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.257, 0.309], "w": 1800, "h": 2250}
     ],
     description: "Сиденье и спинка в серой гладкой обивке на чёрном каркасе, тонкие металлические подлокотники.",
     options: ["Обеденный", "В пару к столу"],
@@ -1074,8 +1074,8 @@ window.RICCA_CATALOG = [
     type: "Стул",
     subtitle: "Без подлокотников",
     photos: [
-      {"src": "img/catalog/p-chair-06.webp", "src600": "img/catalog/p-chair-06-600.webp", "alt": "Стул в серой гладкой обивке на тонких ножках — на светлом фоне", "studio": true, "box": [0.327, 0.34], "w": 1200, "h": 1500},
-      {"src": "img/catalog/p-chair-06-2.webp", "src600": "img/catalog/p-chair-06-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.303, 0.379], "w": 1200, "h": 1500}
+      {"src": "img/catalog/p-chair-06-1800.webp", "src600": "img/catalog/p-chair-06-600.webp", "alt": "Стул в серой гладкой обивке на тонких ножках — на светлом фоне", "studio": true, "box": [0.327, 0.34], "w": 1800, "h": 2250},
+      {"src": "img/catalog/p-chair-06-2-1800.webp", "src600": "img/catalog/p-chair-06-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.303, 0.379], "w": 1800, "h": 2250}
     ],
     description: "Лаконичный стул: цельные сиденье и спинка в серой гладкой обивке на тонких ножках.",
     options: ["Обеденный", "В пару к столу"],
@@ -1094,8 +1094,8 @@ window.RICCA_CATALOG = [
     type: "Стул",
     subtitle: "На крестовой опоре",
     photos: [
-      {"src": "img/catalog/p-chair-07.webp", "src600": "img/catalog/p-chair-07-600.webp", "alt": "Стул: серая чаша с подлокотниками на металлической крестовой опоре — на светлом фоне", "studio": true, "box": [0.333, 0.341], "w": 1200, "h": 1500},
-      {"src": "img/catalog/p-chair-07-2.webp", "src600": "img/catalog/p-chair-07-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.346, 0.354], "w": 1200, "h": 1500}
+      {"src": "img/catalog/p-chair-07-1800.webp", "src600": "img/catalog/p-chair-07-600.webp", "alt": "Стул: серая чаша с подлокотниками на металлической крестовой опоре — на светлом фоне", "studio": true, "box": [0.333, 0.341], "w": 1800, "h": 2250},
+      {"src": "img/catalog/p-chair-07-2-1800.webp", "src600": "img/catalog/p-chair-07-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.346, 0.354], "w": 1800, "h": 2250}
     ],
     description: "Чаша с подлокотниками в серой гладкой обивке, мягкая подушка сиденья, металлическая крестовая опора.",
     options: ["Обеденный", "В пару к столу"],
@@ -1114,8 +1114,8 @@ window.RICCA_CATALOG = [
     type: "Стул",
     subtitle: "Широкая посадка",
     photos: [
-      {"src": "img/catalog/p-chair-08.webp", "src600": "img/catalog/p-chair-08-600.webp", "alt": "Стул: серые сиденье и спинка в окантовке коньячного цвета на тонком каркасе — на светлом фоне", "studio": true, "box": [0.372, 0.326], "w": 1200, "h": 1500},
-      {"src": "img/catalog/p-chair-08-2.webp", "src600": "img/catalog/p-chair-08-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.342, 0.329], "w": 1200, "h": 1500}
+      {"src": "img/catalog/p-chair-08-1800.webp", "src600": "img/catalog/p-chair-08-600.webp", "alt": "Стул: серые сиденье и спинка в окантовке коньячного цвета на тонком каркасе — на светлом фоне", "studio": true, "box": [0.372, 0.326], "w": 1800, "h": 2250},
+      {"src": "img/catalog/p-chair-08-2-1800.webp", "src600": "img/catalog/p-chair-08-2-600.webp", "alt": "Стул, вид спереди — на светлом фоне", "studio": true, "box": [0.342, 0.329], "w": 1800, "h": 2250}
     ],
     description: "Мягкие сиденье и спинка в серой ткани в окантовке коньячного цвета, тонкий металлический каркас.",
     options: ["Обеденный", "В пару к столу"],
