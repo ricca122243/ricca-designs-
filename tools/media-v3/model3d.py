@@ -60,6 +60,7 @@ if tex_img is not None and getattr(m.visual, 'uv', None) is not None:
     low = fc[:, 1] < y0 + h * 0.16
     med = np.median(lum[~low]) if (~low).any() else lum.mean()
     legs = low & (lum < min(0.35, med * 0.55))
+    NL_ = 48; cut = int(np.ceil((fc[legs, 1].max() - y0) / h * NL_)) if legs.any() else 0   # высота среза ножек — по самым верхним тёмным граням
     print(f'граней {len(F)}, ножки по цвету {legs.sum()} ({legs.mean()*100:.1f} %), медиана яркости ткани {med:.2f}')
 else:
     # без текстуры: ножки — нижние слои, где заполнено мало клеток сетки (у корпуса заполнена почти вся площадь)
@@ -152,10 +153,22 @@ def part(mask, target):
         N = (A @ N + N) / deg[:, None]; N /= np.linalg.norm(N, axis=1, keepdims=True) + 1e-12
     g.vertex_normals = N
     return g
-fab, lg = part(~legs, NF), part(legs, NL)
+yCut = y0 + h * cut / NL_ if cut else None
+whole = part(np.ones(len(F), bool), NF + (NL if cut else 0))
+if yCut is not None:
+    fcw = whole.vertices[whole.faces].mean(1); lm = fcw[:, 1] < yCut
+    def sub(mask):
+        f = whole.faces[mask]
+        if not len(f): return None
+        used = np.unique(f); remap = np.full(len(whole.vertices), -1); remap[used] = np.arange(len(used))
+        g = trimesh.Trimesh(whole.vertices[used], remap[f], process=False); g.vertex_normals = np.asarray(whole.vertex_normals)[used]
+        return g
+    fab, lg = sub(~lm), sub(lm)
+else:
+    fab, lg = whole, None
 parts = {'fabric': fab}; 
 if lg is not None and len(lg.faces) > 50: parts['legs'] = lg
-else: parts['fabric'] = part(np.ones(len(F), bool), NF)
+else: parts['fabric'] = whole
 # пол на y=0, центр по x/z — по всей модели
 allv = np.vstack([g.vertices for g in parts.values()]); mn, mx = allv.min(0), allv.max(0)
 off = np.array([(mn[0] + mx[0]) / 2, mn[1], (mn[2] + mx[2]) / 2])
