@@ -245,10 +245,11 @@ function renderModels() {
   /* та же категория — только отметить выбранную (полоса не перестраивается, прокрутка и фото на месте) */
   if (cat === modelsCat && box.firstChild) { $$('[data-model]', box).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.model === activeModel))); return; }
   modelsCat = cat;
-  const list = catalogModels().filter((m) => m.category === cat);
+  /* в полосе — только модели с точной 3D-моделью (models3d): собранные «по мотивам» на фото не похожи и клиента путают */
+  const list = catalogModels().filter((m) => m.category === cat && m.glb);
   box.hidden = !list.length;
   if (!list.length) { box.innerHTML = ''; return; }
-  box.innerHTML = `<p class="models__l" id="models-l">По мотивам моделей каталога</p><div class="models__row" role="group" aria-labelledby="models-l">${list.map((m) => {
+  box.innerHTML = `<p class="models__l" id="models-l">Модели каталога в точном 3D</p><div class="models__row" role="group" aria-labelledby="models-l">${list.map((m) => {
     const ph = m.photos.find((x) => x.studio) || m.photos[0];
     return `<button class="model${m.glb ? ' model--exact' : ''}" type="button" data-model="${esc(m.id)}" aria-pressed="${m.id === activeModel}" title="${esc(m.subtitle || '')}">
       <span class="model__img"><img src="${esc(ph.src600 || ph.src)}" alt="" loading="lazy" decoding="async" width="600" height="450"></span><span class="model__t">${esc(modelName(m))}</span></button>`;
