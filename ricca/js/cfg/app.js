@@ -265,8 +265,10 @@ async function loadExactGroup(m) {
   if (!src) { src = (await new GLTFLoader().loadAsync(m.glb)).scene; exactCache.set(m.glb, src); }
   const g = src.clone(true);
   const box = new THREE.Box3().setFromObject(g), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
-  const d = curDims() || { w: 2.2 };
-  const k = (d.w || 2.2) / Math.max(size.x, 0.01);          // ширина — как в рецепте (размеры — в метрах)
+  const d = curDims() || { w: 2.2, d: 1 };
+  /* масштаб: наибольший горизонтальный размер модели = наибольший из рецепта (ширина или глубина, в метрах) —
+     так и широкий диван, и глубокое узкое кресло получают реальные пропорции */
+  const k = Math.max(d.w || 0, d.d || 0, 0.5) / Math.max(size.x, size.z, 0.01);
   const wrap = new THREE.Group(); wrap.name = `exact:${m.id}`;
   g.scale.setScalar(k); g.position.set(-c.x * k, -box.min.y * k, -c.z * k); wrap.add(g);
   g.traverse((o) => {

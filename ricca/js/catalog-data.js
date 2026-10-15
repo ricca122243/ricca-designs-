@@ -404,6 +404,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-23",
+    glb: "models3d/sofa-23.glb",
     cfg: "t.sofa~w.230~as.wide~lg.hidden",
     category: "sofas",
     tags: ["straight"],
@@ -843,6 +844,7 @@ window.RICCA_CATALOG = [
   /* ═════════ КРЕСЛА ═════════ */
   {
     id: "armchair-01",
+    glb: "models3d/armchair-01.glb",
     cfg: "t.armchair~f.round~as.round~lg.disc~lf.black",
     category: "armchairs",
     tags: [],
@@ -922,6 +924,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-10",
+    glb: "models3d/armchair-10.glb",
     cfg: "t.armchair~f.classic~as.round~aw.20~lg.wood~lf.walnut",
     category: "armchairs",
     tags: [],
@@ -942,6 +945,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-11",
+    glb: "models3d/armchair-11.glb",
     cfg: "t.armchair~f.classic~as.wide~lg.wood~lf.blackwood~lh.12",
     category: "armchairs",
     tags: [],
@@ -1188,6 +1192,7 @@ window.RICCA_CATALOG = [
   /* ═════════ НОВЫЕ МОДЕЛИ (14 октября, фото владельца) ═════════ */
   {
     id: "sofa-24",
+    glb: "models3d/sofa-24.glb",
     cfg: "t.modular~mo.3~ch.left~as.wide~h.68~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
@@ -1366,6 +1371,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-14",
+    glb: "models3d/armchair-14.glb",
     cfg: "t.armchair~f.classic~as.wide~h.100~lg.wood~lf.oak",
     category: "armchairs",
     tags: [],
@@ -1463,6 +1469,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-26",
+    glb: "models3d/bed-26.glb",
     cfg: "t.bed~hs.plain~hh.105~b.legs~lf.black~lh.16~p.1",
     category: "beds",
     tags: [],
@@ -1482,6 +1489,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-27",
+    glb: "models3d/bed-27.glb",
     cfg: "t.bed~hs.wings~hh.120~ho.20~b.plinth",
     category: "beds",
     tags: [],
@@ -1502,6 +1510,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-28",
+    glb: "models3d/bed-28.glb",
     cfg: "t.bed~hs.plain~hh.115~b.plinth",
     category: "beds",
     tags: [],
@@ -1522,6 +1531,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-29",
+    glb: "models3d/bed-29.glb",
     cfg: "t.bed~hs.plain~hh.110~b.legs~lf.black~lh.16",
     category: "beds",
     tags: [],
@@ -1638,6 +1648,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-37",
+    glb: "models3d/sofa-37.glb",
     cfg: "t.corner~f.chaise~s.left~as.round~lg.metal~lf.black",
     category: "sofas",
     tags: ["corner"],
@@ -1657,6 +1668,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-38",
+    glb: "models3d/sofa-38.glb",
     cfg: "t.corner~f.chaise~s.right~as.round~lg.metal~lf.gold",
     category: "sofas",
     tags: ["corner", "modular"],
@@ -1695,6 +1707,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-39",
+    glb: "models3d/sofa-39.glb",
     cfg: "t.modular~mo.3~as.round~bc.fixed~h.68~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
@@ -1716,6 +1729,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-40",
+    glb: "models3d/sofa-40.glb",
     cfg: "t.sofa~w.180~as.thin~lg.metal~lf.black",
     category: "sofas",
     tags: ["straight"],
