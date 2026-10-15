@@ -690,7 +690,8 @@ text{font-family:${FONT};fill:${INK}}
   W('</svg>');
 
   return {
-    svg: out.join('\n'), scale: scaleTxt, den, id, date, title,
+    /* английский конструктор (js/cfg-en.js) переводит надписи чертежа; на русском — как есть */
+    svg: globalThis.RICCA_CFG_TR ? globalThis.RICCA_CFG_TR.svg(out.join('\n')) : out.join('\n'), scale: scaleTxt, den, id, date, title,
     labels, rows: trows.map((r) => ({ label: r.label, value: r.value, lines: r.ls })),
     views: { front: pos.front, side: pos.side, top: pos.top },
     viewBoxes: Object.fromEntries([F, S, T].map((V) => [V.view, { x0: pos[V.view][0] - V.ext.l, y0: pos[V.view][1] - V.ext.t, x1: pos[V.view][0] + V.Wv + V.ext.r, y1: pos[V.view][1] + V.Hv + V.ext.b, obj: { x0: pos[V.view][0], y0: pos[V.view][1], x1: pos[V.view][0] + V.Wv, y1: pos[V.view][1] + V.Hv } }])),

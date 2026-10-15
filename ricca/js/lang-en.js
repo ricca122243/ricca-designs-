@@ -5,6 +5,7 @@
    Русская страница этот файл не подключает: там tr() возвращает текст как есть. */
 (() => {
   'use strict';
+  if (window.RICCA_CFG_LANG === 'ru') return;   // конструктор на русском (/configurator.html) — ничего не переводим
   const NB = ' ';
   window.RICCA_LANG = 'en';
   window.RICCA_T = {
@@ -174,6 +175,8 @@
 
   (window.RICCA_WORKS || []).forEach((w) => { if (!w) return; w.title = WORK_TITLES[w.title] || w.title; w.sub = sub(w.sub); });
   (window.RICCA_MODELS || []).forEach((w) => { if (!w) return; w.title = modelTitle(w.title); w.sub = MODEL_SUBS[w.sub] || sub(w.sub); });
+  /* модели каталога (подписи под фото в конструкторе /en/configurator) */
+  (window.RICCA_CATALOG || []).forEach((m) => { if (m && m.subtitle) m.subtitle = MODEL_SUBS[m.subtitle] || sub(m.subtitle); });
   Object.values(window.RICCA_CATALOG_CATEGORIES || {}).forEach((c) => { if (!c) return; c.label = CAT_LABELS[c.label] || c.label; if (c.desc) c.desc = CAT_DESCS[c.desc] || c.desc; });
   (((window.RICCA_FABRIC_LIBRARY || {}).types) || []).forEach((t) => {
     if (!t) return;

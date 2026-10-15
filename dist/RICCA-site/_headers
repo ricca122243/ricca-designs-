@@ -14,3 +14,21 @@
   Cache-Control: public, max-age=86400
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
+# Защита для всех адресов сайта:
+# • HSTS — только https, без возврата на http;  • nosniff — браузер не «угадывает» тип файла;
+# • запрет встраивать сайт в чужие страницы (X-Frame-Options + frame-ancestors) — защита от подмены и кражи кликов;
+# • чужим сайтам по ссылке уходит только домен, без пути;  • камера и AR — только самому сайту (конструктор: фото комнаты, AR),
+#   остальные датчики выключены;  • окно WhatsApp/2ГИС открывается отдельно и не получает доступ к странице.
+# Остальные правила (откуда грузить скрипты, фото, шрифты) — в <meta http-equiv="Content-Security-Policy"> каждой страницы,
+# его пишет сборка tools/build-ricca-dist.sh.
+/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: frame-ancestors 'self'
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(self), xr-spatial-tracking=(self), microphone=(), geolocation=(), payment=(), usb=(), serial=()
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  X-Permitted-Cross-Domain-Policies: none
+/.well-known/security.txt
+  Content-Type: text/plain; charset=utf-8

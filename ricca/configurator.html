@@ -6,6 +6,11 @@
 <title>Соберите свою мебель — RICCA DESIGNS</title>
 <meta name="description" content="Конструктор RICCA DESIGNS: выберите тип, форму, любой размер и ткань — посмотрите вариант в 3D и отправьте в WhatsApp на расчёт. Ателье мягкой мебели в Алматы.">
 <meta name="robots" content="noindex">
+<meta name="author" content="RICCA DESIGNS">
+<meta name="copyright" content="© RICCA DESIGNS, Алматы">
+<link rel="alternate" hreflang="ru" href="https://ricca.design/configurator.html">
+<link rel="alternate" hreflang="en" href="https://ricca.design/en/configurator">
+<link rel="alternate" hreflang="x-default" href="https://ricca.design/configurator.html">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="img/v3/favicon-v3.svg" type="image/svg+xml">
 <link rel="icon" href="img/v3/favicon-v3-32.png" sizes="32x32" type="image/png">
@@ -23,6 +28,9 @@
 <link rel="modulepreload" href="js/cfg/fabrics.js">
 <script defer src="js/fabrics-data.js"></script>
 <script defer src="js/catalog-data.js"></script>
+<script defer src="js/cfg-en.js"></script><!-- английская версия (/en/configurator): переводит интерфейс; на русской странице ничего не делает -->
+<script defer src="js/lang-en.js"></script><!-- названия тканей и моделей по-английски — тоже только на /en/configurator -->
+<script defer src="js/lang.js"></script><!-- переключатель RU | EN, память выбора языка, защита фото -->
 <script type="module" src="js/cfg/app.js"></script>
 </head>
 <body>
@@ -47,6 +55,7 @@
 <span class="logo__text" aria-hidden="true"><span class="logo__name">RICCA</span><span class="logo__sub">DESIGNS&nbsp;•&nbsp;ALMATY</span></span>
 </a>
 <nav class="hdr__nav" aria-label="Разделы">
+<div class="hdr__lng" role="group" aria-label="Язык сайта"><a href="/configurator.html" hreflang="ru" lang="ru" aria-current="true" data-lng="ru">RU</a><span aria-hidden="true">|</span><a href="/en/configurator" hreflang="en" lang="en" data-lng="en">EN</a></div>
 <a class="hdr__back" href="index.html#catalog"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg>Каталог</a>
 <a class="hdr__wa" href="https://wa.me/77079550808" data-wa-plain aria-label="Написать в WhatsApp"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span class="hdr__wa-t">WhatsApp</span></a>
 </nav>

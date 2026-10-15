@@ -2,28 +2,37 @@
 <html lang="ru" class="no-js">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:; default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' blob: data:; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; upgrade-insecure-requests">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Соберите свою мебель — RICCA DESIGNS</title>
 <meta name="description" content="Конструктор RICCA DESIGNS: выберите тип, форму, любой размер и ткань — посмотрите вариант в 3D и отправьте в WhatsApp на расчёт. Ателье мягкой мебели в Алматы.">
 <meta name="robots" content="noindex">
+<meta name="author" content="RICCA DESIGNS">
+<meta name="copyright" content="© RICCA DESIGNS, Алматы">
+<link rel="alternate" hreflang="ru" href="https://ricca.design/configurator.html">
+<link rel="alternate" hreflang="en" href="https://ricca.design/en/configurator">
+<link rel="alternate" hreflang="x-default" href="https://ricca.design/configurator.html">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="img/v3/favicon-v3.svg" type="image/svg+xml">
 <link rel="icon" href="img/v3/favicon-v3-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="img/v3/favicon-v3-180.png">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts-v3.css?v=ea71ab4eb8">
-<link rel="stylesheet" href="css/configurator.css?v=ea71ab4eb8">
+<link rel="stylesheet" href="css/fonts-v3.css?v=9febbe238b">
+<link rel="stylesheet" href="css/configurator.css?v=9febbe238b">
 <script>document.documentElement.classList.replace('no-js', 'js');</script>
 <script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
-<link rel="modulepreload" href="js/cfg/app.js?v=ea71ab4eb8">
-<link rel="modulepreload" href="js/cfg/params.js?v=ea71ab4eb8">
-<link rel="modulepreload" href="js/cfg/validate.js?v=ea71ab4eb8">
-<link rel="modulepreload" href="js/cfg/share.js?v=ea71ab4eb8">
-<link rel="modulepreload" href="js/cfg/fabrics.js?v=ea71ab4eb8">
-<script defer src="js/fabrics-data.js?v=ea71ab4eb8"></script>
-<script defer src="js/catalog-data.js?v=ea71ab4eb8"></script>
-<script type="module" src="js/cfg/app.js?v=ea71ab4eb8"></script>
+<link rel="modulepreload" href="js/cfg/app.js?v=9febbe238b">
+<link rel="modulepreload" href="js/cfg/params.js?v=9febbe238b">
+<link rel="modulepreload" href="js/cfg/validate.js?v=9febbe238b">
+<link rel="modulepreload" href="js/cfg/share.js?v=9febbe238b">
+<link rel="modulepreload" href="js/cfg/fabrics.js?v=9febbe238b">
+<script defer src="js/fabrics-data.js?v=9febbe238b"></script>
+<script defer src="js/catalog-data.js?v=9febbe238b"></script>
+<script defer src="js/cfg-en.js?v=9febbe238b"></script><!-- английская версия (/en/configurator): переводит интерфейс; на русской странице ничего не делает -->
+<script defer src="js/lang-en.js?v=9febbe238b"></script><!-- названия тканей и моделей по-английски — тоже только на /en/configurator -->
+<script defer src="js/lang.js?v=9febbe238b"></script><!-- переключатель RU | EN, память выбора языка, защита фото -->
+<script type="module" src="js/cfg/app.js?v=9febbe238b"></script>
 </head>
 <body>
 <a class="skip" href="#steps">Перейти к&nbsp;параметрам</a>
@@ -47,6 +56,7 @@
 <span class="logo__text" aria-hidden="true"><span class="logo__name">RICCA</span><span class="logo__sub">DESIGNS&nbsp;•&nbsp;ALMATY</span></span>
 </a>
 <nav class="hdr__nav" aria-label="Разделы">
+<div class="hdr__lng" role="group" aria-label="Язык сайта"><a href="/configurator.html" hreflang="ru" lang="ru" aria-current="true" data-lng="ru">RU</a><span aria-hidden="true">|</span><a href="/en/configurator" hreflang="en" lang="en" data-lng="en">EN</a></div>
 <a class="hdr__back" href="index.html#catalog"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg>Каталог</a>
 <a class="hdr__wa" href="https://wa.me/77079550808" data-wa-plain aria-label="Написать в WhatsApp"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span class="hdr__wa-t">WhatsApp</span></a>
 </nav>

@@ -187,11 +187,28 @@ function load() {
     if (lost) { state.fabricLost = true; pendingToast = MSG_FAB_LOST; return 'fabric'; }
     return 'hash';
   }
+  if (!h.room && fromQuery()) {
+    if (fab) { state.fabric = fab; state.fabricLost = false; }
+    return 'query';
+  }
   if (h.room) state.mode = 'room';
   const src = loadStored();
   if (fab) { state.fabric = fab; state.fabricLost = false; arrivedFabric = fab; return 'fabric'; }
   if (lost) { state.fabricLost = true; pendingToast = MSG_FAB_LOST; return 'fabric'; }
   return src;
+}
+/* ссылка с главной («Влезет ли диван»): ?len=280&depth=95&shape=corner&side=180 — сантиметры; shape: straight | corner.
+   Открываем прямой или угловой диван этого размера на шаге «Размер»; проверка размеров (validate.js) поправит, что не сходится */
+function fromQuery() {
+  let sp; try { sp = new URLSearchParams(location.search); } catch (e) { return false; }
+  const cm = (k) => { const v = parseFloat(String(sp.get(k) || '').replace(',', '.')); return Number.isFinite(v) && v >= 30 && v <= 2000 ? Math.round(v) : null; };
+  const len = cm('len'); if (!len) return false;
+  const corner = sp.get('shape') === 'corner';
+  const depth = cm('depth'), side = cm('side');
+  const parts = ['v1', `t.${corner ? 'corner' : 'sofa'}`, `w.${len}`];
+  if (depth) parts.push(`d.${depth}`);
+  if (corner && side) parts.push(`l.${side}`);
+  return fromCfgString(parts.join('~'));
 }
 function loadStored() {
   const raw = lsGet(LS.cfg);
@@ -1268,8 +1285,9 @@ function init() {
   const src = load();
   renderTypes(); syncTypes(); renderFabricTabs(); renderFabric();
   renderForm(); renderSize(); renderFabricVisibility(); renderSummary(); renderHeads(); renderViewportSize();
-  state.step = src === 'hash' ? 5 : src === 'fabric' ? 4 : 1;
+  state.step = src === 'hash' ? 5 : src === 'fabric' ? 4 : src === 'query' ? 3 : 1;
   if (src === 'hash') [1, 2, 3, 4, 5].forEach((n) => state.visited.add(n));
+  if (src === 'query') [1, 2, 3].forEach((n) => state.visited.add(n));
   state.visited.add(state.step);
   syncSteps();
   bind();

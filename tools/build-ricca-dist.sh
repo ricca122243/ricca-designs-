@@ -53,7 +53,11 @@ html_nocomments=$(sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$SRC/index.html")
 # js/catalog-data.js: модели фабрики сайт больше не показывает (отзыв клиента 13 октября) — их фото в архив не идут;
 # из этого файла берём ссылки только списка RICCA_WORKS (подтверждённые фото работ; RICCA_WORKS_PENDING — нет)
 js_code() { for f in "$OUT"/js/*.js; do
-  if [ "$(basename "$f")" = catalog-data.js ]; then awk '/^window\.RICCA_WORKS =/{on=1} on{print} on&&/\];/{exit}' "$f"; else cat "$f"; fi
+  case "$(basename "$f")" in
+    catalog-data.js) awk '/^window\.RICCA_WORKS =/{on=1} on{print} on&&/\];/{exit}' "$f" ;;
+    content-data.js) ;;   # контент новых блоков: фото и ролики, которых ещё может не быть, — отдельно ниже
+    *) cat "$f" ;;
+  esac
 done; }
 refs=$( (printf '%s' "$html_nocomments"; cat "$OUT/css/"*.css; js_code) \
          | grep -ohE '(img|video|fonts)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|woff2|mp4|webm|css)' | sed 's#^\.\./##' | sort -u)
@@ -68,6 +72,15 @@ for ref in $refs; do
   mkdir -p "$OUT/$(dirname "$ref")"
   cp "$SRC/$ref" "$OUT/$ref"
 done
+# Новые блоки (js/content-data.js): фото работ, основателя, кейса, ролик ателье. Пока файла нет — блок на сайте скрыт,
+# поэтому отсутствие — только предупреждение. Комментарии (/* … */ и // …) с примерами путей пропускаем
+content_refs=$(perl -0pe 's#/\*.*?\*/##gs; s#(^|\s)//[^\n]*##g' "$SRC/js/content-data.js" 2>/dev/null \
+         | grep -ohE '(img|video)/[A-Za-z0-9_./@-]+\.(webp|png|svg|jpg|mp4|webm)' | sort -u | no_supplier_extras)
+for ref in $content_refs; do
+  if [ -f "$SRC/$ref" ]; then mkdir -p "$OUT/$(dirname "$ref")"; cp "$SRC/$ref" "$OUT/$ref"
+  else echo "предупреждение: в js/content-data.js указан файл, которого нет (блок будет скрыт): $ref"; fi
+done
+[ -d "$SRC/img/blocks" ] && mkdir -p "$OUT/img/blocks" && cp -r "$SRC/img/blocks/." "$OUT/img/blocks/"
 # Медиа и шрифты конструктора: ссылки из configurator.html и js/cfg/*.js (образцы тканей запасной библиотеки, шрифты чертежа, иконка)
 if [ "$cfg_page" -eq 1 ]; then
   cfg_refs=$( (sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d' "$SRC/configurator.html"; cat "$OUT"/js/cfg/*.js) \
@@ -139,7 +152,8 @@ cp tools/dist-extra/robots.txt tools/dist-extra/.htaccess tools/dist-extra/_head
 # robots.txt и карта сайта — свои, для домена ricca.design (заменяют общий robots.txt)
 cp tools/ricca-extra/robots.txt tools/ricca-extra/sitemap.xml "$OUT/"
 cp tools/ricca-extra/_headers "$OUT/"   # свои правила кэша вместо общих ELUNA (там стили хранились 7 дней)
-cp tools/ricca-extra/_redirects "$OUT/"  # /en → en.html
+cp tools/ricca-extra/_redirects "$OUT/"  # /en → en.html, /en/configurator → configurator.html
+mkdir -p "$OUT/.well-known" && cp tools/ricca-extra/security.txt "$OUT/.well-known/security.txt"   # куда писать о найденной уязвимости
 # Файл подтверждения Google Search Console — не удалять, иначе подтверждение слетит
 cp tools/ricca-extra/google731f803f39486a1a.html "$OUT/"
 
@@ -160,6 +174,34 @@ md_files=$(find "$OUT" -name '*.md')
 # Фото поставщиков с их названиями / людьми / чужими интерьерами в сборку попасть не должны
 extras=$(find "$OUT/img/fabrics" -type f \( -name 'hero-*' -o -name 'inuse-*' \) 2>/dev/null || true)
 [ -z "$extras" ] || { echo "в сборку попали фото поставщиков hero-/inuse-: $extras"; exit 1; }
+
+# Защита (Content-Security-Policy): страница может грузить скрипты, стили, шрифты, фото и 3D только с ricca.design.
+# Встроенный скрипт входа главной разрешён по его хэшу (считаем здесь, после сборки en.html). Конструктору нужен
+# встроенный importmap (хэшам для него Safari не верит) — там 'unsafe-inline', плюс blob: для Worker и AR (USDZ/GLB в памяти).
+# Правило кладём <meta> в начало <head>: работает на любом хостинге и не зависит от адреса (/en, /en/configurator).
+# frame-ancestors в <meta> не действует — запрет встраивания на чужие сайты задают заголовки в _headers.
+python3 - "$OUT" <<'PY'
+import base64, hashlib, re, sys, pathlib
+out = pathlib.Path(sys.argv[1])
+common = ("default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; "
+          "font-src 'self'; connect-src 'self' blob: data:; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; "
+          "base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; upgrade-insecure-requests")
+for name in ('index.html', 'en.html', 'configurator.html'):
+    f = out / name
+    if not f.exists():
+        continue
+    html = f.read_text(encoding='utf-8')
+    if name == 'configurator.html':
+        script = "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:"
+    else:
+        inline = re.findall(r'<script>(.*?)</script>', html, flags=re.S)
+        hashes = sorted({"'sha256-%s'" % base64.b64encode(hashlib.sha256(b.encode('utf-8')).digest()).decode() for b in inline})
+        script = "script-src 'self' " + ' '.join(hashes)
+    meta = '<meta http-equiv="Content-Security-Policy" content="%s; %s">' % (script, common)
+    html, n = re.subn(r'(<meta charset="utf-8">\n)', lambda m: m.group(1) + meta + '\n', html, count=1)
+    assert n == 1, name
+    f.write_text(html, encoding='utf-8')
+PY
 
 # Метка версии ?v=… у стилей и скриптов: меняется вместе с их содержимым, поэтому браузер, сохранивший прежние
 # файлы, после обновления сайта точно возьмёт новые (иначе — новая страница со старыми стилями)

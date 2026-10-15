@@ -23,7 +23,7 @@
   /* ---------- CONFIG: номера и готовые тексты WhatsApp — менять здесь ---------- */
   const CONFIG = {
     wa: '77079550808',
-    tel: { main: '+77079550808', orders: '+77084802047' },
+    tel: { main: '+77079550808' },
     msg: {
       general: tr('Здравствуйте! Хочу узнать о мебели RICCA на заказ.'),
       question: tr('Здравствуйте! У меня вопрос по мебели RICCA.'),
@@ -1043,6 +1043,9 @@
       passport.innerHTML = rows.map(([k, v]) => `<div><dt>${tr(k)}</dt><dd>${typo(v)}</dd></div>`).join('');
       passport.hidden = !rows.length;
       more.open = false; more.hidden = !rows.length && !it.description && !(it.options || []).length;
+      /* «Состав» (js/blocks.js + js/composition-data.js): только у проверенных моделей (verified: true) */
+      const comp = $('[data-pd-comp]', dlg);
+      if (comp && window.RICCA_COMPOSITION_UI && window.RICCA_COMPOSITION_UI(comp, it.id)) more.hidden = false;
       resetOrder();
       wa.href = itemWa(it);
       wa.setAttribute('aria-label', tr`Узнать цену в WhatsApp: ${labelOf(it)}`);
@@ -1166,6 +1169,8 @@
       wa.setAttribute('aria-label', tr`Хочу ${want(w)}: ${label(w)} — написать в WhatsApp`);
       t3.href = `configurator.html#cfg=v1~${/~|^t\./.test(w.cfg || '') ? w.cfg : 't.' + encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}`;
       ig.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; ig.hidden = !!w.model;   // у моделей каталога поста нет
+      const compD = $('[data-lb-comp-d]', dlg);   // «Состав» модели каталога — только у проверенных (verified: true)
+      if (compD) { compD.open = false; compD.hidden = !(w.model && window.RICCA_COMPOSITION_UI && window.RICCA_COMPOSITION_UI($('[data-lb-comp]', compD), String(w.id).replace(/^m-/, ''))); }
       const many = w.photos.length > 1;
       arrows.forEach((b) => { b.hidden = !many; });
       count.hidden = !many;

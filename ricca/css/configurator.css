@@ -621,3 +621,15 @@ ul, ol { padding: 0; list-style: none; }
   .vp__phe-b .btn { min-height: 46px; padding: 0 14px; }
   .pp__pick { grid-template-columns: 1fr; }
 }
+
+/* переключатель языка «RU | EN» — как на главной */
+.hdr__lng { display: inline-flex; align-items: center; gap: 4px; font: 500 11px/1 var(--sans); letter-spacing: .2em; }
+.hdr__nav .hdr__lng a { display: inline-grid; place-items: center; min-width: 30px; min-height: 44px; padding-left: .2em; gap: 0; opacity: .42; transition: opacity 300ms var(--ease); }
+.hdr__nav .hdr__lng a::after { display: none; }
+.hdr__nav .hdr__lng a[aria-current="true"] { opacity: 1; }
+.hdr__lng > span { opacity: .3; }
+@media (hover: hover) { .hdr__nav .hdr__lng a:hover { opacity: 1; } }
+@media (max-width: 899px) { .hdr__lng { margin-right: 2px; } }
+/* узкий телефон: «Каталог» — только стрелкой (подпись остаётся для экранного диктора), иначе WhatsApp уходит за край */
+@media (max-width: 419px) { .hdr__nav .hdr__back { width: 44px; padding: 0; justify-content: center; font-size: 0; letter-spacing: 0; } .hdr__nav .hdr__back .ico { width: 18px; height: 18px; margin: 0; } }
+@media (max-width: 359px) { .hdr__lng { letter-spacing: .12em; } .hdr__nav .hdr__lng a { min-width: 26px; } }
