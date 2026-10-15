@@ -1,26 +1,44 @@
 #!/usr/bin/env python3
 """Точная 3D-модель из фото каталога для конструктора (models3d/<id>.glb).
-Исходник — GLB из Higgsfield (Hunyuan3D v3 по фото ricca.design/img/catalog/<фото>.webp, ~15 кредитов, ~40 МБ, 500k граней).
+Исходник — GLB из Higgsfield по фото ricca.design/img/catalog/<фото>.webp: Tripo H3.1 (texture=false, orientation=align_image, 6 кредитов)
+или Hunyuan3D v3 (15 кредитов); 40 МБ, 0,5–1,5 млн граней. Если фронт смотрит не на +z — --rot=-90 (или 90, 180).
 Что делает: делит сетку на «fabric» и «legs» (тёмные грани у пола), склеивает вершины, прореживает до ~70k + 6k граней,
 сглаживает, ставит пол на y=0 и центр по x/z. Нормали и UV конструктор считает сам при загрузке (js/cfg/app.js → prepExactGeo).
 Нужны: pip install trimesh fast-simplification scipy pillow numpy. Запуск: python3 tools/media-v3/model3d.py in.glb ricca/models3d/sofa-25.glb
 Потом в js/catalog-data.js у модели: glb: "models3d/sofa-25.glb"."""
 import sys, numpy as np, trimesh, fast_simplification
-src, dst = sys.argv[1], sys.argv[2]; NF = int(sys.argv[3]) if len(sys.argv) > 3 else 70000; NL = int(sys.argv[4]) if len(sys.argv) > 4 else 6000
+import sys, numpy as np, trimesh, fast_simplification
+args = [a for a in sys.argv[1:] if not a.startswith('--rot=')]; ROT = next((float(a[6:]) for a in sys.argv[1:] if a.startswith('--rot=')), 0)   # --rot=-90: повернуть вокруг вертикали (фронт должен смотреть на +z)
+src, dst = args[0], args[1]; NF = int(args[2]) if len(args) > 2 else 70000; NL = int(args[3]) if len(args) > 3 else 6000
 sc = trimesh.load(src)
 m = sc.to_geometry() if hasattr(sc, 'to_geometry') else sc.dump(concatenate=True)
 V, F = m.vertices.copy(), m.faces.copy()
-# цвет каждой грани — из текстуры по UV центра
-tex = np.asarray(m.visual.material.baseColorTexture.convert('RGB')).astype(np.float32) / 255
-uv = m.visual.uv; H, W = tex.shape[:2]
-fuv = uv[F].mean(1); px = np.clip((fuv[:, 0] % 1) * (W - 1), 0, W - 1).astype(int); py = np.clip(((1 - fuv[:, 1]) % 1) * (H - 1), 0, H - 1).astype(int)
-col = tex[py, px]; lum = col @ [0.2126, 0.7152, 0.0722]
+if ROT:
+    t = np.radians(ROT); c, sn = np.cos(t), np.sin(t); x, z = V[:, 0].copy(), V[:, 2].copy(); V[:, 0] = x * c + z * sn; V[:, 2] = -x * sn + z * c
 fc = V[F].mean(1)
 y0, y1 = V[:, 1].min(), V[:, 1].max(); h = y1 - y0
-low = fc[:, 1] < y0 + h * 0.16
-med = np.median(lum[~low]) if (~low).any() else lum.mean()
-legs = low & (lum < min(0.35, med * 0.55))
-print(f'граней {len(F)}, ножки {legs.sum()} ({legs.mean()*100:.1f} %), медиана яркости ткани {med:.2f}')
+tex_img = getattr(getattr(m.visual, 'material', None), 'baseColorTexture', None)
+if tex_img is not None and getattr(m.visual, 'uv', None) is not None:
+    # с текстурой: ножки — тёмные грани у пола
+    tex = np.asarray(tex_img.convert('RGB')).astype(np.float32) / 255
+    uv = m.visual.uv; H, W = tex.shape[:2]
+    fuv = uv[F].mean(1); px = np.clip((fuv[:, 0] % 1) * (W - 1), 0, W - 1).astype(int); py = np.clip(((1 - fuv[:, 1]) % 1) * (H - 1), 0, H - 1).astype(int)
+    lum = tex[py, px] @ [0.2126, 0.7152, 0.0722]
+    low = fc[:, 1] < y0 + h * 0.16
+    med = np.median(lum[~low]) if (~low).any() else lum.mean()
+    legs = low & (lum < min(0.35, med * 0.55))
+    print(f'граней {len(F)}, ножки по цвету {legs.sum()} ({legs.mean()*100:.1f} %), медиана яркости ткани {med:.2f}')
+else:
+    # без текстуры: ножки — нижние слои, где заполнено мало клеток сетки (у корпуса заполнена почти вся площадь)
+    NL_, G = 48, 40
+    lay = np.clip(((fc[:, 1] - y0) / h * NL_).astype(int), 0, NL_ - 1)
+    gx = np.clip(((fc[:, 0] - V[:, 0].min()) / (np.ptp(V[:, 0]) + 1e-9) * G).astype(int), 0, G - 1)
+    gz = np.clip(((fc[:, 2] - V[:, 2].min()) / (np.ptp(V[:, 2]) + 1e-9) * G).astype(int), 0, G - 1)
+    occ = np.array([len(set(zip(gx[lay == i], gz[lay == i]))) for i in range(NL_)])
+    full = occ[: NL_ // 2].max()
+    cut = next((i for i in range(NL_ // 3) if occ[i] > full * 0.35), 0)
+    legs = lay < cut
+    print(f'граней {len(F)}, ножки по форме: слоёв {cut} из {NL_} ({legs.mean()*100:.1f} %)')
 def part(mask, target):
     f = F[mask]
     if not len(f): return None
