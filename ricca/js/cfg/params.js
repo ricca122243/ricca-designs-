@@ -702,6 +702,14 @@ function partsPouf(p) {
       const rr = W / 2 - ins;
       [0, 1, 2, 3].forEach((k) => { const a = Math.PI / 4 + k * Math.PI / 2; items.push(cyl(`leg-${k + 1}`, 'leg', 'legs', W / 2 + rr * Math.cos(a), d / 2 + rr * Math.sin(a), 0.04, 0.04, 0, legH, { taper: 1, legKind: 'glide', rotY: 0 })); });
     } else legsFor({ legs: 'hidden' }, legH, [{ x0: 0, x1: W, z0: 0, z1: d }], add);
+  } else if (p.form === 'round' && p.legs === 'plinth') {
+    /* круглый пуф: цоколь — круглый, чуть меньше сиденья (квадратный торчал углами из-под круга) */
+    add(cyl('plinth', 'plinth', 'fabric', W / 2, d / 2, W - 0.06, d - 0.06, 0, legH, { taper: 1 }));
+  } else if (p.form === 'round' && p.legs !== 'disc') {
+    /* круглый пуф: 4 ножки по окружности под дном (по углам квадрата они выходили за край круга) */
+    const dia = p.legs === 'metal' ? 0.025 : 0.045, taper = p.legs === 'wood' ? 0.032 / 0.045 : 1;
+    const rr = W / 2 - 0.03 - 0.06 - dia / 2;
+    [0, 1, 2, 3].forEach((k) => { const a = Math.PI / 4 + k * Math.PI / 2; add(cyl(`leg-${k + 1}`, 'leg', 'legs', W / 2 + rr * Math.cos(a), d / 2 + rr * Math.sin(a), dia, dia, 0, legH, { taper, legKind: p.legs })); });
   } else if (p.legs === 'plinth') legsFor({ legs: 'plinth' }, legH, [{ x0: 0, x1: W, z0: 0, z1: d }], add);
   else legsFor({ legs: p.legs }, legH, [{ x0: 0, x1: W, z0: 0, z1: d }], add, { centre: 1.6 });
   const round = p.form === 'round';

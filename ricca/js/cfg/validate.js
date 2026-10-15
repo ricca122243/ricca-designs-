@@ -77,7 +77,7 @@ export function validate(type, params = {}) {
   const en = ENUMS[type] || {};
   for (const k of Object.keys(en)) if (!en[k].includes(p[k])) p[k] = D[k];
   if ('legFinish' in p) {
-    const pool = type === 'bed' ? WOOD : p.legs === 'metal' || p.legs === 'disc' ? METAL : p.legs === 'wood' ? WOOD : null;
+    const pool = type === 'bed' ? [...WOOD, ...METAL] : p.legs === 'metal'   // кровать: в «Форме» есть и дерево, и металл — металл раньше сбрасывался на дуб || p.legs === 'disc' ? METAL : p.legs === 'wood' ? WOOD : null;
     if (pool && !pool.includes(p.legFinish)) p.legFinish = pool[0];
   }
   if (SOFA_FAMILY.has(type) && p.sections !== 'auto') {

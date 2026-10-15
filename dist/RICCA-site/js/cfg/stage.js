@@ -59,7 +59,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   } catch (e) { throw new Error('webgl'); }
   if (!renderer.getContext()) throw new Error('webgl');
   /* чёткость: в покое — 2x (ткань и края чёткие), пока модель крутят — меньше (плавно, без лагов на телефоне) */
-  const dprFull = Math.min(window.devicePixelRatio || 1, 2), dprMove = Math.min(dprFull, phone ? 1 : 1.25);
+  /* компьютер: в покое всегда 2x, даже на экране 1x — кадр уменьшается браузером, края и мелкие швы без «лесенки» (жалоба 15 окт.) */
+  const dprFull = phone ? Math.min(window.devicePixelRatio || 1, 2) : 2, dprMove = Math.min(dprFull, phone ? 1 : 1.25);
   renderer.setPixelRatio(dprFull);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;

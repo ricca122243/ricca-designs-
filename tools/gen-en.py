@@ -134,7 +134,11 @@ page = page.replace('href="configurator.html"', 'href="/en/configurator"')
 m = re.search(r'(<script type="application/ld\+json">\n)(.*?)(\n</script>)', page, re.S)
 d = json.loads(m.group(2))
 d['@id'] = 'https://ricca.design/#ricca'; d['url'] = 'https://ricca.design/en'
-d['alternateName'] = 'Ricca Designs — custom upholstered furniture in Almaty'
+d['alternateName'] = ['RICCA DESIGNS furniture atelier', 'Custom upholstered furniture Almaty', 'Made-to-measure sofas and beds in Almaty', 'Ricca Designs — custom upholstered furniture in Almaty']
+d['slogan'] = 'Custom upholstered furniture in Almaty — any size, any fabric, our own atelier'
+d['knowsAbout'] = ['custom sofas', 'corner sofas', 'modular sofas', 'sofa beds', 'upholstered beds', 'beds with lift-up storage', 'custom armchairs and poufs', 'made-to-measure furniture', 'furniture from a photo or sketch', 'hotel and restaurant furniture', 'upholstery fabrics: velour, bouclé, chenille']
+d['keywords'] = 'custom furniture Almaty, custom sofa Almaty, made-to-measure sofa, upholstered bed Kazakhstan, furniture atelier Almaty'
+d['foundingLocation'] = {'@type': 'Place', 'name': 'Almaty, Kazakhstan'}
 d['description'] = 'Upholstered furniture atelier in Almaty, Kazakhstan: sofas, beds and armchairs made to order from your photo, sketch or project. Any size and fabric, own production, 5-year warranty, worldwide delivery.'
 d['address'].update({'streetAddress': '208/2 Alisher Navoi St. (Shakhristan RC)', 'addressLocality': 'Almaty', 'addressRegion': 'Almaty'})
 d['hasOfferCatalog'] = {'@type': 'OfferCatalog', 'name': 'Custom upholstered furniture', 'itemListElement': [

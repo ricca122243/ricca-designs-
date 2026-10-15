@@ -151,6 +151,7 @@ fi
 cp tools/dist-extra/robots.txt tools/dist-extra/.htaccess tools/dist-extra/_headers "$OUT/" 2>/dev/null || true
 # robots.txt и карта сайта — свои, для домена ricca.design (заменяют общий robots.txt)
 cp tools/ricca-extra/robots.txt tools/ricca-extra/sitemap.xml "$OUT/"
+cp "$SRC/llms.txt" "$OUT/"   # описание ателье для ИИ-помощников (ChatGPT, Claude, Perplexity, Gemini)
 cp tools/ricca-extra/_headers "$OUT/"   # свои правила кэша вместо общих ELUNA (там стили хранились 7 дней)
 cp tools/ricca-extra/_redirects "$OUT/"  # /en → en.html, /en/configurator → configurator.html
 # «Приложение» (PWA): описание для телефона, фоновый помощник, страница «Нет интернета», значки
@@ -177,6 +178,26 @@ md_files=$(find "$OUT" -name '*.md')
 # Фото поставщиков с их названиями / людьми / чужими интерьерами в сборку попасть не должны
 extras=$(find "$OUT/img/fabrics" -type f \( -name 'hero-*' -o -name 'inuse-*' \) 2>/dev/null || true)
 [ -z "$extras" ] || { echo "в сборку попали фото поставщиков hero-/inuse-: $extras"; exit 1; }
+
+# Вопросы и ответы (раздел «Вопросы») — ещё и в виде FAQPage для поисковиков и ИИ-помощников: они цитируют ответы напрямую.
+# Берём прямо из страницы (index.html и en.html), поэтому данные всегда совпадают с тем, что видит человек
+python3 - "$OUT" <<'PY'
+import html, json, re, sys, pathlib
+out = pathlib.Path(sys.argv[1])
+for name in ('index.html', 'en.html'):
+    f = out / name
+    page = f.read_text(encoding='utf-8')
+    sec = re.search(r'<section[^>]*id="faq".*?</section>', page, re.S)
+    if not sec or 'FAQPage' in page: continue
+    txt = lambda s: re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', '', s))).strip()
+    qa = re.findall(r'<h3 class="qa__q">(.*?)</h3>\s*<p class="qa__a">(.*?)</p>', sec.group(0), re.S)
+    if not qa: continue
+    d = {'@context': 'https://schema.org', '@type': 'FAQPage', 'inLanguage': 'en' if name == 'en.html' else 'ru',
+         'mainEntity': [{'@type': 'Question', 'name': txt(q), 'acceptedAnswer': {'@type': 'Answer', 'text': txt(a)}} for q, a in qa]}
+    block = '<script type="application/ld+json">\n' + json.dumps(d, ensure_ascii=False, separators=(',', ':')) + '\n</script>\n'
+    page = page.replace('</head>', block + '</head>', 1)
+    f.write_text(page, encoding='utf-8')
+PY
 
 # Защита (Content-Security-Policy): страница может грузить скрипты, стили, шрифты, фото и 3D только с ricca.design.
 # Встроенный скрипт входа главной разрешён по его хэшу (считаем здесь, после сборки en.html). Конструктору нужен

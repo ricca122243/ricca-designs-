@@ -657,7 +657,8 @@ export function materialSet(cfg = {}) {
   const fabric = fabricMaterial({ hex: f.hex || '#E9E4DA', kind, src450: f.src450 || null, src900: f.src900 || null, quality: cfg.quality, collectionId: f.collectionId || '', finish: f.finish || '' });
   let legs;
   const fin = p.legFinish;
-  if (type === 'bed') legs = p.base === 'legs' ? woodMaterial(WOOD[fin] ? fin : 'oak') : metalMaterial('black');
+  /* кровать на ножках: деревянная отделка — дерево, чёрная или золотистая — металл (Bukel, Grafel: чёрные металлические ножки) */
+  if (type === 'bed') legs = p.base === 'legs' ? (METAL[fin] && !WOOD[fin] ? metalMaterial(fin) : woodMaterial(WOOD[fin] ? fin : 'oak')) : metalMaterial('black');
   else if (p.legs === 'metal' || p.legs === 'disc') legs = metalMaterial(METAL[fin] ? fin : 'black');
   else if (p.legs === 'wood') legs = woodMaterial(WOOD[fin] ? fin : 'oak');
   else legs = metalMaterial('black');

@@ -298,7 +298,9 @@ async function loadExactGroup(m) {
   g.traverse((o) => {
     if (!o.isMesh) return;
     const legs = /legs/.test(o.name) || (o.parent && /legs/.test(o.parent.name));
-    o.userData.matKey = legs ? 'legs' : 'fabric'; o.castShadow = true; o.receiveShadow = !legs;
+    /* кровати: матрас, одеяло и подушки — отдельная сетка «bedding» (tools/media-v3/model3d-bedding.py): белые, не цвета ткани */
+    const bedding = /bedding/.test(o.name) || (o.parent && /bedding/.test(o.parent.name));
+    o.userData.matKey = legs ? 'legs' : bedding ? 'mattress' : 'fabric'; o.castShadow = true; o.receiveShadow = !legs;
     o.geometry = o.geometry.clone(); prepExactGeo(THREE, o.geometry, k);
   });
   return wrap;
@@ -316,8 +318,13 @@ function prepExactGeo(THREE, geo, k) {
   if (!geo.attributes.seam) geo.setAttribute('seam', new THREE.BufferAttribute(new Float32Array(n * 4), 4));
   if (!geo.attributes.occ) geo.setAttribute('occ', new THREE.BufferAttribute(new Float32Array(n), 1));
 }
+function exactHasLegs() {
+  const g = exact && exact.id === activeModel ? exact.group : null; let has = false;
+  if (g) g.traverse((o) => { if (o.isMesh && o.userData.matKey === 'legs') has = true; });
+  return has;
+}
 function dropExact() { activeModel = null; exact = null; exactLoading = null; renderModels(); }
-const EXACT_ROWS = new Set(['legs', 'legFinish']);   // что можно менять у точной модели в «Форме»
+const EXACT_ROWS = new Set(['legFinish']);   // что можно менять у точной модели в «Форме» (вид ножек у модели из фото не меняется — только цвет)
 const isExact = () => !!(activeModel && catalogModels().some((m) => m.id === activeModel && m.glb));
 const exactName = () => { const m = activeModel && catalogModels().find((x) => x.id === activeModel && x.glb); return m ? modelName(m) : ''; };
 /* «Собрать из деталей»: клиент хочет другую форму — переходим на модель из деталей с теми же параметрами */
@@ -326,7 +333,7 @@ function useExact(m) {
   if (!m.glb) { exact = null; return; }
   const my = exactLoading = loadExactGroup(m).then((g) => {
     if (exactLoading !== my || activeModel !== m.id) return;
-    exact = { id: m.id, group: g }; rebuild(); if (photoApi && state.mode === 'photo') photoApi.refresh();
+    exact = { id: m.id, group: g }; rebuild(); renderForm(); if (photoApi && state.mode === 'photo') photoApi.refresh();   // renderForm: «Отделка ножек» — только когда ножки у модели есть
     if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced }));
   }).catch((e) => { console.warn('exact', e); if (exactLoading === my) toast('Точная модель не загрузилась — показана собранная из деталей'); });
 }
@@ -350,7 +357,7 @@ function applyModel(mid) {
   activeModel = mid; exact = null; useExact(m);
   syncTypes(); setState({}, { structural: true }); renderForm(); renderHeads();
   if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced }));
-  toast(m.glb ? `${modelName(m)}: точная модель, как на фото. Меняйте размеры, ткань и ножки` : `Собрано по мотивам: ${modelName(m)}. Меняйте что угодно`, 4200);
+  toast(m.glb ? `${modelName(m)}: точная модель, как на фото. Меняйте размер, ткань и цвет ножек` : `Собрано по мотивам: ${modelName(m)}. Меняйте что угодно`, 4200);
   const b = $(`[data-model="${CSS.escape(mid)}"]`); if (b) b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
 }
 function syncTypes() {
@@ -383,7 +390,10 @@ function renderForm() {
   lastFormKey = formKey();
   const p = state.params, t = state.type;
   const ex = isExact();
-  const html = (FORM[t] || []).filter((r) => !r.when || r.when(p)).map((r) => {
+  /* точная модель: показываем только то, что на ней реально меняется (отделка ножек — если ножки видны);
+     прежде серые неактивные кнопки формы выглядели как «не работают» (жалоба 15 окт.) — форму меняет кнопка «Собрать из деталей» */
+  const exLegs = ex && exactHasLegs();
+  const html = (FORM[t] || []).filter((r) => (!r.when || r.when(p)) && (!ex || (r.key === 'legFinish' && exLegs))).map((r) => {
     const off = ex && !EXACT_ROWS.has(r.key) ? ' disabled' : '';
     if (r.count) {
       const v = p[r.key];
@@ -399,7 +409,7 @@ function renderForm() {
     return `<div class="opt" data-row="${r.key}"><p class="opt__l" id="ol-${r.key}">${esc(r.label)}</p>
       <div class="chips" role="radiogroup" aria-labelledby="ol-${r.key}">${vals.map((v) => `<button class="chip" type="button" role="radio" aria-checked="${String(v) === String(cur)}" data-opt="${r.key}" data-v="${esc(String(v))}"${off}>${esc(chipLabel(t, r.key, v))}</button>`).join('')}</div></div>`;
   }).join('');
-  const note = ex ? `<div class="xn"><p class="xn__t">${esc(exactName())} — точная модель, как на фото. Размеры, ткань и ножки меняются; форма — нет.</p>
+  const note = ex ? `<div class="xn"><p class="xn__t">${esc(exactName())} — точная модель, как на фото. Меняются размер, ткань и цвет ножек. Чтобы менять форму, соберите модель из деталей.</p>
     <button class="caps-link xn__b" type="button" data-exact-off>Собрать из деталей и менять форму<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>` : '';
   $('#opts').innerHTML = note + html;
 }

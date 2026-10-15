@@ -1,4 +1,28 @@
+# RICCA DESIGNS — сайт открыт для поисковиков и ИИ-помощников: пусть находят и рекомендуют ателье.
+# Описание ателье для ИИ: https://ricca.design/llms.txt
 User-agent: *
+Allow: /
+
+# ИИ-помощники и их поиск (ChatGPT, Claude, Perplexity, Gemini, Apple) — явно разрешены
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: Claude-User
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Perplexity-User
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Applebot-Extended
 Allow: /
 
 Sitemap: https://ricca.design/sitemap.xml
