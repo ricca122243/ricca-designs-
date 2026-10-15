@@ -638,7 +638,7 @@
     const fcInCart = (id) => !!(RC && RC.list().some((x) => x.kind === 'fabric' && x.id === id));
     function renderLibrary() {
       title.textContent = tr('Ткани');
-      nEl.innerHTML = typo(tr('Популярные коллекции. Выберите цвет — фото сменится.'));   // «больше 50 коллекций и 1000 цветов» — один раз, в конце
+      nEl.innerHTML = typo(tr('Популярные коллекции. Выберите цвет — фото сменится.'));   // «больше 200 коллекций и 5000 цветов» — один раз, в конце
       back.textContent = tr('Каталог');
       tabs.classList.add('is-fab');
       tabs.innerHTML = FLIB.map((t, i) => `<button type="button" data-ftype="${esc(t.id)}" aria-pressed="${i === 0}">${esc(t.title)}</button>`).join('');
@@ -671,7 +671,7 @@
             + '</div></div></article>';
         }).join('')
         + '</section>').join('')}</div>`
-        + `<div class="fl__end"><p class="fl__end-line">${typo(tr('Больше 50 коллекций и 1000 цветов — вживую в шоуруме на Навои, 208/2.'))}</p>`
+        + `<div class="fl__end"><p class="fl__end-line">${typo(tr('Больше 200 коллекций и 5000 цветов — вживую в шоуруме на Навои, 208/2.'))}</p>`
         + `<div class="fl__end-btns"><a class="btn btn--fill" href="#showroom" data-to-showroom>${tr('Подобрать ткань в&nbsp;шоуруме')}</a>`
         + `<a class="btn btn--line" href="${esc(waUrl(CONFIG.msg.fabrics))}" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>${tr('Помогите подобрать ткань')}${tr('<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span>')}</a></div></div>`;
       content.append(fcLive);
@@ -1164,7 +1164,7 @@
       wa.href = waOf(w);
       waT.textContent = tr`Хочу ${want(w)}`;
       wa.setAttribute('aria-label', tr`Хочу ${want(w)}: ${label(w)} — написать в WhatsApp`);
-      t3.href = `configurator.html#cfg=v1~t.${encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}`;
+      t3.href = `configurator.html#cfg=v1~${/~|^t\./.test(w.cfg || '') ? w.cfg : 't.' + encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}`;
       ig.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; ig.hidden = !!w.model;   // у моделей каталога поста нет
       const many = w.photos.length > 1;
       arrows.forEach((b) => { b.hidden = !many; });

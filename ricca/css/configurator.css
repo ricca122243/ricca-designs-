@@ -200,6 +200,18 @@ ul, ol { padding: 0; list-style: none; }
 .step__body { padding: 22px 0 40px; }
 .step__next { display: none; }
 .step__more { margin-top: 18px; color: var(--ink-2); }
+/* модели каталога с рецептом для 3D — полоса фото под типами */
+.models { margin-top: 18px; }
+.models__l { margin-bottom: 10px; font: 400 12px/1.4 var(--sans); color: var(--ink-2); }
+.models__row { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; padding-bottom: 4px; margin-inline: -2px; padding-inline: 2px; }
+.models__row::-webkit-scrollbar { display: none; }
+.model { flex: none; width: 112px; scroll-snap-align: start; display: grid; gap: 6px; text-align: left; }
+.model__img { display: block; aspect-ratio: 4 / 3; background: var(--studio); border: 1px solid var(--line); overflow: hidden; transition: border-color 300ms var(--ease), box-shadow 300ms var(--ease); }
+.model__img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.model__t { font: 400 11px/1.3 var(--sans); color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.model[aria-pressed="true"] .model__img { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.model[aria-pressed="true"] .model__t { color: var(--ink); }
+@media (hover: hover) { .model:hover .model__img { border-color: var(--ink); } }
 .step:first-child .step__head { padding-top: 0; }
 
 /* тип: сетка 3 × 3 */

@@ -1662,6 +1662,6 @@ export const FABRIC_LIBRARY = {
    ]
   }
  ],
- "totalNote": "Больше 50 коллекций и 1000 цветов — в шоуруме"
+ "totalNote": "Больше 200 коллекций и 5000 цветов — в шоуруме"
 };
 export default FABRIC_LIBRARY;

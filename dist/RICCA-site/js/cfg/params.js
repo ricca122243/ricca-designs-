@@ -22,7 +22,7 @@ export const OPTIONS = {
   armStyle: { none: 'без', thin: 'тонкие', wide: 'широкие', round: 'округлые' },
   backCushions: { fixed: 'цельная спинка', loose: 'съёмные подушки' },
   seatCushions: { single: 'одна подушка', sections: 'по секциям' },
-  legs: { hidden: 'скрытые', metal: 'металл', wood: 'дерево', plinth: 'цоколь' },
+  legs: { hidden: 'скрытые', metal: 'металл', wood: 'дерево', plinth: 'цоколь', disc: 'диск-опора' },
   legFinish: { black: 'чёрный', gold: 'золотистый', oak: 'светлое дерево', walnut: 'орех', blackwood: 'тёмное дерево' },
   piping: { true: 'с кантом', false: 'без канта' },
   side: { left: 'угол слева', right: 'угол справа' },
@@ -40,7 +40,7 @@ export const WOOD_FINISHES = ['oak', 'walnut', 'blackwood'];
 export const ARMW_BY_STYLE = { none: R(0, 0, 0), thin: R(0.08, 0.16, 0.12), wide: R(0.18, 0.35, 0.24), round: R(0.16, 0.32, 0.22) };
 export const ARMCHAIR_ROUND_ARMW = R(0.12, 0.22, 0.15);
 /* высота ног по виду опоры */
-export const LEGH_BY_KIND = { hidden: R(0.02, 0.02, 0.02), metal: R(0.08, 0.20, 0.12), wood: R(0.08, 0.20, 0.12), plinth: R(0.04, 0.12, 0.08) };
+export const LEGH_BY_KIND = { hidden: R(0.02, 0.02, 0.02), metal: R(0.08, 0.20, 0.12), wood: R(0.08, 0.20, 0.12), plinth: R(0.04, 0.12, 0.08), disc: R(0.08, 0.20, 0.12) };
 export const HIDDEN_LEG_H = 0.02;
 export const HBT_BY_STYLE = { plain: 0.08, channels: 0.10, capitone: 0.10, wings: 0.12 };
 export const SOFA_H_LOW = 0.74, SOFA_H_HIGH = 0.88, ARMCHAIR_H_LOW = 0.76, ARMCHAIR_H_HIGH = 1.00;
@@ -289,6 +289,14 @@ function cornerBlock(p, core, idp) {
 }
 /* ноги по периметру footprint (мировые координаты, до центрирования) */
 function legsFor(p, legH, rects, add, opts = {}) {
+  /* диск-опора (кресла Velso, Ovro): плоский диск на полу и колонна по центру */
+  if (p.legs === 'disc') {
+    const x0 = Math.min(...rects.map((r) => r.x0)), x1 = Math.max(...rects.map((r) => r.x1)), z0 = Math.min(...rects.map((r) => r.z0)), z1 = Math.max(...rects.map((r) => r.z1));
+    const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, dia = Math.min(x1 - x0, z1 - z0) * 0.8, h = Math.max(0.04, legH);
+    add(cyl('disc', 'leg', 'legs', cx, cz, dia, dia, 0, 0.022, { taper: 0.96, legKind: 'disc' }));
+    add(cyl('column', 'leg', 'legs', cx, cz, 0.12, 0.12, 0.02, h, { taper: 1, legKind: 'disc' }));
+    return;
+  }
   if (p.legs === 'plinth') {
     rects.forEach((r, i) => add(box(i ? `plinth-${i + 1}` : 'plinth', 'plinth', 'fabric', r.x0 + 0.03, r.x1 - 0.03, 0, legH, r.z0 + 0.03, r.z1 - 0.03, { r: 0.01 })));
     return;

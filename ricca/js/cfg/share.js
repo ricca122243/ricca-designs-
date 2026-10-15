@@ -107,7 +107,7 @@ const COMMON = {
   armStyle: { none: 'без подлокотников', thin: 'тонкие', wide: 'широкие', round: 'округлые' },
   backCushions: { fixed: 'цельная спинка', loose: 'съёмные подушки' },
   seatCushions: { single: 'одна подушка', sections: 'по секциям' },
-  legs: { hidden: 'скрытые', metal: 'металл', wood: 'дерево', plinth: 'цоколь' },
+  legs: { hidden: 'скрытые', metal: 'металл', wood: 'дерево', plinth: 'цоколь', disc: 'диск-опора' },
   legFinish: { black: 'чёрный', gold: 'золотистый', oak: 'светлое дерево', walnut: 'орех', blackwood: 'тёмное дерево' },
   piping: { true: 'с кантом', false: 'без канта' },
   side: { left: 'угол слева', right: 'угол справа' },

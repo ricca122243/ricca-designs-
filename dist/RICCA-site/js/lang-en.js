@@ -53,7 +53,7 @@
     'Цвет {}': 'Colour {0}', 'Ткани': 'Fabrics', 'Популярные коллекции. Выберите цвет — фото сменится.': 'Popular collections. Pick a colour — the photo will change.',
     'Предыдущий цвет': 'Previous colour', 'Следующий цвет': 'Next colour', 'Цвет ткани {}': 'Colour of fabric {0}', 'Хочу эту ткань': 'I want this fabric',
     'В&nbsp;корзину&nbsp;— образец': 'Add to&nbsp;cart&nbsp;— sample', 'Примерить на&nbsp;мебели в&nbsp;3D': 'Try it on&nbsp;furniture in&nbsp;3D',
-    'Больше 50 коллекций и 1000 цветов — вживую в шоуруме на Навои, 208/2.': 'More than 50 collections and 1,000 colours — in person at the showroom, 208/2 Navoi St.',
+    'Больше 200 коллекций и 5000 цветов — вживую в шоуруме на Навои, 208/2.': 'More than 200 collections and 5,000 colours — in person at the showroom, 208/2 Navoi St.',
     'Подобрать ткань в&nbsp;шоуруме': 'Choose a fabric in&nbsp;the showroom', 'Помогите подобрать ткань': 'Help me choose a fabric',
     'Образец в&nbsp;корзине': 'Sample in&nbsp;cart', 'Образец {}, {} в корзине — открыть корзину': 'Sample {0}, {1} is in the cart — open the cart',
     'В корзину — образец ткани {}, {}': 'Add to cart — fabric sample {0}, {1}', 'Хочу эту ткань: {}, {} — написать в WhatsApp': 'I want this fabric: {0}, {1} — message on WhatsApp',
@@ -181,7 +181,7 @@
     (t.collections || []).forEach((c) => {
       c.title = FAB_TYPES[c.title] || c.title;
       if (c.kind) c.kind = c.kind.split(': ').map((k) => k.split(', ').map((w) => FAB_KINDS[w] || w).join(', ')).join(': ');
-      if (c.totalNote) c.totalNote = 'More than 50 collections and 1,000 colours — in the showroom';
+      if (c.totalNote) c.totalNote = 'More than 200 collections and 5,000 colours — in the showroom';
       if (Array.isArray(c.facts)) c.facts = c.facts.map(fact);
       (c.colours || []).forEach((k) => { k.name = COLOURS[k.name] || k.name; });
     });

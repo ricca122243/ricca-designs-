@@ -28,7 +28,7 @@ for it in cat:
         w, h = Image.open(f).size; w6, h6 = Image.open(f6).size if os.path.exists(f6) else (w, h)
         photos.append({'src': p['src'], 'src800': p.get('src600', p['src']), 'w': w, 'h': h, 'w800': w6, 'h800': h6, 'studio': bool(p.get('studio'))})
     if not photos: continue
-    cfg = 'corner' if 'corner' in it.get('tags', []) and it['category'] == 'sofas' else CFG[it['category']]
+    cfg = it.get('cfg') or ('corner' if 'corner' in it.get('tags', []) and it['category'] == 'sofas' else CFG[it['category']])   # cfg модели — готовый рецепт для 3D
     name = names.get(it['id'], '')
     out.append({'id': 'm-' + it['id'], 'cat': it['category'], 'title': f"{it.get('type', '')} {name}".strip() if name else f"{it.get('type', '')} № {it['id'].split('-')[-1]}",
                 'sub': it.get('subtitle', ''), 'cfg': cfg, 'photos': photos, 'ig': '', 'model': True})

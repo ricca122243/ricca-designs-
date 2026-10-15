@@ -54,7 +54,7 @@ const ROWS = {
   /* только те количества секций, что помещаются (validate: секция не уже 45 см) — иначе щелчок ничего бы не менял */
   sect: (t) => row('sections', 'Секций', (p) => ['auto', ...[2, 3, 4, 5].filter((n) => { try { return validate(t, { ...p, sections: n }).params.sections === n; } catch (e) { return true; } })], { when: (p) => p.seatCushions === 'sections' }),
   legs: (vals = ['hidden', 'metal', 'wood', 'plinth']) => row('legs', 'Ножки', () => vals),
-  fin: () => row('legFinish', 'Отделка ножек', (p) => (p.legs === 'metal' ? METAL : WOOD), { when: (p) => p.legs === 'metal' || p.legs === 'wood' }),
+  fin: () => row('legFinish', 'Отделка ножек', (p) => (p.legs === 'metal' || p.legs === 'disc' ? METAL : WOOD), { when: (p) => p.legs === 'metal' || p.legs === 'wood' || p.legs === 'disc' }),
   pipe: () => row('piping', 'Кант', () => [false, true]),
 };
 const FORM = {
@@ -64,7 +64,7 @@ const FORM = {
   modular: [row('modules', 'Модулей', null, { count: [2, 6] }), row('chaise', 'Шезлонг', () => ['none', 'left', 'right']), ROWS.arm('modular'), ROWS.backC(), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
   bed: [row('hbStyle', 'Изголовье', () => ['plain', 'channels', 'capitone', 'wings']), row('base', 'Основание', () => ['plinth', 'legs']),
     row('legFinish', 'Отделка ножек', () => [...WOOD, ...METAL], { when: (p) => p.base === 'legs' }), row('lift', 'Подъёмный механизм', () => [false, true]), ROWS.pipe()],
-  armchair: [row('form', 'Форма', () => ['classic', 'round']), ROWS.arm('armchair'), ROWS.look(), { ...ROWS.backC(), when: (p) => p.form !== 'round' }, ROWS.legs(), ROWS.fin(), ROWS.pipe()],
+  armchair: [row('form', 'Форма', () => ['classic', 'round']), ROWS.arm('armchair'), ROWS.look(), { ...ROWS.backC(), when: (p) => p.form !== 'round' }, ROWS.legs(['hidden', 'metal', 'wood', 'plinth', 'disc']), ROWS.fin(), ROWS.pipe()],
   pouf: [row('form', 'Форма', () => ['round', 'square', 'bench']), row('top', 'Верх', () => ['smooth', 'capitone']), ROWS.legs(['hidden', 'wood', 'metal']), ROWS.fin(), ROWS.pipe()],
 };
 
@@ -94,7 +94,7 @@ function sideEffects(type, key, v, p) {
   if (key === 'backLook') { const lh = LOWHIGH[type]; if (lh) p.h = v === 'low' ? lh[0] : lh[1]; delete p.backLook; }
   if (key === 'armStyle') p.armW = v === 'none' ? 0 : P.armDef(type, v);
   if (key === 'legs') {
-    if (v === 'metal' && !METAL.includes(p.legFinish)) p.legFinish = 'black';
+    if ((v === 'metal' || v === 'disc') && !METAL.includes(p.legFinish)) p.legFinish = 'black';
     if (v === 'wood' && !WOOD.includes(p.legFinish)) p.legFinish = 'oak';
     if (v === 'hidden') p.legH = P.HIDDEN_LEG_H || 0.02;
     else { const r = rangeOf(type, 'legH', p); if (r && (p.legH < r.min || p.legH > r.max)) p.legH = r.def; }
@@ -234,14 +234,49 @@ function renderTypes() {
   box.innerHTML = P.TYPES.map((t) => `<button class="type" type="button" role="radio" aria-checked="${t.id === state.type}" data-type="${t.id}">
     ${ico('t-' + t.id, 'type__ico')}<span class="type__t">${esc(t.title)}</span></button>`).join('');
 }
+/* модели каталога (js/catalog-data.js, window.RICCA_CATALOG) с рецептом для 3D (поле cfg: «t.corner~f.chaise~…») — полоса фото под типами:
+   щелчок собирает похожую модель. Новая модель в каталоге с полем cfg появляется здесь сама. */
+const catalogModels = () => (Array.isArray(window.RICCA_CATALOG) ? window.RICCA_CATALOG : []).filter((m) => m && m.cfg && m.photos && m.photos.length && !/^(chairs|tables)$/.test(m.category));
+const modelName = (m) => { const nm = (window.RICCA_MODEL_NAMES || {})[m.id]; return nm ? `${m.type || ''} ${nm}`.trim() : `${m.type || ''} № ${m.id.split('-').pop()}`; };
+let activeModel = null, modelsCat = '';
+function renderModels() {
+  const box = $('#models'); if (!box) return;
+  const cat = (P.TYPES.find((t) => t.id === state.type) || {}).category || '';
+  /* та же категория — только отметить выбранную (полоса не перестраивается, прокрутка и фото на месте) */
+  if (cat === modelsCat && box.firstChild) { $$('[data-model]', box).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.model === activeModel))); return; }
+  modelsCat = cat;
+  const list = catalogModels().filter((m) => m.category === cat);
+  box.hidden = !list.length;
+  if (!list.length) { box.innerHTML = ''; return; }
+  box.innerHTML = `<p class="models__l" id="models-l">По мотивам моделей каталога</p><div class="models__row" role="group" aria-labelledby="models-l">${list.map((m) => {
+    const ph = m.photos.find((x) => x.studio) || m.photos[0];
+    return `<button class="model" type="button" data-model="${esc(m.id)}" aria-pressed="${m.id === activeModel}" title="${esc(m.subtitle || '')}">
+      <span class="model__img"><img src="${esc(ph.src600 || ph.src)}" alt="" loading="lazy" decoding="async" width="600" height="450"></span><span class="model__t">${esc(modelName(m))}</span></button>`;
+  }).join('')}</div>`;
+}
+function applyModel(mid) {
+  const m = catalogModels().find((x) => x.id === mid); if (!m) return;
+  const d = decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS });
+  if (!d.type || !P.DEFAULTS[d.type]) return;
+  memo[state.type] = state.params;
+  state.inputErr = {};
+  applyParams(d.type, d.params);
+  activeModel = mid;
+  syncTypes(); setState({}, { structural: true });
+  if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced }));
+  toast(`Собрано по мотивам: ${modelName(m)}. Меняйте что угодно`, 3600);
+  const b = $(`[data-model="${CSS.escape(mid)}"]`); if (b) b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+}
 function syncTypes() {
   $$('#types .type').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.type === state.type)));
   const cat = (P.TYPES.find((t) => t.id === state.type) || {}).category || '';
   $('#to-catalog').href = `index.html#catalog${cat ? '/' + cat : ''}`;
+  renderModels();
   const phi = $('#vp-ph-ico use'); if (phi) phi.setAttribute('href', `${ICONS}#t-${state.type}`);
 }
 function setType(type) {
   if (type === state.type) return;
+  activeModel = null;
   memo[state.type] = state.params;
   state.inputErr = {};
   applyParams(type, memo[type] || {});
@@ -1013,6 +1048,7 @@ function editFromRoom(item) {
 /* ═════════ события ═════════ */
 function bind() {
   $('#types').addEventListener('click', (e) => { const b = e.target.closest('[data-type]'); if (b) setType(b.dataset.type); });
+  $('#models').addEventListener('click', (e) => { const b = e.target.closest('[data-model]'); if (b) applyModel(b.dataset.model); });
   $('#opts').addEventListener('click', (e) => {
     const c = e.target.closest('[data-opt]'); if (c) return setOption(c.dataset.opt, c.dataset.v);
     const n = e.target.closest('[data-count]'); if (n) setCount(n.dataset.count, +n.dataset.d);

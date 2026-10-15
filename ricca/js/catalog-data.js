@@ -30,6 +30,9 @@
                       box: [ширина, высота] — доля предмета в кадре (0–1), по ней сетка выравнивает «вес» рендеров;
                       pos: '60% 50%' — какую часть фото оставить в кадре; zoom — увеличение (центр — тот же pos).
         description, options, sizes, materials, filling, mechanism, lead, warranty, delivery — в окне изделия, свёрнуто в «Подробнее».
+        cfg         — рецепт для 3D-конструктора (configurator.html#cfg=v1~<cfg>): тип и опции, как в адресе конструктора,
+                      числа в см («t.corner~f.chaise~s.left~as.thin~lg.metal~lf.black»). С ним модель появляется в конструкторе
+                      в полосе «По мотивам моделей каталога» и открывается кнопкой «Собрать похожий в 3D». Без cfg — только тип.
    Текст WhatsApp «Узнать цену» собирается сам: «Интересует диван Svira (Свира) — модульный · прямой или угловой» и ссылка на модель. */
 
 /* Названия моделей RICCA. Пусто — на сайте «№ NN». Комментарий справа — что это за модель. */
@@ -176,6 +179,7 @@ window.RICCA_CATALOG = [
   /* ═════════ ДИВАНЫ (12) ═════════ */
   {
     id: "sofa-01",
+    cfg: "t.modular~mo.4~ch.right~as.wide~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -204,6 +208,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-02",
+    cfg: "t.corner~f.chaise~s.right~as.wide~lg.hidden~bc.loose",
     category: "sofas",
     tags: ["corner", "straight"],
     type: "Диван",
@@ -224,6 +229,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-03",
+    cfg: "t.sofa~w.240~as.wide~lg.metal~lf.black",
     category: "sofas",
     tags: ["foldout", "straight"],
     type: "Диван",
@@ -245,6 +251,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-16",
+    cfg: "t.corner~f.chaise~s.left~as.thin~lg.metal~lf.black",
     category: "sofas",
     tags: ["foldout", "straight", "corner"],
     type: "Диван",
@@ -269,6 +276,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-17",
+    cfg: "t.sofa~w.230~as.wide~bc.fixed~lg.wood~lf.oak",
     category: "sofas",
     tags: ["foldout", "straight"],
     type: "Диван",
@@ -290,6 +298,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-18",
+    cfg: "t.sofa~w.200~as.thin~lg.metal~lf.black",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -312,6 +321,7 @@ window.RICCA_CATALOG = [
   // TODO (заказчик): на чертеже общая ширина 2600 мм — уточнить габарит
   {
     id: "sofa-19",
+    cfg: "t.sofa~w.240~as.round~lg.wood~lf.walnut",
     category: "sofas",
     tags: ["straight", "corner"],
     type: "Диван",
@@ -333,6 +343,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-20",
+    cfg: "t.corner~f.chaise~s.right~as.wide~lg.hidden",
     category: "sofas",
     tags: ["corner", "straight"],
     type: "Диван",
@@ -353,6 +364,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-21",
+    cfg: "t.sofa~w.220~as.wide~bc.loose~lg.plinth~lh.8",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -371,6 +383,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-22",
+    cfg: "t.sofa~w.220~as.round~lg.metal~lf.gold",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -389,6 +402,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-23",
+    cfg: "t.sofa~w.230~as.wide~lg.hidden",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -409,6 +423,7 @@ window.RICCA_CATALOG = [
   /* ═════════ КРОВАТИ (20) ═════════ */
   {
     id: "bed-01",
+    cfg: "t.bed~hs.channels~b.plinth~lt.1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -431,6 +446,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-02",
+    cfg: "t.bed~hs.capitone~b.plinth~lt.1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -450,6 +466,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-03",
+    cfg: "t.bed~hs.plain~b.legs~lf.oak~lt.0",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -470,6 +487,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-04",
+    cfg: "t.bed~hs.wings~b.plinth~lt.1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -491,6 +509,7 @@ window.RICCA_CATALOG = [
   // TODO (заказчик): есть ли подъёмный механизм
   {
     id: "bed-05",
+    cfg: "t.bed~hs.plain~hh.140~b.plinth",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -509,6 +528,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-09",
+    cfg: "t.bed~hs.plain~b.legs~lf.black~lh.12",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -532,6 +552,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-10",
+    cfg: "t.bed~hs.channels~b.legs~lf.black~lh.14",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -552,6 +573,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-11",
+    cfg: "t.bed~hs.capitone~b.plinth~lt.1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -572,6 +594,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-12",
+    cfg: "t.bed~hs.channels~b.plinth~lt.1~hh.110",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -592,6 +615,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-13",
+    cfg: "t.bed~hs.plain~b.plinth~lt.1~p.1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -612,6 +636,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-14",
+    cfg: "t.bed~hs.wings~b.plinth~lt.1~hh.130",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -632,6 +657,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-15",
+    cfg: "t.bed~hs.plain~b.legs~lf.oak~lh.14",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -652,6 +678,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-16",
+    cfg: "t.bed~hs.channels~b.plinth~lt.1~hh.130",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -671,6 +698,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-17",
+    cfg: "t.bed~hs.capitone~b.plinth~lt.1~hh.125",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -690,6 +718,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-18",
+    cfg: "t.bed~hs.plain~b.plinth~lt.1~ho.10",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -709,6 +738,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-19",
+    cfg: "t.bed~hs.channels~b.plinth~lt.1~ho.15",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -728,6 +758,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-20",
+    cfg: "t.bed~hs.wings~b.plinth~lt.1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -747,6 +778,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-21",
+    cfg: "t.bed~hs.capitone~b.plinth~lt.1~hh.140",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -766,6 +798,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-22",
+    cfg: "t.bed~hs.plain~b.plinth~lt.1~hh.100",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -786,6 +819,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-23",
+    cfg: "t.bed~hs.channels~b.plinth~lt.1~ho.20",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -807,6 +841,7 @@ window.RICCA_CATALOG = [
   /* ═════════ КРЕСЛА ═════════ */
   {
     id: "armchair-01",
+    cfg: "t.armchair~f.round~as.round~lg.disc~lf.black",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -825,6 +860,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-07",
+    cfg: "t.armchair~f.classic~as.thin~lg.metal~lf.black~lh.16",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -843,6 +879,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-08",
+    cfg: "t.armchair~f.classic~as.wide~lg.plinth~lh.8",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -863,6 +900,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-09",
+    cfg: "t.armchair~f.round~as.round~lg.wood~lf.oak",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -882,6 +920,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-10",
+    cfg: "t.armchair~f.classic~as.round~aw.20~lg.wood~lf.walnut",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -901,6 +940,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-11",
+    cfg: "t.armchair~f.classic~as.wide~lg.wood~lf.blackwood~lh.12",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1146,6 +1186,7 @@ window.RICCA_CATALOG = [
   /* ═════════ НОВЫЕ МОДЕЛИ (14 октября, фото владельца) ═════════ */
   {
     id: "sofa-24",
+    cfg: "t.modular~mo.3~ch.left~as.wide~h.68~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1164,6 +1205,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-25",
+    cfg: "t.corner~f.chaise~s.left~as.thin~lg.metal~lf.black~bc.loose",
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
@@ -1183,6 +1225,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-26",
+    cfg: "t.modular~mo.3~ch.right~as.wide~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1201,6 +1244,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-27",
+    cfg: "t.sofa~w.260~as.round~aw.30~bc.fixed~sc.sections~n.3~lg.hidden",
     category: "sofas",
     tags: ["modular"],
     type: "Диван",
@@ -1219,6 +1263,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-28",
+    cfg: "t.sofa~w.220~as.thin~lg.metal~lf.black",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -1237,6 +1282,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-29",
+    cfg: "t.sofa~w.240~as.wide~h.88~lg.metal~lf.black",
     category: "sofas",
     tags: ["straight", "foldout"],
     type: "Диван",
@@ -1256,6 +1302,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-30",
+    cfg: "t.corner~f.chaise~s.right~as.wide~lg.metal~lf.black",
     category: "sofas",
     tags: ["corner", "foldout"],
     type: "Диван",
@@ -1278,6 +1325,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-12",
+    cfg: "t.armchair~f.classic~as.thin~bc.loose~lg.metal~lf.black~h.90",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1296,6 +1344,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-13",
+    cfg: "t.armchair~f.classic~as.wide~lg.metal~lf.gold~lh.16",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1314,6 +1363,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-14",
+    cfg: "t.armchair~f.classic~as.wide~h.100~lg.wood~lf.oak",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1332,6 +1382,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-24",
+    cfg: "t.bed~hs.plain~hh.95~b.plinth",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1351,6 +1402,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-15",
+    cfg: "t.armchair~f.round~as.round~lg.disc~lf.black",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1369,6 +1421,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-31",
+    cfg: "t.corner~f.L~s.right~as.thin~lg.wood~lf.blackwood",
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
@@ -1387,6 +1440,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-25",
+    cfg: "t.bed~hs.plain~hh.110~b.plinth~p.1",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1406,6 +1460,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-26",
+    cfg: "t.bed~hs.plain~hh.105~b.legs~lf.black~lh.16~p.1",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1424,6 +1479,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-27",
+    cfg: "t.bed~hs.wings~hh.120~ho.20~b.plinth",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1443,6 +1499,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-28",
+    cfg: "t.bed~hs.plain~hh.115~b.plinth",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1462,6 +1519,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-29",
+    cfg: "t.bed~hs.plain~hh.110~b.legs~lf.black~lh.16",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1480,6 +1538,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-32",
+    cfg: "t.modular~mo.4~ch.right~as.wide~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1498,6 +1557,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-33",
+    cfg: "t.modular~mo.3~ch.left~h.66~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1518,6 +1578,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-34",
+    cfg: "t.pouf~f.bench~w.160~d.60~h.42~lg.hidden",
     category: "sofas",
     tags: ["modular"],
     type: "Диван",
@@ -1536,6 +1597,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-35",
+    cfg: "t.modular~mo.3~ch.none~as.round~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1554,6 +1616,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-36",
+    cfg: "t.modular~mo.3~ch.right~as.wide~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1572,6 +1635,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-37",
+    cfg: "t.corner~f.chaise~s.left~as.round~lg.metal~lf.black",
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
@@ -1590,6 +1654,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-38",
+    cfg: "t.corner~f.chaise~s.right~as.round~lg.metal~lf.gold",
     category: "sofas",
     tags: ["corner", "modular"],
     type: "Диван",
@@ -1608,6 +1673,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-16",
+    cfg: "t.armchair~f.classic~as.wide~w.100~lg.metal~lf.black",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1626,6 +1692,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-39",
+    cfg: "t.modular~mo.3~as.round~bc.fixed~h.68~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1646,6 +1713,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-40",
+    cfg: "t.sofa~w.180~as.thin~lg.metal~lf.black",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -1664,6 +1732,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-17",
+    cfg: "t.armchair~f.classic~as.thin~p.1~lg.metal~lf.black~lh.16",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1682,6 +1751,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-41",
+    cfg: "t.sofa~w.240~as.wide~sc.sections~n.3~lg.metal~lf.black",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",

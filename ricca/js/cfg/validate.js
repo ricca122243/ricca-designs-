@@ -46,7 +46,7 @@ const ENUMS = {
   ushape: SOFA_ENUM,
   modular: { armStyle: ARM, backCushions: ['fixed', 'loose'], legs: LEGS4, chaise: ['none', 'left', 'right'] },
   bed: { hbStyle: ['plain', 'channels', 'capitone', 'wings'], base: ['legs', 'plinth'] },
-  armchair: { form: ['classic', 'round'], armStyle: ARM, backCushions: ['fixed', 'loose'], legs: LEGS4 },
+  armchair: { form: ['classic', 'round'], armStyle: ARM, backCushions: ['fixed', 'loose'], legs: [...LEGS4, 'disc'] },
   pouf: { form: ['round', 'square', 'bench'], top: ['smooth', 'capitone'], legs: LEGS4 },
 };
 const METAL = ['black', 'gold'], WOOD = ['oak', 'walnut', 'blackwood'];
@@ -77,7 +77,7 @@ export function validate(type, params = {}) {
   const en = ENUMS[type] || {};
   for (const k of Object.keys(en)) if (!en[k].includes(p[k])) p[k] = D[k];
   if ('legFinish' in p) {
-    const pool = type === 'bed' ? WOOD : p.legs === 'metal' ? METAL : p.legs === 'wood' ? WOOD : null;
+    const pool = type === 'bed' ? WOOD : p.legs === 'metal' || p.legs === 'disc' ? METAL : p.legs === 'wood' ? WOOD : null;
     if (pool && !pool.includes(p.legFinish)) p.legFinish = pool[0];
   }
   if (SOFA_FAMILY.has(type) && p.sections !== 'auto') {
