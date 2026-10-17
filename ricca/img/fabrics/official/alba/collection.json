@@ -1,0 +1,220 @@
+{
+ "id": "alba",
+ "colours": [
+  {
+   "code": "01",
+   "name": "Альба / Alba 01",
+   "hex": "#b9b2a6",
+   "src1200": "img/fabrics/official/alba/01-1200.webp",
+   "src600": "img/fabrics/official/alba/01-600.webp",
+   "thumb": "img/fabrics/official/alba/01-160.webp"
+  },
+  {
+   "code": "02",
+   "name": "Альба / Alba 02",
+   "hex": "#ada291",
+   "src1200": "img/fabrics/official/alba/02-1200.webp",
+   "src600": "img/fabrics/official/alba/02-600.webp",
+   "thumb": "img/fabrics/official/alba/02-160.webp"
+  },
+  {
+   "code": "03",
+   "name": "Альба / Alba 03",
+   "hex": "#a9a49c",
+   "src1200": "img/fabrics/official/alba/03-1200.webp",
+   "src600": "img/fabrics/official/alba/03-600.webp",
+   "thumb": "img/fabrics/official/alba/03-160.webp"
+  },
+  {
+   "code": "04",
+   "name": "Альба / Alba 04",
+   "hex": "#868687",
+   "src1200": "img/fabrics/official/alba/04-1200.webp",
+   "src600": "img/fabrics/official/alba/04-600.webp",
+   "thumb": "img/fabrics/official/alba/04-160.webp"
+  },
+  {
+   "code": "05",
+   "name": "Альба / Alba 05",
+   "hex": "#6b6c6e",
+   "src1200": "img/fabrics/official/alba/05-1200.webp",
+   "src600": "img/fabrics/official/alba/05-600.webp",
+   "thumb": "img/fabrics/official/alba/05-160.webp"
+  },
+  {
+   "code": "06",
+   "name": "Альба / Alba 06",
+   "hex": "#3f3f3f",
+   "src1200": "img/fabrics/official/alba/06-1200.webp",
+   "src600": "img/fabrics/official/alba/06-600.webp",
+   "thumb": "img/fabrics/official/alba/06-160.webp"
+  },
+  {
+   "code": "07",
+   "name": "Альба / Alba 07",
+   "hex": "#493c33",
+   "src1200": "img/fabrics/official/alba/07-1200.webp",
+   "src600": "img/fabrics/official/alba/07-600.webp",
+   "thumb": "img/fabrics/official/alba/07-160.webp"
+  },
+  {
+   "code": "08",
+   "name": "Альба / Alba 08",
+   "hex": "#413a36",
+   "src1200": "img/fabrics/official/alba/08-1200.webp",
+   "src600": "img/fabrics/official/alba/08-600.webp",
+   "thumb": "img/fabrics/official/alba/08-160.webp"
+  },
+  {
+   "code": "09",
+   "name": "Альба / Alba 09",
+   "hex": "#9b792e",
+   "src1200": "img/fabrics/official/alba/09-1200.webp",
+   "src600": "img/fabrics/official/alba/09-600.webp",
+   "thumb": "img/fabrics/official/alba/09-160.webp"
+  },
+  {
+   "code": "10",
+   "name": "Альба / Alba 10",
+   "hex": "#284949",
+   "src1200": "img/fabrics/official/alba/10-1200.webp",
+   "src600": "img/fabrics/official/alba/10-600.webp",
+   "thumb": "img/fabrics/official/alba/10-160.webp"
+  },
+  {
+   "code": "11",
+   "name": "Альба / Alba 11",
+   "hex": "#27454b",
+   "src1200": "img/fabrics/official/alba/11-1200.webp",
+   "src600": "img/fabrics/official/alba/11-600.webp",
+   "thumb": "img/fabrics/official/alba/11-160.webp"
+  },
+  {
+   "code": "12",
+   "name": "Альба / Alba 12",
+   "hex": "#dad4c7",
+   "src1200": "img/fabrics/official/alba/12-1200.webp",
+   "src600": "img/fabrics/official/alba/12-600.webp",
+   "thumb": "img/fabrics/official/alba/12-160.webp"
+  },
+  {
+   "code": "13",
+   "name": "Альба / Alba 13",
+   "hex": "#d0c8b6",
+   "src1200": "img/fabrics/official/alba/13-1200.webp",
+   "src600": "img/fabrics/official/alba/13-600.webp",
+   "thumb": "img/fabrics/official/alba/13-160.webp"
+  },
+  {
+   "code": "14",
+   "name": "Альба / Alba 14",
+   "hex": "#d4bfa5",
+   "src1200": "img/fabrics/official/alba/14-1200.webp",
+   "src600": "img/fabrics/official/alba/14-600.webp",
+   "thumb": "img/fabrics/official/alba/14-160.webp"
+  },
+  {
+   "code": "15",
+   "name": "Альба / Alba 15",
+   "hex": "#c0af98",
+   "src1200": "img/fabrics/official/alba/15-1200.webp",
+   "src600": "img/fabrics/official/alba/15-600.webp",
+   "thumb": "img/fabrics/official/alba/15-160.webp"
+  },
+  {
+   "code": "16",
+   "name": "Альба / Alba 16",
+   "hex": "#8b8671",
+   "src1200": "img/fabrics/official/alba/16-1200.webp",
+   "src600": "img/fabrics/official/alba/16-600.webp",
+   "thumb": "img/fabrics/official/alba/16-160.webp"
+  },
+  {
+   "code": "17",
+   "name": "Альба / Alba 17",
+   "hex": "#474c3d",
+   "src1200": "img/fabrics/official/alba/17-1200.webp",
+   "src600": "img/fabrics/official/alba/17-600.webp",
+   "thumb": "img/fabrics/official/alba/17-160.webp"
+  },
+  {
+   "code": "18",
+   "name": "Альба / Alba 18",
+   "hex": "#855237",
+   "src1200": "img/fabrics/official/alba/18-1200.webp",
+   "src600": "img/fabrics/official/alba/18-600.webp",
+   "thumb": "img/fabrics/official/alba/18-160.webp"
+  },
+  {
+   "code": "19",
+   "name": "Альба / Alba 19",
+   "hex": "#693831",
+   "src1200": "img/fabrics/official/alba/19-1200.webp",
+   "src600": "img/fabrics/official/alba/19-600.webp",
+   "thumb": "img/fabrics/official/alba/19-160.webp"
+  },
+  {
+   "code": "20",
+   "name": "Альба / Alba 20",
+   "hex": "#76282d",
+   "src1200": "img/fabrics/official/alba/20-1200.webp",
+   "src600": "img/fabrics/official/alba/20-600.webp",
+   "thumb": "img/fabrics/official/alba/20-160.webp"
+  },
+  {
+   "code": "21",
+   "name": "Альба / Alba 21",
+   "hex": "#a27572",
+   "src1200": "img/fabrics/official/alba/21-1200.webp",
+   "src600": "img/fabrics/official/alba/21-600.webp",
+   "thumb": "img/fabrics/official/alba/21-160.webp"
+  },
+  {
+   "code": "22",
+   "name": "Альба / Alba 22",
+   "hex": "#6f5c53",
+   "src1200": "img/fabrics/official/alba/22-1200.webp",
+   "src600": "img/fabrics/official/alba/22-600.webp",
+   "thumb": "img/fabrics/official/alba/22-160.webp"
+  }
+ ],
+ "heroes": [
+  {
+   "src": "img/fabrics/official/alba/hero-1-1600.webp",
+   "w": 2000,
+   "h": 1333
+  },
+  {
+   "src": "img/fabrics/official/alba/hero-2-1600.webp",
+   "w": 2000,
+   "h": 1333
+  },
+  {
+   "src": "img/fabrics/official/alba/hero-3-1600.webp",
+   "w": 1501,
+   "h": 2000
+  }
+ ],
+ "inuse": [
+  {
+   "src": "img/fabrics/official/alba/inuse-1-1200.webp",
+   "w": 1200,
+   "h": 1600
+  },
+  {
+   "src": "img/fabrics/official/alba/inuse-2-1200.webp",
+   "w": 1200,
+   "h": 1600
+  },
+  {
+   "src": "img/fabrics/official/alba/inuse-3-1200.webp",
+   "w": 1200,
+   "h": 1600
+  },
+  {
+   "src": "img/fabrics/official/alba/inuse-4-1200.webp",
+   "w": 1200,
+   "h": 1600
+  }
+ ]
+}
