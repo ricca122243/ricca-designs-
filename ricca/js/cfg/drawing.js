@@ -1061,7 +1061,7 @@ export async function render(cfg, { stage = null, render3q = null } = {}) {
         cc.getContext('2d').drawImage(pen.canvas, x0, y0, cw, ch, 0, 0, cw, ch);
         const sh = (q) => [q[0] - x0, q[1] - y0];
         sketch = { w: cw, h: ch, obj: [pen.box[0] - x0, pen.box[1] - y0, pen.box[2] - x0, pen.box[3] - y0], box8: shot.points.slice(0, 8).map(sh), dims: dims.map((d) => ({ a: sh(d.a), b: sh(d.b), ea: sh(d.ea), eb: sh(d.eb), n: d.n, text: d.text })) };
-        render3qDataUrl = cc.toDataURL('image/png');
+        render3qDataUrl = cc.toDataURL('image/webp', 0.92);   // WebP с прозрачностью: файл чертежа в разы легче (Safari без WebP — сам отдаст PNG)
       }
     }
   } catch (e) { console.warn('sketch', e); render3qDataUrl = null; sketch = null; }
@@ -1090,7 +1090,7 @@ export async function render(cfg, { stage = null, render3q = null } = {}) {
         const x0 = Math.max(0, Math.floor(r[0] - mx)), y0 = Math.max(0, Math.floor(r[1] - my)), x1 = Math.min(W0, Math.ceil(r[2] + mx)), y1 = Math.min(H0, Math.ceil(r[3] + my));
         const cv = document.createElement('canvas'); cv.width = x1 - x0; cv.height = y1 - y0;
         cv.getContext('2d').drawImage(pen.canvas, x0, y0, cv.width, cv.height, 0, 0, cv.width, cv.height);
-        viewPics[v] = { url: cv.toDataURL('image/png'), w: cv.width, h: cv.height, rect: [r[0] - x0, r[1] - y0, r[2] - x0, r[3] - y0] };
+        viewPics[v] = { url: cv.toDataURL('image/webp', 0.92), w: cv.width, h: cv.height, rect: [r[0] - x0, r[1] - y0, r[2] - x0, r[3] - y0] };
       }
     } catch (e) { console.warn('views', e); }
   }
