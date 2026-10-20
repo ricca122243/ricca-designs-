@@ -539,14 +539,23 @@ text{font-family:${FONT};fill:${INK}}
     /* построение: лёгкие линии габарита с выходом за контур, как в эскизе от руки */
     const CO = 4;
     W(`<path class="cl" d="M${n2(-CO)} 0H${n2(V.Wv + CO)}M${n2(-CO)} ${n2(V.Hv)}H${n2(V.Wv + CO)}M0 ${n2(-CO)}V${n2(V.Hv + CO)}M${n2(V.Wv)} ${n2(-CO)}V${n2(V.Hv + CO)}"/>`);
+    /* вид карандашом из 3D (render → viewPics): штрихованный фон за верхней частью (спереди и слева, как в эскизе), сам рисунок —
+       точно в контур вида; без него — векторные контуры деталей, как раньше */
+    const vp = opts.viewPics && opts.viewPics[V.view];
+    if (vp) {
+      if (V.view !== 'top') W(`<rect x="${n2(-V.Wv * 0.05)}" y="${n2(-V.Hv * 0.1)}" width="${n2(V.Wv * 1.09)}" height="${n2(V.Hv * 0.62)}" fill="url(#hxx)"/>`);
+      const kx = V.Wv / (vp.rect[2] - vp.rect[0]), ky = V.Hv / (vp.rect[3] - vp.rect[1]);
+      W(`<image x="${n2(-vp.rect[0] * kx)}" y="${n2(-vp.rect[1] * ky)}" width="${n2(vp.w * kx)}" height="${n2(vp.h * ky)}" preserveAspectRatio="none" xlink:href="${vp.url}" href="${vp.url}"/>`);
+      if (V.view !== 'top') W(`<line class="fl" filter="url(#pn)" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
+    }
     /* пол и тень штриховкой под изделием */
-    if (V.view !== 'top') {
+    if (V.view !== 'top' && !vp) {
       W(`<rect x="${n2(-1.5)}" y="${n2(V.Hv)}" width="${n2(V.Wv + 3)}" height="2.6" fill="url(#hx)" mask="url(#fadeM)"/>`);
       W(`<line class="fl" filter="url(#pn)" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
     }
     W(`<g filter="url(#pn)">`);
     /* детали: дальние → ближние; простёжка изголовья — сразу после него (ближние детали её закрывают) */
-    for (const s of V.shapes) {
+    for (const s of vp ? [] : V.shapes) {
       W(`<path class="o" d="${s.d}"/>`);
       W(`<path class="o2" filter="url(#pn2)" d="${s.d}"/>`);
       const it = s.it;
@@ -811,7 +820,7 @@ async function imageToJpegDataUrl(src, maxW, maxH, quality = 0.9, cover = false)
    яркости, штриховка по тени (тон считается внутри изделия — светлая и тёмная ткань выглядят одинаково «нарисованными»),
    тень на полу — лёгкая штриховка. Внутри изделия — бумага (закрывает штриховку фона листа), снаружи — прозрачно. */
 export const PENCIL_KEY = '#FF00FF';
-function pencilSketch(src) {
+function pencilSketch(src, { outline = 1 } = {}) {
   const W = src.width, H = src.height, N = W * H;
   const c = document.createElement('canvas'); c.width = W; c.height = H;
   const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(src, 0, 0);
@@ -833,7 +842,7 @@ function pencilSketch(src) {
     return o;
   };
   const sm = (x, a, b) => Math.min(1, Math.max(0, (x - a) / (b - a)));
-  const Lb = blur(L, 1), Mb = blur(M, 1);
+  const Lb = blur(L, 1), Mb = blur(M, Math.max(1, Math.round(outline)));
   /* тон внутри изделия: 3-й и 97-й процентили яркости */
   const hist = new Uint32Array(256); let cnt = 0;
   for (let i = 0; i < N; i++) if (M[i]) { hist[Math.min(255, (L[i] * 255) | 0)]++; cnt++; }
@@ -924,9 +933,36 @@ export async function render(cfg, { stage = null, render3q = null } = {}) {
       }
     }
   } catch (e) { console.warn('sketch', e); render3qDataUrl = null; sketch = null; }
+  /* виды спереди / слева / сверху — тоже карандашом из 3D (ортогональные снимки); рамка габарита на снимке → прямоугольник вида
+     на листе (layoutSheet ставит картинку точно в контур вида, размеры — поверх, как раньше) */
+  const viewPics = {};
+  if (stage && stage.snapshot && !render3q) {
+    try {
+      /* габарит без постели и подушек (как на видах): рамка всех деталей → сдвиг к сцене → рамка без «декора» */
+      const sb = stage.box, all = boundsOf(pr.items.map(itemBounds).flatMap((q) => [q.min, q.max]));
+      const nd = boundsOf(pr.items.filter((it) => !it.decor && !it.support).map(itemBounds).flatMap((q) => [q.min, q.max]));
+      const same = Math.abs((sb.max.x - sb.min.x) - (all.max[0] - all.min[0])) < 0.03 && Math.abs((sb.max.z - sb.min.z) - (all.max[2] - all.min[2])) < 0.03;
+      const sh = [sb.min.x - all.min[0], sb.min.y - all.min[1], sb.min.z - all.min[2]];
+      const a = same ? { x: nd.min[0] + sh[0], y: nd.min[1] + sh[1], z: nd.min[2] + sh[2] } : sb.min;
+      const z = same ? { x: nd.max[0] + sh[0], y: nd.max[1] + sh[1], z: nd.max[2] + sh[2] } : sb.max;
+      const c8 = [[a.x, a.y, a.z], [z.x, a.y, a.z], [a.x, z.y, a.z], [z.x, z.y, a.z], [a.x, a.y, z.z], [z.x, a.y, z.z], [a.x, z.y, z.z], [z.x, z.y, z.z]];
+      for (const v of ['front', 'side', 'top']) {
+        const shot = await stage.snapshot({ width: 1600, height: 1100, view: v, watermark: false, background: PENCIL_KEY, project: c8 });
+        if (!shot || !shot.blob) continue;
+        const pen = pencilSketch(await createImageBitmap(shot.blob), { outline: 1.4 });
+        const xs = shot.points.map((q) => q[0]), ys = shot.points.map((q) => q[1]);
+        const r = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+        const W0 = pen.canvas.width, H0 = pen.canvas.height, mx = (r[2] - r[0]) * 0.06, my = (r[3] - r[1]) * 0.08;
+        const x0 = Math.max(0, Math.floor(r[0] - mx)), y0 = Math.max(0, Math.floor(r[1] - my)), x1 = Math.min(W0, Math.ceil(r[2] + mx)), y1 = Math.min(H0, Math.ceil(r[3] + my));
+        const cv = document.createElement('canvas'); cv.width = x1 - x0; cv.height = y1 - y0;
+        cv.getContext('2d').drawImage(pen.canvas, x0, y0, cv.width, cv.height, 0, 0, cv.width, cv.height);
+        viewPics[v] = { url: cv.toDataURL('image/png'), w: cv.width, h: cv.height, rect: [r[0] - x0, r[1] - y0, r[2] - x0, r[3] - y0] };
+      }
+    } catch (e) { console.warn('views', e); }
+  }
   try { if (cfg.fabric && cfg.fabric.src450) swatchDataUrl = await imageToJpegDataUrl(cfg.fabric.src450, 120, 120, 0.88, true); } catch (e) { swatchDataUrl = null; }
   const css = await fontCss();
-  const res = layoutSheet({ ...cfg, params }, pr, { render3qDataUrl, swatchDataUrl, sketch, fontCss: css });
+  const res = layoutSheet({ ...cfg, params }, pr, { render3qDataUrl, swatchDataUrl, sketch, viewPics, fontCss: css });
   const svg = res.svg;
   async function toPNG(width = 3508) {
     const height = Math.round((width * SHEET.h) / SHEET.w);
