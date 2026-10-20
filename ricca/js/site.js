@@ -183,12 +183,14 @@
   /* <picture>: телефон — один файл 800 px; от 768 px — srcset 800 / 1600 по ширине рамки (sizes).
      z — масштаб предметного кадра модели (--z, только p.studio): sizes умножаются на него — рамка × масштаб, иначе браузер берёт файл
      по ширине рамки, и увеличенная модель мыльная. phone — sizes телефона (< 768 px) для этих кадров: файлы 600 / 1200 px по 4–40 КБ,
-     на экране 3x увеличенная модель берёт 1200 px, а не растянутый в 1,5–2 раза 600; фото работ — как раньше, один файл 800 px */
+     на экране 3x увеличенная модель берёт 1200 px, а не растянутый в 1,5–2 раза 600; фото работ — как раньше, один файл 800 px.
+     На телефоне масштаб × 0,92: 600 px хватает и при 0,92 нужного (на глаз не отличить), а 1200 у диванов весят 20–90 КБ против
+     5–25 — без запаса все карточки с z ≈ 1,16 (недобор 1 %) брали 1200, сетка диванов 210 → 600 КБ; владелец: «фото долго загружаются» */
   const workPic = (p, sizes, eager, z = 0, phone = '') => {
     const s = p800(p), set = `${esc(p.src800)} ${s.w}w, ${esc(p.src)} ${p.w}w`, m = z && studio(p);
     return '<picture>'
       + (p.w > s.w ? `<source media="(min-width: 768px)" srcset="${set}" sizes="${m ? zSizes(sizes, z) : sizes}">` : '')
-      + `<img src="${esc(p.src800)}"${m && phone && p.w > s.w ? ` srcset="${set}" sizes="${zSizes(phone, z)}"` : ''} width="${s.w}" height="${s.h}" alt="" loading="${eager ? 'eager' : 'lazy'}" decoding="async"${m ? ` style="--z:${z.toFixed(3)}"` : ''}></picture>`;
+      + `<img src="${esc(p.src800)}"${m && phone && p.w > s.w ? ` srcset="${set}" sizes="${zSizes(phone, z * 0.92)}"` : ''} width="${s.w}" height="${s.h}" alt="" loading="${eager ? 'eager' : 'lazy'}" decoding="async"${m ? ` style="--z:${z.toFixed(3)}"` : ''}></picture>`;
   };
   /* название модели на карточке: вид мебели мелкой капителью над названием («ДИВАН» / Svira); EN — «Svira sofa» */
   const splitTitle = (t) => {
@@ -197,8 +199,9 @@
     m = String(t).match(/^(.+?)\s+(sofa|bed|armchair|pouf|bench|chair|table)$/i);
     return m ? [m[2], m[1]] : ['', String(t)];
   };
-  // подпись карточки узкая (две колонки на телефоне): составное слово не рвём по дефису («основании-» / «диске»), переносим целиком
-  const nwHyph = (h) => h.replace(/([А-Яа-яЁёA-Za-z]+-[А-Яа-яЁёA-Za-z]+)/g, '<span class="nowrap">$1</span>');
+  // подпись карточки узкая (две колонки на телефоне): составное слово не рвём по дефису («основании-» / «диске»), переносим целиком.
+  // только короткие (≤ 16 букв): длинное «Подлокотники-валики» (19) целиком ≈ 138 px шире карточки 134 px на экране 320 и вылезало бы за фото — пусть рвётся
+  const nwHyph = (h) => h.replace(/[А-Яа-яЁёA-Za-z]+-[А-Яа-яЁёA-Za-z]+/g, (m) => (m.length <= 16 ? `<span class="nowrap">${m}</span>` : m));
   // карточка работы: фото 4 : 5 (cover), под ним название и ткань — ссылка #work-<id> (открывает окно работы)
   const workCard = (w, n, sizes, eager, withSub = true) => {
     const p = w.photos[n] || w.photos[0];
@@ -1129,7 +1132,7 @@
     const arrows = $$('[data-lb-step]', dlg), thumbsBox = $('[data-lb-thumbs]', dlg), inner = $('.lb__in', dlg);
     let cur = null, idx = 0, tok = 0, slowT = 0, thumbs = [];
     // «Хочу такой / такую / такие» — по роду: кровать, банкетка — такую; пара кресел — такие
-    const want = (w) => (w.cat === 'beds' || /^(Банкетка|Bench)/.test(w.title) ? tr('такую') : /^(Пара|A pair)\b/.test(w.title) ? tr('такие') : tr('такой'));
+    const want = (w) => (w.cat === 'beds' || /^(Банкетка|Bench)/.test(w.title) ? tr('такую') : /^(Пара|A pair)(?:\s|$)/.test(w.title) ? tr('такие') : tr('такой'));
     const link = (w) => (/^https?:$/.test(location.protocol) ? `${location.origin}${location.pathname}#work-${w.id}` : '');
     const waOf = (w) => { const u = link(w); return waUrl(tr`Здравствуйте! Хочу ${want(w)} же: ${lcFirst(w.title)}${w.sub ? ` (${w.sub})` : ''}. Подскажите, пожалуйста, цену и что нужно для расчёта.${u ? `\n${u}` : ''}`); };
     const label = (w) => `${w.title}${w.sub ? `, ${w.sub}` : ''}`;
@@ -1140,14 +1143,13 @@
       if (p.w <= p800(p).w) return p.src800;
       return fw * (window.devicePixelRatio || 1) > p800(p).w * 1.08 ? p.src : p.src800;
     };
-    /* зум предметного кадра — по доле предмета (fitZoom), но пиксель файла тянем не больше чем на 1,25 точки экрана: кровати
-       с малым box шли с зумом до 2,2 — мыло и квадраты сжатия. Телефон и планшет держат близко — считаем по плотности экрана
-       (3x: 1200 px на рамку 402 — не больше 1,24); компьютер смотрят издалека — по CSS-пикселю, иначе на retina зум пропал бы
-       у всех моделей и кровати потерялись бы в фоне. Меньше 1 не уменьшаем: кадр и так целиком */
-    const coarse = window.matchMedia('(pointer: coarse)');
+    /* зум предметного кадра — по доле предмета (fitZoom), но не больше 1,6 на любом устройстве: кровати с малым box шли
+       с зумом до 2,2 — мыло и квадраты сжатия. На большой рамке компьютера ещё и пиксель файла — не больше 1,25 CSS px
+       (1440: Godal ×1,6 вместо ×2,2). Плотность экрана (devicePixelRatio) не учитываем: на планшете и телефоне зум пропал бы
+       совсем (iPad: ×1,04), и кровати снова потерялись бы в бежевом поле. Меньше 1 не уменьшаем: кадр и так целиком */
     const lbZoom = (p, fw) => {
-      const srcW = fileOf(p, fw) === p.src800 ? p800(p).w : p.w, dpr = coarse.matches ? window.devicePixelRatio || 1 : 1;
-      return Math.min(fitZoom(p, p.w / p.h, 0.8), Math.max(1, (1.25 * srcW) / (fw * dpr)));
+      const srcW = fileOf(p, fw) === p.src800 ? p800(p).w : p.w;
+      return Math.min(fitZoom(p, p.w / p.h, 0.8), 1.6, Math.max(1, (1.25 * srcW) / fw));
     };
     function layout() {
       const p = cur && cur.photos[idx];

@@ -265,7 +265,7 @@ body { counter-reset: sec 1; }
   background: transparent; border: 1px solid var(--line); color: var(--ink); text-decoration: none; transition: border-color 600ms var(--ease); }
 .news:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .news__sky { position: relative; align-self: stretch; min-height: var(--sky, 128px); background: #070707; overflow: hidden; }
-.news__sky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }   /* угол матраса ELUNA в разрезе (video/eluna-poster, без надписей) — угол целиком по центру квадрата */
+.news__sky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }   /* угол матраса ELUNA в разрезе (img/eluna/mattress-sq, ≥ 600 px — mattress-wide; без надписей) — угол целиком по центру квадрата */
 .news__txt { display: grid; justify-items: start; gap: 6px; padding: 16px 24px; min-width: 0; }
 .news__eye { font: 500 10px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
 .news__line { font: 400 13px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .01em; text-wrap: balance; }
@@ -310,7 +310,7 @@ body { counter-reset: sec 1; }
 .tile { display: grid; grid-template-columns: minmax(0, 1fr); }
 .tile__img { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--paper-2); }
 .tile__img.is-night { background: #000; }   /* фон кадров ELUNA — чистый чёрный: до загрузки и по краям нет шва */
-/* ELUNA ≥ 600 px: кадр 16 : 9 (video/eluna-poster) в рамке 2 : 1 / 16 : 7 — срезаем только пустое чёрное поле сверху, матрас целиком */
+/* ELUNA ≥ 600 px: кадр 16 : 9 (img/eluna/mattress-wide) в рамке 2 : 1 / 16 : 7 — срезаем только пустое чёрное поле сверху, матрас целиком */
 @media (min-width: 600px) { .tiles__eluna .tile__img img { object-position: 50% 100%; } }
 /* линейный рисунок вместо фото (отзыв клиента 13 октября: обложки-визуализации «не годятся»): белое поле, волосяная рамка,
    линия 1,1 px при любом размере плитки (non-scaling-stroke); js/site.js дорисовывает линию при наведении и появлении */
@@ -1323,7 +1323,9 @@ img { -webkit-user-drag: none; user-select: none; }
    кнопки — тонкие рамки без бледной серой заливки (нажатие ведёт в пустое поле, js/blocks.js) */
 .nb-fit__res.is-empty dd { color: var(--ink-2); }
 .nb-fit__note { min-height: 3.2em; font: 400 14px/1.6 var(--sans); color: var(--ink-2); text-wrap: pretty; }
-.nb-fit__res.is-empty .nb-fit__note { min-height: 0; font: 300 20px/1.4 var(--serif); color: var(--ink); text-wrap: balance; }   /* 20 px — в одну строку и на 360 px; уже — «в» не висит в конце строки */
+/* 20 px — в одну строку и на 360 px; уже — «в» не висит в конце строки. min-height 44.8 px = 3.2em обычной заметки (14 px):
+   пустая карточка держит высоту двухстрочного итога, и на первом вводе кнопки не прыгают вниз */
+.nb-fit__res.is-empty .nb-fit__note { min-height: 44.8px; font: 300 20px/1.4 var(--serif); color: var(--ink); text-wrap: balance; }
 .nb-fit__acts { display: flex; flex-wrap: wrap; gap: 12px; }
 .nb-fit__acts .btn[aria-disabled="true"] { background: transparent; color: var(--ink-2); border-color: var(--line-2); cursor: default; }
 .nb-fit__fine { margin-top: 24px; font: 400 12px/1.6 var(--sans); color: var(--ink-2); }

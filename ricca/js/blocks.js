@@ -247,8 +247,8 @@
           </dl>
           <p class="nb-fit__note" data-fit="note">${esc(d.empty)}</p>
           <div class="nb-fit__acts">
-            <a class="btn btn--fill" data-fit-3d href="${esc(cfgHref)}" aria-disabled="true">${esc(d.btn3d)}</a>
-            <a class="btn btn--line" data-fit-wa href="${esc(waHref(tpl(d.wa, { w: '…', d: '…' })))}" target="_blank" rel="noopener" aria-disabled="true">${use('i-whatsapp')}${esc(d.btnWa)}</a>
+            <a class="btn btn--fill" data-fit-3d href="${esc(cfgHref)}" aria-disabled="true">${typo(d.btn3d)}</a>
+            <a class="btn btn--line" data-fit-wa href="${esc(waHref(tpl(d.wa, { w: '…', d: '…' })))}" target="_blank" rel="noopener" aria-disabled="true">${use('i-whatsapp')}${typo(d.btnWa)}</a>
           </div>
         </div>
       </div>

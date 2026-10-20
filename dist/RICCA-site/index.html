@@ -39,8 +39,8 @@
 <link rel="preload" as="image" href="img/v3/hero-sofa-cut.webp" imagesrcset="img/v3/hero-sofa-cut-720.webp 720w, img/v3/hero-sofa-cut-1400.webp 1400w, img/v3/hero-sofa-cut.webp 1978w" imagesizes="(min-width: 900px) 60vw, 100vw" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts-v3.css?v=d6e7416a4d">
-<link rel="stylesheet" href="css/site.css?v=d6e7416a4d">
+<link rel="stylesheet" href="css/fonts-v3.css?v=e169e13cf5">
+<link rel="stylesheet" href="css/site.css?v=e169e13cf5">
 <script>
 /* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,6 с). Не играем: повторный визит в этой сессии,
    prefers-reduced-motion, вход по ссылке с #якорем (Instagram → #catalog/sofas), недоступный sessionStorage.
@@ -164,7 +164,12 @@
 <section class="sec nb-sec" id="trust" data-block="trust" aria-labelledby="trust-h" hidden></section>
 
 <!-- ═════════ 2. ВСТУПЛЕНИЕ + НОВОСТИ + ФАКТЫ. Слева — одна фраза о том, что мы делаем; справа — небольшая карточка-новость ELUNA
-     (прямоугольник в тонкой линии, слева квадрат с фрагментом постера «Манифест» ELUNA — тот же, что на плитке каталога).
+     (прямоугольник в тонкой линии, слева чёрный квадрат: угол матраса ELUNA в разрезе — кадр f01 без надписей, тот же, что на плитке
+     каталога шире 600 px: там — img/eluna/mattress-wide (один файл на плитку и новость), на телефоне — его квадратный центр
+     img/eluna/mattress-sq 384 px, 15 КБ вместо 50 КБ ради квадрата 104 px; кроп постера «Манифест» давал в квадрате 104 px нечитаемый
+     мелкий текст и русскую надпись на en.html — аудит 20 октября; ч/б img/nera/eluna-nera — перекрашенный рендер, слои не того цвета,
+     что у матраса на плитке. Кадр лежит в img/eluna, а не в video/: имя video/eluna-* сборка tools/build-ricca-dist.sh считает
+     ссылкой на прежнюю петлю ELUNA и везла бы в архив ~2 МБ неиспользуемых роликов).
      Ниже — четыре факта из брифа под тонкими линиями. ═════════ -->
 <section class="sec lead" id="news" aria-labelledby="news-title">
   <div class="wrap">
@@ -173,7 +178,7 @@
       <div class="lead__news rv">
         <h2 class="label" id="news-title">Новости</h2>
         <a class="news" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">
-          <span class="news__sky" aria-hidden="true"><img src="img/catalog/cover-mattresses-600.webp" width="600" height="750" alt="" loading="lazy" decoding="async"></span>
+          <span class="news__sky" aria-hidden="true"><picture><source media="(min-width: 600px)" srcset="img/eluna/mattress-wide.webp" width="1280" height="720"><img src="img/eluna/mattress-sq.webp" width="384" height="384" alt="" loading="lazy" decoding="async"></picture></span>
           <span class="news__txt">
             <span class="news__eye">Новинка<span class="news__sep">&nbsp;· </span><span class="news__brand">Матрасы&nbsp;ELUNA</span></span>
             <span class="news__line">Модели и&nbsp;цены&nbsp;— на&nbsp;новом сайте.</span>
@@ -195,8 +200,14 @@
 <!-- ═════════ 3. КАТАЛОГ: семь плиток категорий. Нажали плитку — экран категории (#catalog/sofas): что шьём в этой категории
      и три действия — «Собрать в 3D», «Отправить фото в WhatsApp», «В корзину — заявка». Моделей фабрики нет (отзыв клиента
      13 октября: «у нас совсем другой стиль»); обложки «Диваны / Кровати / Кресла» — реальные работы ателье (js/site.js ставит
-     первое фото первой работы категории из js/works-data.js; линейный рисунок в HTML — запас, если работ нет), у «Тканей» — веер
-     образцов в настоящих цветах из js/fabrics-data.js, у ELUNA — постер заказчика.
+     первое фото первой работы категории из js/works-data.js; линейный рисунок в HTML — запас, если работ нет), у «Тканей» — одно
+     спокойное фото стопки образцов (тот же кадр, что вверху экрана «Ткани»; пёстрая мозаика из 8 тканей выбивалась из каталога —
+     аудит 20 октября; sizes 41vw при плитке ≈ 43vw — экран 1440 при 1x берёт файл 600, 0,96 нужного, 95 КБ вместо 270; 2x — 1200),
+     у ELUNA — рендер ELUNA без надписей: матрас с вырезом угла на чёрном (телефон — img/eluna/mattress-tile 4 : 5,
+     шире — img/eluna/mattress-wide, тот же кадр f01 целиком). Постер «Манифест» (img/catalog/cover-mattresses*) снят с плитки по аудиту
+     20 октября: на en.html он показывал русский заголовок, а в плитке читался как обрезанный рекламный баннер (текст чужим
+     шрифтом, матрас срезан краем); файлы постера оставлены — вернуть можно заменой src. Стрелка ↗ «приклеена» к последнему слову
+     названия (.tile__nw): на телефоне название переносится целиком со стрелкой и не вылезает из колонки (360–402 px).
      Только мягкая мебель (столов и стульев нет — владелец, 13 октября). Ряд 1 — три плитки 4 : 5, ряд 2 — две широкие 2 : 1 (Ткани, ELUNA); телефон: Диваны во всю ширину, затем пары. ═════════ -->
 <section class="sec cat" id="catalog" aria-labelledby="cat-title">
   <div class="wrap">
@@ -221,16 +232,16 @@
         <span class="tile__sub" data-tile-sub>Для отдыха, пуфы и&nbsp;банкетки</span>
       </a></li>
       <li class="rv"><a class="tile" href="#catalog/fabrics" data-cat="fabrics">
-        <span class="tile__img tile__img--mosaic" data-fab-mosaic aria-hidden="true"></span>
+        <span class="tile__img tile__img--photo"><picture><img src="img/catalog/cover-fabrics-600.webp" srcset="img/catalog/cover-fabrics-600.webp 600w, img/catalog/cover-fabrics.webp 1200w" sizes="(min-width: 1100px) 41vw, 45vw" width="1200" height="1500" alt="" loading="lazy" decoding="async"></picture></span>
         <span class="tile__cap"><span class="tile__name">Ткани</span></span>
         <span class="tile__sub" data-tile-sub data-fab-types>Велюр, букле, шенилл</span>
       </a></li>
       <li class="rv tiles__eluna"><a class="tile tile--ext" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener" data-cat="mattresses">
         <span class="tile__img is-night"><picture>
-          <source media="(min-width: 600px)" srcset="img/catalog/cover-mattresses-wide.webp" width="1200" height="525">
-          <img src="img/catalog/cover-mattresses-600.webp" srcset="img/catalog/cover-mattresses-600.webp 600w, img/catalog/cover-mattresses.webp 1200w" sizes="(min-width: 1100px) 290px, 45vw" width="1200" height="1500" alt="Постер ELUNA «Мы убирали всё лишнее — пока не осталась тишина»: матрас на звёздном небе" loading="lazy" decoding="async">
+          <source media="(min-width: 600px)" srcset="img/eluna/mattress-wide.webp" width="1280" height="720">
+          <img src="img/eluna/mattress-tile.webp" width="640" height="800" alt="" loading="lazy" decoding="async">
         </picture></span>
-        <span class="tile__cap"><span class="tile__name">Матрасы ELUNA</span><svg class="ico tile__ext" aria-hidden="true"><use href="#i-arrow-ne"/></svg></span>
+        <span class="tile__cap"><span class="tile__name">Матрасы <span class="tile__nw">ELUNA<svg class="ico tile__ext" aria-hidden="true"><use href="#i-arrow-ne"/></svg></span></span></span>
         <span class="tile__sub" data-tile-sub>Ортопедические, на&nbsp;своём сайте</span><span class="sr-only"> — сайт ELUNA, откроется в&nbsp;новой вкладке</span>
       </a></li>
     </ul>
@@ -422,7 +433,7 @@
           <li>Подберём ткани и&nbsp;кожи под проект</li>
           <li>Изготовим по&nbsp;размерам проекта</li>
           <li>Образцы&nbsp;— в&nbsp;шоуруме на&nbsp;Навои</li>
-          <li>Чертёж любой модели из&nbsp;3D-конструктора&nbsp;— в&nbsp;SVG для&nbsp;вашего проекта</li>
+          <li>Чертёж любой модели из&nbsp;<span class="nowrap">3D-конструктора</span>&nbsp;— в&nbsp;SVG для&nbsp;вашего&nbsp;проекта</li>
         </ul>
         <a class="btn btn--noir" href="https://wa.me/77079550808" data-wa="designer"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Написать по&nbsp;проекту</a>
       </div>
@@ -505,7 +516,7 @@
         <h2 class="foot__h" id="fc-3">Об ателье</h2>
         <ul role="list">
           <li><a href="#atelier">О&nbsp;производстве</a></li>
-          <li><a href="#atelier">Оборудование SCM &amp; Dürkopp</a></li>
+          <li><a href="#atelier">Оборудование SCM&nbsp;&amp;&nbsp;Dürkopp</a></li>
           <li><a href="#catalog/fabrics">Палитра тканей и&nbsp;кож</a></li>
           <li><a href="#business">Для бизнеса</a></li>
           <li><a href="#faq">Вопросы</a></li>
@@ -672,6 +683,7 @@
       <button class="pd__arrow pd__arrow--prev" type="button" data-lb-step="-1" aria-label="Предыдущее фото"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
       <button class="pd__arrow pd__arrow--next" type="button" data-lb-step="1" aria-label="Следующее фото"><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
     </div>
+    <div class="lb__thumbs pd__thumbs" data-lb-thumbs role="group" aria-label="Фото изделия" hidden></div>
     <div class="lb__bar">
       <div class="lb__cap">
         <h2 class="lb__title" id="lb-title" data-lb-title tabindex="-1" autofocus></h2>
@@ -723,15 +735,15 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__open" id="toast-open">Открыть</button></div>
 
-<script src="js/lang.js?v=d6e7416a4d" defer></script>
-<script src="js/catalog-data.js?v=d6e7416a4d" defer></script>
-<script src="js/works-data.js?v=d6e7416a4d" defer></script>
-<script src="js/models-data.js?v=d6e7416a4d" defer></script>
-<script src="js/fabrics-data.js?v=d6e7416a4d" defer></script>
-<script src="js/cart.js?v=d6e7416a4d" defer></script>
-<script src="js/site.js?v=d6e7416a4d" defer></script>
-<script src="js/content-data.js?v=d6e7416a4d" defer></script>
-<script src="js/composition-data.js?v=d6e7416a4d" defer></script>
-<script src="js/blocks.js?v=d6e7416a4d" defer></script>
+<script src="js/lang.js?v=e169e13cf5" defer></script>
+<script src="js/catalog-data.js?v=e169e13cf5" defer></script>
+<script src="js/works-data.js?v=e169e13cf5" defer></script>
+<script src="js/models-data.js?v=e169e13cf5" defer></script>
+<script src="js/fabrics-data.js?v=e169e13cf5" defer></script>
+<script src="js/cart.js?v=e169e13cf5" defer></script>
+<script src="js/site.js?v=e169e13cf5" defer></script>
+<script src="js/content-data.js?v=e169e13cf5" defer></script>
+<script src="js/composition-data.js?v=e169e13cf5" defer></script>
+<script src="js/blocks.js?v=e169e13cf5" defer></script>
 </body>
 </html>

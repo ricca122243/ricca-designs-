@@ -139,6 +139,7 @@ html[lang="en"] .hero { --hfs: clamp(36px, 9.3vw, 150px); }
 html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 1.3); }   /* кегль меньше, диван тот же — строки дальше друг от друга */
 @media (max-width: 899px) { html[lang="en"] .hero { --hfs: clamp(30px, 9.1vw, 120px); } html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 3.4); } }
 .hdr__tools { display: flex; align-items: center; margin-right: -10px; }
+@media (min-width: 1200px) { .hdr__tools { margin-left: clamp(16px, 2.5vw, 40px); } }   /* RU | EN и корзина — отдельной группой, дальше от WHATSAPP, чем пункты меню друг от друга; уже 1200 px меню на пределе ширины */
 .hdr__count { position: absolute; top: 7px; right: 5px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 8px; background: currentColor; font: 600 9px/15px var(--sans); text-align: center; }
 .hdr .hdr__count { background: var(--ink); color: var(--paper); }
 .hdr.is-over .hdr__count, .hdr.is-dark .hdr__count { background: var(--on-noir); color: #111; }
@@ -162,7 +163,7 @@ html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 1.3); }   /* кегл�
 .hero { --hfs: clamp(56px, 11.6vw, 196px); position: relative; min-height: 100svh; display: flex; flex-direction: column; padding: calc(var(--hdr) + 12px) 0 0; background: var(--paper); color: var(--ink); overflow: hidden; }
 .hero__stage { flex: 1; display: grid; align-content: center; gap: clamp(18px, 2.4vw, 36px); padding-block: clamp(8px, 2vw, 32px); }
 .hero__eye { display: flex; align-items: center; gap: 16px; font: 500 11px/1.5 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--ink-2); }
-.hero__no { padding-right: 16px; border-right: 1px solid var(--line-2); font: italic 400 17px/1 var(--serif); letter-spacing: .02em; text-transform: none; color: var(--ink); }
+.hero__no { padding-right: 16px; border-right: 1px solid var(--line-2); font: italic 400 17px/1 var(--serif); font-variant-numeric: lining-nums; letter-spacing: .02em; text-transform: none; color: var(--ink); }
 .hero__cover { display: grid; grid-template-areas: "c"; align-items: center; justify-items: center; }
 .hero__title { grid-area: c; width: 100%; display: grid; row-gap: calc(var(--hfs) * .98); margin: 0; font: 300 var(--hfs)/.9 var(--serif); letter-spacing: -.025em; color: var(--ink); }
 .hero__ln { display: block; overflow: hidden; padding: 0 .08em .07em; margin: 0 -.08em; }
@@ -183,7 +184,7 @@ html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 1.3); }   /* кегл�
 .hero__run { margin-top: clamp(20px, 2.6vw, 40px); border-top: 1px solid var(--line); overflow: hidden; }
 .hero__track { display: flex; width: max-content; animation: run 56s linear infinite; }
 .hero__track span { display: inline-flex; align-items: center; gap: clamp(28px, 3vw, 48px); padding: clamp(14px, 1.4vw, 20px) 0 clamp(14px, 1.4vw, 20px) clamp(28px, 3vw, 48px); font: italic 300 clamp(18px, 1.7vw, 26px)/1 var(--serif); color: var(--ink-2); white-space: nowrap; }
-.hero__track span::after { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--ink); }
+.hero__track span::after { content: ""; flex: none; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }   /* точка — цветом слов (--ink-2) и мельче: чёрная 5 px перебивала тонкий курсив */
 @media (hover: hover) { .hero__run:hover .hero__track { animation-play-state: paused; } }
 @keyframes run { to { transform: translateX(-50%); } }
 .hdr.is-over { background: transparent; border-color: transparent; color: var(--ink); }
@@ -227,7 +228,7 @@ html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 1.3); }   /* кегл�
 body { counter-reset: sec 1; }
 .sec h2.title[id$="-title"] { font-size: clamp(34px, 4.2vw, 64px); line-height: 1.04; letter-spacing: -.012em; }
 .sec h2.title[id$="-title"]::before { counter-increment: sec; content: "№ " counter(sec, decimal-leading-zero); content: "№ " counter(sec, decimal-leading-zero) / "";
-  display: block; margin-bottom: clamp(12px, 1.4vw, 20px); font: italic 400 17px/1 var(--serif); letter-spacing: .02em; color: var(--ink-2); }
+  display: block; margin-bottom: clamp(12px, 1.4vw, 20px); font: italic 400 17px/1 var(--serif); font-variant-numeric: lining-nums; letter-spacing: .02em; color: var(--ink-2); }   /* lining — после шортката font: он сбрасывает цифры в старостильные («№ o4») */
 
 /* ==========================================================================
    2. ВСТУПЛЕНИЕ + НОВОСТИ + ФАКТЫ
@@ -264,7 +265,7 @@ body { counter-reset: sec 1; }
   background: transparent; border: 1px solid var(--line); color: var(--ink); text-decoration: none; transition: border-color 600ms var(--ease); }
 .news:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .news__sky { position: relative; align-self: stretch; min-height: var(--sky, 128px); background: #070707; overflow: hidden; }
-.news__sky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; }
+.news__sky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }   /* угол матраса ELUNA в разрезе (img/eluna/mattress-sq, ≥ 600 px — mattress-wide; без надписей) — угол целиком по центру квадрата */
 .news__txt { display: grid; justify-items: start; gap: 6px; padding: 16px 24px; min-width: 0; }
 .news__eye { font: 500 10px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
 .news__line { font: 400 13px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .01em; text-wrap: balance; }
@@ -305,10 +306,12 @@ body { counter-reset: sec 1; }
 .tiles { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 72px 40px; }
 .tiles > li { grid-column: span 6; }
 .tiles > li:nth-child(-n+3) { grid-column: span 4; }
-@media (min-width: 1100px) { .tiles > li:nth-child(n+4) .tile__img { aspect-ratio: 2 / 1; } .tiles__eluna .tile__img img { object-position: 0 50%; } }   /* постер ELUNA 16 : 7 — текст слева целиком */
+@media (min-width: 1100px) { .tiles > li:nth-child(n+4) .tile__img { aspect-ratio: 2 / 1; } }
 .tile { display: grid; grid-template-columns: minmax(0, 1fr); }
 .tile__img { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--paper-2); }
-.tile__img.is-night { background: #0e1326; }
+.tile__img.is-night { background: #000; }   /* фон кадров ELUNA — чистый чёрный: до загрузки и по краям нет шва */
+/* ELUNA ≥ 600 px: кадр 16 : 9 (img/eluna/mattress-wide) в рамке 2 : 1 / 16 : 7 — срезаем только пустое чёрное поле сверху, матрас целиком */
+@media (min-width: 600px) { .tiles__eluna .tile__img img { object-position: 50% 100%; } }
 /* линейный рисунок вместо фото (отзыв клиента 13 октября: обложки-визуализации «не годятся»): белое поле, волосяная рамка,
    линия 1,1 px при любом размере плитки (non-scaling-stroke); js/site.js дорисовывает линию при наведении и появлении */
 .tile__img--draw { background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); transition: box-shadow 500ms var(--ease); }
@@ -316,19 +319,18 @@ body { counter-reset: sec 1; }
 .draw * { vector-effect: non-scaling-stroke; }
 .draw .draw__fl { stroke: var(--line-2); }
 .draw .draw__ln { fill: none; }
-/* «Ткани»: веер образцов в настоящих цветах коллекций; при наведении веер чуть раскрывается */
-.draw .draw__sw { stroke-width: 1; transform-box: view-box; transform-origin: 200px 386px; transform: rotate(var(--a, 0deg)); transition: transform 900ms var(--ease); }
-/* «Ткани»: мозаика настоящих тканей (официальные фото коллекций, js/site.js) — 4 × 2 в широкой плитке 2 : 1, 2 × 2 в квадратной и 4 : 5 */
-.tile__img--mosaic { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 2px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
-.tile__img--mosaic img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease); }
-.tile__img--mosaic img:nth-child(n+9) { display: none; }
-@media (max-width: 1099px) { .tile__img--mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tile__img--mosaic img:nth-child(n+5) { display: none; } }
+/* «Ткани»: одно спокойное фото стопки образцов (img/catalog/cover-fabrics, в HTML) — пёстрая мозаика из 8 тканей и веер выбивались
+   из каталога (аудит 20 октября); в широкой плитке 2 : 1 — середина кадра */
 .tile__img picture { display: contents; }
 .tile__img--photo { background: var(--paper-2); }   /* обложка — реальная работа ателье (js/works-data.js), до загрузки — светлая подложка */
 .tile__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease); }
 .tile__cap { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-top: 18px; }
 .tile__name { font: 400 clamp(26px, 2.2vw, 34px)/1.05 var(--serif); letter-spacing: .005em; white-space: nowrap; }   /* антиквой, как названия моделей (20 октября) */
-.tile__ext { width: 14px; height: 14px; align-self: center; }
+/* ↗ у ELUNA — внутри названия, вместе с последним словом (.tile__nw): стоит сразу за словом, а не у правого края плитки,
+   и не вылезает из колонки на телефоне — название переносится целиком, стрелка одна на строке не остаётся */
+.tile--ext .tile__name { white-space: normal; }
+.tile__nw { white-space: nowrap; }
+.tile__ext { display: inline-block; width: 14px; height: 14px; margin-left: .28em; vertical-align: .1em; }
 .tile__sub { margin-top: 4px; font: 400 13px/1.55 var(--sans); color: var(--ink-2); letter-spacing: .01em; }
 .tile__n { white-space: nowrap; }
 .cat__hint { margin-top: 56px; text-align: left; font: 400 13px/1.6 var(--sans); color: var(--ink-2); letter-spacing: .01em; }
@@ -339,7 +341,6 @@ body { counter-reset: sec 1; }
 @media (hover: hover) {
   .tile:hover .tile__img img { transform: scale(1.03); }
   .tile:hover .tile__img--draw { box-shadow: inset 0 0 0 1px var(--line-2); }
-  .tile:hover .draw__sw { transform: rotate(calc(var(--a, 0deg) * 1.16)); }
   .tile:hover .tile__name { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; text-decoration-color: var(--line-2); }
 }
 @media (max-width: 1099.98px) {
@@ -347,19 +348,20 @@ body { counter-reset: sec 1; }
   .tiles > li, .tiles > li:nth-child(-n+3) { grid-column: span 1; }
   .tiles > li.tiles__eluna { grid-column: 1 / -1; }
   .tiles__eluna .tile__img { aspect-ratio: 16 / 7; }
-  .tiles__eluna .tile__img img { object-position: 50% 50%; }
 }
+/* 600–1099: «Ткани» в паре с «Креслами» — рамка как у соседней плитки модели (4 : 3), иначе ряд разной высоты */
+@media (min-width: 600px) and (max-width: 1099.98px) { .tiles > li:nth-child(3):has(.tile__img--model) + li .tile__img { aspect-ratio: 4 / 3; } }
 @media (max-width: 599.98px) {
   .tiles { gap: 40px 16px; }
   .tiles > li:first-child { grid-column: 1 / -1; }
-  /* Диваны во всю ширину: рамка 3 : 2, а не 4 : 5 — без пустой коробки вокруг небольшого рисунка (svg: xMidYMid slice) */
+  /* Диваны во всю ширину: рамка 3 : 2, а не 4 : 5 — без пустой коробки вокруг небольшого рисунка (svg: xMidYMid slice);
+     с фото модели — низкая 16 : 9 (диван длинный и невысокий: в 4 : 3 он тонкой полоской в пустом поле; фон кадра ровный — обрезка не видна) */
   .tiles > li:first-child .tile__img--draw { aspect-ratio: 3 / 2; }
+  .tiles > li:first-child .tile__img--model { aspect-ratio: 16 / 9; }
   .tiles > li.tiles__eluna { grid-column: span 1; }
-  .tiles__eluna .tile__img { aspect-ratio: 4 / 5; }
-  .tiles__eluna .tile__img img { object-position: 50% 50%; }
+  .tiles__eluna .tile__img { aspect-ratio: 4 / 5; }   /* img/eluna/mattress-tile — ровно 4 : 5, без обрезки */
   /* все плитки одинаково: название / описание — каждое своей строкой, без висящей «·» */
   .tile__cap { display: grid; justify-items: start; gap: 2px; margin-top: 12px; }
-  .tile--ext .tile__cap { display: flex; align-items: center; gap: 8px; }
   .tile__name { font-size: 22px; letter-spacing: 0; }
   .tile__sub { margin-top: 2px; font-size: 12px; line-height: 1.5; }
   .tile__n { display: block; color: var(--ink); }
@@ -441,6 +443,10 @@ body { counter-reset: sec 1; }
   .wk__a--model:hover .wk__t { text-decoration: none; }
   .tile:hover .tile__img--model img { transform: scale(calc(var(--z, 1) * 1.025)); }
 }
+/* плитки каталога: изделия одного визуального веса (js/site.js tileZoom) — крупное кресло уменьшается (--z < 1), и край кадра
+   оказывается внутри рамки. Фон кадров #FAFAF8 × 1,03 = белый (255): после multiply он равен подиуму, края фото нет
+   (иначе — светлая «коробка» вокруг кресла); ткань светлее на 3 % — незаметно */
+.tile__img--model img { filter: brightness(1.03); }
 @media (max-width: 767px) {
   .wk__cap { margin-top: 12px; }
   .wk__a--model .wk__k { font-size: 9px; letter-spacing: .2em; }
@@ -468,7 +474,7 @@ body { counter-reset: sec 1; }
 }
 /* Стили (13 октября): спокойный ряд названий под тонкой линией; «и любой другой» — строкой ниже */
 .styles { display: grid; gap: 14px; width: 100%; padding-top: 18px; border-top: 1px solid var(--line); }
-.styles__list { display: flex; flex-wrap: wrap; gap: 4px 0; font: 300 20px/1.45 var(--serif); color: var(--ink); }
+.styles__list { display: flex; flex-wrap: wrap; gap: 4px 0; font: 300 20px/1.45 var(--serif); font-variant-numeric: lining-nums; color: var(--ink); }
 .styles__list li { white-space: nowrap; }
 .styles__list li:not(:last-child)::after { content: "·"; padding: 0 .55em; color: var(--ink-2); }   /* точка — в конце строки, а не в начале переноса */
 .styles__more { font: 400 13px/1.6 var(--sans); color: var(--ink-2); }
@@ -556,6 +562,16 @@ body { counter-reset: sec 1; }
 .atelier__film { position: relative; grid-column: 8 / span 5; justify-self: start; width: min(100%, 300px); aspect-ratio: 478 / 850; background: var(--paper-2); overflow: hidden; }
 /* ролик 478 px — мягкий и тёплый: монохромная вставка в чёрно-молочной гамме выглядит намеренной (видео и постер — один элемент) */
 .atelier__film video { width: 100%; height: 100%; object-fit: cover; transform: scale(1.015); filter: grayscale(.85) contrast(1.06) brightness(1.03); }   /* у части кадров ролика тёмная строка по краю */
+/* кнопка «пауза / плей» на ролике: зона касания 44 px, видимый круг 28 px — тёмная вуаль и белая линия читаются и на светлых,
+   и на тёмных кадрах. Видна ровно одна иконка: aria-pressed="false" — ролик идёт (пауза), "true" — стоит (плей), см. autoVideo в site.js */
+.vbtn { position: relative; z-index: 1; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: #fff; -webkit-tap-highlight-color: transparent; }
+.vbtn::before { content: ''; position: absolute; inset: 8px; border: 1px solid rgba(255,255,255,.6); border-radius: 50%; background: rgba(11,11,12,.45); transition: border-color 300ms var(--ease), background-color 300ms var(--ease); }
+.vbtn .ico { position: relative; width: 14px; height: 14px; stroke-width: 1.8; }   /* над кругом ::before */
+.vbtn .ico--play { width: 12px; height: 12px; margin-left: 2px; fill: currentColor; stroke: none; }   /* треугольник — оптически по центру круга */
+.vbtn[aria-pressed="false"] .ico--play, .vbtn[aria-pressed="true"] .ico--pause { display: none; }
+.vbtn:focus-visible { outline: 1px solid #fff; outline-offset: -6px; }   /* кольцо внутри кнопки: у края ролика снаружи его срезал бы overflow */
+.vbtn:focus-visible::before { border-color: #fff; background-color: rgba(11,11,12,.65); }
+@media (hover: hover) { .vbtn:hover::before { border-color: #fff; background-color: rgba(11,11,12,.65); } }
 .vbtn--corner { position: absolute; right: 4px; bottom: 4px; }
 @media (max-width: 767px) {
   .atelier__in { grid-template-columns: minmax(0, 1fr); gap: 56px; }
@@ -583,7 +599,7 @@ body { counter-reset: sec 1; }
 .biz__head { grid-column: 1 / span 7; max-width: 15em; font: 300 clamp(28px, 3vw, 44px)/1.18 var(--serif); color: var(--on-noir); text-wrap: pretty; }
 .biz__side { grid-column: 8 / span 5; display: grid; justify-items: start; gap: 40px; padding-top: .5em; }
 .biz__list { width: 100%; border-bottom: 1px solid rgba(255, 255, 255, .2); }
-.biz__list li { padding: 15px 0; border-top: 1px solid rgba(255, 255, 255, .2); font: 300 15px/1.5 var(--sans); letter-spacing: .02em; }
+.biz__list li { padding: 15px 0; border-top: 1px solid rgba(255, 255, 255, .2); font: 300 15px/1.5 var(--sans); letter-spacing: .02em; text-wrap: pretty; }
 /* Дизайнерам и архитекторам — второй ряд чёрной полосы под тонкой линией, та же сетка: строка слева, список и кнопка справа */
 .biz__pro { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 28px; align-items: start; margin-top: clamp(40px, 5vw, 72px); padding-top: clamp(36px, 4vw, 56px); border-top: 1px solid rgba(255, 255, 255, .2); }
 .biz__pro-head { grid-column: 1 / span 7; max-width: 17em; font: 300 clamp(24px, 2.2vw, 32px)/1.25 var(--serif); color: var(--on-noir); text-wrap: pretty; }
@@ -675,6 +691,11 @@ body { counter-reset: sec 1; }
 @media (max-width: 767px) {
   .foot__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 16px; padding: 48px 0 48px; }
   .foot__col a { padding: 12px 0; min-height: 44px; }
+  /* третья колонка («Об ателье») одна осталась бы слева с пустой правой половиной — во всю ширину, ссылки в две колонки
+     по сетке выше (зазор = зазору сетки, 16 px) */
+  .foot__grid > .foot__col:nth-of-type(3) { grid-column: 1 / -1; }
+  .foot__grid > .foot__col:nth-of-type(3) ul { columns: 2; column-gap: 16px; }
+  .foot__grid > .foot__col:nth-of-type(3) li { break-inside: avoid; }
   .foot__contacts dl { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .foot__contacts dd a, .foot__val { min-height: 44px; }
 }
@@ -891,6 +912,14 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   /* вкладки тканей: все пять типов на 390; на 360/320 у правого края видно начало «Экокожи» — знак, что ряд листается */
   .view__tabs.is-fab { gap: 0 14px; }
   .view__tabs.is-fab button { letter-spacing: .12em; }
+  /* ряд шире экрана (EN «Faux leather» на 390–402) — вкладка тает в поле страницы, а не упирается буквой в край экрана
+     («FAUX LEATHE» читалось как опечатка): видно, что ряд листается. Затухание — только в полях (--pad), поэтому ряд,
+     который помещается (RU на 390+), не меняется; долистали до конца — последняя вкладка видна целиком */
+  .view__tabs.is-fab { -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--pad), #000 calc(100% - var(--pad)), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 var(--pad), #000 calc(100% - var(--pad)), transparent); }
+  .view.is-scrolled .view__tabs.is-fab { box-shadow: inset 0 -1px 0 var(--line); }   /* маска срезает всё за рамкой ряда — линия «прилипли» внутрь */
+  html[lang="en"] .view__tabs.is-fab { gap: 0 12px; }   /* EN длиннее («Faux leather»): чуть плотнее — все пять вкладок видны на 390+ (на 402+ — без затухания) */
+  html[lang="en"] .view__tabs.is-fab button { letter-spacing: .08em; }
 }
 @media (max-width: 389px) { .fl__end-btns .btn { padding-inline: 12px; gap: 10px; letter-spacing: .12em; white-space: nowrap; } }   /* 360/320: «Помогите подобрать ткань» — в одну строку */
 
@@ -1001,7 +1030,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .lb__cap { display: grid; gap: 2px; min-width: 0; }
 .lb__title { font: 400 clamp(24px, 2vw, 30px)/1.1 var(--serif); letter-spacing: .005em; }   /* антиквой, как названия на карточках */
 .lb__stage.is-studio { background: #EAE8E3; isolation: isolate; }   /* = фон кадра #FAFAF8 × подиум (multiply): рамки фото не видно */
-.lb__stage.is-studio .lb__frame { background: transparent; }
+.lb__stage.is-studio .lb__frame { background: var(--podium); overflow: hidden; }   /* кадр × подиум (multiply) = цвет сцены: границы фото не видно */
 .lb__stage.is-studio .lb__frame img { mix-blend-mode: multiply; transform: scale(var(--z, 1)); }
 .lb__piece { font: 400 13px/1.5 var(--sans); color: var(--ink-2); }
 .lb__count { margin-top: 2px; font: 400 12px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .1em; font-variant-numeric: tabular-nums; }
@@ -1013,6 +1042,8 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .lb__3d { margin-left: 14px; }
 .lb__ig { display: inline-flex; align-items: center; min-height: 44px; margin-left: 14px; font: 400 12px/1.4 var(--sans); color: var(--ink-2); letter-spacing: .02em; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; text-decoration-color: var(--line-2); }
 @media (hover: hover) { .lb__ig:hover { color: var(--ink); text-decoration-color: currentColor; } }
+.lb .toast { top: calc(64px + env(safe-area-inset-top)); bottom: auto; }   /* «В корзине: …» — сверху, под ✕: кнопки окна и «Собрать похожий в 3D» не закрываем (и на компьютере) */
+.lb__thumbs { display: none; }   /* лента миниатюр модели — только на телефоне (≤ 599 px); компьютер — стрелки и ←/→ */
 @media (max-width: 1099.98px) {
   .lb__bar { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
   .lb__acts { justify-content: flex-start; }
@@ -1024,8 +1055,20 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   .lb__acts { gap: 4px 8px; }
   .lb__acts .btn { flex: 1 1 calc(50% - 4px); padding: 0 10px; letter-spacing: .14em; }
   .lb__3d { margin: 4px 0 0; white-space: nowrap; letter-spacing: .14em; }
-  .lb__ig { margin: 0; min-height: 40px; }
+  /* «Смотреть в Instagram» — всегда своей строкой под «Собрать похожий в 3D»: рядом с капсом ссылки слипались (зазор 8 px,
+     разные базовые линии и подчёркивания), а влезали в строку или нет — смотря по языку и ширине телефона. Перенос — пустой
+     ::after на всю ширину перед ссылкой (order): зона нажатия — по тексту, а не вся строка; −8 px съедают два row-gap */
+  .lb__acts:has(.lb__ig:not([hidden]))::after { content: ''; order: 1; flex-basis: 100%; }
+  .lb__ig { order: 2; margin: -8px 0 0; min-height: 40px; }
+  /* модель каталога (кадр 4:3): сцена — по кадру, а не на весь экран (диван тонул в бежевом поле); ниже — миниатюры на том же
+     бежевом, подпись сверху белой полосы, кнопки прижаты к низу (под палец). Высокий «Состав» — окно прокручивается */
+  .lb--model .lb__in { grid-template-rows: auto auto 1fr; overflow-y: auto; overscroll-behavior: contain; }
+  .lb--model .lb__stage { height: calc(75vw + var(--hdr) + 8px); height: min(max(calc(75vw + var(--hdr) + 8px), 50dvh), 58dvh); padding: calc(var(--hdr) - 4px) 0 8px; }   /* высокий экран — немного воздуха вокруг кадра, не поле */
+  .lb--model .lb__thumbs { display: flex; padding: 4px 16px 14px; background: #EAE8E3; }
+  .lb--model .lb__thumbs .pd__thumb { width: 64px; height: 48px; }
+  .lb--model .lb__bar { grid-row: 3; align-content: space-between; }
 }
+@media (max-width: 359px) { .lb__acts .btn { gap: 8px; padding: 0 8px; letter-spacing: .1em; } }   /* 320: обе кнопки («Хочу такой», «Add to cart») — в одну строку */
 
 /* подборка — панель справа (телефон — на весь экран) */
 .sl { position: fixed; inset: 0 0 0 auto; width: min(440px, 100%); height: 100%; height: 100dvh; display: flex; flex-direction: column; transform: translateX(24px); box-shadow: -1px 0 0 var(--line); }
@@ -1038,6 +1081,9 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .sl__img.is-studio { background: var(--studio); }
 .sl__img img { width: 100%; height: 100%; object-fit: cover; }
 .sl__img.is-studio img { object-fit: contain; transform: scale(var(--z, 1)); }
+/* модель каталога: рамка 4:3 = кадр, фото целиком на подиуме, как карточки каталога (contain без полей — шва от multiply нет) */
+.sl__img.is-studio.is-model { height: 42px; margin-top: 4px; background: var(--podium); isolation: isolate; }
+.sl__img.is-model img { mix-blend-mode: multiply; }
 .sl__t { font: 400 14px/1.4 var(--sans); }
 .sl__m { grid-column: 2; font: 400 12px/1.4 var(--sans); color: var(--ink-2); }
 .sl__list .icon-btn { grid-column: 3; grid-row: 1 / span 2; }
@@ -1231,6 +1277,7 @@ img { -webkit-user-drag: none; user-select: none; }
 /* + Какую ткань выбрать: таблица 3 × 4 со значками; телефон — карточка на ткань */
 .nb-fab__legend { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-bottom: 28px; font: 400 13px/1.5 var(--sans); color: var(--ink-2); }
 .nb-fab__legend > span { display: inline-flex; align-items: center; gap: 10px; }
+@media (max-width: 599px) { .nb-fab__legend { flex-direction: column; gap: 10px; } }   /* три пункта не входят в строку: столбиком, а не 2 + 1 с «не советуем» одним внизу */
 .nb-fab { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .nb-fab th, .nb-fab td { padding: 22px 20px 24px 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
 .nb-fab thead th { padding: 0 20px 14px 0; border-bottom-color: var(--ink); font: 500 10px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
@@ -1262,18 +1309,25 @@ img { -webkit-user-drag: none; user-select: none; }
 .nb-fit__f .fld { font: 300 30px/1.3 var(--serif); padding: 8px 0; font-variant-numeric: lining-nums; }
 .nb-fit__f .fld::placeholder { font: 300 22px/1.3 var(--serif); }
 .nb-fit__hint { font: 400 12px/1.5 var(--sans); color: var(--ink-2); }
-.nb-fit__mode { display: inline-grid; grid-template-columns: repeat(2, auto); justify-self: start; border: 1px solid var(--line-2); }
-.nb-fit__mode button { min-height: 48px; padding: 0 20px; font: 500 11px/1.2 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-2); transition: background 250ms var(--ease), color 250ms var(--ease); }
+.nb-fit__mode { display: inline-grid; grid-template-columns: repeat(2, minmax(0, 1fr)); justify-self: start; border: 1px solid var(--line-2); }   /* половины равные (по длинной подписи): «auto» давал 170 / 190 px — переключатель выглядел кривым */
+.nb-fit__mode button { min-height: 48px; padding: 0 20px; font: 500 11px/1.2 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-2); text-wrap: balance; transition: background 250ms var(--ease), color 250ms var(--ease); }
 .nb-fit__mode button[aria-checked="true"] { background: var(--ink); color: var(--paper); }
 .nb-fit__res { grid-column: 7 / -1; display: grid; gap: 22px; padding: clamp(28px, 3vw, 44px); border: 1px solid var(--line); }
 .nb-fit__dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gap); }
-.nb-fit__dl > div { display: grid; gap: 6px; padding: 16px 0 18px; border-top: 1px solid var(--line); }
+/* ячейка — две строки общей сетки (subgrid): значения соседних ячеек на одной линии, даже если подпись или значение
+   в соседней переносится; без subgrid — align-content: start, чтобы строки ячейки не растягивались и значение не съезжало вниз */
+.nb-fit__dl > div { display: grid; grid-row: span 2; grid-template-rows: subgrid; align-content: start; gap: 6px; padding: 16px 0 18px; border-top: 1px solid var(--line); }
 .nb-fit__dl dt { font: 500 10px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
 .nb-fit__dl dd { min-height: 1.25em; font: 300 26px/1.25 var(--serif); color: var(--ink); font-variant-numeric: lining-nums; transition: color 300ms var(--ease); }
-.nb-fit__res.is-empty dd { color: var(--line-2); }
+/* пустая карточка — спокойное приглашение, а не «недогрузившийся» виджет: прочерки читаются, подсказка — главная строка,
+   кнопки — тонкие рамки без бледной серой заливки (нажатие ведёт в пустое поле, js/blocks.js) */
+.nb-fit__res.is-empty dd { color: var(--ink-2); }
 .nb-fit__note { min-height: 3.2em; font: 400 14px/1.6 var(--sans); color: var(--ink-2); text-wrap: pretty; }
+/* 20 px — в одну строку и на 360 px; уже — «в» не висит в конце строки. min-height 44.8 px = 3.2em обычной заметки (14 px):
+   пустая карточка держит высоту двухстрочного итога, и на первом вводе кнопки не прыгают вниз */
+.nb-fit__res.is-empty .nb-fit__note { min-height: 44.8px; font: 300 20px/1.4 var(--serif); color: var(--ink); text-wrap: balance; }
 .nb-fit__acts { display: flex; flex-wrap: wrap; gap: 12px; }
-.nb-fit__acts .btn[aria-disabled="true"] { opacity: .32; cursor: default; }
+.nb-fit__acts .btn[aria-disabled="true"] { background: transparent; color: var(--ink-2); border-color: var(--line-2); cursor: default; }
 .nb-fit__fine { margin-top: 24px; font: 400 12px/1.6 var(--sans); color: var(--ink-2); }
 .is-tick { animation: nb-tick 420ms var(--ease); }
 @keyframes nb-tick { from { opacity: .2; transform: translateY(4px); } to { opacity: 1; transform: none; } }
@@ -1282,8 +1336,14 @@ img { -webkit-user-drag: none; user-select: none; }
   .nb-fit__res { margin-top: 40px; padding: 24px 20px 28px; }
   .nb-fit__acts .btn { width: 100%; }
   .nb-fit__mode { display: grid; width: 100%; }
+  .nb-fit__mode button { padding: 0 12px; }
 }
-@media (max-width: 374px) { .nb-fit__mode button { padding: 0 10px; letter-spacing: .1em; } }
+@media (max-width: 599px) {
+  .nb-fit__dl dd { font-size: 22px; text-wrap: balance; }   /* «кресло, пуф или небольшой диван» — в 3 строки, а не в 4 */
+  .nb-fit__acts .btn { padding: 0 16px; letter-spacing: .14em; text-wrap: balance; }   /* «Собрать в 3D с этими размерами» — в одну строку от 390 px */
+}
+/* «У открытой стены» (150 px при .16em) — в одну строку и на 360 px, и на узком компьютере (форма — 5 колонок из 12) */
+@media (max-width: 419px), (min-width: 900px) and (max-width: 1099px) { .nb-fit__mode button { padding: 0 8px; letter-spacing: .1em; } }
 
 /* + Без риска: четыре пункта с иконками под линиями и кнопка */
 .nb-nr { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--gap); }

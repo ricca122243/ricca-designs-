@@ -5,7 +5,7 @@
    • фото и шрифты — из памяти телефона мгновенно, в фоне обновляются с сервера (фото — не больше 300 штук);
    • ролики, 3D-модели и всё с других сайтов (WhatsApp, 2ГИС, Instagram) не трогаем — идут как обычно.
    Поменяли логику этого файла → увеличьте VERSION: старая память удалится сама. */
-const VERSION = 'v1';
+const VERSION = 'v2';   // v2 (20 окт.): переделаны фото каталога с теми же именами — старая память удаляется
 const PAGES = `ricca-pages-${VERSION}`, CODE = `ricca-code-${VERSION}`, MEDIA = `ricca-media-${VERSION}`;
 const OFFLINE = '/offline.html';
 const PRECACHE = [OFFLINE, '/img/pwa/icon-192.png', '/img/v3/favicon-v3.svg'];

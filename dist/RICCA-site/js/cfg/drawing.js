@@ -919,7 +919,7 @@ function pencilFromPasses(colorBmp, normalCv, depthCv, { lineW = 1 } = {}) {
   const W = normalCv.width, H = normalCv.height, N = W * H;
   const rd = (src) => { const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(src, 0, 0, W, H); return g.getImageData(0, 0, W, H).data; };
   const nP = rd(normalCv), dP = rd(depthCv), cP = rd(colorBmp);
-  const M = new Uint8Array(N), NX = new Float32Array(N), NY = new Float32Array(N), NZ = new Float32Array(N), D = new Float32Array(N), CL = new Float32Array(N), SH = new Float32Array(N);
+  const M = new Uint8Array(N), NX = new Float32Array(N), NY = new Float32Array(N), NZ = new Float32Array(N), D = new Float32Array(N), SH = new Float32Array(N);
   for (let i = 0; i < N; i++) {
     const r = nP[i * 4], g = nP[i * 4 + 1], b = nP[i * 4 + 2];
     const bg = g < 8 && r > 245 && b > 245;
@@ -927,7 +927,6 @@ function pencilFromPasses(colorBmp, normalCv, depthCv, { lineW = 1 } = {}) {
     if (!bg) { let x = r / 127.5 - 1, y = g / 127.5 - 1, z = b / 127.5 - 1; const l = Math.hypot(x, y, z) || 1; NX[i] = x / l; NY[i] = y / l; NZ[i] = z / l; }
     D[i] = dP[i * 4] / 255;
     const cr = cP[i * 4], cg = cP[i * 4 + 1], cb = cP[i * 4 + 2];
-    CL[i] = (0.2126 * cr + 0.7152 * cg + 0.0722 * cb) / 255;
     SH[i] = cr - cg > 45 && cb - cg > 45 ? (cr + cb) / 510 : 1;          // пурпурный фон обычного кадра: темнее — тень
   }
   const sm = (x, a, b) => Math.min(1, Math.max(0, (x - a) / (b - a)));
@@ -959,10 +958,13 @@ function pencilFromPasses(colorBmp, normalCv, depthCv, { lineW = 1 } = {}) {
   const WX = blur(n1, 14), WY = blur(n2a, 14); let wm = 0; for (let i = 0; i < N; i += 7) wm = Math.max(wm, Math.abs(WX[i]), Math.abs(WY[i]));
   const wk = 1.4 / (wm || 1);
   const PR = blur(Float32Array.from(n1, (v) => v), 22);                    // сила нажима вдоль линии
-  /* затенение из обычного кадра: яркость относительно светлых мест изделия (складки, контакт деталей) */
-  const hist = new Uint32Array(256); let cnt = 0;
-  for (let i = 0; i < N; i++) if (M[i]) { hist[Math.min(255, (CL[i] * 255) | 0)]++; cnt++; }
-  let acc = 0, ref = 1; for (let k = 0; k < 256; k++) { acc += hist[k]; if (acc >= 0.97 * cnt) { ref = Math.max(0.05, k / 255); break; } }
+  /* затенение складок и стыков — по глубине (не по освещению кадра: тени на телефоне жёсткие и «грязнят» эскиз): точка дальше
+     средней глубины соседей изделия — в углублении (Luft и др., «Image Enhancement by Unsharp Masking the Depth Buffer») */
+  const MD = Float32Array.from(M), DM = Float32Array.from(D, (v, i) => v * M[i]);
+  const R = Math.max(6, Math.round(Math.min(W, H) / 70));
+  const bDM = blur(DM, R), bM = blur(MD, R), AO = new Float32Array(N);
+  for (let i = 0; i < N; i++) if (M[i] && bM[i] > 0.05) AO[i] = sm(bDM[i] / bM[i] - D[i], 0.004, 0.035);
+  const AOs = blur(AO, 2); for (let i = 0; i < N; i++) AO[i] = AOs[i];
   let shRef = 0; for (let i = 0; i < N; i++) if (!M[i] && SH[i] > shRef) shRef = SH[i];
   /* штрих — плитка 256 × 256 */
   const T = 256;
@@ -993,8 +995,7 @@ function pencilFromPasses(colorBmp, normalCv, depthCv, { lineW = 1 } = {}) {
     if (M[i]) {
       if (x < bx0) bx0 = x; if (x > bx1) bx1 = x; if (y < by0) by0 = y; if (y > by1) by1 = y;
       const diff = Math.max(0, (NX[i] * Lx + NY[i] * Ly + NZ[i] * Lz) / Ll);
-      const ao = Math.min(1, CL[i] / ref);
-      const lit = (0.15 + 0.85 * diff) * (0.6 + 0.4 * ao);
+      const lit = (0.15 + 0.85 * diff) * (1 - 0.5 * AO[i]);
       const t = 1 - lit;                                               // 0 — свет, 1 — глубокая тень
       let sh = Math.pow(sm(t, 0.34, 0.95), 1.3) * 0.5;                // свет — почти чистая бумага, тень собирается у краёв и на теневой стороне
       sh *= 0.78 + 0.26 * S1[ti] + 0.08 * S3[ti];
