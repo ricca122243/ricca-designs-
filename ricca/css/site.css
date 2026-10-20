@@ -327,7 +327,7 @@ body { counter-reset: sec 1; }
 .tile__img--photo { background: var(--paper-2); }   /* обложка — реальная работа ателье (js/works-data.js), до загрузки — светлая подложка */
 .tile__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease); }
 .tile__cap { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-top: 18px; }
-.tile__name { font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; white-space: nowrap; }
+.tile__name { font: 400 clamp(26px, 2.2vw, 34px)/1.05 var(--serif); letter-spacing: .005em; white-space: nowrap; }   /* антиквой, как названия моделей (20 октября) */
 .tile__ext { width: 14px; height: 14px; align-self: center; }
 .tile__sub { margin-top: 4px; font: 400 13px/1.55 var(--sans); color: var(--ink-2); letter-spacing: .01em; }
 .tile__n { white-space: nowrap; }
@@ -340,7 +340,7 @@ body { counter-reset: sec 1; }
   .tile:hover .tile__img img { transform: scale(1.03); }
   .tile:hover .tile__img--draw { box-shadow: inset 0 0 0 1px var(--line-2); }
   .tile:hover .draw__sw { transform: rotate(calc(var(--a, 0deg) * 1.16)); }
-  .tile:hover .tile__name { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+  .tile:hover .tile__name { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; text-decoration-color: var(--line-2); }
 }
 @media (max-width: 1099.98px) {
   .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px 24px; }
@@ -360,7 +360,7 @@ body { counter-reset: sec 1; }
   /* все плитки одинаково: название / описание — каждое своей строкой, без висящей «·» */
   .tile__cap { display: grid; justify-items: start; gap: 2px; margin-top: 12px; }
   .tile--ext .tile__cap { display: flex; align-items: center; gap: 8px; }
-  .tile__name { font-size: 11px; letter-spacing: .15em; }
+  .tile__name { font-size: 22px; letter-spacing: 0; }
   .tile__sub { margin-top: 2px; font-size: 12px; line-height: 1.5; }
   .tile__n { display: block; color: var(--ink); }
   .tile__dot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -419,6 +419,33 @@ body { counter-reset: sec 1; }
   .wk { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 12px; }
   .wk__t { margin-top: 10px; font-size: 10px; letter-spacing: .12em; }
   .wk__s { font-size: 11.5px; }
+}
+
+/* ── Премиальная карточка модели (заказчик, 20 октября: «максимально премиально»): тёплый каменный «подиум» вместо белой коробки,
+   изделие крупно (≈ 86 % ширины, js/site.js zoomAttr), при наведении — второй ракурс; подпись: вид мебели капителью,
+   название — антиквой, строка формы — тихим серым. Фон предметных кадров (#FAFAF8) уходит в подиум через multiply —
+   рамки «фото в коробке» нет, цвет ткани почти не меняется (×0,98) ── */
+:root { --podium: #EFEDE9; }
+.wk__a--model .wk__img, .tile__img--model { background: var(--podium); box-shadow: none; isolation: isolate; }
+.wk__a--model .wk__img img, .tile__img--model img { mix-blend-mode: multiply; transform: scale(var(--z, 1)); transform-origin: 50% 54%;
+  transition: transform 1400ms var(--ease), opacity 700ms var(--ease); }
+.wk__a--model .wk__alt { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.wk__cap { display: grid; justify-items: start; margin-top: 18px; }
+.wk__a--model .wk__k { font: 500 10px/1.4 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--ink-2); }
+.wk__a--model .wk__t { margin-top: 4px; font: 400 clamp(24px, 1.9vw, 30px)/1.05 var(--serif); letter-spacing: .01em; text-transform: none; color: var(--ink); }
+.wk__a--model .wk__s { margin-top: 8px; font: 400 12.5px/1.5 var(--sans); color: var(--ink-2); }
+@media (hover: hover) {
+  .wk__a--model:hover .wk__img img { transform: scale(calc(var(--z, 1) * 1.025)); }
+  .wk__a--model:hover .wk__img .wk__alt { opacity: 1; }
+  .wk__a--model:hover .wk__img:has(.wk__alt) picture img { opacity: 0; }
+  .wk__a--model:hover .wk__t { text-decoration: none; }
+  .tile:hover .tile__img--model img { transform: scale(calc(var(--z, 1) * 1.025)); }
+}
+@media (max-width: 767px) {
+  .wk__cap { margin-top: 12px; }
+  .wk__a--model .wk__k { font-size: 9px; letter-spacing: .2em; }
+  .wk__a--model .wk__t { font-size: 21px; }
+  .wk__a--model .wk__s { margin-top: 5px; font-size: 11.5px; }
 }
 
 /* ==========================================================================
@@ -972,7 +999,10 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .lb__frame.is-loading img { opacity: .3; }
 .lb__bar { display: flex; align-items: center; justify-content: space-between; gap: 16px 40px; padding: 18px var(--pad) calc(22px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
 .lb__cap { display: grid; gap: 2px; min-width: 0; }
-.lb__title { font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
+.lb__title { font: 400 clamp(24px, 2vw, 30px)/1.1 var(--serif); letter-spacing: .005em; }   /* антиквой, как названия на карточках */
+.lb__stage.is-studio { background: #EAE8E3; isolation: isolate; }   /* = фон кадра #FAFAF8 × подиум (multiply): рамки фото не видно */
+.lb__stage.is-studio .lb__frame { background: transparent; }
+.lb__stage.is-studio .lb__frame img { mix-blend-mode: multiply; transform: scale(var(--z, 1)); }
 .lb__piece { font: 400 13px/1.5 var(--sans); color: var(--ink-2); }
 .lb__count { margin-top: 2px; font: 400 12px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .1em; font-variant-numeric: tabular-nums; }
 .lb__count:empty { display: none; }

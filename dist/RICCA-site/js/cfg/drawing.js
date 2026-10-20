@@ -46,8 +46,11 @@ const EXT_OVER = 2;      // выход выносной за размерную
 const TICK = 0.9;        // половина засечки 45° (длина ≈ 2,5)
 const PAD = 0.3;         // запас при проверке пересечений
 
-const INK = '#111';
+const INK = '#2A2A2A';                               // графит
+const PAPER = '#F4F3F0';                             // бумага эскиза (тёплый светло-серый)
 const FONT = "Montserrat, 'Helvetica Neue', Arial, sans-serif";
+const HAND = "Caveat, 'Segoe Print', 'Bradley Hand', cursive";   // размеры и подписи «от руки» (fonts/caveat, OFL)
+const HAND_K = 1.32;                                 // Caveat мельче Montserrat: тот же кегль × 1,32 ≈ та же ширина строки
 
 export const fmtLen = (m) => String(Math.round(m * 1000) / 10).replace('.', ',');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -495,19 +498,31 @@ export function layoutSheet(cfg, partsResult, opts = {}) {
   W(`<title>${esc(`Чертёж ${id} — ${title}`)}</title>`);
   W(`<style>${opts.fontCss || ''}
 text{font-family:${FONT};fill:${INK}}
-.o{fill:#fff;stroke:${INK};stroke-width:.3;stroke-linejoin:round}
+.o{fill:${PAPER};stroke:${INK};stroke-width:.32;stroke-linejoin:round;stroke-linecap:round}
+.o2{fill:none;stroke:${INK};stroke-width:.16;stroke-opacity:.45;stroke-linejoin:round;stroke-linecap:round}
+.cl{fill:none;stroke:#8E8E8E;stroke-width:.1;stroke-linecap:round}
 .hd{fill:none;stroke:${INK};stroke-width:.18;stroke-dasharray:1.5 1}
-.dl{fill:none;stroke:${INK};stroke-width:.18}
-.tk{fill:none;stroke:${INK};stroke-width:.35;stroke-linecap:round}
-.fl{fill:none;stroke:${INK};stroke-width:.25}
+.dl{fill:none;stroke:#4A4A4A;stroke-width:.15;stroke-linecap:round}
+.tk{fill:none;stroke:${INK};stroke-width:.3;stroke-linecap:round}
+.fl{fill:none;stroke:${INK};stroke-width:.22;stroke-linecap:round}
+.hand{font-family:${HAND};font-weight:500;fill:#333}
 .dt{fill:none;stroke:${INK};stroke-width:.13}
 .fr{fill:none;stroke:${INK};stroke-width:.5}
 .th{fill:none;stroke:${INK};stroke-width:.25}
 .tl{fill:none;stroke:#BDBDBD;stroke-width:.12}
-.dim{font-size:${FS}px;font-weight:500}
+.dim{font-family:${HAND};font-size:${n2(FS * HAND_K)}px;font-weight:500;fill:#333}
 .cap{font-size:2.05px;font-weight:600;letter-spacing:.32px;fill:#555}
 </style>`);
-  W(`<rect x="0" y="0" width="${SHEET.w}" height="${SHEET.h}" fill="#fff"/>`);
+  /* карандаш: лёгкое дрожание линий (шум) и второй, бледный проход со своим шумом; штриховки — фон эскиза и тень на полу */
+  W(`<defs>
+<filter id="pn" x="-5%" y="-5%" width="110%" height="110%" filterUnits="objectBoundingBox"><feTurbulence type="fractalNoise" baseFrequency=".32" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale=".42" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="pn2" x="-5%" y="-5%" width="110%" height="110%" filterUnits="objectBoundingBox"><feTurbulence type="fractalNoise" baseFrequency=".22" numOctaves="2" seed="11"/><feDisplacementMap in="SourceGraphic" scale=".7" xChannelSelector="G" yChannelSelector="R"/></filter>
+<pattern id="hx" width="1.5" height="1.5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V1.5" stroke="#9A9A9A" stroke-width=".1"/></pattern>
+<pattern id="hxx" width="1.7" height="1.7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V1.7M0 0H1.7" stroke="#B4B4B4" stroke-width=".09"/></pattern>
+<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<mask id="fadeM" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#fade)"/></mask>
+</defs>`);
+  W(`<rect x="0" y="0" width="${SHEET.w}" height="${SHEET.h}" fill="${PAPER}"/>`);
   W(`<rect class="fr" x="${FRAME.x0}" y="${FRAME.y0}" width="${FRAME.x1 - FRAME.x0}" height="${FRAME.y1 - FRAME.y0}"/>`);
 
   const VIEW_TITLE = { front: 'Вид спереди', side: 'Вид слева', top: 'Вид сверху' };
@@ -521,11 +536,19 @@ text{font-family:${FONT};fill:${INK}}
     const vtY = -V.ext.t - 2.2;
     W(`<text class="cap" x="0" y="${n2(vtY)}">${esc(vt)}</text>`);
     labels.push({ view: V.view, id: '_title', text: vt, box: { x0: X, x1: X + textWidth(vt, 2.05, 600, 0.32), y0: Y + vtY - 1.6, y1: Y + vtY + 0.4 } });
-    /* пол */
-    if (V.view !== 'top') W(`<line class="fl" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
+    /* построение: лёгкие линии габарита с выходом за контур, как в эскизе от руки */
+    const CO = 4;
+    W(`<path class="cl" d="M${n2(-CO)} 0H${n2(V.Wv + CO)}M${n2(-CO)} ${n2(V.Hv)}H${n2(V.Wv + CO)}M0 ${n2(-CO)}V${n2(V.Hv + CO)}M${n2(V.Wv)} ${n2(-CO)}V${n2(V.Hv + CO)}"/>`);
+    /* пол и тень штриховкой под изделием */
+    if (V.view !== 'top') {
+      W(`<rect x="${n2(-1.5)}" y="${n2(V.Hv)}" width="${n2(V.Wv + 3)}" height="2.6" fill="url(#hx)" mask="url(#fadeM)"/>`);
+      W(`<line class="fl" filter="url(#pn)" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
+    }
+    W(`<g filter="url(#pn)">`);
     /* детали: дальние → ближние; простёжка изголовья — сразу после него (ближние детали её закрывают) */
     for (const s of V.shapes) {
       W(`<path class="o" d="${s.d}"/>`);
+      W(`<path class="o2" filter="url(#pn2)" d="${s.d}"/>`);
       const it = s.it;
       /* каретная стяжка на сиденье пуфа / банкетки — пуговицы на виде сверху */
       if (V.view === 'top' && it.tufting === 'capitone' && it.role === 'seat') {
@@ -554,6 +577,7 @@ text{font-family:${FONT};fill:${INK}}
         for (let v = v0 + sy * 0.8; v < v1 - sy * 0.5; v += sy, row++) for (let u = u0 + sx * (row % 2 ? 1 : 0.5); u < u1 - sx * 0.4; u += sx) W(`<circle cx="${n2(u)}" cy="${n2(v)}" r=".3" fill="${INK}"/>`);
       }
     }
+    W('</g>');
     /* невидимые (под корпусом) — штрихом: ножки и опоры на виде сверху */
     for (const h of V.hidden) {
       const bb = h.it._bb, sz = Math.min(bb.max[0] - bb.min[0], bb.max[2] - bb.min[2]) * 1000 / den;
@@ -577,7 +601,7 @@ text{font-family:${FONT};fill:${INK}}
     }
     /* размеры */
     for (const p of V.placed) {
-      W(`<path class="dl" d="M${n2(p.dl[0])} ${n2(p.dl[1])}L${n2(p.dl[2])} ${n2(p.dl[3])}${p.ext.map((s) => `M${n2(s[0])} ${n2(s[1])}L${n2(s[2])} ${n2(s[3])}`).join('')}"/>`);
+      W(`<path class="dl" filter="url(#pn)" d="M${n2(p.dl[0])} ${n2(p.dl[1])}L${n2(p.dl[2])} ${n2(p.dl[3])}${p.ext.map((s) => `M${n2(s[0])} ${n2(s[1])}L${n2(s[2])} ${n2(s[3])}`).join('')}"/>`);
       const ticks = p.e.orient === 'h' ? [[p.e.c1, p.line], [p.e.c2, p.line]] : [[p.line, p.e.c1], [p.line, p.e.c2]];
       /* засечки 45°; на очень коротких размерах (< 2,4 мм) — точки, чтобы засечки не слипались */
       if (p.e.c2 - p.e.c1 < 2.4) W(ticks.map(([x, y]) => `<circle cx="${n2(x)}" cy="${n2(y)}" r=".32" fill="${INK}"/>`).join(''));
@@ -628,9 +652,38 @@ text{font-family:${FONT};fill:${INK}}
   /* свободное место под таблицей — отдать 3/4-виду (до 74 мм) */
   if (renderH) renderH = Math.max(renderH, Math.min(74, renderH + (avail() - tH()) - 6));
   if (renderH) {
-    const pad = 2;
-    W(`<image x="${cx0 + pad}" y="${FRAME.y0 + pad}" width="${cw - 2 * pad}" height="${renderH - 2 * pad}" preserveAspectRatio="xMidYMid meet" xlink:href="${opts.render3qDataUrl}" href="${opts.render3qDataUrl}"/>`);
-    W(`<text class="cap" x="${cx0 + 2.5}" y="${FRAME.y0 + renderH - 2}" style="font-size:1.7px">ВИД 3/4 · ДЛЯ НАГЛЯДНОСТИ</text>`);
+    /* эскиз 3/4: штрихованный фон-прямоугольник за изделием (как в эскизе от руки), сам эскиз — карандашом (render() → pencilSketch),
+       размеры в перспективе, подпись от руки со стрелкой */
+    const pad = 2, ax = cx0 + pad, ay = FRAME.y0 + pad, aw = cw - 2 * pad, ah = renderH - 2 * pad - 3;
+    const sk = opts.sketch;
+    const k = sk ? Math.min(aw / sk.w, ah / sk.h) : 1, ox = sk ? ax + (aw - sk.w * k) / 2 : ax, oy = sk ? ay + (ah - sk.h * k) / 2 : ay;
+    const M = (q) => [ox + q[0] * k, oy + q[1] * k];
+    let bx0 = cx0 + 7, bx1 = cx1 - 9, by0 = ay + ah * 0.12, by1 = ay + ah * 0.66;
+    if (sk) {
+      const [o0, o1] = [M([sk.obj[0], sk.obj[1]]), M([sk.obj[2], sk.obj[3]])], ow = o1[0] - o0[0], oh = o1[1] - o0[1];
+      bx0 = Math.max(cx0 + 3, o0[0] - ow * 0.05); bx1 = Math.min(cx1 - 3, o1[0] + ow * 0.03); by0 = Math.max(ay + 1, o0[1] - oh * 0.12); by1 = o0[1] + oh * 0.55;
+    }
+    W(`<rect x="${n2(bx0)}" y="${n2(by0)}" width="${n2(bx1 - bx0)}" height="${n2(by1 - by0)}" fill="url(#hxx)"/>`);
+    W(`<path class="cl" filter="url(#pn)" d="M${n2(bx0 - 3)} ${n2(by0)}H${n2(bx1 + 2)}M${n2(bx0)} ${n2(by0 - 2.5)}V${n2(by1 + 3)}M${n2(bx1)} ${n2(by0 - 3)}V${n2(by1 + 2)}M${n2(bx0 - 2)} ${n2(by1)}H${n2(bx1 + 3)}"/>`);
+    W(`<image x="${n2(ax)}" y="${n2(ay)}" width="${n2(aw)}" height="${n2(ah)}" preserveAspectRatio="xMidYMid meet" xlink:href="${opts.render3qDataUrl}" href="${opts.render3qDataUrl}"/>`);
+    if (sk) for (const d of sk.dims) {
+      const a = M(d.a), b = M(d.b), ea = M(d.ea), eb = M(d.eb), n = d.n, o = 1.1;
+      const ang = Math.atan2(eb[1] - ea[1], eb[0] - ea[0]), ux = Math.cos(ang), uy = Math.sin(ang);
+      const tick = (q) => `M${n2(q[0] - (ux - uy) * 0.7)} ${n2(q[1] - (uy + ux) * 0.7)}L${n2(q[0] + (ux - uy) * 0.7)} ${n2(q[1] + (uy + ux) * 0.7)}`;
+      /* выносные — с зазором от изделия (как в черчении): от 40 % выноса до чуть дальше размерной */
+      const ga = [a[0] + (ea[0] - a[0]) * 0.4, a[1] + (ea[1] - a[1]) * 0.4], gb = [b[0] + (eb[0] - b[0]) * 0.4, b[1] + (eb[1] - b[1]) * 0.4];
+      W(`<path class="dl" filter="url(#pn)" d="M${n2(ga[0])} ${n2(ga[1])}L${n2(ea[0] + n[0] * o)} ${n2(ea[1] + n[1] * o)}M${n2(gb[0])} ${n2(gb[1])}L${n2(eb[0] + n[0] * o)} ${n2(eb[1] + n[1] * o)}M${n2(ea[0] - ux * 1.2)} ${n2(ea[1] - uy * 1.2)}L${n2(eb[0] + ux * 1.2)} ${n2(eb[1] + uy * 1.2)}"/>`);
+      W(`<path class="tk" d="${tick(ea)}${tick(eb)}"/>`);
+      let deg = (ang * 180) / Math.PI; if (deg > 60) deg -= 180; if (deg <= -120) deg += 180;   // вертикаль — снизу вверх, как в черчении
+      const t = [(ea[0] + eb[0]) / 2 + n[0] * 1.9, (ea[1] + eb[1]) / 2 + n[1] * 1.9];
+      W(`<text class="hand" text-anchor="middle" dominant-baseline="middle" transform="translate(${n2(t[0])} ${n2(t[1])}) rotate(${n2(deg)})" style="font-size:3px">${esc(d.text)}</text>`);
+    }
+    /* подпись от руки: название и стрелка к изделию — слева вверху */
+    const hn = title, hfs = 3.1, hx = cx0 + 4, hy = ay + 5;
+    W(`<text class="hand" x="${n2(hx)}" y="${n2(hy)}" style="font-size:${hfs}px">${esc(hn)}</text>`);
+    const hw = Math.min(textWidth(hn, hfs, 400) * 0.62, cw * 0.6), sx0 = hx + hw + 1.5, sy0 = hy - 1;
+    W(`<path class="dl" filter="url(#pn)" style="stroke-width:.2" d="M${n2(sx0)} ${n2(sy0)}Q${n2(sx0 + 7)} ${n2(sy0 - 0.5)} ${n2(sx0 + 10)} ${n2(sy0 + 5)}l-1.5 -.6M${n2(sx0 + 10)} ${n2(sy0 + 5)}l.5 -1.5"/>`);
+    W(`<text class="cap" x="${cx1 - 2.5}" y="${FRAME.y0 + renderH - 2}" text-anchor="end" style="font-size:1.7px">ЭСКИЗ · ВИД 3/4</text>`);
     W(`<line class="th" x1="${cx0}" y1="${FRAME.y0 + renderH}" x2="${cx1}" y2="${FRAME.y0 + renderH}"/>`);
   }
   y = FRAME.y0 + renderH;
@@ -726,6 +779,15 @@ async function fontCss() {
       parts.push(`@font-face{font-family:Montserrat;font-style:normal;font-weight:100 900;src:url(${url}) format('woff2');unicode-range:${range}}`);
     } catch (e) { /* системный шрифт */ }
   }
+  /* Caveat — размеры и подписи «от руки» (пути полностью: сборка копирует шрифты по ссылкам в коде) */
+  for (const [f, range] of [['../../fonts/caveat/caveat-cyrillic-500-normal.woff2', 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116'], ['../../fonts/caveat/caveat-latin-500-normal.woff2', 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+2215,U+FEFF,U+FFFD']]) {
+    try {
+      const r = await fetch(new URL(f, import.meta.url));
+      if (!r.ok) continue;
+      const url = await toDataUrl(new Blob([await r.arrayBuffer()], { type: 'font/woff2' }));
+      parts.push(`@font-face{font-family:Caveat;font-style:normal;font-weight:400 700;src:url(${url}) format('woff2');unicode-range:${range}}`);
+    } catch (e) { /* запасной рукописный шрифт системы */ }
+  }
   fontCssCache = parts.join('\n');
   return fontCssCache;
 }
@@ -745,21 +807,126 @@ async function imageToJpegDataUrl(src, maxW, maxH, quality = 0.9, cover = false)
   return c.toDataURL('image/jpeg', quality);
 }
 
+/* Эскиз карандашом из 3D-снимка (фон — пурпурный ключ #FF00FF, его нет у тканей): контур по силуэту, линии по перепадам
+   яркости, штриховка по тени (тон считается внутри изделия — светлая и тёмная ткань выглядят одинаково «нарисованными»),
+   тень на полу — лёгкая штриховка. Внутри изделия — бумага (закрывает штриховку фона листа), снаружи — прозрачно. */
+export const PENCIL_KEY = '#FF00FF';
+function pencilSketch(src) {
+  const W = src.width, H = src.height, N = W * H;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(src, 0, 0);
+  const img = g.getImageData(0, 0, W, H), px = img.data;
+  const L = new Float32Array(N), M = new Float32Array(N), SH = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    const r = px[i * 4], gg = px[i * 4 + 1], b = px[i * 4 + 2];
+    const bg = r - gg > 45 && b - gg > 45 && Math.abs(r - b) < 70;
+    M[i] = bg ? 0 : 1;
+    L[i] = bg ? 1 : (0.2126 * r + 0.7152 * gg + 0.0722 * b) / 255;
+    SH[i] = bg ? (r + b) / 510 : 1;
+  }
+  const blur = (a, rad) => {                                   // два прохода «коробкой» — почти гаусс
+    let t = new Float32Array(N), o = new Float32Array(a);
+    for (let pass = 0; pass < 2; pass++) {
+      for (let y = 0; y < H; y++) { let acc = 0, n = 0; for (let x = -rad; x < W + rad; x++) { if (x + rad < W) { acc += o[y * W + x + rad]; n++; } if (x - rad - 1 >= 0) { acc -= o[y * W + x - rad - 1]; n--; } if (x >= 0 && x < W) t[y * W + x] = acc / n; } }
+      for (let x = 0; x < W; x++) { let acc = 0, n = 0; for (let y = -rad; y < H + rad; y++) { if (y + rad < H) { acc += t[(y + rad) * W + x]; n++; } if (y - rad - 1 >= 0) { acc -= t[(y - rad - 1) * W + x]; n--; } if (y >= 0 && y < H) o[y * W + x] = acc / n; } }
+    }
+    return o;
+  };
+  const sm = (x, a, b) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+  const Lb = blur(L, 1), Mb = blur(M, 1);
+  /* тон внутри изделия: 3-й и 97-й процентили яркости */
+  const hist = new Uint32Array(256); let cnt = 0;
+  for (let i = 0; i < N; i++) if (M[i]) { hist[Math.min(255, (L[i] * 255) | 0)]++; cnt++; }
+  const pct = (q) => { let acc = 0; for (let k = 0; k < 256; k++) { acc += hist[k]; if (acc >= q * cnt) return k / 255; } return 1; };
+  const lo = pct(0.03), hi = Math.max(pct(0.97), lo + 0.05);
+  let shRef = 0; for (let i = 0; i < N; i++) if (!M[i] && SH[i] > shRef) shRef = SH[i];
+  const out = g.createImageData(W, H), o = out.data;
+  const PR = 244, PG = 243, PB = 240, GR = 43;
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const WX = new Float32Array(W), WY = new Float32Array(H);              // «дрожание» штриха: заранее по строкам и столбцам
+  for (let x = 0; x < W; x++) WX[x] = 0.8 * Math.sin(x / 31);
+  for (let y = 0; y < H; y++) WY[y] = 1.2 * Math.sin(y / 23);
+  const R2 = Math.SQRT1_2;
+  const hatch = (x, y, dir, sp, w) => {                       // dir: 1 — 45°, -1 — −45°, 0 — горизонталь
+    const u = (dir === 0 ? y : (x + dir * y) * R2) + WX[x] + WY[y];
+    const d = Math.abs(((u / sp) % 1 + 1) % 1 - 0.5) * sp; return sm(w - d, 0, 0.9);
+  };
+  const k = Math.max(1, W / 1200);                             // шаг штриховки — от размера кадра
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x;
+    const gx = x > 0 && x < W - 1 ? Lb[i + 1] - Lb[i - 1] : 0, gy = y > 0 && y < H - 1 ? Lb[i + W] - Lb[i - W] : 0;
+    const line = sm(Math.hypot(gx, gy), 0.012, 0.06) * 0.85;
+    const sil = sm(1 - Math.abs(Mb[i] - 0.5) * 2, 0.2, 0.7);
+    let ink;
+    if (M[i]) {
+      const tone = Math.min(1, Math.max(0, (hi - L[i]) / (hi - lo)));
+      const h = (tone > 0.3 ? hatch(x, y, 1, 7 * k, 0.9 * k) * sm(tone, 0.3, 0.55) * 0.55 : 0) + (tone > 0.6 ? hatch(x, y, -1, 7 * k, 0.8 * k) * sm(tone, 0.6, 0.85) * 0.45 : 0) + (tone > 0.85 ? hatch(x, y, 0, 5 * k, 0.7 * k) * sm(tone, 0.85, 1) * 0.35 : 0);
+      const dark = sm(0.3 - L[i], 0, 0.15) * 0.85;           // ножки, чёрный металл
+      ink = Math.max(line, sil, h, dark) * (0.75 + 0.25 * rnd());
+      const a = Math.max(Mb[i], ink);
+      o[i * 4] = PR * (1 - ink) + GR * ink; o[i * 4 + 1] = PG * (1 - ink) + GR * ink; o[i * 4 + 2] = PB * (1 - ink) + GR * ink; o[i * 4 + 3] = 255 * Math.min(1, a + sil);
+    } else {
+      const shade = sm(1 - SH[i] / (shRef || 1), 0.08, 0.45);  // тень на полу
+      ink = Math.max(sil, shade > 0 ? hatch(x, y, 1, 6 * k, 0.7 * k) * shade * 0.45 : 0) * (0.75 + 0.25 * rnd());
+      o[i * 4] = GR; o[i * 4 + 1] = GR; o[i * 4 + 2] = GR; o[i * 4 + 3] = 255 * ink;
+    }
+  }
+  g.putImageData(out, 0, 0);
+  /* рамка изделия (с тенью) на снимке — для кадрирования и фона-штриховки */
+  let x0 = W, y0 = H, x1 = 0, y1 = 0;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (M[y * W + x]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  return { canvas: c, box: x1 > x0 ? [x0, y0, x1, y1] : [0, 0, W, H] };
+}
+
+/* размеры на эскизе: рёбра габарита в перспективе (ширина — по фронту внизу, глубина — по видимому боку, высота — у дальнего
+   переднего угла), вынесены наружу от центра изделия; P — точки снимка (stage.snapshot project) */
+function sketchDims(P, cam, box, bb) {
+  const [c0, c1, c2, c3, c4, c5, c6, c7, cc] = P;          // см. порядок в render()
+  const leftVisible = cam[0] < (box.min.x + box.max.x) / 2;
+  const off = (a, b, d) => {                               // сдвиг отрезка наружу (от центра изделия) на d пикселей
+    const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; let nx = -(b[1] - a[1]), ny = b[0] - a[0];
+    const l = Math.hypot(nx, ny) || 1; nx /= l; ny /= l;
+    if (nx * (mx - cc[0]) + ny * (my - cc[1]) < 0) { nx = -nx; ny = -ny; }
+    return { a, b, ea: [a[0] + nx * d, a[1] + ny * d], eb: [b[0] + nx * d, b[1] + ny * d], n: [nx, ny] };
+  };
+  const D = Math.hypot(c1[0] - c0[0], c1[1] - c0[1]) * 0.075 + 14;
+  const out = [];
+  out.push({ ...off(c0, c1, D), text: fmtLen(bb.w) });                                                  // ширина: фронт, низ
+  out.push({ ...(leftVisible ? off(c2, c0, D) : off(c1, c3, D)), text: fmtLen(bb.d) });                 // глубина: видимый бок
+  out.push({ ...(leftVisible ? off(c1, c5, D * 0.8) : off(c0, c4, D * 0.8)), text: fmtLen(bb.h) });     // высота: передний угол с другой стороны
+  return out;
+}
+
 export async function render(cfg, { stage = null, render3q = null } = {}) {
   const type = cfg.type;
   const params = normalize(type, cfg.params || {});
   const pr = partsOf(type, params);
-  let render3qDataUrl = null, swatchDataUrl = null;
+  let render3qDataUrl = null, swatchDataUrl = null, sketch = null;
   try {
     if (render3q) render3qDataUrl = typeof render3q === 'string' && render3q.startsWith('data:') ? render3q : await imageToJpegDataUrl(render3q, 1200, 850, 0.9);
     else if (stage && stage.snapshot) {
-      const blob = await stage.snapshot({ width: 1200, height: 850, view: '3q', watermark: false, background: '#FFFFFF' });
-      if (blob) render3qDataUrl = await imageToJpegDataUrl(blob, 1200, 850, 0.9);
+      const b = stage.box, a = b.min, z = b.max;
+      const pts = [[a.x, a.y, z.z], [z.x, a.y, z.z], [a.x, a.y, a.z], [z.x, a.y, a.z], [a.x, z.y, z.z], [z.x, z.y, z.z], [a.x, z.y, a.z], [z.x, z.y, a.z], [(a.x + z.x) / 2, (a.y + z.y) / 2, (a.z + z.z) / 2]];
+      const shot = await stage.snapshot({ width: 1400, height: 1000, view: '3q', watermark: false, background: PENCIL_KEY, project: pts });
+      if (shot && shot.blob) {
+        const pen = pencilSketch(await createImageBitmap(shot.blob));
+        const dims = sketchDims(shot.points, shot.camera, b, pr.bbox);
+        /* кадр: изделие + вынесенные размеры (+ место под цифры), поля 3 % */
+        let [x0, y0, x1, y1] = pen.box;
+        for (const d of dims) for (const q of [d.ea, d.eb]) { x0 = Math.min(x0, q[0] - 30); x1 = Math.max(x1, q[0] + 30); y0 = Math.min(y0, q[1] - 30); y1 = Math.max(y1, q[1] + 30); }
+        const W0 = pen.canvas.width, H0 = pen.canvas.height, m = 0.03 * W0;
+        x0 = Math.max(0, Math.floor(x0 - m)); y0 = Math.max(0, Math.floor(y0 - m)); x1 = Math.min(W0, Math.ceil(x1 + m)); y1 = Math.min(H0, Math.ceil(y1 + m));
+        const cw = x1 - x0, ch = y1 - y0, cc = document.createElement('canvas'); cc.width = cw; cc.height = ch;
+        cc.getContext('2d').drawImage(pen.canvas, x0, y0, cw, ch, 0, 0, cw, ch);
+        const sh = (q) => [q[0] - x0, q[1] - y0];
+        sketch = { w: cw, h: ch, obj: [pen.box[0] - x0, pen.box[1] - y0, pen.box[2] - x0, pen.box[3] - y0], dims: dims.map((d) => ({ a: sh(d.a), b: sh(d.b), ea: sh(d.ea), eb: sh(d.eb), n: d.n, text: d.text })) };
+        render3qDataUrl = cc.toDataURL('image/png');
+      }
     }
-  } catch (e) { render3qDataUrl = null; }
+  } catch (e) { console.warn('sketch', e); render3qDataUrl = null; sketch = null; }
   try { if (cfg.fabric && cfg.fabric.src450) swatchDataUrl = await imageToJpegDataUrl(cfg.fabric.src450, 120, 120, 0.88, true); } catch (e) { swatchDataUrl = null; }
   const css = await fontCss();
-  const res = layoutSheet({ ...cfg, params }, pr, { render3qDataUrl, swatchDataUrl, fontCss: css });
+  const res = layoutSheet({ ...cfg, params }, pr, { render3qDataUrl, swatchDataUrl, sketch, fontCss: css });
   const svg = res.svg;
   async function toPNG(width = 3508) {
     const height = Math.round((width * SHEET.h) / SHEET.w);

@@ -15,6 +15,14 @@ def js_to_json(t):
     t = re.sub(r'/\*.*?\*/', '', t, flags=re.S); t = re.sub(r'//[^\n]*', '', t)
     t = re.sub(r'([{,]\s*)([A-Za-z_]\w*)\s*:', r'\1"\2":', t); t = re.sub(r"'((?:[^'\\]|\\.)*)'", lambda m: json.dumps(m.group(1)), t)
     t = re.sub(r',(\s*[}\]])', r'\1', t); return json.loads(t)
+def box_of(f):
+    """[ширина, высота] изделия долей кадра: всё, что отличается от цвета углов (фона) больше чем на 25."""
+    import numpy as np
+    a = np.asarray(Image.open(f).convert('RGB')).astype(int)
+    bg = np.median(np.concatenate([a[:8, :8].reshape(-1, 3), a[:8, -8:].reshape(-1, 3), a[-8:, :8].reshape(-1, 3), a[-8:, -8:].reshape(-1, 3)]), 0)
+    ys, xs = np.where(np.abs(a - bg).max(2) > 25)
+    if not len(xs): return [1, 1]
+    return [round((xs.max() - xs.min() + 1) / a.shape[1], 3), round((ys.max() - ys.min() + 1) / a.shape[0], 3)]
 cat = js_to_json(block('RICCA_CATALOG')); names = js_to_json(block('RICCA_MODEL_NAMES'))
 CFG = {'sofas': 'sofa', 'beds': 'bed', 'armchairs': 'armchair'}
 out = []
@@ -26,7 +34,9 @@ for it in cat:
         f = os.path.join(ROOT, p['src']); f6 = os.path.join(ROOT, p.get('src600', p['src']))
         if not os.path.exists(f): continue
         w, h = Image.open(f).size; w6, h6 = Image.open(f6).size if os.path.exists(f6) else (w, h)
-        photos.append({'src': p['src'], 'src800': p.get('src600', p['src']), 'w': w, 'h': h, 'w800': w6, 'h800': h6, 'studio': bool(p.get('studio'))})
+        ph_ = {'src': p['src'], 'src800': p.get('src600', p['src']), 'w': w, 'h': h, 'w800': w6, 'h800': h6, 'studio': bool(p.get('studio'))}
+        if ph_['studio']: ph_['box'] = box_of(f)   # доля изделия в кадре — карточка подгоняет масштаб (js/site.js fitZoom)
+        photos.append(ph_)
     if not photos: continue
     cfg = it.get('cfg') or ('corner' if 'corner' in it.get('tags', []) and it['category'] == 'sofas' else CFG[it['category']])   # cfg модели — готовый рецепт для 3D
     name = names.get(it['id'], '')
