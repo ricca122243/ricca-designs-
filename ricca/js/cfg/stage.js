@@ -468,7 +468,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   function setStudio(on) { studioOn = !!on; studio.visible = studioOn; if (studioOn) scene.background = bgDirect; requestRender(); }
 
   /* ---------- снимок ---------- */
-  async function snapshot({ width = 2400, height = 1600, view: sv = '3q', watermark = true, background = BG } = {}) {
+  async function snapshot({ width = 2400, height = 1600, view: sv = '3q', watermark = true, background = BG, project = null } = {}) {
     const prevSize = renderer.getSize(new THREE.Vector2()), prevPR = renderer.getPixelRatio();
     const maxTex = renderer.capabilities.maxTextureSize || 4096;
     const ss = Math.min(2, Math.floor(maxTex / Math.max(width, height) * 10) / 10) || 1;
@@ -515,6 +515,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       applySeamLOD(camera, H);
       requestRender();
     }
+    /* project: точки мира → пиксели снимка (размеры на эскизе чертежа, js/cfg/drawing.js); тогда ответ — { blob, points } */
+    const points = project ? project.map((p) => { const v = new THREE.Vector3(p[0], p[1], p[2]).project(cam); return [(v.x + 1) / 2 * width, (1 - v.y) / 2 * height]; }) : null;
     if (watermark) {
       const fs = Math.round(height * 0.02);
       g.font = `500 ${fs}px Montserrat, 'Helvetica Neue', Arial, sans-serif`;
@@ -522,7 +524,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       g.fillStyle = 'rgba(17,17,17,0.72)'; g.textBaseline = 'alphabetic';
       g.fillText('RICCA DESIGNS', Math.round(height * 0.04), Math.round(height - height * 0.04));
     }
-    return new Promise((res) => out.toBlob((b) => res(b), 'image/png'));
+    return new Promise((res) => out.toBlob((b) => res(points ? { blob: b, points, camera: cam.position.toArray() } : b), 'image/png'));
   }
 
   const offMat = onMaterialUpdate(() => requestRender());

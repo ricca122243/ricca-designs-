@@ -207,7 +207,7 @@
     'спинка': 'back', 'сид.': 'seat', 'подл.': 'arm', 'царга': 'rail', 'матрас': 'mattress', 'изг.': 'hb', 'ушки': 'wings', 'бок.': 'side',
     'угол': 'corner', 'проём': 'opening', 'шезл.': 'chaise', 'Примечания:': 'Notes:', 'Чертёж ': 'Drawing ',
     'Вид спереди': 'Front view', 'Вид слева': 'Left view', 'Вид сверху': 'Top view', 'М 1:': 'Scale 1:',
-    'ВИД 3/4 · ДЛЯ НАГЛЯДНОСТИ': '3/4 VIEW · FOR ILLUSTRATION', 'СПЕЦИФИКАЦИЯ': 'SPECIFICATION', 'для наглядности': 'for illustration', 'Спецификация': 'Specification', 'Схема для согласования. Размеры в см': 'Drawing for approval. Dimensions in cm',
+    'ВИД 3/4 · ДЛЯ НАГЛЯДНОСТИ': '3/4 VIEW · FOR ILLUSTRATION', 'ЭСКИЗ · ВИД 3/4': 'SKETCH · 3/4 VIEW', 'СПЕЦИФИКАЦИЯ': 'SPECIFICATION', 'для наглядности': 'for illustration', 'Спецификация': 'Specification', 'Схема для согласования. Размеры в см': 'Drawing for approval. Dimensions in cm',
     'Дата': 'Date', 'Масштаб': 'Scale', 'Лист': 'Sheet', 'RICCA DESIGNS — ателье мягкой мебели, Алматы': 'RICCA DESIGNS — upholstered furniture atelier, Almaty',
     'ул. Алишера Навои, 208/2 · шоурум': '208/2 Alisher Navoi St. · showroom', 'WhatsApp · номер схемы ': 'WhatsApp · please quote drawing No. ',
     ' указывайте в переписке': ' in your messages', ' · размеры в сантиметрах': ' · dimensions in centimetres',
