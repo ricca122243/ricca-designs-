@@ -674,6 +674,13 @@ text{font-family:${FONT};fill:${INK}}
     }
     W(`<rect x="${n2(bx0)}" y="${n2(by0)}" width="${n2(bx1 - bx0)}" height="${n2(by1 - by0)}" fill="url(#hxx)"/>`);
     W(`<path class="cl" filter="url(#pn)" d="M${n2(bx0 - 3)} ${n2(by0)}H${n2(bx1 + 2)}M${n2(bx0)} ${n2(by0 - 2.5)}V${n2(by1 + 3)}M${n2(bx1)} ${n2(by0 - 3)}V${n2(by1 + 2)}M${n2(bx0 - 2)} ${n2(by1)}H${n2(bx1 + 3)}"/>`);
+    /* линии построения: рёбра габаритного «ящика» в перспективе с выходом за углы — как в эскизе от руки (за рисунком) */
+    if (sk && sk.box8) {
+      const P8 = sk.box8.map(M), E = [[0, 1], [1, 3], [3, 2], [2, 0], [0, 4], [1, 5], [2, 6], [3, 7], [4, 5], [5, 7], [7, 6], [6, 4]];
+      const ext = (p, q, f) => [p[0] + (p[0] - q[0]) * f, p[1] + (p[1] - q[1]) * f];
+      W(`<clipPath id="rc"><rect x="${n2(cx0 + 1)}" y="${n2(FRAME.y0 + 1)}" width="${n2(cw - 2)}" height="${n2(renderH - 2)}"/></clipPath>`);
+      W(`<path class="cl" clip-path="url(#rc)" filter="url(#pn)" style="stroke:#A3A3A3;stroke-width:.09" d="${E.map(([i, j]) => { const a = ext(P8[i], P8[j], 0.14), b = ext(P8[j], P8[i], 0.14); return `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`; }).join('')}"/>`);
+    }
     W(`<image x="${n2(ax)}" y="${n2(ay)}" width="${n2(aw)}" height="${n2(ah)}" preserveAspectRatio="xMidYMid meet" xlink:href="${opts.render3qDataUrl}" href="${opts.render3qDataUrl}"/>`);
     if (sk) for (const d of sk.dims) {
       const a = M(d.a), b = M(d.b), ea = M(d.ea), eb = M(d.eb), n = d.n, o = 1.1;
@@ -842,43 +849,55 @@ function pencilSketch(src, { outline = 1 } = {}) {
     return o;
   };
   const sm = (x, a, b) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  /* текстура карандашного штриха: шум, размазанный вдоль направления (плитка 256 × 256, повторяется), нормирован */
+  const T = 256;
+  const streak = (deg, len) => {
+    const n = new Float32Array(T * T); for (let i = 0; i < T * T; i++) n[i] = rnd();
+    const a = (deg * Math.PI) / 180, dx = Math.cos(a), dy = -Math.sin(a), out = new Float32Array(T * T);
+    let sum = 0, sq = 0;
+    for (let y = 0; y < T; y++) for (let x = 0; x < T; x++) {
+      let acc = 0; for (let k = -len; k <= len; k++) acc += n[(((y + Math.round(k * dy)) % T + T) % T) * T + (((x + Math.round(k * dx)) % T + T) % T)];
+      const v = acc / (2 * len + 1); out[y * T + x] = v; sum += v; sq += v * v;
+    }
+    const mu = sum / (T * T), sd = Math.sqrt(sq / (T * T) - mu * mu) || 1;
+    for (let i = 0; i < T * T; i++) out[i] = (out[i] - mu) / sd;
+    return out;
+  };
+  const S1 = streak(35, 14), S2 = streak(125, 12), GR = new Float32Array(T * T);
+  for (let i = 0; i < T * T; i++) GR[i] = rnd() * 2 - 1;
   const Lb = blur(L, 1), Mb = blur(M, Math.max(1, Math.round(outline)));
-  /* тон внутри изделия: 3-й и 97-й процентили яркости */
+  /* тон изделия: относительный (тень и свет внутри предмета) + немного абсолютного (тёмная ткань темнее светлой) */
   const hist = new Uint32Array(256); let cnt = 0;
   for (let i = 0; i < N; i++) if (M[i]) { hist[Math.min(255, (L[i] * 255) | 0)]++; cnt++; }
   const pct = (q) => { let acc = 0; for (let k = 0; k < 256; k++) { acc += hist[k]; if (acc >= q * cnt) return k / 255; } return 1; };
-  const lo = pct(0.03), hi = Math.max(pct(0.97), lo + 0.05);
+  const lo = pct(0.02), hi = Math.max(pct(0.99), lo + 0.05);
   let shRef = 0; for (let i = 0; i < N; i++) if (!M[i] && SH[i] > shRef) shRef = SH[i];
   const out = g.createImageData(W, H), o = out.data;
-  const PR = 244, PG = 243, PB = 240, GR = 43;
-  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  const WX = new Float32Array(W), WY = new Float32Array(H);              // «дрожание» штриха: заранее по строкам и столбцам
-  for (let x = 0; x < W; x++) WX[x] = 0.8 * Math.sin(x / 31);
-  for (let y = 0; y < H; y++) WY[y] = 1.2 * Math.sin(y / 23);
-  const R2 = Math.SQRT1_2;
-  const hatch = (x, y, dir, sp, w) => {                       // dir: 1 — 45°, -1 — −45°, 0 — горизонталь
-    const u = (dir === 0 ? y : (x + dir * y) * R2) + WX[x] + WY[y];
-    const d = Math.abs(((u / sp) % 1 + 1) % 1 - 0.5) * sp; return sm(w - d, 0, 0.9);
-  };
-  const k = Math.max(1, W / 1200);                             // шаг штриховки — от размера кадра
+  const PR = 244, PG = 243, PB = 240, GR0 = 38;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const i = y * W + x;
+    const i = y * W + x, ti = (y % T) * T + (x % T), s1 = S1[ti], s2 = S2[ti], gr = GR[ti];
     const gx = x > 0 && x < W - 1 ? Lb[i + 1] - Lb[i - 1] : 0, gy = y > 0 && y < H - 1 ? Lb[i + W] - Lb[i - W] : 0;
-    const line = sm(Math.hypot(gx, gy), 0.012, 0.06) * 0.85;
-    const sil = sm(1 - Math.abs(Mb[i] - 0.5) * 2, 0.2, 0.7);
-    let ink;
+    /* контур: силуэт (с «живой» силой нажима) и второй, смещённый бледный проход; внутренние линии — по перепадам яркости */
+    const sil = sm(1 - Math.abs(Mb[i] - 0.5) * 2, 0.18, 0.62) * (0.78 + 0.22 * Math.max(-1, Math.min(1, s1)));
+    const j2 = Math.min(N - 1, i + W + 1), sil2 = sm(1 - Math.abs(Mb[j2] - 0.5) * 2, 0.3, 0.7) * 0.32;
+    const edge = sm(Math.hypot(gx, gy), 0.02, 0.1) * 0.8;
+    let ink, a;
     if (M[i]) {
-      const tone = Math.min(1, Math.max(0, (hi - L[i]) / (hi - lo)));
-      const h = (tone > 0.3 ? hatch(x, y, 1, 7 * k, 0.9 * k) * sm(tone, 0.3, 0.55) * 0.55 : 0) + (tone > 0.6 ? hatch(x, y, -1, 7 * k, 0.8 * k) * sm(tone, 0.6, 0.85) * 0.45 : 0) + (tone > 0.85 ? hatch(x, y, 0, 5 * k, 0.7 * k) * sm(tone, 0.85, 1) * 0.35 : 0);
-      const dark = sm(0.3 - L[i], 0, 0.15) * 0.85;           // ножки, чёрный металл
-      ink = Math.max(line, sil, h, dark) * (0.75 + 0.25 * rnd());
-      const a = Math.max(Mb[i], ink);
-      o[i * 4] = PR * (1 - ink) + GR * ink; o[i * 4 + 1] = PG * (1 - ink) + GR * ink; o[i * 4 + 2] = PB * (1 - ink) + GR * ink; o[i * 4 + 3] = 255 * Math.min(1, a + sil);
+      const rel = Math.min(1, Math.max(0, (hi - L[i]) / (hi - lo))), absd = Math.min(1, Math.max(0, (0.95 - L[i]) / 0.75));
+      const t = Math.min(1, 0.65 * rel + 0.35 * absd);
+      let shade = Math.pow(t, 1.1) * 0.62;
+      shade = shade * (1 + 0.45 * s1 * sm(t, 0.05, 0.4)) + 0.18 * Math.max(0, s2) * sm(t, 0.45, 0.8);   // штрих 35°, в тени — перекрёстный
+      shade += 0.03 * gr;
+      ink = Math.max(shade, edge, sil, sil2);
+      a = 255 * Math.min(1, Math.max(Mb[i], ink) + sil);
     } else {
-      const shade = sm(1 - SH[i] / (shRef || 1), 0.08, 0.45);  // тень на полу
-      ink = Math.max(sil, shade > 0 ? hatch(x, y, 1, 6 * k, 0.7 * k) * shade * 0.45 : 0) * (0.75 + 0.25 * rnd());
-      o[i * 4] = GR; o[i * 4 + 1] = GR; o[i * 4 + 2] = GR; o[i * 4 + 3] = 255 * ink;
+      const sh = sm(1 - SH[i] / (shRef || 1), 0.06, 0.45);     // тень на полу — штрихом, гуще у изделия
+      ink = Math.max(sil, sil2, sh * (0.32 + 0.3 * Math.max(0, s1) + 0.18 * Math.max(0, s2)));
+      a = 255 * Math.min(1, ink);
     }
+    ink = Math.min(1, Math.max(0, ink * (0.93 + 0.07 * gr)));
+    o[i * 4] = M[i] ? PR * (1 - ink) + GR0 * ink : GR0; o[i * 4 + 1] = M[i] ? PG * (1 - ink) + GR0 * ink : GR0; o[i * 4 + 2] = M[i] ? PB * (1 - ink) + GR0 * ink : GR0; o[i * 4 + 3] = a;
   }
   g.putImageData(out, 0, 0);
   /* рамка изделия (с тенью) на снимке — для кадрирования и фона-штриховки */
@@ -928,7 +947,7 @@ export async function render(cfg, { stage = null, render3q = null } = {}) {
         const cw = x1 - x0, ch = y1 - y0, cc = document.createElement('canvas'); cc.width = cw; cc.height = ch;
         cc.getContext('2d').drawImage(pen.canvas, x0, y0, cw, ch, 0, 0, cw, ch);
         const sh = (q) => [q[0] - x0, q[1] - y0];
-        sketch = { w: cw, h: ch, obj: [pen.box[0] - x0, pen.box[1] - y0, pen.box[2] - x0, pen.box[3] - y0], dims: dims.map((d) => ({ a: sh(d.a), b: sh(d.b), ea: sh(d.ea), eb: sh(d.eb), n: d.n, text: d.text })) };
+        sketch = { w: cw, h: ch, obj: [pen.box[0] - x0, pen.box[1] - y0, pen.box[2] - x0, pen.box[3] - y0], box8: shot.points.slice(0, 8).map(sh), dims: dims.map((d) => ({ a: sh(d.a), b: sh(d.b), ea: sh(d.ea), eb: sh(d.eb), n: d.n, text: d.text })) };
         render3qDataUrl = cc.toDataURL('image/png');
       }
     }
