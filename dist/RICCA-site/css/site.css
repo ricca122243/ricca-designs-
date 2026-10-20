@@ -265,7 +265,7 @@ body { counter-reset: sec 1; }
   background: transparent; border: 1px solid var(--line); color: var(--ink); text-decoration: none; transition: border-color 600ms var(--ease); }
 .news:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .news__sky { position: relative; align-self: stretch; min-height: var(--sky, 128px); background: #070707; overflow: hidden; }
-.news__sky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }   /* угол матраса ELUNA в разрезе (img/eluna/mattress-sq, ≥ 600 px — mattress-wide; без надписей) — угол целиком по центру квадрата */
+.news__sky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; }
 .news__txt { display: grid; justify-items: start; gap: 6px; padding: 16px 24px; min-width: 0; }
 .news__eye { font: 500 10px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
 .news__line { font: 400 13px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .01em; text-wrap: balance; }
@@ -306,12 +306,10 @@ body { counter-reset: sec 1; }
 .tiles { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 72px 40px; }
 .tiles > li { grid-column: span 6; }
 .tiles > li:nth-child(-n+3) { grid-column: span 4; }
-@media (min-width: 1100px) { .tiles > li:nth-child(n+4) .tile__img { aspect-ratio: 2 / 1; } }
+@media (min-width: 1100px) { .tiles > li:nth-child(n+4) .tile__img { aspect-ratio: 2 / 1; } .tiles__eluna .tile__img img { object-position: 0 50%; } }   /* постер ELUNA 16 : 7 — текст слева целиком */
 .tile { display: grid; grid-template-columns: minmax(0, 1fr); }
 .tile__img { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--paper-2); }
-.tile__img.is-night { background: #000; }   /* фон кадров ELUNA — чистый чёрный: до загрузки и по краям нет шва */
-/* ELUNA ≥ 600 px: кадр 16 : 9 (img/eluna/mattress-wide) в рамке 2 : 1 / 16 : 7 — срезаем только пустое чёрное поле сверху, матрас целиком */
-@media (min-width: 600px) { .tiles__eluna .tile__img img { object-position: 50% 100%; } }
+.tile__img.is-night { background: #0e1326; }
 /* линейный рисунок вместо фото (отзыв клиента 13 октября: обложки-визуализации «не годятся»): белое поле, волосяная рамка,
    линия 1,1 px при любом размере плитки (non-scaling-stroke); js/site.js дорисовывает линию при наведении и появлении */
 .tile__img--draw { background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); transition: box-shadow 500ms var(--ease); }
@@ -321,6 +319,10 @@ body { counter-reset: sec 1; }
 .draw .draw__ln { fill: none; }
 /* «Ткани»: одно спокойное фото стопки образцов (img/catalog/cover-fabrics, в HTML) — пёстрая мозаика из 8 тканей и веер выбивались
    из каталога (аудит 20 октября); в широкой плитке 2 : 1 — середина кадра */
+.tile__img--mosaic { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 2px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+.tile__img--mosaic img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease); }
+.tile__img--mosaic img:nth-child(n+9) { display: none; }
+@media (max-width: 1099px) { .tile__img--mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tile__img--mosaic img:nth-child(n+5) { display: none; } }
 .tile__img picture { display: contents; }
 .tile__img--photo { background: var(--paper-2); }   /* обложка — реальная работа ателье (js/works-data.js), до загрузки — светлая подложка */
 .tile__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease); }
@@ -348,6 +350,7 @@ body { counter-reset: sec 1; }
   .tiles > li, .tiles > li:nth-child(-n+3) { grid-column: span 1; }
   .tiles > li.tiles__eluna { grid-column: 1 / -1; }
   .tiles__eluna .tile__img { aspect-ratio: 16 / 7; }
+  .tiles__eluna .tile__img img { object-position: 50% 50%; }
 }
 /* 600–1099: «Ткани» в паре с «Креслами» — рамка как у соседней плитки модели (4 : 3), иначе ряд разной высоты */
 @media (min-width: 600px) and (max-width: 1099.98px) { .tiles > li:nth-child(3):has(.tile__img--model) + li .tile__img { aspect-ratio: 4 / 3; } }
@@ -359,7 +362,8 @@ body { counter-reset: sec 1; }
   .tiles > li:first-child .tile__img--draw { aspect-ratio: 3 / 2; }
   .tiles > li:first-child .tile__img--model { aspect-ratio: 16 / 9; }
   .tiles > li.tiles__eluna { grid-column: span 1; }
-  .tiles__eluna .tile__img { aspect-ratio: 4 / 5; }   /* img/eluna/mattress-tile — ровно 4 : 5, без обрезки */
+  .tiles__eluna .tile__img { aspect-ratio: 4 / 5; }
+  .tiles__eluna .tile__img img { object-position: 50% 50%; }
   /* все плитки одинаково: название / описание — каждое своей строкой, без висящей «·» */
   .tile__cap { display: grid; justify-items: start; gap: 2px; margin-top: 12px; }
   .tile__name { font-size: 22px; letter-spacing: 0; }

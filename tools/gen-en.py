@@ -81,6 +81,7 @@ ATTR = {
  'Диваны, кровати и кресла на заказ — любой размер и ткань. Своё ателье, шоурум на Навои, 208/2. Гарантия 5 лет.': 'Sofas, beds and armchairs made to order — any size and fabric. Our own atelier, showroom at 208/2 Navoi St. 5-year warranty.',
  'Монограмма RD, RICCA DESIGNS — мебель на заказ, Алматы': 'RD monogram, RICCA DESIGNS — custom furniture, Almaty', 'RICCA DESIGNS — наверх': 'RICCA DESIGNS — to the top', 'Разделы': 'Sections',
  'Корзина, пусто': 'Cart, empty', 'Меню': 'Menu', 'Диван Rasma — открыть модель': 'Rasma sofa — open the model', 'Диван Rasma в светлом букле': 'Rasma sofa in light bouclé',
+ 'Постер ELUNA «Мы убирали всё лишнее — пока не осталась тишина»: матрас на звёздном небе': 'ELUNA poster “We removed everything unnecessary — until only silence remained”: a mattress under the starry sky',
  'Листать работы назад': 'Previous works', 'Листать работы вперёд': 'Next works', 'Работы ателье': 'Atelier works',
  'Видео: как мы делаем мебель — каркас, раскрой, пошив, обивка и сборка': 'Video: how we make furniture — frame, cutting, sewing, upholstery and assembly', 'Остановить видео ателье': 'Stop the atelier video',
  'Instagram @ricca.designs (откроется в новой вкладке)': 'Instagram @ricca.designs (opens in a new tab)', 'Шоурум в 2ГИС (откроется в новой вкладке)': 'Showroom on 2GIS (opens in a new tab)',

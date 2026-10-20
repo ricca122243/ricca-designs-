@@ -230,6 +230,17 @@
     const li = a.closest('li'), wide = !!li && !li.previousElementSibling;
     box.innerHTML = workPic(w.photos[0], '(min-width: 1100px) 30vw, 46vw', false, w.model ? tileZoom(w.photos[0]) : 0, wide ? '(min-width: 600px) 43vw, 90vw' : '43vw');
   });
+  // плитка «Ткани»: 8 настоящих образцов из библиотеки — по два из каждого типа (разные по светлоте), остальное — первыми типами
+  (() => {
+    const box = $('[data-fab-mosaic]');
+    if (!box || !FLIB.length) return;
+    const lum = (h) => { const n = parseInt(String(h || '#888').slice(1, 7), 16); return (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)); };
+    const picks = [];
+    FLIB.forEach((t) => { const c = t.collections[0]; if (!c) return; const ks = c.colours.filter((k) => k.src240).slice().sort((a, b) => lum(b.hex) - lum(a.hex)); if (!ks.length) return; picks.push([c, ks[Math.floor(ks.length * 0.25)]]); if (ks.length > 2) picks.push([c, ks[Math.floor(ks.length * 0.75)]]); });
+    FLIB.forEach((t) => t.collections.slice(1).forEach((c) => { if (picks.length < 8 && c.colours[0]) picks.push([c, c.colours[Math.floor(c.colours.length / 2)]]); }));
+    // srcset: на экранах 2x–3x плитка 155 px берёт файл 700 px (src450 → *-600.webp), а не 160 (src240 → *-160.webp) — иначе образец мыльный
+    box.innerHTML = picks.slice(0, 8).map(([c, k]) => `<img src="${esc(k.src240 || k.src450)}"${k.src240 && k.src450 ? ` srcset="${esc(k.src240)} 160w, ${esc(k.src450)} 700w" sizes="160px"` : ''} width="160" height="160" alt="" loading="lazy" decoding="async">`).join('');
+  })();
   // лента «Наши работы» на главной: кадры из RICCA_WORKS_STRIP ([id, номер фото]); нет списка — первые фото первых работ
   (() => {
     const sec = $('#works');
