@@ -1229,6 +1229,7 @@ function bind() {
   $('#bar-next').addEventListener('click', () => { const n = +$('#bar-next').dataset.goto; if (n) openStep(n); });
   $('#ar-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(variantLink()); toast('Ссылка скопирована'); } catch (e) { toast('Скопируйте адрес из строки браузера'); } });
   $('#dd-open').addEventListener('click', openDrawingFull);
+  $('#dd-img').addEventListener('click', () => { if (!$('#dd-open').hidden) openDrawingFull(); });
   $('#vp-fab').addEventListener('click', seatCloseUp);
   $('#ar-go').addEventListener('click', arGo);
   $('#b-to-room').addEventListener('click', addToRoom);

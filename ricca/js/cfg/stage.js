@@ -472,9 +472,12 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
      тенью — карандаш передаёт форму, а не цвет; тёмный металл ножек — тёмной глиной. Всё возвращается после снимка */
   const CLAY = new THREE.MeshStandardMaterial({ color: 0xd9d6d0, roughness: 0.8, metalness: 0 });
   const CLAY_DARK = new THREE.MeshStandardMaterial({ color: 0x2c2c2c, roughness: 0.55, metalness: 0 });
-  function enterClay() {
-    const saved = { env: scene.environmentIntensity, hemi: hemi.intensity, key: key.intensity, fill: fill.intensity, rim: rim.intensity, fo: floor.material.opacity, mats: [] };
-    scene.environmentIntensity = 0.22; hemi.intensity = 0.16; key.intensity = LIGHT.key * 1.9; fill.intensity = 0.1; rim.intensity = 0.28; floor.material.opacity = 0.42;
+  /* тень на полу в эскизе — только мягкая контактная (одинаково на любом устройстве: падающая тень на телефоне жёсткая и длинная —
+     в эскизе выходила тёмным клином); на видах спереди, слева и сверху пола нет вовсе — линию пола рисует чертёж */
+  function enterClay(sv) {
+    const saved = { env: scene.environmentIntensity, hemi: hemi.intensity, key: key.intensity, fill: fill.intensity, rim: rim.intensity, fo: floor.material.opacity, studio: studio.visible, mats: [] };
+    scene.environmentIntensity = 0.22; hemi.intensity = 0.16; key.intensity = LIGHT.key * 1.9; fill.intensity = 0.1; rim.intensity = 0.28; floor.material.opacity = 0;
+    if (sv !== '3q' && sv !== '3d') studio.visible = false;
     root.traverse((o) => {
       if (!o.isMesh || !o.material) return;
       const m = Array.isArray(o.material) ? o.material[0] : o.material, c = m.color;
@@ -483,7 +486,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       o.material = lum < 0.06 && !m.map ? CLAY_DARK : CLAY;
     });
     return () => {
-      scene.environmentIntensity = saved.env; hemi.intensity = saved.hemi; key.intensity = saved.key; fill.intensity = saved.fill; rim.intensity = saved.rim; floor.material.opacity = saved.fo;
+      scene.environmentIntensity = saved.env; hemi.intensity = saved.hemi; key.intensity = saved.key; fill.intensity = saved.fill; rim.intensity = saved.rim; floor.material.opacity = saved.fo; studio.visible = saved.studio;
       for (const [o, m] of saved.mats) o.material = m;
     };
   }
@@ -538,7 +541,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     renderer.setPixelRatio(1); renderer.setSize(RW, RH, false);
     const out = document.createElement('canvas'); out.width = width; out.height = height;
     const g = out.getContext('2d');
-    const leaveClay = clay ? enterClay() : null;
+    const leaveClay = clay ? enterClay(sv) : null;
     let extra = null;
     try {
       if (aoMode !== 'off' && ensureComposer()) {
