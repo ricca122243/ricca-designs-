@@ -37,6 +37,7 @@
     'Например: мягче посадка, подушки на молнии': 'For example: softer seat, zip-off cushions',
     'Меньше': 'Less', 'Больше': 'More',
     'Отправить в WhatsApp на расчёт': 'Send to WhatsApp for a quote', 'Чертёж': 'Drawing', 'Посмотреть у себя дома': 'See it in your home',
+    'В WhatsApp на расчёт': 'WhatsApp for a quote', 'Листайте чертёж в сторону': 'Swipe the drawing sideways',
     'Добавить в комнату': 'Add to the room', 'Рассчитаем стоимость в WhatsApp.': 'We’ll quote the price on WhatsApp.',
     'Это схема для подбора формы, размера и ткани; детали согласуем с мастером.': 'This is a guide for choosing the shape, size and fabric; we’ll agree the details with the master.',
     'Это примерка для подбора формы, размера и ткани; детали согласуем с мастером.': 'This is a preview for choosing the shape, size and fabric; we’ll agree the details with the master.',

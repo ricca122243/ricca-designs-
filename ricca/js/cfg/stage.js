@@ -165,10 +165,13 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   let anim = null, raf = 0, idleT = 0, interacting = false, disposed = false, studioOn = true;
   let shadowDirty = true;   // тени пересчитываем только когда изменилась сама сцена (не камера и не ткань)
   let W = 1, H = 1;
+  /* сверху холста на телефоне — кнопки окна (css: --stage-pad-top у контейнера); орто-виды кадрируются в полосу под ними */
+  let padTop = 0;
 
   function resize() {
     const r = container.getBoundingClientRect();
     W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+    padTop = Math.min(parseFloat(getComputedStyle(container).getPropertyValue('--stage-pad-top')) || 0, H * 0.4);
     renderer.setSize(W, H, false);
     persp.aspect = W / H; persp.updateProjectionMatrix();
     fitOrtho();
@@ -199,13 +202,18 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   }
   const framingDist = (dir) => fitDistance(dir || dir3q(), FOV, W / H, fillFor());
   /* полувысота кадра для оси вида */
-  function orthoHalf(v) {
+  function orthoHalf(v, pad = padTop) {
     const ext = v === 'front' ? [size.x, size.y] : v === 'side' ? [size.z, size.y] : [size.x, size.z];
     const aspect = W / H;
     const m = dimList ? 1.34 : 1.18; // место под размерные ряды
-    return Math.max(ext[1] / 2, ext[0] / 2 / aspect) * m + 0.03;
+    return Math.max(ext[1] / 2 * H / (H - pad), ext[0] / 2 / aspect) * m + 0.03;
   }
   function viewTarget(v) { return v === 'top' ? new THREE.Vector3(center.x, 0, center.z) : center.clone(); }
+  /* точка взгляда живого орто-вида: выше центра на половину полосы под кнопками — изделие в середине свободной части окна */
+  function liveTarget(v, half) {
+    const t = viewTarget(v), s = half * padTop / H;
+    return v === 'top' ? t.add(new THREE.Vector3(0, 0, -s)) : t.add(new THREE.Vector3(0, s, 0));
+  }
   function fitOrtho(half) {
     const h = half || (view !== '3d' ? orthoHalf(view) : 1);
     const a = W / H;
@@ -303,8 +311,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       else { persp.position.copy(to.pos); controls.target.copy(to.target); persp.fov = FOV; persp.updateProjectionMatrix(); controls.update(); }
       controls.minDistance = fd * 0.6; controls.maxDistance = fd * 2.5;
     } else {
-      const t = viewTarget(view);
       ortho.zoom = 1; fitOrtho();
+      const t = liveTarget(view, (ortho.top - ortho.bottom) / 2);
       ortho.position.copy(t).add(DIRS[view].clone().multiplyScalar(50)); ortho.lookAt(t);
       controls.target.copy(t); controls.update();
     }
@@ -316,10 +324,10 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     if (!['3d', 'front', 'side', 'top'].includes(v) || v === view) { if (v === view) frame({ animate }); return; }
     const from = view; view = v;
     const instant = !animate || reduced();
-    const T = viewTarget(v === '3d' ? 'front' : v);
+    const half = v === '3d' ? 0 : orthoHalf(v);
+    const T = v === '3d' ? viewTarget('front') : liveTarget(v, half);
     if (v !== '3d') {
       /* перспектива → наклон к оси с сужением угла (dolly-zoom) → ортография */
-      const half = orthoHalf(v);
       const endDir = DIRS[v].clone();
       if (from !== '3d') { /* из одного орто-вида в другой: через перспективу 6° */ enterPerspFromOrtho(); }
       const startDir = persp.position.clone().sub(controls.target).normalize();
@@ -527,7 +535,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     } else {
       cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.05, 200);
       const savedW = W, savedH = H; W = RW; H = RH;
-      const h = orthoHalf(sv); W = savedW; H = savedH;
+      const h = orthoHalf(sv, 0); W = savedW; H = savedH;
       cam.left = -h * RW / RH; cam.right = h * RW / RH; cam.top = h; cam.bottom = -h; cam.updateProjectionMatrix();
       const t = viewTarget(sv); cam.position.copy(t).add(DIRS[sv].clone().multiplyScalar(50)); cam.lookAt(t);
     }

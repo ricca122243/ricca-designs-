@@ -68,11 +68,12 @@
     'Фото {} из {}': 'Photo {0} of {1}', 'ширина × глубина × высота': 'width × depth × height', '{} мм': '{0} mm',
     'Узнать цену в WhatsApp: {}': 'Get a price on WhatsApp: {0}', 'Добавить в корзину: {}': 'Add to cart: {0}',
     'Размеры': 'Dimensions', 'Механизм': 'Mechanism', 'Гарантия': 'Warranty', 'Доставка': 'Delivery', 'Ткань и&nbsp;кожа': 'Fabric and&nbsp;leather', 'Наполнение': 'Filling', 'Срок': 'Lead time',
-    // окно работы
+    // окно работы. Кнопка — коротко «I want this» (без {0}): «I want one like this» на телефоне в полкнопки ломалось на две строки;
+    //   «one like this / ones like these» остаются в тексте сообщения WhatsApp. aria-label начинается так же, как видимая подпись
     'такую': 'one like this', 'такие': 'ones like these', 'такой': 'one like this',
     'Здравствуйте! Хочу {} же: {}{}. Подскажите, пожалуйста, цену и что нужно для расчёта.{}': "Hello! I'd like {0}: {1}{2}. Could you tell me the price and what you need for a quote?{3}",
     'В&nbsp;корзине': 'In&nbsp;cart', 'В&nbsp;корзину': 'Add to&nbsp;cart', '{} в корзине — открыть корзину': '{0} is in the cart — open the cart', 'В корзину: {}': 'Add to cart: {0}',
-    '{} — фото {} из {}': '{0} — photo {1} of {2}', 'Хочу {}': 'I want {0}', 'Хочу {}: {} — написать в WhatsApp': 'I want {0}: {1} — message on WhatsApp',
+    '{} — фото {} из {}': '{0} — photo {1} of {2}', 'Хочу {}': 'I want this', 'Хочу {}: {} — написать в WhatsApp': 'I want this: {1} — message on WhatsApp',
     // корзина
     'Ткань: {}': 'Fabric: {0}', 'цвет не выбран': 'colour not chosen', 'Ткань: подберём вместе': "Fabric: we'll choose together", 'Размер: {}': 'Size: {0}',
     'Комментарий': 'Comment', 'Размер, механизм, пожелания': 'Size, mechanism, wishes', 'Количество: {}': 'Quantity: {0}', 'Меньше: {}': 'Less: {0}', 'Больше: {}': 'More: {0}',

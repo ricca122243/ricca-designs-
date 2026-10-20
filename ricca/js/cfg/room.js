@@ -336,6 +336,20 @@ export function mountRoom({ stage, panel, viewport, engine, share, fabrics, getC
     let x = (p.x * 0.5 + 0.5) * cr.width + cr.left - vr.left - bw / 2;
     let y = (-p.y * 0.5 + 0.5) * cr.height + cr.top - vr.top - bh - 10;
     x = clamp(x, 8, vr.width - bw - 8); y = clamp(y, 8, vr.height - bh - 8);
+    /* не наезжать на кнопки окна (.vp__tools, справа сверху): в низком окне телефона предмет у задней стены — панель под ним, иначе левее кнопок */
+    const tools = viewport.querySelector('.vp__tools'), tr = tools && tools.getBoundingClientRect();
+    if (tr && tr.width) {
+      const tl = tr.left - vr.left, tb = tr.bottom - vr.top;
+      if (y < tb + 8 && x + bw > tl - 8) {
+        const { hx, hz } = halfExt(it); let by = -Infinity;
+        for (const [dx, dz] of [[-hx, -hz], [hx, -hz], [-hx, hz], [hx, hz]]) {
+          const q = new THREE.Vector3(it.x + dx, 0, it.z + dz).project(stage.camera);
+          by = Math.max(by, (-q.y * 0.5 + 0.5) * cr.height + cr.top - vr.top);
+        }
+        const yb = Math.max(by + 10, tb + 8);
+        if (yb + bh <= vr.height - 8) y = yb; else x = Math.max(8, tl - 8 - bw);
+      }
+    }
     bar.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
   }
 

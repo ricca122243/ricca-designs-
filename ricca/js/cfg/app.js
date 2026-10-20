@@ -251,8 +251,11 @@ function setState(patch = {}, { rebuild = 'auto', drag = false, structural = fal
 /* ═════════ шаг 1 — тип ═════════ */
 function renderTypes() {
   const box = $('#types');
+  /* «Диван П-образный»: после дефиса — невидимый «соединитель слов» (U+2060), строка не рвётся на «П-» / «образный».
+     Только в подписи плитки и только по-русски: название в params.js — ключ перевода (cfg-en.js), а в Montserrat нет неразрывного дефиса */
+  const label = (s) => (window.RICCA_CFG_LANG === 'en' ? s : s.replace(/-/g, '-⁠'));
   box.innerHTML = P.TYPES.map((t) => `<button class="type" type="button" role="radio" aria-checked="${t.id === state.type}" data-type="${t.id}">
-    ${ico('t-' + t.id, 'type__ico')}<span class="type__t">${esc(t.title)}</span></button>`).join('');
+    ${ico('t-' + t.id, 'type__ico')}<span class="type__t">${esc(label(t.title))}</span></button>`).join('');
 }
 /* модели каталога (js/catalog-data.js, window.RICCA_CATALOG) с рецептом для 3D (поле cfg: «t.corner~f.chaise~…») — полоса фото под типами:
    щелчок собирает похожую модель. Новая модель в каталоге с полем cfg появляется здесь сама. */
@@ -653,7 +656,21 @@ function syncBar() {
   const n = state.mode === 'model' ? nextStepFor() : 0;
   nb.hidden = !n; wa.hidden = !!n;
   if (n) { $('#bar-next-t').textContent = `Далее: ${STEP_NAMES[n]}`; $('#bar-next-n').textContent = `${Math.max(1, Math.min(5, n - 1 || 1))}/5`; nb.dataset.goto = String(n); }
+  syncBarAwaySoon();
 }
+/* итог на телефоне: пока его кнопки («В WhatsApp на расчёт», «Чертёж», «У себя дома») видны между окном 3D и плашкой,
+   плашку с теми же действиями убираем вниз (css: .bar--away). Видны — значит хотя бы на высоту кнопки, не за липким окном 3D */
+let barAwayRaf = 0;
+function syncBarAway() {
+  const bar = $('#bar'), acts = $('.sum__acts'); if (!bar || !acts) return;
+  let away = false;
+  if (mqPhone.matches && state.mode === 'model' && acts.offsetParent) {
+    const r = acts.getBoundingClientRect(), top = Math.max(r.top, $('#vp').getBoundingClientRect().bottom), bottom = Math.min(r.bottom, innerHeight - bar.offsetHeight);
+    away = bottom - top >= 48;
+  }
+  bar.classList.toggle('bar--away', away);
+}
+const syncBarAwaySoon = () => { if (!barAwayRaf) barAwayRaf = requestAnimationFrame(() => { barAwayRaf = 0; syncBarAway(); }); };
 function openStep(n, scroll = true) {
   state.step = n; if (n) state.visited.add(n); syncSteps();
   if (scroll && mqPhone.matches) {
@@ -870,7 +887,7 @@ async function openDrawing() {
   const ph = mqPhone.matches, send = $('#dd-send'), png = $('#dd-png');
   send.classList.toggle('btn--fill', ph); send.classList.toggle('btn--line', !ph); png.classList.toggle('btn--fill', !ph); png.classList.toggle('btn--line', ph);
   if (ph) send.parentNode.insertBefore(send, png); else png.parentNode.insertBefore(png, send);
-  img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…';
+  img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…'; $('#dd-hint').hidden = true; $('#dd-pan').scrollLeft = 0;
   ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = true; });
   openDialog(dlg);
   try {
@@ -886,6 +903,11 @@ async function openDrawing() {
     console.warn('drawing', e);
     wait.textContent = 'Чертёж пока не получилось подготовить. Отправьте вариант в WhatsApp — мастер пришлёт схему.';
   }
+}
+/* телефон в руке: лист во всю высоту окна шире экрана и листается в сторону — подсказка, только когда листать есть куда */
+function syncDrawingHint() {
+  const pan = $('#dd-pan'), hint = $('#dd-hint'); if (!pan || !hint) return;
+  hint.hidden = $('#dd-img').hidden || pan.scrollWidth <= pan.clientWidth + 8;
 }
 async function drawingPng() { const b = await drawing.toPNG(3508); return b; }
 /* чертёж во весь экран: PNG в новой вкладке — можно увеличить пальцами */
@@ -1230,6 +1252,8 @@ function bind() {
   $('#ar-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(variantLink()); toast('Ссылка скопирована'); } catch (e) { toast('Скопируйте адрес из строки браузера'); } });
   $('#dd-open').addEventListener('click', openDrawingFull);
   $('#dd-img').addEventListener('click', () => { if (!$('#dd-open').hidden) openDrawingFull(); });
+  $('#dd-img').addEventListener('load', syncDrawingHint); window.addEventListener('resize', syncDrawingHint);
+  $('#dd-pan').addEventListener('scroll', () => { if ($('#dd-pan').scrollLeft > 24) $('#dd-hint').hidden = true; }, { passive: true });   // уже листают — подсказка не нужна
   $('#vp-fab').addEventListener('click', seatCloseUp);
   $('#ar-go').addEventListener('click', arGo);
   $('#b-to-room').addEventListener('click', addToRoom);
@@ -1268,6 +1292,7 @@ function bind() {
   }));
   $$('[data-next]').forEach((b) => b.addEventListener('click', () => openStep(+b.dataset.next)));
   mqPhone.addEventListener('change', () => { syncSteps(); if (stage) rebuild(quality()); });
+  window.addEventListener('scroll', syncBarAwaySoon, { passive: true }); window.addEventListener('resize', syncBarAwaySoon);
   bindRadioKeys();
 
   window.addEventListener('hashchange', () => {

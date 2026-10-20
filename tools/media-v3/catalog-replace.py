@@ -11,6 +11,8 @@
 import sys, os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
+sys.dont_write_bytecode = True   # общий модуль studio_box.py — без папки __pycache__ в репозитории
+from studio_box import product_box
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 CAT = os.path.join(ROOT, 'ricca', 'img', 'catalog')
@@ -35,9 +37,9 @@ def bg_mask(a, tol=22):
 
 
 def bbox(a, th=25):
-    """Рамка изделия — одинаковым правилом для старого и нового кадра (отличие от цвета фона > th)."""
-    ys, xs = np.where(np.abs(a - corners_bg(a)).max(2) > th)
-    return xs.min(), ys.min(), xs.max() + 1, ys.max() + 1
+    """Рамка изделия — одинаковым правилом для старого и нового кадра (отличие от цвета фона > th). Пылинки на фоне не в счёт
+    (studio_box.py): раздутая ими рамка ставила новое изделие не по центру — так «уехали» Molva и Ormel."""
+    return product_box(a, th)[0]
 
 
 def main():

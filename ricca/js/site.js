@@ -161,20 +161,34 @@
   const BEST = BEST_WORKS.map((id) => WORKS.find((w) => w.id === id)).filter(Boolean);
   const SMALL = window.matchMedia('(max-width: 767px)');   // телефон: только файлы 800 px (так же — ткани, FC_PHONE)
   const p800 = (p) => ({ w: p.w800 || p.w, h: p.h800 || p.h });
-  // <picture>: телефон — один файл 800 px; от 768 px — srcset 800 / 1600 по ширине рамки (sizes)
-  const workPic = (p, sizes, eager, extra = '') => {
-    const s = p800(p);
-    return '<picture>'
-      + (p.w > s.w ? `<source media="(min-width: 768px)" srcset="${esc(p.src800)} ${s.w}w, ${esc(p.src)} ${p.w}w" sizes="${sizes}">` : '')
-      + `<img src="${esc(p.src800)}" width="${s.w}" height="${s.h}" alt="" loading="${eager ? 'eager' : 'lazy'}" decoding="async"${extra}></picture>`;
-  };
   /* предметный кадр модели: крупнее в рамке 4 : 3 (доля предмета ≈ 86 % ширины) — масштаб по box, как в окне изделия */
   const MODEL_FILL = 0.86;
-  const zoomAttr = (p, fill = MODEL_FILL, vfill = 0.68) => {
-    if (!p || !p.studio || !Array.isArray(p.box) || !p.w || !p.h) return '';
+  const studio = (p) => !!(p && p.studio && Array.isArray(p.box) && p.w && p.h);
+  const zoomOf = (p, fill = MODEL_FILL, vfill = 0.68) => {
+    if (!studio(p)) return 1;
     const ar = p.w / p.h, iw = Math.min(1, ar / (4 / 3)), ih = Math.min(1, (4 / 3) / ar);   // высокие (кресла) — не выше ≈ 68 % рамки
-    const z = Math.max(1, Math.min(fill / (p.box[0] * iw), vfill / (p.box[1] * ih), 2.2));
-    return ` style="--z:${z.toFixed(3)}"`;
+    return Math.max(1, Math.min(fill / (p.box[0] * iw), vfill / (p.box[1] * ih), 2.2));
+  };
+  const zoomAttr = (p) => (studio(p) ? ` style="--z:${zoomOf(p).toFixed(3)}"` : '');
+  /* плитки каталога (Диваны / Кровати / Кресла в одном ряду): одинаковый визуальный вес, а не одинаковая ширина — площадь изделия
+     ≈ 0,52² кадра (sqrt(w·h)); не шире 86 % и не выше 62 % рамки. Кресло (≈ 0,74 × 0,70 кадра) уменьшается до ≈ 0,72 — край фото
+     прячет brightness в css/site.css; низкий длинный диван упирается в 86 % ширины. Только для плиток: карточки моделей — zoomOf */
+  const tileZoom = (p) => {
+    if (!studio(p)) return 1;
+    const ar = p.w / p.h, bw = p.box[0] * Math.min(1, ar / (4 / 3)), bh = p.box[1] * Math.min(1, (4 / 3) / ar);
+    return Math.max(0.72, Math.min(0.52 / Math.sqrt(bw * bh), 0.86 / bw, 0.62 / bh, 2.2));
+  };
+  // sizes × масштаб: «(min-width: 1440px) 440px, 46vw» → «(min-width: 1440px) calc(440px * 1.690), calc(46vw * 1.690)»
+  const zSizes = (sizes, z) => (z === 1 ? sizes : sizes.split(',').map((t) => t.trim().replace(/(\S+)$/, `calc($1 * ${z.toFixed(3)})`)).join(', '));
+  /* <picture>: телефон — один файл 800 px; от 768 px — srcset 800 / 1600 по ширине рамки (sizes).
+     z — масштаб предметного кадра модели (--z, только p.studio): sizes умножаются на него — рамка × масштаб, иначе браузер берёт файл
+     по ширине рамки, и увеличенная модель мыльная. phone — sizes телефона (< 768 px) для этих кадров: файлы 600 / 1200 px по 4–40 КБ,
+     на экране 3x увеличенная модель берёт 1200 px, а не растянутый в 1,5–2 раза 600; фото работ — как раньше, один файл 800 px */
+  const workPic = (p, sizes, eager, z = 0, phone = '') => {
+    const s = p800(p), set = `${esc(p.src800)} ${s.w}w, ${esc(p.src)} ${p.w}w`, m = z && studio(p);
+    return '<picture>'
+      + (p.w > s.w ? `<source media="(min-width: 768px)" srcset="${set}" sizes="${m ? zSizes(sizes, z) : sizes}">` : '')
+      + `<img src="${esc(p.src800)}"${m && phone && p.w > s.w ? ` srcset="${set}" sizes="${zSizes(phone, z)}"` : ''} width="${s.w}" height="${s.h}" alt="" loading="${eager ? 'eager' : 'lazy'}" decoding="async"${m ? ` style="--z:${z.toFixed(3)}"` : ''}></picture>`;
   };
   /* название модели на карточке: вид мебели мелкой капителью над названием («ДИВАН» / Svira); EN — «Svira sofa» */
   const splitTitle = (t) => {
@@ -183,20 +197,25 @@
     m = String(t).match(/^(.+?)\s+(sofa|bed|armchair|pouf|bench|chair|table)$/i);
     return m ? [m[2], m[1]] : ['', String(t)];
   };
+  // подпись карточки узкая (две колонки на телефоне): составное слово не рвём по дефису («основании-» / «диске»), переносим целиком
+  const nwHyph = (h) => h.replace(/([А-Яа-яЁёA-Za-z]+-[А-Яа-яЁёA-Za-z]+)/g, '<span class="nowrap">$1</span>');
   // карточка работы: фото 4 : 5 (cover), под ним название и ткань — ссылка #work-<id> (открывает окно работы)
   const workCard = (w, n, sizes, eager, withSub = true) => {
     const p = w.photos[n] || w.photos[0];
     if (!w.model) return `<li><a class="wk__a" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
       + `<span class="wk__img">${workPic(p, sizes, eager)}</span>`
-      + `<span class="wk__t">${typo(w.title)}</span>${withSub && w.sub ? `<span class="wk__s">${typo(w.sub)}</span>` : ''}</a></li>`;
-    /* модель: фото на тёплом «подиуме», при наведении — второй ракурс; подпись — вид мебели капителью, название антиквой */
+      + `<span class="wk__t">${typo(w.title)}</span>${withSub && w.sub ? `<span class="wk__s">${nwHyph(typo(w.sub))}</span>` : ''}</a></li>`;
+    /* модель: фото на тёплом «подиуме», при наведении — второй ракурс; подпись — вид мебели капителью, название антиквой;
+       телефон — две колонки .wk ≈ 43vw (sizes для srcset, workPic умножает на --z) */
     const alt = w.photos.find((q, i) => i !== n && q.studio);
     const [kind, name] = splitTitle(w.title);
     return `<li><a class="wk__a wk__a--model" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
-      + `<span class="wk__img">${workPic(p, sizes, eager, zoomAttr(p))}${alt ? `<img class="wk__alt" src="${esc(alt.src800)}" width="${p800(alt).w}" height="${p800(alt).h}" alt="" loading="lazy" decoding="async"${zoomAttr(alt)}>` : ''}</span>`
-      + `<span class="wk__cap">${kind ? `<span class="wk__k">${typo(kind)}</span>` : ''}<span class="wk__t">${typo(name)}</span>${withSub && w.sub ? `<span class="wk__s">${typo(w.sub)}</span>` : ''}</span></a></li>`;
+      + `<span class="wk__img">${workPic(p, sizes, eager, zoomOf(p), '43vw')}${alt ? `<img class="wk__alt" src="${esc(alt.src800)}" width="${p800(alt).w}" height="${p800(alt).h}" alt="" loading="lazy" decoding="async"${zoomAttr(alt)}>` : ''}</span>`
+      + `<span class="wk__cap">${kind ? `<span class="wk__k">${typo(kind)}</span>` : ''}<span class="wk__t">${typo(name)}</span>${withSub && w.sub ? `<span class="wk__s">${nwHyph(typo(w.sub))}</span>` : ''}</span></a></li>`;
   };
-  // обложки плиток каталога: реальное фото вместо линейного рисунка; рисунок — в DRAW (миниатюра заявки «по вашему проекту»)
+  // обложки плиток каталога: реальное фото вместо линейного рисунка; рисунок — в DRAW (миниатюра заявки «по вашему проекту»).
+  // телефон (< 600 px, css/site.css): первая плитка во всю ширину (≈ 90vw — на экране 3x «Диваны» берёт файл 1200 px), остальные
+  // парами (≈ 43vw); 600–767 — все парами
   const DRAW = {};
   $$('.tile[data-cat]').forEach((a) => {
     const cat = a.dataset.cat, box = $('.tile__img--draw', a), w = MODELS.find((x) => x.cat === cat) || WORKS.find((x) => x.cat === cat);
@@ -205,19 +224,9 @@
     if (svg) DRAW[cat] = svg.cloneNode(true);
     box.classList.remove('tile__img--draw');
     box.classList.add('tile__img--photo'); if (w.model) box.classList.add('tile__img--model');
-    box.innerHTML = workPic(w.photos[0], '(min-width: 1100px) 30vw, 46vw', false, w.model ? zoomAttr(w.photos[0], 0.74) : '');
+    const li = a.closest('li'), wide = !!li && !li.previousElementSibling;
+    box.innerHTML = workPic(w.photos[0], '(min-width: 1100px) 30vw, 46vw', false, w.model ? tileZoom(w.photos[0]) : 0, wide ? '(min-width: 600px) 43vw, 90vw' : '43vw');
   });
-  // плитка «Ткани»: 8 настоящих образцов из библиотеки — по два из каждого типа (разные по светлоте), остальное — первыми типами
-  (() => {
-    const box = $('[data-fab-mosaic]');
-    if (!box || !FLIB.length) return;
-    const lum = (h) => { const n = parseInt(String(h || '#888').slice(1, 7), 16); return (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)); };
-    const picks = [];
-    FLIB.forEach((t) => { const c = t.collections[0]; if (!c) return; const ks = c.colours.filter((k) => k.src240).slice().sort((a, b) => lum(b.hex) - lum(a.hex)); if (!ks.length) return; picks.push([c, ks[Math.floor(ks.length * 0.25)]]); if (ks.length > 2) picks.push([c, ks[Math.floor(ks.length * 0.75)]]); });
-    FLIB.forEach((t) => t.collections.slice(1).forEach((c) => { if (picks.length < 8 && c.colours[0]) picks.push([c, c.colours[Math.floor(c.colours.length / 2)]]); }));
-    // srcset: на экранах 2x–3x плитка 155 px берёт файл 700 px (src450 → *-600.webp), а не 160 (src240 → *-160.webp) — иначе образец мыльный
-    box.innerHTML = picks.slice(0, 8).map(([c, k]) => `<img src="${esc(k.src240 || k.src450)}"${k.src240 && k.src450 ? ` srcset="${esc(k.src240)} 160w, ${esc(k.src450)} 700w" sizes="160px"` : ''} width="160" height="160" alt="" loading="lazy" decoding="async">`).join('');
-  })();
   // лента «Наши работы» на главной: кадры из RICCA_WORKS_STRIP ([id, номер фото]); нет списка — первые фото первых работ
   (() => {
     const sec = $('#works');
@@ -254,7 +263,7 @@
   const drawOn = (svg, slow) => {
     if (reduceMotion || !svg || svg._drawing || typeof svg.animate !== 'function') return;
     const k = svg.getBoundingClientRect().width / ((svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width) || 400);
-    const els = $$('rect, path, line, circle', svg).filter((el) => !el.classList.contains('draw__sw') && typeof el.getTotalLength === 'function');
+    const els = $$('rect, path, line, circle', svg).filter((el) => typeof el.getTotalLength === 'function');
     if (!k || !els.length) return;
     svg._drawing = true;
     let left = els.length;
@@ -284,18 +293,10 @@
   // строка под «Каталогом» — в HTML: модели каталога — примеры, шьём и любую другую (BRIEF, правки 13 октября); общего
   // числа моделей не пишем, чтобы каталог не выглядел пределом
 
-  /* Плитка «Ткани»: подпись — типы из js/fabrics-data.js («Велюр, букле, шенилл»), веер — настоящие цвета коллекций
-     (от светлого к тёмному: шесть цветов, взятых равномерно по светлоте из всех цветов библиотеки). Данные сменились — плитка тоже */
+  /* Плитка «Ткани»: подпись — типы из js/fabrics-data.js («Велюр, букле, шенилл»); обложка — фото в HTML. Данные сменились — подпись тоже */
   (() => {
     const sub = $('[data-fab-types]');
     if (sub && FLIB.length) sub.textContent = FLIB.map((t, i) => (i ? t.title.toLowerCase() : t.title)).join(', ');
-    const sw = $$('.tile[data-cat="fabrics"] .draw__sw');
-    const lum = (h) => { const n = parseInt(h.slice(1), 16); return 0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255); };
-    const hexes = [];
-    FLIB.forEach((t) => t.collections.forEach((c) => c.colours.forEach((k) => { if (/^#[0-9a-f]{6}$/i.test(k.hex || '')) hexes.push(k.hex); })));
-    if (!sw.length || hexes.length < sw.length) return;
-    hexes.sort((a, b) => lum(b) - lum(a));
-    sw.forEach((r, i) => { r.style.fill = hexes[Math.round((i + 0.5) / sw.length * (hexes.length - 1))]; });
   })();
 
   /* ---------- Телефоны и WhatsApp из CONFIG ---------- */
@@ -1125,8 +1126,8 @@
     const stage = $('[data-lb-stage]', dlg), frame = $('[data-lb-frame]', dlg), img = $('[data-lb-img]', dlg);
     const title = $('[data-lb-title]', dlg), piece = $('[data-lb-piece]', dlg), count = $('[data-lb-count]', dlg);
     const wa = $('[data-lb-wa]', dlg), waT = $('[data-lb-wa-t]', dlg), cartB = $('[data-lb-cart]', dlg), t3 = $('[data-lb-3d]', dlg), ig = $('[data-lb-ig]', dlg);
-    const arrows = $$('[data-lb-step]', dlg);
-    let cur = null, idx = 0, tok = 0, slowT = 0;
+    const arrows = $$('[data-lb-step]', dlg), thumbsBox = $('[data-lb-thumbs]', dlg), inner = $('.lb__in', dlg);
+    let cur = null, idx = 0, tok = 0, slowT = 0, thumbs = [];
     // «Хочу такой / такую / такие» — по роду: кровать, банкетка — такую; пара кресел — такие
     const want = (w) => (w.cat === 'beds' || /^(Банкетка|Bench)/.test(w.title) ? tr('такую') : /^(Пара|A pair)\b/.test(w.title) ? tr('такие') : tr('такой'));
     const link = (w) => (/^https?:$/.test(location.protocol) ? `${location.origin}${location.pathname}#work-${w.id}` : '');
@@ -1135,10 +1136,18 @@
     const inCart = (w) => !!(RC && RC.list().some((x) => x.kind === 'catalog' && x.id === w.id));
     // файл под рамку: 1600, если 800 px мало для рамки на этом экране (телефон с плотностью 3x — тоже: владелец 14 окт.,
     // «качество фото хуже стало» — 800 px на экране 1170 px выглядели мыльно); иначе 800
-    const fileOf = (p) => {
+    const fileOf = (p, fw = frame.getBoundingClientRect().width || stage.clientWidth) => {
       if (p.w <= p800(p).w) return p.src800;
-      const fw = frame.getBoundingClientRect().width || stage.clientWidth;
       return fw * (window.devicePixelRatio || 1) > p800(p).w * 1.08 ? p.src : p.src800;
+    };
+    /* зум предметного кадра — по доле предмета (fitZoom), но пиксель файла тянем не больше чем на 1,25 точки экрана: кровати
+       с малым box шли с зумом до 2,2 — мыло и квадраты сжатия. Телефон и планшет держат близко — считаем по плотности экрана
+       (3x: 1200 px на рамку 402 — не больше 1,24); компьютер смотрят издалека — по CSS-пикселю, иначе на retina зум пропал бы
+       у всех моделей и кровати потерялись бы в фоне. Меньше 1 не уменьшаем: кадр и так целиком */
+    const coarse = window.matchMedia('(pointer: coarse)');
+    const lbZoom = (p, fw) => {
+      const srcW = fileOf(p, fw) === p.src800 ? p800(p).w : p.w, dpr = coarse.matches ? window.devicePixelRatio || 1 : 1;
+      return Math.min(fitZoom(p, p.w / p.h, 0.8), Math.max(1, (1.25 * srcW) / (fw * dpr)));
     };
     function layout() {
       const p = cur && cur.photos[idx];
@@ -1147,8 +1156,9 @@
       const sw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
       const sh = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
       if (sw <= 0 || sh <= 0) return;
-      const k = Math.min(sw / p.w, sh / p.h);
-      frame.style.width = `${Math.round(p.w * k)}px`; frame.style.height = `${Math.round(p.h * k)}px`;
+      const k = Math.min(sw / p.w, sh / p.h), fw = Math.round(p.w * k);
+      frame.style.width = `${fw}px`; frame.style.height = `${Math.round(p.h * k)}px`;
+      if (p.studio) img.style.setProperty('--z', lbZoom(p, fw).toFixed(3));   // рамка другой ширины (поворот экрана) — зум заново
     }
     function syncCart() {
       if (!cur || !RC) return;
@@ -1164,7 +1174,7 @@
       const p = ph[idx], t = ++tok;
       /* предметный кадр модели — на тёплом «подиуме» во всё окно, изделие чуть крупнее (как карточки каталога) */
       stage.classList.toggle('is-studio', !!p.studio);
-      if (p.studio) img.style.setProperty('--z', fitZoom(p, p.w / p.h, 0.8).toFixed(3)); else img.style.removeProperty('--z');
+      if (!p.studio) img.style.removeProperty('--z');   // зум предметного кадра ставит layout() — он знает ширину рамки
       // новое фото грузится в фоне, прежнее стоит до готовности (дольше 120 мс — приглушено); рамка — под новое фото
       clearTimeout(slowT);
       slowT = setTimeout(() => { if (t === tok) frame.classList.add('is-loading'); }, 120);
@@ -1184,6 +1194,10 @@
       pre.src = src;
       if (pre.complete && pre.naturalWidth) put(src);
       count.innerHTML = n > 1 ? `<span aria-hidden="true">${pad2(idx + 1)} / ${pad2(n)}</span><span class="sr-only">${tr`Фото ${idx + 1} из ${n}`}</span>` : '';
+      // миниатюры — одна остановка Tab (roving tabindex), текущая — в середине ленты
+      thumbs.forEach((b, j) => { b.setAttribute('aria-current', String(j === idx)); b.tabIndex = j === idx ? 0 : -1; });
+      const tb = thumbs[idx];
+      if (tb && thumbsBox.scrollWidth > thumbsBox.clientWidth) thumbsBox.scrollTo({ left: tb.offsetLeft - (thumbsBox.clientWidth - tb.offsetWidth) / 2, behavior: reduceMotion ? 'auto' : 'smooth' });
       // соседние фото — заранее (тот же файл, что выберет окно)
       if (n > 1) [idx + 1, idx - 1].forEach((j) => { const q = ph[(j + n) % n]; if (q !== p) new Image().src = fileOf(q); });
     }
@@ -1198,9 +1212,22 @@
       ig.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; ig.hidden = !!w.model;   // у моделей каталога поста нет
       const compD = $('[data-lb-comp-d]', dlg);   // «Состав» модели каталога — только у проверенных (verified: true)
       if (compD) { compD.open = false; compD.hidden = !(w.model && window.RICCA_COMPOSITION_UI && window.RICCA_COMPOSITION_UI($('[data-lb-comp]', compD), String(w.id).replace(/^m-/, ''))); }
-      const many = w.photos.length > 1;
+      const n = w.photos.length, many = n > 1;
       arrows.forEach((b) => { b.hidden = !many; });
       count.hidden = !many;
+      /* модель каталога: на телефоне сцена — по кадру 4:3, а не на весь экран (диван тонул в бежевом поле), под ней — лента
+         миниатюр: видно, что фото несколько, к любому — одно касание (CSS .lb--model, ≤ 599 px). Фото работ — как были */
+      dlg.classList.toggle('lb--model', !!w.model);
+      thumbs = w.model && many ? w.photos.map((p, j) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = `pd__thumb${p.studio ? ' is-studio' : ''}`;
+        b.setAttribute('aria-label', tr`Фото ${j + 1} из ${n}`);
+        b.innerHTML = `<img src="${esc(p.src800)}" alt="" width="${p800(p).w}" height="${p800(p).h}" loading="lazy" decoding="async"${p.studio ? ` style="--z:${fitZoom(p, p.w / p.h, 0.92).toFixed(3)}"` : ''}>`;
+        b.addEventListener('click', () => show(j));
+        return b;
+      }) : [];
+      thumbsBox.replaceChildren(...thumbs);
+      thumbsBox.hidden = !thumbs.length;
       syncCart();
     }
     cartB.addEventListener('click', () => {
@@ -1225,7 +1252,8 @@
         return;
       }
       if (e.shiftKey) return;
-      if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); } else if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); } else if (e.key === 'ArrowRight') { e.preventDefault(); step(1); } else return;
+      if (e.target.classList && e.target.classList.contains('pd__thumb') && thumbs[idx]) thumbs[idx].focus();   // фокус идёт за текущим фото
     });
     // свайп (палец, перо): влево — следующее фото, вправо — предыдущее
     let sx = null, sy = 0;
@@ -1241,7 +1269,7 @@
         const same = cur === w && dlg.open;
         if (!same) fill(w);
         showDlg(dlg, R.opener);
-        if (!same) { show(n); requestAnimationFrame(layout); }
+        if (!same) { inner.scrollTop = 0; show(n); requestAnimationFrame(layout); }
       },
       close(focus = true) { hideDlg(dlg, focus); }
     };
@@ -1287,6 +1315,10 @@
         const p = ITEM.get(x.id).photos[0];
         return { src: p.src600 || p.src, w: p.w, h: p.h, studio: !!p.studio, z: p.studio ? fitZoom(p, 0.8) : 1 };
       }
+      /* модель каталога из окна модели (kind 'catalog', id из WORK): предметное фото 4:3 — целиком в рамке 4:3 на подиуме, как
+         карточки каталога (раньше — cover в рамке 4:5: у дивана срезались подлокотники). Фото работ — как были, cover */
+      const w = x.kind === 'catalog' && WORK.get(x.id), wp = w && w.photos[0];
+      if (wp && wp.studio) return { src: wp.src800 || wp.src, w: p800(wp).w, h: p800(wp).h, studio: true, model: true, z: fitZoom(wp, wp.w / wp.h, 0.9) };
       if (x.kind === 'fabric' && x.fabric && x.fabric.id) {
         const m = /^(.+)-(\d+)$/.exec(x.fabric.id), f = m && FCOL.get(m[1]), k = f && f.c.colours[+m[2] - 1];
         if (k) return { src: k.src240 || k.src450, w: 240, h: 240, fabric: true, z: 1 };
@@ -1337,7 +1369,7 @@
       const th = thumbOf(x), key = th ? th.src : '';
       if (r.thumb !== key) {
         r.thumb = key;
-        r.img.className = `sl__img${th && th.studio ? ' is-studio' : ''}${th && th.fabric ? ' is-fabric' : ''}`;
+        r.img.className = `sl__img${th && th.studio ? ' is-studio' : ''}${th && th.model ? ' is-model' : ''}${th && th.fabric ? ' is-fabric' : ''}`;
         r.img.replaceChildren();
         if (th) {
           const im = document.createElement('img');

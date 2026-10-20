@@ -7,7 +7,7 @@ s = open(ROOT + 'index.html', encoding='utf-8').read()
 
 TEXT = {
  'Собрать в&nbsp;3D': 'Build in&nbsp;3D',
- 'Чертёж любой модели из&nbsp;3D-конструктора&nbsp;— в&nbsp;SVG для&nbsp;вашего проекта': 'A drawing of&nbsp;any model from the&nbsp;3D configurator&nbsp;— in&nbsp;SVG for&nbsp;your project',
+ 'Чертёж любой модели из&nbsp;': 'A drawing of&nbsp;any model from the&nbsp;', '3D-конструктора': '3D configurator', '&nbsp;— в&nbsp;SVG для&nbsp;вашего&nbsp;проекта': '&nbsp;— in&nbsp;SVG for&nbsp;your&nbsp;project',   # «3D-конструктора» — в .nowrap (не рвать по дефису)
  'Все права защищены. Фото, тексты, 3D-модели и&nbsp;дизайн сайта&nbsp;— собственность RICCA&nbsp;DESIGNS; копирование и&nbsp;использование без письменного разрешения запрещены.': 'All rights reserved. Photos, texts, 3D models and&nbsp;the website design are the property of&nbsp;RICCA&nbsp;DESIGNS; copying or use without written permission is prohibited.',
  'Состав': 'What it’s made of',
  'Перейти к&nbsp;содержанию': 'Skip to&nbsp;content', 'Каталог': 'Catalogue', 'Работы': 'Works', 'Ателье': 'Atelier', 'Для бизнеса': 'For business', 'Шоурум': 'Showroom',
@@ -61,13 +61,13 @@ TEXT = {
  'Маршрут в&nbsp;2ГИС': 'Route in&nbsp;2GIS', '(откроется в&nbsp;новой вкладке)': '(opens in&nbsp;a new tab)', 'Отзывы в&nbsp;2ГИС': 'Reviews on&nbsp;2GIS',
  'Дизайнерские кровати': 'Designer beds', 'Кресла для&nbsp;отдыха': 'Lounge armchairs', 'Ортопедические матрасы': 'Orthopaedic mattresses', 'Покупателям': 'For customers',
  'Шоурум в&nbsp;Алматы': 'Showroom in&nbsp;Almaty', 'Доставка по&nbsp;РК': 'Delivery across&nbsp;Kazakhstan', 'Гарантия 5&nbsp;лет': '5-year warranty', 'Отзывы 2ГИС': 'Reviews on 2GIS',
- 'Об ателье': 'About the atelier', 'О&nbsp;производстве': 'About production', 'Оборудование SCM &amp; Dürkopp': 'SCM &amp; Dürkopp equipment', 'Палитра тканей и&nbsp;кож': 'Fabric and&nbsp;leather palette',
+ 'Об ателье': 'About the atelier', 'О&nbsp;производстве': 'About production', 'Оборудование SCM&nbsp;&amp;&nbsp;Dürkopp': 'SCM&nbsp;&amp;&nbsp;Dürkopp equipment', 'Палитра тканей и&nbsp;кож': 'Fabric and&nbsp;leather palette',
  'Контакты': 'Contacts', 'Основной / WhatsApp': 'Main / WhatsApp', 'Отдел заказов': 'Orders department', 'Адрес шоурума': 'Showroom address', 'ул.&nbsp;Алишера Навои,&nbsp;208/2': '208/2&nbsp;Alisher Navoi&nbsp;St.',
  'График': 'Hours', 'Пн–Вс&nbsp;10:00–20:00': 'Mon–Sun&nbsp;10:00–20:00', 'Задать вопрос': 'Ask a question', '© 2026 RICCA&nbsp;DESIGNS · Алматы': '© 2026 RICCA&nbsp;DESIGNS · Almaty',
  '— сайт матрасов, откроется в&nbsp;новой вкладке': '— mattress website, opens in&nbsp;a new tab', 'Корзина': 'Cart', 'Написать в&nbsp;WhatsApp': 'Message on&nbsp;WhatsApp',
  'Размер и&nbsp;ткань&nbsp;— под заказ.': 'Size and&nbsp;fabric&nbsp;— to order.', 'Количество': 'Quantity', '1&nbsp;шт.': '1&nbsp;pc', 'Ткань': 'Fabric', 'Подберём вместе': "We'll choose together",
  'Размер': 'Size', 'Пожелания': 'Wishes', 'Добавить в&nbsp;корзину': 'Add to&nbsp;cart', 'Узнать цену': 'Get a price', 'в&nbsp;WhatsApp': 'on&nbsp;WhatsApp', 'Подробнее': 'Details',
- 'Хочу такой': 'I want one like this', 'В&nbsp;корзину': 'Add to&nbsp;cart', 'Собрать похожий в&nbsp;3D': 'Build a similar one in&nbsp;3D', 'Смотреть в&nbsp;Instagram': 'View on&nbsp;Instagram',
+ 'Хочу такой': 'I want this', 'В&nbsp;корзину': 'Add to&nbsp;cart', 'Собрать похожий в&nbsp;3D': 'Build a similar one in&nbsp;3D', 'Смотреть в&nbsp;Instagram': 'View on&nbsp;Instagram',
  'Пока пусто. Складывайте мебель и&nbsp;ткани&nbsp;— и&nbsp;отправьте заявку одним сообщением в&nbsp;WhatsApp.': 'Empty for now. Add furniture and&nbsp;fabrics&nbsp;— and&nbsp;send one request via&nbsp;WhatsApp.',
  'Смотреть каталог': 'View the catalogue', 'Для заявки&nbsp;— по&nbsp;желанию': 'For the request&nbsp;— optional', 'Имя': 'Name', 'Город': 'City', 'Комментарий к&nbsp;заказу': 'Order comment',
  'Цены рассчитаем и&nbsp;ответим в&nbsp;WhatsApp.': "We'll quote prices and&nbsp;reply on&nbsp;WhatsApp.", 'Заявка открыта в&nbsp;WhatsApp. Очистить корзину?': 'Request opened in&nbsp;WhatsApp. Clear the cart?',
@@ -81,7 +81,6 @@ ATTR = {
  'Диваны, кровати и кресла на заказ — любой размер и ткань. Своё ателье, шоурум на Навои, 208/2. Гарантия 5 лет.': 'Sofas, beds and armchairs made to order — any size and fabric. Our own atelier, showroom at 208/2 Navoi St. 5-year warranty.',
  'Монограмма RD, RICCA DESIGNS — мебель на заказ, Алматы': 'RD monogram, RICCA DESIGNS — custom furniture, Almaty', 'RICCA DESIGNS — наверх': 'RICCA DESIGNS — to the top', 'Разделы': 'Sections',
  'Корзина, пусто': 'Cart, empty', 'Меню': 'Menu', 'Диван Rasma — открыть модель': 'Rasma sofa — open the model', 'Диван Rasma в светлом букле': 'Rasma sofa in light bouclé',
- 'Постер ELUNA «Мы убирали всё лишнее — пока не осталась тишина»: матрас на звёздном небе': 'ELUNA poster “We removed everything unnecessary — until only silence remained”: a mattress under the starry sky',
  'Листать работы назад': 'Previous works', 'Листать работы вперёд': 'Next works', 'Работы ателье': 'Atelier works',
  'Видео: как мы делаем мебель — каркас, раскрой, пошив, обивка и сборка': 'Video: how we make furniture — frame, cutting, sewing, upholstery and assembly', 'Остановить видео ателье': 'Stop the atelier video',
  'Instagram @ricca.designs (откроется в новой вкладке)': 'Instagram @ricca.designs (opens in a new tab)', 'Шоурум в 2ГИС (откроется в новой вкладке)': 'Showroom on 2GIS (opens in a new tab)',
@@ -90,6 +89,15 @@ ATTR = {
  'Механизм, опоры, посадка': 'Mechanism, legs, seating', 'Варианты': 'Options', 'Подробности': 'Details', 'Закрыть корзину': 'Close cart', 'Позиции в корзине': 'Cart lines',
  'Например, Алматы': 'e.g. London', 'Сроки, адрес доставки, удобное время для связи': 'Lead time, delivery address, best time to contact',
 }
+
+# --- фрагменты разметки, где в английском другой порядок слов: ↗ у ELUNA «приклеена» к последнему слову названия (.tile__nw),
+#     а последнее слово в EN другое («ELUNA mattresses»). Заменяем до перевода узлов — иначе «Матрасы» останется непереведённым
+FRAG = [
+ ('<span class="tile__name">Матрасы <span class="tile__nw">ELUNA<svg', '<span class="tile__name">ELUNA <span class="tile__nw">mattresses<svg'),
+]
+for a, b in FRAG:
+    assert s.count(a) == 1, f'нет в index.html: {a[:70]}'
+    s = s.replace(a, b)
 
 # --- тексты: только внутри <body>, узел за узлом (пробелы по краям сохраняем)
 head, body = s[:s.index('<body')], s[s.index('<body'):]
