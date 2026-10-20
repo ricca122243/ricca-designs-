@@ -435,7 +435,10 @@ export function layoutSheet(cfg, partsResult, opts = {}) {
   const src = partsResult || partsOf(type, params);
   /* копия с габаритом каждой детали в мире (исходник не меняем) */
   /* одеяло и подушки кровати (decor) и утопленные опоры (support) — не на чертеже */
-  const pr = { ...src, items: src.items.filter((it) => !it.decor && !it.support).map((it) => ({ ...it, _bb: itemBounds(it) })), dims: chainTexts(src.dims.map((d) => ({ ...d }))) };
+  /* точная модель (как на фото): рисунок — настоящая форма, а цепочки размеров собраны по деталям конструктора и с ней не
+     совпадают (секции, подлокотники) — оставляем только габариты: ширину, глубину, высоту */
+  const dimsSrc = cfg.exact ? src.dims.filter((d) => !(d.tier >= 1) && /^(Ширина|Глубина|Высота|Длина|Длина шезлонга)$/.test(d.label)) : src.dims;
+  const pr = { ...src, items: src.items.filter((it) => !it.decor && !it.support).map((it) => ({ ...it, _bb: itemBounds(it) })), dims: chainTexts(dimsSrc.map((d) => ({ ...d }))) };
   const all = boundsOf(pr.items.flatMap((it) => [it._bb.min, it._bb.max]));
   pr._bounds = all;
 
@@ -906,6 +909,111 @@ function pencilSketch(src, { outline = 1 } = {}) {
   return { canvas: c, box: x1 > x0 ? [x0, y0, x1, y1] : [0, 0, W, H] };
 }
 
+/* Эскиз по проходам 3D (stage.snapshot passes): как рисует художник —
+   • линии: силуэт, сгибы (резкая смена направления поверхности по нормалям), заходы одной детали за другую (скачок глубины);
+     линия слегка «дрожит» (плавный шум смещения) и меняет нажим;
+   • светотень: свет сверху-слева в осях камеры по нормалям (форма, а не цвет ткани) × затенение из обычного кадра (складки,
+     контакт подушек), растушёвка графитом со штрихом 35°, в глубокой тени — перекрёстный;
+   • тень на полу — штрихом (из обычного кадра на пурпурном фоне). Снаружи изделия прозрачно, внутри — бумага. */
+function pencilFromPasses(colorBmp, normalCv, depthCv, { lineW = 1 } = {}) {
+  const W = normalCv.width, H = normalCv.height, N = W * H;
+  const rd = (src) => { const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(src, 0, 0, W, H); return g.getImageData(0, 0, W, H).data; };
+  const nP = rd(normalCv), dP = rd(depthCv), cP = rd(colorBmp);
+  const M = new Uint8Array(N), NX = new Float32Array(N), NY = new Float32Array(N), NZ = new Float32Array(N), D = new Float32Array(N), CL = new Float32Array(N), SH = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    const r = nP[i * 4], g = nP[i * 4 + 1], b = nP[i * 4 + 2];
+    const bg = g < 8 && r > 245 && b > 245;
+    M[i] = bg ? 0 : 1;
+    if (!bg) { let x = r / 127.5 - 1, y = g / 127.5 - 1, z = b / 127.5 - 1; const l = Math.hypot(x, y, z) || 1; NX[i] = x / l; NY[i] = y / l; NZ[i] = z / l; }
+    D[i] = dP[i * 4] / 255;
+    const cr = cP[i * 4], cg = cP[i * 4 + 1], cb = cP[i * 4 + 2];
+    CL[i] = (0.2126 * cr + 0.7152 * cg + 0.0722 * cb) / 255;
+    SH[i] = cr - cg > 45 && cb - cg > 45 ? (cr + cb) / 510 : 1;          // пурпурный фон обычного кадра: темнее — тень
+  }
+  const sm = (x, a, b) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+  const blur = (a, rad) => {
+    const t = new Float32Array(N), o = new Float32Array(a);
+    for (let pass = 0; pass < 2; pass++) {
+      for (let y = 0; y < H; y++) { let acc = 0, n = 0; for (let x = -rad; x < W + rad; x++) { if (x + rad < W) { acc += o[y * W + x + rad]; n++; } if (x - rad - 1 >= 0) { acc -= o[y * W + x - rad - 1]; n--; } if (x >= 0 && x < W) t[y * W + x] = acc / n; } }
+      for (let x = 0; x < W; x++) { let acc = 0, n = 0; for (let y = -rad; y < H + rad; y++) { if (y + rad < H) { acc += t[(y + rad) * W + x]; n++; } if (y - rad - 1 >= 0) { acc -= t[(y - rad - 1) * W + x]; n--; } if (y >= 0 && y < H) o[y * W + x] = acc / n; } }
+    }
+    return o;
+  };
+  let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  /* линии: сгиб (угол между соседними нормалями), скачок глубины, край изделия */
+  const LN = new Float32Array(N);
+  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+    const i = y * W + x;
+    let crease = 0, dd = 0, edge = 0;
+    for (const j of [i + 1, i + W, i + W + 1, i + W - 1]) {
+      if (M[i] !== M[j]) { edge = 1; continue; }
+      if (!M[i]) continue;
+      crease = Math.max(crease, 1 - (NX[i] * NX[j] + NY[i] * NY[j] + NZ[i] * NZ[j]));
+      dd = Math.max(dd, Math.abs(D[i] - D[j]));
+    }
+    LN[i] = Math.max(edge * 1.25, sm(crease, 0.035, 0.16) * 0.85, sm(dd, 0.01, 0.035) * 1.1);   // силуэт и заходы — нажим сильнее
+  }
+  /* толщина и мягкость линии; «дрожание» руки — плавный шум смещения ±1,4 px */
+  const LT = blur(LN, Math.max(1, Math.round(lineW)));
+  const n1 = new Float32Array(N), n2a = new Float32Array(N); for (let i = 0; i < N; i++) { n1[i] = rnd() - 0.5; n2a[i] = rnd() - 0.5; }
+  const WX = blur(n1, 14), WY = blur(n2a, 14); let wm = 0; for (let i = 0; i < N; i += 7) wm = Math.max(wm, Math.abs(WX[i]), Math.abs(WY[i]));
+  const wk = 1.4 / (wm || 1);
+  const PR = blur(Float32Array.from(n1, (v) => v), 22);                    // сила нажима вдоль линии
+  /* затенение из обычного кадра: яркость относительно светлых мест изделия (складки, контакт деталей) */
+  const hist = new Uint32Array(256); let cnt = 0;
+  for (let i = 0; i < N; i++) if (M[i]) { hist[Math.min(255, (CL[i] * 255) | 0)]++; cnt++; }
+  let acc = 0, ref = 1; for (let k = 0; k < 256; k++) { acc += hist[k]; if (acc >= 0.97 * cnt) { ref = Math.max(0.05, k / 255); break; } }
+  let shRef = 0; for (let i = 0; i < N; i++) if (!M[i] && SH[i] > shRef) shRef = SH[i];
+  /* штрих — плитка 256 × 256 */
+  const T = 256;
+  const streak = (deg, len) => {
+    const n = new Float32Array(T * T); for (let i = 0; i < T * T; i++) n[i] = rnd();
+    const a = (deg * Math.PI) / 180, dx = Math.cos(a), dy = -Math.sin(a), out = new Float32Array(T * T);
+    let su = 0, sq = 0;
+    for (let y = 0; y < T; y++) for (let x = 0; x < T; x++) {
+      let s = 0; for (let k = -len; k <= len; k++) s += n[(((y + Math.round(k * dy)) % T + T) % T) * T + (((x + Math.round(k * dx)) % T + T) % T)];
+      const v = s / (2 * len + 1); out[y * T + x] = v; su += v; sq += v * v;
+    }
+    const mu = su / (T * T), sd = Math.sqrt(sq / (T * T) - mu * mu) || 1;
+    for (let i = 0; i < T * T; i++) out[i] = (out[i] - mu) / sd;
+    return out;
+  };
+  const S1 = streak(38, 18), S2 = streak(128, 14), S3 = streak(38, 6);
+  const Lx = -0.45, Ly = 0.6, Lz = 0.72, Ll = Math.hypot(Lx, Ly, Lz);   // свет сверху-слева, чуть от зрителя: обращённое к нам — светлое
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d'); const out = g.createImageData(W, H), o = out.data;
+  const P0 = [244, 243, 240], G0 = 36;
+  let bx0 = W, by0 = H, bx1 = 0, by1 = 0;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x, ti = (y % T) * T + (x % T);
+    const sx = Math.min(W - 1, Math.max(0, Math.round(x + WX[i] * wk))), sy = Math.min(H - 1, Math.max(0, Math.round(y + WY[i] * wk)));
+    const li = sy * W + sx;
+    const line = sm(LT[li], 0.08, 0.42) * (0.82 + 0.18 * Math.max(-1, Math.min(1, PR[li] * 40)));
+    let ink, a;
+    if (M[i]) {
+      if (x < bx0) bx0 = x; if (x > bx1) bx1 = x; if (y < by0) by0 = y; if (y > by1) by1 = y;
+      const diff = Math.max(0, (NX[i] * Lx + NY[i] * Ly + NZ[i] * Lz) / Ll);
+      const ao = Math.min(1, CL[i] / ref);
+      const lit = (0.15 + 0.85 * diff) * (0.6 + 0.4 * ao);
+      const t = 1 - lit;                                               // 0 — свет, 1 — глубокая тень
+      let sh = Math.pow(sm(t, 0.34, 0.95), 1.3) * 0.5;                // свет — почти чистая бумага, тень собирается у краёв и на теневой стороне
+      sh *= 0.78 + 0.26 * S1[ti] + 0.08 * S3[ti];
+      sh += 0.1 * Math.max(0, S2[ti]) * sm(t, 0.62, 0.92);
+      sh += 0.09 * sm(t, 0.12, 0.55) * (0.85 + 0.15 * S3[ti]);       // мягкая растушёвка полутона — объём без штриха
+      ink = Math.min(1, Math.max(0, Math.max(sh, line)));
+      o[i * 4] = P0[0] * (1 - ink) + G0 * ink; o[i * 4 + 1] = P0[1] * (1 - ink) + G0 * ink; o[i * 4 + 2] = P0[2] * (1 - ink) + G0 * ink; a = 255;
+    } else {
+      const shd = sm(1 - SH[i] / (shRef || 1), 0.05, 0.4);
+      const h = shd * (0.42 + 0.34 * Math.max(0, S1[ti]) + 0.26 * Math.max(0, S2[ti]) * sm(shd, 0.35, 0.75));
+      ink = Math.min(1, Math.max(line, h));
+      o[i * 4] = G0; o[i * 4 + 1] = G0; o[i * 4 + 2] = G0; a = 255 * ink;
+    }
+    o[i * 4 + 3] = a;
+  }
+  g.putImageData(out, 0, 0);
+  return { canvas: c, box: bx1 > bx0 ? [bx0, by0, bx1, by1] : [0, 0, W, H] };
+}
+
 /* размеры на эскизе: рёбра габарита в перспективе (ширина — по фронту внизу, глубина — по видимому боку, высота — у дальнего
    переднего угла), вынесены наружу от центра изделия; P — точки снимка (stage.snapshot project) */
 function sketchDims(P, cam, box, bb) {
@@ -930,14 +1038,19 @@ export async function render(cfg, { stage = null, render3q = null } = {}) {
   const params = normalize(type, cfg.params || {});
   const pr = partsOf(type, params);
   let render3qDataUrl = null, swatchDataUrl = null, sketch = null;
+  /* телефон: снимки эскиза меньше (≈ вдвое меньше точек) — чертёж готов быстрее; на листе A4 разница не видна */
+  const SK = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches ? 0.72 : 1;
+  const breath = () => new Promise((r) => setTimeout(r, 0));     // между тяжёлыми шагами — отдать кадр интерфейсу
   try {
     if (render3q) render3qDataUrl = typeof render3q === 'string' && render3q.startsWith('data:') ? render3q : await imageToJpegDataUrl(render3q, 1200, 850, 0.9);
     else if (stage && stage.snapshot) {
       const b = stage.box, a = b.min, z = b.max;
       const pts = [[a.x, a.y, z.z], [z.x, a.y, z.z], [a.x, a.y, a.z], [z.x, a.y, a.z], [a.x, z.y, z.z], [z.x, z.y, z.z], [a.x, z.y, a.z], [z.x, z.y, a.z], [(a.x + z.x) / 2, (a.y + z.y) / 2, (a.z + z.z) / 2]];
-      const shot = await stage.snapshot({ width: 1400, height: 1000, view: '3q', watermark: false, background: PENCIL_KEY, project: pts });
+      const shot = await stage.snapshot({ width: Math.round(1400 * SK), height: Math.round(1000 * SK), view: '3q', watermark: false, background: PENCIL_KEY, clay: true, passes: true, project: pts });
       if (shot && shot.blob) {
-        const pen = pencilSketch(await createImageBitmap(shot.blob));
+        if (globalThis.__RICCA_SKETCH_DEBUG) Object.assign(globalThis.__RICCA_SKETCH_DEBUG, { raw3q: shot.blob, normal3q: shot.normal, depth3q: shot.depth });   // проверка эскиза (тесты)
+        const bmp = await createImageBitmap(shot.blob);
+        const pen = shot.normal ? pencilFromPasses(bmp, shot.normal, shot.depth, { lineW: 1 }) : pencilSketch(bmp);
         const dims = sketchDims(shot.points, shot.camera, b, pr.bbox);
         /* кадр: изделие + вынесенные размеры (+ место под цифры), поля 3 % */
         let [x0, y0, x1, y1] = pen.box;
@@ -966,9 +1079,11 @@ export async function render(cfg, { stage = null, render3q = null } = {}) {
       const z = same ? { x: nd.max[0] + sh[0], y: nd.max[1] + sh[1], z: nd.max[2] + sh[2] } : sb.max;
       const c8 = [[a.x, a.y, a.z], [z.x, a.y, a.z], [a.x, z.y, a.z], [z.x, z.y, a.z], [a.x, a.y, z.z], [z.x, a.y, z.z], [a.x, z.y, z.z], [z.x, z.y, z.z]];
       for (const v of ['front', 'side', 'top']) {
-        const shot = await stage.snapshot({ width: 1600, height: 1100, view: v, watermark: false, background: PENCIL_KEY, project: c8 });
+        await breath();
+        const shot = await stage.snapshot({ width: Math.round(1600 * SK), height: Math.round(1100 * SK), view: v, watermark: false, background: PENCIL_KEY, clay: true, passes: true, project: c8 });
         if (!shot || !shot.blob) continue;
-        const pen = pencilSketch(await createImageBitmap(shot.blob), { outline: 1.4 });
+        const bmp = await createImageBitmap(shot.blob);
+        const pen = shot.normal ? pencilFromPasses(bmp, shot.normal, shot.depth, { lineW: 1 }) : pencilSketch(bmp, { outline: 1.4 });
         const xs = shot.points.map((q) => q[0]), ys = shot.points.map((q) => q[1]);
         const r = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
         const W0 = pen.canvas.width, H0 = pen.canvas.height, mx = (r[2] - r[0]) * 0.06, my = (r[3] - r[1]) * 0.08;
@@ -1000,4 +1115,5 @@ export async function render(cfg, { stage = null, render3q = null } = {}) {
   return { svg, toPNG, scale: res.scale, id: res.id, layout: res };
 }
 
+export { pencilFromPasses };
 export default { layoutSheet, render, checkOverlaps, textWidth };

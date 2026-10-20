@@ -859,7 +859,7 @@ function drawingCfg() {
   const d = new Date();
   return {
     ...cfgState(), id: id(), title: titleOf(state.type, state.params), lines: summaryLines(cfgState(), { dims: curDims() }),
-    notes: state.notes.slice(), dims: curDims(), date: `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`,
+    notes: state.notes.slice(), dims: curDims(), exact: !!(exact && exact.id === activeModel), date: `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`,
   };
 }
 async function openDrawing() {

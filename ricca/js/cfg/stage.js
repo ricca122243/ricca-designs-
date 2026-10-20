@@ -468,7 +468,47 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   function setStudio(on) { studioOn = !!on; studio.visible = studioOn; if (studioOn) scene.background = bgDirect; requestRender(); }
 
   /* ---------- снимок ---------- */
-  async function snapshot({ width = 2400, height = 1600, view: sv = '3q', watermark = true, background = BG, project = null } = {}) {
+  /* «Глина» для эскиза чертежа (js/cfg/drawing.js): ровный светло-серый материал без рисунка ткани и направленный свет с глубокой
+     тенью — карандаш передаёт форму, а не цвет; тёмный металл ножек — тёмной глиной. Всё возвращается после снимка */
+  const CLAY = new THREE.MeshStandardMaterial({ color: 0xd9d6d0, roughness: 0.8, metalness: 0 });
+  const CLAY_DARK = new THREE.MeshStandardMaterial({ color: 0x2c2c2c, roughness: 0.55, metalness: 0 });
+  function enterClay() {
+    const saved = { env: scene.environmentIntensity, hemi: hemi.intensity, key: key.intensity, fill: fill.intensity, rim: rim.intensity, fo: floor.material.opacity, mats: [] };
+    scene.environmentIntensity = 0.22; hemi.intensity = 0.16; key.intensity = LIGHT.key * 1.9; fill.intensity = 0.1; rim.intensity = 0.28; floor.material.opacity = 0.42;
+    root.traverse((o) => {
+      if (!o.isMesh || !o.material) return;
+      const m = Array.isArray(o.material) ? o.material[0] : o.material, c = m.color;
+      const lum = c ? 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b : 0.5;
+      saved.mats.push([o, o.material]);
+      o.material = lum < 0.06 && !m.map ? CLAY_DARK : CLAY;
+    });
+    return () => {
+      scene.environmentIntensity = saved.env; hemi.intensity = saved.hemi; key.intensity = saved.key; fill.intensity = saved.fill; rim.intensity = saved.rim; floor.material.opacity = saved.fo;
+      for (const [o, m] of saved.mats) o.material = m;
+    };
+  }
+  /* проходы для карандашного эскиза: нормали (в осях камеры) и глубина — тем же ракурсом; без пола и тени, без тон-маппинга */
+  const NORMAL_MAT = new THREE.MeshNormalMaterial();
+  const DEPTH_MAT = new THREE.MeshDepthMaterial();
+  function sketchPasses(cam, RW, RH, width, height) {
+    const prev = { bg: scene.background, cs: renderer.outputColorSpace, tm: renderer.toneMapping, studio: studio.visible, ov: scene.overrideMaterial, near: cam.near, far: cam.far };
+    const grab = () => { const c = document.createElement('canvas'); c.width = width; c.height = height; c.getContext('2d').drawImage(canvas, 0, 0, RW, RH, 0, 0, width, height); return c; };
+    try {
+      studio.visible = false; renderer.outputColorSpace = THREE.LinearSRGBColorSpace; renderer.toneMapping = THREE.NoToneMapping;
+      scene.background = new THREE.Color(1, 0, 1);
+      scene.overrideMaterial = NORMAL_MAT; renderer.render(scene, cam); const normal = grab();
+      /* глубина: близкая и дальняя плоскости — вплотную к изделию (256 уровней на габарит — видны щели между подушками) */
+      const sph = box.getBoundingSphere(new THREE.Sphere()), d = cam.position.distanceTo(sph.center);
+      cam.near = Math.max(0.01, d - sph.radius * 1.05); cam.far = d + sph.radius * 1.05; cam.updateProjectionMatrix();
+      scene.background = new THREE.Color(0, 0, 0);
+      scene.overrideMaterial = DEPTH_MAT; renderer.render(scene, cam); const depth = grab();
+      return { normal, depth };
+    } finally {
+      scene.overrideMaterial = prev.ov; scene.background = prev.bg; renderer.outputColorSpace = prev.cs; renderer.toneMapping = prev.tm; studio.visible = prev.studio;
+      cam.near = prev.near; cam.far = prev.far; cam.updateProjectionMatrix();
+    }
+  }
+  async function snapshot({ width = 2400, height = 1600, view: sv = '3q', watermark = true, background = BG, project = null, clay = false, passes = false } = {}) {
     const prevSize = renderer.getSize(new THREE.Vector2()), prevPR = renderer.getPixelRatio();
     const maxTex = renderer.capabilities.maxTextureSize || 4096;
     const ss = Math.min(2, Math.floor(maxTex / Math.max(width, height) * 10) / 10) || 1;
@@ -498,6 +538,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     renderer.setPixelRatio(1); renderer.setSize(RW, RH, false);
     const out = document.createElement('canvas'); out.width = width; out.height = height;
     const g = out.getContext('2d');
+    const leaveClay = clay ? enterClay() : null;
+    let extra = null;
     try {
       if (aoMode !== 'off' && ensureComposer()) {
         composer.setPixelRatio(1); composer.setSize(RW, RH);
@@ -506,7 +548,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       } else renderer.render(scene, cam);
       g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
       g.drawImage(canvas, 0, 0, RW, RH, 0, 0, width, height);
+      if (passes) extra = sketchPasses(cam, RW, RH, width, height);
     } finally {
+      if (leaveClay) leaveClay();
       scene.background = prevBg;
       key.shadow.mapSize.copy(prevMap); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; }
       renderer.shadowMap.needsUpdate = true;
@@ -524,7 +568,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       g.fillStyle = 'rgba(17,17,17,0.72)'; g.textBaseline = 'alphabetic';
       g.fillText('RICCA DESIGNS', Math.round(height * 0.04), Math.round(height - height * 0.04));
     }
-    return new Promise((res) => out.toBlob((b) => res(points ? { blob: b, points, camera: cam.position.toArray() } : b), 'image/png'));
+    return new Promise((res) => out.toBlob((b) => res(points || extra ? { blob: b, points, camera: cam.position.toArray(), ...(extra || {}) } : b), 'image/png'));
   }
 
   const offMat = onMaterialUpdate(() => requestRender());
