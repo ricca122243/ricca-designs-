@@ -505,7 +505,7 @@ text{font-family:${FONT};fill:${INK}}
 .o2{fill:none;stroke:${INK};stroke-width:.16;stroke-opacity:.45;stroke-linejoin:round;stroke-linecap:round}
 .cl{fill:none;stroke:#8E8E8E;stroke-width:.1;stroke-linecap:round}
 .hd{fill:none;stroke:${INK};stroke-width:.18;stroke-dasharray:1.5 1}
-.dl{fill:none;stroke:#4A4A4A;stroke-width:.15;stroke-linecap:round}
+.dl{fill:none;stroke:#3A3A3A;stroke-width:.15;stroke-linecap:butt;shape-rendering:geometricPrecision}
 .tk{fill:none;stroke:${INK};stroke-width:.3;stroke-linecap:round}
 .fl{fill:none;stroke:${INK};stroke-width:.22;stroke-linecap:round}
 .hand{font-family:${HAND};font-weight:500;fill:#333}
@@ -549,12 +549,12 @@ text{font-family:${FONT};fill:${INK}}
       if (V.view !== 'top') W(`<rect x="${n2(-V.Wv * 0.05)}" y="${n2(-V.Hv * 0.1)}" width="${n2(V.Wv * 1.09)}" height="${n2(V.Hv * 0.62)}" fill="url(#hxx)"/>`);
       const kx = V.Wv / (vp.rect[2] - vp.rect[0]), ky = V.Hv / (vp.rect[3] - vp.rect[1]);
       W(`<image x="${n2(-vp.rect[0] * kx)}" y="${n2(-vp.rect[1] * ky)}" width="${n2(vp.w * kx)}" height="${n2(vp.h * ky)}" preserveAspectRatio="none" xlink:href="${vp.url}" href="${vp.url}"/>`);
-      if (V.view !== 'top') W(`<line class="fl" filter="url(#pn)" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
+      if (V.view !== 'top') W(`<line class="fl" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
     }
     /* пол и тень штриховкой под изделием */
     if (V.view !== 'top' && !vp) {
       W(`<rect x="${n2(-1.5)}" y="${n2(V.Hv)}" width="${n2(V.Wv + 3)}" height="2.6" fill="url(#hx)" mask="url(#fadeM)"/>`);
-      W(`<line class="fl" filter="url(#pn)" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
+      W(`<line class="fl" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
     }
     W(`<g filter="url(#pn)">`);
     /* детали: дальние → ближние; простёжка изголовья — сразу после него (ближние детали её закрывают) */
@@ -613,7 +613,7 @@ text{font-family:${FONT};fill:${INK}}
     }
     /* размеры */
     for (const p of V.placed) {
-      W(`<path class="dl" filter="url(#pn)" d="M${n2(p.dl[0])} ${n2(p.dl[1])}L${n2(p.dl[2])} ${n2(p.dl[3])}${p.ext.map((s) => `M${n2(s[0])} ${n2(s[1])}L${n2(s[2])} ${n2(s[3])}`).join('')}"/>`);
+      W(`<path class="dl" d="M${n2(p.dl[0])} ${n2(p.dl[1])}L${n2(p.dl[2])} ${n2(p.dl[3])}${p.ext.map((s) => `M${n2(s[0])} ${n2(s[1])}L${n2(s[2])} ${n2(s[3])}`).join('')}"/>`);
       const ticks = p.e.orient === 'h' ? [[p.e.c1, p.line], [p.e.c2, p.line]] : [[p.line, p.e.c1], [p.line, p.e.c2]];
       /* засечки 45°; на очень коротких размерах (< 2,4 мм) — точки, чтобы засечки не слипались */
       if (p.e.c2 - p.e.c1 < 2.4) W(ticks.map(([x, y]) => `<circle cx="${n2(x)}" cy="${n2(y)}" r=".32" fill="${INK}"/>`).join(''));
@@ -676,13 +676,13 @@ text{font-family:${FONT};fill:${INK}}
       bx0 = Math.max(cx0 + 3, o0[0] - ow * 0.05); bx1 = Math.min(cx1 - 3, o1[0] + ow * 0.03); by0 = Math.max(ay + 1, o0[1] - oh * 0.12); by1 = o0[1] + oh * 0.55;
     }
     W(`<rect x="${n2(bx0)}" y="${n2(by0)}" width="${n2(bx1 - bx0)}" height="${n2(by1 - by0)}" fill="url(#hxx)"/>`);
-    W(`<path class="cl" filter="url(#pn)" d="M${n2(bx0 - 3)} ${n2(by0)}H${n2(bx1 + 2)}M${n2(bx0)} ${n2(by0 - 2.5)}V${n2(by1 + 3)}M${n2(bx1)} ${n2(by0 - 3)}V${n2(by1 + 2)}M${n2(bx0 - 2)} ${n2(by1)}H${n2(bx1 + 3)}"/>`);
+    W(`<path class="cl" d="M${n2(bx0 - 3)} ${n2(by0)}H${n2(bx1 + 2)}M${n2(bx0)} ${n2(by0 - 2.5)}V${n2(by1 + 3)}M${n2(bx1)} ${n2(by0 - 3)}V${n2(by1 + 2)}M${n2(bx0 - 2)} ${n2(by1)}H${n2(bx1 + 3)}"/>`);
     /* линии построения: рёбра габаритного «ящика» в перспективе с выходом за углы — как в эскизе от руки (за рисунком) */
     if (sk && sk.box8) {
       const P8 = sk.box8.map(M), E = [[0, 1], [1, 3], [3, 2], [2, 0], [0, 4], [1, 5], [2, 6], [3, 7], [4, 5], [5, 7], [7, 6], [6, 4]];
       const ext = (p, q, f) => [p[0] + (p[0] - q[0]) * f, p[1] + (p[1] - q[1]) * f];
       W(`<clipPath id="rc"><rect x="${n2(cx0 + 1)}" y="${n2(FRAME.y0 + 1)}" width="${n2(cw - 2)}" height="${n2(renderH - 2)}"/></clipPath>`);
-      W(`<path class="cl" clip-path="url(#rc)" filter="url(#pn)" style="stroke:#A3A3A3;stroke-width:.09" d="${E.map(([i, j]) => { const a = ext(P8[i], P8[j], 0.14), b = ext(P8[j], P8[i], 0.14); return `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`; }).join('')}"/>`);
+      W(`<path class="cl" clip-path="url(#rc)" style="stroke:#A3A3A3;stroke-width:.09" d="${E.map(([i, j]) => { const a = ext(P8[i], P8[j], 0.14), b = ext(P8[j], P8[i], 0.14); return `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`; }).join('')}"/>`);
     }
     W(`<image x="${n2(ax)}" y="${n2(ay)}" width="${n2(aw)}" height="${n2(ah)}" preserveAspectRatio="xMidYMid meet" xlink:href="${opts.render3qDataUrl}" href="${opts.render3qDataUrl}"/>`);
     if (sk) for (const d of sk.dims) {
@@ -691,7 +691,7 @@ text{font-family:${FONT};fill:${INK}}
       const tick = (q) => `M${n2(q[0] - (ux - uy) * 0.7)} ${n2(q[1] - (uy + ux) * 0.7)}L${n2(q[0] + (ux - uy) * 0.7)} ${n2(q[1] + (uy + ux) * 0.7)}`;
       /* выносные — с зазором от изделия (как в черчении): от 40 % выноса до чуть дальше размерной */
       const ga = [a[0] + (ea[0] - a[0]) * 0.4, a[1] + (ea[1] - a[1]) * 0.4], gb = [b[0] + (eb[0] - b[0]) * 0.4, b[1] + (eb[1] - b[1]) * 0.4];
-      W(`<path class="dl" filter="url(#pn)" d="M${n2(ga[0])} ${n2(ga[1])}L${n2(ea[0] + n[0] * o)} ${n2(ea[1] + n[1] * o)}M${n2(gb[0])} ${n2(gb[1])}L${n2(eb[0] + n[0] * o)} ${n2(eb[1] + n[1] * o)}M${n2(ea[0] - ux * 1.2)} ${n2(ea[1] - uy * 1.2)}L${n2(eb[0] + ux * 1.2)} ${n2(eb[1] + uy * 1.2)}"/>`);
+      W(`<path class="dl" d="M${n2(ga[0])} ${n2(ga[1])}L${n2(ea[0] + n[0] * o)} ${n2(ea[1] + n[1] * o)}M${n2(gb[0])} ${n2(gb[1])}L${n2(eb[0] + n[0] * o)} ${n2(eb[1] + n[1] * o)}M${n2(ea[0] - ux * 1.2)} ${n2(ea[1] - uy * 1.2)}L${n2(eb[0] + ux * 1.2)} ${n2(eb[1] + uy * 1.2)}"/>`);
       W(`<path class="tk" d="${tick(ea)}${tick(eb)}"/>`);
       let deg = (ang * 180) / Math.PI; if (deg > 60) deg -= 180; if (deg <= -120) deg += 180;   // вертикаль — снизу вверх, как в черчении
       const t = [(ea[0] + eb[0]) / 2 + n[0] * 1.9, (ea[1] + eb[1]) / 2 + n[1] * 1.9];
