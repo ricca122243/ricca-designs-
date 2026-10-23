@@ -787,7 +787,7 @@ window.RICCA_CATALOG = [
     type: "Кровать",
     subtitle: "С подъёмным механизмом",
     photos: [
-      {"src": "img/catalog/p-bed-21-hd.webp", "src600": "img/catalog/p-bed-21-hd-600.webp", "alt": "Кровать — на светлом фоне", "studio": true, "box": [0.578, 0.259], "w": 1800, "h": 1350}
+      {"src": "img/catalog/p-bed-21.webp", "src600": "img/catalog/p-bed-21-600.webp", "alt": "Кровать — на светлом фоне", "studio": true, "box": [0.578, 0.259], "w": 1200, "h": 900}
     ],
     description: "Изголовье с округлой контрастной боковиной.",
     options: ["Подъёмный механизм", "Размер под матрас", "Ткань или кожа"],
@@ -889,7 +889,7 @@ window.RICCA_CATALOG = [
     type: "Кресло",
     subtitle: "На низком цоколе",
     photos: [
-      {"src": "img/catalog/p-armchair-08-hd.webp", "src600": "img/catalog/p-armchair-08-hd-600.webp", "alt": "Кресло в розовом букле — на светлом фоне", "studio": true, "box": [0.74, 0.684], "w": 1800, "h": 1350},
+      {"src": "img/catalog/p-armchair-08.webp", "src600": "img/catalog/p-armchair-08-600.webp", "alt": "Кресло в розовом букле — на светлом фоне", "studio": true, "box": [0.74, 0.684], "w": 1200, "h": 900},
       {"src": "img/catalog/p-armchair-08-2-hd.webp", "src600": "img/catalog/p-armchair-08-2-hd-600.webp", "alt": "Кресло в оливковой ткани — на светлом фоне", "studio": true, "box": [0.74, 0.683], "w": 1800, "h": 1350},
       {"src": "img/catalog/p-armchair-08-3-hd.webp", "src600": "img/catalog/p-armchair-08-3-hd-600.webp", "alt": "Кресло в оливковой ткани, вид спереди — на светлом фоне", "studio": true, "box": [0.726, 0.76], "w": 1800, "h": 1350}
     ],
@@ -910,7 +910,7 @@ window.RICCA_CATALOG = [
     type: "Кресло",
     subtitle: "Округлое",
     photos: [
-      {"src": "img/catalog/p-armchair-09-hd.webp", "src600": "img/catalog/p-armchair-09-hd-600.webp", "alt": "Кресло в зелёной ткани в мелкую клетку — на светлом фоне", "studio": true, "box": [0.699, 0.76], "w": 1800, "h": 1350},
+      {"src": "img/catalog/p-armchair-09.webp", "src600": "img/catalog/p-armchair-09-600.webp", "alt": "Кресло в зелёной ткани в мелкую клетку — на светлом фоне", "studio": true, "box": [0.699, 0.76], "w": 1200, "h": 900},
       {"src": "img/catalog/p-armchair-09-2-hd.webp", "src600": "img/catalog/p-armchair-09-2-hd-600.webp", "alt": "Кресло, вид спереди — на светлом фоне", "studio": true, "box": [0.605, 0.76], "w": 1800, "h": 1350}
     ],
     description: "Глубокое округлое кресло: спинка плавно переходит в подлокотники.",
@@ -1417,7 +1417,7 @@ window.RICCA_CATALOG = [
     type: "Кресло",
     subtitle: "Округлое · на основании-диске, букле",
     photos: [
-      {"src": "img/catalog/p-armchair-15-hd.webp", "src600": "img/catalog/p-armchair-15-hd-600.webp", "alt": "Округлое кресло в белом букле на основании-диске, вид со спины — на светлом фоне", "studio": true, "box": [0.554, 0.76], "w": 1800, "h": 1350}
+      {"src": "img/catalog/p-armchair-15.webp", "src600": "img/catalog/p-armchair-15-600.webp", "alt": "Округлое кресло в белом букле на основании-диске, вид со спины — на светлом фоне", "studio": true, "box": [0.554, 0.76], "w": 1200, "h": 900}
     ],
     description: "Округлое кресло-бочонок в букле: цельная обволакивающая спинка, свободная подушка и низкое основание-диск. Красиво смотрится с любой стороны — можно ставить в центре комнаты.",
     options: ["Округлое", "Основание-диск", "Букле или другая ткань"],
@@ -1694,7 +1694,7 @@ window.RICCA_CATALOG = [
     type: "Кресло",
     subtitle: "Широкое · букле, на металлических ножках",
     photos: [
-      {"src": "img/catalog/p-armchair-16-hd.webp", "src600": "img/catalog/p-armchair-16-hd-600.webp", "alt": "Широкое кресло в чёрном букле на чёрных металлических ножках — на светлом фоне", "studio": true, "box": [0.74, 0.72], "w": 1800, "h": 1350}
+      {"src": "img/catalog/p-armchair-16.webp", "src600": "img/catalog/p-armchair-16-600.webp", "alt": "Широкое кресло в чёрном букле на чёрных металлических ножках — на светлом фоне", "studio": true, "box": [0.74, 0.72], "w": 1200, "h": 900}
     ],
     description: "Широкое кресло с мягкой подушкой спинки и строгими подлокотниками на чёрных металлических ножках. Показано в чёрном букле — глубокая, спокойная посадка.",
     options: ["Широкая посадка", "Металлические ножки", "Букле или другая ткань"],
