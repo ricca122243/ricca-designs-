@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>RICCA BARBER — барбершоп в Алматы. Онлайн-запись</title>
-<meta name="description" content="Барбершоп в Алматы: мужские стрижки, борода, бритьё. Выберите причёску и запишитесь онлайн за минуту.">
+<title>Barber Shop 86 — барбершоп в Алматы. Онлайн-запись</title>
+<meta name="description" content="Barber Shop 86: три барбершопа в Алматы. Стрижки, борода, бритьё, завивка. Выберите причёску и запишитесь онлайн за минуту.">
 <meta name="theme-color" content="#0e0d0c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap">
@@ -13,11 +13,12 @@
 <body>
 
 <header class="nav" id="nav">
-  <a class="logo" href="#top"><span class="logo-mark"></span><span class="logo-text">RICCA</span></a>
+  <a class="logo" href="#top"><span class="logo-mark"></span><span class="logo-text">BARBER 86</span></a>
   <nav class="nav-links">
     <a href="#styles">Причёски</a>
     <a href="#prices">Цены</a>
     <a href="#barbers">Мастера</a>
+    <a href="#branches">Филиалы</a>
     <a href="#contacts">Контакты</a>
   </nav>
   <button class="btn btn-sm" data-book>Записаться</button>
@@ -26,22 +27,25 @@
 <main id="top">
 
 <section class="hero">
-  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-bg" aria-hidden="true"><picture><source media="(max-width:700px)" srcset="img/hero-m.webp"><img src="img/hero.webp" alt="" fetchpriority="high"></picture></div>
   <div class="hero-inner">
     <p class="eyebrow" id="heroCity">Барбершоп · Алматы</p>
     <h1>Стрижка,<br>которую<br><em>не хочется<br>прятать</em></h1>
-    <p class="lead">Выберите причёску по фото, мастера и время. Запись занимает меньше минуты, без звонков.</p>
+    <p class="lead">Три барбершопа в Алматы. Выберите причёску, филиал, мастера и время. Запись занимает меньше минуты, без звонков.</p>
     <div class="hero-cta">
       <button class="btn btn-lg" data-book>Записаться онлайн</button>
       <a class="btn btn-ghost btn-lg" href="#styles">Выбрать причёску</a>
     </div>
     <ul class="hero-facts">
       <li><b id="factHours">10:00–21:00</b><span>без выходных</span></li>
-      <li><b>5.0</b><span>рейтинг в 2ГИС</span></li>
-      <li><b>от 3 500 ₸</b><span>стрижка</span></li>
+      <li><b id="factRating">4.9</b><span id="factRatingSub">637 оценок в 2ГИС</span></li>
+      <li><b>3</b><span>филиала</span></li>
+      <li><b id="factPrice">от 7 000 ₸</b><span>стрижка</span></li>
     </ul>
   </div>
 </section>
+
+<div class="promo" id="promo"></div>
 
 <section class="section" id="styles">
   <div class="section-head">
@@ -55,6 +59,7 @@
       <button class="chip" data-v="short">Короткие</button>
       <button class="chip" data-v="medium">Средние</button>
       <button class="chip" data-v="long">Длинные</button>
+      <button class="chip" data-v="perm">Завивка</button>
       <button class="chip" data-v="beard">Борода</button>
     </div>
     <div class="chip-row" data-group="tag">
@@ -85,6 +90,8 @@
   <div class="grid barbers-grid" id="barbersGrid"></div>
 </section>
 
+<section class="gallery" id="gallery" aria-label="Фото салона"></section>
+
 <section class="section section-dark" id="reviews">
   <div class="section-head">
     <p class="eyebrow">Отзывы</p>
@@ -93,26 +100,16 @@
   <div class="grid reviews-grid" id="reviewsGrid"></div>
 </section>
 
-<section class="section" id="contacts">
+<section class="section" id="branches">
   <div class="section-head">
-    <p class="eyebrow">Контакты</p>
-    <h2>Ждём вас</h2>
+    <p class="eyebrow">Филиалы</p>
+    <h2>Где нас найти</h2>
+    <p class="muted" id="cHours"></p>
   </div>
-  <div class="contacts">
-    <div>
-      <p class="contact-row"><span>Адрес</span><b id="cAddress"></b></p>
-      <p class="contact-row"><span>Часы</span><b id="cHours"></b></p>
-      <p class="contact-row"><span>Телефон</span><a id="cPhone" href="#"></a></p>
-      <div class="contact-links">
-        <a class="btn btn-ghost" id="cWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
-        <a class="btn btn-ghost" id="cMap" href="#" target="_blank" rel="noopener">Открыть в 2ГИС</a>
-        <a class="btn btn-ghost" id="cInst" href="#" target="_blank" rel="noopener">Instagram</a>
-      </div>
-    </div>
-    <div class="contact-cta">
-      <h3>Свободное время есть уже сегодня</h3>
-      <button class="btn btn-lg" data-book>Записаться</button>
-    </div>
+  <div class="grid branches-grid" id="branchesGrid"></div>
+  <div class="contact-cta" id="contacts">
+    <h3>Свободное время есть уже сегодня</h3>
+    <div class="contact-links"><button class="btn btn-lg" data-book>Записаться</button><a class="btn btn-ghost btn-lg" id="cInst" href="#" target="_blank" rel="noopener">Instagram</a></div>
   </div>
 </section>
 
@@ -135,34 +132,37 @@
       <button type="button" class="x" id="bookClose" aria-label="Закрыть">×</button>
     </header>
     <ol class="steps" id="steps">
-      <li class="is-on">Услуга</li><li>Мастер</li><li>Время</li><li>Контакты</li>
+      <li class="is-on">Филиал</li><li>Услуга</li><li>Мастер</li><li>Время</li><li>Контакты</li>
     </ol>
 
     <section class="step is-on" data-step="0">
-      <div class="pick-list" id="pickService"></div>
+      <div class="pick-list" id="pickBranch"></div>
     </section>
     <section class="step" data-step="1">
-      <div class="pick-list" id="pickBarber"></div>
+      <div class="pick-list" id="pickService"></div>
     </section>
     <section class="step" data-step="2">
+      <p class="muted small" style="margin-bottom:10px">Цена зависит от уровня мастера: ведущий или старший барбер.</p>
+      <div class="pick-list" id="pickBarber"></div>
+    </section>
+    <section class="step" data-step="3">
       <div class="days" id="pickDay"></div>
       <div class="slots" id="pickSlot"></div>
       <p class="muted small" id="slotHint"></p>
     </section>
-    <section class="step" data-step="3">
+    <section class="step" data-step="4">
       <label class="field"><span>Имя</span><input type="text" name="name" autocomplete="name" required placeholder="Как к вам обращаться"></label>
       <label class="field"><span>Телефон</span><input type="tel" name="phone" autocomplete="tel" inputmode="tel" required placeholder="+7 7__ ___ __ __"></label>
       <label class="field"><span>Комментарий</span><input type="text" name="note" placeholder="Необязательно"></label>
       <div class="summary" id="summary"></div>
     </section>
-    <section class="step step-done" data-step="4">
+    <section class="step step-done" data-step="5">
       <div class="done">
         <div class="done-icon">✓</div>
         <h3>Заявка готова</h3>
         <p class="muted">Отправьте её нам в WhatsApp одним нажатием. Мы подтвердим время ответным сообщением.</p>
         <a class="btn btn-lg" id="sendWa" href="#" target="_blank" rel="noopener">Отправить в WhatsApp</a>
-        <a class="btn btn-ghost" id="sendTg" href="#" target="_blank" rel="noopener" hidden>Отправить в Telegram</a>
-        <a class="btn btn-ghost" id="addCal" href="#" download="zapis.ics">Добавить в календарь</a>
+                <a class="btn btn-ghost" id="addCal" href="#" download="zapis.ics">Добавить в календарь</a>
       </div>
     </section>
 

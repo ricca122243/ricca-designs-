@@ -6,23 +6,29 @@
   const pad = n => String(n).padStart(2, '0');
   const DOW = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
   const MONTHS = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
-  const LEN = { short: 'Короткие', medium: 'Средние', long: 'Длинные', beard: 'Борода' };
+  const LEN = { short: 'Короткие', medium: 'Средние', long: 'Длинные', beard: 'Борода', perm: 'Завивка' };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   /* ---------- контакты ---------- */
   const hours = `${pad(D.hours.open)}:00–${pad(D.hours.close)}:00`;
+  const price = s => s.price, priceOf = (s, b) => (b && b.level === 'senior' && s.senior) ? s.senior : s.price;
   $('#heroCity').textContent = `Барбершоп · ${D.city}`;
   $('#factHours').textContent = hours;
-  $('#cAddress').textContent = D.address;
-  $('#cHours').textContent = hours + ', без выходных';
-  $('#cPhone').textContent = D.phone;
-  $('#cPhone').href = 'tel:' + D.phone.replace(/[^\d+]/g, '');
-  $('#cWa').href = 'https://wa.me/' + D.whatsapp;
-  $('#cMap').href = D.mapUrl;
+  $('#factRating').textContent = D.rating;
+  $('#factRatingSub').textContent = `${D.ratingCount} оценок в 2ГИС`;
+  $('#factPrice').textContent = 'от ' + money(Math.min(...D.services.filter(x => x.cat === 'hair').map(price)));
+  $('#cHours').textContent = `Ежедневно ${hours}. Оплата картой, наличными, QR.`;
   $('#cInst').href = D.instagram;
   $('#fName').textContent = D.name;
   $('#year').textContent = new Date().getFullYear();
-  $('.logo-text').textContent = D.name.split(' ')[0];
+  $('.logo-text').textContent = D.short;
+  if (D.promo) $('#promo').innerHTML = `<span>${esc(D.promo)}</span>`;
+  $('#branchesGrid').innerHTML = D.branches.map(b => `<div class="branch"><h3>${esc(b.name)}</h3><p class="muted">${esc(b.note)} · ${D.city}</p>
+    <a class="phone" href="tel:${b.phone.replace(/[^\d+]/g, '')}">${esc(b.phone)}</a>
+    <div class="branch-links"><button class="btn" data-book data-branch="${b.id}">Записаться</button>
+    <a class="btn btn-ghost" href="https://wa.me/${b.whatsapp}" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="btn btn-ghost" href="${esc(b.map)}" target="_blank" rel="noopener">2ГИС</a></div></div>`).join('');
+  $('#gallery').innerHTML = (D.gallery || []).map(g => `<img src="${esc(g)}" alt="Barber Shop 86" loading="lazy">`).join('');
 
   /* ---------- причёски ---------- */
   const svgHead = h => `<svg viewBox="0 0 120 150" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -44,7 +50,7 @@
         <div class="card-body">
           <h3>${esc(s.name)}</h3>
           <p>${esc(s.desc)}</p>
-          <div class="card-meta"><span>${money(svc.price)}</span><span class="muted">${svc.min} мин</span></div>
+          <div class="card-meta"><span>${svc.senior ? 'от ' : ''}${money(svc.price)}</span><span class="muted">${svc.min} мин</span></div>
           <button class="btn" data-book data-service="${svc.id}" data-style="${esc(s.name)}">Хочу так</button>
         </div></article>`;
     }).join('');
@@ -59,10 +65,11 @@
 
   /* ---------- прайс, мастера, отзывы ---------- */
   $('#priceList').innerHTML = D.services.map(s => `<li data-book data-service="${s.id}">
-    <span class="price-name">${esc(s.name)}<br><span class="price-min">${s.min} мин</span></span><span class="price-dots"></span><span class="price-val">${money(s.price)}</span></li>`).join('');
+    <span class="price-name">${esc(s.name)}<br><span class="price-min">${s.min} мин</span></span><span class="price-dots"></span><span class="price-val">${money(s.price)}${s.senior ? `<span class="price-min"> / ${money(s.senior)}</span>` : ''}</span></li>`).join('');
+  $('#priceList').insertAdjacentHTML('afterend', '<p class="muted small" style="margin-top:14px">Первая цена у ведущего барбера, вторая у старшего.</p>');
   $('#barbersGrid').innerHTML = D.barbers.filter(b => b.id !== 'any').map(b => `<div class="barber">
     <div class="avatar">${esc(b.name[0])}</div><h3>${esc(b.name)}</h3><p class="muted">${esc(b.role)}</p>
-    <div class="barber-meta"><span>Стаж <b>${esc(b.exp)}</b></span><span>Рейтинг <b>${esc(b.rating)}</b></span></div>
+    ${b.tag ? `<div class="barber-meta"><b>${esc(b.tag)}</b></div>` : ''}
     <button class="btn btn-sm" data-book data-barber="${b.id}">Записаться к ${esc(b.name)}</button></div>`).join('');
   $('#reviewsGrid').innerHTML = D.reviews.map(r => `<div class="review"><div class="stars">${'★'.repeat(r.rating)}</div><p>${esc(r.text)}</p><b>${esc(r.name)}</b></div>`).join('');
 
@@ -75,27 +82,29 @@
 
   /* ---------- запись ---------- */
   const dlg = $('#book');
-  const st = { step: 0, service: null, barber: null, day: null, slot: null, style: '' };
+  const st = { step: 0, branch: null, service: null, barber: null, day: null, slot: null, style: '' };
   const steps = $$('.step', dlg), stepTabs = $$('#steps li');
-  const titles = ['Услуга', 'Мастер', 'Дата и время', 'Контакты', 'Готово'];
+  const titles = ['Филиал', 'Услуга', 'Мастер', 'Дата и время', 'Контакты', 'Готово'];
   const next = $('#next'), back = $('#back');
 
   document.addEventListener('click', e => {
     const t = e.target.closest('[data-book]'); if (!t) return;
     e.preventDefault();
-    open({ service: t.dataset.service, barber: t.dataset.barber, style: t.dataset.style });
+    open({ branch: t.dataset.branch, service: t.dataset.service, barber: t.dataset.barber, style: t.dataset.style });
   });
   $('#bookClose').addEventListener('click', () => dlg.close());
   dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
 
   function open(o) {
+    st.branch = o.branch ? D.branches.find(b => b.id === o.branch) : (st.branch || null);
     st.service = o.service ? D.services.find(s => s.id === o.service) : null;
     st.barber = o.barber ? D.barbers.find(b => b.id === o.barber) : null;
     st.style = o.style || '';
     st.day = null; st.slot = null;
     dlg.classList.remove('is-done');
-    renderService(); renderBarber();
-    go(st.service ? (st.barber ? 2 : 1) : 0);
+    st.skipService = !!st.service;
+    renderBranch(); renderService(); renderBarber();
+    go(st.branch ? (st.skipService ? 2 : 1) : 0);
     if (!dlg.open) dlg.showModal();
   }
   function go(n) {
@@ -104,36 +113,45 @@
     stepTabs.forEach((t, i) => { t.classList.toggle('is-on', i === n); t.classList.toggle('is-done', i < n); });
     $('#bookTitle').textContent = titles[n];
     back.style.visibility = n === 0 ? 'hidden' : '';
-    next.textContent = n === 3 ? 'Записаться' : 'Дальше';
-    if (n === 2) renderDays();
-    if (n === 3) renderSummary();
-    if (n === 4) { dlg.classList.add('is-done'); renderDone(); }
+    next.textContent = n === 4 ? 'Записаться' : 'Дальше';
+    if (n === 3) renderDays();
+    if (n === 4) renderSummary();
+    if (n === 5) { dlg.classList.add('is-done'); renderDone(); }
     refresh();
   }
   function refresh() {
-    const ok = [!!st.service, !!st.barber, !!(st.day && st.slot), true][st.step];
+    const ok = [!!st.branch, !!st.service, !!st.barber, !!(st.day && st.slot), true][st.step];
     next.disabled = !ok;
-    $('#total').innerHTML = st.service ? `${money(st.service.price)}<small>${st.service.min} мин</small>` : '';
+    $('#total').innerHTML = st.service ? `${money(priceOf(st.service, st.barber))}<small>${st.service.min} мин</small>` : '';
   }
-  back.addEventListener('click', () => go(st.step - 1));
+  back.addEventListener('click', () => go(st.step === 2 && st.skipService ? 0 : st.step - 1));
   next.addEventListener('click', () => {
-    if (st.step === 3 && !validate()) return;
-    go(st.step + 1);
+    if (st.step === 4 && !validate()) return;
+    go(st.step === 0 && st.skipService ? 2 : st.step + 1);
   });
 
+  function renderBranch() {
+    $('#pickBranch').innerHTML = D.branches.map(b => `<button type="button" class="pick ${st.branch && st.branch.id === b.id ? 'is-on' : ''}" data-id="${b.id}">
+      <div class="pick-main"><b>${esc(b.name)}</b><span>${esc(b.note)}</span></div></button>`).join('');
+  }
+  $('#pickBranch').addEventListener('click', e => {
+    const b = e.target.closest('.pick'); if (!b) return;
+    st.branch = D.branches.find(x => x.id === b.dataset.id);
+    renderBranch(); refresh();
+  });
   function renderService() {
     $('#pickService').innerHTML = D.services.map(s => `<button type="button" class="pick ${st.service && st.service.id === s.id ? 'is-on' : ''}" data-id="${s.id}">
-      <div class="pick-main"><b>${esc(s.name)}</b><span>${s.min} мин</span></div><div class="pick-price">${money(s.price)}</div></button>`).join('');
+      <div class="pick-main"><b>${esc(s.name)}</b><span>${s.min} мин</span></div><div class="pick-price">${s.senior ? 'от ' : ''}${money(s.price)}</div></button>`).join('');
   }
   $('#pickService').addEventListener('click', e => {
     const b = e.target.closest('.pick'); if (!b) return;
-    st.service = D.services.find(s => s.id === b.dataset.id); st.slot = null;
+    st.service = D.services.find(s => s.id === b.dataset.id); st.slot = null; st.skipService = false;
     renderService(); refresh();
   });
   function renderBarber() {
     $('#pickBarber').innerHTML = D.barbers.map(b => `<button type="button" class="pick ${st.barber && st.barber.id === b.id ? 'is-on' : ''}" data-id="${b.id}">
       <div class="avatar" style="width:44px;height:44px;font-size:20px">${b.id === 'any' ? '✦' : esc(b.name[0])}</div>
-      <div class="pick-main"><b>${esc(b.name)}</b><span>${esc(b.role)}${b.exp ? ' · ' + esc(b.exp) : ''}</span></div>${b.rating ? `<div class="pick-price">${b.rating}</div>` : ''}</button>`).join('');
+      <div class="pick-main"><b>${esc(b.name)}</b><span>${esc(b.role)}${b.level === 'senior' ? ' · старший' : ''}</span>${b.tag ? `<span class="pick-tag">${esc(b.tag)}</span>` : ''}</div>${st.service ? `<div class="pick-price">${money(priceOf(st.service, b))}</div>` : ''}</button>`).join('');
   }
   $('#pickBarber').addEventListener('click', e => {
     const b = e.target.closest('.pick'); if (!b) return;
@@ -195,8 +213,8 @@
     return `${DOW[dt.getDay()]}, ${d} ${MONTHS[m - 1]}`;
   }
   function renderSummary() {
-    $('#summary').innerHTML = `<div>Услуга: <b>${esc(st.service.name)}${st.style ? ' («' + esc(st.style) + '»)' : ''}</b></div>
-      <div>Мастер: <b>${esc(st.barber.name)}</b></div><div>Когда: <b>${fmtDay(st.day)}, ${st.slot}</b></div><div>Стоимость: <b>${money(st.service.price)}</b></div>`;
+    $('#summary').innerHTML = `<div>Филиал: <b>${esc(st.branch.name)}, ${esc(st.branch.note)}</b></div><div>Услуга: <b>${esc(st.service.name)}${st.style ? ' («' + esc(st.style) + '»)' : ''}</b></div>
+      <div>Мастер: <b>${esc(st.barber.name)}</b></div><div>Когда: <b>${fmtDay(st.day)}, ${st.slot}</b></div><div>Стоимость: <b>${money(priceOf(st.service, st.barber))}</b></div>`;
   }
   function validate() {
     const f = $('#bookForm'); let ok = true;
@@ -210,20 +228,18 @@
   }
   function renderDone() {
     const f = $('#bookForm');
-    const msg = `Здравствуйте! Хочу записаться.\n` +
+    const msg = `Здравствуйте! Хочу записаться.\nФилиал: ${st.branch.name} (${st.branch.note})\n` +
       `Услуга: ${st.service.name}${st.style ? ' (' + st.style + ')' : ''}\n` +
       `Мастер: ${st.barber.name}\nКогда: ${fmtDay(st.day)}, ${st.slot}\n` +
       `Имя: ${f.name.value.trim()}\nТелефон: ${f.phone.value.trim()}` +
       (f.note.value.trim() ? `\nКомментарий: ${f.note.value.trim()}` : '');
-    $('#sendWa').href = `https://wa.me/${D.whatsapp}?text=${encodeURIComponent(msg)}`;
-    const tg = $('#sendTg');
-    if (D.telegram) { tg.hidden = false; tg.href = `https://t.me/${D.telegram}?text=${encodeURIComponent(msg)}`; }
+    $('#sendWa').href = `https://wa.me/${st.branch.whatsapp}?text=${encodeURIComponent(msg)}`;
     // .ics
     const [y, mo, d] = st.day.split('-').map(Number), [hh, mm] = st.slot.split(':').map(Number);
     const start = new Date(y, mo - 1, d, hh, mm), end = new Date(start.getTime() + st.service.min * 6e4);
     const ics = dt => `${dt.getFullYear()}${pad(dt.getMonth() + 1)}${pad(dt.getDate())}T${pad(dt.getHours())}${pad(dt.getMinutes())}00`;
     const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//barber//RU', 'BEGIN:VEVENT', `DTSTART:${ics(start)}`, `DTEND:${ics(end)}`,
-      `SUMMARY:${D.name}: ${st.service.name}`, `LOCATION:${D.address}`, `DESCRIPTION:Мастер ${st.barber.name}`, 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+      `SUMMARY:${D.name}: ${st.service.name}`, `LOCATION:${st.branch.name}, ${st.branch.note}, ${D.city}`, `DESCRIPTION:Мастер ${st.barber.name}`, 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
     $('#addCal').href = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(body);
   }
 })();

@@ -47,6 +47,7 @@ em{font-style:normal;color:var(--accent)}
   radial-gradient(60% 50% at 80% 20%,#d9a65b33,transparent 60%),
   radial-gradient(40% 40% at 10% 80%,#ffffff0d,transparent 60%),
   repeating-linear-gradient(135deg,#ffffff05 0 2px,transparent 2px 22px),var(--bg)}
+.hero-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% 30%;opacity:.42;mask-image:linear-gradient(#000 40%,transparent);-webkit-mask-image:linear-gradient(#000 40%,transparent)}
 .hero-bg::after{content:"";position:absolute;right:-10vw;top:10vh;width:60vw;height:60vw;max-width:720px;max-height:720px;border-radius:50%;border:1px solid #d9a65b40;box-shadow:inset 0 0 120px #d9a65b22}
 .hero-inner{position:relative;width:100%;max-width:var(--max);margin:0 auto}
 .hero h1{margin:12px 0 20px}
@@ -176,3 +177,19 @@ em{font-style:normal;color:var(--accent)}
 .done .btn{width:100%;max-width:320px}
 .book.is-done .book-foot{display:none}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.promo{max-width:var(--max);margin:-20px auto 0;padding:0 16px}
+.promo span{display:block;padding:14px 18px;border-radius:12px;background:#d9a65b14;border:1px dashed #d9a65b60;font-size:14px;color:var(--accent2)}
+@media(min-width:860px){.promo{padding:0 40px}}
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 4px}
+.gallery img{width:100%;aspect-ratio:1;object-fit:cover;display:block;filter:saturate(.9)}
+@media(max-width:700px){.gallery{grid-template-columns:repeat(2,1fr)}}
+.branches-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-bottom:40px}
+.branch{padding:22px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);display:flex;flex-direction:column;gap:6px}
+.branch h3{font-size:28px}
+.branch .muted{font-size:14px}
+.branch a.phone{font-weight:600;font-size:17px;margin-top:6px}
+.branch-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.branch-links .btn{min-height:40px;padding:0 14px;font-size:13px}
+.steps li{font-size:10px}
+.pick-tag{font-size:11px;color:var(--accent);display:block}
