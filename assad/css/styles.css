@@ -56,17 +56,20 @@ h1,h2,h3{font-family:var(--serif);font-weight:300;line-height:1;letter-spacing:-
 .hero-lead{max-width:440px;margin:34px 0 36px;color:var(--ink2);font-size:16px;opacity:0;animation:fadeUp 1s .5s var(--ease) forwards}
 .hero-cta{display:flex;flex-wrap:wrap;align-items:center;gap:26px;opacity:0;animation:fadeUp 1s .65s var(--ease) forwards}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-.wall{position:relative;aspect-ratio:5/6;max-height:78svh;width:100%;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(8,1fr);grid-auto-flow:dense;grid-auto-rows:0;gap:6px;perspective:1200px;margin:0 auto;overflow:hidden}
+.wall{position:relative;aspect-ratio:5/6;max-height:78svh;width:100%;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(8,1fr);gap:6px;perspective:1200px;margin:0 auto}
 .wall i{display:block;border-radius:2px;opacity:0;transform:scale(.4) rotateX(60deg);transform-origin:50% 100%;animation:panel 1.1s var(--ease) forwards;position:relative;overflow:hidden;will-change:transform}
 .wall i::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,#fff3 0,#fff0 40%,#0000 60%,#0001 100%)}
 .wall i.w2{grid-column:span 2}.wall i.h2{grid-row:span 2}.wall i.w3{grid-column:span 3}
 .wall i.knob::before{content:"";position:absolute;right:10%;top:50%;width:2px;height:22%;background:#1c1b1980;border-radius:2px;transform:translateY(-50%)}
 .wall i.glass{background:linear-gradient(135deg,#dfe6ea,#f7fafb 45%,#c9d2d7)!important}
 @keyframes panel{to{opacity:1;transform:none}}
+.wall-wrap{display:flex;flex-direction:column;gap:14px}
+.wall-cap{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);line-height:1.8}
+.wall-cap span{display:block;color:var(--ink);font-weight:500}
 .hero-side{position:absolute;right:var(--pad);bottom:28px;display:flex;gap:24px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink2)}
 .hero-side span:last-child::after{content:"";display:inline-block;width:28px;height:1px;background:var(--ink2);margin-left:10px;vertical-align:middle;animation:line 1.6s ease-in-out infinite}
 @keyframes line{50%{transform:translateX(8px);opacity:.3}}
-@media(max-width:960px){.wall{max-height:52svh;aspect-ratio:4/3;grid-template-rows:repeat(6,1fr)}.hero-side{display:none}.hero{gap:20px}}
+@media(max-width:960px){.wall{max-height:none;aspect-ratio:4/5}.hero-side{display:none}.hero{gap:28px;padding-top:100px}.hero-h{font-size:clamp(52px,15vw,80px)}}
 
 /* stats band */
 .band{padding:0 var(--pad)}

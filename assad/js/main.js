@@ -14,18 +14,28 @@
   $('#cPhone').textContent = D.phone; $('#cPhone').href = 'tel:' + D.phone.replace(/[^\d+]/g, '');
   $('#cInst').href = D.instagram; $('#cMap').href = D.map; $('#year').textContent = new Date().getFullYear();
 
-  /* стена фасадов в hero */
+  /* стена фасадов в hero: сетка заполняется ровно, без обрезков */
   const wall = $('#wall');
-  const pal = ['#b98d62', '#e9e6df', '#8b5e3c', '#2d2f33', '#cdbfa6', '#a77a52', '#e4ddd0', '#9aa58f'];
-  const shapes = ['', '', '', 'w2', 'h2', '', 'w2', '', '', 'h2', '', 'w3', '', '', 'w2', '', 'h2', '', '', 'w2', '', '', '', 'w2', 'h2', '', '', '', 'w2', '', '', '', 'w2', '', '', '', '', 'w2', '', '', 'h2', '', 'w2', '', '', '', ''];
-  let html = '';
-  for (let i = 0; i < 44; i++) {
-    const c = pal[(i * 7 + Math.floor(i / 6) * 3) % pal.length];
-    const cls = [shapes[i] || '', i % 9 === 4 ? 'knob' : '', i === 15 ? 'glass' : ''].join(' ');
-    html += `<i class="${cls}" style="background:${c};animation-delay:${0.25 + (i % 6) * 0.07 + Math.floor(i / 6) * 0.05}s;--d:${(i % 3) + 1}"></i>`;
+  const pal = [['#b98d62', 'Дуб Галифакс'], ['#e9e6df', 'Эмаль кашемир'], ['#8b5e3c', 'Шпон дуба'], ['#2d2f33', 'Графит'], ['#cdbfa6', 'Эмаль песок'], ['#a77a52', 'Орех'], ['#e4ddd0', 'Эмаль лён'], ['#9aa58f', 'Шалфей']];
+  function buildWall() {
+    const mobile = innerWidth < 960, cols = mobile ? 4 : 6, rows = mobile ? 5 : 8;
+    wall.style.gridTemplateColumns = `repeat(${cols},1fr)`; wall.style.gridTemplateRows = `repeat(${rows},1fr)`;
+    const occ = Array.from({ length: rows }, () => Array(cols).fill(false));
+    let rnd = 7, html = '', n = 0; const rand = () => (rnd = (rnd * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      if (occ[r][c]) continue;
+      let w = 1, h = 1; const x = rand();
+      if (x < .3 && c + 1 < cols && !occ[r][c + 1]) w = 2;
+      else if (x < .45 && r + 1 < rows) h = 2;
+      for (let i = 0; i < h; i++) for (let j = 0; j < w; j++) occ[r + i][c + j] = true;
+      const [col, name] = pal[(n * 5 + r * 3) % pal.length]; n++;
+      const cls = [w === 2 ? 'w2' : '', h === 2 ? 'h2' : '', n % 7 === 3 ? 'knob' : '', n === 11 ? 'glass' : ''].join(' ');
+      html += `<i class="${cls}" title="${name}" style="background:${col};animation-delay:${0.25 + c * 0.07 + r * 0.05}s;--d:${(n % 3) + 1}"></i>`;
+    }
+    wall.innerHTML = html;
   }
-  wall.innerHTML = html;
-  const panels = $$('i', wall);
+  buildWall();
+  let panels = $$('i', wall);
   if (hasGsap) {
     // лёгкий параллакс за курсором, по глубине
     addEventListener('mousemove', e => {
