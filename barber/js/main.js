@@ -141,7 +141,7 @@
   });
   function renderService() {
     $('#pickService').innerHTML = D.services.map(s => `<button type="button" class="pick ${st.service && st.service.id === s.id ? 'is-on' : ''}" data-id="${s.id}">
-      <div class="pick-main"><b>${esc(s.name)}</b><span>${s.min} мин</span></div><div class="pick-price">${s.senior ? 'от ' : ''}${money(s.price)}</div></button>`).join('');
+      <div class="pick-main"><b>${esc(s.name)}</b><span>${s.min} мин</span></div><div class="pick-price">${s.senior ? '<small>от</small>' : ''}${money(s.price)}</div></button>`).join('');
   }
   $('#pickService').addEventListener('click', e => {
     const b = e.target.closest('.pick'); if (!b) return;
