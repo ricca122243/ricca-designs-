@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ASSAD — корпусная мебель на заказ в Алматы</title>
+<meta name="description" content="Кухни, шкафы-купе, гардеробные и прихожие на заказ в Алматы. Собственный цех, бесплатный замер и 3D-проект, гарантия 3 года.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="demo-bar">Демо-версия сайта для ASSAD · подготовлено RICCA DESIGNS · фото и цены заменяются на ваши</div>
+
+<header class="hdr" id="hdr">
+  <a class="brand" href="#top"><span class="brand-mark">AS</span><span class="brand-text"><b>ASSAD</b><small>корпусная мебель · алматы</small></span></a>
+  <nav class="nav-links">
+    <a href="#catalog">Каталог</a><a href="#calc">Расчёт</a><a href="#process">Как работаем</a><a href="#tools">Для мастера</a><a href="#contacts">Контакты</a>
+  </nav>
+  <div class="hdr-right">
+    <a class="hdr-wa" id="hdrWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    <button class="btn btn-dark btn-sm" data-measure>Замер</button>
+  </div>
+</header>
+
+<main id="top">
+
+<section class="hero" id="hero">
+  <p class="label"><span class="num">№ 01</span><span>ASSAD · Алматы</span></p>
+  <h1 class="hero-h"><span class="hero-l1"><span class="w">Корпусная</span> <span class="w">мебель</span></span><span class="hero-l2 italic"><span class="w">на</span> <span class="w">заказ</span></span></h1>
+  <div class="hero-scene" id="heroScene" aria-hidden="true"></div>
+  <div class="hero-foot">
+    <p class="hero-lead">Кухни, шкафы и гардеробные по вашим размерам.<br>Свой цех в Алматы. Замер и 3D-проект бесплатно.</p>
+    <div class="hero-cta">
+      <a class="btn btn-dark" href="#catalog">Каталог</a>
+      <a class="btn btn-line" id="heroWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="btn btn-line" href="#calc">Рассчитать</a>
+    </div>
+    <p class="hero-note"><em>Кухня Linea</em> · МДФ эмаль, кварц<br><span>любой размер и цвет</span></p>
+  </div>
+</section>
+
+<div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+<section class="sec" id="stats">
+  <ul class="stats" id="statsList"></ul>
+</section>
+
+<section class="sec" id="catalog">
+  <div class="sec-head">
+    <p class="label"><span class="num">№ 02</span><span>Каталог</span></p>
+    <h2>Что делаем</h2>
+    <p class="lead">Нажмите на изделие, чтобы увидеть ориентировочную стоимость и перейти к расчёту.</p>
+  </div>
+  <div class="cat-grid" id="catGrid"></div>
+</section>
+
+<section class="sec sec-noir" id="materials">
+  <div class="sec-head">
+    <p class="label"><span class="num">№ 03</span><span>Материалы</span></p>
+    <h2>Фасады и&nbsp;фурнитура</h2>
+  </div>
+  <div class="mat-wrap">
+    <div class="swatches" id="swatches"></div>
+    <div class="mat-copy">
+      <h3 id="swName">ЛДСП Egger · Дуб Галифакс</h3>
+      <p id="swNote" class="lead">Австрийские плиты с текстурой дерева. 200+ декоров, кромка ABS 2 мм, не боится влаги.</p>
+      <ul class="mat-list"><li>Фурнитура Blum и Hettich</li><li>Столешницы кварц, HPL, массив</li><li>Подсветка LED с датчиком</li></ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="calc">
+  <div class="calc">
+    <div class="calc-copy">
+      <p class="label"><span class="num">№ 04</span><span>Расчёт</span></p>
+      <h2>Узнайте цену<br><span class="italic">за минуту</span></h2>
+      <p class="lead">Ориентир по погонным метрам. Точную смету пришлём после бесплатного замера.</p>
+    </div>
+    <form class="calc-box" id="calcForm">
+      <div class="calc-row"><span class="calc-lbl">Изделие</span><div class="seg" id="calcProduct"></div></div>
+      <div class="calc-row"><span class="calc-lbl">Длина, <span id="calcUnit">пог. м</span></span>
+        <div class="range"><input type="range" id="calcLen" min="2" max="12" step="0.5" value="4"><output id="calcLenOut">4 м</output></div></div>
+      <div class="calc-row"><span class="calc-lbl">Фасады</span><div class="seg" id="calcMat"></div></div>
+      <div class="calc-row"><span class="calc-lbl">Фурнитура</span><div class="seg" id="calcHw"></div></div>
+      <div class="calc-total"><span>Ориентировочно</span><b id="calcTotal">0 ₸</b><small id="calcPer"></small></div>
+      <div class="calc-actions"><a class="btn btn-dark" id="calcWa" href="#" target="_blank" rel="noopener">Получить смету в WhatsApp</a><button type="button" class="btn btn-line" data-measure>Записаться на замер</button></div>
+    </form>
+  </div>
+</section>
+
+<section class="sec" id="process">
+  <div class="sec-head">
+    <p class="label"><span class="num">№ 05</span><span>Как работаем</span></p>
+    <h2>От заявки до&nbsp;монтажа</h2>
+  </div>
+  <ol class="steps" id="stepsList"></ol>
+</section>
+
+<section class="sec sec-studio" id="tools">
+  <div class="sec-head">
+    <p class="label"><span class="num">№ 06</span><span>Для мастера</span></p>
+    <h2>Инструменты в&nbsp;сайте</h2>
+    <p class="lead">То, что экономит время мебельщику каждый день. Работает прямо в браузере, без программ.</p>
+  </div>
+  <div class="tools">
+    <div class="tool">
+      <h3>Водяной знак на фото</h3>
+      <p>Загрузите фото работы, и сайт поставит ваш логотип. Снимки в Instagram и на сайте не украдут конкуренты.</p>
+      <label class="drop" id="wmDrop"><input type="file" id="wmFile" accept="image/*" hidden><span>Перетащите фото или нажмите</span></label>
+      <div class="wm-opts"><input type="text" id="wmText" value="ASSAD · мебель на заказ" maxlength="40"><label><input type="range" id="wmSize" min="2" max="8" value="4"> размер</label></div>
+      <canvas id="wmCanvas" hidden></canvas>
+      <a class="btn btn-dark btn-sm" id="wmDownload" href="#" download="assad-photo.jpg" hidden>Скачать с водяным знаком</a>
+    </div>
+    <div class="tool">
+      <h3>Запись на замер</h3>
+      <p>Клиент выбирает день и время сам, заявка приходит в WhatsApp уже с адресом и типом изделия. Ни одного пропущенного звонка.</p>
+      <button class="btn btn-dark btn-sm" data-measure>Открыть форму записи</button>
+    </div>
+    <div class="tool">
+      <h3>Калькулятор</h3>
+      <p>Клиент видит ориентир цены до звонка: меньше «просто спросить», больше реальных заявок. Цены правятся в одном файле.</p>
+      <a class="btn btn-dark btn-sm" href="#calc">К расчёту</a>
+    </div>
+    <div class="tool">
+      <h3>Галерея с защитой</h3>
+      <p>Фото работ на сайте выводятся с автоматическим водяным знаком и отключённым сохранением по правому клику.</p>
+      <div class="protect-demo" id="protectDemo"></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="reviews">
+  <div class="sec-head">
+    <p class="label"><span class="num">№ 07</span><span>Отзывы</span></p>
+    <h2>Из 2ГИС</h2>
+  </div>
+  <div class="reviews" id="reviewsList"></div>
+</section>
+
+<section class="sec sec-noir" id="contacts">
+  <div class="contacts">
+    <div>
+      <p class="label"><span class="num">№ 08</span><span>Контакты</span></p>
+      <h2>Приезжайте<br><span class="italic">посмотреть образцы</span></h2>
+      <p class="lead" id="cAddress"></p>
+      <p class="lead" id="cHours"></p>
+      <a class="big-link" id="cPhone" href="#"></a>
+      <div class="hero-cta">
+        <a class="btn btn-light" id="cWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="btn btn-line-light" id="cInst" href="#" target="_blank" rel="noopener">Instagram</a>
+        <a class="btn btn-line-light" id="cMap" href="#" target="_blank" rel="noopener">2ГИС</a>
+      </div>
+    </div>
+    <div class="contact-card">
+      <p class="label"><span class="num">Шаг 1</span><span>Бесплатно</span></p>
+      <h3>Замер и 3D-проект</h3>
+      <p>Приедем, измерим, нарисуем в вашем интерьере. Решение остаётся за вами.</p>
+      <button class="btn btn-light" data-measure>Записаться на замер</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="ftr"><span>ASSAD · корпусная мебель на заказ · Алматы</span><span>© <span id="year"></span> · Демо-сайт от <a href="https://ricca.design" target="_blank" rel="noopener">RICCA DESIGNS</a></span></footer>
+
+<dialog class="dlg" id="measure">
+  <form method="dialog" class="dlg-inner" id="measureForm" novalidate>
+    <header class="dlg-head"><div><p class="label"><span class="num">Замер</span><span>Бесплатно по Алматы</span></p><h3>Когда вам удобно?</h3></div><button type="button" class="x" id="measureClose" aria-label="Закрыть">×</button></header>
+    <div class="dlg-body">
+      <div class="seg" id="mProduct"></div>
+      <div class="days" id="mDays"></div>
+      <div class="slots" id="mSlots"></div>
+      <div class="fields">
+        <label><span>Имя</span><input type="text" name="name" required placeholder="Как к вам обращаться"></label>
+        <label><span>Телефон</span><input type="tel" name="phone" required inputmode="tel" placeholder="+7 7__ ___ __ __"></label>
+        <label class="wide"><span>Адрес</span><input type="text" name="addr" placeholder="Улица, дом, квартира"></label>
+      </div>
+    </div>
+    <footer class="dlg-foot"><div class="dlg-sum" id="mSum"></div><a class="btn btn-dark" id="mSend" href="#" target="_blank" rel="noopener">Отправить в WhatsApp</a></footer>
+  </form>
+</dialog>
+
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
