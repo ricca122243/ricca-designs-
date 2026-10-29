@@ -14,44 +14,29 @@
   $('#cPhone').textContent = D.phone; $('#cPhone').href = 'tel:' + D.phone.replace(/[^\d+]/g, '');
   $('#cInst').href = D.instagram; $('#cMap').href = D.map; $('#year').textContent = new Date().getFullYear();
 
-  /* стена фасадов в hero: сетка заполняется ровно, без обрезков */
-  const wall = $('#wall');
-  const pal = [['#b98d62', 'Дуб Галифакс'], ['#e9e6df', 'Эмаль кашемир'], ['#8b5e3c', 'Шпон дуба'], ['#2d2f33', 'Графит'], ['#cdbfa6', 'Эмаль песок'], ['#a77a52', 'Орех'], ['#e4ddd0', 'Эмаль лён'], ['#9aa58f', 'Шалфей']];
-  function buildWall() {
-    const mobile = innerWidth < 960, cols = mobile ? 4 : 6, rows = mobile ? 5 : 8;
-    wall.style.gridTemplateColumns = `repeat(${cols},1fr)`; wall.style.gridTemplateRows = `repeat(${rows},1fr)`;
-    const occ = Array.from({ length: rows }, () => Array(cols).fill(false));
-    let rnd = 7, html = '', n = 0; const rand = () => (rnd = (rnd * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
-    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-      if (occ[r][c]) continue;
-      let w = 1, h = 1; const x = rand();
-      if (x < .3 && c + 1 < cols && !occ[r][c + 1]) w = 2;
-      else if (x < .45 && r + 1 < rows) h = 2;
-      for (let i = 0; i < h; i++) for (let j = 0; j < w; j++) occ[r + i][c + j] = true;
-      const [col, name] = pal[(n * 5 + r * 3) % pal.length]; n++;
-      const cls = [w === 2 ? 'w2' : '', h === 2 ? 'h2' : '', n % 7 === 3 ? 'knob' : '', n === 11 ? 'glass' : ''].join(' ');
-      html += `<i class="${cls}" title="${name}" style="background:${col};animation-delay:${0.25 + c * 0.07 + r * 0.05}s;--d:${(n % 3) + 1}"></i>`;
-    }
-    wall.innerHTML = html;
+  /* рендер кухни в hero с перекраской фасадов */
+  const matOrder = ['ldsp', 'mdf', 'veneer', 'dark', 'sage'], matColor = { ldsp: '#b98d62', mdf: '#e9e6df', veneer: '#8b5e3c', dark: '#2d2f33', sage: '#9aa58f' };
+  const render = $('#render');
+  render.innerHTML = matOrder.map((m, i) => SC.render('kitchenHero', m).replace('<svg ', `<svg data-m="${m}" class="${i === 0 ? 'is-on' : ''}" `)).join('');
+  $('#renderChips').innerHTML = matOrder.map((m, i) => `<button type="button" data-m="${m}" class="${i === 0 ? 'is-on' : ''}" aria-label="${esc(SC.MAT[m].name)}">${SC.render('chip', m)}</button>`).join('');
+  function pickHero(m) {
+    $$('#renderChips button').forEach(b => b.classList.toggle('is-on', b.dataset.m === m));
+    $$('svg', render).forEach(s => s.classList.toggle('is-on', s.dataset.m === m));
+    $('#renderName').textContent = SC.MAT[m].name;
   }
-  buildWall();
-  let panels = $$('i', wall);
+  $('#renderChips').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pickHero(b.dataset.m); });
+  let heroTimer = setInterval(() => { const cur = $('#renderChips button.is-on').dataset.m; pickHero(matOrder[(matOrder.indexOf(cur) + 1) % matOrder.length]); }, 4500);
+  $('#renderChips').addEventListener('click', () => clearInterval(heroTimer));
   if (hasGsap) {
-    // лёгкий параллакс за курсором, по глубине
-    addEventListener('mousemove', e => {
-      const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
-      panels.forEach(p => { const d = +p.style.getPropertyValue('--d'); gsap.to(p, { x: x * 10 * d, y: y * 8 * d, duration: 1.2, ease: 'power2.out', overwrite: 'auto' }); });
-    }, { passive: true });
-    // разбирается при скролле
-    gsap.to(panels, { yPercent: i => -20 - (i % 5) * 18, opacity: 0, stagger: { each: .01, from: 'random' }, ease: 'none', scrollTrigger: { trigger: '#hero', start: '35% top', end: 'bottom top', scrub: .8 } });
+    gsap.to('.hero-render', { yPercent: -8, ease: 'none', scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: .8 } });
     gsap.to('.hero-text', { yPercent: 10, opacity: .2, ease: 'none', scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: .8 } });
+    addEventListener('mousemove', e => { const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5; gsap.to(render, { rotateY: x * 4, rotateX: -y * 3, transformPerspective: 1400, duration: 1.2, ease: 'power2.out', overwrite: 'auto' }); }, { passive: true });
   }
 
   /* цифры */
   $('#statsList').innerHTML = D.stats.map(([b, s]) => `<li class="rv"><b data-count="${esc(b)}">${esc(b)}</b><span>${esc(s)}</span></li>`).join('');
 
   /* каталог: лента */
-  const matOrder = ['ldsp', 'mdf', 'veneer', 'dark', 'sage'], matColor = { ldsp: '#b98d62', mdf: '#e9e6df', veneer: '#8b5e3c', dark: '#2d2f33', sage: '#9aa58f' };
   const rail = $('#rail');
   rail.innerHTML = D.products.map(p => `<article class="cat" data-id="${p.id}">
     <div class="cat-img"><div class="cat-mat">${matOrder.slice(0, 4).map((m, j) => `<button type="button" data-m="${m}" class="${j === 0 ? 'is-on' : ''}" style="background:${matColor[m]}" aria-label="${esc(SC.MAT[m].name)}"></button>`).join('')}</div><div class="cat-svg">${SC.render(p.scene, 'ldsp')}</div></div>

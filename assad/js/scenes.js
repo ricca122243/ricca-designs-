@@ -120,6 +120,49 @@
       s += `<circle cx="120" cy="60" r="14" fill="#f3c969" opacity=".8"/></g>`;
       return s;
     },
+
+    kitchenHero(m, id) {
+      const W = 480, H = 320, floorY = 262;
+      let s = `<rect width="${W}" height="${H}" fill="url(#wall${id})"/><rect y="${floorY}" width="${W}" height="${H - floorY}" fill="url(#floor${id})"/>`;
+      // мягкий свет на стене
+      s += `<ellipse cx="240" cy="40" rx="260" ry="90" fill="#fff" opacity=".35"/>`;
+      s += `<g filter="url(#sh${id})">`;
+      // пенал слева с духовкой
+      s += door(28, 40, 62, 60, m, id, 'none'); s += `<rect x="28" y="102" width="62" height="40" rx="1.5" fill="#1d1d1f"/><rect x="33" y="108" width="52" height="24" fill="#2b2b2e"/><circle cx="40" cy="105" r="1.4" fill="#888"/>`; s += door(28, 144, 62, 118, m, id, 'v');
+      // верхние шкафы
+      let x = 96; for (let i = 0; i < 4; i++) { s += door(x, 40, 66, 68, m, id, 'none'); x += 68; }
+      // открытая полка с посудой
+      s += `<rect x="368" y="40" width="84" height="68" fill="${m.wood ? m.b : '#3a3a3c'}" opacity=".08"/><rect x="368" y="66" width="84" height="2.5" fill="${fill(m, id)}"/><rect x="368" y="92" width="84" height="2.5" fill="${fill(m, id)}"/>`;
+      s += `<rect x="376" y="50" width="10" height="16" rx="2" fill="#d9d2c3"/><rect x="390" y="54" width="8" height="12" rx="2" fill="#cfc6b3"/><rect x="408" y="46" width="14" height="20" rx="1" fill="#9aa58f"/><rect x="430" y="56" width="16" height="10" rx="1" fill="#e9e6df"/><rect x="378" y="78" width="30" height="14" rx="1" fill="#e4ddd0"/><rect x="416" y="76" width="12" height="16" rx="2" fill="#b98d62"/>`;
+      // вытяжка
+      s += `<rect x="232" y="108" width="68" height="14" fill="#232325"/><rect x="232" y="108" width="68" height="3" fill="#3a3a3d"/>`;
+      // фартук
+      s += `<rect x="96" y="108" width="356" height="52" fill="#ebe6dc"/><g stroke="#fff" stroke-opacity=".7"><line x1="96" y1="134" x2="452" y2="134"/>${[150,204,258,312,366,420].map(v=>`<line x1="${v}" y1="108" x2="${v}" y2="134"/><line x1="${v-27}" y1="134" x2="${v-27}" y2="160"/>`).join('')}</g>`;
+      // подсветка под шкафами
+      s += `<rect x="96" y="107" width="356" height="2" fill="#ffe3a3" opacity=".9"/><rect x="96" y="109" width="356" height="16" fill="url(#f${id})" opacity=".5"/>`;
+      // столешница
+      s += `<rect x="92" y="160" width="366" height="7" fill="#2a2a2c"/><rect x="92" y="167" width="366" height="1" fill="#000" opacity=".3"/>`;
+      // нижние: ящики и дверцы
+      x = 96; for (let i = 0; i < 2; i++) { s += door(x, 170, 66, 26, m, id, 'h'); s += door(x, 198, 66, 30, m, id, 'h'); s += door(x, 230, 66, 32, m, id, 'h'); x += 68; }
+      s += door(232, 170, 66, 92, m, id, 'v'); // под варочной: посудомойка
+      s += `<rect x="232" y="170" width="66" height="92" fill="#e9e9e7" rx="1.5"/><rect x="232" y="170" width="66" height="92" fill="url(#f${id})"/><rect x="238" y="176" width="54" height="2" fill="#999"/>`;
+      x = 300; for (let i = 0; i < 2; i++) { s += door(x, 170, 66, 44, m, id, 'h'); s += door(x, 216, 66, 46, m, id, 'h'); x += 68; }
+      s += door(436, 170, 22, 92, m, id, 'none');
+      // варочная и мойка
+      s += `<rect x="238" y="154" width="56" height="7" rx="1" fill="#111"/><circle cx="252" cy="157.5" r="2" fill="#555"/><circle cx="280" cy="157.5" r="2" fill="#555"/>`;
+      s += `<rect x="104" y="156" width="52" height="5" rx="1" fill="#9aa0a6"/><rect x="128" y="136" width="2.5" height="20" fill="#8e949a"/><path d="M129 136 q12 -10 18 2" fill="none" stroke="#8e949a" stroke-width="2.5"/>`;
+      // декор на столешнице: доска, растение, ваза
+      s += `<rect x="314" y="150" width="40" height="10" rx="1" fill="#a77a52"/><rect x="318" y="146" width="3" height="14" fill="#5a4a3a"/>`;
+      s += `<rect x="404" y="142" width="16" height="18" rx="2" fill="#d9d2c3"/><path d="M412 142 c-8 -12 -2 -22 2 -26 c4 6 8 16 -2 26 M412 142 c6 -10 14 -12 18 -10 c-4 6 -10 10 -18 10 M412 142 c-6 -8 -16 -8 -20 -6 c6 4 12 6 20 6" fill="#8c9a7b"/>`;
+      s += `<rect x="178" y="146" width="10" height="14" rx="3" fill="#2d2f33"/><rect x="192" y="150" width="6" height="10" rx="2" fill="#9aa58f"/>`;
+      // цоколь и тень на полу
+      s += `<rect x="28" y="262" width="430" height="1.5" fill="#000" opacity=".2"/></g>`;
+      s += `<ellipse cx="243" cy="272" rx="230" ry="8" fill="#000" opacity=".08"/>`;
+      // подвесные лампы
+      s += `<g><line x1="150" y1="0" x2="150" y2="22" stroke="#333" stroke-width="1"/><path d="M138 22 h24 l4 12 h-32 z" fill="#1d1d1f"/><ellipse cx="150" cy="34" rx="14" ry="3" fill="#ffe3a3" opacity=".8"/>`;
+      s += `<line x1="330" y1="0" x2="330" y2="22" stroke="#333" stroke-width="1"/><path d="M318 22 h24 l4 12 h-32 z" fill="#1d1d1f"/><ellipse cx="330" cy="34" rx="14" ry="3" fill="#ffe3a3" opacity=".8"/></g>`;
+      return s;
+    },
     chip(m, id) { // образец материала
       return `<rect width="120" height="120" rx="8" fill="${fill(m, id)}"/><rect width="120" height="120" rx="8" fill="url(#f${id})"/>`;
     },
@@ -128,7 +171,7 @@
     MAT,
     render(scene, matId = 'ldsp', W = 400, H = 300) {
       const m = MAT[matId] || MAT.ldsp; const id = 's' + (uid++);
-      const vb = scene === 'chip' ? '0 0 120 120' : `0 0 ${W} ${H}`;
+      const vb = scene === 'chip' ? '0 0 120 120' : scene === 'kitchenHero' ? '0 0 480 320' : `0 0 ${W} ${H}`;
       return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">${defs(m, id)}${S[scene](m, id)}</svg>`;
     },
   };
