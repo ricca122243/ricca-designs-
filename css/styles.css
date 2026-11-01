@@ -616,7 +616,7 @@ body:not(.is-intro) .nebula { animation: nebulaDrift 70s ease-in-out infinite al
 .acc__body { padding: 0 clamp(20px, 3vw, 36px) 26px; color: var(--ink-2); font-size: 14px; line-height: 1.7; animation: panelIn .5s var(--ease-out); }
 .acc__body > p { max-width: 60ch; }
 .mcard__list--more { margin-top: 18px; font-size: 14px; color: var(--ink-2); }
-.mdl__actions { padding: 22px clamp(20px, 3vw, 36px) clamp(24px, 3vw, 32px); border-top: 1px solid var(--line); display: flex; justify-content: flex-end; }
+.mdl__actions { padding: 22px clamp(20px, 3vw, 36px) clamp(24px, 3vw, 32px); border-top: 1px solid var(--line); display: flex; justify-content: flex-end; align-items: center; gap: 22px; flex-wrap: wrap; }
 
 .reviews { display: flex; flex-direction: column; gap: 14px; }
 .review { margin: 0; padding: 20px; border: 1px dashed var(--line); border-radius: 2px; font-size: 13.5px; line-height: 1.6; color: var(--ink-3); }

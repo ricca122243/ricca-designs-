@@ -1335,56 +1335,12 @@
 
   /* ------------------------------------------------------------------------
      Линейка: цены, модели, рельс света, модальные окна, размеры
-     Цены меняются только здесь. null → «— ₸».
+     Цены и состав моделей — в js/catalog.js. null → «— ₸».
      ------------------------------------------------------------------------ */
-  // ₸. Все цены — за размер 1600 × 2000 мм (Royal — фиксированная цена флагмана).
-  const PRICES = { air: 125000, balance: 220000, prime: 280000, royal: 1250000 };
-  const OLD_PRICES = { prime: 350000 };   // полная цена до скидки; нет ключа → скидки нет
-  const discountPct = (k) => (OLD_PRICES[k] ? Math.round((1 - PRICES[k] / OLD_PRICES[k]) * 100) : 0);
-  const WHATSAPP = '77079550808';
-  const MODELS = {
-    air: {
-      name: 'Eluna Air',
-      layers: [
-        { kind: 'knit',    cm: 0.6, name: 'Вискозный трикотаж' },
-        { kind: 'foam',    cm: 2,   name: 'Ортопена', spec: '20 мм' },
-        { kind: 'felt',    cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
-        { kind: 'springs', cm: 14,  name: 'Армированные пружины', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
-        { kind: 'felt',    cm: 0.6, name: 'Термовойлок' },
-        { kind: 'coir',    cm: 1,   name: 'Натуральный кокос', spec: '10 мм' },
-        { kind: 'knit',    cm: 0.6, name: 'Вискозный трикотаж' },
-      ],
-    },
-    balance: {
-      name: 'Eluna Balance',
-      layers: [
-        { kind: 'knit',    cm: 0.6, name: 'Плотный вискозный трикотаж' },
-        { kind: 'foam',    cm: 2,   name: 'Ортопена' },
-        { kind: 'felt',    cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
-        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '20 мм' },
-        { kind: 'springs', cm: 14,  name: 'Армированные пружины', spec: 'усиленный боковой каркас', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
-        { kind: 'felt',    cm: 0.6, name: 'Термовойлок' },
-        { kind: 'coir',    cm: 1,   name: 'Натуральный кокос', spec: '10 мм' },
-        { kind: 'foam',    cm: 1.5, name: 'Ортопена' },
-        { kind: 'knit',    cm: 0.6, name: 'Плотный вискозный трикотаж' },
-      ],
-    },
-    prime: {
-      name: 'Eluna Prime',
-      layers: [
-        { kind: 'cotton',  cm: 1,   name: 'Чехол из 100 % хлопка', spec: 'ручная работа' },
-        { kind: 'latex',   cm: 2,   name: 'Натуральный латекс', spec: '20 мм', note: 'Микромассажный эффект — тело расслабляется' },
-        { kind: 'felt',    cm: 0.6, name: 'Термовойлок', note: 'Долговечный, не сбивается и не собирает пыль внутри матраса' },
-        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '20 мм — отвечает за жёсткость' },
-        { kind: 'springs', cm: 16,  name: 'Армированные пружины', note: 'Без эффекта гамака — тело лежит ровно, спина в балансе' },
-        { kind: 'coir',    cm: 2,   name: 'Натуральный кокос', spec: '20 мм' },
-        { kind: 'felt',    cm: 0.6, name: 'Термовойлок' },
-        { kind: 'latex',   cm: 2,   name: 'Натуральный латекс', spec: '20 мм' },
-        { kind: 'cotton',  cm: 1,   name: 'Чехол из 100 % хлопка' },
-      ],
-    },
-    royal: { name: 'Eluna Royal', layers: null, dims: '1600 × 2000 мм' },
-  };
+  // Цены, модели и WhatsApp живут в js/catalog.js (общий каталог главной и страницы товара).
+  const CAT = window.ELUNA_CATALOG;
+  const PRICES = CAT.PRICES, OLD_PRICES = CAT.OLD_PRICES, WHATSAPP = CAT.WHATSAPP, MODELS = CAT.MODELS;
+  const discountPct = CAT.discountPct;
   // уровни: метка и шкала света (1..4) — для карточек и силы прожектора
   const TIERS = [
     { key: 'air',     series: 'Air',     lvl: 1, tier: 'Базовая' },
@@ -1533,7 +1489,7 @@
 
     // 1800 × 2000 дороже 1600 × 2000 на 16 000 ₸ (+0,4 м²) → 40 000 ₸ за каждый м² сверх/меньше 3,2 м².
     // Свой размер считается так же по площади; старая цена (Prime) — та же скидка в процентах.
-    const PER_M2 = 40000;
+    const PER_M2 = CAT.PER_M2;
     function priceOf(o) {
       const base = PRICES[o.model], old = OLD_PRICES[o.model];
       if (base == null || typeof base === 'object') return { v: null, o: null };

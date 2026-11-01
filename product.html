@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Матрас Eluna Prime — цена, слои, 3D и AR — ELUNA</title>
+  <meta name="description" content="Матрас Eluna Prime от ELUNA · RICCA DESIGNS, Алматы. Девять слоёв, латекс и кокос, ручная сборка. Посмотрите в 3D и поставьте в свою спальню через AR в натуральную величину. Размер под кровать, доставка по Казахстану, рассрочка 0 %.">
+  <meta name="theme-color" content="#06070c">
+  <meta name="author" content="RICCA DESIGNS">
+  <meta name="copyright" content="© 2026 ELUNA · RICCA DESIGNS. Все права защищены.">
+  <meta property="og:type" content="product">
+  <meta property="og:site_name" content="ELUNA">
+  <meta property="og:title" content="Матрас Eluna Prime — ELUNA">
+  <meta property="og:description" content="Слои, 3D и AR в натуральную величину. Размер под вашу кровать, доставка по Казахстану.">
+  <meta property="og:image" content="img/hero.webp">
+  <link rel="preload" as="font" type="font/woff2" href="fonts/Unbounded-300-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="fonts/Inter-300-600-normal-cyrillic.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="fonts/Inter-300-600-normal-latin.woff2" crossorigin>
+  <link rel="preload" as="image" href="img/hero.webp">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/product.css">
+  <link rel="icon" type="image/png" href="img/mark.png">
+  <script defer src="js/catalog.js"></script>
+  <script defer src="js/product.js"></script>
+</head>
+<body class="product-page">
+
+  <a class="skip-link" href="#buy">К заказу</a>
+
+  <!-- Космос: статичное звёздное поле -->
+  <canvas class="stars" id="stars" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <a class="nav__brand" href="index.html" aria-label="ELUNA — на главную"><img class="mark" src="img/mark.png" alt="" width="351" height="345">ELUNA</a>
+    <nav class="nav__links" aria-label="Разделы">
+      <a href="index.html#concept">Концепция</a>
+      <a href="index.html#tech">Технология</a>
+      <a href="index.html#models" class="is-here">Модели</a>
+      <a href="#delivery">Доставка</a>
+    </nav>
+    <a class="nav__cta" href="#buy">Заказать</a>
+  </header>
+
+  <main class="pdp container" id="top">
+
+    <!-- ================================================================
+         Крошки · переключатель моделей
+         ================================================================ -->
+    <nav class="crumbs" aria-label="Вы здесь">
+      <a href="index.html">ELUNA</a><i></i><a href="index.html#models">Матрасы</a><i></i><b id="crumbModel">Eluna Prime</b>
+    </nav>
+    <nav class="mswitch" id="mswitch" aria-label="Модель">
+      <a href="product.html?model=air" data-m="air">Air<small>база</small></a>
+      <a href="product.html?model=balance" data-m="balance">Balance<small>pro</small></a>
+      <a href="product.html?model=prime" data-m="prime" aria-current="page">Prime<small>выбор Eluna</small></a>
+      <a href="product.html?model=royal" data-m="royal">Royal<small>флагман</small></a>
+    </nav>
+
+    <!-- ================================================================
+         Товар: просмотр (Фото / Слои / 3D / AR) + заказ
+         ================================================================ -->
+    <section class="pd" aria-labelledby="pdTitle">
+      <div class="pd__media">
+        <div class="viewer" id="viewer">
+          <div class="viewer__stage">
+            <!-- Фото -->
+            <div class="viewer__panel viewer__panel--photo is-on" id="panel-photo" role="tabpanel" aria-labelledby="tab-photo">
+              <img src="img/hero.webp" alt="Матрас Eluna: стёганый верх, тёмный борт с золотым кантом" width="1920" height="1080" fetchpriority="high">
+              <p class="viewer__caption"><span><b id="capName">Eluna Prime</b> · <span id="capHeight">280–300 мм</span></span><span>Изображение для ознакомления</span></p>
+            </div>
+            <!-- Слои: разлёт по ползунку -->
+            <div class="viewer__panel viewer__panel--layers" id="panel-layers" role="tabpanel" aria-labelledby="tab-layers" hidden>
+              <canvas id="layersCanvas" aria-label="Разрез матраса: слои разлетаются по ползунку"></canvas>
+              <div class="layers-ctl">
+                <div class="layers-ctl__row">
+                  <span>Раскрыть слои</span>
+                  <input type="range" id="layersRange" min="0" max="23" step="1" value="0" aria-label="Разлёт слоёв" style="--p:0%">
+                  <b id="layersPct">0 %</b>
+                  <button type="button" class="layers-ctl__play" id="layersPlay">Показать</button>
+                </div>
+              </div>
+            </div>
+            <!-- 3D -->
+            <div class="viewer__panel viewer__panel--3d" id="panel-3d" role="tabpanel" aria-labelledby="tab-3d" hidden>
+              <div class="viewer__wait" id="wait3d"><i></i><span>Загружаем 3D-модель</span></div>
+              <div id="mv3d" style="position:absolute;inset:0"></div>
+              <p class="viewer__hint">Вращайте · колесо — масштаб · двумя пальцами — на телефоне</p>
+              <button type="button" class="viewer__btn" id="fs3d" aria-label="Во весь экран"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Во весь экран</button>
+            </div>
+            <!-- AR -->
+            <div class="viewer__panel viewer__panel--ar" id="panel-ar" role="tabpanel" aria-labelledby="tab-ar" hidden>
+              <div class="ar" id="arBox">
+                <div class="ar__qr" id="arQr" aria-label="QR-код этой страницы для телефона"><img class="mark" src="img/mark.png" alt="" width="351" height="345"></div>
+                <div class="ar__text">
+                  <h3>Поставьте матрас в свою спальню.<br>В натуральную величину.</h3>
+                  <p>Отсканируйте код камерой телефона — страница откроется с кнопкой «Смотреть в комнате». Матрас встанет на пол ровно 1600 × 2000 мм, и вы увидите, как он впишется в кровать.</p>
+                  <ol>
+                    <li>Наведите камеру телефона на код</li>
+                    <li>Нажмите «Смотреть в комнате»</li>
+                    <li>Обведите пол — матрас появится в комнате</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="viewer__tabs" role="tablist" aria-label="Как посмотреть">
+            <button type="button" role="tab" id="tab-photo" aria-selected="true" aria-controls="panel-photo" data-tab="photo"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3 16 5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.5"/></svg>Фото</button>
+            <button type="button" role="tab" id="tab-layers" aria-selected="false" aria-controls="panel-layers" data-tab="layers"><svg viewBox="0 0 24 24"><path d="m12 4 8 4-8 4-8-4 8-4Z"/><path d="m4 12 8 4 8-4"/><path d="m4 16 8 4 8-4"/></svg>Слои</button>
+            <button type="button" role="tab" id="tab-3d" aria-selected="false" aria-controls="panel-3d" data-tab="3d"><svg viewBox="0 0 24 24"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="M12 12 20 7.5M12 12v9M12 12 4 7.5"/></svg>3D</button>
+            <button type="button" role="tab" id="tab-ar" aria-selected="false" aria-controls="panel-ar" data-tab="ar"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="m12 8 4 2v4l-4 2-4-2v-4l4-2Z"/></svg>AR</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pd__info" id="buy">
+        <p class="eyebrow"><span id="eyeName">Eluna Prime</span><span class="dot"></span><span id="eyeHeight">280–300 мм</span><span class="dot"></span><span>Ручная сборка · Алматы</span></p>
+        <h1 class="pd__title" id="pdTitle">Матрас <span id="titleName">Eluna Prime</span>.<br><em id="titleSlogan">Для тех, кто выбирает раз и надолго.</em></h1>
+        <p class="pd__who" id="pdWho">Самый натуральный матрас линейки</p>
+        <div class="pd__tier" id="pdTier"></div>
+
+        <div class="pd__price" id="pdPrice" aria-live="polite">— ₸</div>
+        <p class="pd__price-note">Цена за <b>1600 × 2000 мм</b>, включая доставку до спальни, подъём и вынос старого матраса.</p>
+
+        <!-- Размер -->
+        <div class="opt">
+          <div class="opt__head"><span>Размер</span><b id="sizeNow">1600 × 2000 мм</b></div>
+          <div class="opt__row" id="sizeOpts" role="radiogroup" aria-label="Размер матраса">
+            <button type="button" class="chip" role="radio" aria-checked="true" data-w="1600" data-h="2000">1600 × 2000</button>
+            <button type="button" class="chip" role="radio" aria-checked="false" data-w="1800" data-h="2000">1800 × 2000<small id="d1800"></small></button>
+            <button type="button" class="chip" role="radio" aria-checked="false" data-custom>Свой размер</button>
+          </div>
+          <div class="custom" id="custom" hidden>
+            <div class="custom__row"><label for="cw">Ширина</label><input type="range" id="cw" min="1400" max="2200" step="10" value="1600"><span class="custom__num"><input type="number" id="cwn" min="1400" max="2200" step="10" value="1600" inputmode="numeric" aria-label="Ширина, мм"><span>мм</span></span></div>
+            <div class="custom__row"><label for="ch">Длина</label><input type="range" id="ch" min="1900" max="2200" step="10" value="2000"><span class="custom__num"><input type="number" id="chn" min="1900" max="2200" step="10" value="2000" inputmode="numeric" aria-label="Длина, мм"><span>мм</span></span></div>
+            <p class="custom__hint" id="customHint">Свой размер собираем вручную под вашу кровать — 21 день. Цена — по площади: ±40 000 ₸ за каждый м² от 1600 × 2000.</p>
+          </div>
+        </div>
+
+        <!-- Количество -->
+        <div class="opt">
+          <div class="opt__head"><span>Количество</span><b id="qtyNote">1 матрас</b></div>
+          <div class="opt__row">
+            <div class="qty" role="group" aria-label="Количество">
+              <button type="button" id="qtyMinus" aria-label="Меньше">−</button>
+              <output id="qtyOut" aria-live="polite">1</output>
+              <button type="button" id="qtyPlus" aria-label="Больше">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Город -->
+        <div class="opt">
+          <div class="opt__head"><span>Доставка</span><b>Весь Казахстан</b></div>
+          <div class="citysel"><select id="citySel" aria-label="Город доставки"><option value="">Выберите город</option></select></div>
+          <p class="citysel__days" id="cityDays">Мы в Алматы: по городу привезём и установим сами. В остальные города — <b>от 7 дней</b> до двери.</p>
+        </div>
+
+        <!-- Итог и WhatsApp -->
+        <div class="sum">
+          <div class="sum__row">
+            <span class="sum__label"><small>Ваш выбор</small><span id="sumText">Eluna Prime · 1600 × 2000 мм · 1 шт</span></span>
+            <span class="sum__price" id="sumPrice">—</span>
+          </div>
+          <p class="sum__monthly" id="sumMonthly">Рассрочка 0 % на 12 месяцев — <b>—</b> ₸ в месяц.</p>
+          <a class="button button--primary button--wa" id="waOrder" href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3Z"/><path d="M8.8 8.2c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4l.7 1.7c.1.2 0 .4-.1.5l-.5.6c-.1.1-.2.3 0 .5a6.6 6.6 0 0 0 3.3 2.9c.2.1.4 0 .5-.1l.6-.7c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.4 0 .3 0 1-.5 1.5-.4.4-1.2.8-1.8.8-.5 0-1.2-.1-2.6-.9a9.7 9.7 0 0 1-3.6-3.4c-.6-1-.9-1.8-.9-2.5 0-.9.5-1.6.8-2Z"/></svg>Заказать в WhatsApp</a>
+          <p class="sum__legal">Откроется чат с мастером — ваш выбор уже будет в сообщении, останется нажать «Отправить». Нажимая кнопку, вы соглашаетесь с <a href="privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a>.</p>
+        </div>
+        <a class="more pd__ask" id="waAsk" href="https://wa.me/77079550808" target="_blank" rel="noopener">Сначала задать вопрос</a>
+
+        <div class="pd__trust">
+          <ul class="trust" aria-label="Гарантии">
+            <li class="trust__item"><span class="trust__value">100 ночей</span><span class="trust__label">пробного сна. Не подошёл — заберём и вернём деньги.</span></li>
+            <li class="trust__item"><span class="trust__value">5 лет</span><span class="trust__label">гарантии. Срок службы — 15 лет и больше.</span></li>
+            <li class="trust__item"><span class="trust__value">Один мастер</span><span class="trust__label">собирает ваш матрас — его подпись на этикетке.</span></li>
+            <li class="trust__item"><span class="trust__value">От 7 дней</span><span class="trust__label">до двери в любом городе Казахстана.</span></li>
+          </ul>
+        </div>
+
+        <div class="pd__files">
+          <a id="dlGlb" href="models/eluna-prime.glb" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg>3D-модель (GLB)</a>
+          <button type="button" id="dlSvg"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg>Схема размеров (SVG)</button>
+          <button type="button" id="share"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.6M8.2 13.2l7.6 4.6"/></svg>Поделиться</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         Больше о матрасе
+         ================================================================ -->
+    <section class="more-sec" aria-labelledby="moreTitle">
+      <aside>
+        <p class="eyebrow more-head"><span>Больше о матрасе</span></p>
+        <nav class="more-nav" id="moreNav" aria-label="Разделы описания">
+          <a href="#layers">Состав</a>
+          <a href="#materials">Материалы</a>
+          <a href="#firmness">Жёсткость</a>
+          <a href="#sizes">Размеры и цена</a>
+          <a href="#delivery">Доставка и сборка</a>
+          <a href="#payment">Оплата</a>
+          <a href="#warranty">Гарантия</a>
+          <a href="#care">Уход</a>
+          <a href="#reviews">Отзывы</a>
+        </nav>
+      </aside>
+      <div>
+        <h2 class="sr-only" id="moreTitle">Больше о матрасе</h2>
+
+        <article class="block" id="layers">
+          <h3 class="block__title"><span id="layersCount">Девять слоёв</span>, <em>собранных вокруг одного ощущения — тишины.</em></h3>
+          <p class="block__lead" id="layersLead">Сверху вниз — каждый слой с толщиной. Нажмите на слой, чтобы прочитать, за что он отвечает.</p>
+          <div class="stack">
+            <div class="xs is-open" id="xs" aria-label="Разрез: слои сверху вниз"></div>
+            <div class="stack__side">
+              <div class="stack__sum" id="stackSum"></div>
+              <p class="stack__note" id="stackNote"></p>
+            </div>
+          </div>
+        </article>
+
+        <article class="block" id="materials">
+          <h3 class="block__title">Материалы. <em>Только то, что служит 15 лет.</em></h3>
+          <p class="block__lead">Натуральный кокос и латекс, термовойлок, армированные пружины, ортопена и хлопок — каждый материал в матрасе делает одну понятную работу.</p>
+          <div class="mats" id="mats"></div>
+        </article>
+
+        <article class="block" id="firmness">
+          <h3 class="block__title">Жёсткость. <em>Какой она ощущается.</em></h3>
+          <div class="firm">
+            <div class="firm__scale"><span class="firm__dot" id="firmDot" style="--v:62%"></span></div>
+            <div class="firm__labels"><span>Мягкий</span><span>Средний</span><span>Жёсткий</span></div>
+            <p class="firm__value" id="firmValue">Средняя / выше средней</p>
+            <p class="firm__text" id="firmText"></p>
+          </div>
+        </article>
+
+        <article class="block" id="sizes">
+          <h3 class="block__title">Размеры и цена. <em>Стандарт или точно под вашу кровать.</em></h3>
+          <p class="block__lead">Два стандартных размера со склада и любой свой — от 1400 до 2200 мм по ширине и от 1900 до 2200 мм по длине. Все размеры на сайте — в миллиметрах.</p>
+          <div class="dims">
+            <div class="size-table" id="sizeTable"></div>
+            <div>
+              <div class="dims__draw" id="dimsDraw"></div>
+              <p class="dims__draw-note"><span id="dimsNote">Вид сверху и разрез, масштаб 1:20</span><button type="button" id="dlSvg2">Скачать SVG</button></p>
+            </div>
+          </div>
+        </article>
+
+        <article class="block" id="delivery">
+          <h3 class="block__title">Доставка и сборка. <em>Весь Казахстан.</em></h3>
+          <p class="block__lead">Собираем в Алматы. По городу привозим и устанавливаем сами, в остальные города — от 7 дней до двери. Доставка до спальни, подъём и вынос старого матраса включены в цену.</p>
+          <div class="facts">
+            <div class="pfact"><b>Алматы</b><span>Привезём и установим сами. Согласуем день и время в WhatsApp, занесём в спальню и заберём старый матрас.</span></div>
+            <div class="pfact"><b>Другие города</b><span>От 7 дней до двери — Астана, Шымкент, Караганда и ещё 14 городов. Статус отправки — в том же чате.</span></div>
+            <div class="pfact"><b>Упаковка</b><span>Матрас едет в плотной плёнке и картонных углах. Чехол не касается упаковки — распаковываем уже в спальне.</span></div>
+            <div class="pfact"><b>Свой размер</b><span>Изготовление 21 день, затем обычная доставка. Срок стандартного размера мастер подтверждает в чате.</span></div>
+          </div>
+        </article>
+
+        <article class="block" id="payment">
+          <h3 class="block__title">Оплата. <em>Как вам удобно.</em></h3>
+          <ol class="steps">
+            <li><span><b>Рассрочка 0 % на 12 месяцев.</b> Платёж в месяц показан в вашем выборе выше — без переплаты и скрытых комиссий.</span></li>
+            <li><span><b>Оплата при получении.</b> Вы принимаете матрас в спальне и только после этого оплачиваете — переводом или картой.</span></li>
+            <li><span><b>Счёт для компаний и дизайнеров.</b> Для отелей, апартаментов и проектов выставляем счёт на юридическое лицо.</span></li>
+          </ol>
+        </article>
+
+        <article class="block" id="warranty">
+          <h3 class="block__title">Гарантия и 100 ночей. <em>Без мелкого шрифта.</em></h3>
+          <div class="facts">
+            <div class="pfact"><b>100 ночей пробного сна</b><span>Спите на матрасе до 100 ночей. Не подошёл — заберём и вернём деньги.</span></div>
+            <div class="pfact"><b>5 лет гарантии</b><span>На пружинный блок, каркас и слои. Гарантийный случай решаем по одному сообщению в WhatsApp.</span></div>
+            <div class="pfact"><b>15 лет и больше</b><span>Расчётный срок службы при обычном уходе: переворачивать и проветривать.</span></div>
+          </div>
+        </article>
+
+        <article class="block" id="care">
+          <h3 class="block__title">Уход. <em>Три привычки на 15 лет.</em></h3>
+          <ul class="mcard__list mcard__list--more">
+            <li>Первые три месяца переворачивайте матрас раз в две недели, затем — раз в сезон: голова ↔ ноги и верх ↔ низ у двусторонних моделей.</li>
+            <li>Используйте наматрасник — чехол останется чистым, а стирать наматрасник можно при 40 °C.</li>
+            <li>Проветривайте раз в месяц: снимите бельё на пару часов, откройте окно.</li>
+            <li>Пятна убирайте сразу: сухая ткань, затем слабый мыльный раствор. Не замачивайте и не сушите феном.</li>
+            <li>Не сгибайте и не ставьте матрас на ребро надолго, не прыгайте — пружинный блок этого не любит.</li>
+          </ul>
+        </article>
+
+        <article class="block" id="reviews">
+          <h3 class="block__title">Отзывы. <em>Слова тех, кто уже спит.</em></h3>
+          <div class="reviews reviews--grid" id="reviewsBox">
+            <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
+            <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
+            <blockquote class="review"><p>Отзыв появится здесь.</p><footer>—</footer></blockquote>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         Другие модели
+         ================================================================ -->
+    <section class="others" aria-labelledby="othersTitle">
+      <p class="eyebrow"><span>Линейка</span><span class="dot"></span><span>Air → Balance → Prime → Royal</span></p>
+      <h2 class="section-title" id="othersTitle" style="font-size:clamp(24px,2.6vw,36px)">Другие модели.</h2>
+      <div class="others__grid" id="others"></div>
+    </section>
+
+    <!-- ================================================================
+         Дизайнерам и архитекторам
+         ================================================================ -->
+    <section class="pro" aria-labelledby="proTitle">
+      <div>
+        <p class="eyebrow"><span>Дизайнерам и архитекторам</span></p>
+        <h2 class="pro__title" id="proTitle">Матрас в ваш проект — <em>без регистрации и писем.</em></h2>
+        <p class="pro__text">3D-модель в натуральную величину для SketchUp, 3ds Max, Blender и любых визуализаций, схема с размерами и прямая линия с мастером. Нестандартные размеры и партии для отелей и апартаментов — по счёту.</p>
+      </div>
+      <div class="pro__list">
+        <a id="dlGlbPro" href="models/eluna-prime.glb" download><span>3D-модель в разрезе, glTF Binary</span><small>.glb · 0,4 МБ</small></a>
+        <button type="button" id="dlSvgPro"><span>Схема размеров: вид сверху и разрез</span><small>.svg</small></button>
+        <a id="waPro" href="https://wa.me/77079550808" target="_blank" rel="noopener"><span>Запросить расчёт партии или нестандарта</span><small>WhatsApp</small></a>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         Написать мастеру
+         ================================================================ -->
+    <section class="ask" aria-labelledby="askTitle">
+      <div>
+        <p class="eyebrow"><span>Написать мастеру</span></p>
+        <h2 class="ask__title" id="askTitle">Остался вопрос? <em>Ответит тот, кто собирает.</em></h2>
+        <p class="ask__text">Напишите, какая у вас кровать, как вы спите и что болит по утрам — подскажем модель и размер. Сообщение уйдёт в WhatsApp, без форм и звонков.</p>
+      </div>
+      <form class="ask__form" id="askForm">
+        <label>Как к вам обращаться<input type="text" name="name" autocomplete="name" placeholder="Имя"></label>
+        <label>Вопрос<textarea name="note" placeholder="Например: кровать 1600 × 2000, сплю на боку, нужна помягче…"></textarea></label>
+        <button type="submit" class="button button--primary">Отправить в WhatsApp</button>
+        <p class="ask__legal">Нажимая кнопку, вы соглашаетесь с <a href="privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a>. Мы не храним ваши данные на сайте — сообщение уходит напрямую в чат.</p>
+      </form>
+    </section>
+  </main>
+
+  <!-- Липкая панель покупки на телефоне -->
+  <div class="buybar" id="buybar">
+    <div class="buybar__price" id="buybarPrice">—<small id="buybarNote">Eluna Prime · 1600 × 2000</small></div>
+    <a class="button button--primary" id="buybarGo" href="#buy">Заказать</a>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="footer__brand"><img class="mark" src="img/mark.png" alt="" width="351" height="345">ELUNA<small>Sleep Tech</small></span>
+      <span class="footer__studio"><b>RICCA DESIGNS</b><small>Алматы · студия-производитель</small></span>
+      <span class="footer__copy">© 2026 ELUNA · RICCA DESIGNS. Все права защищены. Копирование материалов без письменного разрешения запрещено.</span>
+      <nav class="footer__links" aria-label="Служебные ссылки">
+        <a href="#delivery">Доставка</a>
+        <a href="https://wa.me/77079550808" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="privacy.html">Политика конфиденциальности</a>
+        <a href="legal.html">Авторские права</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="application/ld+json" id="ldProduct"></script>
+</body>
+</html>

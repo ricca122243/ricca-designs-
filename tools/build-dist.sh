@@ -6,10 +6,10 @@ cd "$(dirname "$0")/.."
 OUT=dist/ELUNA-site
 rm -rf dist && mkdir -p "$OUT"
 
-cp index.html privacy.html legal.html "$OUT/"
-cp -r css js vendor fonts "$OUT/"
+cp index.html product.html privacy.html legal.html "$OUT/"
+cp -r css js vendor fonts models "$OUT/"
 mkdir -p "$OUT/img/kz"
-cp img/mark.png img/coir.webp img/cotton.webp img/gel.webp img/latex.webp \
+cp img/mark.png img/hero.webp img/coir.webp img/cotton.webp img/gel.webp img/latex.webp \
    img/moon-hd.webp img/moon-hd-1280.webp \
    img/moon-map-1024.webp img/moon-map-2048.webp img/moon-map-4096.webp "$OUT/img/"
 cp img/kz/kz-map-2080.webp img/kz/kz-map-1280.webp "$OUT/img/kz/"
@@ -19,7 +19,7 @@ cp tools/dist-extra/robots.txt tools/dist-extra/.htaccess tools/dist-extra/_head
 
 # проверка: все локальные ссылки на файлы существуют
 missing=0
-for ref in $(grep -ohE '(img|css|js|fonts|vendor)/[A-Za-z0-9_./-]+\.(webp|png|css|js|woff2|ttf)' "$OUT"/*.html "$OUT"/css/*.css | sort -u); do
+for ref in $(grep -ohE '(img|css|js|fonts|vendor|models)/[A-Za-z0-9_./-]+\.(webp|png|css|js|woff2|ttf|glb)' "$OUT"/*.html "$OUT"/css/*.css "$OUT"/js/*.js | sort -u); do
   [ -f "$OUT/$ref" ] || { echo "нет файла: $ref"; missing=1; }
 done
 for d in seq seq2560 seq720; do [ "$(ls "$OUT/img/$d" | wc -l)" -eq 24 ] || { echo "в img/$d не 24 кадра"; missing=1; }; done
