@@ -1,0 +1,166 @@
+{
+ "id": "beauty",
+ "colours": [
+  {
+   "code": "012",
+   "name": "BEAUTY/ БЬЮТИ 012",
+   "hex": "#a1a09f",
+   "src1200": "img/fabrics/official/beauty/012-1200.webp",
+   "src600": "img/fabrics/official/beauty/012-600.webp",
+   "thumb": "img/fabrics/official/beauty/012-160.webp"
+  },
+  {
+   "code": "007",
+   "name": "BEAUTY/ БЬЮТИ 007",
+   "hex": "#c5bfb5",
+   "src1200": "img/fabrics/official/beauty/007-1200.webp",
+   "src600": "img/fabrics/official/beauty/007-600.webp",
+   "thumb": "img/fabrics/official/beauty/007-160.webp"
+  },
+  {
+   "code": "003",
+   "name": "BEAUTY/ БЬЮТИ 003",
+   "hex": "#ccbfae",
+   "src1200": "img/fabrics/official/beauty/003-1200.webp",
+   "src600": "img/fabrics/official/beauty/003-600.webp",
+   "thumb": "img/fabrics/official/beauty/003-160.webp"
+  },
+  {
+   "code": "013",
+   "name": "BEAUTY/ БЬЮТИ 013",
+   "hex": "#a09287",
+   "src1200": "img/fabrics/official/beauty/013-1200.webp",
+   "src600": "img/fabrics/official/beauty/013-600.webp",
+   "thumb": "img/fabrics/official/beauty/013-160.webp"
+  },
+  {
+   "code": "014",
+   "name": "BEAUTY/ БЬЮТИ 014",
+   "hex": "#736051",
+   "src1200": "img/fabrics/official/beauty/014-1200.webp",
+   "src600": "img/fabrics/official/beauty/014-600.webp",
+   "thumb": "img/fabrics/official/beauty/014-160.webp"
+  },
+  {
+   "code": "006",
+   "name": "BEAUTY/ БЬЮТИ 006",
+   "hex": "#a39787",
+   "src1200": "img/fabrics/official/beauty/006-1200.webp",
+   "src600": "img/fabrics/official/beauty/006-600.webp",
+   "thumb": "img/fabrics/official/beauty/006-160.webp"
+  },
+  {
+   "code": "016",
+   "name": "BEAUTY/ БЬЮТИ 016",
+   "hex": "#60321b",
+   "src1200": "img/fabrics/official/beauty/016-1200.webp",
+   "src600": "img/fabrics/official/beauty/016-600.webp",
+   "thumb": "img/fabrics/official/beauty/016-160.webp"
+  },
+  {
+   "code": "015",
+   "name": "BEAUTY/ БЬЮТИ 015",
+   "hex": "#273852",
+   "src1200": "img/fabrics/official/beauty/015-1200.webp",
+   "src600": "img/fabrics/official/beauty/015-600.webp",
+   "thumb": "img/fabrics/official/beauty/015-160.webp"
+  },
+  {
+   "code": "004",
+   "name": "BEAUTY/ БЬЮТИ 004",
+   "hex": "#a0a0a2",
+   "src1200": "img/fabrics/official/beauty/004-1200.webp",
+   "src600": "img/fabrics/official/beauty/004-600.webp",
+   "thumb": "img/fabrics/official/beauty/004-160.webp"
+  },
+  {
+   "code": "008",
+   "name": "BEAUTY/ БЬЮТИ 008",
+   "hex": "#888883",
+   "src1200": "img/fabrics/official/beauty/008-1200.webp",
+   "src600": "img/fabrics/official/beauty/008-600.webp",
+   "thumb": "img/fabrics/official/beauty/008-160.webp"
+  },
+  {
+   "code": "017",
+   "name": "BEAUTY/ БЬЮТИ 017",
+   "hex": "#6a6e62",
+   "src1200": "img/fabrics/official/beauty/017-1200.webp",
+   "src600": "img/fabrics/official/beauty/017-600.webp",
+   "thumb": "img/fabrics/official/beauty/017-160.webp"
+  },
+  {
+   "code": "002",
+   "name": "BEAUTY/ БЬЮТИ 002",
+   "hex": "#223b35",
+   "src1200": "img/fabrics/official/beauty/002-1200.webp",
+   "src600": "img/fabrics/official/beauty/002-600.webp",
+   "thumb": "img/fabrics/official/beauty/002-160.webp"
+  },
+  {
+   "code": "009",
+   "name": "BEAUTY/ БЬЮТИ 009",
+   "hex": "#726f6a",
+   "src1200": "img/fabrics/official/beauty/009-1200.webp",
+   "src600": "img/fabrics/official/beauty/009-600.webp",
+   "thumb": "img/fabrics/official/beauty/009-160.webp"
+  },
+  {
+   "code": "005",
+   "name": "BEAUTY/ БЬЮТИ 005",
+   "hex": "#625c5a",
+   "src1200": "img/fabrics/official/beauty/005-1200.webp",
+   "src600": "img/fabrics/official/beauty/005-600.webp",
+   "thumb": "img/fabrics/official/beauty/005-160.webp"
+  },
+  {
+   "code": "010",
+   "name": "BEAUTY/ БЬЮТИ 010",
+   "hex": "#2a2c30",
+   "src1200": "img/fabrics/official/beauty/010-1200.webp",
+   "src600": "img/fabrics/official/beauty/010-600.webp",
+   "thumb": "img/fabrics/official/beauty/010-160.webp"
+  },
+  {
+   "code": "018",
+   "name": "BEAUTY/ БЬЮТИ 018",
+   "hex": "#1a1d20",
+   "src1200": "img/fabrics/official/beauty/018-1200.webp",
+   "src600": "img/fabrics/official/beauty/018-600.webp",
+   "thumb": "img/fabrics/official/beauty/018-160.webp"
+  }
+ ],
+ "heroes": [
+  {
+   "src": "img/fabrics/official/beauty/hero-1-1600.webp",
+   "w": 1506,
+   "h": 2000
+  },
+  {
+   "src": "img/fabrics/official/beauty/hero-2-1600.webp",
+   "w": 1506,
+   "h": 2000
+  },
+  {
+   "src": "img/fabrics/official/beauty/hero-3-1600.webp",
+   "w": 1506,
+   "h": 2000
+  },
+  {
+   "src": "img/fabrics/official/beauty/hero-4-1600.webp",
+   "w": 1506,
+   "h": 2000
+  },
+  {
+   "src": "img/fabrics/official/beauty/hero-5-1600.webp",
+   "w": 1506,
+   "h": 2000
+  },
+  {
+   "src": "img/fabrics/official/beauty/hero-6-1600.webp",
+   "w": 1506,
+   "h": 2000
+  }
+ ],
+ "inuse": []
+}

@@ -1,0 +1,204 @@
+{
+ "id": "noble",
+ "colours": [
+  {
+   "code": "000",
+   "name": "Noble 000",
+   "hex": "#d9d5ca",
+   "src1200": "img/fabrics/official/noble/000-1200.webp",
+   "src600": "img/fabrics/official/noble/000-600.webp",
+   "thumb": "img/fabrics/official/noble/000-160.webp"
+  },
+  {
+   "code": "010",
+   "name": "Noble 010",
+   "hex": "#d6d1c4",
+   "src1200": "img/fabrics/official/noble/010-1200.webp",
+   "src600": "img/fabrics/official/noble/010-600.webp",
+   "thumb": "img/fabrics/official/noble/010-160.webp"
+  },
+  {
+   "code": "110",
+   "name": "Noble 110",
+   "hex": "#c6b59e",
+   "src1200": "img/fabrics/official/noble/110-1200.webp",
+   "src600": "img/fabrics/official/noble/110-600.webp",
+   "thumb": "img/fabrics/official/noble/110-160.webp"
+  },
+  {
+   "code": "161",
+   "name": "Noble 161",
+   "hex": "#a8987f",
+   "src1200": "img/fabrics/official/noble/161-1200.webp",
+   "src600": "img/fabrics/official/noble/161-600.webp",
+   "thumb": "img/fabrics/official/noble/161-160.webp"
+  },
+  {
+   "code": "229",
+   "name": "Noble 229",
+   "hex": "#303535",
+   "src1200": "img/fabrics/official/noble/229-1200.webp",
+   "src600": "img/fabrics/official/noble/229-600.webp",
+   "thumb": "img/fabrics/official/noble/229-160.webp"
+  },
+  {
+   "code": "230",
+   "name": "Noble 230",
+   "hex": "#7e7370",
+   "src1200": "img/fabrics/official/noble/230-1200.webp",
+   "src600": "img/fabrics/official/noble/230-600.webp",
+   "thumb": "img/fabrics/official/noble/230-160.webp"
+  },
+  {
+   "code": "250",
+   "name": "Noble 250",
+   "hex": "#7f4f26",
+   "src1200": "img/fabrics/official/noble/250-1200.webp",
+   "src600": "img/fabrics/official/noble/250-600.webp",
+   "thumb": "img/fabrics/official/noble/250-160.webp"
+  },
+  {
+   "code": "260",
+   "name": "Noble 260",
+   "hex": "#a79382",
+   "src1200": "img/fabrics/official/noble/260-1200.webp",
+   "src600": "img/fabrics/official/noble/260-600.webp",
+   "thumb": "img/fabrics/official/noble/260-160.webp"
+  },
+  {
+   "code": "420",
+   "name": "Noble 420",
+   "hex": "#b0937c",
+   "src1200": "img/fabrics/official/noble/420-1200.webp",
+   "src600": "img/fabrics/official/noble/420-600.webp",
+   "thumb": "img/fabrics/official/noble/420-160.webp"
+  },
+  {
+   "code": "551",
+   "name": "Noble 551",
+   "hex": "#a67f32",
+   "src1200": "img/fabrics/official/noble/551-1200.webp",
+   "src600": "img/fabrics/official/noble/551-600.webp",
+   "thumb": "img/fabrics/official/noble/551-160.webp"
+  },
+  {
+   "code": "610",
+   "name": "Noble 610",
+   "hex": "#a59a63",
+   "src1200": "img/fabrics/official/noble/610-1200.webp",
+   "src600": "img/fabrics/official/noble/610-600.webp",
+   "thumb": "img/fabrics/official/noble/610-160.webp"
+  },
+  {
+   "code": "624",
+   "name": "Noble 624",
+   "hex": "#5d6540",
+   "src1200": "img/fabrics/official/noble/624-1200.webp",
+   "src600": "img/fabrics/official/noble/624-600.webp",
+   "thumb": "img/fabrics/official/noble/624-160.webp"
+  },
+  {
+   "code": "669",
+   "name": "Noble 669",
+   "hex": "#213627",
+   "src1200": "img/fabrics/official/noble/669-1200.webp",
+   "src600": "img/fabrics/official/noble/669-600.webp",
+   "thumb": "img/fabrics/official/noble/669-160.webp"
+  },
+  {
+   "code": "754",
+   "name": "Noble 754",
+   "hex": "#435e63",
+   "src1200": "img/fabrics/official/noble/754-1200.webp",
+   "src600": "img/fabrics/official/noble/754-600.webp",
+   "thumb": "img/fabrics/official/noble/754-160.webp"
+  },
+  {
+   "code": "758",
+   "name": "Noble 758",
+   "hex": "#203949",
+   "src1200": "img/fabrics/official/noble/758-1200.webp",
+   "src600": "img/fabrics/official/noble/758-600.webp",
+   "thumb": "img/fabrics/official/noble/758-160.webp"
+  },
+  {
+   "code": "786",
+   "name": "Noble 786",
+   "hex": "#233151",
+   "src1200": "img/fabrics/official/noble/786-1200.webp",
+   "src600": "img/fabrics/official/noble/786-600.webp",
+   "thumb": "img/fabrics/official/noble/786-160.webp"
+  },
+  {
+   "code": "793",
+   "name": "Noble 793",
+   "hex": "#708281",
+   "src1200": "img/fabrics/official/noble/793-1200.webp",
+   "src600": "img/fabrics/official/noble/793-600.webp",
+   "thumb": "img/fabrics/official/noble/793-160.webp"
+  },
+  {
+   "code": "870",
+   "name": "Noble 870",
+   "hex": "#78616f",
+   "src1200": "img/fabrics/official/noble/870-1200.webp",
+   "src600": "img/fabrics/official/noble/870-600.webp",
+   "thumb": "img/fabrics/official/noble/870-160.webp"
+  },
+  {
+   "code": "981",
+   "name": "Noble 981",
+   "hex": "#635f65",
+   "src1200": "img/fabrics/official/noble/981-1200.webp",
+   "src600": "img/fabrics/official/noble/981-600.webp",
+   "thumb": "img/fabrics/official/noble/981-160.webp"
+  },
+  {
+   "code": "996",
+   "name": "Noble 996",
+   "hex": "#6c7171",
+   "src1200": "img/fabrics/official/noble/996-1200.webp",
+   "src600": "img/fabrics/official/noble/996-600.webp",
+   "thumb": "img/fabrics/official/noble/996-160.webp"
+  }
+ ],
+ "heroes": [
+  {
+   "src": "img/fabrics/official/noble/hero-1-1600.webp",
+   "w": 1200,
+   "h": 1200
+  },
+  {
+   "src": "img/fabrics/official/noble/hero-2-1600.webp",
+   "w": 2000,
+   "h": 1125
+  },
+  {
+   "src": "img/fabrics/official/noble/hero-3-1600.webp",
+   "w": 2000,
+   "h": 1126
+  },
+  {
+   "src": "img/fabrics/official/noble/hero-4-1600.webp",
+   "w": 2000,
+   "h": 1125
+  }
+ ],
+ "inuse": [
+  {
+   "src": "img/fabrics/official/noble/inuse-1-1200.webp",
+   "w": 1600,
+   "h": 901
+  },
+  {
+   "src": "img/fabrics/official/noble/inuse-2-1200.webp",
+   "w": 1600,
+   "h": 901
+  },
+  {
+   "src": "img/fabrics/official/noble/inuse-3-1200.webp",
+   "w": 1600,
+   "h": 901
+  }
+ ]
+}

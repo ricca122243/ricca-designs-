@@ -1,0 +1,6 @@
+# Netlify: сайт RICCA DESIGNS публикуется из готовой папки dist/RICCA-site (её собирает tools/build-ricca-dist.sh и она лежит в репозитории).
+# Подключите репозиторий в Netlify (Add new site → Import from GitHub), ветка claude/determined-pasteur-sqdi8l — дальше каждое обновление
+# сайта выкладывается само, скачивать и перетаскивать папку не нужно.
+[build]
+  publish = "dist/RICCA-site"
+  command = "echo 'сборка не нужна — папка готова'"

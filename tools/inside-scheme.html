@@ -1,0 +1,133 @@
+<!doctype html>
+<!-- Схема «Что внутри» (ricca/img/blocks/inside-scheme.webp): three.js, разнесённые слои — каркас, пружины, наполнитель, обивка.
+     Перерисовать: положить файл рядом с папкой vendor/ (например, в ricca/), открыть через локальный сервер, сохранить canvas (2800×2100)
+     и уменьшить до 1400×1050 на белом фоне, webp q84. -->
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:transparent}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const W = 1400 * 2, H = 1050 * 2;
+const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+r.setSize(W, H); r.setPixelRatio(1);
+r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFShadowMap;
+r.setClearColor(0xffffff, 0);
+document.body.appendChild(r.domElement);
+const scene = new THREE.Scene();
+const pm = new THREE.PMREMGenerator(r);
+scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.55;
+
+/* процедурные текстуры */
+function canvasTex(w, h, draw, srgb = true, rep = [1, 1]) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rep[0], rep[1]);
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+}
+let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const wood = canvasTex(1024, 256, (g, w, h) => {
+  g.fillStyle = '#d8b88a'; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < 140; i++) {
+    const y = rnd() * h, a = 0.05 + rnd() * 0.12;
+    g.strokeStyle = `rgba(${120 + rnd() * 40},${80 + rnd() * 30},${40 + rnd() * 20},${a})`; g.lineWidth = 0.6 + rnd() * 2.4;
+    g.beginPath(); g.moveTo(0, y);
+    for (let x = 0; x <= w; x += 32) g.lineTo(x, y + Math.sin(x / 90 + i) * 3 + (rnd() - 0.5) * 1.5);
+    g.stroke();
+  }
+});
+const noiseTex = (base, amp, dots, size, srgb) => canvasTex(512, 512, (g, w, h) => {
+  g.fillStyle = base; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < dots; i++) {
+    const v = Math.round((rnd() - 0.5) * amp);
+    g.fillStyle = `rgba(${v > 0 ? 255 : 0},${v > 0 ? 255 : 0},${v > 0 ? 255 : 0},${Math.abs(v) / 255})`;
+    const s = size * (0.5 + rnd()); g.beginPath(); g.arc(rnd() * w, rnd() * h, s, 0, Math.PI * 2); g.fill();
+  }
+}, srgb, [3, 1.4]);
+const foamBump = noiseTex('#808080', 160, 9000, 1.6, false);
+const boucle = noiseTex('#808080', 220, 14000, 2.6, false);
+
+const M = {
+  wood: new THREE.MeshStandardMaterial({ map: wood, roughness: 0.72 }),
+  ply: new THREE.MeshStandardMaterial({ color: 0xe2cba6, roughness: 0.8 }),
+  steel: new THREE.MeshStandardMaterial({ color: 0x3b3d42, metalness: 0.85, roughness: 0.32 }),
+  clip: new THREE.MeshStandardMaterial({ color: 0x1d1e21, roughness: 0.5 }),
+  foam: new THREE.MeshStandardMaterial({ color: 0xe8cf86, roughness: 1, bumpMap: foamBump, bumpScale: 0.9 }),
+  foam2: new THREE.MeshStandardMaterial({ color: 0xf1e2b2, roughness: 1, bumpMap: foamBump, bumpScale: 0.7 }),
+  fibre: new THREE.MeshStandardMaterial({ color: 0xf2f3f5, roughness: 1, bumpMap: foamBump, bumpScale: 0.4 }),
+  fabric: new THREE.MeshStandardMaterial({ color: 0xa99a86, roughness: 0.95, bumpMap: boucle, bumpScale: 2.2 }),
+};
+const add = (geo, mat, x, y, z, parent = scene) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = parent === frame; m.receiveShadow = true; parent.add(m); return m; };
+
+const SW = 150, SD = 84;
+/* слои разнесены по диагонали: каркас слева внизу → обивка справа вверху */
+const STEP = new THREE.Vector3(62, 40, -14);
+const L = (i) => { const g = new THREE.Group(); g.position.copy(STEP.clone().multiplyScalar(i)); scene.add(g); return g; };
+/* 1. каркас: брус по периметру, поперечины, фанерные косынки */
+const frame = L(0);
+const rail = (w, h, d, x, y, z) => add(new RoundedBoxGeometry(w, h, d, 2, 0.35), M.wood, x, y, z, frame);
+rail(SW, 14, 4, 0, 7, SD / 2 - 2); rail(SW, 14, 4, 0, 7, -SD / 2 + 2);
+rail(4, 14, SD - 8, SW / 2 - 2, 7, 0); rail(4, 14, SD - 8, -SW / 2 + 2, 7, 0);
+for (const x of [-25, 25]) rail(4, 8, SD - 8, x, 4, 0);
+for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(new THREE.BoxGeometry(10, 0.9, 10), M.ply, sx * (SW / 2 - 9), 14.2, sz * (SD / 2 - 9), frame);
+
+/* 2. основание: пружины «змейка» спереди назад, чуть выгнуты вверх */
+const springs = L(1);
+for (let i = 0; i < 7; i++) {
+  const x0 = -SW / 2 + 14 + i * ((SW - 28) / 6);
+  const pts = [];
+  const N = 500, P = 8, A = 4.4;
+  for (let k = 0; k <= N; k++) {
+    const z = -SD / 2 + 3 + (SD - 6) * (k / N);
+    const ph = (z + SD / 2) / P;
+    const tri = (2 / Math.PI) * Math.asin(Math.sin(ph * Math.PI * 2));
+    const sm = Math.sign(tri) * Math.pow(Math.abs(tri), 0.55);
+    pts.push(new THREE.Vector3(x0 + A * sm, 2.6 * Math.sin(Math.PI * k / N), z));
+  }
+  add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 1200, 0.55, 10, false), M.steel, 0, 8, 0, springs);
+  for (const z of [-SD / 2 + 2.5, SD / 2 - 2.5]) add(new RoundedBoxGeometry(5, 1.6, 3, 2, 0.4), M.clip, x0, 7.7, z, springs);
+}
+/* рейки, на которых стоят пружины (для понимания масштаба) */
+for (const z of [-SD / 2 + 2, SD / 2 - 2]) add(new RoundedBoxGeometry(SW, 3, 4, 2, 0.35), M.wood, 0, 5.5, z, springs);
+
+/* 3. наполнитель: ППУ двух плотностей + синтепон */
+const foam = L(2);
+add(new RoundedBoxGeometry(SW - 4, 10, SD - 4, 4, 1.2), M.foam, 0, 5, 0, foam);
+add(new RoundedBoxGeometry(SW - 4, 4, SD - 4, 4, 1.2), M.foam2, 0, 12.2, 0, foam);
+add(new RoundedBoxGeometry(SW - 2, 2.2, SD - 2, 4, 1.0), M.fibre, 0, 16, 0, foam);
+
+/* 4. обивка: чехол-подушка */
+const fab = L(3);
+const cushion = add(new RoundedBoxGeometry(SW + 2, 9, SD + 2, 8, 3.8), M.fabric, 0, 6, 0, fab);
+
+/* пунктир между слоями по углам */
+const dash = new THREE.LineDashedMaterial({ color: 0x8a8d93, dashSize: 1.6, gapSize: 1.6, transparent: true, opacity: 0.75 });
+for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+  const a = new THREE.Vector3(sx * (SW / 2 - 1), 14.5, sz * (SD / 2 - 1));
+  const b = a.clone().add(STEP.clone().multiplyScalar(3)).setY(STEP.y * 3 + 2);
+  const g = new THREE.BufferGeometry().setFromPoints([a, b]);
+  const l = new THREE.Line(g, dash); l.computeLineDistances(); scene.add(l);
+}
+
+/* тень на полу */
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200), new THREE.ShadowMaterial({ opacity: 0.10 }));
+ground.rotation.x = -Math.PI / 2; ground.position.y = -0.05; ground.receiveShadow = true; scene.add(ground);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xe9e4dc, 0.9));
+const sun = new THREE.DirectionalLight(0xffffff, 2.1);
+sun.position.set(-160, 320, 200); sun.castShadow = true;
+sun.shadow.mapSize.set(4096, 4096); sun.shadow.radius = 6; sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.4;
+Object.assign(sun.shadow.camera, { left: -180, right: 180, top: 180, bottom: -180, near: 10, far: 900 });
+scene.add(sun);
+const fill = new THREE.DirectionalLight(0xfff6ea, 0.55); fill.position.set(260, 120, -60); scene.add(fill);
+
+const cam = new THREE.PerspectiveCamera(23, W / H, 1, 3000);
+cam.position.set(-150, 330, 560); cam.lookAt(92, 58, -22);
+r.render(scene, cam);
+window.__done = true;
+</script>
+</body></html>
