@@ -436,9 +436,11 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
         let ang = (Math.atan2(dy, dx) * 180) / Math.PI; if (ang > 90) ang -= 180; if (ang < -90) ang += 180;
         label((A[0] + B[0]) / 2 + nx * 10, (A[1] + B[1]) / 2 + ny * 10, ang, fmt(val));
       };
-      seg([mn.x, 0, mx.z], [mx.x, 0, mx.z], size.x);
-      seg([mx.x, 0, mx.z], [mx.x, 0, mn.z], size.z);
-      seg([mx.x, 0, mx.z], [mx.x, mx.y, mx.z], size.y);
+      /* цифры — размеры изделия (app.js → dimsForView('3d')), а не рамка сцены: у кровати рамку раздувают одеяло и подушки (195,8 × 222 вместо 172 × 216) */
+      const dimOf = (ax, fb) => { const d = dimList && dimList.find((q) => q.axis === ax); return d ? d.value : fb; };
+      seg([mn.x, 0, mx.z], [mx.x, 0, mx.z], dimOf('x', size.x));
+      seg([mx.x, 0, mx.z], [mx.x, 0, mn.z], dimOf('z', size.z));
+      seg([mx.x, 0, mx.z], [mx.x, mx.y, mx.z], dimOf('y', size.y));
     } else {
       /* орто-виды: ряды размеров снаружи силуэта, ярус 2 — ближе всего, 0 — дальше */
       let sx0 = Infinity, sx1 = -Infinity, sy0 = Infinity, sy1 = -Infinity;
@@ -519,10 +521,14 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       cam.near = prev.near; cam.far = prev.far; cam.updateProjectionMatrix();
     }
   }
-  async function snapshot({ width = 2400, height = 1600, view: sv = '3q', watermark = true, background = BG, project = null, clay = false, passes = false } = {}) {
+  async function snapshot({ width = 2400, height = 1600, view: sv = '3q', watermark = true, background = BG, project = null, clay = false, passes = false, ss: ssMax = 2, canvas: asCanvas = false } = {}) {
     const prevSize = renderer.getSize(new THREE.Vector2()), prevPR = renderer.getPixelRatio();
     const maxTex = renderer.capabilities.maxTextureSize || 4096;
-    const ss = Math.min(2, Math.floor(maxTex / Math.max(width, height) * 10) / 10) || 1;
+    const ss = Math.min(ssMax, Math.floor(maxTex / Math.max(width, height) * 10) / 10) || 1;
+    /* эскиз чертежа (clay + passes): тень ключевого света в нём не участвует (светотень — по нормалям и глубине, пол — контактная
+       тень) — карту теней 4096² не строим (≈200 МБ видеопамяти и самая долгая часть снимка); виды спереди/слева/сверху —
+       без студии и пола: обычный кадр ничего не даёт эскизу, его не рисуем вовсе */
+    const sketch = clay && passes, ortho = sv !== '3q' && sv !== '3d' && sv !== 'current';
     const RW = Math.round(width * ss), RH = Math.round(height * ss);
     let cam;
     if (sv === '3q' || sv === '3d') {
@@ -543,28 +549,31 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     applySeamLOD(cam, RH, sv === '3q' || sv === '3d' ? center : null);
     const useComp = aoMode !== 'off';
     scene.background = useComp ? preToneMapped(background, renderer.toneMappingExposure) : new THREE.Color(background);
-    const prevMap = key.shadow.mapSize.clone();
-    key.shadow.mapSize.set(4096, 4096); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; }
-    renderer.shadowMap.needsUpdate = true;
+    const prevMap = key.shadow.mapSize.clone(), prevCast = key.castShadow;
+    if (sketch) key.castShadow = false;
+    else { key.shadow.mapSize.set(4096, 4096); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; } renderer.shadowMap.needsUpdate = true; }
     renderer.setPixelRatio(1); renderer.setSize(RW, RH, false);
     const out = document.createElement('canvas'); out.width = width; out.height = height;
     const g = out.getContext('2d');
     const leaveClay = clay ? enterClay(sv) : null;
     let extra = null;
     try {
-      if (aoMode !== 'off' && ensureComposer()) {
-        composer.setPixelRatio(1); composer.setSize(RW, RH);
-        gtao.updateGtaoMaterial({ samples: 32 });
-        setPassCamera(cam); composer.render();
-      } else renderer.render(scene, cam);
-      g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
-      g.drawImage(canvas, 0, 0, RW, RH, 0, 0, width, height);
+      if (sketch && ortho) { g.fillStyle = background; g.fillRect(0, 0, width, height); }
+      else {
+        if (aoMode !== 'off' && ensureComposer()) {
+          composer.setPixelRatio(1); composer.setSize(RW, RH);
+          gtao.updateGtaoMaterial({ samples: 32 });
+          setPassCamera(cam); composer.render();
+        } else renderer.render(scene, cam);
+        g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+        g.drawImage(canvas, 0, 0, RW, RH, 0, 0, width, height);
+      }
       if (passes) extra = sketchPasses(cam, RW, RH, width, height);
     } finally {
       if (leaveClay) leaveClay();
       scene.background = prevBg;
-      key.shadow.mapSize.copy(prevMap); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; }
-      renderer.shadowMap.needsUpdate = true;
+      key.castShadow = prevCast;
+      if (!sketch) { key.shadow.mapSize.copy(prevMap); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; } renderer.shadowMap.needsUpdate = true; }
       renderer.setPixelRatio(prevPR); renderer.setSize(prevSize.x, prevSize.y, false);
       if (composer) { composer.setPixelRatio(dprFull); composer.setSize(prevSize.x, prevSize.y); gtao.updateGtaoMaterial({ samples: phone ? 12 : 24 }); setPassCamera(camera); }
       applySeamLOD(camera, H);
@@ -579,6 +588,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       g.fillStyle = 'rgba(17,17,17,0.72)'; g.textBaseline = 'alphabetic';
       g.fillText('RICCA DESIGNS', Math.round(height * 0.04), Math.round(height - height * 0.04));
     }
+    /* canvas: true — сам холст, без PNG (сжать и тут же разжать ≈1 Мп — лишние 0,1–1,5 с на снимок); холст освобождает вызывающий */
+    if (asCanvas) return { canvas: out, points, camera: cam.position.toArray(), ...(extra || {}) };
     return new Promise((res) => out.toBlob((b) => res(points || extra ? { blob: b, points, camera: cam.position.toArray(), ...(extra || {}) } : b), 'image/png'));
   }
 

@@ -71,6 +71,10 @@
     'Собрать из деталей и менять форму': 'Build from parts and change the shape',
     'Написать в WhatsApp с этим размером': 'Message us on WhatsApp with this size',
     'Общая ширина': 'Overall width', 'Габарит кровати': 'Bed footprint', 'Готовые размеры': 'Preset sizes',
+    'Модели из каталога': 'Catalogue models', 'Весь каталог': 'Full catalogue', 'Ещё размеры': 'More dimensions', 'Изменить форму': 'Change the shape',
+    'Меняются размер, ткань и цвет ножек.': 'You can change the size, fabric and leg colour.', 'Меняются размер и ткань.': 'You can change the size and fabric.',
+    'Цвет на экране может отличаться — образцы и ещё 200 коллекций покажем в шоуруме.': 'On-screen colour may differ — we’ll show you samples and 200+ more collections in the showroom.',
+    'Стоимость рассчитаем в WhatsApp, детали согласуем с мастером.': 'We’ll quote the price on WhatsApp and agree the details with the master.',
     'Далее': 'Next',
 
     /* типы и варианты (params.js, app.js) */
@@ -119,6 +123,9 @@
     'Эта ткань сейчас не в библиотеке конструктора — выберите похожую; образцы покажем в шоуруме': 'This fabric isn’t in the configurator library right now — pick a similar one; we’ll show you samples in the showroom',
     'Ателье шьёт только мягкую мебель — показываем диван': 'The atelier makes upholstered furniture only — showing a sofa',
     'Теперь модель собрана из деталей — меняйте форму': 'The model is now built from parts — change the shape',
+    'Собрано из деталей — меняйте форму': 'Built from parts — change the shape', 'точная модель': 'exact model', 'по мотивам': 'inspired by the photo',
+    'Этой ткани нет в конструкторе — выберите похожую': 'This fabric isn’t in the configurator — pick a similar one',
+    'Точная модель не загрузилась — показываем похожую': 'The exact model didn’t load — showing a similar one',
     'Точная модель не загрузилась — показана собранная из деталей': 'The exact model didn’t load — showing one built from parts',
     ': точная модель, как на фото. Меняйте размер, ткань и цвет ножек': ': the exact model, as in the photo. Change the size, fabric and leg colour',
     'Собрано по мотивам: ': 'Built after: ', '. Меняйте что угодно': '. Change anything you like',

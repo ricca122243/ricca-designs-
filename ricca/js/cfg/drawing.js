@@ -548,7 +548,7 @@ text{font-family:${FONT};fill:${INK}}
     if (vp) {
       if (V.view !== 'top') W(`<rect x="${n2(-V.Wv * 0.05)}" y="${n2(-V.Hv * 0.1)}" width="${n2(V.Wv * 1.09)}" height="${n2(V.Hv * 0.62)}" fill="url(#hxx)"/>`);
       const kx = V.Wv / (vp.rect[2] - vp.rect[0]), ky = V.Hv / (vp.rect[3] - vp.rect[1]);
-      W(`<image x="${n2(-vp.rect[0] * kx)}" y="${n2(-vp.rect[1] * ky)}" width="${n2(vp.w * kx)}" height="${n2(vp.h * ky)}" preserveAspectRatio="none" xlink:href="${vp.url}" href="${vp.url}"/>`);
+      W(picTag(n2(-vp.rect[0] * kx), n2(-vp.rect[1] * ky), n2(vp.w * kx), n2(vp.h * ky), 'none', vp.url, vp.mask, `pm-${V.view}`));
       if (V.view !== 'top') W(`<line class="fl" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
     }
     /* пол и тень штриховкой под изделием */
@@ -684,7 +684,7 @@ text{font-family:${FONT};fill:${INK}}
       W(`<clipPath id="rc"><rect x="${n2(cx0 + 1)}" y="${n2(FRAME.y0 + 1)}" width="${n2(cw - 2)}" height="${n2(renderH - 2)}"/></clipPath>`);
       W(`<path class="cl" clip-path="url(#rc)" style="stroke:#A3A3A3;stroke-width:.09" d="${E.map(([i, j]) => { const a = ext(P8[i], P8[j], 0.14), b = ext(P8[j], P8[i], 0.14); return `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`; }).join('')}"/>`);
     }
-    W(`<image x="${n2(ax)}" y="${n2(ay)}" width="${n2(aw)}" height="${n2(ah)}" preserveAspectRatio="xMidYMid meet" xlink:href="${opts.render3qDataUrl}" href="${opts.render3qDataUrl}"/>`);
+    W(picTag(n2(ax), n2(ay), n2(aw), n2(ah), 'xMidYMid meet', opts.render3qDataUrl, opts.render3qMask, 'pm-3q'));
     if (sk) for (const d of sk.dims) {
       const a = M(d.a), b = M(d.b), ea = M(d.ea), eb = M(d.eb), n = d.n, o = 1.1;
       const ang = Math.atan2(eb[1] - ea[1], eb[0] - ea[0]), ux = Math.cos(ang), uy = Math.sin(ang);
@@ -915,10 +915,62 @@ function pencilSketch(src, { outline = 1 } = {}) {
    • светотень: свет сверху-слева в осях камеры по нормалям (форма, а не цвет ткани) × затенение из обычного кадра (складки,
      контакт подушек), растушёвка графитом со штрихом 35°, в глубокой тени — перекрёстный;
    • тень на полу — штрихом (из обычного кадра на пурпурном фоне). Снаружи изделия прозрачно, внутри — бумага. */
-function pencilFromPasses(colorBmp, normalCv, depthCv, { lineW = 1 } = {}) {
+/* размытие «коробкой» (2 прохода ≈ гаусс); по столбцам — построчно с суммами столбцов (кэш процессора: в 1,5–2 раза быстрее),
+   один рабочий буфер на все вызовы */
+function boxBlur(W, H) {
+  const N = W * H, t = new Float32Array(N), col = new Float64Array(W);
+  return (a, rad) => {
+    const o = new Float32Array(a);
+    for (let pass = 0; pass < 2; pass++) {
+      for (let y = 0; y < H; y++) { const r = y * W; let acc = 0, n = 0; for (let x = -rad; x < W + rad; x++) { if (x + rad < W) { acc += o[r + x + rad]; n++; } if (x - rad - 1 >= 0) { acc -= o[r + x - rad - 1]; n--; } if (x >= 0 && x < W) t[r + x] = acc / n; } }
+      col.fill(0); let n = 0;
+      for (let y = -rad; y < H + rad; y++) {
+        const yi = y + rad, yo = y - rad - 1;
+        if (yi < H) { const r = yi * W; for (let x = 0; x < W; x++) col[x] += t[r + x]; n++; }
+        if (yo >= 0) { const r = yo * W; for (let x = 0; x < W; x++) col[x] -= t[r + x]; n--; }
+        if (y >= 0 && y < H) { const r = y * W, k = 1 / n; for (let x = 0; x < W; x++) o[r + x] = col[x] * k; }
+      }
+    }
+    return o;
+  };
+}
+/* штрих — плитки 256 × 256: от снимка не зависят — считаются один раз за сессию */
+let strokeTiles = null;
+function pencilTiles() {
+  if (strokeTiles) return strokeTiles;
+  let seed = 29; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const T = 256;
+  const streak = (deg, len) => {
+    const n = new Float32Array(T * T); for (let i = 0; i < T * T; i++) n[i] = rnd();
+    const a = (deg * Math.PI) / 180, dx = Math.cos(a), dy = -Math.sin(a), out = new Float32Array(T * T);
+    let su = 0, sq = 0;
+    for (let y = 0; y < T; y++) for (let x = 0; x < T; x++) {
+      let s = 0; for (let k = -len; k <= len; k++) s += n[(((y + Math.round(k * dy)) % T + T) % T) * T + (((x + Math.round(k * dx)) % T + T) % T)];
+      const v = s / (2 * len + 1); out[y * T + x] = v; su += v; sq += v * v;
+    }
+    const mu = su / (T * T), sd = Math.sqrt(sq / (T * T) - mu * mu) || 1;
+    for (let i = 0; i < T * T; i++) out[i] = (out[i] - mu) / sd;
+    return out;
+  };
+  strokeTiles = { T, S1: streak(38, 18), S2: streak(128, 14), S3: streak(38, 6) };
+  return strokeTiles;
+}
+/* «дрожание» руки и нажим — плавный шум; от снимка не зависит: на один чертёж — один раз на размер кадра (виды одного размера) */
+function pencilWobble(W, H, blur, cache) {
+  const key = `${W}x${H}`;
+  if (cache && cache.wob && cache.wob.key === key) return cache.wob;
+  const N = W * H; let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const n1 = new Float32Array(N), n2 = new Float32Array(N); for (let i = 0; i < N; i++) { n1[i] = rnd() - 0.5; n2[i] = rnd() - 0.5; }
+  const WX = blur(n1, 14), WY = blur(n2, 14); let wm = 0; for (let i = 0; i < N; i += 7) wm = Math.max(wm, Math.abs(WX[i]), Math.abs(WY[i]));
+  const w = { key, WX, WY, PR: blur(n1, 22), wk: 1.4 / (wm || 1) };          // PR — сила нажима вдоль линии
+  if (cache) cache.wob = w;
+  return w;
+}
+function pencilFromPasses(colorBmp, normalCv, depthCv, { lineW = 1, cache = null } = {}) {
   const W = normalCv.width, H = normalCv.height, N = W * H;
-  const rd = (src) => { const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(src, 0, 0, W, H); return g.getImageData(0, 0, W, H).data; };
-  const nP = rd(normalCv), dP = rd(depthCv), cP = rd(colorBmp);
+  /* временный холст — сразу освобождаем (Safari считает память холстов до сборки мусора) */
+  const rd = (src) => { const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(src, 0, 0, W, H); const d = g.getImageData(0, 0, W, H).data; c.width = 0; c.height = 0; return d; };
+  let nP = rd(normalCv), dP = rd(depthCv), cP = rd(colorBmp);
   const M = new Uint8Array(N), NX = new Float32Array(N), NY = new Float32Array(N), NZ = new Float32Array(N), D = new Float32Array(N), SH = new Float32Array(N);
   for (let i = 0; i < N; i++) {
     const r = nP[i * 4], g = nP[i * 4 + 1], b = nP[i * 4 + 2];
@@ -929,16 +981,9 @@ function pencilFromPasses(colorBmp, normalCv, depthCv, { lineW = 1 } = {}) {
     const cr = cP[i * 4], cg = cP[i * 4 + 1], cb = cP[i * 4 + 2];
     SH[i] = cr - cg > 45 && cb - cg > 45 ? (cr + cb) / 510 : 1;          // пурпурный фон обычного кадра: темнее — тень
   }
+  nP = dP = cP = null;                                                   // 12 байт на точку — больше не нужны
   const sm = (x, a, b) => Math.min(1, Math.max(0, (x - a) / (b - a)));
-  const blur = (a, rad) => {
-    const t = new Float32Array(N), o = new Float32Array(a);
-    for (let pass = 0; pass < 2; pass++) {
-      for (let y = 0; y < H; y++) { let acc = 0, n = 0; for (let x = -rad; x < W + rad; x++) { if (x + rad < W) { acc += o[y * W + x + rad]; n++; } if (x - rad - 1 >= 0) { acc -= o[y * W + x - rad - 1]; n--; } if (x >= 0 && x < W) t[y * W + x] = acc / n; } }
-      for (let x = 0; x < W; x++) { let acc = 0, n = 0; for (let y = -rad; y < H + rad; y++) { if (y + rad < H) { acc += t[(y + rad) * W + x]; n++; } if (y - rad - 1 >= 0) { acc -= t[(y - rad - 1) * W + x]; n--; } if (y >= 0 && y < H) o[y * W + x] = acc / n; } }
-    }
-    return o;
-  };
-  let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const blur = boxBlur(W, H);
   /* линии: сгиб (угол между соседними нормалями), скачок глубины, край изделия */
   const LN = new Float32Array(N);
   for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
@@ -954,33 +999,16 @@ function pencilFromPasses(colorBmp, normalCv, depthCv, { lineW = 1 } = {}) {
   }
   /* толщина и мягкость линии; «дрожание» руки — плавный шум смещения ±1,4 px */
   const LT = blur(LN, Math.max(1, Math.round(lineW)));
-  const n1 = new Float32Array(N), n2a = new Float32Array(N); for (let i = 0; i < N; i++) { n1[i] = rnd() - 0.5; n2a[i] = rnd() - 0.5; }
-  const WX = blur(n1, 14), WY = blur(n2a, 14); let wm = 0; for (let i = 0; i < N; i += 7) wm = Math.max(wm, Math.abs(WX[i]), Math.abs(WY[i]));
-  const wk = 1.4 / (wm || 1);
-  const PR = blur(Float32Array.from(n1, (v) => v), 22);                    // сила нажима вдоль линии
+  const { WX, WY, PR, wk } = pencilWobble(W, H, blur, cache);
   /* затенение складок и стыков — по глубине (не по освещению кадра: тени на телефоне жёсткие и «грязнят» эскиз): точка дальше
      средней глубины соседей изделия — в углублении (Luft и др., «Image Enhancement by Unsharp Masking the Depth Buffer») */
-  const MD = Float32Array.from(M), DM = Float32Array.from(D, (v, i) => v * M[i]);
+  const MD = new Float32Array(N), DM = new Float32Array(N); for (let i = 0; i < N; i++) { MD[i] = M[i]; DM[i] = D[i] * M[i]; }
   const R = Math.max(6, Math.round(Math.min(W, H) / 70));
   const bDM = blur(DM, R), bM = blur(MD, R), AO = new Float32Array(N);
   for (let i = 0; i < N; i++) if (M[i] && bM[i] > 0.05) AO[i] = sm(bDM[i] / bM[i] - D[i], 0.004, 0.035);
   const AOs = blur(AO, 2); for (let i = 0; i < N; i++) AO[i] = AOs[i];
   let shRef = 0; for (let i = 0; i < N; i++) if (!M[i] && SH[i] > shRef) shRef = SH[i];
-  /* штрих — плитка 256 × 256 */
-  const T = 256;
-  const streak = (deg, len) => {
-    const n = new Float32Array(T * T); for (let i = 0; i < T * T; i++) n[i] = rnd();
-    const a = (deg * Math.PI) / 180, dx = Math.cos(a), dy = -Math.sin(a), out = new Float32Array(T * T);
-    let su = 0, sq = 0;
-    for (let y = 0; y < T; y++) for (let x = 0; x < T; x++) {
-      let s = 0; for (let k = -len; k <= len; k++) s += n[(((y + Math.round(k * dy)) % T + T) % T) * T + (((x + Math.round(k * dx)) % T + T) % T)];
-      const v = s / (2 * len + 1); out[y * T + x] = v; su += v; sq += v * v;
-    }
-    const mu = su / (T * T), sd = Math.sqrt(sq / (T * T) - mu * mu) || 1;
-    for (let i = 0; i < T * T; i++) out[i] = (out[i] - mu) / sd;
-    return out;
-  };
-  const S1 = streak(38, 18), S2 = streak(128, 14), S3 = streak(38, 6);
+  const { T, S1, S2, S3 } = pencilTiles();
   const Lx = -0.45, Ly = 0.6, Lz = 0.72, Ll = Math.hypot(Lx, Ly, Lz);   // свет сверху-слева, чуть от зрителя: обращённое к нам — светлое
   const c = document.createElement('canvas'); c.width = W; c.height = H;
   const g = c.getContext('2d'); const out = g.createImageData(W, H), o = out.data;
@@ -1034,24 +1062,80 @@ function sketchDims(P, cam, box, bb) {
   return out;
 }
 
-export async function render(cfg, { stage = null, render3q = null } = {}) {
+/* эскизы из 3D — «глина»: ткань на них не видна; для той же формы, размера, ножек и модели повторно не считаем */
+let picsCache = null;
+/* картинка эскиза в лист: WebP с прозрачностью. Safari (iPhone) WebP не пишет — toDataURL('image/webp') молча отдаёт PNG,
+   и лист выходит ×6 тяжелее (≈5 МБ — встроенным браузерам Instagram/WhatsApp на телефоне тяжело). Тогда цвет — JPEG,
+   прозрачность — отдельная JPEG-маска (SVG <mask>, по яркости): лист снова около мегабайта */
+let webpOk = null;
+function canWebp() {
+  if (webpOk === null) { try { const c = document.createElement('canvas'); c.width = 2; c.height = 2; webpOk = c.toDataURL('image/webp').startsWith('data:image/webp'); } catch (e) { webpOk = false; } }
+  return webpOk;
+}
+function encodePic(cv) {
+  if (canWebp()) return { url: cv.toDataURL('image/webp', 0.92), mask: null };
+  const w = cv.width, h = cv.height, d = cv.getContext('2d').getImageData(0, 0, w, h).data;
+  const c2 = document.createElement('canvas'); c2.width = w; c2.height = h; const g2 = c2.getContext('2d');
+  const col = g2.createImageData(w, h), msk = g2.createImageData(w, h), a = col.data, b = msk.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const al = d[i + 3];
+    a[i] = al ? d[i] : 200; a[i + 1] = al ? d[i + 1] : 200; a[i + 2] = al ? d[i + 2] : 200; a[i + 3] = 255;   // под прозрачным — ровный светлый (меньше «звона» JPEG)
+    b[i] = b[i + 1] = b[i + 2] = al; b[i + 3] = 255;
+  }
+  g2.putImageData(col, 0, 0); const url = c2.toDataURL('image/jpeg', 0.9);
+  g2.putImageData(msk, 0, 0); const mask = c2.toDataURL('image/jpeg', 0.9);
+  c2.width = 0; c2.height = 0;
+  return { url, mask };
+}
+/* <image> листа; есть маска — картинка под ней (id — уникальный в листе) */
+function picTag(x, y, w, h, par, url, mask, id) {
+  const img = (href, extra = '') => `<image x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="${par}" xlink:href="${href}" href="${href}"${extra}/>`;
+  if (!mask) return img(url);
+  return `<mask id="${id}" maskUnits="userSpaceOnUse" x="${x}" y="${y}" width="${w}" height="${h}">${img(mask)}</mask>${img(url, ` mask="url(#${id})"`)}`;
+}
+export async function render(cfg, { stage = null, render3q = null, onProgress = null, signal = null, budgetMs = 0 } = {}) {
   const type = cfg.type;
   const params = normalize(type, cfg.params || {});
   const pr = partsOf(type, params);
-  let render3qDataUrl = null, swatchDataUrl = null, sketch = null;
-  /* телефон: снимки эскиза меньше (≈ вдвое меньше точек) — чертёж готов быстрее; на листе A4 разница не видна */
-  const SK = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches ? 0.72 : 1;
+  let render3qDataUrl = null, render3qMask = null, swatchDataUrl = null, sketch = null;
+  /* телефон: снимки меньше (≈ вдвое меньше точек) и суперсэмплинг 1,5 вместо 2 (видеопамять кадра 74 МБ вместо 131) —
+     на листе A4 разница не видна (проверено на 300 dpi); без суперсэмплинга вовсе — точки-«соринки» на эскизе */
+  const phone = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
+  const SK = phone ? 0.72 : 1, SS = phone ? 1.5 : 2;
   const breath = () => new Promise((r) => setTimeout(r, 0));     // между тяжёлыми шагами — отдать кадр интерфейсу
+  const t0 = performance.now();
+  const late = () => !!(signal && signal.aborted) || (budgetMs > 0 && performance.now() - t0 > budgetMs);
+  /* Safari считает память холстов до сборки мусора — освобождаем сразу */
+  const free = (...cs) => { for (const c of cs) { if (!c) continue; if (typeof HTMLCanvasElement !== 'undefined' && c instanceof HTMLCanvasElement) { c.width = 0; c.height = 0; } else if (typeof c.close === 'function') c.close(); } };
+  const step = (i) => { if (onProgress) try { onProgress(i, 4); } catch (e) { /* интерфейс */ } };
+  /* пустой снимок (контекст WebGL потерян, нет памяти): маска — весь кадр → этот вид векторный */
+  const blank = (pen) => pen.box[0] <= 0 && pen.box[1] <= 0 && pen.box[2] >= pen.canvas.width - 1 && pen.box[3] >= pen.canvas.height - 1;
+  const gl = stage && stage.renderer && stage.renderer.getContext ? stage.renderer.getContext() : null;
+  const use3d = !!(stage && stage.snapshot && !render3q && !(gl && gl.isContextLost && gl.isContextLost()));
+  const pkey = JSON.stringify([type, params, cfg.model || '', !!cfg.exact, SK]);
+  const hit = use3d && picsCache && picsCache.key === pkey ? picsCache : null;
+  const viewPics = hit ? { ...hit.viewPics } : {};
+  if (hit) ({ render3qDataUrl, render3qMask, sketch } = hit);
+  const wcache = {};
+  const shoot = async (o) => {
+    const shot = await stage.snapshot({ ...o, watermark: false, background: PENCIL_KEY, clay: true, passes: true, ss: SS, canvas: true });
+    if (!shot || !shot.normal) return null;
+    if (!shot.canvas && shot.blob) shot.canvas = await createImageBitmap(shot.blob);   // старый stage.js (кэш)
+    await breath();
+    const pen = pencilFromPasses(shot.canvas, shot.normal, shot.depth, { lineW: 1, cache: wcache });
+    free(shot.canvas, shot.normal, shot.depth);
+    if (blank(pen)) { free(pen.canvas); return null; }
+    return { shot, pen };
+  };
   try {
     if (render3q) render3qDataUrl = typeof render3q === 'string' && render3q.startsWith('data:') ? render3q : await imageToJpegDataUrl(render3q, 1200, 850, 0.9);
-    else if (stage && stage.snapshot) {
+    else if (use3d && !hit) {
+      step(0);
       const b = stage.box, a = b.min, z = b.max;
       const pts = [[a.x, a.y, z.z], [z.x, a.y, z.z], [a.x, a.y, a.z], [z.x, a.y, a.z], [a.x, z.y, z.z], [z.x, z.y, z.z], [a.x, z.y, a.z], [z.x, z.y, a.z], [(a.x + z.x) / 2, (a.y + z.y) / 2, (a.z + z.z) / 2]];
-      const shot = await stage.snapshot({ width: Math.round(1400 * SK), height: Math.round(1000 * SK), view: '3q', watermark: false, background: PENCIL_KEY, clay: true, passes: true, project: pts });
-      if (shot && shot.blob) {
-        if (globalThis.__RICCA_SKETCH_DEBUG) Object.assign(globalThis.__RICCA_SKETCH_DEBUG, { raw3q: shot.blob, normal3q: shot.normal, depth3q: shot.depth });   // проверка эскиза (тесты)
-        const bmp = await createImageBitmap(shot.blob);
-        const pen = shot.normal ? pencilFromPasses(bmp, shot.normal, shot.depth, { lineW: 1 }) : pencilSketch(bmp);
+      const r = await shoot({ width: Math.round(1400 * SK), height: Math.round(1000 * SK), view: '3q', project: pts });
+      if (r) {
+        const { shot, pen } = r;
         const dims = sketchDims(shot.points, shot.camera, b, pr.bbox);
         /* кадр: изделие + вынесенные размеры (+ место под цифры), поля 3 % */
         let [x0, y0, x1, y1] = pen.box;
@@ -1060,16 +1144,18 @@ export async function render(cfg, { stage = null, render3q = null } = {}) {
         x0 = Math.max(0, Math.floor(x0 - m)); y0 = Math.max(0, Math.floor(y0 - m)); x1 = Math.min(W0, Math.ceil(x1 + m)); y1 = Math.min(H0, Math.ceil(y1 + m));
         const cw = x1 - x0, ch = y1 - y0, cc = document.createElement('canvas'); cc.width = cw; cc.height = ch;
         cc.getContext('2d').drawImage(pen.canvas, x0, y0, cw, ch, 0, 0, cw, ch);
+        free(pen.canvas);
         const sh = (q) => [q[0] - x0, q[1] - y0];
         sketch = { w: cw, h: ch, obj: [pen.box[0] - x0, pen.box[1] - y0, pen.box[2] - x0, pen.box[3] - y0], box8: shot.points.slice(0, 8).map(sh), dims: dims.map((d) => ({ a: sh(d.a), b: sh(d.b), ea: sh(d.ea), eb: sh(d.eb), n: d.n, text: d.text })) };
-        render3qDataUrl = cc.toDataURL('image/webp', 0.92);   // WebP с прозрачностью: файл чертежа в разы легче (Safari без WebP — сам отдаст PNG)
+        ({ url: render3qDataUrl, mask: render3qMask } = encodePic(cc));
+        free(cc);
       }
     }
   } catch (e) { console.warn('sketch', e); render3qDataUrl = null; sketch = null; }
   /* виды спереди / слева / сверху — тоже карандашом из 3D (ортогональные снимки); рамка габарита на снимке → прямоугольник вида
-     на листе (layoutSheet ставит картинку точно в контур вида, размеры — поверх, как раньше) */
-  const viewPics = {};
-  if (stage && stage.snapshot && !render3q) {
+     на листе (layoutSheet ставит картинку точно в контур вида, размеры — поверх, как раньше). Время вышло — остальные виды
+     векторные (как без 3D): чертёж есть всегда */
+  if (use3d && !hit) {
     try {
       /* габарит без постели и подушек (как на видах): рамка всех деталей → сдвиг к сцене → рамка без «декора» */
       const sb = stage.box, all = boundsOf(pr.items.map(itemBounds).flatMap((q) => [q.min, q.max]));
@@ -1079,25 +1165,31 @@ export async function render(cfg, { stage = null, render3q = null } = {}) {
       const a = same ? { x: nd.min[0] + sh[0], y: nd.min[1] + sh[1], z: nd.min[2] + sh[2] } : sb.min;
       const z = same ? { x: nd.max[0] + sh[0], y: nd.max[1] + sh[1], z: nd.max[2] + sh[2] } : sb.max;
       const c8 = [[a.x, a.y, a.z], [z.x, a.y, a.z], [a.x, z.y, a.z], [z.x, z.y, a.z], [a.x, a.y, z.z], [z.x, a.y, z.z], [a.x, z.y, z.z], [z.x, z.y, z.z]];
+      let i = 0;
       for (const v of ['front', 'side', 'top']) {
+        step(++i);
         await breath();
-        const shot = await stage.snapshot({ width: Math.round(1600 * SK), height: Math.round(1100 * SK), view: v, watermark: false, background: PENCIL_KEY, clay: true, passes: true, project: c8 });
-        if (!shot || !shot.blob) continue;
-        const bmp = await createImageBitmap(shot.blob);
-        const pen = shot.normal ? pencilFromPasses(bmp, shot.normal, shot.depth, { lineW: 1 }) : pencilSketch(bmp, { outline: 1.4 });
+        if (late()) break;
+        const r0 = await shoot({ width: Math.round(1600 * SK), height: Math.round(1100 * SK), view: v, project: c8 });
+        if (!r0) continue;
+        const { shot, pen } = r0;
         const xs = shot.points.map((q) => q[0]), ys = shot.points.map((q) => q[1]);
         const r = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
         const W0 = pen.canvas.width, H0 = pen.canvas.height, mx = (r[2] - r[0]) * 0.06, my = (r[3] - r[1]) * 0.08;
         const x0 = Math.max(0, Math.floor(r[0] - mx)), y0 = Math.max(0, Math.floor(r[1] - my)), x1 = Math.min(W0, Math.ceil(r[2] + mx)), y1 = Math.min(H0, Math.ceil(r[3] + my));
         const cv = document.createElement('canvas'); cv.width = x1 - x0; cv.height = y1 - y0;
         cv.getContext('2d').drawImage(pen.canvas, x0, y0, cv.width, cv.height, 0, 0, cv.width, cv.height);
-        viewPics[v] = { url: cv.toDataURL('image/webp', 0.92), w: cv.width, h: cv.height, rect: [r[0] - x0, r[1] - y0, r[2] - x0, r[3] - y0] };
+        free(pen.canvas);
+        const pic = encodePic(cv);
+        viewPics[v] = { url: pic.url, mask: pic.mask, w: cv.width, h: cv.height, rect: [r[0] - x0, r[1] - y0, r[2] - x0, r[3] - y0] };
+        free(cv);
       }
     } catch (e) { console.warn('views', e); }
+    if (render3qDataUrl && viewPics.front && viewPics.side && viewPics.top) picsCache = { key: pkey, render3qDataUrl, render3qMask, sketch, viewPics: { ...viewPics } };
   }
   try { if (cfg.fabric && cfg.fabric.src450) swatchDataUrl = await imageToJpegDataUrl(cfg.fabric.src450, 120, 120, 0.88, true); } catch (e) { swatchDataUrl = null; }
   const css = await fontCss();
-  const res = layoutSheet({ ...cfg, params }, pr, { render3qDataUrl, swatchDataUrl, sketch, viewPics, fontCss: css });
+  const res = layoutSheet({ ...cfg, params }, pr, { render3qDataUrl, render3qMask, swatchDataUrl, sketch, viewPics, fontCss: css });
   const svg = res.svg;
   async function toPNG(width = 3508) {
     const height = Math.round((width * SHEET.h) / SHEET.w);
@@ -1105,15 +1197,16 @@ export async function render(cfg, { stage = null, render3q = null } = {}) {
     try {
       const img = new Image();
       img.decoding = 'sync';
-      img.src = url;
-      await (img.decode ? img.decode() : new Promise((r, j) => { img.onload = r; img.onerror = j; }));
+      /* сначала onload (Safari: decode() у SVG иногда отклоняется), decode — по возможности */
+      await new Promise((r, j) => { img.onload = r; img.onerror = j; img.src = url; });
+      if (img.decode) await img.decode().catch(() => {});
       const c = document.createElement('canvas'); c.width = width; c.height = height;
       const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, width, height);
       g.drawImage(img, 0, 0, width, height);
       return await new Promise((r) => c.toBlob((b) => r(b), 'image/png'));
     } finally { URL.revokeObjectURL(url); }
   }
-  return { svg, toPNG, scale: res.scale, id: res.id, layout: res };
+  return { svg, toPNG, scale: res.scale, id: res.id, layout: res, complete: !use3d || !!(render3qDataUrl && viewPics.front && viewPics.side && viewPics.top) };
 }
 
 export { pencilFromPasses };

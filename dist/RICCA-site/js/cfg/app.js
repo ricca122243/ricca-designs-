@@ -77,13 +77,16 @@ const SIZE = {
   corner: [fld('w', 'Длина вдоль спинки'), fld('l', (p) => (p.form === 'chaise' ? 'Длина шезлонга' : 'Вторая сторона')), fld('chaiseW', 'Ширина шезлонга', (p) => p.form === 'chaise'), ...SOFA_FIELDS().slice(1)],
   ushape: [fld('w', 'Ширина'), fld('l', 'Боковые стороны'), ...SOFA_FIELDS().slice(1)],
   modular: [fld('moduleW', 'Ширина модуля'), fld('chaiseL', 'Глубина шезлонга', (p) => p.chaise !== 'none'), ...SOFA_FIELDS().slice(1)],
-  bed: [fld('mw', 'Ширина матраса'), fld('ml', 'Длина матраса'), fld('hbH', 'Высота изголовья'), fld('hbOver', 'Выступ изголовья с каждой стороны'),
+  bed: [fld('mw', 'Ширина матраса'), fld('ml', 'Длина матраса'), fld('hbH', 'Высота изголовья'), fld('hbOver', 'Выступ изголовья'),
     fld('frameT', 'Боковина'), fld('railH', 'Высота царги'), fld('legH', 'Высота ножек', (p) => p.base === 'legs')],
   /* округлое кресло: оболочка вместо подлокотников — её толщина и высота спереди */
   armchair: [...SOFA_FIELDS().slice(0, 5), fld('armW', (p) => (p.form === 'round' ? 'Толщина оболочки' : 'Ширина подлокотника'), (p) => p.armStyle !== 'none'),
     fld('armH', (p) => (p.form === 'round' ? 'Высота оболочки спереди' : 'Высота подлокотника'), (p) => p.armStyle !== 'none'), fld('legH', legLabel, (p) => p.legs !== 'hidden')],
   pouf: [fld('w', (p) => ({ round: 'Диаметр', square: 'Сторона', bench: 'Длина' }[p.form] || 'Ширина')), fld('d', 'Глубина', (p) => p.form === 'bench'), fld('h', 'Высота'), fld('legH', 'Высота ножек', (p) => p.legs !== 'hidden')],
 };
+/* «Ещё размеры» (свёрнуто): посадка, подлокотники, ножки, царга — главное на экране: габарит, матрас, изголовье */
+const SIZE_MORE = new Set(['seatH', 'seatD', 'armW', 'armH', 'legH', 'hbOver', 'frameT', 'railH']);
+let sizeMoreOpen = false;
 const KEY_CHIPS = { bed: { mw: [90, 120, 140, 160, 180, 200], ml: [190, 200, 210] } };
 const lbl = (f, p) => (typeof f.label === 'function' ? f.label(p) : f.label);
 const rangeOf = (type, key, p) => (P.rangeOf ? P.rangeOf(type, key, p) : null) || (P.RANGES[type] && P.RANGES[type][key]) || { min: 0.02, max: 6, def: p[key] };
@@ -119,7 +122,7 @@ const state = {
   /* ткань из ссылки/памяти, которой больше нет в библиотеке: на модели — спокойная по умолчанию, в итоге и WhatsApp — «подберём вместе» */
   fabricLost: false, visited: new Set([1]),
 };
-const MSG_FAB_LOST = 'Эта ткань сейчас не в библиотеке конструктора — выберите похожую; образцы покажем в шоуруме';
+const MSG_FAB_LOST = 'Этой ткани нет в конструкторе — выберите похожую';
 const MSG_TYPE_GONE = 'Ателье шьёт только мягкую мебель — показываем диван';
 let pendingToast = '';
 const memo = {};                // параметры других типов в этой сессии (вернуться без потерь)
@@ -261,6 +264,8 @@ function renderTypes() {
    щелчок собирает похожую модель. Новая модель в каталоге с полем cfg появляется здесь сама. */
 const catalogModels = () => (Array.isArray(window.RICCA_CATALOG) ? window.RICCA_CATALOG : []).filter((m) => m && m.cfg && m.photos && m.photos.length && !/^(chairs|tables)$/.test(m.category));
 const modelName = (m) => { const nm = (window.RICCA_MODEL_NAMES || {})[m.id]; return nm ? `${m.type || ''} ${nm}`.trim() : `${m.type || ''} № ${m.id.split('-').pop()}`; };
+/* плашка в окне 3D после выбора модели: «Novel · точная модель» */
+const modelTag = (m) => `${(window.RICCA_MODEL_NAMES || {})[m.id] || modelName(m)} · ${m.glb ? 'точная модель' : 'по мотивам'}`;
 let activeModel = null, modelsCat = '';
 function renderModels() {
   const box = $('#models'); if (!box) return;
@@ -272,7 +277,7 @@ function renderModels() {
   const list = catalogModels().filter((m) => m.category === cat && m.glb);
   box.hidden = !list.length;
   if (!list.length) { box.innerHTML = ''; return; }
-  box.innerHTML = `<p class="models__l" id="models-l">Модели каталога в точном 3D</p><div class="models__row" role="group" aria-labelledby="models-l">${list.map((m) => {
+  box.innerHTML = `<p class="models__l" id="models-l">Модели из каталога</p><div class="models__row" role="group" aria-labelledby="models-l">${list.map((m) => {
     const ph = m.photos.find((x) => x.studio) || m.photos[0];
     return `<button class="model${m.glb ? ' model--exact' : ''}" type="button" data-model="${esc(m.id)}" aria-pressed="${m.id === activeModel}" title="${esc(m.subtitle || '')}">
       <span class="model__img"><img src="${esc(ph.src600 || ph.src)}" alt="" loading="lazy" decoding="async" width="600" height="450"></span><span class="model__t">${esc(modelName(m))}</span></button>`;
@@ -331,14 +336,14 @@ const EXACT_ROWS = new Set(['legFinish']);   // что можно менять �
 const isExact = () => !!(activeModel && catalogModels().some((m) => m.id === activeModel && m.glb));
 const exactName = () => { const m = activeModel && catalogModels().find((x) => x.id === activeModel && x.glb); return m ? modelName(m) : ''; };
 /* «Собрать из деталей»: клиент хочет другую форму — переходим на модель из деталей с теми же параметрами */
-function exactOff() { dropExact(); renderForm(); renderHeads(); setState({}, { structural: true }); toast('Теперь модель собрана из деталей — меняйте форму', 3200); }
+function exactOff() { dropExact(); renderForm(); renderHeads(); setState({}, { structural: true }); toast('Собрано из деталей — меняйте форму'); }
 function useExact(m) {
   if (!m.glb) { exact = null; return; }
   const my = exactLoading = loadExactGroup(m).then((g) => {
     if (exactLoading !== my || activeModel !== m.id) return;
     exact = { id: m.id, group: g }; rebuild(); renderForm(); if (photoApi && state.mode === 'photo') photoApi.refresh();   // renderForm: «Отделка ножек» — только когда ножки у модели есть
     if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced }));
-  }).catch((e) => { console.warn('exact', e); if (exactLoading === my) toast('Точная модель не загрузилась — показана собранная из деталей'); });
+  }).catch((e) => { console.warn('exact', e); if (exactLoading === my) toast('Точная модель не загрузилась — показываем похожую', 3500); });
 }
 /* ссылка «Собрать похожий в 3D» с сайта: если параметры совпадают с рецептом модели — показать её точную модель */
 function matchModel() {
@@ -360,7 +365,7 @@ function applyModel(mid) {
   activeModel = mid; exact = null; useExact(m);
   syncTypes(); setState({}, { structural: true }); renderForm(); renderHeads();
   if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced }));
-  toast(m.glb ? `${modelName(m)}: точная модель, как на фото. Меняйте размер, ткань и цвет ножек` : `Собрано по мотивам: ${modelName(m)}. Меняйте что угодно`, 4200);
+  toast(modelTag(m));   // 2 с; касание модели убирает раньше
   const b = $(`[data-model="${CSS.escape(mid)}"]`); if (b) b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
 }
 function syncTypes() {
@@ -412,8 +417,8 @@ function renderForm() {
     return `<div class="opt" data-row="${r.key}"><p class="opt__l" id="ol-${r.key}">${esc(r.label)}</p>
       <div class="chips" role="radiogroup" aria-labelledby="ol-${r.key}">${vals.map((v) => `<button class="chip" type="button" role="radio" aria-checked="${String(v) === String(cur)}" data-opt="${r.key}" data-v="${esc(String(v))}"${off}>${esc(chipLabel(t, r.key, v))}</button>`).join('')}</div></div>`;
   }).join('');
-  const note = ex ? `<div class="xn"><p class="xn__t">${esc(exactName())} — точная модель, как на фото. Меняются размер, ткань и цвет ножек. Чтобы менять форму, соберите модель из деталей.</p>
-    <button class="caps-link xn__b" type="button" data-exact-off>Собрать из деталей и менять форму<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>` : '';
+  const note = ex ? `<div class="xn"><p class="xn__t">${html.includes('data-row="legFinish"') ? 'Меняются размер, ткань и цвет ножек.' : 'Меняются размер и ткань.'}</p>
+    <button class="caps-link xn__b" type="button" data-exact-off>Изменить форму<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>` : '';
   $('#opts').innerHTML = note + html;
 }
 function setOption(key, raw) {
@@ -451,7 +456,7 @@ function renderSize() {
   const prs = (P.PRESETS[t] || []);
   $('#presets').innerHTML = prs.length ? `<p class="opt__l">Готовые размеры</p><div class="chips">${prs.map((pr, i) => `<button class="chip" type="button" aria-pressed="${presetActive(pr)}" data-preset="${i}">${esc(pr.label)}${/^\d/.test(pr.label) && !/[×x]/.test(pr.label) && t !== 'modular' ? ' см' : ''}</button>`).join('')}</div>` : '';
   const fields = (SIZE[t] || []).filter((f) => !f.when || f.when(p));
-  let html = fields.map((f) => {
+  const fldHtml = (f) => {
     const r = rangeOf(t, f.key, p);
     const min = Math.round(r.min * 100), max = Math.round(r.max * 100);
     const kc = KEY_CHIPS[t] && KEY_CHIPS[t][f.key];
@@ -469,9 +474,11 @@ function renderSize() {
       <div class="fld__scale" aria-hidden="true"><span>${min}</span><span>${max}</span></div>
       <p class="fld__n" id="fn-${f.key}" aria-live="polite"></p>
     </div>`;
-  }).join('');
-  if (t === 'modular') html += `<p class="flds__ro">Общая ширина <b data-ro="w"></b></p>`;
-  if (t === 'bed') html += `<p class="flds__ro">Габарит кровати <b data-ro="bed"></b></p>`;
+  };
+  const main = fields.filter((f) => !SIZE_MORE.has(f.key)), more = fields.filter((f) => SIZE_MORE.has(f.key));
+  const open = sizeMoreOpen || more.some((f) => state.inputErr[f.key]);
+  let html = main.map(fldHtml).join('');
+  if (more.length) html += `<details class="flds__more"${open ? ' open' : ''}><summary class="flds__sum">Ещё размеры<svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>${more.map(fldHtml).join('')}</details>`;
   $('#flds').innerHTML = html;
   syncSize(true);
 }
@@ -495,6 +502,7 @@ function syncSize(all = false) {
     $$('[data-keychip]', el).forEach((b) => b.setAttribute('aria-pressed', String(Math.round(v * 100) === +b.dataset.v)));
   });
   $$('#presets [data-preset]').forEach((b) => b.setAttribute('aria-pressed', String(presetActive((P.PRESETS[t] || [])[+b.dataset.preset]))));
+  const more = $('#flds .flds__more'); if (more && !more.open && $('.fld.has-err', more)) more.open = true;
   const ro = $('[data-ro="w"]'); if (ro) ro.textContent = `${fmtCm(p.w || 0)} см`;
   const rb = $('[data-ro="bed"]'); if (rb) { const d = curDims(); rb.textContent = d ? `${fmtCm(d.w)} × ${fmtCm(d.d)} см` : ''; }
 }
@@ -600,7 +608,7 @@ function renderSummary() {
     a.href = bad ? '#size' : waUrl(waText(s, { link, dims: d, id: rid }));
     a.classList.toggle('is-off', bad); a.setAttribute('aria-disabled', String(bad));
   }
-  $('#b-drawing').disabled = bad;
+  $$('[data-drawing]').forEach((b) => { b.disabled = bad; });   // «Чертёж»: окно 3D, плашка (шаг «Размер»), итог
   $('#wa-size').href = sizeWaHref();
   syncBar();
   const plain = $('[data-wa-plain]'); if (plain) plain.href = waUrl('Здравствуйте! Пишу из конструктора RICCA.');
@@ -655,6 +663,9 @@ function syncBar() {
   const nb = $('#bar-next'), wa = $('#bar-wa'); if (!nb || !wa) return;
   const n = state.mode === 'model' ? nextStepFor() : 0;
   nb.hidden = !n; wa.hidden = !!n;
+  /* шаг «Размер»: слева в плашке — «Чертёж» вместо «У себя дома»: размер задали — чертёж под пальцем (жалоба 1 нояб.) */
+  const draw = state.mode === 'model' && state.step === 3;
+  $('#bar-draw').hidden = !draw; $('#bar-ar').hidden = draw;
   if (n) { $('#bar-next-t').textContent = `Далее: ${STEP_NAMES[n]}`; $('#bar-next-n').textContent = `${Math.max(1, Math.min(5, n - 1 || 1))}/5`; nb.dataset.goto = String(n); }
   syncBarAwaySoon();
 }
@@ -693,9 +704,11 @@ function scheduleRebuild(drag) {
   if (drag) {
     const now = performance.now();
     if (now - rbLast > 100) { rbLast = now; rebuild('mid'); }
-    rbT = setTimeout(() => rebuild(quality()), 180);
-  } else rbT = setTimeout(() => rebuild(quality()), 120);
+    rbT = setTimeout(() => { rbT = 0; rebuild(quality()); }, 180);
+  } else rbT = setTimeout(() => { rbT = 0; rebuild(quality()); }, 120);
 }
+/* перестройка ещё ждёт своей очереди (размер только что ввели) — сделать сейчас: чертёж снимает модель со сцены */
+function flushRebuild() { if (rbT) { clearTimeout(rbT); rbT = 0; rebuild(quality()); } }
 function rebuild(q = quality()) {
   if (!stage) return;
   try {
@@ -764,6 +777,7 @@ async function initStage() {
   }
   let shown = false;
   stage.on('render', () => { if (!shown) { shown = true; $('#vp-ph').classList.add('is-gone'); } });
+  stage.on('interact', toastHide);   // повернули или приблизили модель — плашка уходит
   stage.on('view', (v) => { if (typeof v === 'string' && v !== state.view) { state.view = v; $$('.vp__views [data-view]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.view === v))); } updateDims(); });
   const real = $('#t-real');
   real.hidden = !(typeof stage.photoreal === 'function' && (stage.supportsPhotoreal === true || stage.photorealSupported === true));
@@ -792,10 +806,13 @@ function seatCloseUp() {
 }
 
 /* ═════════ фото и файлы ═════════ */
-function toast(msg, ms = 2600) {
+/* подсказка в окне 3D: светлая плашка у верхнего края (телефон — под образцом ткани), уходит сама через ~2 с;
+   касание плашки или модели убирает её сразу (initStage: stage.on('interact'), bind: click) */
+function toast(msg, ms = 2000) {
   const t = $('#vp-toast'); t.textContent = msg; t.hidden = false;
-  clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, ms);
+  clearTimeout(toast.t); toast.t = setTimeout(toastHide, ms);
 }
+function toastHide() { clearTimeout(toast.t); $('#vp-toast').hidden = true; }
 /* выбранный цвет ткани — в поле зрения (после прихода из «Ткани крупно») */
 function revealFabric() {
   requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -879,6 +896,8 @@ function drawingCfg() {
     notes: state.notes.slice(), dims: curDims(), exact: !!(exact && exact.id === activeModel), date: `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`,
   };
 }
+let drawingJob = null;
+const drawingKey = (c) => { const { id: _i, date: _d, ...rest } = c; return JSON.stringify(rest); };
 async function openDrawing() {
   if (hasErrors()) return;
   const dlg = $('#dlg-drawing'); const img = $('#dd-img'); const wait = $('#dd-wait');
@@ -887,18 +906,51 @@ async function openDrawing() {
   const ph = mqPhone.matches, send = $('#dd-send'), png = $('#dd-png');
   send.classList.toggle('btn--fill', ph); send.classList.toggle('btn--line', !ph); png.classList.toggle('btn--fill', !ph); png.classList.toggle('btn--line', ph);
   if (ph) send.parentNode.insertBefore(send, png); else png.parentNode.insertBefore(png, send);
-  img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…'; $('#dd-hint').hidden = true; $('#dd-pan').scrollLeft = 0;
+  /* точная модель ещё грузится (1,8 МБ на мобильной сети) — дождаться (один раз; ошибка загрузки — дальше с «собранной»),
+     иначе эскизы снимутся с «собранной» кровати, а модель подменится посреди съёмки */
+  if (exactLoading && !(exact && exact.id === activeModel)) {
+    img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…'; openDialog(dlg);
+    await Promise.resolve(exactLoading).catch(() => {});
+    if (!dlg.open) return;
+  }
+  flushRebuild();   // ввели размер и сразу нажали «Чертёж»: иначе эскиз — со старой модели, а цифры — новые
+  const cfg = drawingCfg(), key = drawingKey(cfg);
+  const show = (d) => { img.src = d.url; img.hidden = false; wait.hidden = true; ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = false; }); $('#dd-open').hidden = false; };
   ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = true; });
+  $('#dd-hint').hidden = true; $('#dd-pan').scrollLeft = 0;
+  /* тот же вариант — готовый чертёж сразу */
+  if (drawing && drawing.key === key) { openDialog(dlg); show(drawing); return; }
+  img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…';
   openDialog(dlg);
+  /* один расчёт за раз: повторное нажатие того же варианта ждёт уже начатый (два параллельных — дерутся за сцену) */
+  if (!drawingJob || drawingJob.key !== key) {
+    const ac = new AbortController();
+    const job = { key, ac };
+    job.p = (async () => {
+      const mod = await import('./drawing.js');
+      let res;
+      try {
+        res = await mod.render(cfg, { stage, signal: ac.signal, budgetMs: 12000, onProgress: (i, n) => { if (drawingJob === job) wait.textContent = `Готовим чертёж · ${i + 1}/${n}`; } });
+      } catch (e) {
+        console.warn('drawing 3d', e);
+        res = await mod.render(cfg, {});          // без 3D-эскизов (векторные виды) — за доли секунды
+      }
+      return res;
+    })();
+    if (drawingJob) drawingJob.ac.abort();
+    drawingJob = job;
+  }
+  const job = drawingJob;
+  dlg.addEventListener('close', () => { if (drawingJob === job) { job.ac.abort(); drawingJob = null; } }, { once: true });
   try {
-    const mod = await import('./drawing.js');
-    const res = await mod.render(drawingCfg(), { stage });
+    /* страховка: что бы ни случилось со сценой — через 20 с лист без 3D-эскизов */
+    let res = await Promise.race([job.p, new Promise((r) => setTimeout(r, 20000, null))]);
+    if (!res) { job.ac.abort(); res = await (await import('./drawing.js')).render(cfg, {}); }
+    if (drawingJob === job) drawingJob = null;
     if (drawing && drawing.url) URL.revokeObjectURL(drawing.url);
     const url = URL.createObjectURL(new Blob([res.svg], { type: 'image/svg+xml' }));
-    drawing = { ...res, url, id: id() };
-    img.src = url; img.hidden = false; wait.hidden = true;
-    ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = false; });
-    $('#dd-open').hidden = false;
+    drawing = { ...res, url, id: cfg.id, key: res.complete && !job.ac.signal.aborted ? key : null };
+    if (dlg.open) show(drawing);
   } catch (e) {
     console.warn('drawing', e);
     wait.textContent = 'Чертёж пока не получилось подготовить. Отправьте вариант в WhatsApp — мастер пришлёт схему.';
@@ -1039,7 +1091,7 @@ async function setMode(mode, { focus = false } = {}) {
   $('#main').dataset.mode = mode;
   $$('[data-mode-tab]').forEach((b) => { const on = b.dataset.modeTab === mode; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; });
   $('#steps').hidden = !model; $('#room-panel').hidden = !room; $('#photo-panel').hidden = !photo;
-  $('.vp__views').hidden = !model; $('#t-dims').hidden = !model; $('#vp-size').hidden = !model;
+  $('.vp__views').hidden = !model; $('#t-dims').hidden = !model; $('#t-drawing').hidden = !model; $('#vp-size').hidden = !model;
   $('#photo-host').hidden = !photo; $('#ph-empty').hidden = !photo || !!(photoApi && photoApi.hasPhoto);
   if (focus) $(`[data-mode-tab="${mode}"]`).focus();
   if (prev === 'photo' && photoApi && photoApi.leave) photoApi.leave();
@@ -1217,6 +1269,7 @@ function bind() {
     if (e.key === 'Enter') { e.preventDefault(); setSize(key, parseCm(e.target.value)); e.target.select(); }
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); setSize(key, Math.round(toCm(state.params[key] || 0)) + (e.key === 'ArrowUp' ? 1 : -1) * (e.shiftKey ? 10 : 1)); }
   });
+  flds.addEventListener('toggle', (e) => { if (e.target.classList && e.target.classList.contains('flds__more')) sizeMoreOpen = e.target.open; }, true);   // «Ещё размеры» остаётся открытым при перерисовке
   flds.addEventListener('focusout', (e) => { if (e.target.classList.contains('fld__i')) { const key = e.target.closest('.fld').dataset.key; if (!state.inputErr[key]) e.target.value = fmtIn(state.params[key]); } });
 
   $('#fab-tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-ftype]'); if (!b) return; fabUI = { typeId: b.dataset.ftype, collectionId: null }; renderFabric(); });
@@ -1234,7 +1287,7 @@ function bind() {
   $$('[data-qty]').forEach((b) => b.addEventListener('click', () => { qtyTouched = true; setState({ qty: Math.max(1, Math.min(99, state.qty + (+b.dataset.qty))) }, { rebuild: false }); }));
   for (const a of [$('#wa-send'), $('#bar-wa')]) a.addEventListener('click', (e) => { if (state.mode === 'room' && a.id === 'bar-wa') return; if (state.mode === 'photo' && a.id === 'bar-wa') { e.preventDefault(); if (photoApi && photoApi.hasPhoto) photoSend(); else photoPick(isPhoneDevice() ? 'camera' : 'gallery'); return; } if (hasErrors()) { e.preventDefault(); openStep(3); const f = $('#flds .has-err .fld__i'); if (f) f.focus(); } });
 
-  $('#b-drawing').addEventListener('click', openDrawing);
+  $$('[data-drawing]').forEach((b) => b.addEventListener('click', openDrawing));
   $('#b-ar').addEventListener('click', openHome); $('#bar-ar').addEventListener('click', openHome);
   $('#ph-ar').addEventListener('click', openAR); $('#ph-qr').addEventListener('click', openAR);
   $('#ph-file').addEventListener('change', (e) => photoChosen(e.target.files && e.target.files[0]));
@@ -1255,6 +1308,7 @@ function bind() {
   $('#dd-img').addEventListener('load', syncDrawingHint); window.addEventListener('resize', syncDrawingHint);
   $('#dd-pan').addEventListener('scroll', () => { if ($('#dd-pan').scrollLeft > 24) $('#dd-hint').hidden = true; }, { passive: true });   // уже листают — подсказка не нужна
   $('#vp-fab').addEventListener('click', seatCloseUp);
+  $('#vp-toast').addEventListener('click', toastHide);
   $('#ar-go').addEventListener('click', arGo);
   $('#b-to-room').addEventListener('click', addToRoom);
   $('#b-reset').addEventListener('click', () => {
@@ -1309,7 +1363,7 @@ function bind() {
       if (stage) { applyFabric(); rebuild(quality()); }
       renderFabChip();
       if ((fab && !ph.cfg) || lost) { openStep(4); revealFabric(); }
-      if (pendingToast) toast(pendingToast, 5000); else if (fab && !ph.cfg) toast(`На модели: ${fab.collectionTitle} · ${fab.colour}`);
+      if (pendingToast) toast(pendingToast, 3500);
     }
     else if (ph.room) setMode('room');
   });
@@ -1336,10 +1390,9 @@ function init() {
     if (pendingModel && catalogModels().some((m) => m.id === pendingModel && m.glb && decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }).type === state.type)) { activeModel = pendingModel; useExact(catalogModels().find((m) => m.id === pendingModel)); renderModels(); }
     else if (src === 'hash') matchModel();
     if (state.mode === 'room') setMode('room');
-    if (pendingToast) toast(pendingToast, 5000);
-    else if (arrivedFabric) toast(`На модели: ${arrivedFabric.collectionTitle} · ${arrivedFabric.colour}`, 4000);
+    if (pendingToast) toast(pendingToast, 3500);
   });
-  if (pendingToast && !stage) toast(pendingToast, 5000);
+  if (pendingToast && !stage) toast(pendingToast, 3500);
   /* пришли со страницы «Ткани» — сразу к шагу «Ткань» (на телефоне — под моделью, на компьютере — в колонке справа) */
   if (src === 'fabric') {
     if (mqPhone.matches) { openStep(4); revealFabric(); }
