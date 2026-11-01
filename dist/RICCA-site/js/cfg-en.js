@@ -57,7 +57,7 @@
       'If the furniture seems to float or sink into the floor, adjust these two sliders. In the photo you can drag the furniture along the floor with one finger, and rotate or zoom with two.',
     'Поставить по центру': 'Centre it', 'Отправить фото в WhatsApp': 'Send the photo to WhatsApp', 'Вживую через камеру (AR)': 'Live through the camera (AR)',
     'RICCA DESIGNS · Алматы, ул. Алишера Навои, 208/2 ·': 'RICCA DESIGNS · Almaty, 208/2 Alisher Navoi St. ·',
-    'У себя дома': 'In your home', 'В WhatsApp': 'To WhatsApp', 'Готовим чертёж…': 'Preparing the drawing…', 'Крупно': 'Close-up',
+    'У себя дома': 'In your home', 'В WhatsApp': 'To WhatsApp', 'Готовим чертёж…': 'Preparing the drawing…', 'Готовим чертёж': 'Preparing the drawing', 'Крупно': 'Close-up',
     'Скачать чертёж': 'Download drawing', 'Отправить чертёж': 'Send drawing', 'Файл для дизайнера (SVG)': 'File for designers (SVG)',
     'Схема для согласования. Размеры в см. Детали согласуем с мастером.': 'Drawing for approval. Dimensions in cm. We’ll agree the details with the master.',
     'Освободите участок пола, нужен свет': 'Clear a patch of floor; you need light', 'Наведите телефон на пол и медленно поведите им': 'Point your phone at the floor and move it slowly',

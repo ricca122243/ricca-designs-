@@ -602,6 +602,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     get camera() { return camera; },
     get view() { return view; },
     get box() { return box.clone(); },
+    /* рамка только нужных сеток (например, кровать без одеяла и подушек — одеяло свисает шире рамы) */
+    boxOf(keep) { const b = new THREE.Box3(); if (object) { object.updateMatrixWorld(true); object.traverse((o) => { if (o.isMesh && keep(o)) b.expandByObject(o); }); } return b; },
     supportsPhotoreal: false,
     setObject, setView, frame, setDims, setStudio, snapshot, resize,
     /* снаружи (комната двигает мебель): сцена могла измениться — тени пересчитать; markShadows=false — только перерисовать */

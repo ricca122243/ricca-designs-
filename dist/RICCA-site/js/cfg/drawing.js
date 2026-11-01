@@ -437,7 +437,7 @@ export function layoutSheet(cfg, partsResult, opts = {}) {
   /* одеяло и подушки кровати (decor) и утопленные опоры (support) — не на чертеже */
   /* точная модель (как на фото): рисунок — настоящая форма, а цепочки размеров собраны по деталям конструктора и с ней не
      совпадают (секции, подлокотники) — оставляем только габариты: ширину, глубину, высоту */
-  const dimsSrc = cfg.exact ? src.dims.filter((d) => !(d.tier >= 1) && /^(Ширина|Глубина|Высота|Длина|Длина шезлонга)$/.test(d.label)) : src.dims;
+  const dimsSrc = cfg.exact ? src.dims.filter((d) => !(d.tier >= 1) && /^(Ширина|Ширина \(изголовье\)|Глубина|Высота|Длина|Длина шезлонга|Изголовье)$/.test(d.label)) : src.dims;
   const pr = { ...src, items: src.items.filter((it) => !it.decor && !it.support).map((it) => ({ ...it, _bb: itemBounds(it) })), dims: chainTexts(dimsSrc.map((d) => ({ ...d }))) };
   const all = boundsOf(pr.items.flatMap((it) => [it._bb.min, it._bb.max]));
   pr._bounds = all;
@@ -548,7 +548,12 @@ text{font-family:${FONT};fill:${INK}}
     if (vp) {
       if (V.view !== 'top') W(`<rect x="${n2(-V.Wv * 0.05)}" y="${n2(-V.Hv * 0.1)}" width="${n2(V.Wv * 1.09)}" height="${n2(V.Hv * 0.62)}" fill="url(#hxx)"/>`);
       const kx = V.Wv / (vp.rect[2] - vp.rect[0]), ky = V.Hv / (vp.rect[3] - vp.rect[1]);
-      W(picTag(n2(-vp.rect[0] * kx), n2(-vp.rect[1] * ky), n2(vp.w * kx), n2(vp.h * ky), 'none', vp.url, vp.mask, `pm-${V.view}`));
+      if (cfg.exact && Math.abs(kx / ky - 1) > 0.03) {
+        /* точная модель: пропорции из файла модели не тянем под рецепт — рисунок без искажений, по центру, на полу (план — по центру) */
+        const k = Math.min(kx, ky), rw = (vp.rect[2] - vp.rect[0]) * k, rh = (vp.rect[3] - vp.rect[1]) * k;
+        const x0 = (V.Wv - rw) / 2 - vp.rect[0] * k, y0 = (V.view === 'top' ? (V.Hv - rh) / 2 : V.Hv - rh) - vp.rect[1] * k;
+        W(picTag(n2(x0), n2(y0), n2(vp.w * k), n2(vp.h * k), 'none', vp.url, vp.mask, `pm-${V.view}`));
+      } else W(picTag(n2(-vp.rect[0] * kx), n2(-vp.rect[1] * ky), n2(vp.w * kx), n2(vp.h * ky), 'none', vp.url, vp.mask, `pm-${V.view}`));
       if (V.view !== 'top') W(`<line class="fl" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
     }
     /* пол и тень штриховкой под изделием */
@@ -1162,8 +1167,14 @@ export async function render(cfg, { stage = null, render3q = null, onProgress = 
       const nd = boundsOf(pr.items.filter((it) => !it.decor && !it.support).map(itemBounds).flatMap((q) => [q.min, q.max]));
       const same = Math.abs((sb.max.x - sb.min.x) - (all.max[0] - all.min[0])) < 0.03 && Math.abs((sb.max.z - sb.min.z) - (all.max[2] - all.min[2])) < 0.03;
       const sh = [sb.min.x - all.min[0], sb.min.y - all.min[1], sb.min.z - all.min[2]];
-      const a = same ? { x: nd.min[0] + sh[0], y: nd.min[1] + sh[1], z: nd.min[2] + sh[2] } : sb.min;
-      const z = same ? { x: nd.max[0] + sh[0], y: nd.max[1] + sh[1], z: nd.max[2] + sh[2] } : sb.max;
+      let a = same ? { x: nd.min[0] + sh[0], y: nd.min[1] + sh[1], z: nd.min[2] + sh[2] } : sb.min;
+      let z = same ? { x: nd.max[0] + sh[0], y: nd.max[1] + sh[1], z: nd.max[2] + sh[2] } : sb.max;
+      /* кровать из деталей: одеяло свисает шире рамы — рамка сцены шире габарита, и вид сжимался; берём сетки без постели */
+      if (!same && !cfg.exact && stage.boxOf) {
+        const skip = new Set(pr.items.filter((it) => it.decor || it.support).map((it) => it.id));
+        const b = stage.boxOf((o) => !skip.has(o.userData.partId));
+        if (!b.isEmpty()) { a = b.min; z = b.max; }
+      }
       const c8 = [[a.x, a.y, a.z], [z.x, a.y, a.z], [a.x, z.y, a.z], [z.x, z.y, a.z], [a.x, a.y, z.z], [z.x, a.y, z.z], [a.x, z.y, z.z], [z.x, z.y, z.z]];
       let i = 0;
       for (const v of ['front', 'side', 'top']) {

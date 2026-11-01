@@ -32,7 +32,7 @@
 @media (max-width: 899px) {
   :root { --hdr: 60px; --vp-h: clamp(220px, 40svh, 380px); --bar: calc(64px + env(safe-area-inset-bottom)); }
 }
-@media (max-width: 899px) and (max-height: 700px) { :root { --vp-h: 34svh; } .vp .vp__fab { display: none; } .vp .vp__toast { top: 46px; } }
+@media (max-width: 899px) and (max-height: 700px) { :root { --vp-h: 34svh; } .vp .vp__fab { display: none; } .vp .vp__toast { top: auto; bottom: 58px; } }
 /* короткое окно в руке (Instagram, Safari с панелями, SE): окну 3D — не меньше 220 px, иначе над полосой видов диван совсем мелкий.
    Телефон боком (ниже 500 px) — прежние 34 %, чтобы под окном 3D оставалось место для шагов */
 @media (max-width: 899px) and (max-height: 700px) and (min-height: 500px) { :root { --vp-h: max(220px, 36svh); } }
@@ -172,6 +172,7 @@ ul, ol { padding: 0; list-style: none; }
 .vp__tool[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .vp__tool:disabled { opacity: .4; }
 @media (hover: hover) { .vp__tool:not([aria-pressed="true"]):hover { background: var(--paper-2); } }
+@media (min-width: 900px) and (max-width: 1099px) { .vp__tools { flex-direction: column; } .vp__tool + .vp__tool { border-left: 0; border-top: 1px solid var(--line); } }   /* iPad 1024: 4 кнопки окна в ряд ложились на «Сверху» */
 
 .vp__size { position: absolute; z-index: 3; right: 20px; bottom: 18px; font: 500 13px/1 var(--sans); letter-spacing: .06em; font-variant-numeric: tabular-nums; color: var(--ink); pointer-events: none; }
 /* подсказка (app.js → toast): светлая плашка в тон образцу ткани, не на модели; касание — убрать */
@@ -287,8 +288,6 @@ ul, ol { padding: 0; list-style: none; }
 .fld__n { font: 400 12px/1.5 var(--sans); color: var(--ink-2); }
 .fld__n:not(:empty) { margin-top: 10px; }
 .fld__n.is-err { color: var(--ink); padding-left: 12px; border-left: 1px solid var(--ink); }
-.flds__ro { padding: 16px 0; border-bottom: 1px solid var(--line); font: 400 13px/1.4 var(--sans); color: var(--ink-2); }
-.flds__ro b { margin-left: 6px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
 .flds__more { border-bottom: 1px solid var(--line); }
 .flds__sum { display: flex; align-items: center; justify-content: space-between; min-height: 52px; font: 500 10px/1.4 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); cursor: pointer; list-style: none; }
 .flds__sum::-webkit-details-marker { display: none; }
@@ -434,7 +433,7 @@ ul, ol { padding: 0; list-style: none; }
   .vp__size { top: 22px; bottom: auto; left: 16px; right: auto; font-size: 12px; }
   .vp__fab { left: 10px; top: 46px; bottom: auto; max-width: calc(100% - 80px); min-height: 40px; padding: 2px 10px 2px 2px; font-size: 9px; }
   .vp__fab-c { width: 34px; height: 34px; }
-  .vp__toast { left: 10px; top: 92px; max-width: calc(100% - 20px); padding: 7px 10px; font-size: 9px; }
+  .vp__toast { left: 10px; top: auto; bottom: 58px; max-width: calc(100% - 20px); padding: 7px 10px; font-size: 9px; }   /* над видами, на пустом полу — не на модели и не на кнопках */
   .vp__pt { left: 10px; right: 10px; bottom: 62px; }
   .vp__ph-ico { width: 88px; height: 88px; }
   .panel { padding-top: 8px; }

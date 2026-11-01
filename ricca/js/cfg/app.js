@@ -338,7 +338,7 @@ const exactName = () => { const m = activeModel && catalogModels().find((x) => x
 /* «Собрать из деталей»: клиент хочет другую форму — переходим на модель из деталей с теми же параметрами */
 function exactOff() { dropExact(); renderForm(); renderHeads(); setState({}, { structural: true }); toast('Собрано из деталей — меняйте форму'); }
 function useExact(m) {
-  if (!m.glb) { exact = null; return; }
+  if (!m.glb) { exact = null; exactLoading = null; return; }   // прежняя модель ещё грузилась — чертёж её больше не ждёт
   const my = exactLoading = loadExactGroup(m).then((g) => {
     if (exactLoading !== my || activeModel !== m.id) return;
     exact = { id: m.id, group: g }; rebuild(); renderForm(); if (photoApi && state.mode === 'photo') photoApi.refresh();   // renderForm: «Отделка ножек» — только когда ножки у модели есть
@@ -503,8 +503,6 @@ function syncSize(all = false) {
   });
   $$('#presets [data-preset]').forEach((b) => b.setAttribute('aria-pressed', String(presetActive((P.PRESETS[t] || [])[+b.dataset.preset]))));
   const more = $('#flds .flds__more'); if (more && !more.open && $('.fld.has-err', more)) more.open = true;
-  const ro = $('[data-ro="w"]'); if (ro) ro.textContent = `${fmtCm(p.w || 0)} см`;
-  const rb = $('[data-ro="bed"]'); if (rb) { const d = curDims(); rb.textContent = d ? `${fmtCm(d.w)} × ${fmtCm(d.d)} см` : ''; }
 }
 function parseCm(s) {
   const t = String(s).replace(/\s/g, '').replace(',', '.').replace(/[^\d.]/g, '');
@@ -896,65 +894,76 @@ function drawingCfg() {
     notes: state.notes.slice(), dims: curDims(), exact: !!(exact && exact.id === activeModel), date: `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`,
   };
 }
-let drawingJob = null;
+let drawingJob = null, drawingLast = null, drawingSeq = 0;
 const drawingKey = (c) => { const { id: _i, date: _d, ...rest } = c; return JSON.stringify(rest); };
 async function openDrawing() {
   if (hasErrors()) return;
+  /* только последнее открытие трогает лист: старый расчёт (закрыли и открыли другой вариант) молча уходит */
+  const seq = ++drawingSeq, t0 = Date.now(), mine = () => seq === drawingSeq;
   const dlg = $('#dlg-drawing'); const img = $('#dd-img'); const wait = $('#dd-wait');
   $('#dd-id').textContent = `№ ${id()}`; $('#dd-open').hidden = true;
   /* на телефоне главное — отправить: «Отправить чертёж» первой и залитой */
   const ph = mqPhone.matches, send = $('#dd-send'), png = $('#dd-png');
   send.classList.toggle('btn--fill', ph); send.classList.toggle('btn--line', !ph); png.classList.toggle('btn--fill', !ph); png.classList.toggle('btn--line', ph);
   if (ph) send.parentNode.insertBefore(send, png); else png.parentNode.insertBefore(png, send);
-  /* точная модель ещё грузится (1,8 МБ на мобильной сети) — дождаться (один раз; ошибка загрузки — дальше с «собранной»),
-     иначе эскизы снимутся с «собранной» кровати, а модель подменится посреди съёмки */
+  /* точная модель ещё грузится (1,8 МБ на мобильной сети) — дождаться, иначе эскизы снимутся с «собранной» кровати,
+     а модель подменится посреди съёмки. Но не дольше 8 с: сеть «повисла» — лист без 3D-эскизов, а не вечное ожидание */
+  let stalled = false;
   if (exactLoading && !(exact && exact.id === activeModel)) {
     img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…'; openDialog(dlg);
-    await Promise.resolve(exactLoading).catch(() => {});
-    if (!dlg.open) return;
+    stalled = !(await Promise.race([Promise.resolve(exactLoading).then(() => true, () => true), new Promise((r) => setTimeout(r, 8000, false))]));
+    if (!dlg.open || !mine()) return;
   }
   flushRebuild();   // ввели размер и сразу нажали «Чертёж»: иначе эскиз — со старой модели, а цифры — новые
   const cfg = drawingCfg(), key = drawingKey(cfg);
   const show = (d) => { img.src = d.url; img.hidden = false; wait.hidden = true; ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = false; }); $('#dd-open').hidden = false; };
+  const put = (res, k) => {
+    if (drawing && drawing.url) URL.revokeObjectURL(drawing.url);
+    drawing = { ...res, url: URL.createObjectURL(new Blob([res.svg], { type: 'image/svg+xml' })), id: cfg.id, key: k };
+    if (dlg.open) show(drawing);
+  };
+  const fail = (e) => { console.warn('drawing', e); if (mine()) wait.textContent = 'Чертёж пока не получилось подготовить. Отправьте вариант в WhatsApp — мастер пришлёт схему.'; };
   ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = true; });
   $('#dd-hint').hidden = true; $('#dd-pan').scrollLeft = 0;
   /* тот же вариант — готовый чертёж сразу */
   if (drawing && drawing.key === key) { openDialog(dlg); show(drawing); return; }
   img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…';
   openDialog(dlg);
-  /* один расчёт за раз: повторное нажатие того же варианта ждёт уже начатый (два параллельных — дерутся за сцену) */
-  if (!drawingJob || drawingJob.key !== key) {
-    const ac = new AbortController();
+  if (stalled) {   // лист с векторными видами — за доли секунды; не запоминаем, чтобы потом снять с точной модели
+    try { const res = await (await import('./drawing.js')).render(cfg, {}); if (mine()) put(res, null); } catch (e) { fail(e); }
+    return;
+  }
+  /* один расчёт за раз: повторное нажатие того же варианта ждёт уже начатый; новый ждёт, пока отменённый отпустит сцену */
+  if (!drawingJob || drawingJob.key !== key || drawingJob.ac.signal.aborted) {
+    const ac = new AbortController(), prev = drawingLast;
     const job = { key, ac };
+    if (drawingJob) drawingJob.ac.abort();
     job.p = (async () => {
+      if (prev) await prev.catch(() => {});
       const mod = await import('./drawing.js');
+      if (ac.signal.aborted) return mod.render(cfg, {});
       let res;
       try {
         res = await mod.render(cfg, { stage, signal: ac.signal, budgetMs: 12000, onProgress: (i, n) => { if (drawingJob === job) wait.textContent = `Готовим чертёж · ${i + 1}/${n}`; } });
       } catch (e) {
         console.warn('drawing 3d', e);
-        res = await mod.render(cfg, {});          // без 3D-эскизов (векторные виды) — за доли секунды
+        res = { ...(await mod.render(cfg, {})), complete: false };   // без 3D-эскизов (векторные виды) — за доли секунды; не запоминаем — в следующий раз попробуем снова
       }
       return res;
     })();
-    if (drawingJob) drawingJob.ac.abort();
-    drawingJob = job;
+    drawingJob = job; drawingLast = job.p;
   }
   const job = drawingJob;
-  dlg.addEventListener('close', () => { if (drawingJob === job) { job.ac.abort(); drawingJob = null; } }, { once: true });
+  /* закрыли окно — расчёт не нужен (если тут же открыли снова — dlg.open, пусть идёт) */
+  dlg.addEventListener('close', () => { if (drawingJob === job && !dlg.open) { job.ac.abort(); drawingJob = null; } }, { once: true });
   try {
-    /* страховка: что бы ни случилось со сценой — через 20 с лист без 3D-эскизов */
-    let res = await Promise.race([job.p, new Promise((r) => setTimeout(r, 20000, null))]);
-    if (!res) { job.ac.abort(); res = await (await import('./drawing.js')).render(cfg, {}); }
+    /* страховка: что бы ни случилось со сценой — через 20 с от нажатия лист без 3D-эскизов */
+    let res = await Promise.race([job.p, new Promise((r) => setTimeout(r, Math.max(4000, 20000 - (Date.now() - t0)), null))]);
+    if (!mine()) return;
+    if (!res) { job.ac.abort(); res = await (await import('./drawing.js')).render(cfg, {}); if (!mine()) return; }
     if (drawingJob === job) drawingJob = null;
-    if (drawing && drawing.url) URL.revokeObjectURL(drawing.url);
-    const url = URL.createObjectURL(new Blob([res.svg], { type: 'image/svg+xml' }));
-    drawing = { ...res, url, id: cfg.id, key: res.complete && !job.ac.signal.aborted ? key : null };
-    if (dlg.open) show(drawing);
-  } catch (e) {
-    console.warn('drawing', e);
-    wait.textContent = 'Чертёж пока не получилось подготовить. Отправьте вариант в WhatsApp — мастер пришлёт схему.';
-  }
+    put(res, res.complete && !job.ac.signal.aborted ? key : null);
+  } catch (e) { fail(e); }
 }
 /* телефон в руке: лист во всю высоту окна шире экрана и листается в сторону — подсказка, только когда листать есть куда */
 function syncDrawingHint() {
@@ -1269,7 +1278,7 @@ function bind() {
     if (e.key === 'Enter') { e.preventDefault(); setSize(key, parseCm(e.target.value)); e.target.select(); }
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); setSize(key, Math.round(toCm(state.params[key] || 0)) + (e.key === 'ArrowUp' ? 1 : -1) * (e.shiftKey ? 10 : 1)); }
   });
-  flds.addEventListener('toggle', (e) => { if (e.target.classList && e.target.classList.contains('flds__more')) sizeMoreOpen = e.target.open; }, true);   // «Ещё размеры» остаётся открытым при перерисовке
+  flds.addEventListener('toggle', (e) => { const m = e.target; if (!m.classList || !m.classList.contains('flds__more')) return; if (!m.open && $('.fld.has-err', m)) { m.open = true; return; } sizeMoreOpen = m.open; }, true);   // «Ещё размеры» остаётся открытым при перерисовке; с ошибкой внутри не закрывается   // «Ещё размеры» остаётся открытым при перерисовке
   flds.addEventListener('focusout', (e) => { if (e.target.classList.contains('fld__i')) { const key = e.target.closest('.fld').dataset.key; if (!state.inputErr[key]) e.target.value = fmtIn(state.params[key]); } });
 
   $('#fab-tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-ftype]'); if (!b) return; fabUI = { typeId: b.dataset.ftype, collectionId: null }; renderFabric(); });
@@ -1285,7 +1294,7 @@ function bind() {
   $('#note').addEventListener('input', (e) => { state.note = e.target.value.slice(0, 300); setState({}, { rebuild: false }); });
   $('#qty').addEventListener('change', (e) => { const q = parseInt(e.target.value, 10); qtyTouched = true; setState({ qty: Math.max(1, Math.min(99, Number.isFinite(q) ? q : state.qty)) }, { rebuild: false }); });
   $$('[data-qty]').forEach((b) => b.addEventListener('click', () => { qtyTouched = true; setState({ qty: Math.max(1, Math.min(99, state.qty + (+b.dataset.qty))) }, { rebuild: false }); }));
-  for (const a of [$('#wa-send'), $('#bar-wa')]) a.addEventListener('click', (e) => { if (state.mode === 'room' && a.id === 'bar-wa') return; if (state.mode === 'photo' && a.id === 'bar-wa') { e.preventDefault(); if (photoApi && photoApi.hasPhoto) photoSend(); else photoPick(isPhoneDevice() ? 'camera' : 'gallery'); return; } if (hasErrors()) { e.preventDefault(); openStep(3); const f = $('#flds .has-err .fld__i'); if (f) f.focus(); } });
+  for (const a of [$('#wa-send'), $('#bar-wa')]) a.addEventListener('click', (e) => { if (state.mode === 'room' && a.id === 'bar-wa') return; if (state.mode === 'photo' && a.id === 'bar-wa') { e.preventDefault(); if (photoApi && photoApi.hasPhoto) photoSend(); else photoPick(isPhoneDevice() ? 'camera' : 'gallery'); return; } if (hasErrors()) { e.preventDefault(); openStep(3); const m = $('#flds .flds__more'); if (m && $('.fld.has-err', m)) m.open = true; requestAnimationFrame(() => { const f = $('#flds .has-err .fld__i'); if (f) f.focus(); }); } });
 
   $$('[data-drawing]').forEach((b) => b.addEventListener('click', openDrawing));
   $('#b-ar').addEventListener('click', openHome); $('#bar-ar').addEventListener('click', openHome);
