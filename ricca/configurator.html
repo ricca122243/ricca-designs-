@@ -24,7 +24,18 @@
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts-v3.css">
 <link rel="stylesheet" href="css/configurator.css">
-<script>document.documentElement.classList.replace('no-js', 'js');</script>
+<script>
+/* как js/site.js на главной: вариант шрифтов ?font=a|b → html[data-font] (Б — антиква в заголовках, css/configurator.css) и фон за изделием
+   ?bg=white → html[data-bg] (белый вместо светло-серого); при смене #cfg=… строка запроса остаётся — атрибуты держатся. Линия под шапкой —
+   только когда страница прокручена (html.is-scrolled). Ставим до первой отрисовки, чтобы шрифт не «прыгал» */
+(function (d, q) {
+  d.classList.replace('no-js', 'js');
+  var f = /[?&]font=([ab])(?:&|$)/.exec(q); d.dataset.font = f ? f[1] : 'a';
+  if (/[?&]bg=white(?:&|$)/.test(q)) d.dataset.bg = 'white';
+  var on = function () { d.classList.toggle('is-scrolled', (window.scrollY || d.scrollTop) > 8); };
+  addEventListener('scroll', on, { passive: true }); addEventListener('DOMContentLoaded', on);
+})(document.documentElement, location.search);
+</script>
 <script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
 <link rel="modulepreload" href="js/cfg/app.js">
 <link rel="modulepreload" href="js/cfg/params.js">
