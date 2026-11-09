@@ -328,9 +328,10 @@
 </div>
 </footer>
 
+<!-- плашка телефона: на каждом шаге модели — «Чертёж» и «У себя дома» (значок над короткой подписью), справа — «Далее: …» или «В WhatsApp» -->
 <div class="bar" id="bar">
-<button class="btn btn--line" type="button" id="bar-ar"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-ar"/></svg>У&nbsp;себя дома</button>
-<button class="btn btn--line" type="button" id="bar-draw" data-drawing hidden><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-drawing"/></svg>Чертёж</button>
+<button class="btn btn--line bar__b" type="button" id="bar-draw" data-drawing><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-drawing"/></svg><span class="bar__t">Чертёж</span></button>
+<button class="btn btn--line bar__b" type="button" id="bar-ar"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-ar"/></svg><span class="bar__t">У&nbsp;себя дома</span></button>
 <a class="btn btn--fill" id="bar-wa" href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>В&nbsp;WhatsApp</a>
 <button class="btn btn--fill bar__next" type="button" id="bar-next" hidden><span id="bar-next-t">Далее: форма</span><span class="bar__n" id="bar-next-n" aria-hidden="true">1/5</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button>
 </div>

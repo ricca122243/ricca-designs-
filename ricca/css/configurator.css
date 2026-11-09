@@ -209,6 +209,7 @@ ul, ol { padding: 0; list-style: none; }
 /* модели каталога с рецептом для 3D — полоса фото под типами */
 .models { margin-top: 18px; }
 .models__l { margin-bottom: 10px; font: 400 12px/1.4 var(--sans); color: var(--ink-2); }
+.models__l--none { margin-bottom: 0; }   /* «Для этого типа точных моделей пока нет — соберите из деталей.» — одна строка вместо полосы */
 .models__row { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; padding-bottom: 4px; margin-inline: -2px; padding-inline: 2px; }
 .models__row::-webkit-scrollbar { display: none; }
 .model { flex: none; width: 112px; scroll-snap-align: start; display: grid; gap: 6px; text-align: left; }
@@ -226,9 +227,18 @@ ul, ol { padding: 0; list-style: none; }
 @media (hover: hover) { .model:hover .model__img { border-color: var(--ink); } }
 .step:first-child .step__head { padding-top: 0; }
 
-/* тип: сетка 3 × 3 */
-.types { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-.type { position: relative; display: grid; justify-items: center; align-content: center; gap: 10px; min-height: 112px; padding: 16px 8px 14px; border: 1px solid var(--line); background: transparent; text-align: center; transition: border-color 300ms var(--ease), background 300ms var(--ease); }
+/* тип: плитки группами («Диваны» · «Кровати» · «Кресла и пуфы», app.js → renderTypes), все семь видны без прокрутки.
+   Сетка из 12 долей: группа из 4 плиток — вся строка, из 1 — 3 доли, из 2 — 6 долей, поэтому плитки во всех рядах одной ширины
+   (как в прежней сетке 4 × 2 с пустой ячейкой). Группы одного ряда тянутся на одну высоту: плитки ряда тоже одной высоты */
+.types { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 18px 8px; }
+.types__g { display: grid; grid-template-rows: auto 1fr; gap: 8px; min-width: 0; }
+.types__g[data-n="1"] { grid-column: span 3; }
+.types__g[data-n="2"] { grid-column: span 6; }
+.types__g[data-n="3"] { grid-column: span 9; }
+.types__g[data-n="4"] { grid-column: span 12; }
+.types__l { font: 500 10px/1.4 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.types__row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
+.type { position: relative; display: grid; justify-items: center; align-content: center; gap: 10px; min-height: 112px; padding: 16px 6px 14px; border: 1px solid var(--line); background: transparent; text-align: center; transition: border-color 300ms var(--ease), background 300ms var(--ease); }
 .type__ico { width: 52px; height: 52px; fill: none; stroke: currentColor; stroke-width: 1.15; stroke-linecap: round; stroke-linejoin: round; color: var(--ink-2); transition: color 300ms; }
 .type__t { font: 400 12px/1.3 var(--sans); letter-spacing: .02em; }
 .type[aria-checked="true"] { border-color: var(--ink); background: #fff; box-shadow: inset 0 0 0 1px var(--ink); }
@@ -445,11 +455,13 @@ ul, ol { padding: 0; list-style: none; }
   .step__v { max-width: 52%; }
   .step__body { padding: 6px 0 32px; }
   .step__next { display: none; }                 /* «Далее» — в нижней плашке */
-  /* тип — одна строка, листается пальцем */
-  .types { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 31%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; }
-  .types::-webkit-scrollbar { display: none; }
-  .type { min-height: 88px; padding: 10px 6px; gap: 6px; scroll-snap-align: start; }
+  /* тип — те же группы в два ряда, без прокрутки (кровать и кресло раньше были за краем): диваны вчетвером, ниже кровать, кресло и пуф */
+  .types { gap: 14px 8px; }
+  .types__g { gap: 6px; }
+  .types__l { font-size: 9px; letter-spacing: .14em; }
+  .type { min-height: 88px; padding: 10px 3px 9px; gap: 6px; }
   .type__ico { width: 40px; height: 40px; }
+  .type__t { font-size: 11px; letter-spacing: 0; }
   /* ткань: вкладки с подсказкой прокрутки, коллекции — одной строкой чипов, описание — только у выбранной */
   .fab__tabs { gap: 20px; -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
   .fab__tab { letter-spacing: .12em; }
@@ -471,8 +483,12 @@ ul, ol { padding: 0; list-style: none; }
   /* поле касания телефона 44 px остаётся, но строку подвала не раздувает */
   .foot__line a { min-height: 0; padding-block: 12px; margin-block: -12px; }
 
-  .bar { position: fixed; z-index: 50; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr 1.2fr; gap: 8px; height: var(--bar); padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: rgba(255, 255, 255, .96); border-top: 1px solid var(--line); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  /* три кнопки: «Чертёж» и «У себя дома» — по содержимому (значок над подписью), «Далее» / «В WhatsApp» — всё остальное */
+  .bar { position: fixed; z-index: 50; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 8px; height: var(--bar); padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: rgba(255, 255, 255, .96); border-top: 1px solid var(--line); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
   .bar .btn { min-height: 48px; padding: 0 12px; letter-spacing: .15em; }
+  .bar .bar__b { display: grid; justify-items: center; align-content: center; gap: 5px; min-width: 56px; padding: 0 9px; font-size: 8px; line-height: 1; letter-spacing: .08em; }
+  .bar .bar__b .ico { width: 18px; height: 18px; }
+  .bar__t { white-space: nowrap; }
   .bar .bar__next { gap: 8px; padding: 0 10px; font-size: 10px; letter-spacing: .1em; white-space: nowrap; }
   .bar__n { font-weight: 400; letter-spacing: .06em; opacity: .7; font-variant-numeric: tabular-nums; }
   .bar__next .ico { width: 14px; height: 14px; }
@@ -487,8 +503,14 @@ ul, ol { padding: 0; list-style: none; }
 }
 @media (max-width: 380px) {
   .vp__views button { padding: 0 10px; letter-spacing: .1em; font-size: 9.5px; }
-  .types { gap: 6px; }
-  .type__t { font-size: 11px; }
+  .types { gap: 12px 6px; }
+  .types__row { gap: 6px; }
+  .type__t { font-size: 10.5px; }
+  /* плашка: «Далее: форма» без счётчика шагов и теснее — три кнопки умещаются и на 320 px */
+  .bar { gap: 6px; }
+  .bar .bar__b { min-width: 52px; padding: 0 7px; font-size: 7.5px; letter-spacing: .05em; }
+  .bar .bar__next { padding: 0 8px; gap: 6px; font-size: 9.5px; letter-spacing: .06em; }
+  .bar__n { display: none; }
   .chip { padding: 0 13px; font-size: 12.5px; }
   .opts .chip { padding-inline: 9px; }
   .fld__box { width: 80px; }
@@ -498,8 +520,8 @@ ul, ol { padding: 0; list-style: none; }
   .rp__dims { grid-template-columns: 1fr 1fr; }
   .bar .btn { letter-spacing: .1em; gap: 8px; }
 }
-/* 320 px: четыре кнопки окна 3D (с «Чертежом») не наезжают на габарит слева */
-@media (max-width: 359px) { .vp__tool { width: 38px; } .vp__size { font-size: 11px; letter-spacing: .02em; } }
+/* 320 px: четыре кнопки окна 3D (с «Чертежом») не наезжают на габарит слева; плитки типа — подпись чуть мельче, «П-образный» в одну строку */
+@media (max-width: 359px) { .vp__tool { width: 38px; } .vp__size { font-size: 11px; letter-spacing: .02em; } .type__t { font-size: 10px; } .types__l { letter-spacing: .1em; } }
 
 /* ==========================================================================
    ОКНА (чертёж, AR)
