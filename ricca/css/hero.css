@@ -30,7 +30,7 @@ html[data-hero="2"] .hero__slides { display: none; }
   background: linear-gradient(to top, rgba(10, 10, 10, .62), rgba(10, 10, 10, .34) 28%, rgba(10, 10, 10, 0) 58%), linear-gradient(to right, rgba(10, 10, 10, .22), rgba(10, 10, 10, 0) 55%); }
 
 /* текст слева внизу; справа на той же линии — точки и счётчик */
-.hero__foot { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; padding-bottom: clamp(32px, 4.4vw, 64px); }
+.hero__front { position: absolute; display: block; left: 0; right: 0; bottom: 0; z-index: 4; padding-bottom: clamp(32px, 4.4vw, 64px); }
 .hero__grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 24px clamp(24px, 4vw, 64px); }
 .hero__text { display: grid; gap: clamp(16px, 2vw, 24px); justify-items: start; max-width: 720px; }
 .hero__title { margin: 0; font: var(--w-display) var(--h1)/var(--lh-h1) var(--f-display); letter-spacing: var(--ls-h1); color: #FFFFFF; text-wrap: balance; }
@@ -58,7 +58,7 @@ html[data-hero="2"] .hero__slides { display: none; }
 .hero__pp .ico { width: 18px; height: 18px; stroke-width: 1.5; }
 
 @media (max-width: 899px) {
-  .hero__foot { padding-bottom: 28px; }
+  .hero__front { padding-bottom: 28px; }
   .hero__grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .hero__text { gap: 14px; max-width: none; }
   .hero__cta { width: 100%; margin-top: 6px; }

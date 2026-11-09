@@ -9,6 +9,7 @@
   const NB = ' ';
   window.RICCA_LANG = 'en';
   window.RICCA_T = {
+    'Написать': 'Message', 'Написать в WhatsApp': 'Message on WhatsApp',   // плавающая кнопка WhatsApp (site.js)
     // готовые тексты WhatsApp (CONFIG.msg)
     'Здравствуйте! Хочу узнать о мебели RICCA на заказ.': "Hello! I'd like to know more about RICCA custom furniture.",
     'Здравствуйте! У меня вопрос по мебели RICCA.': 'Hello! I have a question about RICCA furniture.',

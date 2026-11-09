@@ -1,9 +1,9 @@
-/* RICCA DESIGNS — v4 «в меру» (10 октября, ночь). Ванильный JS без библиотек.
+/* RICCA DESIGNS — v5 «холодный минимализм» (9 ноября). Ванильный JS без библиотек.
    Порядок: CONFIG → данные (js/catalog-data.js) → плитки каталога → «Наши работы» (js/works-data.js: обложки плиток, лента
    на главной) → ссылки WhatsApp/телефон → вход (занавес, видео) → видео по экрану → появления → окна и адреса (#catalog/<категория>,
    #item-<id>, #work-<id>, #fabric-<коллекция>-<N>) → экран категории / тканей (библиотека js/fabrics-data.js: у коллекции одно
    большое фото и цвета кнопками; #fabric-… открывает «Ткани» на этой коллекции с этим цветом) → окно изделия
-   → окно работы (готовый каталог) → корзина (данные — js/cart.js, RICCA_CART) → меню → шапка и липкая плашка.
+   → окно работы (готовый каталог) → корзина (данные — js/cart.js, RICCA_CART) → меню → шапка, липкая плашка и плавающий WhatsApp.
    Новость ELUNA — карточка с луной на чистом CSS (css/site.css, .news), скрипт ей не нужен.
    Единственный владелец ссылок [data-wa] / [data-tel] — этот файл. */
 (() => {
@@ -46,6 +46,8 @@
   // фон за фото изделий для сравнения (css/site.css, --product-bg): index.html?bg=white — белый вместо светло-серого. При переходах
   // по #адресам ?bg остаётся в адресе сам (меняется только хэш)
   if (/[?&]bg=white(?:&|$)/.test(location.search)) root.dataset.bg = 'white';
+  // шрифты на выбор заказчика (css/site.css, html[data-font]): ?font=a — только Montserrat (по умолчанию), ?font=b — заголовки антиквой
+  root.dataset.font = (/[?&]font=(a|b)(?:&|$)/.exec(location.search) || [0, 'a'])[1];
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -414,6 +416,8 @@
     const io = new IntersectionObserver((es) => {
       es.filter((e) => e.isIntersecting).forEach((e, i) => { io.unobserve(e.target); show(e.target, i * 90); });
     }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    // .rv ставит разметка; остальным прямым детям разделов (кроме тех, где .rv уже внутри, и скрытых блоков) — добавляем сами
+    $$(':is(.sec, .biz):not([hidden]) > .wrap > :not(.rv, [hidden], script, template)').forEach((el) => { if (!el.querySelector('.rv')) el.classList.add('rv'); });
     $$('.rv').forEach((el) => { if (el.getBoundingClientRect().top > vh) { pre(el); io.observe(el); } });
   }
 
@@ -435,7 +439,7 @@
 
   /* ---------- Окна: показ/скрытие с анимацией, блокировка прокрутки, возврат фокуса ---------- */
   const updateBarSoon = () => requestAnimationFrame(() => updateBar());
-  function lock() { root.classList.toggle('is-locked', !!$('dialog[open]')); updateBarSoon(); }
+  function lock() { root.classList.toggle('is-locked', !!$('dialog[open]')); updateBarSoon(); }   // updateBar() заодно прячет .wa-fab под открытым окном
   function showDlg(dlg, opener) {
     clearTimeout(dlg._hideT);
     if (!dlg.open) {
@@ -1566,7 +1570,7 @@
   const darkZones = $$('.biz, .foot');
   let lastY = window.scrollY, raf = 0;
   function updateBar() {
-    if (!bar) return;
+    if (!bar) { updateFab(false); return; }
     const vh = window.innerHeight;
     // над чёрной полосой «Для бизнеса» плашка тоже чёрная (как шапка) — без белой полосы поперёк
     const by = vh - bar.offsetHeight / 2;
@@ -1577,6 +1581,22 @@
       bar.setAttribute('aria-hidden', String(!on));
       $$('a', bar).forEach((a) => { a.tabIndex = on ? 0 : -1; });
     }
+    updateFab(on);
+  }
+  /* плавающая кнопка WhatsApp (css: .wa-fab): после 400 px прокрутки, не под открытым окном и не вместе с плашкой .mbar (в ней WhatsApp уже есть);
+     на странице конструктора этого скрипта нет — там своя полоса */
+  const fab = document.createElement('a');
+  fab.className = 'wa-fab'; fab.href = waUrl(CONFIG.msg.general); fab.target = '_blank'; fab.rel = 'noopener';
+  fab.setAttribute('aria-label', T ? (T['Написать в WhatsApp'] || 'Message on WhatsApp') : 'Написать в WhatsApp');
+  fab.innerHTML = `<svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span class="wa-fab__t">${esc(T ? (T['Написать'] || 'Message') : 'Написать')}</span>`;
+  fab.tabIndex = -1; fab.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(fab);
+  function updateFab(barOn) {
+    const on = window.scrollY > 400 && !$('dialog[open]') && !barOn;
+    if (on !== fab.classList.contains('is-on')) { fab.classList.toggle('is-on', on); fab.tabIndex = on ? 0 : -1; fab.setAttribute('aria-hidden', String(!on)); }
+    // над чёрными «Для бизнеса» и подвалом — белая кнопка с чёрным значком (иначе чёрный круг сливается с фоном)
+    const fy = window.innerHeight - 20 - 26;
+    if (on) fab.classList.toggle('is-dark', darkZones.some((el) => { const r = el.getBoundingClientRect(); return r.top < fy && r.bottom > fy; }));
   }
   function onScroll() {
     if (raf) return;
@@ -1586,6 +1606,7 @@
       // шапка прозрачна только в самом верху: обложка белая, а диван при прокрутке уходит вверх — под шапкой ему нужен фон
       const over = y < 8;
       hdr.classList.toggle('is-over', over);
+      hdr.classList.toggle('is-scrolled', y > 8);   // линия под шапкой — только когда страница прокручена
       // над чёрной полосой «Для бизнеса» и подвалом шапка тоже чёрная — без белой полосы поперёк: чёрная, как только полоса
       // зашла под шапку (а не с середины шапки — иначе на 30 px прокрутки белая полоса висит над чёрным)
       const hh = hdr.offsetHeight, mid = hh / 2;
@@ -1600,28 +1621,6 @@
   window.addEventListener('resize', onScroll, { passive: true });
   hdr.addEventListener('focusin', () => hdr.classList.remove('is-hidden'));
   onScroll();
-
-  /* ---------- Обложка: глубина от мыши (--mx/--my) и разлёт строк при прокрутке (--sy); при reduced-motion — ничего ---------- */
-  (function heroFx() {
-    if (!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    let tx = 0, ty = 0, cx = 0, cy = 0, sy = -1, fr = 0;
-    function tick() {
-      fr = 0;
-      cx += (tx - cx) * 0.08; cy += (ty - cy) * 0.08;
-      const s = Math.min(1, Math.max(0, window.scrollY / hero.offsetHeight));
-      if (s !== sy) { sy = s; hero.style.setProperty('--sy', s.toFixed(4)); }
-      hero.style.setProperty('--mx', cx.toFixed(4)); hero.style.setProperty('--my', cy.toFixed(4));
-      if (Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002) fr = requestAnimationFrame(tick);
-    }
-    const kick = () => { if (!fr) fr = requestAnimationFrame(tick); };
-    if (fine) {
-      hero.addEventListener('pointermove', (e) => { tx = e.clientX / window.innerWidth * 2 - 1; ty = e.clientY / window.innerHeight * 2 - 1; kick(); });
-      hero.addEventListener('pointerleave', () => { tx = 0; ty = 0; kick(); });
-    }
-    window.addEventListener('scroll', () => { if (sy < 1 || window.scrollY < hero.offsetHeight) kick(); }, { passive: true });
-    kick();
-  })();
 
   /* ---------- Старт: окно по адресу (#catalog/sofas, #item-…, #work-<id>) ---------- */
   R.apply(true);

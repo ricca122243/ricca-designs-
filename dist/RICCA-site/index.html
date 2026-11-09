@@ -2,7 +2,7 @@
 <html lang="ru" class="no-js">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-aY0RCLQg5f+iUdlhdjtUpErFUHCZMOQ7LYomT2Oma50='; default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' blob: data:; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-aY0RCLQg5f+iUdlhdjtUpErFUHCZMOQ7LYomT2Oma50=' 'sha256-p4sG7M7JH1qw5CgLf+PhXWO7AvZy60DgBYUQOzV1gwY='; default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' blob: data:; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; upgrade-insecure-requests">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Мягкая мебель на заказ в Алматы — диваны, кровати, кресла · RICCA DESIGNS</title>
 <meta name="description" content="RICCA DESIGNS — ателье мягкой мебели в Алматы: диваны, кровати и кресла на заказ по вашему фото, эскизу или проекту. Любой размер и ткань, своё производство, шоурум на Навои, 208/2. Гарантия 5 лет, доставка по Казахстану и за рубеж.">
@@ -35,12 +35,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="RICCA">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<!-- диван первого экрана = LCP: грузится первым -->
-<link rel="preload" as="image" href="img/v3/hero-sofa-cut.webp" imagesrcset="img/v3/hero-sofa-cut-720.webp 720w, img/v3/hero-sofa-cut-1400.webp 1400w, img/v3/hero-sofa-cut.webp 1978w" imagesizes="(min-width: 900px) 60vw, 100vw" fetchpriority="high">
+<!-- первый кадр первого экрана (реальная работа, см. #top) = LCP: грузится первым; srcset и sizes те же, что у <img> -->
+<link rel="preload" as="image" href="img/works/C9h3Txai1KF-1-800.webp" imagesrcset="img/works/C9h3Txai1KF-1-800.webp 800w, img/works/C9h3Txai1KF-1-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts-v3.css?v=dafe2c3154">
-<link rel="stylesheet" href="css/site.css?v=dafe2c3154">
+<link rel="stylesheet" href="css/fonts-v3.css?v=0aea91f3e3">
+<link rel="stylesheet" href="css/site.css?v=0aea91f3e3">
+<link rel="stylesheet" href="css/hero.css?v=0aea91f3e3">
 <script>
 /* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,6 с). Не играем: повторный визит в этой сессии,
    prefers-reduced-motion, вход по ссылке с #якорем (Instagram → #catalog/sofas), недоступный sessionStorage.
@@ -128,36 +129,43 @@
 
 <main id="main">
 
-<!-- ═════════ 1. ВХОД: обложка-журнал на белом (решение владельца 14 октября — белый минимализм, одно изделие, без фото интерьеров
-     и без смены кадров). Крупная антиква в две строки, диван (вырезан из фото модели, img/v3/hero-sofa-cut*) стоит ПЕРЕД буквами;
-     строки поднимаются из-под маски, диван выезжает с тенью; мышь даёт глубину, прокрутка разводит строки. Внизу — бегущая строка. ═════════ -->
-<section class="hero" id="top">
-  <div class="wrap hero__stage">
-    <p class="hero__eye"><span class="hero__no">№&nbsp;01</span>RICCA DESIGNS&nbsp;· Алматы</p>
-    <div class="hero__cover">
-      <h1 class="hero__title">
-        <span class="hero__ln hero__ln--1"><span>Мягкая мебель</span></span>
-        <span class="hero__ln hero__ln--2"><span>на&nbsp;заказ</span></span>
-      </h1>
-      <a class="hero__pic" href="#work-m-sofa-19" aria-label="Диван Rasma — открыть модель">
-        <span class="hero__floor" aria-hidden="true"></span>
-        <img src="img/v3/hero-sofa-cut.webp" srcset="img/v3/hero-sofa-cut-720.webp 720w, img/v3/hero-sofa-cut-1400.webp 1400w, img/v3/hero-sofa-cut.webp 1978w" sizes="(min-width: 900px) 60vw, 100vw" width="1978" height="609" alt="Диван Rasma в светлом букле" fetchpriority="high" decoding="async">
-      </a>
-    </div>
-    <div class="hero__foot">
-      <p class="hero__sub">Диваны, кровати и&nbsp;кресла — по&nbsp;вашему фото, эскизу или проекту. Своё ателье.</p>
-      <div class="hero__btns">
-        <a class="btn btn--fill" href="#catalog">Каталог</a>
-        <a class="btn btn--line" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
-        <a class="btn btn--line hero__3d" href="configurator.html">Собрать в&nbsp;3D</a>
-      </div>
-      <p class="hero__cap"><span>Диван Rasma · букле</span> <span>в&nbsp;любом размере и&nbsp;ткани</span></p>
-    </div>
+<!-- ═════════ 1. ВХОД (9 ноября, решение владельца № 26: на первом экране — реальные работы). Фото во весь экран, текст слева внизу
+     на мягком градиенте, ≤ 12 слов, без бегущей строки. Два варианта на выбор заказчика — css/hero.css, js/hero.js:
+     ?hero=1 (по умолчанию) — четыре реальные работы из js/works-data.js медленной сменой кадров (светлые, чистые кадры без людей и надписей;
+     грузится первым только первый — preload в <head>, остальные без src до загрузки первого); ?hero=2 — ролик рендеров партнёра
+     video/hero-* из шаблона hero-tpl (постер первым, на телефоне файл hero-mobile). Строка ниже ставит html[data-hero] до разметки.
+     Высота min(100svh, 900px) / телефон 78svh задана в CSS — при загрузке ничего не сдвигается. Ряд .hero__nav (точки, счётчик, пауза)
+     заполняет js/hero.js. js/site.js от первого экрана нужен только .hero (высота — для шапки и плашки). ═════════ -->
+<script>if (/[?&]hero=2(?:&|$)/.test(location.search)) document.documentElement.dataset.hero = '2';</script>
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="hero__media" aria-hidden="true">
+    <ul class="hero__slides">
+      <li class="hero__slide is-on" style="--pos: 50% 50%"><img src="img/works/C9h3Txai1KF-1-800.webp" srcset="img/works/C9h3Txai1KF-1-800.webp 800w, img/works/C9h3Txai1KF-1-1600.webp 1600w" sizes="100vw" width="1600" height="1600" alt="" fetchpriority="high" decoding="async"></li>
+      <li class="hero__slide" style="--pos: 50% 56%"><img data-src="img/works/DGlGyYrND3R-4-800.webp" data-srcset="img/works/DGlGyYrND3R-4-800.webp 640w, img/works/DGlGyYrND3R-4-1600.webp 960w" data-sizes="100vw" width="960" height="1200" alt="" fetchpriority="low" decoding="async"></li>
+      <li class="hero__slide" style="--pos: 50% 58%"><img data-src="img/works/C0EZbsnoxni-1-800.webp" data-srcset="img/works/C0EZbsnoxni-1-800.webp 800w, img/works/C0EZbsnoxni-1-1600.webp 1200w" data-sizes="100vw" width="1200" height="1200" alt="" fetchpriority="low" decoding="async"></li>
+      <li class="hero__slide" style="--pos: 50% 50%"><img data-src="img/works/DKkV-ORIobz-1-800.webp" data-srcset="img/works/DKkV-ORIobz-1-800.webp 640w, img/works/DKkV-ORIobz-1-1600.webp 1280w" data-sizes="100vw" width="1280" height="1600" alt="" fetchpriority="low" decoding="async"></li>
+    </ul>
+    <template id="hero-tpl">
+      <picture class="hero__poster">
+        <source media="(max-width: 767px)" srcset="video/hero-mobile-poster.webp" type="image/webp">
+        <img src="video/hero-desktop-poster.webp" width="1600" height="900" alt="" fetchpriority="high" decoding="async">
+      </picture>
+      <video class="hero__video" muted loop playsinline preload="none" tabindex="-1" data-desktop="video/hero-desktop" data-mobile="video/hero-mobile"></video>
+    </template>
+    <span class="hero__shade"></span>
   </div>
-  <div class="hero__run" aria-hidden="true"><div class="hero__track">
-    <span>Диваны</span><span>Кровати</span><span>Кресла</span><span>Пуфы и&nbsp;банкетки</span><span>Любой размер</span><span>Любая ткань</span><span>Своё ателье в&nbsp;Алматы</span><span>Матрасы ELUNA</span>
-    <span>Диваны</span><span>Кровати</span><span>Кресла</span><span>Пуфы и&nbsp;банкетки</span><span>Любой размер</span><span>Любая ткань</span><span>Своё ателье в&nbsp;Алматы</span><span>Матрасы ELUNA</span>
+  <div class="hero__front"><div class="wrap hero__grid">
+    <div class="hero__text">
+      <h1 class="hero__title" id="hero-title">Мягкая мебель на&nbsp;заказ</h1>
+      <p class="hero__lead">Своё ателье в&nbsp;Алматы</p>
+      <div class="hero__cta">
+        <a class="btn btn--fill" href="#catalog">Каталог</a>
+        <a class="btn btn--line" href="configurator.html">Собрать в&nbsp;3D</a>
+      </div>
+    </div>
+    <div class="hero__nav"></div>
   </div></div>
+  <script src="js/hero.js?v=0aea91f3e3" defer></script>
 </section>
 
 <!-- ═════════ + ЦИФРЫ ДОВЕРИЯ (js/blocks.js, тексты — js/content-data.js → trust). Пока есть [плейсхолдеры] — скрыт ═════════ -->
@@ -724,15 +732,15 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__open" id="toast-open">Открыть</button></div>
 
-<script src="js/lang.js?v=dafe2c3154" defer></script>
-<script src="js/catalog-data.js?v=dafe2c3154" defer></script>
-<script src="js/works-data.js?v=dafe2c3154" defer></script>
-<script src="js/models-data.js?v=dafe2c3154" defer></script>
-<script src="js/fabrics-data.js?v=dafe2c3154" defer></script>
-<script src="js/cart.js?v=dafe2c3154" defer></script>
-<script src="js/site.js?v=dafe2c3154" defer></script>
-<script src="js/content-data.js?v=dafe2c3154" defer></script>
-<script src="js/composition-data.js?v=dafe2c3154" defer></script>
-<script src="js/blocks.js?v=dafe2c3154" defer></script>
+<script src="js/lang.js?v=0aea91f3e3" defer></script>
+<script src="js/catalog-data.js?v=0aea91f3e3" defer></script>
+<script src="js/works-data.js?v=0aea91f3e3" defer></script>
+<script src="js/models-data.js?v=0aea91f3e3" defer></script>
+<script src="js/fabrics-data.js?v=0aea91f3e3" defer></script>
+<script src="js/cart.js?v=0aea91f3e3" defer></script>
+<script src="js/site.js?v=0aea91f3e3" defer></script>
+<script src="js/content-data.js?v=0aea91f3e3" defer></script>
+<script src="js/composition-data.js?v=0aea91f3e3" defer></script>
+<script src="js/blocks.js?v=0aea91f3e3" defer></script>
 </body>
 </html>
