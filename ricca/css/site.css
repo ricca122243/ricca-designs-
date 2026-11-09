@@ -1,38 +1,50 @@
 /* ==========================================================================
-   RICCA DESIGNS — v4 «в меру» (10 октября, ночь). Минимализм уровня BOCA: почти белая страница и почти чёрный текст,
-   мелкая спокойная капитель (Montserrat), заголовки — тонкая антиква (Cormorant), много воздуха; у каждого блока —
-   короткий заголовок и 1–3 строки фактов. Чёрные — только «Для бизнеса» и подвал. Шрифты — css/fonts-v3.css.
+   RICCA DESIGNS — v5 «холодный минимализм» (9 ноября): по ориентирам Boca Room / Mononova / Como Casa — белая страница, изделия на холодном
+   сером, почти чёрный текст, чёрные кнопки, без золота и бежевого; капитель — только меню и короткие подписи. Шрифты на выбор заказчика:
+   А (по умолчанию) — только Montserrat; Б (?font=b → html[data-font="b"]) — H1 и заголовки разделов антиквой Cormorant. Шрифты — css/fonts-v3.css.
    Порядок: токены → основа → шапка → вход → разделы → вступление + новость ELUNA + факты → каталог → работы → как заказать
    → ателье → для бизнеса → вопросы → шоурум → подвал → плашка → окна (меню, категория, изделие, лайтбокс, подборка)
    → вход-занавес → движение.
    ========================================================================== */
 
 :root {
-  /* цвет: контраст текста ≥ 7 : 1, капитель ≥ 4,5 : 1 (проверено) */
+  /* цвет (9 ноября, ориентиры Boca Room / Mononova / Como Casa): холодный белый, холодный серый за изделиями, почти чёрный текст, чёрные блоки
+     с молочным текстом; без золота, коричневого и тёплого бежевого. Контраст проверен: --ink 19,8 : 1, --ink-2 5,3 : 1 на --paper
+     (4,8 : 1 на --product-bg), --on-noir 18,1 : 1 и --on-noir-2 7,9 : 1 на --noir */
   --paper: #FFFFFF;      /* страница — холодный белый (заказчик 13 окт.: «айвори слишком жёлтый») */
-  --paper-2: #F2F3F5;    /* подложка фото, пока грузится */
+  --paper-2: #F4F5F7;    /* подложка фото, пока грузится, = --product-bg */
   --product-bg: #F4F5F7; /* фон за фото изделий: подиум карточек и плиток, сцена и миниатюры окна работы — холодный светло-серый (заказчик 9 ноября: бежевый — «яичный»); ?bg=white — белый */
-  --studio: #FAFAF8;     /* фон предметных рендеров — тот же, что в файлах и у страницы (tools/media-v3/studio-rekey.py): рамки не видны */
-  --ink: #0B0B0C;        /* текст 19,6 : 1 на --paper */
-  --ink-2: #45474C;      /* второстепенный 9,4 : 1 на --paper */
-  --line: #DADDE2;       /* волосяные линии: видны и на 1x (1,36 : 1), не спорят с текстом */
-  --line-2: #C6C9CF;
-  --noir: #000000;      /* «Для бизнеса» и подвал */
-  --on-noir: #F5F6F8;    /* 19,1 : 1 на --noir */
-  --on-noir-2: #A6A9AF;  /* 8,6 : 1 на --noir */
-  --gold: #D2B57A;       /* основной телефон в подвале (макет заказчика) — 10,5 : 1 */
+  --studio: #F4F5F7;     /* подложка схем и наведения — тот же холодный серый (прежний #FAFAF8 отдавал в жёлтое) */
+  --ink: #0A0A0A;        /* текст */
+  --ink-2: #6B6E73;      /* второстепенный */
+  --line: #E6E8EB;       /* волосяные линии */
+  --line-2: #CFD2D7;     /* линии полей и рамок, которые должны быть видны */
+  --noir: #111111;       /* «Для бизнеса» и подвал */
+  --on-noir: #F5F6F8;
+  --on-noir-2: #A6A9AF;
+  --ink-hover: #2A2B2E;  /* чёрная кнопка при наведении */
   --sans: 'Montserrat', 'Helvetica Neue', Arial, system-ui, sans-serif;
   --serif: 'Cormorant', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-  --pad: clamp(20px, 5.2vw, 80px);                /* поля страницы */
-  --sec: clamp(112px, 11vw, 176px);               /* воздух между разделами (блоков больше, чем в v3) */
-  --gap: clamp(16px, 2.6vw, 40px);
+  /* шрифты на выбор: А — Montserrat всюду; Б (html[data-font="b"], ставит js/site.js по ?font=b) — H1 и заголовки разделов антиквой,
+     весом 400 и чуть крупнее (--k-display); остальное в обоих вариантах — Montserrat */
+  --f-display: var(--sans);
+  --w-display: 300;
+  --k-display: 1;
+  --ls-h1: -.03em;  --lh-h1: 1.05;
+  --ls-h2: -.02em;  --lh-h2: 1.1;
+  --h1: calc(clamp(40px, 5vw, 64px) * var(--k-display));
+  --h2: calc(clamp(28px, 3vw, 40px) * var(--k-display));
+  --pad: clamp(20px, 5vw, 60px);                  /* поля страницы */
+  --sec: clamp(64px, 8.9vw, 128px);               /* воздух между разделами: 96–128 px на компьютере, 64–80 на телефоне */
+  --gap: clamp(20px, 2.2vw, 32px);                /* зазор сеток карточек */
   --hdr: 72px;
   --ease: cubic-bezier(.22, 1, .36, 1);
   --ease-io: cubic-bezier(.65, 0, .35, 1);
   color-scheme: light;
   font-synthesis: none;
 }
-@media (max-width: 899px) { :root { --hdr: 60px; } }
+@media (max-width: 899px) { :root { --hdr: 64px; } }
+html[data-font="b"] { --f-display: var(--serif); --w-display: 400; --k-display: 1.12; --ls-h1: -.005em; --lh-h1: 1.02; --ls-h2: -.005em; --lh-h2: 1.05; }   /* вариант Б: index.html?font=b */
 html[data-bg="white"] { --product-bg: #FFFFFF; }   /* вариант «белый» для сравнения: index.html?bg=white (атрибут ставит js/site.js) */
 
 /* ---------- основа ---------- */
@@ -44,7 +56,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 html.is-locked { overflow: hidden; }
 body {
   margin: 0; background: var(--paper); color: var(--ink);
-  font: 400 15px/1.7 var(--sans); letter-spacing: .01em;
+  font: 400 16px/1.6 var(--sans); letter-spacing: 0;
   -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
   overflow-x: clip;
 }
@@ -59,36 +71,36 @@ ul, ol { padding: 0; list-style: none; }
 [hidden] { display: none !important; }
 .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 .sr-only { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-.skip { position: fixed; top: 8px; left: 8px; z-index: 200; padding: 16px 18px; background: var(--ink); color: var(--paper); font: 500 12px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; transform: translateY(-200%); }
+.skip { position: fixed; top: 8px; left: 8px; z-index: 200; padding: 16px 18px; background: var(--ink); color: var(--paper); font: 500 12px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; transform: translateY(-200%); }
 .skip:focus { transform: none; }
 .nowrap { white-space: nowrap; }
 .wrap { width: min(100% - 2 * var(--pad), 1440px); margin-inline: auto; }
 .ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
-/* типографика: капитель, заголовок-антиква (≤ 44 px), строка */
-.caps { font: 500 11px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
-.title { font: 300 clamp(30px, 2.9vw, 44px)/1.12 var(--serif); letter-spacing: .005em; color: var(--ink); text-wrap: balance; }
-.shead { display: grid; gap: 18px; justify-items: start; text-align: left; margin-bottom: clamp(72px, 8vw, 128px); }   /* одна ось слева, как у остальных разделов */
-.shead__line { font: 300 15px/1.7 var(--sans); color: var(--ink-2); letter-spacing: .02em; }
+/* типографика: подпись-капитель (12 px, только меню и короткие подписи), заголовок раздела — var(--f-display) (А: Montserrat 300, Б: Cormorant 400), строка */
+.caps { font: 500 12px/1.5 var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+.title { font: var(--w-display) var(--h2)/var(--lh-h2) var(--f-display); letter-spacing: var(--ls-h2); color: var(--ink); text-wrap: balance; }
+.shead { display: grid; gap: 16px; justify-items: start; text-align: left; margin-bottom: clamp(40px, 4.4vw, 64px); }   /* одна ось слева, как у остальных разделов */
+.shead__line { font: 400 16px/1.6 var(--sans); color: var(--ink-2); letter-spacing: 0; max-width: 52ch; text-wrap: pretty; }
 
-/* ссылка-капитель с тонким подчёркиванием */
-.caps-link { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; font: 500 11px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; position: relative; }
-.caps-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 10px; height: 1px; background: currentColor; transform-origin: left; transition: transform 600ms var(--ease); }
-.caps-link .ico { width: 14px; height: 14px; transition: transform 500ms var(--ease); }
+/* тихая ссылка с тонким подчёркиванием (обычный регистр, 14 px; капителью была до 9 ноября) */
+.caps-link { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: 500 14px/1 var(--sans); letter-spacing: 0; text-transform: none; position: relative; }
+.caps-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 11px; height: 1px; background: currentColor; transform-origin: left; transition: transform 250ms var(--ease); }
+.caps-link .ico { width: 14px; height: 14px; transition: transform 250ms var(--ease); }
 @media (hover: hover) {
   .caps-link:hover::after { transform: scaleX(.35); }
   .caps-link:hover .ico { transform: translateX(3px); }
 }
 
-/* кнопки: чёрная и контурная, прямые углы, капитель */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 52px; padding: 0 28px; border: 1px solid var(--ink); font: 500 11px/1.2 var(--sans); letter-spacing: .2em; text-transform: uppercase; text-align: center; transition: background 300ms var(--ease), color 300ms var(--ease), border-color 300ms var(--ease); }
+/* кнопки: чёрная и контурная, прямые углы, подпись 14 px обычным регистром; наведение 200 мс */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; padding: 0 24px; border: 1px solid var(--ink); border-radius: 0; font: 500 14px/1.2 var(--sans); letter-spacing: .01em; text-transform: none; text-align: center; transition: background 200ms var(--ease), color 200ms var(--ease), border-color 200ms var(--ease); }
 .btn .ico { width: 16px; height: 16px; }
 .btn--fill { background: var(--ink); color: var(--paper); }
 .btn--line { background: transparent; color: var(--ink); }
 .btn--wide { width: 100%; }
-@media (max-width: 359px) { .btn { letter-spacing: .14em; padding: 0 16px; } }   /* «Узнать цену в WhatsApp» — в одну строку и на 320 px */
+@media (max-width: 359px) { .btn { padding: 0 14px; } }   /* 320 px: «Узнать цену в WhatsApp» — в одну строку */
 @media (hover: hover) {
-  .btn--fill:hover { background: #2B2B2B; border-color: #2B2B2B; }
+  .btn--fill:hover { background: var(--ink-hover); border-color: var(--ink-hover); }
   .btn--line:hover { background: var(--ink); color: var(--paper); }
 }
 .icon-btn { display: inline-grid; place-items: center; width: 44px; height: 44px; position: relative; }
@@ -96,7 +108,7 @@ ul, ol { padding: 0; list-style: none; }
 
 /* поля заказа и корзины: тонкая линия снизу, без рамок; количество — «− 2 +» в тонкой рамке */
 .fld { display: block; width: 100%; min-height: 44px; margin: 0; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line-2); border-radius: 0; background: transparent; color: var(--ink); font: 400 14px/1.5 var(--sans); letter-spacing: .01em; }
-.fld::placeholder { color: #6B6E74; opacity: 1; }   /* холодный серый, 4,9 : 1 на --paper */
+.fld::placeholder { color: var(--ink-2); opacity: 1; }
 .fld:focus { outline: none; border-bottom-color: var(--ink); box-shadow: 0 1px 0 var(--ink); }
 textarea.fld { min-height: 64px; resize: vertical; }
 @media (max-width: 899px) { .fld { font-size: 16px; } }   /* iOS не увеличивает страницу при вводе */
@@ -117,9 +129,10 @@ textarea.fld { min-height: 64px; resize: vertical; }
 /* ==========================================================================
    ШАПКА
    ========================================================================== */
-.hdr { position: fixed; inset: 0 0 auto; z-index: 60; height: var(--hdr); color: var(--ink); background: var(--paper); border-bottom: 1px solid var(--line); transition: transform 600ms var(--ease), background-color 400ms var(--ease), color 400ms var(--ease), border-color 400ms var(--ease); }
-.hdr.is-over { background: transparent; border-color: transparent; color: #fff; }
-.hdr.is-dark { background: var(--noir); border-color: transparent; color: var(--on-noir); }   /* над «Для бизнеса» и подвалом — без белой полосы */
+.hdr { position: fixed; inset: 0 0 auto; z-index: 60; height: var(--hdr); color: var(--ink); background: rgba(255, 255, 255, .82); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid transparent; transition: transform 400ms var(--ease), background-color 250ms var(--ease), color 250ms var(--ease), border-color 250ms var(--ease); }
+.hdr.is-over { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; border-color: transparent; }   /* в самом верху (y < 8): без подложки и линии */
+.hdr.is-scrolled { border-bottom-color: var(--line); }   /* линия — только когда страница прокручена (js/site.js) */
+.hdr.is-dark { background: rgba(17, 17, 17, .82); border-color: transparent; color: var(--on-noir); }   /* над «Для бизнеса» и подвалом — без белой полосы */
 .hdr.is-hidden { transform: translateY(-101%); }
 .hdr__row { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .logo { display: inline-flex; align-items: center; gap: 14px; min-height: 44px; }
@@ -128,21 +141,24 @@ textarea.fld { min-height: 64px; resize: vertical; }
 .logo__text { display: grid; gap: 5px; line-height: 1; }
 .logo__name { font: 500 15px/1 var(--sans); letter-spacing: .42em; margin-right: -.42em; }
 .logo__sub { font: 500 7.5px/1 var(--sans); letter-spacing: .34em; opacity: .9; }
-.hdr__nav { display: flex; align-items: center; gap: clamp(28px, 3vw, 48px); margin-left: auto; }
-.hdr__nav a { position: relative; display: inline-flex; align-items: center; min-height: 44px; font: 500 11px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; }
-.hdr__nav a::after { content: ''; position: absolute; left: 0; right: .2em; bottom: 12px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform 500ms var(--ease); }
+.hdr__nav { display: flex; align-items: center; gap: clamp(24px, 2.6vw, 40px); margin-left: auto; }
+.hdr__nav a { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: 500 12px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+.hdr__nav a::after { content: ''; position: absolute; left: 0; right: .12em; bottom: 12px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform 250ms var(--ease); }
 @media (hover: hover) { .hdr__nav a:hover::after { transform: scaleX(1); } }
+/* WhatsApp в меню — со значком (контур из спрайта #i-whatsapp маской: в ::before <use> не вставить) */
+.hdr__nav a[data-wa]::before { content: ''; flex: none; width: 16px; height: 16px; background: currentColor; -webkit-mask: var(--i-wa) center / contain no-repeat; mask: var(--i-wa) center / contain no-repeat; }
+:root { --i-wa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3Z'/%3E%3Cpath d='M9.3 8.6c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4l.7 1.7c.1.2 0 .4-.1.5l-.5.6c-.1.1-.2.3 0 .5a6 6 0 0 0 2.8 2.6c.2.1.4.1.5 0l.7-.8c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3 0 .3 0 .9-.3 1.3-.3.4-1.1.9-1.6.9-.6 0-1.6-.1-3.5-1.3a9 9 0 0 1-3.2-3.6c-.6-1-.6-1.8-.6-2.1 0-.5.3-1 .5-1.3Z'/%3E%3C/svg%3E"); }
 /* переключатель языка RU / EN — в шапке последним пунктом, в меню телефона — строкой */
 .hdr__lang { padding-left: clamp(16px, 2vw, 28px); border-left: 1px solid var(--line); }
-.menu__lang { margin-top: 12px; font: 500 12px/1 var(--sans) !important; letter-spacing: .24em; text-transform: uppercase; }
+.menu__lang { margin-top: 12px; font: 400 16px/1 var(--sans) !important; letter-spacing: 0; text-transform: none; color: var(--ink-2); }
 /* английская страница: «No. 01» вместо «№ 01»; заголовок обложки длиннее («Upholstered furniture») — кегль меньше */
 html[lang="en"] .sec h2.title[id$="-title"]::before { content: "No. " counter(sec, decimal-leading-zero); content: "No. " counter(sec, decimal-leading-zero) / ""; }
 html[lang="en"] .hero { --hfs: clamp(36px, 9.3vw, 150px); }
-html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 1.3); }   /* кегль меньше, диван тот же — строки дальше друг от друга */
-@media (max-width: 899px) { html[lang="en"] .hero { --hfs: clamp(30px, 9.1vw, 120px); } html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 3.4); } }
+html[lang="en"] .hero__cover .hero__title { row-gap: calc(var(--hfs) * 1.3); }   /* кегль меньше, диван тот же — строки дальше друг от друга */
+@media (max-width: 899px) { html[lang="en"] .hero { --hfs: clamp(30px, 9.1vw, 120px); } html[lang="en"] .hero__cover .hero__title { row-gap: calc(var(--hfs) * 3.4); } }
 .hdr__tools { display: flex; align-items: center; margin-right: -10px; }
 @media (min-width: 1200px) { .hdr__tools { margin-left: clamp(16px, 2.5vw, 40px); } }   /* RU | EN и корзина — отдельной группой, дальше от WHATSAPP, чем пункты меню друг от друга; уже 1200 px меню на пределе ширины */
-.hdr__count { position: absolute; top: 7px; right: 5px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 8px; background: currentColor; font: 600 9px/15px var(--sans); text-align: center; }
+.hdr__count { position: absolute; top: 7px; right: 5px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 8px; background: currentColor; font: 600 10px/15px var(--sans); text-align: center; }
 .hdr .hdr__count { background: var(--ink); color: var(--paper); }
 .hdr.is-over .hdr__count, .hdr.is-dark .hdr__count { background: var(--on-noir); color: #111; }
 .view__bar .hdr__count { background: var(--ink); color: var(--paper); }
@@ -150,6 +166,7 @@ html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 1.3); }   /* кегл�
 @media (max-width: 899px) {
   .hdr__nav { display: none; }
   .hdr__menu { display: inline-grid; }
+  .hdr { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
   .logo__mono { width: 34px; }
   .logo { gap: 12px; }
   .logo__rule { height: 22px; }
@@ -158,64 +175,72 @@ html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 1.3); }   /* кегл�
 }
 
 /* ==========================================================================
-   1. ВХОД — обложка-журнал на белом: антиква в две строки, диван стоит перед буквами, бегущая строка внизу.
-   --mx/--my (мышь, −1…1) и --sy (сколько первого экрана прокручено, 0…1) ставит js/site.js (heroFx); без JS и при
-   reduced-motion они равны 0 — обложка просто стоит.
+   1. ВХОД. Общие классы первого экрана (разметку делает index.html): .hero__title — H1 (var(--h1): А — Montserrat 300,
+   Б — Cormorant 400), .hero__lead / .hero__sub — подводка 16–18 px, .hero__cta / .hero__btns — ряд кнопок, .hero__media — фото.
+   Ниже — прежняя обложка-журнал (.hero__cover: две строки, диван перед буквами, бегущая строка); параллакса от мыши и прокрутки
+   больше нет (9 ноября: без параллакса и зума).
    ========================================================================== */
 .hero { --hfs: clamp(56px, 11.6vw, 196px); position: relative; min-height: 100svh; display: flex; flex-direction: column; padding: calc(var(--hdr) + 12px) 0 0; background: var(--paper); color: var(--ink); overflow: hidden; }
+.hero__title { margin: 0; font: var(--w-display) var(--h1)/var(--lh-h1) var(--f-display); letter-spacing: var(--ls-h1); color: var(--ink); text-wrap: balance; }
+.hero__lead, .hero__sub { max-width: 40ch; font: 400 clamp(16px, 1.2vw, 18px)/1.6 var(--sans); color: var(--ink-2); text-wrap: pretty; }
+.hero__cta, .hero__btns { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero__media { position: relative; overflow: hidden; background: var(--product-bg); }
+.hero__media img, .hero__media video { width: 100%; height: 100%; object-fit: cover; }
 .hero__stage { flex: 1; display: grid; align-content: center; gap: clamp(18px, 2.4vw, 36px); padding-block: clamp(8px, 2vw, 32px); }
-.hero__eye { display: flex; align-items: center; gap: 16px; font: 500 11px/1.5 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--ink-2); }
-.hero__no { padding-right: 16px; border-right: 1px solid var(--line-2); font: italic 400 17px/1 var(--serif); font-variant-numeric: lining-nums; letter-spacing: .02em; text-transform: none; color: var(--ink); }
+.hero__eye { display: flex; align-items: center; gap: 12px; font: 500 12px/1.5 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+.hero__no { padding-right: 12px; border-right: 1px solid var(--line-2); font: 500 12px/1 var(--sans); font-variant-numeric: lining-nums tabular-nums; letter-spacing: .12em; color: var(--ink); }
 .hero__cover { display: grid; grid-template-areas: "c"; align-items: center; justify-items: center; }
-.hero__title { grid-area: c; width: 100%; display: grid; row-gap: calc(var(--hfs) * .98); margin: 0; font: 300 var(--hfs)/.9 var(--serif); letter-spacing: -.025em; color: var(--ink); }
+.hero__cover .hero__title { grid-area: c; width: 100%; display: grid; row-gap: calc(var(--hfs) * .98); font-size: var(--hfs); line-height: .9; letter-spacing: -.025em; text-wrap: initial; }   /* прежняя обложка: строки крупно, диван между ними */
 .hero__ln { display: block; overflow: hidden; padding: 0 .08em .07em; margin: 0 -.08em; }
 .hero__ln > span { display: inline-block; }
-.hero__ln--1 { justify-self: start; transform: translate3d(calc(var(--sy, 0) * -7vw + var(--mx, 0) * 6px), 0, 0); }
-.hero__ln--2 { justify-self: end; text-align: right; font-style: italic; transform: translate3d(calc(var(--sy, 0) * 7vw + var(--mx, 0) * 6px), 0, 0); }
-.hero__pic { grid-area: c; position: relative; z-index: 2; display: block; width: min(62%, 960px);
-  transform: translate3d(calc(var(--mx, 0) * -18px), calc(var(--my, 0) * -10px + var(--sy, 0) * -60px), 0) scale(calc(1 + var(--sy, 0) * .06)); }
-.hero__pic img { position: relative; display: block; width: 100%; height: auto; transition: transform 1200ms var(--ease); }
-.hero__floor { position: absolute; left: 4%; right: 4%; bottom: -9%; height: 26%; border-radius: 50%; background: radial-gradient(closest-side, rgba(11, 11, 12, .2), rgba(11, 11, 12, .06) 60%, rgba(11, 11, 12, 0)); filter: blur(4px);
-  transform: translateX(calc(var(--mx, 0) * 8px)); }
-@media (hover: hover) { .hero__pic:hover img { transform: translateY(-6px); } }
+.hero__ln--1 { justify-self: start; }
+.hero__ln--2 { justify-self: end; text-align: right; }
+html[data-font="b"] .hero__ln--2 { font-style: italic; }   /* курсивная вторая строка — только с антиквой (Б) */
+.hero__pic { grid-area: c; position: relative; z-index: 2; display: block; width: min(62%, 960px); }
+.hero__pic img { position: relative; display: block; width: 100%; height: auto; }
+.hero__floor { position: absolute; left: 4%; right: 4%; bottom: -9%; height: 26%; border-radius: 50%; background: radial-gradient(closest-side, rgba(10, 10, 10, .2), rgba(10, 10, 10, .06) 60%, rgba(10, 10, 10, 0)); filter: blur(4px); }
 .hero__foot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: end; gap: 24px clamp(24px, 4vw, 64px); }
-.hero__sub { max-width: 34ch; font: 400 clamp(14px, 1.1vw, 16px)/1.6 var(--sans); color: var(--ink-2); text-wrap: pretty; }
-.hero__btns { display: flex; flex-wrap: wrap; gap: 12px; }
-.hero__cap { justify-self: end; display: grid; gap: 4px; text-align: right; font: 500 10px/1.5 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ink-2); }
-.hero__cap span:first-child { font: italic 400 18px/1.2 var(--serif); letter-spacing: 0; text-transform: none; color: var(--ink); }
+.hero__sub { max-width: 36ch; }
+.hero__btns .btn { min-width: 180px; }
+.hero__cap { justify-self: end; display: grid; gap: 4px; text-align: right; font: 400 13px/1.5 var(--sans); letter-spacing: 0; color: var(--ink-2); }
+.hero__cap span:first-child { font: 500 14px/1.3 var(--sans); color: var(--ink); }
 .hero__run { margin-top: clamp(20px, 2.6vw, 40px); border-top: 1px solid var(--line); overflow: hidden; }
 .hero__track { display: flex; width: max-content; animation: run 56s linear infinite; }
-.hero__track span { display: inline-flex; align-items: center; gap: clamp(28px, 3vw, 48px); padding: clamp(14px, 1.4vw, 20px) 0 clamp(14px, 1.4vw, 20px) clamp(28px, 3vw, 48px); font: italic 300 clamp(18px, 1.7vw, 26px)/1 var(--serif); color: var(--ink-2); white-space: nowrap; }
+.hero__track span { display: inline-flex; align-items: center; gap: clamp(28px, 3vw, 48px); padding: clamp(14px, 1.4vw, 20px) 0 clamp(14px, 1.4vw, 20px) clamp(28px, 3vw, 48px); font: 300 clamp(15px, 1.2vw, 18px)/1 var(--sans); letter-spacing: .01em; color: var(--ink-2); white-space: nowrap; }
 .hero__track span::after { content: ""; flex: none; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }   /* точка — цветом слов (--ink-2) и мельче: чёрная 5 px перебивала тонкий курсив */
 @media (hover: hover) { .hero__run:hover .hero__track { animation-play-state: paused; } }
 @keyframes run { to { transform: translateX(-50%); } }
-.hdr.is-over { background: transparent; border-color: transparent; color: var(--ink); }
 .hdr.is-over .hdr__count { background: var(--ink); color: var(--paper); }
 @media (max-width: 899px) {
   .hero { --hfs: clamp(44px, 15.8vw, 120px); }
   .hero__stage { align-content: center; gap: 20px; }
-  .hero__eye { font-size: 10px; letter-spacing: .26em; gap: 12px; } .hero__no { padding-right: 12px; font-size: 15px; }
+  .hero__eye { gap: 10px; } .hero__no { padding-right: 10px; }
   .hero__ln { white-space: nowrap; }
-  .hero__title { row-gap: calc(var(--hfs) * 1.62); }
+  .hero__cover .hero__title { row-gap: calc(var(--hfs) * 1.62); }
   .hero__pic { width: calc(100% + 2 * var(--pad) - 8px); }
   .hero__foot { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-  .hero__btns { width: 100%; } .hero__btns .btn { flex: 1 1 0; padding-inline: 16px; }
+  .hero__btns, .hero__cta { width: 100%; } .hero__btns .btn, .hero__cta .btn { flex: 1 1 0; min-width: 0; padding-inline: 16px; }
   .hero__cap { display: none; }
 }
-/* Вход обложки: строки поднимаются из-под маски, диван выезжает, тень проявляется. С занавесом (html.intro) — после него */
+/* Вход первого экрана — тихо: проявление и подъём на 12 px, 400–600 мс, по очереди (заголовок → подводка → кнопки → фото).
+   С занавесом (html.intro) — после него. Прежняя обложка: строки поднимаются из-под маски, диван проявляется */
 .js .hero { --hd: 120ms; }
 .js.intro .hero { --hd: 1100ms; }
-.js .hero__ln > span { animation: ln 1150ms var(--ease) both; animation-delay: var(--hd); }
-.js .hero__ln--2 > span { animation-delay: calc(var(--hd) + 140ms); }
-.js .hero__pic img { animation: sofa 1400ms var(--ease) both; animation-delay: calc(var(--hd) + 260ms); }
-.js .hero__floor { animation: fade 1400ms var(--ease) both; animation-delay: calc(var(--hd) + 520ms); }
-.js .hero__eye { animation: up 800ms var(--ease) both; animation-delay: calc(var(--hd) + 420ms); }
-.js .hero__foot { animation: up 900ms var(--ease) both; animation-delay: calc(var(--hd) + 620ms); }
-.js .hero__run { animation: fade 1200ms var(--ease) both; animation-delay: calc(var(--hd) + 800ms); }
+.js .hero__title, .js .hero__eye { animation: up 500ms var(--ease) both; animation-delay: var(--hd); }
+.js .hero__lead, .js .hero__sub, .js .hero__foot { animation: up 500ms var(--ease) both; animation-delay: calc(var(--hd) + 120ms); }
+.js .hero__cta, .js .hero__btns { animation: up 500ms var(--ease) both; animation-delay: calc(var(--hd) + 220ms); }
+.js .hero__media { animation: fade 600ms var(--ease) both; animation-delay: calc(var(--hd) + 160ms); }
+.js .hero__foot .hero__btns { animation: none; }   /* в обложке кнопки — внутри .hero__foot, он уже поднимается */
+.js .hero__cover .hero__title { animation: none; }
+.js .hero__ln > span { animation: ln 700ms var(--ease) both; animation-delay: var(--hd); }
+.js .hero__ln--2 > span { animation-delay: calc(var(--hd) + 90ms); }
+.js .hero__pic img { animation: sofa 700ms var(--ease) both; animation-delay: calc(var(--hd) + 160ms); }
+.js .hero__floor { animation: fade 700ms var(--ease) both; animation-delay: calc(var(--hd) + 320ms); }
+.js .hero__run { animation: fade 600ms var(--ease) both; animation-delay: calc(var(--hd) + 400ms); }
 @keyframes ln { from { transform: translateY(108%); } to { transform: none; } }
-@keyframes sofa { from { opacity: 0; transform: translateY(48px) scale(.95); } to { opacity: 1; transform: none; } }
+@keyframes sofa { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
-  .js .hero__ln > span, .js .hero__pic img, .js .hero__floor, .js .hero__eye, .js .hero__foot, .js .hero__run, .hero__track { animation: none; }
+  .js .hero__title, .js .hero__lead, .js .hero__sub, .js .hero__cta, .js .hero__btns, .js .hero__media, .js .hero__ln > span, .js .hero__pic img, .js .hero__floor, .js .hero__eye, .js .hero__foot, .js .hero__run, .hero__track { animation: none; }
 }
 
 /* ==========================================================================
@@ -223,14 +248,13 @@ html[lang="en"] .hero__title { row-gap: calc(var(--hfs) * 1.3); }   /* кегл�
    ========================================================================== */
 .sec { padding-top: var(--sec); }
 .showroom { padding-bottom: var(--sec); }
-.label { font: 500 10px/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
+.label { font: 500 12px/1.5 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
 .proc__title, .faq__title { margin-bottom: clamp(40px, 4.4vw, 64px); }
-/* Заголовки разделов — в духе обложки: крупнее, с журнальным номером «№ 02…» (обложка — № 01). Номер считает CSS-счётчик
-   по видимым разделам (скрытый раздел «Наши работы» номер не занимает); экранный диктор номер не читает (alt-текст "") */
+/* Заголовки разделов — один кегль (var(--h2)); над ними тихий номер «№ 02…» мелкой подписью (обложка — № 01). Номер считает
+   CSS-счётчик по видимым разделам (скрытый раздел «Наши работы» номер не занимает); экранный диктор номер не читает (alt-текст "") */
 body { counter-reset: sec 1; }
-.sec h2.title[id$="-title"] { font-size: clamp(34px, 4.2vw, 64px); line-height: 1.04; letter-spacing: -.012em; }
 .sec h2.title[id$="-title"]::before { counter-increment: sec; content: "№ " counter(sec, decimal-leading-zero); content: "№ " counter(sec, decimal-leading-zero) / "";
-  display: block; margin-bottom: clamp(12px, 1.4vw, 20px); font: italic 400 17px/1 var(--serif); font-variant-numeric: lining-nums; letter-spacing: .02em; color: var(--ink-2); }   /* lining — после шортката font: он сбрасывает цифры в старостильные («№ o4») */
+  display: block; margin-bottom: clamp(12px, 1.4vw, 18px); font: 500 12px/1 var(--sans); font-variant-numeric: lining-nums tabular-nums; letter-spacing: .12em; color: var(--ink-2); }
 
 /* ==========================================================================
    2. ВСТУПЛЕНИЕ + НОВОСТИ + ФАКТЫ
