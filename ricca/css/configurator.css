@@ -511,6 +511,7 @@ ul, ol { padding: 0; list-style: none; }
   .bar .bar__b { min-width: 52px; padding: 0 7px; font-size: 7.5px; letter-spacing: .05em; }
   .bar .bar__next { padding: 0 8px; gap: 6px; font-size: 9.5px; letter-spacing: .06em; }
   .bar__n { display: none; }
+  .bar #bar-wa { padding: 0 8px; gap: 6px; font-size: 10px; letter-spacing: .06em; white-space: nowrap; }   /* «To WhatsApp» на 320 px — в одну строку */
   .chip { padding: 0 13px; font-size: 12.5px; }
   .opts .chip { padding-inline: 9px; }
   .fld__box { width: 80px; }

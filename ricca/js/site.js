@@ -43,6 +43,9 @@
   };
 
   const root = document.documentElement;
+  // фон за фото изделий для сравнения (css/site.css, --product-bg): index.html?bg=white — белый вместо светло-серого. При переходах
+  // по #адресам ?bg остаётся в адресе сам (меняется только хэш)
+  if (/[?&]bg=white(?:&|$)/.test(location.search)) root.dataset.bg = 'white';
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1154,14 +1157,8 @@
       if (p.w <= p800(p).w) return p.src800;
       return fw * (window.devicePixelRatio || 1) > p800(p).w * 1.08 ? p.src : p.src800;
     };
-    /* зум предметного кадра — по доле предмета (fitZoom), но не больше 1,6 на любом устройстве: кровати с малым box шли
-       с зумом до 2,2 — мыло и квадраты сжатия. На большой рамке компьютера ещё и пиксель файла — не больше 1,25 CSS px
-       (1440: Godal ×1,6 вместо ×2,2). Плотность экрана (devicePixelRatio) не учитываем: на планшете и телефоне зум пропал бы
-       совсем (iPad: ×1,04), и кровати снова потерялись бы в бежевом поле. Меньше 1 не уменьшаем: кадр и так целиком */
-    const lbZoom = (p, fw) => {
-      const srcW = fileOf(p, fw) === p.src800 ? p800(p).w : p.w;
-      return Math.min(fitZoom(p, p.w / p.h, 0.8), 1.6, Math.max(1, (1.25 * srcW) / fw));
-    };
+    /* рамка — по кадру целиком (contain) в размер сцены, без увеличения изделия (владелец, 9 ноября: прежний зум до ×1,6 резал кадр).
+       Больше 1,1 размера файла и шире 1600 px не растягиваем: кадры 1800 × 1350 на большом экране иначе мылятся */
     function layout() {
       const p = cur && cur.photos[idx];
       if (!p) return;
@@ -1169,9 +1166,8 @@
       const sw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
       const sh = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
       if (sw <= 0 || sh <= 0) return;
-      const k = Math.min(sw / p.w, sh / p.h), fw = Math.round(p.w * k);
-      frame.style.width = `${fw}px`; frame.style.height = `${Math.round(p.h * k)}px`;
-      if (p.studio) img.style.setProperty('--z', lbZoom(p, fw).toFixed(3));   // рамка другой ширины (поворот экрана) — зум заново
+      const k = Math.min(sw / p.w, sh / p.h, 1.1, 1600 / p.w);
+      frame.style.width = `${Math.round(p.w * k)}px`; frame.style.height = `${Math.round(p.h * k)}px`;
     }
     function syncCart() {
       if (!cur || !RC) return;
@@ -1185,9 +1181,7 @@
       const ph = cur.photos, n = ph.length;
       idx = ((i % n) + n) % n;
       const p = ph[idx], t = ++tok;
-      /* предметный кадр модели — на тёплом «подиуме» во всё окно, изделие чуть крупнее (как карточки каталога) */
-      stage.classList.toggle('is-studio', !!p.studio);
-      if (!p.studio) img.style.removeProperty('--z');   // зум предметного кадра ставит layout() — он знает ширину рамки
+      stage.classList.toggle('is-studio', !!p.studio);   // предметный кадр модели — сцена и рамка на подиуме (css: .lb__stage.is-studio)
       // новое фото грузится в фоне, прежнее стоит до готовности (дольше 120 мс — приглушено); рамка — под новое фото
       clearTimeout(slowT);
       slowT = setTimeout(() => { if (t === tok) frame.classList.add('is-loading'); }, 120);
