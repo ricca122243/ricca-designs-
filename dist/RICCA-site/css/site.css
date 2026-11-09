@@ -416,37 +416,28 @@ body { counter-reset: sec 1; }
 }
 
 /* ==========================================================================
-   НАШИ РАБОТЫ — реальные фото работ ателье (js/works-data.js). На главной — лента лучших кадров 4 : 5 (свайп; компьютер — стрелки
-   и «Все работы»); на экране категории — сетка .wk (телефон 2 колонки, планшет 3, компьютер 4). Рамки — простые прямоугольники
+   НАШИ РАБОТЫ — реальные фото работ ателье (js/works-data.js). На главной — сетка 8 лучших работ (.wk: компьютер 4 колонки, планшет 3,
+   телефон 2; js/site.js добавляет класс .wk контейнеру [data-works-row]); экран «Наши работы» (#catalog/works) — все работы той же
+   сеткой с фишками-фильтрами (.view__tabs); экраны категорий — та же .wk. Рамки — простые прямоугольники, фото интерьеров — от края до края
    ========================================================================== */
 .works__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 40px; flex-wrap: wrap; margin-bottom: clamp(40px, 4.4vw, 64px); }
 .works__nav { display: flex; align-items: center; gap: 4px; }
 .works__all { margin-left: 20px; }
-.works__step { display: none; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line); color: var(--ink); transition: border-color 300ms var(--ease), opacity 300ms; }
-.works__step .ico { width: 16px; height: 16px; }
-.works__step[aria-disabled="true"] { opacity: .35; cursor: default; }
-@media (hover: hover) and (min-width: 768px) {
-  .works__step { display: inline-grid; }
-  .works__step:not([aria-disabled="true"]):hover { border-color: var(--ink); }
-}
-.works__strip { display: flex; gap: var(--gap); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
-.works__strip::-webkit-scrollbar { display: none; }
-.works__strip > li { flex: 0 0 calc((100% - 3 * var(--gap)) / 4); scroll-snap-align: start; }
-@media (max-width: 1099.98px) {
-  /* планшет и телефон: лента во всю ширину экрана, следующий кадр виден краем — знак, что листается */
-  .works__strip { margin-inline: calc(-1 * var(--pad)); padding-inline: var(--pad); scroll-padding-inline: var(--pad); }
-  .works__strip > li { flex-basis: calc((100% - 2 * var(--gap)) / 2.6); }
-}
+.works__step { display: none; }   /* стрелки прежней ленты: сетке не нужны (js/site.js их убирает; запас, если разметка старая) */
 @media (max-width: 767px) {
-  .works__strip { gap: 12px; }
-  .works__strip > li { flex-basis: 64%; }
   .works__head { align-items: baseline; }
   .works__all { margin-left: 0; }
 }
 
-/* карточка работы: фото 4 : 5 целиком в рамке (cover), под ним название капителью и ткань строкой */
+/* карточка работы: фото интерьера 4 : 5 от края до края рамки (cover), под ним название 16–18 px и ткань серой строкой (одной — лишнее в «…»,
+   полностью — в окне работы). Одна сетка .wk для главной, экрана «Наши работы» и экранов категорий: зазор 32 между колонками, 56 между рядами */
 .wk { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(40px, 4vw, 56px) var(--gap); }   /* 4 колонки ≥ 1200, 3 на 900–1199, 2 на телефоне */
 @media (max-width: 1199.98px) { .wk { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* ритм сетки на главной (как у Boca Room): карточка с горизонтальным кадром на две колонки — рамка ≈ 1,65 : 1 (две рамки 4 : 5 и зазор), только на компьютере */
+@media (min-width: 1200px) {
+  .wk > .wk__wide { grid-column: span 2; }
+  .wk__wide .wk__img { aspect-ratio: 1.65; }
+}
 .wk__a { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; text-align: left; }
 .wk__img { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--radius); background: var(--product-bg); }
 .wk__img picture { display: contents; }
@@ -455,16 +446,18 @@ body { counter-reset: sec 1; }
    поля вокруг изделия уже сделаны в самом фото (одинаковые у всех моделей) */
 .wk__a--model .wk__img, .tile__img--model { aspect-ratio: 4 / 3; }
 .wk__a--model .wk__img img, .tile__img--model img { object-fit: cover; }
-.wk__t { margin-top: 12px; font: 500 15px/1.4 var(--sans); letter-spacing: 0; color: var(--ink); text-wrap: balance; }
-.wk__s { margin-top: 2px; font: 400 14px/1.5 var(--sans); color: var(--ink-2); letter-spacing: 0; }
+.wk__t { margin-top: 14px; font: 500 clamp(16px, 1.15vw, 18px)/1.35 var(--sans); letter-spacing: 0; color: var(--ink); text-wrap: balance; }
+.wk__s { margin-top: 4px; font: 400 14px/1.5 var(--sans); color: var(--ink-2); letter-spacing: 0; }
+.wk__a:not(.wk__a--model) .wk__s { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .wk__t, .model__name { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; text-decoration-color: transparent; transition: text-decoration-color 200ms; }
 @media (hover: hover) { .wk__a:hover .wk__t, .model:hover .model__name { text-decoration-color: var(--ink); } }
 .wk__a:focus-visible { outline-offset: 6px; }
 @media (max-width: 899.98px) {
   .wk { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 16px; }
-  .wk__t { margin-top: 10px; font-size: 14px; }
-  .wk__s { font-size: 13px; }
+  .wk__t { margin-top: 10px; font-size: 16px; }
+  .wk__s { margin-top: 2px; font-size: 13px; }
 }
+@media (max-width: 359px) { .wk__t { font-size: 15px; } }   /* 320: две колонки по 134 px — «Кровать с панельным изголовьем» в три строки, не в четыре */
 
 /* ── Карточка модели: изделие крупно (≈ 86 % ширины, js/site.js zoomAttr) на светло-сером «подиуме» (--product-bg), при наведении —
    второй ракурс; подпись: вид мебели капителью, название — антиквой, строка формы — тихим серым. Фон предметных кадров (#FAFBF8)
@@ -797,6 +790,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .view__tabs button::after { content: ''; position: absolute; left: 0; right: 0; bottom: 11px; height: 1px; background: var(--ink); transform: scaleX(0); transform-origin: left; transition: transform 250ms var(--ease); }
 .view__tabs button[aria-pressed="true"] { color: var(--ink); }
 .view__tabs button[aria-pressed="true"]::after { transform: scaleX(1); }
+.view__tabs-n { margin-left: 6px; font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; vertical-align: 1px; }   /* «Диваны 21» — счётчик фишки экрана «Наши работы» */
 @media (max-width: 767px) {
   /* одна строка со свайпом и «прилипает» под полосой окна: фильтр можно сменить из середины длинного списка */
   .view__tabs { position: sticky; top: var(--hdr); z-index: 4; flex-wrap: nowrap; justify-content: flex-start; gap: 0 22px; overflow-x: auto; scrollbar-width: none;
@@ -1051,12 +1045,14 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 @media (max-width: 359px) { .pd__facts > div, .pd__row { grid-template-columns: 92px minmax(0, 1fr); gap: 12px; } }   /* «2740 × 1090 × 760 мм» — без выхода за край на 320 px */
 @media (max-width: 389px) { .pd__wa-tail { display: none; } }   /* узкий телефон: «Узнать цену» + значок WhatsApp — в одну строку */
 
-/* окно работы (готовый каталог): фото целиком на белом, снизу полоса — название, ткань, счётчик и действия */
+/* окно работы (готовый каталог): фото интерьера целиком (contain) на белом, без подрезки и увеличения — bbox-логика layout() в site.js
+   только для предметных кадров моделей (p.studio); снизу полоса — название, ткань, счётчик и действия («Смотреть в Instagram») */
 .lb { background: var(--paper); }
 .lb__close { position: absolute; top: 10px; right: calc(var(--pad) - 10px); z-index: 4; background: rgba(255, 255, 255, .9); }
 .lb__in { display: grid; grid-template-rows: minmax(0, 1fr) auto; height: 100%; }
-.lb__stage { position: relative; display: grid; place-items: center; min-height: 0; padding: calc(var(--hdr) - 8px) clamp(16px, 6vw, 120px) 16px; overflow: hidden; touch-action: pan-y pinch-zoom; user-select: none; -webkit-user-select: none; }
-.lb__frame { position: relative; max-width: 100%; max-height: 100%; overflow: hidden; background: var(--product-bg); }   /* overflow: предметный кадр может быть шире рамки (layout() в site.js) */
+.lb__stage { position: relative; display: grid; place-items: center; min-height: 0; padding: calc(var(--hdr) - 8px) clamp(16px, 5vw, 96px) 16px; overflow: hidden; touch-action: pan-y pinch-zoom; user-select: none; -webkit-user-select: none; }
+.lb__frame { position: relative; max-width: 100%; max-height: 100%; overflow: hidden; background: var(--paper); }   /* overflow: предметный кадр может быть шире рамки (layout() в site.js) */
+.lb__frame.is-loading, .lb__stage.is-studio .lb__frame { background: var(--product-bg); }   /* серая подложка — пока фото грузится и под предметным кадром */
 .lb__frame img { width: 100%; height: 100%; object-fit: contain; transition: opacity 300ms var(--ease); -webkit-user-drag: none; }
 .lb__frame.is-loading img { opacity: .3; }
 .lb__bar { display: flex; align-items: center; justify-content: space-between; gap: 16px 40px; padding: 18px var(--pad) calc(22px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }

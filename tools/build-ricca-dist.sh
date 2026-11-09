@@ -190,7 +190,7 @@ for name in ('index.html', 'en.html'):
     sec = re.search(r'<section[^>]*id="faq".*?</section>', page, re.S)
     if not sec or 'FAQPage' in page: continue
     txt = lambda s: re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', '', s))).strip()
-    qa = re.findall(r'<h3 class="qa__q">(.*?)</h3>\s*<p class="qa__a">(.*?)</p>', sec.group(0), re.S)
+    qa = re.findall(r'<(?:h3|summary) class="qa__q">(.*?)</(?:h3|summary)>\s*<p class="qa__a">(.*?)</p>', sec.group(0), re.S)   # вопросы — <summary> (раскрывашки, 9 ноября) или прежние <h3>
     if not qa: continue
     d = {'@context': 'https://schema.org', '@type': 'FAQPage', 'inLanguage': 'en' if name == 'en.html' else 'ru',
          'mainEntity': [{'@type': 'Question', 'name': txt(q), 'acceptedAnswer': {'@type': 'Answer', 'text': txt(a)}} for q, a in qa]}

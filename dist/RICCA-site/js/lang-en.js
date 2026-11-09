@@ -46,7 +46,8 @@
     'Отправить фото в&nbsp;WhatsApp': 'Send a photo via&nbsp;WhatsApp', 'В&nbsp;корзину&nbsp;— заявка': 'Add to&nbsp;cart&nbsp;— request',
     'Цену рассчитаем и&nbsp;ответим в&nbsp;WhatsApp.': "We'll quote the price and&nbsp;reply on&nbsp;WhatsApp.",
     'Наши работы': 'Our works', 'Реальные изделия ателье — сшиты по проектам клиентов.': "Real pieces by the atelier — made for our clients' projects.",
-    'Работы ателье': 'Atelier works', 'Заявка в&nbsp;корзине&nbsp;— открыть': 'Request in&nbsp;cart&nbsp;— open',
+    'Работы ателье': 'Atelier works', 'Все': 'All',   // фишки-фильтры экрана «Наши работы» («Все · Диваны · Кровати · Кресла» — названия категорий из CAT_LABELS)
+    'Заявка в&nbsp;корзине&nbsp;— открыть': 'Request in&nbsp;cart&nbsp;— open',
     '{} по вашему проекту': '{0} to your project', 'По фото, эскизу или дизайн-проекту': 'From a photo, sketch or design project',
     'В корзине уже {} позиций — отправьте заявку, затем добавьте ещё': 'The cart already has {0} lines — send the request, then add more',
     'В корзине: {}': 'In the cart: {0}',
@@ -95,7 +96,7 @@
     // множественное число: plural3 берёт ед. ч. (1) и род. п. мн. ч. (остальное)
     'коллекция': 'collection', 'коллекций': 'collections', 'образец': 'sample', 'образцов': 'samples', 'модель': 'model', 'моделей': 'models',
     'цвет': 'colour', 'цветов': 'colours', 'предмет': 'item', 'предметов': 'items', 'часть': 'part', 'частей': 'parts',
-    'ткань': 'fabric', 'тканей': 'fabrics', 'позиция': 'line', 'позиций': 'lines',
+    'ткань': 'fabric', 'тканей': 'fabrics', 'позиция': 'line', 'позиций': 'lines', 'работа': 'work', 'работ': 'works',
   };
 
   /* ---------- Данные: названия работ, моделей, категорий и тканей ---------- */
