@@ -31,6 +31,15 @@ def box_of(f):
     oc = off_center(bb, W, H)
     if oc: WARN.append(f'{rel}: изделие не по центру — центр ({oc[0]:.2f}, {oc[1]:.2f}), норма ({CENTER[0]}, {CENTER[1]}) — перекадрировать (python3 tools/media-v3/studio-recenter.py)')
     return [round(np.float64(bb[2] - bb[0]) / W, 3), round(np.float64(bb[3] - bb[1]) / H, 3)]   # округление numpy, как раньше: box не «дрожит» на 0.001
+def bbox_of(f):
+    """[x0, y0, x1, y1] — границы изделия долями кадра (та же рамка, что у box_of): окно изделия показывает изделие крупно,
+    подрезая только фон кадра (js/site.js layout())."""
+    import numpy as np
+    from studio_box import product_box
+    a = np.asarray(Image.open(f).convert('RGB')); H, W = a.shape[:2]
+    bb, _ = product_box(a)
+    if bb is None: return None
+    return [round(float(bb[0]) / W, 3), round(float(bb[1]) / H, 3), round(float(bb[2]) / W, 3), round(float(bb[3]) / H, 3)]
 cat = js_to_json(block('RICCA_CATALOG')); names = js_to_json(block('RICCA_MODEL_NAMES'))
 CFG = {'sofas': 'sofa', 'beds': 'bed', 'armchairs': 'armchair'}
 out = []
@@ -44,6 +53,9 @@ for it in cat:
         w, h = Image.open(f).size; w6, h6 = Image.open(f6).size if os.path.exists(f6) else (w, h)
         ph_ = {'src': p['src'], 'src800': p.get('src600', p['src']), 'w': w, 'h': h, 'w800': w6, 'h800': h6, 'studio': bool(p.get('studio'))}
         if ph_['studio']: ph_['box'] = box_of(f)   # доля изделия в кадре — карточка подгоняет масштаб (js/site.js fitZoom)
+        if ph_['studio']:
+            bb = bbox_of(f)
+            if bb: ph_['bbox'] = bb   # границы изделия — окно изделия кадрирует по ним (js/site.js layout())
         photos.append(ph_)
     if not photos: continue
     cfg = it.get('cfg') or ('corner' if 'corner' in it.get('tags', []) and it['category'] == 'sofas' else CFG[it['category']])   # cfg модели — готовый рецепт для 3D

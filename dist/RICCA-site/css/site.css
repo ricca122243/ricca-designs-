@@ -11,6 +11,7 @@
   /* цвет: контраст текста ≥ 7 : 1, капитель ≥ 4,5 : 1 (проверено) */
   --paper: #FFFFFF;      /* страница — холодный белый (заказчик 13 окт.: «айвори слишком жёлтый») */
   --paper-2: #F2F3F5;    /* подложка фото, пока грузится */
+  --product-bg: #F4F5F7; /* фон за фото изделий: подиум карточек и плиток, сцена и миниатюры окна работы — холодный светло-серый (заказчик 9 ноября: бежевый — «яичный»); ?bg=white — белый */
   --studio: #FAFAF8;     /* фон предметных рендеров — тот же, что в файлах и у страницы (tools/media-v3/studio-rekey.py): рамки не видны */
   --ink: #0B0B0C;        /* текст 19,6 : 1 на --paper */
   --ink-2: #45474C;      /* второстепенный 9,4 : 1 на --paper */
@@ -32,6 +33,7 @@
   font-synthesis: none;
 }
 @media (max-width: 899px) { :root { --hdr: 60px; } }
+html[data-bg="white"] { --product-bg: #FFFFFF; }   /* вариант «белый» для сравнения: index.html?bg=white (атрибут ставит js/site.js) */
 
 /* ---------- основа ---------- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -409,10 +411,9 @@ body { counter-reset: sec 1; }
 .wk__img { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--paper-2); }
 .wk__img picture { display: contents; }
 .wk__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1400ms var(--ease); }
-/* модели каталога на белом фоне — целиком, без обрезки */
-/* модели каталога: рамка повторяет кадр фото (4 : 3, фон страницы), фото заполняет рамку целиком — без пустоты вокруг;
+/* модели каталога: рамка повторяет кадр фото (4 : 3), фото заполняет рамку целиком — без пустоты вокруг;
    поля вокруг изделия уже сделаны в самом фото (одинаковые у всех моделей) */
-.wk__a--model .wk__img, .tile__img--model { aspect-ratio: 4 / 3; background: var(--studio); box-shadow: inset 0 0 0 1px var(--line); }
+.wk__a--model .wk__img, .tile__img--model { aspect-ratio: 4 / 3; }
 .wk__a--model .wk__img img, .tile__img--model img { object-fit: cover; }
 .wk__t { margin-top: 14px; font: 500 11px/1.5 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--ink); text-wrap: balance; }
 .wk__s { margin-top: 2px; font: 400 12px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .01em; }
@@ -427,13 +428,12 @@ body { counter-reset: sec 1; }
   .wk__s { font-size: 11.5px; }
 }
 
-/* ── Премиальная карточка модели (заказчик, 20 октября: «максимально премиально»): тёплый каменный «подиум» вместо белой коробки,
-   изделие крупно (≈ 86 % ширины, js/site.js zoomAttr), при наведении — второй ракурс; подпись: вид мебели капителью,
-   название — антиквой, строка формы — тихим серым. Фон предметных кадров (#FAFAF8) уходит в подиум через multiply —
-   рамки «фото в коробке» нет, цвет ткани почти не меняется (×0,98) ── */
-:root { --podium: #EFEDE9; }
-.wk__a--model .wk__img, .tile__img--model { background: var(--podium); box-shadow: none; isolation: isolate; }
-.wk__a--model .wk__img img, .tile__img--model img { mix-blend-mode: multiply; transform: scale(var(--z, 1)); transform-origin: 50% 54%;
+/* ── Карточка модели: изделие крупно (≈ 86 % ширины, js/site.js zoomAttr) на светло-сером «подиуме» (--product-bg), при наведении —
+   второй ракурс; подпись: вид мебели капителью, название — антиквой, строка формы — тихим серым. Фон предметных кадров (#FAFBF8)
+   светлее подиума по каждому каналу, поэтому darken (min(фото, подиум)) даёт ровно цвет подиума — рамки «фото в коробке» нет,
+   ткань (темнее подиума) остаётся как в файле ── */
+.wk__a--model .wk__img, .tile__img--model { background: var(--product-bg); isolation: isolate; }
+.wk__a--model .wk__img img, .tile__img--model img { mix-blend-mode: darken; transform: scale(var(--z, 1)); transform-origin: 50% 54%;
   transition: transform 1400ms var(--ease), opacity 700ms var(--ease); }
 .wk__a--model .wk__alt { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
 .wk__cap { display: grid; justify-items: start; margin-top: 18px; }
@@ -448,9 +448,9 @@ body { counter-reset: sec 1; }
   .tile:hover .tile__img--model img { transform: scale(calc(var(--z, 1) * 1.025)); }
 }
 /* плитки каталога: изделия одного визуального веса (js/site.js tileZoom) — крупное кресло уменьшается (--z < 1), и край кадра
-   оказывается внутри рамки. Фон кадров #FAFAF8 × 1,03 = белый (255): после multiply он равен подиуму, края фото нет
-   (иначе — светлая «коробка» вокруг кресла); ткань светлее на 3 % — незаметно */
-.tile__img--model img { filter: brightness(1.03); }
+   оказывается внутри рамки: с darken он того же цвета, что подиум, «коробки» вокруг кресла нет.
+   Вариант «белый» (?bg=white): фон кадра #FAFBF8 × 1,03 = 255 — сливается с белым и без blend; ткань светлее на 3 % — незаметно */
+html[data-bg="white"] :is(.wk__a--model .wk__img, .tile__img--model, .lb__stage.is-studio .lb__frame, .pd__thumb.is-studio, .pd__frame.is-studio, .model__img.is-studio, .sl__img.is-studio) img { filter: brightness(1.03); }
 @media (max-width: 767px) {
   .wk__cap { margin-top: 12px; }
   .wk__a--model .wk__k { font-size: 9px; letter-spacing: .2em; }
@@ -805,9 +805,9 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .models { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(48px, 5vw, 80px) clamp(16px, 2.2vw, 36px); }
 .model { display: grid; gap: 14px; width: 100%; text-align: left; }
 .model__img { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--paper-2); }
-.model__img.is-studio { background: var(--studio); }
+.model__img.is-studio { background: var(--product-bg); isolation: isolate; }   /* предметный кадр — на подиуме, фото сливается с ним (darken, как карточки) */
 .model__img img { width: 100%; height: 100%; object-fit: cover; transform: scale(var(--z, 1)); transition: transform 1400ms var(--ease), opacity 500ms var(--ease); }
-.model__img.is-studio img { object-fit: contain; }
+.model__img.is-studio img { object-fit: contain; mix-blend-mode: darken; }
 .model__name { font: 400 13px/1.5 var(--sans); letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .model__name small { display: block; font-size: 12px; color: var(--ink-2); }
 @media (hover: hover) {
@@ -932,12 +932,12 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .pd__close { position: fixed; top: 10px; right: calc(var(--pad) - 10px); z-index: 6; background: rgba(255, 255, 255, .9); }
 .pd__in { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, 1fr); min-height: 100%; }
 .pd__gallery { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; min-width: 0; height: 100dvh; position: sticky; top: 0; background: var(--paper-2); transition: background-color 300ms var(--ease); }
-.pd__gallery.is-studio { background: var(--studio); }   /* предметный кадр — на одном тоне с панелью */
+.pd__gallery.is-studio { background: var(--product-bg); }   /* предметный кадр — на подиуме, на одном тоне с панелью */
 .pd__stage { position: relative; display: grid; place-items: center; padding: clamp(32px, 4vw, 64px); overflow: hidden; touch-action: pan-y pinch-zoom; }
 .pd__frame { position: relative; display: block; max-width: 100%; max-height: 100%; overflow: hidden; }
 .pd__frame img { width: 100%; height: 100%; object-fit: contain; transition: opacity 300ms var(--ease); }
-.pd__frame.is-studio { background: var(--studio); }
-.pd__frame.is-studio img { transform: scale(var(--z, 1)); }
+.pd__frame.is-studio { background: var(--product-bg); isolation: isolate; }
+.pd__frame.is-studio img { transform: scale(var(--z, 1)); mix-blend-mode: darken; }
 .pd__frame.is-loading img { opacity: .25; }
 .pd__arrow { position: absolute; top: 50%; z-index: 3; width: 48px; height: 48px; margin-top: -24px; display: grid; place-items: center; color: var(--ink); }
 .pd__arrow::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: rgba(255, 255, 255, .9); transition: background 300ms; }
@@ -948,9 +948,9 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .pd__thumbs { position: relative; display: flex; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: none; padding: 4px; }   /* 4 px: рамка активной миниатюры (1 + 2 px) не обрезается */
 .pd__thumbs::-webkit-scrollbar { display: none; }
 .pd__thumb { position: relative; flex: none; width: 52px; height: 64px; overflow: hidden; background: var(--paper); opacity: .55; transition: opacity 300ms; }
-.pd__thumb.is-studio { background: var(--studio); }
+.pd__thumb.is-studio { background: var(--product-bg); isolation: isolate; }
 .pd__thumb img { width: 100%; height: 100%; object-fit: cover; }
-.pd__thumb.is-studio img { object-fit: contain; transform: scale(var(--z, 1)); }
+.pd__thumb.is-studio img { object-fit: contain; transform: scale(var(--z, 1)); mix-blend-mode: darken; }
 .pd__thumb[aria-current="true"] { opacity: 1; outline: 1px solid var(--ink); outline-offset: 2px; }
 @media (hover: hover) { .pd__thumb:hover { opacity: 1; } }
 .pd__info { display: flex; flex-direction: column; justify-content: center; gap: 16px; padding: calc(var(--hdr) + 24px) clamp(32px, 4.4vw, 80px) 56px; }
@@ -1027,15 +1027,16 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .lb__close { position: absolute; top: 10px; right: calc(var(--pad) - 10px); z-index: 4; background: rgba(255, 255, 255, .9); }
 .lb__in { display: grid; grid-template-rows: minmax(0, 1fr) auto; height: 100%; }
 .lb__stage { position: relative; display: grid; place-items: center; min-height: 0; padding: calc(var(--hdr) - 8px) clamp(16px, 6vw, 120px) 16px; overflow: hidden; touch-action: pan-y pinch-zoom; user-select: none; -webkit-user-select: none; }
-.lb__frame { position: relative; max-width: 100%; max-height: 100%; background: var(--paper-2); }
+.lb__frame { position: relative; max-width: 100%; max-height: 100%; overflow: hidden; background: var(--product-bg); }   /* overflow: предметный кадр может быть шире рамки (layout() в site.js) */
 .lb__frame img { width: 100%; height: 100%; object-fit: contain; transition: opacity 300ms var(--ease); -webkit-user-drag: none; }
 .lb__frame.is-loading img { opacity: .3; }
 .lb__bar { display: flex; align-items: center; justify-content: space-between; gap: 16px 40px; padding: 18px var(--pad) calc(22px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
 .lb__cap { display: grid; gap: 2px; min-width: 0; }
 .lb__title { font: 400 clamp(24px, 2vw, 30px)/1.1 var(--serif); letter-spacing: .005em; }   /* антиквой, как названия на карточках */
-.lb__stage.is-studio { background: #EAE8E3; isolation: isolate; }   /* = фон кадра #FAFAF8 × подиум (multiply): рамки фото не видно */
-.lb__stage.is-studio .lb__frame { background: var(--podium); overflow: hidden; }   /* кадр × подиум (multiply) = цвет сцены: границы фото не видно */
-.lb__stage.is-studio .lb__frame img { mix-blend-mode: multiply; transform: scale(var(--z, 1)); }
+/* предметный кадр модели: сцена и рамка — подиум (--product-bg), фото целиком и без увеличения (владелец, 9 ноября), с подиумом
+   сливается через darken — границ кадра не видно; размер рамки по кадру ставит js/site.js layout() */
+.lb__stage.is-studio { background: var(--product-bg); isolation: isolate; }
+.lb__stage.is-studio .lb__frame img { mix-blend-mode: darken; }
 .lb__piece { font: 400 13px/1.5 var(--sans); color: var(--ink-2); }
 .lb__count { margin-top: 2px; font: 400 12px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .1em; font-variant-numeric: tabular-nums; }
 .lb__count:empty { display: none; }
@@ -1064,13 +1065,13 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
      ::after на всю ширину перед ссылкой (order): зона нажатия — по тексту, а не вся строка; −8 px съедают два row-gap */
   .lb__acts:has(.lb__ig:not([hidden]))::after { content: ''; order: 1; flex-basis: 100%; }
   .lb__ig { order: 2; margin: -8px 0 0; min-height: 40px; }
-  /* модель каталога (кадр 4:3): сцена — по кадру, а не на весь экран (диван тонул в бежевом поле); ниже — миниатюры на том же
-     бежевом, подпись сверху белой полосы, кнопки прижаты к низу (под палец). Высокий «Состав» — окно прокручивается */
-  .lb--model .lb__in { grid-template-rows: auto auto 1fr; overflow-y: auto; overscroll-behavior: contain; }
-  .lb--model .lb__stage { height: calc(75vw + var(--hdr) + 8px); height: min(max(calc(75vw + var(--hdr) + 8px), 50dvh), 58dvh); padding: calc(var(--hdr) - 4px) 0 8px; }   /* высокий экран — немного воздуха вокруг кадра, не поле */
-  .lb--model .lb__thumbs { display: flex; padding: 4px 16px 14px; background: #EAE8E3; }
+  /* модель каталога: сцена занимает всё место над миниатюрами и подписью (не меньше кадра 4:3 с шапкой — на коротком экране окно
+     прокручивается), фото целиком по центру; ниже — миниатюры на том же подиуме, подпись и кнопки — внизу (под палец) */
+  .lb--model .lb__in { grid-template-rows: minmax(min(calc(75vw + var(--hdr)), 50dvh), 1fr) auto auto; overflow-y: auto; overscroll-behavior: contain; }
+  .lb--model .lb__stage { padding: calc(var(--hdr) - 4px) 0 8px; }
+  .lb--model .lb__thumbs { display: flex; padding: 4px 16px 14px; background: var(--product-bg); }
   .lb--model .lb__thumbs .pd__thumb { width: 64px; height: 48px; }
-  .lb--model .lb__bar { grid-row: 3; align-content: space-between; }
+  .lb--model .lb__bar { grid-row: 3; }
 }
 @media (max-width: 359px) { .lb__acts .btn { gap: 8px; padding: 0 8px; letter-spacing: .1em; } }   /* 320: обе кнопки («Хочу такой», «Add to cart») — в одну строку */
 
@@ -1082,12 +1083,10 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .sl__list { flex: 1; overflow-y: auto; padding: 8px 28px; }
 .sl__list li { display: grid; grid-template-columns: 56px minmax(0, 1fr) 44px; align-items: center; gap: 4px 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
 .sl__img { grid-row: span 2; width: 56px; height: 70px; overflow: hidden; background: var(--paper-2); }
-.sl__img.is-studio { background: var(--studio); }
+.sl__img.is-studio { background: var(--product-bg); isolation: isolate; }   /* предметный кадр на подиуме, фото сливается с ним (darken) */
 .sl__img img { width: 100%; height: 100%; object-fit: cover; }
-.sl__img.is-studio img { object-fit: contain; transform: scale(var(--z, 1)); }
-/* модель каталога: рамка 4:3 = кадр, фото целиком на подиуме, как карточки каталога (contain без полей — шва от multiply нет) */
-.sl__img.is-studio.is-model { height: 42px; margin-top: 4px; background: var(--podium); isolation: isolate; }
-.sl__img.is-model img { mix-blend-mode: multiply; }
+.sl__img.is-studio img { object-fit: contain; transform: scale(var(--z, 1)); mix-blend-mode: darken; }
+.sl__img.is-studio.is-model { height: 42px; margin-top: 4px; }   /* модель каталога: рамка 4:3 = кадр, фото целиком, как карточки каталога */
 .sl__t { font: 400 14px/1.4 var(--sans); }
 .sl__m { grid-column: 2; font: 400 12px/1.4 var(--sans); color: var(--ink-2); }
 .sl__list .icon-btn { grid-column: 3; grid-row: 1 / span 2; }

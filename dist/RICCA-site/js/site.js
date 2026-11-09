@@ -43,6 +43,9 @@
   };
 
   const root = document.documentElement;
+  // фон за фото изделий для сравнения (css/site.css, --product-bg): index.html?bg=white — белый вместо светло-серого. При переходах
+  // по #адресам ?bg остаётся в адресе сам (меняется только хэш)
+  if (/[?&]bg=white(?:&|$)/.test(location.search)) root.dataset.bg = 'white';
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1150,18 +1153,14 @@
     const inCart = (w) => !!(RC && RC.list().some((x) => x.kind === 'catalog' && x.id === w.id));
     // файл под рамку: 1600, если 800 px мало для рамки на этом экране (телефон с плотностью 3x — тоже: владелец 14 окт.,
     // «качество фото хуже стало» — 800 px на экране 1170 px выглядели мыльно); иначе 800
-    const fileOf = (p, fw = frame.getBoundingClientRect().width || stage.clientWidth) => {
+    const fileOf = (p, fw = imgW || frame.getBoundingClientRect().width || stage.clientWidth) => {
       if (p.w <= p800(p).w) return p.src800;
       return fw * (window.devicePixelRatio || 1) > p800(p).w * 1.08 ? p.src : p.src800;
     };
-    /* зум предметного кадра — по доле предмета (fitZoom), но не больше 1,6 на любом устройстве: кровати с малым box шли
-       с зумом до 2,2 — мыло и квадраты сжатия. На большой рамке компьютера ещё и пиксель файла — не больше 1,25 CSS px
-       (1440: Godal ×1,6 вместо ×2,2). Плотность экрана (devicePixelRatio) не учитываем: на планшете и телефоне зум пропал бы
-       совсем (iPad: ×1,04), и кровати снова потерялись бы в бежевом поле. Меньше 1 не уменьшаем: кадр и так целиком */
-    const lbZoom = (p, fw) => {
-      const srcW = fileOf(p, fw) === p.src800 ? p800(p).w : p.w;
-      return Math.min(fitZoom(p, p.w / p.h, 0.8), 1.6, Math.max(1, (1.25 * srcW) / fw));
-    };
+    /* рамка: предметный кадр — изделие крупно (по его границам bbox из данных: ≈ 86 % ширины сцены на телефоне, 72 % на компьютере),
+       фон кадра можно подрезать, само изделие — никогда; крупнее ~1,15 экранного пикселя на пиксель файла и шире 1600 px не растягиваем
+       (кадры 1800 × 1350 иначе мылятся — владелец, 9 ноября); без bbox — кадр целиком (contain) */
+    let imgW = 0;
     function layout() {
       const p = cur && cur.photos[idx];
       if (!p) return;
@@ -1169,9 +1168,22 @@
       const sw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
       const sh = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
       if (sw <= 0 || sh <= 0) return;
-      const k = Math.min(sw / p.w, sh / p.h), fw = Math.round(p.w * k);
-      frame.style.width = `${fw}px`; frame.style.height = `${Math.round(p.h * k)}px`;
-      if (p.studio) img.style.setProperty('--z', lbZoom(p, fw).toFixed(3));   // рамка другой ширины (поворот экрана) — зум заново
+      const dpr = window.devicePixelRatio || 1;
+      let k = Math.min(sw / p.w, sh / p.h, 1.1, 1600 / p.w);
+      const bb = p.studio && Array.isArray(p.bbox) && p.bbox.length === 4 ? p.bbox : null;
+      if (bb) {
+        const bw = Math.max(0.05, bb[2] - bb[0]) * p.w, bh = Math.max(0.05, bb[3] - bb[1]) * p.h;
+        const phone = sw < 600, fit = Math.min((phone ? 0.86 : 0.72) * sw / bw, (phone ? 0.78 : 0.76) * sh / bh);
+        k = Math.max(k, Math.min(fit, 1.15 / dpr, 1.1, 1600 / p.w));
+      }
+      const iw = Math.round(p.w * k), ih = Math.round(p.h * k), fw = Math.min(iw, sw), fh = Math.min(ih, sh);
+      imgW = iw;
+      frame.style.width = `${fw}px`; frame.style.height = `${fh}px`;
+      if (iw > fw + 1 || ih > fh + 1) {   // кадр шире рамки — сдвигаем так, чтобы изделие стояло по центру, края кадра уходят за рамку
+        const cx = bb ? (bb[0] + bb[2]) / 2 * iw : iw / 2, cy = bb ? (bb[1] + bb[3]) / 2 * ih : ih / 2;
+        const left = Math.min(0, Math.max(fw - iw, fw / 2 - cx)), top = Math.min(0, Math.max(fh - ih, fh / 2 - cy));
+        img.style.cssText = `position:absolute;left:${Math.round(left)}px;top:${Math.round(top)}px;width:${iw}px;height:${ih}px;max-width:none;`;
+      } else img.style.cssText = '';
     }
     function syncCart() {
       if (!cur || !RC) return;
@@ -1185,9 +1197,7 @@
       const ph = cur.photos, n = ph.length;
       idx = ((i % n) + n) % n;
       const p = ph[idx], t = ++tok;
-      /* предметный кадр модели — на тёплом «подиуме» во всё окно, изделие чуть крупнее (как карточки каталога) */
-      stage.classList.toggle('is-studio', !!p.studio);
-      if (!p.studio) img.style.removeProperty('--z');   // зум предметного кадра ставит layout() — он знает ширину рамки
+      stage.classList.toggle('is-studio', !!p.studio);   // предметный кадр модели — сцена и рамка на подиуме (css: .lb__stage.is-studio)
       // новое фото грузится в фоне, прежнее стоит до готовности (дольше 120 мс — приглушено); рамка — под новое фото
       clearTimeout(slowT);
       slowT = setTimeout(() => { if (t === tok) frame.classList.add('is-loading'); }, 120);

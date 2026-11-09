@@ -252,13 +252,22 @@ function setState(patch = {}, { rebuild = 'auto', drag = false, structural = fal
 }
 
 /* ═════════ шаг 1 — тип ═════════ */
+/* плитки — группами по категории каталога (params.js → category): «Диваны» · «Кровати» · «Кресла и пуфы». Все семь видны сразу, без прокрутки
+   (на телефоне кровать и кресло были за краем — клиенты их не находили). Под подписью «Диваны» у плитки короткое имя: «Прямой», не «Диван прямой»;
+   полное название — в aria-label, его читает экранный диктор. Подпись группы — для глаз, радиогруппа одна: стрелки ходят по всем семи */
+const TYPE_GROUPS = { sofas: 'Диваны', beds: 'Кровати', armchairs: 'Кресла и пуфы' };
+const TYPE_SHORT = { sofa: 'Прямой', corner: 'Угловой', ushape: 'П-образный', modular: 'Модульный' };
 function renderTypes() {
   const box = $('#types');
-  /* «Диван П-образный»: после дефиса — невидимый «соединитель слов» (U+2060), строка не рвётся на «П-» / «образный».
+  /* «П-образный»: после дефиса — невидимый «соединитель слов» (U+2060), строка не рвётся на «П-» / «образный».
      Только в подписи плитки и только по-русски: название в params.js — ключ перевода (cfg-en.js), а в Montserrat нет неразрывного дефиса */
   const label = (s) => (window.RICCA_CFG_LANG === 'en' ? s : s.replace(/-/g, '-⁠'));
-  box.innerHTML = P.TYPES.map((t) => `<button class="type" type="button" role="radio" aria-checked="${t.id === state.type}" data-type="${t.id}">
-    ${ico('t-' + t.id, 'type__ico')}<span class="type__t">${esc(label(t.title))}</span></button>`).join('');
+  const cats = [...new Set(P.TYPES.map((t) => t.category))];
+  box.innerHTML = cats.map((c) => {
+    const ts = P.TYPES.filter((t) => t.category === c);
+    return `<div class="types__g" data-n="${ts.length}"><p class="types__l" aria-hidden="true">${esc(TYPE_GROUPS[c] || '')}</p><div class="types__row">${ts.map((t) => `<button class="type" type="button" role="radio" aria-checked="${t.id === state.type}" aria-label="${esc(t.title)}" data-type="${t.id}">
+      ${ico('t-' + t.id, 'type__ico')}<span class="type__t">${esc(label(TYPE_SHORT[t.id] || t.title))}</span></button>`).join('')}</div></div>`;
+  }).join('');
 }
 /* модели каталога (js/catalog-data.js, window.RICCA_CATALOG) с рецептом для 3D (поле cfg: «t.corner~f.chaise~…») — полоса фото под типами:
    щелчок собирает похожую модель. Новая модель в каталоге с полем cfg появляется здесь сама. */
@@ -266,17 +275,19 @@ const catalogModels = () => (Array.isArray(window.RICCA_CATALOG) ? window.RICCA_
 const modelName = (m) => { const nm = (window.RICCA_MODEL_NAMES || {})[m.id]; return nm ? `${m.type || ''} ${nm}`.trim() : `${m.type || ''} № ${m.id.split('-').pop()}`; };
 /* плашка в окне 3D после выбора модели: «Novel · точная модель» */
 const modelTag = (m) => `${(window.RICCA_MODEL_NAMES || {})[m.id] || modelName(m)} · ${m.glb ? 'точная модель' : 'по мотивам'}`;
-let activeModel = null, modelsCat = '';
+/* тип по рецепту модели («t.corner~…» → corner) — как в applyModel */
+const recipeType = (m) => { try { return decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }).type || ''; } catch (e) { return ''; } };
+let activeModel = null, modelsType = '';
 function renderModels() {
   const box = $('#models'); if (!box) return;
-  const cat = (P.TYPES.find((t) => t.id === state.type) || {}).category || '';
-  /* та же категория — только отметить выбранную (полоса не перестраивается, прокрутка и фото на месте) */
-  if (cat === modelsCat && box.firstChild) { $$('[data-model]', box).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.model === activeModel))); return; }
-  modelsCat = cat;
-  /* в полосе — только модели с точной 3D-моделью (models3d): собранные «по мотивам» на фото не похожи и клиента путают */
-  const list = catalogModels().filter((m) => m.category === cat && m.glb);
-  box.hidden = !list.length;
-  if (!list.length) { box.innerHTML = ''; return; }
+  /* тот же тип — только отметить выбранную (полоса не перестраивается, прокрутка и фото на месте) */
+  if (state.type === modelsType && box.firstChild) { $$('[data-model]', box).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.model === activeModel))); return; }
+  modelsType = state.type;
+  /* в полосе — только модели с точной 3D-моделью (models3d) и только выбранного типа: у «Углового» — угловые, у «Прямого» — прямые.
+     Собранные «по мотивам» на фото не похожи и клиента путают; модели другого типа при его выборе исчезали бы без объяснения */
+  const list = catalogModels().filter((m) => m.glb && recipeType(m) === state.type);
+  box.hidden = false;
+  if (!list.length) { box.innerHTML = '<p class="models__l models__l--none">Для этого типа точных моделей пока нет — соберите из деталей.</p>'; return; }
   box.innerHTML = `<p class="models__l" id="models-l">Модели из каталога</p><div class="models__row" role="group" aria-labelledby="models-l">${list.map((m) => {
     const ph = m.photos.find((x) => x.studio) || m.photos[0];
     return `<button class="model${m.glb ? ' model--exact' : ''}" type="button" data-model="${esc(m.id)}" aria-pressed="${m.id === activeModel}" title="${esc(m.subtitle || '')}">
@@ -375,8 +386,11 @@ function syncTypes() {
   renderModels();
   const phi = $('#vp-ph-ico use'); if (phi) phi.setAttribute('href', `${ICONS}#t-${state.type}`);
 }
+/* точная модель бывает только своего типа — творительный падеж для плашки: «она бывает только прямой / кроватью» */
+const TYPE_ONLY = { sofa: 'прямой', corner: 'угловой', ushape: 'П-образной', modular: 'модульной', bed: 'кроватью', armchair: 'креслом', pouf: 'пуфом' };
 function setType(type) {
   if (type === state.type) return;
+  const was = isExact() ? catalogModels().find((m) => m.id === activeModel) : null;   // точная модель с фото сейчас исчезнет — скажем почему
   dropExact();
   memo[state.type] = state.params;
   state.inputErr = {};
@@ -385,6 +399,8 @@ function setType(type) {
   syncTypes();
   setState({}, { structural: true });
   if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced }));
+  /* «Диван Rulva — точная модель с фото, она бывает только прямой. Диван угловой соберём из деталей.» — раньше Rulva пропадала молча */
+  if (was) toast(`${modelName(was)} — точная модель с фото, она бывает только ${TYPE_ONLY[recipeType(was)] || 'такой'}. ${cap((P.TYPES.find((t) => t.id === type) || {}).title || '')} соберём из деталей.`, 3500);
 }
 
 /* ═════════ шаг 2 — форма ═════════ */
@@ -649,7 +665,7 @@ function syncSteps() {
   });
   syncBar();
 }
-/* нижняя плашка телефона ведёт по шагам: «Далее: форма → 1/5» … на последнем шаге (или когда все пройдены) — «В WhatsApp» */
+/* нижняя плашка телефона: [Чертёж] [У себя дома] [Далее: форма 1/5] … на последнем шаге (или когда все пройдены) — [В WhatsApp] */
 const STEP_NAMES = { 1: 'тип', 2: 'форма', 3: 'размер', 4: 'ткань', 5: 'итог' };
 function nextStepFor() {
   if (state.visited.size >= 5 || state.step === 5) return 0;
@@ -659,11 +675,12 @@ function nextStepFor() {
 }
 function syncBar() {
   const nb = $('#bar-next'), wa = $('#bar-wa'); if (!nb || !wa) return;
-  const n = state.mode === 'model' ? nextStepFor() : 0;
+  const model = state.mode === 'model';
+  const n = model ? nextStepFor() : 0;
   nb.hidden = !n; wa.hidden = !!n;
-  /* шаг «Размер»: слева в плашке — «Чертёж» вместо «У себя дома»: размер задали — чертёж под пальцем (жалоба 1 нояб.) */
-  const draw = state.mode === 'model' && state.step === 3;
-  $('#bar-draw').hidden = !draw; $('#bar-ar').hidden = draw;
+  /* модель: слева в плашке на каждом шаге — «Чертёж» и «У себя дома» (раньше «Чертёж» был только на «Размере», и его искали; жалоба 1 нояб.).
+     Комната и фото — одна кнопка «В WhatsApp» (css прячет остальные) */
+  $('#bar-draw').hidden = !model; $('#bar-ar').hidden = !model;
   if (n) { $('#bar-next-t').textContent = `Далее: ${STEP_NAMES[n]}`; $('#bar-next-n').textContent = `${Math.max(1, Math.min(5, n - 1 || 1))}/5`; nb.dataset.goto = String(n); }
   syncBarAwaySoon();
 }

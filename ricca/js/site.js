@@ -1153,12 +1153,14 @@
     const inCart = (w) => !!(RC && RC.list().some((x) => x.kind === 'catalog' && x.id === w.id));
     // файл под рамку: 1600, если 800 px мало для рамки на этом экране (телефон с плотностью 3x — тоже: владелец 14 окт.,
     // «качество фото хуже стало» — 800 px на экране 1170 px выглядели мыльно); иначе 800
-    const fileOf = (p, fw = frame.getBoundingClientRect().width || stage.clientWidth) => {
+    const fileOf = (p, fw = imgW || frame.getBoundingClientRect().width || stage.clientWidth) => {
       if (p.w <= p800(p).w) return p.src800;
       return fw * (window.devicePixelRatio || 1) > p800(p).w * 1.08 ? p.src : p.src800;
     };
-    /* рамка — по кадру целиком (contain) в размер сцены, без увеличения изделия (владелец, 9 ноября: прежний зум до ×1,6 резал кадр).
-       Больше 1,1 размера файла и шире 1600 px не растягиваем: кадры 1800 × 1350 на большом экране иначе мылятся */
+    /* рамка: предметный кадр — изделие крупно (по его границам bbox из данных: ≈ 86 % ширины сцены на телефоне, 72 % на компьютере),
+       фон кадра можно подрезать, само изделие — никогда; крупнее ~1,15 экранного пикселя на пиксель файла и шире 1600 px не растягиваем
+       (кадры 1800 × 1350 иначе мылятся — владелец, 9 ноября); без bbox — кадр целиком (contain) */
+    let imgW = 0;
     function layout() {
       const p = cur && cur.photos[idx];
       if (!p) return;
@@ -1166,8 +1168,22 @@
       const sw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
       const sh = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
       if (sw <= 0 || sh <= 0) return;
-      const k = Math.min(sw / p.w, sh / p.h, 1.1, 1600 / p.w);
-      frame.style.width = `${Math.round(p.w * k)}px`; frame.style.height = `${Math.round(p.h * k)}px`;
+      const dpr = window.devicePixelRatio || 1;
+      let k = Math.min(sw / p.w, sh / p.h, 1.1, 1600 / p.w);
+      const bb = p.studio && Array.isArray(p.bbox) && p.bbox.length === 4 ? p.bbox : null;
+      if (bb) {
+        const bw = Math.max(0.05, bb[2] - bb[0]) * p.w, bh = Math.max(0.05, bb[3] - bb[1]) * p.h;
+        const phone = sw < 600, fit = Math.min((phone ? 0.86 : 0.72) * sw / bw, (phone ? 0.78 : 0.76) * sh / bh);
+        k = Math.max(k, Math.min(fit, 1.15 / dpr, 1.1, 1600 / p.w));
+      }
+      const iw = Math.round(p.w * k), ih = Math.round(p.h * k), fw = Math.min(iw, sw), fh = Math.min(ih, sh);
+      imgW = iw;
+      frame.style.width = `${fw}px`; frame.style.height = `${fh}px`;
+      if (iw > fw + 1 || ih > fh + 1) {   // кадр шире рамки — сдвигаем так, чтобы изделие стояло по центру, края кадра уходят за рамку
+        const cx = bb ? (bb[0] + bb[2]) / 2 * iw : iw / 2, cy = bb ? (bb[1] + bb[3]) / 2 * ih : ih / 2;
+        const left = Math.min(0, Math.max(fw - iw, fw / 2 - cx)), top = Math.min(0, Math.max(fh - ih, fh / 2 - cy));
+        img.style.cssText = `position:absolute;left:${Math.round(left)}px;top:${Math.round(top)}px;width:${iw}px;height:${ih}px;max-width:none;`;
+      } else img.style.cssText = '';
     }
     function syncCart() {
       if (!cur || !RC) return;

@@ -77,6 +77,15 @@
     'Стоимость рассчитаем в WhatsApp, детали согласуем с мастером.': 'We’ll quote the price on WhatsApp and agree the details with the master.',
     'Далее': 'Next',
 
+    /* шаг «Тип»: группы плиток и короткие подписи (app.js → renderTypes) */
+    'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла и пуфы': 'Armchairs and poufs', 'Прямой': 'Straight', 'Угловой': 'Corner', 'П-образный': 'U-shaped', 'Модульный': 'Modular',
+    'Для этого типа точных моделей пока нет — соберите из деталей.': 'No exact models for this type yet — build it from parts.',
+    /* смена типа при точной модели (app.js → setType): «Диван Rulva — точная модель с фото, она бывает только прямой. Диван угловой соберём из деталей.» →
+       «Rulva sofa is an exact model from a photo — it comes only as a straight sofa. Corner sofa — we’ll build it from parts.» (имя — правилом RE ниже) */
+    ' — точная модель с фото, она ': ' is an exact model from a photo — it ', ' соберём из деталей.': ' — we’ll build it from parts.',
+    'бывает только прямой': 'comes only as a straight sofa', 'бывает только угловой': 'comes only as a corner sofa', 'бывает только П-образной': 'comes only as a U-shaped sofa',
+    'бывает только модульной': 'comes only as a modular sofa', 'бывает только кроватью': 'comes only as a bed', 'бывает только креслом': 'comes only as an armchair',
+    'бывает только пуфом': 'comes only as a pouf', 'бывает только такой': 'comes only in this shape',
     /* типы и варианты (params.js, app.js) */
     'диван угловой с шезлонгом': 'corner sofa with a chaise', 'диван прямой': 'straight sofa', 'диван угловой': 'corner sofa', 'диван п-образный': 'U-shaped sofa',
     'модульный диван': 'modular sofa', 'кресло округлое': 'round armchair', 'пуф круглый': 'round pouf', 'пуф квадратный': 'square pouf',

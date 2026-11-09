@@ -1027,7 +1027,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .lb__close { position: absolute; top: 10px; right: calc(var(--pad) - 10px); z-index: 4; background: rgba(255, 255, 255, .9); }
 .lb__in { display: grid; grid-template-rows: minmax(0, 1fr) auto; height: 100%; }
 .lb__stage { position: relative; display: grid; place-items: center; min-height: 0; padding: calc(var(--hdr) - 8px) clamp(16px, 6vw, 120px) 16px; overflow: hidden; touch-action: pan-y pinch-zoom; user-select: none; -webkit-user-select: none; }
-.lb__frame { position: relative; max-width: 100%; max-height: 100%; background: var(--product-bg); }
+.lb__frame { position: relative; max-width: 100%; max-height: 100%; overflow: hidden; background: var(--product-bg); }   /* overflow: предметный кадр может быть шире рамки (layout() в site.js) */
 .lb__frame img { width: 100%; height: 100%; object-fit: contain; transition: opacity 300ms var(--ease); -webkit-user-drag: none; }
 .lb__frame.is-loading img { opacity: .3; }
 .lb__bar { display: flex; align-items: center; justify-content: space-between; gap: 16px 40px; padding: 18px var(--pad) calc(22px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
