@@ -12,6 +12,7 @@ TEXT = {
  'Состав': 'What it’s made of',
  'Перейти к&nbsp;содержанию': 'Skip to&nbsp;content', 'Каталог': 'Catalogue', 'Работы': 'Works', 'Ателье': 'Atelier', 'Для бизнеса': 'For business', 'Шоурум': 'Showroom',
  'RICCA DESIGNS&nbsp;· Алматы': 'RICCA DESIGNS&nbsp;· Almaty', 'Мягкая мебель': 'Upholstered furniture', 'на&nbsp;заказ': 'made to&nbsp;order',
+ 'Мягкая мебель на&nbsp;заказ': 'Custom upholstered furniture',   # первый экран (#top): H1 в одну строку; подводка «Своё ателье в Алматы» — ниже
  'Диваны, кровати и&nbsp;кресла — по&nbsp;вашему фото, эскизу или проекту. Своё ателье.': 'Sofas, beds and&nbsp;armchairs — from&nbsp;your photo, sketch or project. Our own atelier.',
  'Диван Rasma · букле': 'Rasma sofa · bouclé', 'в&nbsp;любом размере и&nbsp;ткани': 'in&nbsp;any size and&nbsp;fabric',
  'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла': 'Armchairs', 'Пуфы и&nbsp;банкетки': 'Poufs and&nbsp;benches', 'Любой размер': 'Any size', 'Любая ткань': 'Any fabric',
@@ -128,7 +129,6 @@ reps = [
  ('<meta property="og:locale" content="ru_RU">', '<meta property="og:locale" content="en_US">\n<meta property="og:locale:alternate" content="ru_RU">'),
  ('<meta property="og:url" content="https://ricca.design/">', '<meta property="og:url" content="https://ricca.design/en">'),
  ('<link rel="manifest" href="/manifest.webmanifest">', '<link rel="manifest" href="/en.webmanifest">'),
- ('№&nbsp;01', 'No.&nbsp;01'),
  ('<script src="js/cart.js" defer></script>', '<script src="js/lang-en.js" defer></script>\n<script src="js/cart.js" defer></script>'),
  ('<a class="hdr__lang" href="/en" hreflang="en" lang="en" aria-label="English version">EN</a>', '<a class="hdr__lang" href="/" hreflang="ru" lang="ru" aria-label="Русская версия">RU</a>'),
  ('<a class="menu__lang" href="/en" hreflang="en" lang="en">English</a>', '<a class="menu__lang" href="/" hreflang="ru" lang="ru">Русский</a>'),
