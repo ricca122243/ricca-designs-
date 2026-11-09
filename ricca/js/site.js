@@ -1,6 +1,6 @@
 /* RICCA DESIGNS — v5 «холодный минимализм» (9 ноября). Ванильный JS без библиотек.
-   Порядок: CONFIG → данные (js/catalog-data.js) → плитки каталога → «Наши работы» (js/works-data.js: обложки плиток, лента
-   на главной) → ссылки WhatsApp/телефон → вход (занавес, видео) → видео по экрану → появления → окна и адреса (#catalog/<категория>,
+   Порядок: CONFIG → данные (js/catalog-data.js) → плитки каталога → «Наши работы» (js/works-data.js: обложки плиток, сетка
+   8 лучших на главной) → ссылки WhatsApp/телефон → вход (занавес, видео) → видео по экрану → появления → окна и адреса (#catalog/<категория>,
    #item-<id>, #work-<id>, #fabric-<коллекция>-<N>) → экран категории / тканей (библиотека js/fabrics-data.js: у коллекции одно
    большое фото и цвета кнопками; #fabric-… открывает «Ткани» на этой коллекции с этим цветом) → окно изделия
    → окно работы (готовый каталог) → корзина (данные — js/cart.js, RICCA_CART) → меню → шапка, липкая плашка и плавающий WhatsApp.
@@ -151,7 +151,8 @@
      выборка, порядок и подписи — tools/media-v3/works-selection.json). Работа = пост: id (shortcode), cat, title, sub, cfg (тип
      конструктора), photos [{ src (до 1600 px), src800, w, h, w800, h800 }], ig. Фото из content/client-photos — не работы ателье.
      Где видно: обложки плиток «Диваны / Кровати / Кресла» (первое фото первой работы категории; линейный рисунок плитки
-     остаётся в DRAW — для миниатюры заявки в корзине), лента на главной (#works), сетка на экране категории, окно работы (#work-<id>).
+     остаётся в DRAW — для миниатюры заявки в корзине), сетка 8 лучших на главной (#works), экран «Наши работы» (#catalog/works — все
+     работы с фильтром по категории), окно работы (#work-<id>).
      Скорость (заказчик: «фото долго загружаются»): всё ниже первого экрана — loading="lazy"; телефон (< 768 px) всегда берёт
      файл 800 px — на экране 3x браузер иначе выбрал бы 1600; компьютер — srcset 800 / 1600; width/height — без сдвига вёрстки ---------- */
   const WORKS = (Array.isArray(window.RICCA_WORKS) ? window.RICCA_WORKS : [])
@@ -161,7 +162,7 @@
   // модели каталога на белом фоне (js/models-data.js) — те же карточки и то же окно, что у работ
   const MODELS = (Array.isArray(window.RICCA_MODELS) ? window.RICCA_MODELS : []).filter((w) => w && w.id && KINDS[w.cat] && Array.isArray(w.photos) && w.photos.length);
   const WORK = new Map([...WORKS, ...MODELS].map((w) => [w.id, w]));
-  // экран «Наши работы»: только лучшие кадры реальных изделий (по решению владельца: остальные снимки не в стиле сайта)
+  // главная (#works): 8 лучших кадров реальных изделий — порядок подобран владельцем (светлые, чистые, без людей и надписей — проверено 9 ноября)
   const BEST_WORKS = ['C_tjlDdgnmn', 'DdAJz7PiC61', 'DGy-8O2Ilbr', 'C9h3Txai1KF', 'DJU1WlUuBh8', 'DGgipIMx6ma', 'DaSUDdwDKly', 'DGlGyYrND3R', 'C7E_JvdoXM-', 'C0EZbsnoxni', 'DKkV-ORIobz', 'C1Ur3ZXIE3f'];
   const BEST = BEST_WORKS.map((id) => WORKS.find((w) => w.id === id)).filter(Boolean);
   const SMALL = window.matchMedia('(max-width: 767px)');   // телефон: только файлы 800 px (так же — ткани, FC_PHONE)
@@ -207,17 +208,19 @@
   // подпись карточки узкая (две колонки на телефоне): составное слово не рвём по дефису («основании-» / «диске»), переносим целиком.
   // только короткие (≤ 16 букв): длинное «Подлокотники-валики» (19) целиком ≈ 138 px шире карточки 134 px на экране 320 и вылезало бы за фото — пусть рвётся
   const nwHyph = (h) => h.replace(/[А-Яа-яЁёA-Za-z]+-[А-Яа-яЁёA-Za-z]+/g, (m) => (m.length <= 16 ? `<span class="nowrap">${m}</span>` : m));
-  // карточка работы: фото 4 : 5 (cover), под ним название и ткань — ссылка #work-<id> (открывает окно работы)
-  const workCard = (w, n, sizes, eager, withSub = true) => {
+  /* карточка работы: фото 4 : 5 (cover), под ним название (16–18 px) и ткань одной строкой — ссылка #work-<id> (открывает окно работы).
+     data-cat на <li> — фильтр экрана «Наши работы»; wide — карточка на две колонки (главная, компьютер: горизонтальный кадр в рамке
+     ≈ 1,65 : 1, css .wk__wide; sizes — вдвое шире) */
+  const workCard = (w, n, sizes, eager, withSub = true, wide = false) => {
     const p = w.photos[n] || w.photos[0];
-    if (!w.model) return `<li><a class="wk__a" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
-      + `<span class="wk__img">${workPic(p, sizes, eager)}</span>`
+    if (!w.model) return `<li data-cat="${esc(w.cat)}"${wide ? ' class="wk__wide"' : ''}><a class="wk__a" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
+      + `<span class="wk__img">${workPic(p, wide ? zSizes(sizes, 2) : sizes, eager)}</span>`
       + `<span class="wk__t">${typo(w.title)}</span>${withSub && w.sub ? `<span class="wk__s">${nwHyph(typo(w.sub))}</span>` : ''}</a></li>`;
     /* модель: фото на тёплом «подиуме», при наведении — второй ракурс; подпись — вид мебели капителью, название антиквой;
        телефон — две колонки .wk ≈ 43vw (sizes для srcset, workPic умножает на --z) */
     const alt = w.photos.find((q, i) => i !== n && q.studio);
     const [kind, name] = splitTitle(w.title);
-    return `<li><a class="wk__a wk__a--model" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
+    return `<li data-cat="${esc(w.cat)}"><a class="wk__a wk__a--model" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
       + `<span class="wk__img">${workPic(p, sizes, eager, zoomOf(p), '43vw')}${alt ? `<img class="wk__alt" src="${esc(alt.src800)}" width="${p800(alt).w}" height="${p800(alt).h}" alt="" loading="lazy" decoding="async"${zoomAttr(alt)}>` : ''}</span>`
       + `<span class="wk__cap">${kind ? `<span class="wk__k">${typo(kind)}</span>` : ''}<span class="wk__t">${typo(name)}</span>${withSub && w.sub ? `<span class="wk__s">${nwHyph(typo(w.sub))}</span>` : ''}</span></a></li>`;
   };
@@ -246,34 +249,23 @@
     // srcset: на экранах 2x–3x плитка 155 px берёт файл 700 px (src450 → *-600.webp), а не 160 (src240 → *-160.webp) — иначе образец мыльный
     box.innerHTML = picks.slice(0, 8).map(([c, k]) => `<img src="${esc(k.src240 || k.src450)}"${k.src240 && k.src450 ? ` srcset="${esc(k.src240)} 160w, ${esc(k.src450)} 700w" sizes="160px"` : ''} width="160" height="160" alt="" loading="lazy" decoding="async">`).join('');
   })();
-  // лента «Наши работы» на главной: кадры из RICCA_WORKS_STRIP ([id, номер фото]); нет списка — первые фото первых работ
+  /* сетка «Наши работы» на главной: 8 лучших работ (BEST, первое фото) в контейнере [data-works-row] — компьютер 4 колонки, планшет 3,
+     телефон 2 (css .wk, как на экранах каталога). Ритм как у Boca Room: 1-я и 6-я карточки на компьютере — на две колонки (.wk__wide),
+     если кадр горизонтальный; у всех 41 работы кадры вертикальные или квадратные (9 ноября) — правило ждёт таких фото.
+     Стрелки прежней ленты [data-works-step] сетке не нужны — убираем. Размер файла: карточка ≈ 22 vw на компьютере (≤ 340 px),
+     29 vw на планшете, 46 vw на телефоне — 800 px хватает везде, кроме компьютера 2x с широкой карточкой */
+  const WK_SIZES = '(min-width: 1560px) 340px, (min-width: 1200px) 22vw, (min-width: 900px) 29vw, 46vw';
   (() => {
     const sec = $('#works');
     if (!sec) return;
-    if (!WORKS.length) { sec.remove(); $$('[data-works-link]').forEach((a) => a.remove()); return; }
-    let list = (Array.isArray(window.RICCA_WORKS_STRIP) ? window.RICCA_WORKS_STRIP : [])
-      .map((x) => (Array.isArray(x) && WORK.has(x[0]) && WORK.get(x[0]).photos[x[1]] ? [WORK.get(x[0]), +x[1]] : null)).filter(Boolean);
-    if (!list.length) list = WORKS.slice(0, 8).map((w) => [w, 0]);
+    const list = (BEST.length ? BEST : WORKS).slice(0, 8);
+    if (!list.length) { sec.remove(); $$('[data-works-link]').forEach((a) => a.remove()); return; }
     const row = $('[data-works-row]', sec);
-    row.innerHTML = list.map(([w, n]) => workCard(w, n, '(min-width: 1100px) 23vw, (min-width: 768px) 30vw, 64vw', false, false)).join('');
+    row.classList.add('wk');
+    row.innerHTML = list.map((w, i) => workCard(w, 0, WK_SIZES, false, true, (i === 0 || i === 5) && w.photos[0].w > w.photos[0].h)).join('');
     sec.hidden = false;
     $$('[data-works-link]').forEach((a) => { a.hidden = false; });
-    // стрелки (компьютер): листают ленту; у края — неактивны
-    const steps = $$('[data-works-step]', sec);
-    const sync = () => {
-      const max = row.scrollWidth - row.clientWidth - 2;
-      steps.forEach((b) => b.setAttribute('aria-disabled', String(+b.dataset.worksStep < 0 ? row.scrollLeft <= 2 : row.scrollLeft >= max)));
-    };
-    steps.forEach((b) => b.addEventListener('click', () => {
-      const li = row.firstElementChild;
-      if (!li || b.getAttribute('aria-disabled') === 'true') return;
-      const one = li.getBoundingClientRect().width + (parseFloat(getComputedStyle(row).columnGap) || 0);
-      row.scrollBy({ left: +b.dataset.worksStep * one * Math.max(1, Math.floor(row.clientWidth / one) - 1), behavior: reduceMotion ? 'auto' : 'smooth' });
-    }));
-    let sr = 0;
-    row.addEventListener('scroll', () => { if (!sr) sr = requestAnimationFrame(() => { sr = 0; sync(); }); }, { passive: true });
-    window.addEventListener('resize', sync, { passive: true });
-    sync();
+    $$('[data-works-step]', sec).forEach((b) => b.remove());
   })();
 
   /* Линейные рисунки (.draw в плитках и на экране категории): при наведении и один раз при появлении на экране линия
@@ -523,16 +515,16 @@
         if (cat && CATS[cat] && !CATS[cat].href) { R.replace(`#catalog/${cat}`); return R.apply(false); }
         R.toCatalog(); return;
       }
-      // работы такой нет (убрали из выборки) или старая ссылка #work-NN — каталог; прежние «Все работы» (#works/all) — экран «Диваны»
+      // работы такой нет (убрали из выборки) или старая ссылка #work-NN — каталог; прежние «Все работы» (#works/all) — экран «Наши работы»
       if (r.work != null && !WORK.has(r.work)) { R.toCatalog(); return; }
-      if (r.works) { R.replace(BEST.length ? '#catalog/works' : '#catalog'); return R.apply(false); }
+      if (r.works) { R.replace(WORKS.length ? '#catalog/works' : '#catalog'); return R.apply(false); }
       // ткани такой нет (коллекцию убрали из js/fabrics-data.js) — экран «Ткани»
       if (r.fab != null && !(FCOL.has(r.fab) && FCOL.get(r.fab).c.colours[r.fabN])) { R.replace('#catalog/fabrics'); return R.apply(false); }
-      // уровень 1: категория / ткани / все работы; #fabric-<коллекция>-<N> — экран «Ткани» на этой коллекции с цветом N
+      // уровень 1: категория / ткани / все работы (#catalog/works/<категория> — с фильтром); #fabric-<коллекция>-<N> — экран «Ткани» на этой коллекции с цветом N
       if (r.cat) {
         const c = CATS[r.cat];
         if (!c || c.href) R.toCatalog();
-        else View.open(c.view === 'fabrics' ? { type: 'fabrics', sub: r.sub } : c.view === 'works' ? { type: 'works' } : { type: 'cat', cat: r.cat, sub: r.sub });
+        else View.open(c.view === 'fabrics' ? { type: 'fabrics', sub: r.sub } : c.view === 'works' ? { type: 'works', sub: r.sub } : { type: 'cat', cat: r.cat, sub: r.sub });
       } else if (r.fab != null) View.open({ type: 'fabrics', sub: 'all', fab: r.fab, fabN: r.fabN });
       else if (r.work && initial) {
         // вход по ссылке на работу (#work-<id> из WhatsApp или Instagram): под окном — её категория, «Закрыть» ведёт к остальным работам
@@ -588,14 +580,32 @@
         + '</div></section>';
       syncKind();
     }
-    // «Наши работы»: сетка лучших реальных изделий ателье
+    /* «Наши работы»: все 41 работа ателье (WORKS) той же сеткой .wk, что и экраны категорий; над сеткой — фишки-фильтры
+       «Все · Диваны · Кровати · Кресла» со счётчиками (те же кнопки .view__tabs, что были у типов), в строке под заголовком — число
+       показанных работ. Фильтр пишет адрес #catalog/works/<категория> (replace — «Назад» не ходит по фильтрам); по такой ссылке
+       экран открывается сразу с этим фильтром. Фото — 800 px на телефоне и компьютере 1x (WK_SIZES), первые четыре — сразу */
+    const WCATS = ['sofas', 'beds', 'armchairs'];
     function renderWorks() {
       title.textContent = tr('Наши работы');
-      tabs.classList.remove('is-fab'); tabs.innerHTML = ''; tabs.hidden = true;
+      tabs.classList.remove('is-fab');
       if (foot) foot.hidden = true;
-      nEl.innerHTML = typo(tr('Реальные изделия ателье — сшиты по проектам клиентов.'));
       back.textContent = tr('Каталог');
-      content.innerHTML = `<ul class="wk" role="list" aria-label="${tr('Работы ателье')}">${BEST.map((w, i) => workCard(w, 0, GRID_SIZES, i < 4)).join('')}</ul>`;
+      const cnt = (c) => (c === 'all' ? WORKS : WORKS.filter((w) => w.cat === c)).length;
+      const chips = ['all', ...WCATS.filter((c) => cnt(c))];
+      tabs.innerHTML = chips.map((c) => `<button type="button" data-wcat="${c}" aria-pressed="false">${c === 'all' ? tr('Все') : typo(catLabel(c))}<span class="view__tabs-n" aria-hidden="true">${cnt(c)}</span><span class="sr-only">: ${cnt(c)}</span></button>`).join('');
+      tabs.hidden = chips.length < 3;
+      content.innerHTML = `<ul class="wk" role="list" aria-label="${tr('Работы ателье')}">${WORKS.map((w, i) => workCard(w, 0, WK_SIZES, i < 4)).join('')}</ul>`;
+    }
+    // фильтр экрана «Наши работы»: показываем работы категории (или все), в строке под заголовком — их число
+    function setWcat(sub) {
+      const btns = $$('button[data-wcat]', tabs);
+      if (!btns.some((b) => b.dataset.wcat === sub)) sub = 'all';
+      btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.wcat === sub)));
+      let n = 0;
+      $$('.wk > li', content).forEach((li) => { const off = sub !== 'all' && li.dataset.cat !== sub; li.hidden = off; if (!off) n += 1; });
+      nEl.innerHTML = `${n}&nbsp;${plural3(n, ['работа', 'работы', 'работ'])} · ${typo(tr('Реальные изделия ателье — сшиты по проектам клиентов.'))}`;
+      if (spec) spec.sub = sub;
+      return sub;
     }
     // «В корзину — заявка»: уже в корзине — кнопка открывает корзину
     function syncKind() {
@@ -892,6 +902,8 @@
     tabs.addEventListener('click', (e) => {
       const f = e.target.closest('button[data-ftype]');
       if (f && spec && spec.type === 'fabrics') { toType(f.dataset.ftype, true); return; }
+      const wc = e.target.closest('button[data-wcat]');
+      if (wc && spec && spec.type === 'works') { const sub = setWcat(wc.dataset.wcat); R.replace(`#catalog/works${sub !== 'all' ? `/${sub}` : ''}`); return; }
       const b = e.target.closest('button[data-sub]');
       if (!b || !spec || spec.type !== 'cat') return;
       const sub = setSub(b.dataset.sub);
@@ -903,7 +915,7 @@
     }, { passive: true });
     return {
       isOpen: () => dlg.open,
-      hash: () => (!spec ? '#catalog' : spec.type === 'fabrics' ? '#catalog/fabrics' : `#catalog/${spec.cat}${spec.sub && spec.sub !== 'all' ? `/${spec.sub}` : ''}`),
+      hash: () => (!spec ? '#catalog' : spec.type === 'fabrics' ? '#catalog/fabrics' : `#catalog/${spec.type === 'works' ? 'works' : spec.cat}${spec.sub && spec.sub !== 'all' ? `/${spec.sub}` : ''}`),
       parentHash: () => '#catalog',
       open(s) {
         const k = s.type === 'cat' ? `cat:${s.cat}` : s.type;
@@ -912,7 +924,7 @@
           spec = Object.assign({}, s); key = k;
           if (s.type === 'cat') renderCat(s.cat); else if (s.type === 'works') renderWorks(); else renderFabrics();
         }
-        if (s.type === 'cat') setSub(s.sub || 'all');
+        if (s.type === 'cat') setSub(s.sub || 'all'); else if (s.type === 'works') setWcat(s.sub || 'all');
         const was = dlg.open;
         showDlg(dlg, R.opener);
         if (fresh) { dlg.scrollTop = 0; dlg.classList.remove('is-scrolled'); }   // закрытое окно не помнит прокрутку — сбрасываем после показа

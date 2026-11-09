@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4.0 -4.0 114.0 101.0" role="img" aria-hidden="true">
+<style>.o{fill:#F4F5F7;stroke:#141414;stroke-width:.32;stroke-linejoin:round;stroke-linecap:round}.o2{fill:none;stroke:#141414;stroke-width:.16;stroke-opacity:.45;stroke-linejoin:round;stroke-linecap:round}.fl{fill:none;stroke:#141414;stroke-width:.22;stroke-linecap:round}</style><defs><filter id="pn" x="-5%" y="-5%" width="110%" height="110%" filterUnits="objectBoundingBox"><feTurbulence type="fractalNoise" baseFrequency=".32" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale=".42" xChannelSelector="R" yChannelSelector="G"/></filter><filter id="pn2" x="-5%" y="-5%" width="110%" height="110%" filterUnits="objectBoundingBox"><feTurbulence type="fractalNoise" baseFrequency=".22" numOctaves="2" seed="11"/><feDisplacementMap in="SourceGraphic" scale=".7" xChannelSelector="G" yChannelSelector="R"/></filter><pattern id="hx" width="1.5" height="1.5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V1.5" stroke="#9A9A9A" stroke-width=".1"/></pattern><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="fadeM" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#fade)"/></mask></defs>
+<g transform="translate(0.00 0.00)">
+<g filter="url(#pn)">
+<path class="o" d="M0 0.75Q0 0 0.75 0L42.25 0Q43 0 43 0.75L43 28.95Q43 29.7 42.25 29.7L0.75 29.7Q0 29.7 0 28.95Z"/>
+<path class="o2" filter="url(#pn2)" d="M0 0.75Q0 0 0.75 0L42.25 0Q43 0 43 0.75L43 28.95Q43 29.7 42.25 29.7L0.75 29.7Q0 29.7 0 28.95Z"/>
+<line class="dt" x1="4.78" y1="1.2" x2="4.78" y2="28.5"/>
+<line class="dt" x1="9.56" y1="1.2" x2="9.56" y2="28.5"/>
+<line class="dt" x1="14.33" y1="1.2" x2="14.33" y2="28.5"/>
+<line class="dt" x1="19.11" y1="1.2" x2="19.11" y2="28.5"/>
+<line class="dt" x1="23.89" y1="1.2" x2="23.89" y2="28.5"/>
+<line class="dt" x1="28.67" y1="1.2" x2="28.67" y2="28.5"/>
+<line class="dt" x1="33.44" y1="1.2" x2="33.44" y2="28.5"/>
+<line class="dt" x1="38.22" y1="1.2" x2="38.22" y2="28.5"/>
+<path class="o" d="M1.6 19.5Q1.6 18.25 2.85 18.25L40.15 18.25Q41.4 18.25 41.4 19.5L41.4 22.5Q41.4 23.75 40.15 23.75L2.85 23.75Q1.6 23.75 1.6 22.5Z"/>
+<path class="o2" filter="url(#pn2)" d="M1.6 19.5Q1.6 18.25 2.85 18.25L40.15 18.25Q41.4 18.25 41.4 19.5L41.4 22.5Q41.4 23.75 40.15 23.75L2.85 23.75Q1.6 23.75 1.6 22.5Z"/>
+<path class="o" d="M1.5 24Q1.5 23.75 1.75 23.75L41.25 23.75Q41.5 23.75 41.5 24L41.5 27.25Q41.5 27.5 41.25 27.5L1.75 27.5Q1.5 27.5 1.5 27.25Z"/>
+<path class="o2" filter="url(#pn2)" d="M1.5 24Q1.5 23.75 1.75 23.75L41.25 23.75Q41.5 23.75 41.5 24L41.5 27.25Q41.5 27.5 41.25 27.5L1.75 27.5Q1.5 27.5 1.5 27.25Z"/>
+<path class="o" d="M1.25 27.75Q1.25 27.5 1.5 27.5L41.5 27.5Q41.75 27.5 41.75 27.75L41.75 29.75Q41.75 30 41.5 30L1.5 30Q1.25 30 1.25 29.75Z"/>
+<path class="o2" filter="url(#pn2)" d="M1.25 27.75Q1.25 27.5 1.5 27.5L41.5 27.5Q41.75 27.5 41.75 27.75L41.75 29.75Q41.75 30 41.5 30L1.5 30Q1.25 30 1.25 29.75Z"/>
+<path class="o" d="M1.45 21.75Q1.45 21.25 1.95 21.25L41.05 21.25Q41.55 21.25 41.55 21.75L41.55 27Q41.55 27.5 41.05 27.5L1.95 27.5Q1.45 27.5 1.45 27Z"/>
+<path class="o2" filter="url(#pn2)" d="M1.45 21.75Q1.45 21.25 1.95 21.25L41.05 21.25Q41.55 21.25 41.55 21.75L41.55 27Q41.55 27.5 41.05 27.5L1.95 27.5Q1.45 27.5 1.45 27Z"/>
+<path class="o" d="M0 21.75Q0 21.25 0.5 21.25L1 21.25Q1.5 21.25 1.5 21.75L1.5 27Q1.5 27.5 1 27.5L0.5 27.5Q0 27.5 0 27Z"/>
+<path class="o2" filter="url(#pn2)" d="M0 21.75Q0 21.25 0.5 21.25L1 21.25Q1.5 21.25 1.5 21.75L1.5 27Q1.5 27.5 1 27.5L0.5 27.5Q0 27.5 0 27Z"/>
+<path class="o" d="M41.5 21.75Q41.5 21.25 42 21.25L42.5 21.25Q43 21.25 43 21.75L43 27Q43 27.5 42.5 27.5L42 27.5Q41.5 27.5 41.5 27Z"/>
+<path class="o2" filter="url(#pn2)" d="M41.5 21.75Q41.5 21.25 42 21.25L42.5 21.25Q43 21.25 43 21.75L43 27Q43 27.5 42.5 27.5L42 27.5Q41.5 27.5 41.5 27Z"/>
+</g>
+<rect x="-1.5" y="30" width="46" height="2.6" fill="url(#hx)" mask="url(#fadeM)"/>
+<line class="fl" x1="-3" y1="30" x2="46" y2="30"/>
+</g>
+<g transform="translate(52.00 0.00)">
+<g filter="url(#pn)">
+<path class="o" d="M2.5 21.75Q2.5 21.25 3 21.25L53.5 21.25Q54 21.25 54 21.75L54 27Q54 27.5 53.5 27.5L3 27.5Q2.5 27.5 2.5 27Z"/>
+<path class="o2" filter="url(#pn2)" d="M2.5 21.75Q2.5 21.25 3 21.25L53.5 21.25Q54 21.25 54 21.75L54 27Q54 27.5 53.5 27.5L3 27.5Q2.5 27.5 2.5 27Z"/>
+<path class="o" d="M2.6 19.5Q2.6 18.25 3.85 18.25L51.15 18.25Q52.4 18.25 52.4 19.5L52.4 22.5Q52.4 23.75 51.15 23.75L3.85 23.75Q2.6 23.75 2.6 22.5Z"/>
+<path class="o2" filter="url(#pn2)" d="M2.6 19.5Q2.6 18.25 3.85 18.25L51.15 18.25Q52.4 18.25 52.4 19.5L52.4 22.5Q52.4 23.75 51.15 23.75L3.85 23.75Q2.6 23.75 2.6 22.5Z"/>
+<path class="o" d="M2.5 24Q2.5 23.75 2.75 23.75L52.25 23.75Q52.5 23.75 52.5 24L52.5 27.25Q52.5 27.5 52.25 27.5L2.75 27.5Q2.5 27.5 2.5 27.25Z"/>
+<path class="o2" filter="url(#pn2)" d="M2.5 24Q2.5 23.75 2.75 23.75L52.25 23.75Q52.5 23.75 52.5 24L52.5 27.25Q52.5 27.5 52.25 27.5L2.75 27.5Q2.5 27.5 2.5 27.25Z"/>
+<path class="o" d="M52.5 21.75Q52.5 21.25 53 21.25L53.5 21.25Q54 21.25 54 21.75L54 27Q54 27.5 53.5 27.5L53 27.5Q52.5 27.5 52.5 27Z"/>
+<path class="o2" filter="url(#pn2)" d="M52.5 21.75Q52.5 21.25 53 21.25L53.5 21.25Q54 21.25 54 21.75L54 27Q54 27.5 53.5 27.5L53 27.5Q52.5 27.5 52.5 27Z"/>
+<path class="o" d="M3.5 27.75Q3.5 27.5 3.75 27.5L52.5 27.5Q52.75 27.5 52.75 27.75L52.75 29.75Q52.75 30 52.5 30L3.75 30Q3.5 30 3.5 29.75Z"/>
+<path class="o2" filter="url(#pn2)" d="M3.5 27.75Q3.5 27.5 3.75 27.5L52.5 27.5Q52.75 27.5 52.75 27.75L52.75 29.75Q52.75 30 52.5 30L3.75 30Q3.5 30 3.5 29.75Z"/>
+<path class="o" d="M0 0.75Q0 0 0.75 0L1.75 0Q2.5 0 2.5 0.75L2.5 28.95Q2.5 29.7 1.75 29.7L0.75 29.7Q0 29.7 0 28.95Z"/>
+<path class="o2" filter="url(#pn2)" d="M0 0.75Q0 0 0.75 0L1.75 0Q2.5 0 2.5 0.75L2.5 28.95Q2.5 29.7 1.75 29.7L0.75 29.7Q0 29.7 0 28.95Z"/>
+<path class="o" d="M2.5 21.75Q2.5 21.25 3 21.25L53.5 21.25Q54 21.25 54 21.75L54 27Q54 27.5 53.5 27.5L3 27.5Q2.5 27.5 2.5 27Z"/>
+<path class="o2" filter="url(#pn2)" d="M2.5 21.75Q2.5 21.25 3 21.25L53.5 21.25Q54 21.25 54 21.75L54 27Q54 27.5 53.5 27.5L3 27.5Q2.5 27.5 2.5 27Z"/>
+</g>
+<rect x="-1.5" y="30" width="57" height="2.6" fill="url(#hx)" mask="url(#fadeM)"/>
+<line class="fl" x1="-3" y1="30" x2="57" y2="30"/>
+</g>
+<g transform="translate(0.00 39.00)">
+<g filter="url(#pn)">
+<path class="o" d="M1.25 3.75Q1.25 3.5 1.5 3.5L41.5 3.5Q41.75 3.5 41.75 3.75L41.75 52.5Q41.75 52.75 41.5 52.75L1.5 52.75Q1.25 52.75 1.25 52.5Z"/>
+<path class="o2" filter="url(#pn2)" d="M1.25 3.75Q1.25 3.5 1.5 3.5L41.5 3.5Q41.75 3.5 41.75 3.75L41.75 52.5Q41.75 52.75 41.5 52.75L1.5 52.75Q1.25 52.75 1.25 52.5Z"/>
+<path class="o" d="M1.5 2.75Q1.5 2.5 1.75 2.5L41.25 2.5Q41.5 2.5 41.5 2.75L41.5 52.25Q41.5 52.5 41.25 52.5L1.75 52.5Q1.5 52.5 1.5 52.25Z"/>
+<path class="o2" filter="url(#pn2)" d="M1.5 2.75Q1.5 2.5 1.75 2.5L41.25 2.5Q41.5 2.5 41.5 2.75L41.5 52.25Q41.5 52.5 41.25 52.5L1.75 52.5Q1.5 52.5 1.5 52.25Z"/>
+<path class="o" d="M0 3Q0 2.5 0.5 2.5L1 2.5Q1.5 2.5 1.5 3L1.5 53.5Q1.5 54 1 54L0.5 54Q0 54 0 53.5Z"/>
+<path class="o2" filter="url(#pn2)" d="M0 3Q0 2.5 0.5 2.5L1 2.5Q1.5 2.5 1.5 3L1.5 53.5Q1.5 54 1 54L0.5 54Q0 54 0 53.5Z"/>
+<path class="o" d="M41.5 3Q41.5 2.5 42 2.5L42.5 2.5Q43 2.5 43 3L43 53.5Q43 54 42.5 54L42 54Q41.5 54 41.5 53.5Z"/>
+<path class="o2" filter="url(#pn2)" d="M41.5 3Q41.5 2.5 42 2.5L42.5 2.5Q43 2.5 43 3L43 53.5Q43 54 42.5 54L42 54Q41.5 54 41.5 53.5Z"/>
+<path class="o" d="M1.45 53Q1.45 52.5 1.95 52.5L41.05 52.5Q41.55 52.5 41.55 53L41.55 53.5Q41.55 54 41.05 54L1.95 54Q1.45 54 1.45 53.5Z"/>
+<path class="o2" filter="url(#pn2)" d="M1.45 53Q1.45 52.5 1.95 52.5L41.05 52.5Q41.55 52.5 41.55 53L41.55 53.5Q41.55 54 41.05 54L1.95 54Q1.45 54 1.45 53.5Z"/>
+<path class="o" d="M1.6 3.85Q1.6 2.6 2.85 2.6L40.15 2.6Q41.4 2.6 41.4 3.85L41.4 51.15Q41.4 52.4 40.15 52.4L2.85 52.4Q1.6 52.4 1.6 51.15Z"/>
+<path class="o2" filter="url(#pn2)" d="M1.6 3.85Q1.6 2.6 2.85 2.6L40.15 2.6Q41.4 2.6 41.4 3.85L41.4 51.15Q41.4 52.4 40.15 52.4L2.85 52.4Q1.6 52.4 1.6 51.15Z"/>
+<path class="o" d="M0 0.75Q0 0 0.75 0L42.25 0Q43 0 43 0.75L43 1.75Q43 2.5 42.25 2.5L0.75 2.5Q0 2.5 0 1.75Z"/>
+<path class="o2" filter="url(#pn2)" d="M0 0.75Q0 0 0.75 0L42.25 0Q43 0 43 0.75L43 1.75Q43 2.5 42.25 2.5L0.75 2.5Q0 2.5 0 1.75Z"/>
+</g>
+</g>
+</svg>
