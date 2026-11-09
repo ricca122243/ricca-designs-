@@ -160,6 +160,17 @@ html[lang="en"] .sec h2.title[id$="-title"]::before { content: "No. " counter(se
 html[lang="en"] .hero { --hfs: clamp(36px, 9.3vw, 150px); }
 html[lang="en"] .hero__cover .hero__title { row-gap: calc(var(--hfs) * 1.3); }   /* кегль меньше, диван тот же — строки дальше друг от друга */
 @media (max-width: 899px) { html[lang="en"] .hero { --hfs: clamp(30px, 9.1vw, 120px); } html[lang="en"] .hero__cover .hero__title { row-gap: calc(var(--hfs) * 3.4); } }
+/* вариант А: Montserrat шире антиквы в 1,35 раза — кегль обложки меньше (строка «Мягкая мебель» в одну строку на 320–1920), диван тот же,
+   поэтому строки раздвинуты сильнее (row-gap) */
+html:not([data-font="b"]) .hero { --hfs: clamp(56px, 11.6vw, 176px); }
+html:not([data-font="b"])[lang="en"] .hero { --hfs: clamp(32px, 8.7vw, 136px); }
+html:not([data-font="b"])[lang="en"] .hero__cover .hero__title { row-gap: calc(var(--hfs) * 1.5); }
+@media (max-width: 899px) {
+  html:not([data-font="b"]) .hero { --hfs: clamp(34px, 11.3vw, 96px); }
+  html:not([data-font="b"]) .hero__cover .hero__title { row-gap: calc(var(--hfs) * 2.6); }
+  html:not([data-font="b"])[lang="en"] .hero { --hfs: clamp(24px, 8.2vw, 90px); }
+  html:not([data-font="b"])[lang="en"] .hero__cover .hero__title { row-gap: calc(var(--hfs) * 4.2); }
+}
 .hdr__tools { display: flex; align-items: center; margin-right: -10px; }
 @media (min-width: 1200px) { .hdr__tools { margin-left: clamp(16px, 2.5vw, 40px); } }   /* RU | EN и корзина — отдельной группой, дальше от WHATSAPP, чем пункты меню друг от друга; уже 1200 px меню на пределе ширины */
 .hdr__count { position: absolute; top: 7px; right: 5px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 8px; background: currentColor; font: 600 10px/15px var(--sans); text-align: center; }
@@ -171,7 +182,7 @@ html[lang="en"] .hero__cover .hero__title { row-gap: calc(var(--hfs) * 1.3); }  
   .hdr__nav { display: none; }
   .hdr__menu { display: inline-grid; }
   .hdr { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
-  .logo__mono { width: 34px; }
+  .logo__mono { width: 34px; flex: none; }
   .logo { gap: 12px; }
   .logo__rule { height: 22px; }
   .logo__name { font-size: 13px; letter-spacing: .38em; }
@@ -397,7 +408,7 @@ body { counter-reset: sec 1; }
   /* все плитки одинаково: название / описание — каждое своей строкой, без висящей «·» */
   .tile__cap { display: grid; justify-items: start; gap: 2px; margin-top: 12px; }
   .tile__name { font-size: 20px; }
-  .tile__sub { margin-top: 2px; font-size: 13px; line-height: 1.5; }
+  .tile__sub { margin-top: 2px; font-size: 14px; line-height: 1.5; }
   .tile__n { display: block; color: var(--ink); }
   .tile__dot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .cat__hint { margin-top: 48px; font-size: 12px; text-wrap: pretty; }
@@ -702,7 +713,7 @@ html[data-bg="white"] :is(.wk__a--model .wk__img, .tile__img--model, .lb__stage.
 .foot__contacts dl { display: grid; gap: 14px; }
 .foot__contacts dt { font: 500 12px/1.5 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--on-noir-2); }
 .foot__contacts dd a, .foot__val { display: inline-flex; align-items: center; min-height: 32px; font: 400 15px/1.3 var(--sans); letter-spacing: .03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.foot__gold a { color: var(--on-noir); font-size: 17px; font-weight: 500; }   /* прежде золотом (--gold) — 9 ноября палитра без золота */
+.foot__contacts .foot__gold a { color: var(--on-noir); font-size: 17px; font-weight: 500; }   /* прежде золотом (--gold) — 9 ноября палитра без золота */
 .foot__bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px 32px; padding-top: 28px; border-top: 1px solid rgba(255, 255, 255, .14); }
 .foot__ask { min-height: 48px; }
 .foot__copy { margin-left: auto; font: 400 12px/1.5 var(--sans); color: var(--on-noir-2); letter-spacing: .04em; }
@@ -1194,7 +1205,8 @@ dialog .toast { position: fixed; }
 .wa-fab .ico { width: 24px; height: 24px; margin-inline: 14px; stroke-width: 1.5; }
 .wa-fab__t { display: none; padding-right: 22px; font: 500 14px/1 var(--sans); letter-spacing: .01em; white-space: nowrap; }
 .wa-fab:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-@media (hover: hover) { .wa-fab:hover { background: var(--ink-hover); } }
+.wa-fab.is-dark { background: var(--on-noir); color: var(--ink); box-shadow: 0 8px 24px rgba(0, 0, 0, .35); }   /* над чёрными блоками (js/site.js) */
+@media (hover: hover) { .wa-fab:hover { background: var(--ink-hover); } .wa-fab.is-dark:hover { background: #FFFFFF; } }
 @media (min-width: 900px) { .wa-fab .ico { margin-inline: 14px 0; } .wa-fab__t { display: inline; } }
 @media (max-width: 899px) { .wa-fab { right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); } }
 
@@ -1223,7 +1235,7 @@ dialog .toast { position: fixed; }
 .hdr__lng > span { opacity: .3; }
 @media (hover: hover) { .hdr__lng a:hover { opacity: 1; } }
 .hdr__nav .hdr__lang { display: none; }
-@media (max-width: 359px) { .hdr__lng { letter-spacing: .12em; } .hdr__lng a { min-width: 26px; } }
+@media (max-width: 359px) { .hdr .hdr__lng { display: none; } }   /* 320 px: логотипу не хватало места (знак сжимался до 1 px) — RU | EN остаётся в меню (.menu__lang) */
 
 /* обложка: третья кнопка «Собрать в 3D»; на телефоне — во всю ширину вторым рядом */
 @media (max-width: 899px) { .hero__btns .hero__3d { flex-basis: 100%; } }

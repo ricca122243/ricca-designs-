@@ -1594,6 +1594,9 @@
   function updateFab(barOn) {
     const on = window.scrollY > 400 && !$('dialog[open]') && !barOn;
     if (on !== fab.classList.contains('is-on')) { fab.classList.toggle('is-on', on); fab.tabIndex = on ? 0 : -1; fab.setAttribute('aria-hidden', String(!on)); }
+    // над чёрными «Для бизнеса» и подвалом — белая кнопка с чёрным значком (иначе чёрный круг сливается с фоном)
+    const fy = window.innerHeight - 20 - 26;
+    if (on) fab.classList.toggle('is-dark', darkZones.some((el) => { const r = el.getBoundingClientRect(); return r.top < fy && r.bottom > fy; }));
   }
   function onScroll() {
     if (raf) return;
