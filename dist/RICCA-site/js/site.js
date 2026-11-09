@@ -163,7 +163,7 @@
   const MODELS = (Array.isArray(window.RICCA_MODELS) ? window.RICCA_MODELS : []).filter((w) => w && w.id && KINDS[w.cat] && Array.isArray(w.photos) && w.photos.length);
   const WORK = new Map([...WORKS, ...MODELS].map((w) => [w.id, w]));
   // главная (#works): 8 лучших кадров реальных изделий — порядок подобран владельцем (светлые, чистые, без людей и надписей — проверено 9 ноября)
-  const BEST_WORKS = ['C_tjlDdgnmn', 'DdAJz7PiC61', 'DGy-8O2Ilbr', 'C9h3Txai1KF', 'DJU1WlUuBh8', 'DGgipIMx6ma', 'DaSUDdwDKly', 'DGlGyYrND3R', 'C7E_JvdoXM-', 'C0EZbsnoxni', 'DKkV-ORIobz', 'C1Ur3ZXIE3f'];
+  const BEST_WORKS = ['C_tjlDdgnmn', 'DdAJz7PiC61', 'DGy-8O2Ilbr', 'C9h3Txai1KF', 'DaSUDdwDKly', 'C7E_JvdoXM-', 'C0EZbsnoxni', 'DKkV-ORIobz', 'C1Ur3ZXIE3f'];   // владелец, 9 ноября: NUBO, Modena и «округлое изголовье» убраны
   const BEST = BEST_WORKS.map((id) => WORKS.find((w) => w.id === id)).filter(Boolean);
   const SMALL = window.matchMedia('(max-width: 767px)');   // телефон: только файлы 800 px (так же — ткани, FC_PHONE)
   const p800 = (p) => ({ w: p.w800 || p.w, h: p.h800 || p.h });

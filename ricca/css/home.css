@@ -35,7 +35,7 @@
 /* ---------- как заказать: фото 4 : 5 слева (5 колонок), справа заголовок, три шага в ряд под линиями и WhatsApp; телефон — фото 3 : 2 сверху ---------- */
 .how__in { align-items: center; }
 .how__pic { grid-column: 1 / span 5; aspect-ratio: 4 / 5; }
-.how__text { grid-column: 7 / -1; display: grid; gap: clamp(32px, 3.3vw, 48px); justify-items: start; }
+.how__text { grid-column: 1 / -1; display: grid; gap: clamp(32px, 3.3vw, 48px); justify-items: start; }
 .how__steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gap); width: 100%; }
 .how__steps li { display: grid; align-content: start; gap: 14px; padding-top: 18px; border-top: 1px solid var(--line); font: 500 15px/1.5 var(--sans); letter-spacing: 0; text-wrap: balance; }
 .how__n { font: 400 13px/1 var(--sans); letter-spacing: .04em; color: var(--ink-2); font-variant-numeric: lining-nums tabular-nums; }
@@ -59,7 +59,7 @@
 
 /* ---------- для бизнеса: чёрная полоса — слева подпись, строка-заголовок, строка и WhatsApp (6 колонок), справа фото 4 : 5 (5 колонок);
    телефон — фото 16 : 9 сверху, полоса ниже (64 px вместо 96) ---------- */
-.biz { padding: clamp(80px, 8vw, 120px) 0; }   /* site.css: 96–160 px — с фото полоса и так высокая */
+.biz { padding: clamp(64px, 6.5vw, 96px) 0; }   /* site.css: 96–160 px — с фото полоса и так высокая */
 .biz__in--photo { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: center; }
 .biz__text { grid-column: 1 / span 6; display: grid; gap: 24px; justify-items: start; }
 .biz__text .biz__head { max-width: 15em; }
@@ -95,31 +95,6 @@ details.qa .qa__a { margin: 0; padding: 0 44px 20px 0; font-size: 15px; }
   .qa__q { font-size: 15px; min-height: 56px; }
 }
 
-/* ---------- подвал + шоурум: фото работы (320 px, 4 : 5), шоурум (адрес → 2ГИС, часы, маршрут; id="showroom"), контакты (телефон, Instagram,
-   почта, WhatsApp); снизу значки и ©. Колонок ссылок и длинной строки прав больше нет (главная ≤ 350 слов). Телефон — фото 2 : 1 сверху, столбиком ---------- */
-.foot { padding-top: clamp(64px, 7vw, 104px); }
-.foot__body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 40px var(--gap); padding: 48px 0 56px; }
-.foot__pic { aspect-ratio: 4 / 5; max-width: 320px; background: #1A1A1A; }
-.foot__show, .foot__contacts { display: grid; align-content: start; justify-items: start; gap: 16px; }
-.foot__show .foot__h, .foot__contacts .foot__h { margin-bottom: 0; }
-.foot__addr { font: 300 17px/1.55 var(--sans); letter-spacing: .01em; }
-.foot__addr a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 600ms var(--ease); }
-@media (hover: hover) { .foot__addr a:hover { background-size: 100% 1px; } }
-@media (hover: none) { .foot__addr a { background-size: 100% 1px; } }   /* на касание: видно, что адрес — ссылка на 2ГИС */
-.foot__hours { font: 400 14px/1.5 var(--sans); color: var(--on-noir-2); }
-.foot__tel a { font: 500 20px/1.3 var(--sans); letter-spacing: .02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.foot__links { display: grid; }
-.foot__links a { display: inline-flex; align-items: center; min-height: 40px; font: 400 15px/1.4 var(--sans); letter-spacing: 0; color: var(--on-noir); }
-.foot__show .btn, .foot__contacts .btn { margin-top: 8px; min-height: 48px; }
-@media (max-width: 899.98px) {
-  .foot__body { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 40px 0 48px; }
-  .foot__pic { grid-column: 1 / -1; max-width: none; aspect-ratio: 16 / 9; }
-}
-@media (max-width: 599.98px) {
-  .foot__top { padding-bottom: 32px; }
-  .foot__body { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 32px 0 40px; }
-  .foot__pic { aspect-ratio: 2.4; }
-  .foot__show, .foot__contacts { gap: 12px; }
-  .foot__show, .foot__contacts { justify-items: stretch; }
-  .foot__tel a { font-size: 19px; }
-}
+
+/* ателье: ролик вертикальный (478 × 850) — на компьютере крупнее, по центру правой половины */
+@media (min-width: 768px) { .atelier__film { max-width: 420px; justify-self: center; } .atelier__film video { width: 100%; height: auto; } }
