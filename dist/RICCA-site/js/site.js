@@ -1249,6 +1249,18 @@
       wa.setAttribute('aria-label', tr`Хочу ${want(w)}: ${label(w)} — написать в WhatsApp`);
       t3.href = `configurator.html#cfg=v1~${/~|^t\./.test(w.cfg || '') ? w.cfg : 't.' + encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}`;
       ig.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; ig.hidden = !!w.model;   // у моделей каталога поста нет
+      /* «Подробнее» модели каталога (владелец, 9 ноября: «информации нет — пусть будет свёрнуто, захочет — откроет»):
+         описание и карточка из RICCA_CATALOG по id; на /en данные не переведены — блок скрыт */
+      const moreD = $('[data-lb-more]', dlg);
+      if (moreD) {
+        const it = w.model && window.RICCA_LANG !== 'en' ? (window.RICCA_CATALOG || []).find((x) => x.id === String(w.id).replace(/^m-/, '')) : null;
+        moreD.open = false;
+        if (it && (it.description || it.options || it.sizes)) {
+          const row = (k, v) => (v ? `<div class="lb__row"><dt>${k}</dt><dd>${typo(Array.isArray(v) ? v.join(', ') : v)}</dd></div>` : '');
+          $('[data-lb-info]', moreD).innerHTML = `${it.description ? `<p class="lb__desc">${typo(it.description)}</p>` : ''}<dl class="lb__dl">${row('Варианты', it.options)}${row('Размеры', it.sizes)}${row('Материалы', it.materials)}${row('Наполнение', it.filling)}${row('Механизм', it.mechanism)}${row('Срок', it.lead)}${row('Гарантия', it.warranty)}${row('Доставка', it.delivery)}</dl>`;
+          moreD.hidden = false;
+        } else moreD.hidden = true;
+      }
       const compD = $('[data-lb-comp-d]', dlg);   // «Состав» модели каталога — только у проверенных (verified: true)
       if (compD) { compD.open = false; compD.hidden = !(w.model && window.RICCA_COMPOSITION_UI && window.RICCA_COMPOSITION_UI($('[data-lb-comp]', compD), String(w.id).replace(/^m-/, ''))); }
       const n = w.photos.length, many = n > 1;

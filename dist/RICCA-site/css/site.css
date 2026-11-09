@@ -1474,3 +1474,12 @@ img { -webkit-user-drag: none; user-select: none; }
 .lb .nb-comp-d { margin-top: 8px; max-width: 460px; }
 .lb .nb-comp-d .nb-comp-box { padding: 4px 0 16px; max-height: 46vh; overflow-y: auto; }
 .lb .nb-comp-d .nb-comp__h { display: none; }   /* заголовок уже в строке «Состав» над списком */
+
+/* «Подробнее» в окне изделия: описание и карточка свойств (dl), свёрнуто; телефон — на всю ширину подписи */
+.lb__more { max-width: 560px; }
+.lb__info { display: grid; gap: 14px; padding: 2px 0 18px; }
+.lb__desc { font: 300 15px/1.6 var(--sans); color: var(--ink); text-wrap: pretty; }
+.lb__dl { display: grid; gap: 0; margin: 0; }
+.lb__row { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font: 400 14px/1.5 var(--sans); }
+.lb__row dt { color: var(--ink-2); } .lb__row dd { margin: 0; }
+@media (max-width: 599.98px) { .lb__more { max-width: none; } .lb__row { grid-template-columns: 96px minmax(0, 1fr); font-size: 13.5px; } }
