@@ -48,6 +48,7 @@
     'Цену рассчитаем и&nbsp;ответим в&nbsp;WhatsApp.': "We'll quote the price and&nbsp;reply on&nbsp;WhatsApp.",
     'Наши работы': 'Our works', 'Реальные изделия ателье — сшиты по проектам клиентов.': "Real pieces by the atelier — made for our clients' projects.",
     'Работы ателье': 'Atelier works', 'Все': 'All',   // фишки-фильтры экрана «Наши работы» («Все · Диваны · Кровати · Кресла» — названия категорий из CAT_LABELS)
+    'Назад': 'Back', 'По&nbsp;две в&nbsp;ряд': 'Two per row', 'Крупнее': 'Larger',   // телефон: «Назад» экрана работ, переключатель сетки моделей
     'Заявка в&nbsp;корзине&nbsp;— открыть': 'Request in&nbsp;cart&nbsp;— open',
     '{} по вашему проекту': '{0} to your project', 'По фото, эскизу или дизайн-проекту': 'From a photo, sketch or design project',
     'В корзине уже {} позиций — отправьте заявку, затем добавьте ещё': 'The cart already has {0} lines — send the request, then add more',

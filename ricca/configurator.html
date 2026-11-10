@@ -72,7 +72,7 @@
 </a>
 <nav class="hdr__nav" aria-label="Разделы">
 <div class="hdr__lng" role="group" aria-label="Язык сайта"><a href="/configurator.html" hreflang="ru" lang="ru" aria-current="true" data-lng="ru">RU</a><span aria-hidden="true">|</span><a href="/en/configurator" hreflang="en" lang="en" data-lng="en">EN</a></div>
-<a class="hdr__back" href="index.html#catalog"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg>Каталог</a>
+<a class="hdr__back" id="hdr-back" href="index.html#catalog"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg><span class="hdr__back-t" id="hdr-back-t">Каталог</span></a>
 <a class="hdr__wa" href="https://wa.me/77079550808" data-wa-plain aria-label="Написать в WhatsApp"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span class="hdr__wa-t">WhatsApp</span></a>
 </nav>
 </div>
@@ -95,7 +95,7 @@
 <div class="wrap work">
 
 
-<div class="vp" id="vp">
+<div class="vp" id="vp" data-view="3d">
 <div class="vp__stage" id="stage" aria-label="Трёхмерная модель — тяните, чтобы повернуть" role="img" tabindex="0"></div>
 <div class="vp__photo" id="photo-host" hidden></div>
 <div class="vp__phe" id="ph-empty" hidden>
@@ -119,6 +119,9 @@
 <button type="button" role="radio" aria-checked="false" data-view="side">Сбоку</button>
 <button type="button" role="radio" aria-checked="false" data-view="top">Сверху</button>
 </div>
+
+<!-- телефон: вместо полосы из четырёх видов — одна кнопка, по кругу 3D → Спереди → Сбоку → Сверху (app.js → syncVp) -->
+<button class="vp__view" type="button" id="t-view" aria-label="Вид: 3D. Следующий: Спереди"><span id="t-view-t">3D</span><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
 
 <div class="vp__tools">
 <button class="vp__tool" type="button" id="t-dims" aria-pressed="false" title="Размеры"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-ruler"/></svg><span class="sr-only">Размеры</span></button>
@@ -183,6 +186,7 @@
 <div class="fab__tabs" role="tablist" aria-label="Тип ткани" id="fab-tabs"></div>
 <div class="fab__cols" id="fab-cols" role="radiogroup" aria-label="Коллекция"></div>
 <p class="fab__facts" id="fab-facts"></p>
+<button class="fab__cur" type="button" id="fab-cur" hidden><span class="fab__cur-t" id="fab-cur-t"></span><span class="fab__cur-b">Крупно<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></span></button>
 <div class="fab__sw" id="fab-sw" role="radiogroup" aria-label="Цвет"></div>
 <figure class="fab__pv" id="fab-pv">
 <img id="fab-pv-img" alt="" width="450" height="450" decoding="async">
@@ -336,13 +340,14 @@
 <span class="logo__text" aria-hidden="true"><span class="logo__name">RICCA</span><span class="logo__sub">DESIGNS&nbsp;•&nbsp;ALMATY</span></span>
 </a>
 <p class="foot__line">RICCA DESIGNS · Алматы, ул.&nbsp;Алишера&nbsp;Навои,&nbsp;208/2 · <a class="nowrap" href="tel:+77079550808">+7 (707) 955-08-08</a></p>
+<div class="foot__lng" role="group" aria-label="Язык сайта"><a href="/configurator.html" hreflang="ru" lang="ru" aria-current="true" data-lng="ru">RU</a><span aria-hidden="true">|</span><a href="/en/configurator" hreflang="en" lang="en" data-lng="en">EN</a></div>
 </div>
 </footer>
 
-<!-- плашка телефона: на каждом шаге модели — «Чертёж» и «У себя дома» (значок над короткой подписью), справа — «Далее: …» или «В WhatsApp» -->
+<!-- плашка телефона: на каждом шаге модели — «Чертёж» и «Дома» («У себя дома»: значок над короткой подписью 13 px), справа — «Далее: …» или «В WhatsApp» -->
 <div class="bar" id="bar">
 <button class="btn btn--line bar__b" type="button" id="bar-draw" data-drawing><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-drawing"/></svg><span class="bar__t">Чертёж</span></button>
-<button class="btn btn--line bar__b" type="button" id="bar-ar"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-ar"/></svg><span class="bar__t">У&nbsp;себя дома</span></button>
+<button class="btn btn--line bar__b" type="button" id="bar-ar" aria-label="У себя дома"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-ar"/></svg><span class="bar__t">Дома</span></button>
 <a class="btn btn--fill" id="bar-wa" href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>В&nbsp;WhatsApp</a>
 <button class="btn btn--fill bar__next" type="button" id="bar-next" hidden><span id="bar-next-t">Далее: форма</span><span class="bar__n" id="bar-next-n" aria-hidden="true">1/5</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button>
 </div>
@@ -361,6 +366,16 @@
 <button class="btn btn--line" type="button" id="dd-send" disabled><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-share"/></svg>Отправить чертёж</button>
 <button class="caps-link dlg__svg" type="button" id="dd-svg" disabled>Файл для дизайнера (SVG)</button>
 </div>
+</div>
+</dialog>
+
+<dialog class="dlg dlg--fab" id="dlg-fab" aria-labelledby="fz-title">
+<div class="dlg__in">
+<header class="dlg__hdr">
+<h2 class="caps" id="fz-title"></h2>
+<button class="icon-btn" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+</header>
+<figure class="fz"><img id="fz-img" alt="" width="900" height="675" decoding="async"><figcaption class="fz__f" id="fz-f"></figcaption></figure>
 </div>
 </dialog>
 

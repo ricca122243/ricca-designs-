@@ -35,7 +35,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="RICCA">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="preload" as="image" href="img/works/C9h3Txai1KF-1-800.webp" imagesrcset="img/works/C9h3Txai1KF-1-800.webp 800w, img/works/C9h3Txai1KF-1-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
+<link rel="preload" as="image" href="video/hero-mobile-poster.webp" media="(max-width: 767px)" fetchpriority="high">
+<link rel="preload" as="image" href="video/hero-desktop-poster.webp" media="(min-width: 768px)" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts-v3.css">
@@ -115,43 +116,41 @@
       <button class="icon-btn hdr__sl" type="button" id="cart-open" aria-haspopup="dialog" aria-label="Cart, empty">
         <svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span class="hdr__count" id="cart-count" aria-hidden="true" hidden>0</span>
       </button>
-      <button class="icon-btn hdr__menu" type="button" id="menu-open" aria-haspopup="dialog" aria-label="Menu">
-        <svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg>
-      </button>
     </div>
   </div>
 </header>
 
 <main id="main">
 
-<script>if (/[?&]hero=2(?:&|$)/.test(location.search)) document.documentElement.dataset.hero = '2';</script>
+<script>document.documentElement.dataset.hero = /[?&]hero=1(?:&|$)/.test(location.search) ? '1' : '2';</script>
 <section class="hero" id="top" aria-labelledby="hero-title">
   <div class="hero__media" aria-hidden="true">
-    <ul class="hero__slides">
-      <li class="hero__slide is-on" style="--pos: 50% 50%"><img src="img/works/C9h3Txai1KF-1-800.webp" srcset="img/works/C9h3Txai1KF-1-800.webp 800w, img/works/C9h3Txai1KF-1-1600.webp 1600w" sizes="100vw" width="1600" height="1600" alt="" fetchpriority="high" decoding="async"></li>
-      <li class="hero__slide" style="--pos: 50% 55%"><img data-src="img/works/DdAJz7PiC61-6-800.webp" data-srcset="img/works/DdAJz7PiC61-6-800.webp 600w, img/works/DdAJz7PiC61-6-1600.webp 1200w" data-sizes="100vw" width="1200" height="1600" alt="" fetchpriority="low" decoding="async"></li>
-      <li class="hero__slide" style="--pos: 50% 58%"><img data-src="img/works/C0EZbsnoxni-1-800.webp" data-srcset="img/works/C0EZbsnoxni-1-800.webp 800w, img/works/C0EZbsnoxni-1-1600.webp 1200w" data-sizes="100vw" width="1200" height="1200" alt="" fetchpriority="low" decoding="async"></li>
-      <li class="hero__slide" style="--pos: 50% 50%"><img data-src="img/works/DKkV-ORIobz-1-800.webp" data-srcset="img/works/DKkV-ORIobz-1-800.webp 640w, img/works/DKkV-ORIobz-1-1600.webp 1280w" data-sizes="100vw" width="1280" height="1600" alt="" fetchpriority="low" decoding="async"></li>
-    </ul>
-    <template id="hero-tpl">
-      <picture class="hero__poster">
-        <source media="(max-width: 767px)" srcset="video/hero-mobile-poster.webp" type="image/webp">
-        <img src="video/hero-desktop-poster.webp" width="1600" height="900" alt="" fetchpriority="high" decoding="async">
-      </picture>
-      <video class="hero__video" muted loop playsinline preload="none" tabindex="-1" data-desktop="video/hero-desktop" data-mobile="video/hero-mobile"></video>
+    <picture class="hero__poster">
+      <source media="(max-width: 767px)" srcset="video/hero-mobile-poster.webp" type="image/webp">
+      <img src="video/hero-desktop-poster.webp" width="1600" height="900" alt="" fetchpriority="high" decoding="async">
+    </picture>
+    <video class="hero__video" muted loop playsinline preload="none" tabindex="-1" data-desktop="video/hero-desktop" data-mobile="video/hero-mobile"></video>
+    <template id="hero-slides">
+      <ul class="hero__slides">
+        <li class="hero__slide is-on" style="--pos: 50% 50%; --pos-m: 78% 100%"><img src="img/works/C9h3Txai1KF-1-800.webp" srcset="img/works/C9h3Txai1KF-1-800.webp 800w, img/works/C9h3Txai1KF-1-1600.webp 1600w" sizes="100vw" width="1600" height="1600" alt="" fetchpriority="high" decoding="async"></li>
+        <li class="hero__slide" data-phone="0" style="--pos: 50% 55%"><img data-src="img/works/DdAJz7PiC61-6-800.webp" data-srcset="img/works/DdAJz7PiC61-6-800.webp 600w, img/works/DdAJz7PiC61-6-1600.webp 1200w" data-sizes="100vw" width="1200" height="1600" alt="" fetchpriority="low" decoding="async"></li>
+        <li class="hero__slide" style="--pos: 50% 58%; --pos-m: 46% 100%"><img data-src="img/works/C0EZbsnoxni-1-800.webp" data-srcset="img/works/C0EZbsnoxni-1-800.webp 800w, img/works/C0EZbsnoxni-1-1600.webp 1200w" data-sizes="100vw" width="1200" height="1200" alt="" fetchpriority="low" decoding="async"></li>
+        <li class="hero__slide" data-phone="0" style="--pos: 50% 50%"><img data-src="img/works/DKkV-ORIobz-1-800.webp" data-srcset="img/works/DKkV-ORIobz-1-800.webp 640w, img/works/DKkV-ORIobz-1-1600.webp 1280w" data-sizes="100vw" width="1280" height="1600" alt="" fetchpriority="low" decoding="async"></li>
+      </ul>
     </template>
     <span class="hero__shade"></span>
   </div>
-  <div class="hero__front"><div class="wrap hero__grid">
-    <div class="hero__text">
-      <h1 class="hero__title" id="hero-title">Custom upholstered furniture</h1>
-      <p class="hero__lead">Our own atelier in&nbsp;Almaty</p>
-      <div class="hero__cta">
-        <a class="btn btn--fill" href="#catalog">Catalogue</a>
-        <a class="btn btn--line" href="/en/configurator">Build in&nbsp;3D</a>
-      </div>
+  <span class="hero__base" data-hdr="dark" aria-hidden="true"></span>
+  <div class="hero__front"><div class="wrap">
+    <div class="hero__top"><p class="hero__eye">Atelier&nbsp;· Almaty</p><div class="hero__nav"></div></div>
+    <h1 class="hero__title" id="hero-title">
+      <span class="hero__ln"><span>Upholstered furniture</span></span>
+      <span class="hero__ln"><span>made to&nbsp;order</span></span>
+    </h1>
+    <div class="hero__cta">
+      <a class="btn btn--fill" href="#catalog">Catalogue</a>
+      <a class="btn btn--line" href="/en/configurator">Build in&nbsp;3D</a>
     </div>
-    <div class="hero__nav"></div>
   </div></div>
   <script src="js/hero.js" defer></script>
 </section>
@@ -195,14 +194,13 @@
   </div>
 </section>
 
-<section class="sec works" id="works" aria-labelledby="works-title" hidden>
+<section class="sec pop" id="popular" aria-labelledby="pop-title" hidden>
   <div class="wrap">
     <header class="shead rv">
-      <h2 class="title" id="works-title">Our works</h2>
-      <p class="shead__line">Finished pieces&nbsp;— photos from&nbsp;Instagram @ricca.designs.</p>
+      <h2 class="title" id="pop-title">Popular models</h2>
     </header>
-    <ul class="works__strip rv" data-works-row role="list" aria-label="Atelier works"></ul>
-    <p class="works__foot rv"><a class="btn btn--line" href="#catalog/works">All works<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+    <ul class="pop__row" data-pop-row role="list" aria-label="Popular models"></ul>
+    <p class="works__foot rv"><a class="btn btn--line" href="#catalog/sofas">Full catalogue<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
   </div>
 </section>
 
@@ -214,6 +212,18 @@
       <p class="shead__line">Size, fabric and&nbsp;a drawing&nbsp;— in&nbsp;a minute.</p>
       <a class="btn btn--fill" href="/en/configurator">Open the configurator<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
+  </div>
+</section>
+
+<section class="sec works" id="works" aria-labelledby="works-title" hidden>
+  <div class="wrap">
+    <header class="shead rv">
+      <h2 class="title" id="works-title">Our works</h2>
+      <p class="shead__line">Finished pieces&nbsp;— photos from&nbsp;Instagram @ricca.designs.</p>
+      <nav class="chips" data-works-chips aria-label="Works by type" hidden></nav>
+    </header>
+    <ul class="works__strip rv" data-works-row role="list" aria-label="Atelier works"></ul>
+    <p class="works__foot rv"><a class="btn btn--line" href="#catalog/works">All works<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
   </div>
 </section>
 
@@ -403,10 +413,11 @@
 </footer>
 
 
-<div class="mbar" id="mbar" aria-hidden="true">
-  <a class="btn" href="https://wa.me/77079550808" data-wa="general" tabindex="-1"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
-  <a class="btn" href="#showroom" tabindex="-1">Showroom</a>
-</div>
+<nav class="mbar" id="mbar" aria-label="Quick actions">
+  <a class="mbar__i" href="#catalog">Catalogue</a>
+  <a class="mbar__i mbar__i--main" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
+  <button class="mbar__i" type="button" id="mbar-menu" data-open-menu aria-haspopup="dialog">Menu</button>
+</nav>
 
 
 <dialog class="menu" id="menu" aria-label="Menu">
@@ -414,21 +425,30 @@
     <span class="logo__text" aria-hidden="true"><span class="logo__name">RICCA</span><span class="logo__sub">DESIGNS&nbsp;•&nbsp;ALMATY</span></span>
     <button class="icon-btn" type="button" data-close aria-label="Close menu"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
   </div>
-  <nav class="menu__list wrap" aria-label="Sections">
-    <a href="#catalog">Catalogue</a>
-    <a href="#works" data-works-link hidden>Our works</a>
-    <a href="#process">How to order</a>
-    <a href="#atelier">Atelier</a>
-    <a href="#business">For business</a>
-    <a href="#faq">Questions</a>
-    <a href="#showroom">Showroom</a>
-    <a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">ELUNA<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — mattress website, opens in&nbsp;a new tab</span></a>
-    <a class="menu__lang" href="/" hreflang="ru" lang="ru">Русский</a>
-    <button class="menu__sl" type="button" data-open-cart>Cart <span data-cart-mn></span></button>
-  </nav>
-  <div class="menu__foot wrap">
-    <a class="btn btn--fill btn--wide" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Message on&nbsp;WhatsApp</a>
-    <a class="menu__tel" href="tel:+77079550808" data-tel="main">+7&nbsp;(707)&nbsp;955-08-08</a>
+  <div class="menu__body wrap">
+    <nav class="menu__main" aria-label="Catalogue">
+      <a class="menu__all" href="#catalog">Catalogue<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <a class="menu__row" style="--i:0" href="#catalog/sofas"><span>Sofas</span></a>
+      <a class="menu__row" style="--i:1" href="#catalog/beds"><span>Beds</span></a>
+      <a class="menu__row" style="--i:2" href="#catalog/armchairs"><span>Armchairs</span></a>
+      <a class="menu__row" style="--i:3" href="#catalog/fabrics"><span>Fabrics</span></a>
+    </nav>
+    <nav class="menu__more" aria-label="Sections">
+      <a href="/en/configurator">Build in&nbsp;3D</a>
+      <a href="#catalog/works" data-works-link hidden>Our works</a>
+      <a href="#process">How to order</a>
+      <a href="#atelier">Atelier</a>
+      <a href="#business">For business</a>
+      <a href="#faq">Questions</a>
+      <a href="#showroom">Showroom</a>
+      <a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">ELUNA<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — mattress website, opens in&nbsp;a new tab</span></a>
+      <a class="menu__lang" href="/" hreflang="ru" lang="ru">Русский</a>
+      <button class="menu__sl" type="button" data-open-cart>Cart <span data-cart-mn></span></button>
+    </nav>
+    <div class="menu__foot">
+      <a class="btn btn--fill" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Message on&nbsp;WhatsApp</a>
+      <a class="btn btn--line menu__call" href="tel:+77079550808" data-tel="main" aria-label="Call: +7 (707) 955-08-08"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg></a>
+    </div>
   </div>
 </dialog>
 
@@ -444,11 +464,17 @@
     <header class="view__head">
       <h2 class="title" id="view-title" tabindex="-1" autofocus>Catalogue</h2>
       <p class="view__n" data-view-n></p>
+      <button class="caps-link view__cols" type="button" data-view-cols aria-pressed="false" hidden>Two per row</button>
     </header>
     <div class="view__tabs" data-view-tabs role="group" aria-label="Type" hidden></div>
     <div data-view-content></div>
     <p class="view__foot" data-view-foot><a class="caps-link" data-view-wa href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-view-wa-label>Discuss on&nbsp;WhatsApp</span></a></p>
   </div>
+  <nav class="mbar mbar--view" aria-label="Quick actions">
+    <a class="mbar__i" href="#catalog" data-to-catalog>Catalogue</a>
+    <a class="mbar__i mbar__i--main" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
+    <button class="mbar__i" type="button" data-open-menu aria-haspopup="dialog">Menu</button>
+  </nav>
 </dialog>
 
 <dialog class="pd" id="product" aria-labelledby="pd-title">
@@ -526,15 +552,24 @@
   <div class="lb__in">
     <div class="lb__stage" data-lb-stage>
       <div class="lb__frame" data-lb-frame><img data-lb-img alt="" width="1280" height="1600"></div>
+      <img class="lb__next" data-lb-next alt="" aria-hidden="true" hidden>
+      <span class="lb__pill" data-lb-pill aria-hidden="true" hidden></span>
       <button class="pd__arrow pd__arrow--prev" type="button" data-lb-step="-1" aria-label="Previous photo"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
       <button class="pd__arrow pd__arrow--next" type="button" data-lb-step="1" aria-label="Next photo"><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
     </div>
     <div class="lb__thumbs pd__thumbs" data-lb-thumbs role="group" aria-label="Product photo" hidden></div>
+    <div class="lb__dots" data-lb-dots aria-hidden="true" hidden></div>
     <div class="lb__bar">
       <div class="lb__cap">
         <h2 class="lb__title" id="lb-title" data-lb-title tabindex="-1" autofocus></h2>
         <p class="lb__piece" id="lb-sub" data-lb-piece></p>
         <p class="lb__count" data-lb-count aria-live="polite"></p>
+        <ul class="lb__rows" data-lb-rows role="list">
+          <li data-lb-row="size"><span class="lb__r"><span class="lb__rk">Size</span><span class="lb__rv">Any&nbsp;— made to order</span></span></li>
+          <li data-lb-row="fabric"><a class="lb__r" href="#catalog/fabrics"><span class="lb__rk">Fabric</span><span class="lb__rv">Choose</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li><a class="lb__r" data-lb-3d href="/en/configurator"><span class="lb__rk">3D</span><span class="lb__rv">Build a similar one</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li data-lb-row="ig"><a class="lb__r" data-lb-ig href="https://instagram.com/ricca.designs" target="_blank" rel="noopener"><span class="lb__rk">Instagram</span><span class="lb__rv">View</span><svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> (opens in&nbsp;a new tab)</span></a></li>
+        </ul>
         <details class="pd__more lb__more" data-lb-more hidden><summary>Details<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="lb__info" data-lb-info></div></details>
         <details class="pd__more nb-comp-d" data-lb-comp-d hidden><summary>What it’s made of<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="nb-comp-box" data-lb-comp></div></details>
       </div>

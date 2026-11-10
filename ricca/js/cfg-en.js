@@ -76,6 +76,9 @@
     'Цвет на экране может отличаться — образцы и ещё 200 коллекций покажем в шоуруме.': 'On-screen colour may differ — we’ll show you samples and 200+ more collections in the showroom.',
     'Стоимость рассчитаем в WhatsApp, детали согласуем с мастером.': 'We’ll quote the price on WhatsApp and agree the details with the master.',
     'Далее': 'Next',
+    /* телефон: кнопка вида, «назад» в шапке, плашка, ткань и чертёж крупно (app.js → syncVp, initBack, renderFabCur, zoomDrawing) */
+    'Следующий': 'Next', 'Назад': 'Back', 'Дома': 'At home', 'Весь лист': 'Whole sheet',
+    'Показать весь лист': 'Show the whole sheet', 'Показать чертёж крупно': 'Show the drawing close-up', ': показать ткань крупно': ': show the fabric close-up',
 
     /* шаг «Тип»: группы плиток и короткие подписи (app.js → renderTypes) */
     'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла и пуфы': 'Armchairs and poufs', 'Прямой': 'Straight', 'Угловой': 'Corner', 'П-образный': 'U-shaped', 'Модульный': 'Modular',

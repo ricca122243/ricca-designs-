@@ -26,7 +26,7 @@ const ico = (id, cls = 'ico') => `<svg class="${cls}" aria-hidden="true"><use hr
 const mqPhone = matchMedia('(max-width: 899px)');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isHttp = /^https?:$/.test(location.protocol);
-const LS = { cfg: 'ricca.cfg.v1', room: 'ricca.room.v1', seen: 'ricca.cfg.seen' };
+const LS = { cfg: 'ricca.cfg.v1', room: 'ricca.room.v1', seen: 'ricca.cfg.seen', peek: 'ricca.cfg.peek' };
 const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* приватный режим — живём без него */ } };
 
@@ -155,12 +155,13 @@ const hashOf = () => {
 const variantLink = () => (isHttp ? `${location.origin}${location.pathname}${hashOf()}` : '');
 /* «#cfg=…&f=alba:12», «#f=alba:12» (со страницы «Ткани»), «#room=…» → части */
 function parseHash(h) {
-  const out = { cfg: null, f: null, room: null, m: null };
+  const out = { cfg: null, f: null, room: null, m: null, from: null };
   String(h || '').replace(/^#/, '').split('&').forEach((part) => {
     if (part.startsWith('cfg=')) out.cfg = part.slice(4);
     else if (part.startsWith('f=')) { try { out.f = decodeURIComponent(part.slice(2)); } catch (e) { out.f = part.slice(2); } }
     else if (part.startsWith('room=')) out.room = part.slice(5);
     else if (part.startsWith('m=')) out.m = part.slice(2);
+    else if (part.startsWith('from=')) out.from = part.slice(5);
   });
   return out;
 }
@@ -237,7 +238,7 @@ function writeHash() {
   clearTimeout(hashT);
   hashT = setTimeout(() => {
     if (state.mode !== 'model') return;
-    lastHash = hashOf();
+    lastHash = hashOf() + (cameFrom ? `&from=${cameFrom}` : '');   // «откуда пришли» остаётся в адресе (не в ссылке варианта): после обновления страницы «‹ Кровать Bukel» на месте
     try { history.replaceState(null, '', lastHash); } catch (e) { /* file:// и т. п. */ }
   }, 300);
 }
@@ -262,11 +263,14 @@ function renderTypes() {
   /* «П-образный»: после дефиса — невидимый «соединитель слов» (U+2060), строка не рвётся на «П-» / «образный».
      Только в подписи плитки и только по-русски: название в params.js — ключ перевода (cfg-en.js), а в Montserrat нет неразрывного дефиса */
   const label = (s) => (window.RICCA_CFG_LANG === 'en' ? s : s.replace(/-/g, '-⁠'));
+  /* «Пуф / банкетка»: на телефоне в плитке остаётся «Пуф» (css прячет .type__x — иначе подпись в две строки и ряд выше остальных);
+     полное название — в aria-label и в заголовке шага */
+  const short = (s) => { const i = s.indexOf(' / '); return i > 0 ? `${esc(s.slice(0, i))}<span class="type__x">${esc(s.slice(i))}</span>` : esc(s); };
   const cats = [...new Set(P.TYPES.map((t) => t.category))];
   box.innerHTML = cats.map((c) => {
     const ts = P.TYPES.filter((t) => t.category === c);
     return `<div class="types__g" data-n="${ts.length}"><p class="types__l" aria-hidden="true">${esc(TYPE_GROUPS[c] || '')}</p><div class="types__row">${ts.map((t) => `<button class="type" type="button" role="radio" aria-checked="${t.id === state.type}" aria-label="${esc(t.title)}" data-type="${t.id}">
-      ${ico('t-' + t.id, 'type__ico')}<span class="type__t">${esc(label(TYPE_SHORT[t.id] || t.title))}</span></button>`).join('')}</div></div>`;
+      ${ico('t-' + t.id, 'type__ico')}<span class="type__t">${short(label(TYPE_SHORT[t.id] || t.title))}</span></button>`).join('')}</div></div>`;
   }).join('');
 }
 /* модели каталога (js/catalog-data.js, window.RICCA_CATALOG) с рецептом для 3D (поле cfg: «t.corner~f.chaise~…») — полоса фото под типами:
@@ -365,6 +369,35 @@ function matchModel() {
     const r = runValidate(d.type, d.params);
     if (encodeCfg({ type: d.type, params: r.params }, { defaults: P.DEFAULTS[d.type], withNote: false, withQty: false }) === mine) { activeModel = m.id; useExact(m); renderModels(); return; }
   }
+}
+/* ═════════ «назад» в шапке: откуда пришли ═════════
+   Из окна изделия («Собрать похожий в 3D») — «‹ Кровать Bukel»: возврат к тому же изделию (history.back() — окно и место в списке
+   восстанавливаются), а не к плиткам каталога. Изделие узнаём по &from=work-<id> в адресе; если сайт его не передал — по рецепту
+   (#cfg=…), когда он в каталоге один такой. С сайта, но изделие неизвестно, — «‹ Назад»; пришли извне — «‹ Каталог», как раньше */
+let cameFrom = '';
+const cameInside = (() => { try { const r = document.referrer && new URL(document.referrer); return !!r && r.origin === location.origin && !/configurator/.test(r.pathname); } catch (e) { return false; } })();
+function recipeOwner() {
+  const mine = encodeCfg({ type: state.type, params: state.params }, { defaults: P.DEFAULTS[state.type], withNote: false, withQty: false });
+  const same = catalogModels().filter((m) => {
+    try { const d = decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }); return d.type === state.type && encodeCfg({ type: d.type, params: runValidate(d.type, d.params).params }, { defaults: P.DEFAULTS[d.type], withNote: false, withQty: false }) === mine; } catch (e) { return false; }
+  });
+  return same.length === 1 ? same[0] : null;
+}
+function initBack(src) {
+  const a = $('#hdr-back'), t = $('#hdr-back-t'); if (!a || !t) return;
+  let from = parseHash(location.hash).from || '';
+  if (!from) { try { from = new URLSearchParams(location.search).get('from') || ''; } catch (e) { from = ''; } }
+  if (!/^work-[\w-]{1,60}$/.test(from)) from = '';
+  let m = from ? (window.RICCA_CATALOG || []).find((x) => x && `work-m-${x.id}` === from) : null;
+  if (!from && src === 'hash' && cameInside) { m = recipeOwner(); if (m) from = `work-m-${m.id}`; }
+  cameFrom = from;
+  if (m) {
+    const nm = modelName(m), i = nm.indexOf(' ');
+    t.innerHTML = i > 0 ? `<span class="hdr__back-k">${esc(nm.slice(0, i + 1))}</span>${esc(nm.slice(i + 1))}` : esc(nm);
+    a.setAttribute('aria-label', `Назад: ${nm}`);
+  } else if (from || cameInside) t.textContent = 'Назад';
+  if (from) a.setAttribute('href', `index.html#${from}`);
+  a.addEventListener('click', (e) => { if (cameInside && history.length > 1) { e.preventDefault(); history.back(); } });
 }
 function applyModel(mid) {
   const m = catalogModels().find((x) => x.id === mid); if (!m) return;
@@ -574,9 +607,36 @@ function renderFabric() {
     return `<button class="sw" type="button" role="radio" aria-checked="${on}" data-fslug="${esc(c.slug)}" title="${esc(nm)}" aria-label="${esc(nm)}">
       <span class="sw__c" style="background-color:${c.hex};background-image:url('${esc(c.src240 || c.src450)}')"></span><span class="sw__n" aria-hidden="true">${esc(c.name)}${c.finish ? `<span class="sw__f">${esc(c.finish)}</span>` : ''}</span></button>`;
   }).join('');
-  renderFabricPreview();
+  renderFabricPreview(); syncFades();
+}
+/* телефон: выбранный цвет — строкой над образцами («ALBA · № 12 … Крупно +»); строка или долгое касание образца открывают настоящий
+   образец крупно — окно #dlg-fab, фото 4 : 3 во всю ширину (на 390 px — 350 × 263) */
+function renderFabCur() {
+  const b = $('#fab-cur'), f = shownFabric(); if (!b) return;
+  b.hidden = !f; if (!f) return;
+  const nm = `${f.collectionTitle} · ${f.colour}`;
+  $('#fab-cur-t').textContent = nm; b.setAttribute('aria-label', `${nm}: показать ткань крупно`);
+}
+let fabZoomAt = 0;
+function openFabZoom() {
+  const f = shownFabric(); if (!f) return;
+  const img = $('#fz-img'), t = lib.types.find((x) => x.id === f.typeId), c = t && t.collections.find((x) => x.id === f.collectionId);
+  if (img.dataset.src !== f.src900) { img.removeAttribute('srcset'); img.removeAttribute('src'); img.style.backgroundColor = f.hex; img.dataset.src = f.src900; img.sizes = '(min-width: 900px) 520px, 100vw'; img.srcset = `${f.src450} 450w, ${f.src900} 900w`; img.src = f.src450; }
+  img.alt = `${f.typeTitle} ${f.collectionTitle}, цвет «${f.colour}»${f.finish ? `, ${f.finish}` : ''}`;
+  $('#fz-title').textContent = `${f.collectionTitle} · ${f.colour}`;
+  $('#fz-f').textContent = [f.kindTitle && !/:/.test(f.kindTitle) ? cap(f.kindTitle) : f.typeTitle, c && c.facts, f.finish].filter(Boolean).join(' · ');
+  fabZoomAt = performance.now(); openDialog($('#dlg-fab'));
+}
+/* телефон: вкладки типов и чипы коллекций листаются вбок — затухание справа только пока справа есть что листать (css: .is-more) */
+function syncFades() { for (const el of [$('#fab-tabs'), $('#fab-cols')]) if (el) el.classList.toggle('is-more', el.scrollWidth - el.clientWidth - el.scrollLeft > 4); }
+/* один раз: ряд коллекций сдвигается на 24 px и возвращается — видно, что он листается (css: cols-peek — 0,7 с, только transform) */
+function peekCols() {
+  const el = $('#fab-cols'); if (!el || !mqPhone.matches || reduced || state.step !== 4 || lsGet(LS.peek)) return;
+  if (el.scrollWidth - el.clientWidth < 24 || el.scrollLeft > 0) return;
+  lsSet(LS.peek, '1'); el.classList.add('is-peek'); setTimeout(() => el.classList.remove('is-peek'), 900);
 }
 function renderFabricPreview() {
+  renderFabCur();
   const f = state.fabric; if (!f) return;
   const img = $('#fab-pv-img');
   if (img.dataset.src !== f.src900) { img.dataset.src = f.src900; img.src = f.src450; img.srcset = `${f.src450} 450w, ${f.src900} 900w`; img.sizes = '(min-width: 900px) 200px, 40vw'; }
@@ -663,7 +723,8 @@ function syncSteps() {
     b.tabIndex = phone ? 0 : -1;
     $('.step__body', li).hidden = !open;
   });
-  syncBar();
+  syncBar(); syncFades();
+  if (phone && state.step === 4) setTimeout(peekCols, 600);
 }
 /* нижняя плашка телефона: [Чертёж] [У себя дома] [Далее: форма 1/5] … на последнем шаге (или когда все пройдены) — [В WhatsApp] */
 const STEP_NAMES = { 1: 'тип', 2: 'форма', 3: 'размер', 4: 'ткань', 5: 'итог' };
@@ -702,8 +763,8 @@ function openStep(n, scroll = true) {
   if (scroll && mqPhone.matches) {
     const li = $(`.step[data-step="${n}"]`);
     requestAnimationFrame(() => {
-      const vp = $('#vp'); const hdr = $('#hdr').offsetHeight;
-      const top = li.getBoundingClientRect().top + window.scrollY - hdr - (state.mode === 'model' ? vp.offsetHeight : 0);
+      /* шапка на телефоне не липкая: над шагом остаётся только липкое окно 3D (css: .vp { top: 0 }) */
+      const top = li.getBoundingClientRect().top + window.scrollY - (state.mode === 'model' ? $('#vp').offsetHeight : 0);
       window.scrollTo({ top: Math.max(0, top), behavior: reduced ? 'auto' : 'smooth' });
     });
   }
@@ -773,10 +834,29 @@ function dimsForView(view) {
   return list.filter((d) => d.view === view);
 }
 function updateDims() { if (stage && stage.setDims) stage.setDims(state.showDims && state.mode === 'model' ? dimsForView(stage.view || state.view) : null); }
-function setView(v) {
-  state.view = v;
+/* окно 3D: вид и «Размеры» — атрибутами на #vp (css телефона: рамка холста под размерные ряды, какие кнопки видны), на полосе видов
+   (компьютер) и на кнопке «Вид» (телефон: одна кнопка, по кругу 3D → Спереди → Сбоку → Сверху) */
+const VIEWS = ['3d', 'front', 'side', 'top'];
+const VIEW_NAMES = { '3d': '3D', front: 'Спереди', side: 'Сбоку', top: 'Сверху' };
+function syncVp() {
+  const vp = $('#vp'), v = VIEWS.includes(state.view) ? state.view : '3d';
+  vp.dataset.view = v; vp.toggleAttribute('data-dims', state.showDims && state.mode === 'model');
   $$('.vp__views [data-view]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.view === v)));
-  if (stage) { stage.setView(v, { animate: !reduced }); updateDims(); }
+  const b = $('#t-view'); if (!b) return;
+  $('#t-view-t').textContent = VIEW_NAMES[v];
+  b.setAttribute('aria-label', `Вид: ${VIEW_NAMES[v]}. Следующий: ${VIEW_NAMES[VIEWS[(VIEWS.indexOf(v) + 1) % VIEWS.length]]}`);
+}
+function setView(v) {
+  state.view = v; syncVp();
+  /* рамка холста на телефоне зависит от вида (css) — сцена берёт новый размер до расчёта кадра (ResizeObserver пришёл бы после него) */
+  if (stage) { if (stage.resize) stage.resize(); stage.setView(v, { animate: !reduced }); updateDims(); }
+}
+function toggleDims() {
+  state.showDims = !state.showDims; $('#t-dims').setAttribute('aria-pressed', String(state.showDims)); syncVp();
+  if (!stage) return;
+  if (stage.resize) stage.resize();
+  updateDims();
+  if (mqPhone.matches && state.mode === 'model' && stage.frame) stage.frame({ animate: false });   // окно и рамка холста изменились — кадр заново
 }
 async function initStage() {
   const host = $('#stage');
@@ -793,7 +873,7 @@ async function initStage() {
   let shown = false;
   stage.on('render', () => { if (!shown) { shown = true; $('#vp-ph').classList.add('is-gone'); } });
   stage.on('interact', toastHide);   // повернули или приблизили модель — плашка уходит
-  stage.on('view', (v) => { if (typeof v === 'string' && v !== state.view) { state.view = v; $$('.vp__views [data-view]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.view === v))); } updateDims(); });
+  stage.on('view', (v) => { if (typeof v === 'string' && v !== state.view) { state.view = v; syncVp(); } updateDims(); });
   const real = $('#t-real');
   real.hidden = !(typeof stage.photoreal === 'function' && (stage.supportsPhotoreal === true || stage.photorealSupported === true));
   rebuild(quality());
@@ -941,7 +1021,7 @@ async function openDrawing() {
   };
   const fail = (e) => { console.warn('drawing', e); if (mine()) wait.textContent = 'Чертёж пока не получилось подготовить. Отправьте вариант в WhatsApp — мастер пришлёт схему.'; };
   ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = true; });
-  $('#dd-hint').hidden = true; $('#dd-pan').scrollLeft = 0;
+  $('#dd-hint').hidden = true; zoomDrawing(false);
   /* тот же вариант — готовый чертёж сразу */
   if (drawing && drawing.key === key) { openDialog(dlg); show(drawing); return; }
   img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…';
@@ -985,7 +1065,28 @@ async function openDrawing() {
 /* телефон в руке: лист во всю высоту окна шире экрана и листается в сторону — подсказка, только когда листать есть куда */
 function syncDrawingHint() {
   const pan = $('#dd-pan'), hint = $('#dd-hint'); if (!pan || !hint) return;
-  hint.hidden = $('#dd-img').hidden || pan.scrollWidth <= pan.clientWidth + 8;
+  hint.hidden = $('#dd-img').hidden || $('#dd-sheet').classList.contains('is-zoom') || pan.scrollWidth <= pan.clientWidth + 8;
+}
+/* «Крупно» на телефоне — увеличение внутри окна: во встроенном браузере Instagram новая вкладка не открывается, и клиент оставался
+   с голой картинкой вне конструктора. Лист вчетверо шире окна (css: .is-zoom), двигается пальцем в обе стороны, щипком — ещё крупнее;
+   at — точка касания листа: она остаётся под пальцем. Кнопка становится «Весь лист». На компьютере — по-прежнему PNG в новой вкладке */
+const drawingZoomed = () => $('#dd-sheet').classList.contains('is-zoom');
+function zoomDrawing(on, at) {
+  const sheet = $('#dd-sheet'), pan = $('#dd-pan'), img = $('#dd-img'), b = $('#dd-open'), phone = mqPhone.matches;
+  on = !!on && phone;
+  const pr = pan.getBoundingClientRect(), r0 = img.getBoundingClientRect();
+  const px = at ? at.clientX : pr.left + pr.width / 2, py = at ? at.clientY : pr.top + pr.height / 2;
+  const fx = r0.width ? Math.max(0, Math.min(1, (px - r0.left) / r0.width)) : 0.5, fy = r0.height ? Math.max(0, Math.min(1, (py - r0.top) / r0.height)) : 0.5;
+  sheet.classList.toggle('is-zoom', on);
+  if (phone) b.setAttribute('aria-pressed', String(on)); else b.removeAttribute('aria-pressed');
+  b.setAttribute('aria-label', !phone ? 'Открыть чертёж во весь экран' : on ? 'Показать весь лист' : 'Показать чертёж крупно');
+  $('span', b).textContent = on ? 'Весь лист' : 'Крупно';
+  $('use', b).setAttribute('href', on ? `${ICONS}#i-minus` : '#i-plus');
+  if (on) {
+    $('#dd-hint').hidden = true;
+    const r1 = img.getBoundingClientRect();
+    pan.scrollLeft += r1.left + fx * r1.width - px; pan.scrollTop += r1.top + fy * r1.height - py;
+  } else { pan.scrollLeft = 0; pan.scrollTop = 0; syncDrawingHint(); }
 }
 async function drawingPng() { const b = await drawing.toPNG(3508); return b; }
 /* чертёж во весь экран: PNG в новой вкладке — можно увеличить пальцами */
@@ -1117,7 +1218,8 @@ async function setMode(mode, { focus = false } = {}) {
   $('#main').dataset.mode = mode;
   $$('[data-mode-tab]').forEach((b) => { const on = b.dataset.modeTab === mode; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; });
   $('#steps').hidden = !model; $('#room-panel').hidden = !room; $('#photo-panel').hidden = !photo;
-  $('.vp__views').hidden = !model; $('#t-dims').hidden = !model; $('#t-drawing').hidden = !model; $('#vp-size').hidden = !model;
+  $('.vp__views').hidden = !model; $('#t-view').hidden = !model; $('#t-dims').hidden = !model; $('#t-drawing').hidden = !model; $('#vp-size').hidden = !model;
+  syncVp();
   $('#photo-host').hidden = !photo; $('#ph-empty').hidden = !photo || !!(photoApi && photoApi.hasPhoto);
   if (focus) $(`[data-mode-tab="${mode}"]`).focus();
   if (prev === 'photo' && photoApi && photoApi.leave) photoApi.leave();
@@ -1230,8 +1332,8 @@ async function photoSend() {
 async function openHome() {
   await setMode('photo');
   if (mqPhone.matches) {
-    const vp = $('#vp'), hdr = $('#hdr').offsetHeight;
-    requestAnimationFrame(() => { const top = vp.getBoundingClientRect().top + window.scrollY - hdr; window.scrollTo({ top: Math.max(0, top), behavior: reduced ? 'auto' : 'smooth' }); });
+    const vp = $('#vp');   // окно 3D липнет к верху экрана — подводим его туда
+    requestAnimationFrame(() => { const top = vp.getBoundingClientRect().top + window.scrollY; window.scrollTo({ top: Math.max(0, top), behavior: reduced ? 'auto' : 'smooth' }); });
   }
 }
 /* в комнате нижняя кнопка «В WhatsApp» отправляет план комнаты (размер + предметы + параметры «Моего варианта») */
@@ -1306,7 +1408,21 @@ function bind() {
     fabUI = { typeId: n.dataset.ftype, collectionId: null }; renderFabric(); $(`[data-ftype="${CSS.escape(n.dataset.ftype)}"]`).focus();
   });
   $('#fab-cols').addEventListener('click', (e) => { const b = e.target.closest('[data-fcol]'); if (!b) return; fabUI.collectionId = b.dataset.fcol; renderFabric(); const nb = $(`[data-fcol="${CSS.escape(b.dataset.fcol)}"]`); if (nb) nb.focus({ preventScroll: true }); });
-  $('#fab-sw').addEventListener('click', (e) => { const b = e.target.closest('[data-fslug]'); if (b) setFabric(b.dataset.fslug); });
+  /* долгое касание образца (телефон): выбрать цвет и показать образец крупно; «нажатие» от того же касания гасим */
+  const fsw = $('#fab-sw'); let lpT = 0, lpDone = false, lpXY = null;
+  fsw.addEventListener('click', (e) => { if (lpDone) { lpDone = false; return; } const b = e.target.closest('[data-fslug]'); if (b) setFabric(b.dataset.fslug); });
+  fsw.addEventListener('pointerdown', (e) => {
+    const b = e.target.closest('[data-fslug]'); clearTimeout(lpT); lpDone = false;
+    if (!b || e.pointerType !== 'touch') return;
+    lpXY = [e.clientX, e.clientY];
+    lpT = setTimeout(() => { lpDone = true; setFabric(b.dataset.fslug); openFabZoom(); }, 480);
+  });
+  fsw.addEventListener('pointermove', (e) => { if (lpXY && Math.hypot(e.clientX - lpXY[0], e.clientY - lpXY[1]) > 10) clearTimeout(lpT); });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => fsw.addEventListener(ev, () => clearTimeout(lpT)));
+  fsw.addEventListener('contextmenu', (e) => e.preventDefault());
+  $('#fab-cur').addEventListener('click', openFabZoom);
+  for (const el of [$('#fab-tabs'), $('#fab-cols')]) el.addEventListener('scroll', syncFades, { passive: true });
+  window.addEventListener('resize', syncFades);
 
   $('#note').addEventListener('input', (e) => { state.note = e.target.value.slice(0, 300); setState({}, { rebuild: false }); });
   $('#qty').addEventListener('change', (e) => { const q = parseInt(e.target.value, 10); qtyTouched = true; setState({ qty: Math.max(1, Math.min(99, Number.isFinite(q) ? q : state.qty)) }, { rebuild: false }); });
@@ -1329,8 +1445,8 @@ function bind() {
   $('#ph-save').addEventListener('click', photoSave); $('#ph-wa').addEventListener('click', photoSend);
   $('#bar-next').addEventListener('click', () => { const n = +$('#bar-next').dataset.goto; if (n) openStep(n); });
   $('#ar-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(variantLink()); toast('Ссылка скопирована'); } catch (e) { toast('Скопируйте адрес из строки браузера'); } });
-  $('#dd-open').addEventListener('click', openDrawingFull);
-  $('#dd-img').addEventListener('click', () => { if (!$('#dd-open').hidden) openDrawingFull(); });
+  $('#dd-open').addEventListener('click', () => (mqPhone.matches ? zoomDrawing(!drawingZoomed()) : openDrawingFull()));
+  $('#dd-img').addEventListener('click', (e) => { if ($('#dd-open').hidden) return; if (mqPhone.matches) zoomDrawing(!drawingZoomed(), e); else openDrawingFull(); });
   $('#dd-img').addEventListener('load', syncDrawingHint); window.addEventListener('resize', syncDrawingHint);
   $('#dd-pan').addEventListener('scroll', () => { if ($('#dd-pan').scrollLeft > 24) $('#dd-hint').hidden = true; }, { passive: true });   // уже листают — подсказка не нужна
   $('#vp-fab').addEventListener('click', seatCloseUp);
@@ -1346,7 +1462,10 @@ function bind() {
   $('#dd-svg').addEventListener('click', () => { if (drawing) download(new Blob([drawing.svg], { type: 'image/svg+xml' }), `ricca-chertezh-${drawing.id}.svg`); });
   $('#dd-send').addEventListener('click', sendDrawing);
   $$('dialog').forEach((dlg) => {
-    dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('[data-close]')) closeDialog(dlg); });
+    dlg.addEventListener('click', (e) => {
+      if (dlg.id === 'dlg-fab' && performance.now() - fabZoomAt < 500) return;   // палец ещё лежит после долгого касания — его «нажатие» окно не закрывает
+      if (e.target === dlg || e.target.closest('[data-close]')) closeDialog(dlg);
+    });
     dlg.addEventListener('close', () => onDialogClosed(dlg));
   });
 
@@ -1356,7 +1475,22 @@ function bind() {
     const bs = $$('.vp__views [data-view]'); const i = bs.findIndex((b) => b.dataset.view === state.view);
     const n = bs[(i + (e.key === 'ArrowRight' ? 1 : -1) + bs.length) % bs.length]; setView(n.dataset.view); n.focus();
   });
-  $('#t-dims').addEventListener('click', () => { state.showDims = !state.showDims; $('#t-dims').setAttribute('aria-pressed', String(state.showDims)); updateDims(); });
+  /* телефон, «Модель»: вертикальный свайп одним пальцем по окну 3D листает страницу (css: touch-action: pan-y). Пока браузер не забрал
+     жест, он успевает прислать 1–2 движения — без этой проверки камера при каждом пролистывании наклонялась бы на ~6°. Жест, начатый
+     вертикально, до камеры не доходит; начатый вбок — вращает как раньше; два пальца (приближение) не трогаем */
+  let swipe = null;
+  $('#stage').addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'touch') return;
+    swipe = e.isPrimary && e.target.tagName === 'CANVAS' && getComputedStyle(e.target).touchAction === 'pan-y' ? { id: e.pointerId, x: e.clientX, y: e.clientY, v: null } : null;
+  }, true);
+  window.addEventListener('pointermove', (e) => {
+    if (!swipe || e.pointerId !== swipe.id) return;
+    if (swipe.v === null) { const dx = Math.abs(e.clientX - swipe.x), dy = Math.abs(e.clientY - swipe.y); if (dx + dy < 3) return; swipe.v = dy > dx; }
+    if (swipe.v) e.stopImmediatePropagation();
+  }, true);
+  ['pointerup', 'pointercancel'].forEach((ev) => window.addEventListener(ev, (e) => { if (swipe && e.pointerId === swipe.id) swipe = null; }, true));
+  $('#t-dims').addEventListener('click', toggleDims);
+  $('#t-view').addEventListener('click', () => setView(VIEWS[(VIEWS.indexOf(state.view) + 1) % VIEWS.length]));
   $('#t-photo').addEventListener('click', () => (state.mode === 'photo' ? photoSave() : savePhoto()));
   $('#t-frame').addEventListener('click', () => { if (state.mode === 'photo' && photoApi) { photoApi.reset(); syncPhotoUI(); return; } if (state.mode === 'room' && roomApi) { roomApi.resetView(); return; } if (stage && stage.frame) stage.frame({ animate: !reduced }); });
   $('#t-real').addEventListener('click', photoreal);
@@ -1405,6 +1539,7 @@ function init() {
   if (src === 'hash') [1, 2, 3, 4, 5].forEach((n) => state.visited.add(n));
   if (src === 'query') [1, 2, 3].forEach((n) => state.visited.add(n));
   state.visited.add(state.step);
+  initBack(src); syncVp();
   syncSteps();
   bind();
   document.documentElement.classList.add('cfg-ui');

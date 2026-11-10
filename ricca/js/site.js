@@ -3,7 +3,7 @@
    8 лучших на главной) → ссылки WhatsApp/телефон → вход (занавес, видео) → видео по экрану → появления → окна и адреса (#catalog/<категория>,
    #item-<id>, #work-<id>, #fabric-<коллекция>-<N>) → экран категории / тканей (библиотека js/fabrics-data.js: у коллекции одно
    большое фото и цвета кнопками; #fabric-… открывает «Ткани» на этой коллекции с этим цветом) → окно изделия
-   → окно работы (готовый каталог) → корзина (данные — js/cart.js, RICCA_CART) → меню → шапка, липкая плашка и плавающий WhatsApp.
+   → окно работы (готовый каталог) → корзина (данные — js/cart.js, RICCA_CART) → меню → шапка, нижнее меню телефона и плавающий WhatsApp.
    Новость ELUNA — карточка с луной на чистом CSS (css/site.css, .news), скрипт ей не нужен.
    Единственный владелец ссылок [data-wa] / [data-tel] — этот файл. */
 (() => {
@@ -65,6 +65,7 @@
   const plural3 = (n, f) => T ? (n === 1 ? tr(f[0]) : tr(f[2])) : f[n % 10 === 1 && n % 100 !== 11 ? 0 : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2)];
   const waUrl = (text) => `https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(text)}`;
   const mqPhone = window.matchMedia('(max-width: 899px)');
+  const mqSmall = window.matchMedia('(max-width: 599.98px)');   // телефон: карточки по одной, окно работы листается (css/site.css)
 
   /* ---------- Данные каталога ---------- */
   /* Только мягкая мебель (владелец, 13 октября: «мы столы и стулья не делаем»): категории chairs и tables на сайт не идут, даже если
@@ -211,22 +212,27 @@
   /* карточка работы: фото 4 : 5 (cover), под ним название (16–18 px) и ткань одной строкой — ссылка #work-<id> (открывает окно работы).
      data-cat на <li> — фильтр экрана «Наши работы»; wide — карточка на две колонки (главная, компьютер: горизонтальный кадр в рамке
      ≈ 1,65 : 1, css .wk__wide; sizes — вдвое шире) */
-  const workCard = (w, n, sizes, eager, withSub = true, wide = false) => {
+  const workCard = (w, n, sizes, eager, withSub = true, wide = false, phone = '43vw') => {
     const p = w.photos[n] || w.photos[0];
     if (!w.model) return `<li data-cat="${esc(w.cat)}"${wide ? ' class="wk__wide"' : ''}><a class="wk__a" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
       + `<span class="wk__img">${workPic(p, wide ? zSizes(sizes, 2) : sizes, eager)}</span>`
       + `<span class="wk__t">${typo(w.title)}</span>${withSub && w.sub ? `<span class="wk__s">${nwHyph(typo(w.sub))}</span>` : ''}</a></li>`;
-    /* модель: фото на тёплом «подиуме», при наведении — второй ракурс; подпись — вид мебели капителью, название антиквой;
-       телефон — две колонки .wk ≈ 43vw (sizes для srcset, workPic умножает на --z) */
+    /* модель: фото на «подиуме», при наведении — второй ракурс; подпись — вид мебели капителью (на телефоне скрыт), название, строка;
+       телефон — две колонки .wk ≈ 43vw (sizes для srcset, workPic умножает на --z); крупная карточка во всю ширину — phone = PHONE_BIG */
     const alt = w.photos.find((q, i) => i !== n && q.studio);
     const [kind, name] = splitTitle(w.title);
     return `<li data-cat="${esc(w.cat)}"><a class="wk__a wk__a--model" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
-      + `<span class="wk__img">${workPic(p, sizes, eager, zoomOf(p), '43vw')}${alt ? `<img class="wk__alt" src="${esc(alt.src800)}" width="${p800(alt).w}" height="${p800(alt).h}" alt="" loading="lazy" decoding="async"${zoomAttr(alt)}>` : ''}</span>`
+      + `<span class="wk__img">${workPic(p, sizes, eager, zoomOf(p), phone === PHONE_BIG ? bigSizes(zoomOf(p)) : phone)}${alt ? `<img class="wk__alt" src="${esc(alt.src800)}" width="${p800(alt).w}" height="${p800(alt).h}" alt="" loading="lazy" decoding="async"${zoomAttr(alt)}>` : ''}</span>`
       + `<span class="wk__cap">${kind ? `<span class="wk__k">${typo(kind)}</span>` : ''}<span class="wk__t">${typo(name)}</span>${withSub && w.sub ? `<span class="wk__s">${nwHyph(typo(w.sub))}</span>` : ''}</span></a></li>`;
   };
+  /* крупная карточка телефона (во всю ширину, 350 px; ритм «одна большая — две малых», DESIGN.md 4.5): sizes подобраны так, чтобы и на экране 3x
+     браузер брал малый файл 900 px (≈ 40 КБ; плотность 2–2,5x — резко), а не 2400 px (≈ 300 КБ): десять диванов по 300 КБ — те самые
+     «фото долго загружаются». workPic умножает sizes на масштаб изделия (--z × 0,92) — делим на него же: итог всегда 296 px × плотность ≤ 900 */
+  const PHONE_BIG = 'big';
+  const bigSizes = (z) => `${Math.floor(296 / (Math.max(1, z) * 0.92))}px`;
+  const bigAt = (i, n) => i % 3 === 0 || (i === n - 1 && i % 3 === 1);   // какие карточки ритма большие: 1-я, 4-я, 7-я… и последняя, если осталась одна
   // обложки плиток каталога: реальное фото вместо линейного рисунка; рисунок — в DRAW (миниатюра заявки «по вашему проекту»).
-  // телефон (< 600 px, css/site.css): первая плитка во всю ширину (≈ 90vw — на экране 3x «Диваны» берёт файл 1200 px), остальные
-  // парами (≈ 43vw); 600–767 — все парами
+  // телефон (< 600 px, css/site.css): Диваны · Кровати · Кресла — три в ряд (≈ 30vw); 600–767 — парами (≈ 43vw)
   const DRAW = {};
   $$('.tile[data-cat]').forEach((a) => {
     const cat = a.dataset.cat, box = $('.tile__img--draw', a), w = MODELS.find((x) => x.cat === cat) || WORKS.find((x) => x.cat === cat);
@@ -235,8 +241,7 @@
     if (svg) DRAW[cat] = svg.cloneNode(true);
     box.classList.remove('tile__img--draw');
     box.classList.add('tile__img--photo'); if (w.model) box.classList.add('tile__img--model');
-    const li = a.closest('li'), wide = !!li && !li.previousElementSibling;
-    box.innerHTML = workPic(w.photos[0], '(min-width: 1100px) 30vw, 46vw', false, w.model ? tileZoom(w.photos[0]) : 0, wide ? '(min-width: 600px) 43vw, 90vw' : '43vw');
+    box.innerHTML = workPic(w.photos[0], '(min-width: 1100px) 30vw, 46vw', false, w.model ? tileZoom(w.photos[0]) : 0, '(min-width: 600px) 43vw, 30vw');
   });
   // плитка «Ткани»: 8 настоящих образцов из библиотеки — по два из каждого типа (разные по светлоте), остальное — первыми типами
   (() => {
@@ -261,11 +266,33 @@
     const list = (BEST.length ? BEST : WORKS).slice(0, 8);
     if (!list.length) { sec.remove(); $$('[data-works-link]').forEach((a) => a.remove()); return; }
     const row = $('[data-works-row]', sec);
-    row.classList.add('wk');
+    row.classList.add('wk'); row.classList.remove('rv');   // появляется каждая карточка сама, а не сетка разом (DESIGN.md 4.10)
     row.innerHTML = list.map((w, i) => workCard(w, 0, WK_SIZES, false, true, (i === 0 || i === 5) && w.photos[0].w > w.photos[0].h)).join('');
+    Array.from(row.children).forEach((li) => li.classList.add('rv'));
+    // фишки под заголовком (телефон): «Все 41 · Диваны 21 · Кровати 15 · Кресла 5» — сразу экран работ с этим фильтром
+    const chips = $('[data-works-chips]', sec);
+    if (chips) {
+      const cnt = (c) => (c === 'all' ? WORKS : WORKS.filter((w) => w.cat === c)).length;
+      const cs = ['all', 'sofas', 'beds', 'armchairs'].filter((c) => cnt(c));
+      chips.innerHTML = cs.map((c) => `<a href="#catalog/works${c === 'all' ? '' : `/${c}`}">${c === 'all' ? tr('Все') : typo(catLabel(c))}<span class="chips__n" aria-hidden="true">${cnt(c)}</span><span class="sr-only">: ${cnt(c)}</span></a>`).join('');
+      chips.hidden = cs.length < 3;
+    }
     sec.hidden = false;
     $$('[data-works-link]').forEach((a) => { a.hidden = false; });
     $$('[data-works-step]', sec).forEach((b) => b.remove());
+  })();
+  /* «Популярные модели» на главной (сразу под плитками): четыре модели каталога на подиуме — те же карточки и то же окно, что на экранах
+     категорий. Телефон: большая, пара, большая (css .wk--rhythm) — у больших sizes PHONE_BIG. Список — здесь; модели нет в данных — пропускаем */
+  const POPULAR = ['m-sofa-01', 'm-bed-01', 'm-armchair-01', 'm-sofa-19'];
+  (() => {
+    const sec = $('#popular'), row = sec && $('[data-pop-row]', sec);
+    if (!row) return;
+    const list = POPULAR.map((id) => MODELS.find((w) => w.id === id)).filter(Boolean);
+    if (list.length < 2) { sec.remove(); return; }
+    row.classList.add('wk', 'wk--rhythm');
+    row.innerHTML = list.map((w, i) => workCard(w, 0, WK_SIZES, false, true, false, bigAt(i, list.length) ? PHONE_BIG : '43vw')).join('');
+    Array.from(row.children).forEach((li) => li.classList.add('rv'));
+    sec.hidden = false;
   })();
 
   /* Линейные рисунки (.draw в плитках и на экране категории): при наведении и один раз при появлении на экране линия
@@ -552,7 +579,17 @@
     const dlg = $('#view');
     const title = $('#view-title'), nEl = $('[data-view-n]'), tabs = $('[data-view-tabs]'), content = $('[data-view-content]');
     const back = $('[data-view-back]'), wa = $('[data-view-wa]'), waLabel = $('[data-view-wa-label]'), foot = $('[data-view-foot]');
+    const colsBtn = $('[data-view-cols]', dlg);
     let key = null, spec = null;
+    /* телефон: модели крупно — ритм «одна большая во всю ширину, потом пара малых» (DESIGN.md 4.5; диваны и кровати — по умолчанию,
+       кресла — по две), переключатель «По две в ряд / Крупнее» рядом с числом моделей; выбор помнится в этом браузере (ricca:cols)
+       и действует на все три категории */
+    const COLS_KEY = 'ricca:cols';
+    const bigMode = (cat) => { const v = store.get(COLS_KEY, ''); return mqSmall.matches && (v ? v === 'big' : cat !== 'armchairs'); };
+    /* фишки категорий в окне моделей (телефон): «Диваны 29 · Кровати 26 · Кресла 12 · Ткани» — сменить категорию, не закрывая окно */
+    const VCATS = ['sofas', 'beds', 'armchairs'];
+    const catChips = (cat) => VCATS.filter((c) => MODELS.some((w) => w.cat === c)).map((c) => { const n = MODELS.filter((w) => w.cat === c).length; return `<button type="button" data-vcat="${c}" aria-pressed="${c === cat}">${typo(catLabel(c))}<span class="view__tabs-n" aria-hidden="true">${n}</span><span class="sr-only">: ${n}</span></button>`; }).join('')
+      + (CATS.fabrics && FCOL.size ? `<button type="button" data-vcat="fabrics" aria-pressed="false">${typo(catLabel('fabrics'))}</button>` : '');
     const mark = '<span class="mark" aria-hidden="true">RICCA DESIGNS</span>';
     /* Экран категории: сверху — сетка реальных работ ателье (фото 4 : 5, название и ткань; нажали — окно работы #work-<id>);
        ниже, под тонкой линией, — «На заказ»: абзац, что шьём, три действия (3D, фото в WhatsApp, заявка в корзину) */
@@ -561,11 +598,13 @@
       const k = KINDS[cat] || { verb: tr`Шьём: ${lcFirst(catLabel(cat))}`, what: [], wa: lcFirst(catLabel(cat)), title: catLabel(cat) };
       const ws = MODELS.filter((w) => w.cat === cat);
       title.innerHTML = typo(k.label || catLabel(cat));
-      tabs.classList.remove('is-fab'); tabs.innerHTML = ''; tabs.hidden = true;
+      const chips = catChips(cat), one = bigMode(cat);
+      tabs.classList.remove('is-fab'); tabs.classList.add('is-cats'); tabs.innerHTML = chips; tabs.hidden = !chips;
+      if (colsBtn) { colsBtn.hidden = ws.length < 2; colsBtn.innerHTML = one ? tr('По&nbsp;две в&nbsp;ряд') : tr('Крупнее'); colsBtn.setAttribute('aria-pressed', String(!one)); }
       if (foot) foot.hidden = true;   // WhatsApp — среди трёх действий
       nEl.innerHTML = ws.length ? `${ws.length}&nbsp;${plural3(ws.length, ['модель', 'модели', 'моделей'])}` : '';
       back.textContent = tr('Каталог');
-      content.innerHTML = (ws.length ? `<ul class="wk" role="list" aria-label="${esc(tr`Модели: ${k.label || catLabel(cat)}`.replace(/\u00a0/g, ' '))}">${ws.map((w, i) => workCard(w, 0, GRID_SIZES, i < 4)).join('')}</ul>` : '')
+      content.innerHTML = (ws.length ? `<ul class="wk${one ? ' wk--rhythm' : ''}" role="list" aria-label="${esc(tr`Модели: ${k.label || catLabel(cat)}`.replace(/\u00a0/g, ' '))}">${ws.map((w, i) => workCard(w, 0, GRID_SIZES, i < (one ? 3 : 4), true, false, one && bigAt(i, ws.length) ? PHONE_BIG : '43vw')).join('')}</ul>` : '')
         + `<section class="kind${ws.length ? ' kind--after' : ''}" aria-labelledby="kind-t">`
         + '<div class="kind__side">'
         + `<h3 class="label kind__t" id="kind-t">${tr('На&nbsp;заказ')}</h3>`
@@ -587,9 +626,10 @@
     const WCATS = ['sofas', 'beds', 'armchairs'];
     function renderWorks() {
       title.textContent = tr('Наши работы');
-      tabs.classList.remove('is-fab');
+      tabs.classList.remove('is-fab', 'is-cats');
       if (foot) foot.hidden = true;
-      back.textContent = tr('Каталог');
+      if (colsBtn) colsBtn.hidden = true;
+      back.textContent = tr('Назад');   // сюда приходят с главной («Наши работы», фишки) и из меню — «Каталог» было бы неправдой
       const cnt = (c) => (c === 'all' ? WORKS : WORKS.filter((w) => w.cat === c)).length;
       const chips = ['all', ...WCATS.filter((c) => cnt(c))];
       tabs.innerHTML = chips.map((c) => `<button type="button" data-wcat="${c}" aria-pressed="false">${c === 'all' ? tr('Все') : typo(catLabel(c))}<span class="view__tabs-n" aria-hidden="true">${cnt(c)}</span><span class="sr-only">: ${cnt(c)}</span></button>`).join('');
@@ -696,7 +736,8 @@
       title.textContent = tr('Ткани');
       nEl.innerHTML = typo(tr('Популярные коллекции. Выберите цвет — фото сменится.'));   // «больше 200 коллекций и 5000 цветов» — один раз, в конце
       back.textContent = tr('Каталог');
-      tabs.classList.add('is-fab');
+      if (colsBtn) colsBtn.hidden = true;
+      tabs.classList.remove('is-cats'); tabs.classList.add('is-fab');
       tabs.innerHTML = FLIB.map((t, i) => `<button type="button" data-ftype="${esc(t.id)}" aria-pressed="${i === 0}">${esc(t.title)}</button>`).join('');
       tabs.hidden = FLIB.length < 2;
       const kindLine = (c) => { const n = c.colours.length; let k = String(c.kind || '').trim(); if (!fabKindOf(c) && k.includes(':')) k = k.slice(k.indexOf(':') + 1).trim(); return `${typo(k.replace(/^./, (ch) => ch.toUpperCase()))}&nbsp;· ${n}&nbsp;${plural3(n, ['цвет', 'цвета', 'цветов'])}`; };
@@ -877,7 +918,8 @@
     }
     function renderFabrics() {
       if (FCOL.size) { renderLibrary(); return; }
-      tabs.classList.remove('is-fab'); if (foot) foot.hidden = false;
+      tabs.classList.remove('is-fab', 'is-cats'); if (foot) foot.hidden = false;
+      if (colsBtn) colsBtn.hidden = true;
       const n = FABRICS.reduce((s, g) => s + ((g && g.items) || []).length, 0);
       title.textContent = tr('Ткани');
       nEl.innerHTML = tr`${subOf('fabrics')}. Образцы&nbsp;— в&nbsp;шоуруме`;
@@ -890,7 +932,7 @@
       waLabel.innerHTML = `${tr('Подобрать ткань в&nbsp;WhatsApp')}<span class="sr-only"> · ${n} ${plural3(n, ['образец', 'образца', 'образцов'])}</span>`;
     }
     function setSub(sub) {
-      const btns = $$('button', tabs);
+      const btns = $$('button[data-sub]', tabs);   // фишки категорий (data-vcat) — не подфильтры
       if (!btns.length) sub = 'all';
       else if (!btns.some((b) => b.dataset.sub === sub)) sub = 'all';
       btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.sub === sub)));
@@ -904,6 +946,15 @@
       if (f && spec && spec.type === 'fabrics') { toType(f.dataset.ftype, true); return; }
       const wc = e.target.closest('button[data-wcat]');
       if (wc && spec && spec.type === 'works') { const sub = setWcat(wc.dataset.wcat); R.replace(`#catalog/works${sub !== 'all' ? `/${sub}` : ''}`); return; }
+      // фишка категории: сетка меняется на месте, окно не закрывается; адрес — #catalog/<категория> (replace: «Назад» не ходит по фишкам)
+      const vc = e.target.closest('button[data-vcat]');
+      if (vc && spec && spec.type === 'cat') {
+        const c = vc.dataset.vcat;
+        if (c === spec.cat) return;
+        R.replace(`#catalog/${c}`);
+        api.open(c === 'fabrics' ? { type: 'fabrics', sub: 'all' } : { type: 'cat', cat: c, sub: 'all' });
+        return;
+      }
       const b = e.target.closest('button[data-sub]');
       if (!b || !spec || spec.type !== 'cat') return;
       const sub = setSub(b.dataset.sub);
@@ -913,7 +964,13 @@
       dlg.classList.toggle('is-scrolled', dlg.scrollTop > 8);
       if (spec && spec.type === 'fabrics' && !spyRaf) spyRaf = requestAnimationFrame(spy);
     }, { passive: true });
-    return {
+    // «По две в ряд / Крупнее»: запомнить выбор и перестроить сетку на месте (файлы фото — под новую ширину карточки)
+    if (colsBtn) colsBtn.addEventListener('click', () => {
+      if (!spec || spec.type !== 'cat') return;
+      store.set(COLS_KEY, bigMode(spec.cat) ? 'two' : 'big');
+      renderCat(spec.cat);
+    });
+    const api = {
       isOpen: () => dlg.open,
       hash: () => (!spec ? '#catalog' : spec.type === 'fabrics' ? '#catalog/fabrics' : `#catalog/${spec.type === 'works' ? 'works' : spec.cat}${spec.sub && spec.sub !== 'all' ? `/${spec.sub}` : ''}`),
       parentHash: () => '#catalog',
@@ -945,6 +1002,7 @@
       },
       close(focus = true) { hideDlg(dlg, focus); }
     };
+    return api;
   })();
 
   /* ---------- Окно изделия: все фото (свайп, стрелки, миниатюры, ←/→), одна строка; заказ — количество, ткань из библиотеки
@@ -1158,9 +1216,19 @@
     const dlg = $('#lightbox');
     const stage = $('[data-lb-stage]', dlg), frame = $('[data-lb-frame]', dlg), img = $('[data-lb-img]', dlg);
     const title = $('[data-lb-title]', dlg), piece = $('[data-lb-piece]', dlg), count = $('[data-lb-count]', dlg);
-    const wa = $('[data-lb-wa]', dlg), waT = $('[data-lb-wa-t]', dlg), cartB = $('[data-lb-cart]', dlg), t3 = $('[data-lb-3d]', dlg), ig = $('[data-lb-ig]', dlg);
+    const wa = $('[data-lb-wa]', dlg), waT = $('[data-lb-wa-t]', dlg), cartB = $('[data-lb-cart]', dlg), t3s = $$('[data-lb-3d]', dlg), igs = $$('[data-lb-ig]', dlg);
     const arrows = $$('[data-lb-step]', dlg), thumbsBox = $('[data-lb-thumbs]', dlg), inner = $('.lb__in', dlg);
+    // телефон: счётчик на фото, штрихи под ним, следующее фото «выглядывает» при первом показе, строки под названием (css ≤ 599 px)
+    const pill = $('[data-lb-pill]', dlg), dotsBox = $('[data-lb-dots]', dlg), nextImg = $('[data-lb-next]', dlg);
+    const rowOf = (k) => $(`[data-lb-row="${k}"]`, dlg);
     let cur = null, idx = 0, tok = 0, slowT = 0, thumbs = [];
+    /* телефон: высота сцены — по фото во всю ширину (--lb-h): модель — кадр 4 : 3 (390 × 292), работа — самое высокое её фото (4 : 5 —
+       390 × 487), но не выше экрана без полосы действий и строки названия; у сцены своя высота — «Подробнее» её не сжимает */
+    function stageH() {
+      if (!cur || !mqSmall.matches) { dlg.style.removeProperty('--lb-h'); return; }
+      const w = dlg.clientWidth || window.innerWidth, r = Math.max(...cur.photos.map((p) => p.h / p.w));
+      dlg.style.setProperty('--lb-h', `${Math.round(Math.min(w * (cur.model ? 0.75 : r), window.innerHeight - 190))}px`);
+    }
     // «Хочу такой / такую / такие» — по роду: кровать, банкетка — такую; пара кресел — такие
     const want = (w) => (w.cat === 'beds' || /^(Банкетка|Bench)/.test(w.title) ? tr('такую') : /^(Пара|A pair)(?:\s|$)/.test(w.title) ? tr('такие') : tr('такой'));
     const link = (w) => (/^https?:$/.test(location.protocol) ? `${location.origin}${location.pathname}#work-${w.id}` : '');
@@ -1233,6 +1301,8 @@
       pre.src = src;
       if (pre.complete && pre.naturalWidth) put(src);
       count.innerHTML = n > 1 ? `<span aria-hidden="true">${pad2(idx + 1)} / ${pad2(n)}</span><span class="sr-only">${tr`Фото ${idx + 1} из ${n}`}</span>` : '';
+      if (pill) { pill.hidden = n < 2; pill.textContent = `${idx + 1} / ${n}`; }
+      if (dotsBox) Array.from(dotsBox.children).forEach((d, j) => d.classList.toggle('is-on', j === idx));
       // миниатюры — одна остановка Tab (roving tabindex), текущая — в середине ленты
       thumbs.forEach((b, j) => { b.setAttribute('aria-current', String(j === idx)); b.tabIndex = j === idx ? 0 : -1; });
       const tb = thumbs[idx];
@@ -1247,8 +1317,10 @@
       wa.href = waOf(w);
       waT.textContent = tr`Хочу ${want(w)}`;
       wa.setAttribute('aria-label', tr`Хочу ${want(w)}: ${label(w)} — написать в WhatsApp`);
-      t3.href = `configurator.html#cfg=v1~${/~|^t\./.test(w.cfg || '') ? w.cfg : 't.' + encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}`;
-      ig.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; ig.hidden = !!w.model;   // у моделей каталога поста нет
+      t3s.forEach((a) => { a.href = `configurator.html#cfg=v1~${/~|^t\./.test(w.cfg || '') ? w.cfg : 't.' + encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}`; });
+      igs.forEach((a) => { a.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; a.hidden = !!w.model; });   // у моделей каталога поста нет
+      // строки под названием (телефон): у модели — «Размер — любой», «Ткань — выбрать», «3D»; у работы — «3D» и Instagram
+      [['size', !w.model], ['fabric', !w.model], ['ig', !!w.model]].forEach(([k, off]) => { const li = rowOf(k); if (li) li.hidden = off; });
       /* «Подробнее» модели каталога (владелец, 9 ноября: «информации нет — пусть будет свёрнуто, захочет — откроет»):
          описание и карточка из RICCA_CATALOG по id; на /en данные не переведены — блок скрыт */
       const moreD = $('[data-lb-more]', dlg);
@@ -1279,7 +1351,19 @@
       }) : [];
       thumbsBox.replaceChildren(...thumbs);
       thumbsBox.hidden = !thumbs.length;
+      // работа с несколькими фото: штрихи под фото (у модели вместо них лента миниатюр)
+      if (dotsBox) { dotsBox.hidden = !many || !!w.model; dotsBox.innerHTML = dotsBox.hidden ? '' : w.photos.map(() => '<i></i>').join(''); }
+      stageH();
       syncCart();
+    }
+    /* первый показ работы с несколькими фото на телефоне (один раз за визит): кадр на 24 px сдвигается влево — справа выглядывает
+       следующее фото — и возвращается: видно, что фото листаются. reduced-motion — без подсказки (счётчик и штрихи остаются) */
+    function peek() {
+      if (!nextImg || !cur || cur.photos.length < 2 || !mqSmall.matches || reduceMotion) return;
+      try { if (sessionStorage.getItem('ricca:lbpeek') === '1') return; sessionStorage.setItem('ricca:lbpeek', '1'); } catch (_) { return; }
+      const w = cur, done = () => { stage.classList.remove('is-peek'); nextImg.hidden = true; nextImg.removeAttribute('src'); };
+      nextImg.onload = () => { if (cur !== w || !dlg.open || idx !== 0) return; nextImg.hidden = false; stage.classList.add('is-peek'); setTimeout(done, 1300); };
+      nextImg.src = fileOf(w.photos[1]);
     }
     cartB.addEventListener('click', () => {
       if (!RC || !cur) return;
@@ -1311,8 +1395,21 @@
     stage.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse' && !e.target.closest('[data-lb-step]')) { sx = e.clientX; sy = e.clientY; } });
     stage.addEventListener('pointerup', (e) => { if (sx == null) return; const dx = e.clientX - sx, dy = e.clientY - sy; sx = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) step(dx < 0 ? 1 : -1); });
     stage.addEventListener('pointercancel', () => { sx = null; });
+    /* телефон: свайп вниз по фото (больше 80 px, окно не прокручено) закрывает окно — как «смахнуть» фото; крестик остаётся.
+       Касания, а не pointer: вертикальный жест браузер забирает под прокрутку и pointerup не приходит */
+    let ty = null, tx = 0;
+    stage.addEventListener('touchstart', (e) => { ty = e.touches.length === 1 && inner.scrollTop <= 0 ? e.touches[0].clientY : null; tx = e.touches[0].clientX; }, { passive: true });
+    stage.addEventListener('touchend', (e) => {
+      if (ty == null) return;
+      const t = e.changedTouches[0], dy = t.clientY - ty, dx = t.clientX - tx; ty = null;
+      if (mqSmall.matches && dy > 80 && dy > Math.abs(dx) * 1.5 && inner.scrollTop <= 0 && closers.lightbox) closers.lightbox();
+    }, { passive: true });
+    stage.addEventListener('touchcancel', () => { ty = null; }, { passive: true });
+    // крестик над текстом — на сплошном белом (css .lb.is-scrolled)
+    inner.addEventListener('scroll', () => dlg.classList.toggle('is-scrolled', inner.scrollTop > 8), { passive: true });
     if ('ResizeObserver' in window) new ResizeObserver(() => { if (dlg.open) layout(); }).observe(stage);
     else window.addEventListener('resize', () => { if (dlg.open) layout(); });
+    window.addEventListener('resize', () => { if (dlg.open) stageH(); }, { passive: true });
     return {
       open(id, n = 0) {
         const w = WORK.get(id);
@@ -1320,7 +1417,7 @@
         const same = cur === w && dlg.open;
         if (!same) fill(w);
         showDlg(dlg, R.opener);
-        if (!same) { inner.scrollTop = 0; show(n); requestAnimationFrame(layout); }
+        if (!same) { inner.scrollTop = 0; dlg.classList.remove('is-scrolled'); stageH(); show(n); requestAnimationFrame(layout); if (!n) peek(); }
       },
       close(focus = true) { hideDlg(dlg, focus); }
     };
@@ -1539,11 +1636,20 @@
   })();
 
   /* ---------- Меню (телефон и планшет) ---------- */
+  /* открывают ячейки «Меню» нижних панелей ([data-open-menu]: на странице и в окне каталога) — бургера в шапке нет (DESIGN.md 4.1, 4.3) */
   const menu = $('#menu');
-  $('#menu-open').addEventListener('click', (e) => showDlg(menu, e.currentTarget));
+  $$('[data-open-menu]').forEach((b) => b.addEventListener('click', (e) => showDlg(menu, e.currentTarget)));
   menu.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="#"]');
-    if (a) { clearTimeout(menu._hideT); menu.classList.remove('is-in'); menu.close(); lock(); }   // сразу, чтобы прокрутка к разделу сработала
+    if (!a) return;
+    clearTimeout(menu._hideT); menu.classList.remove('is-in'); menu.close(); lock();   // сразу, чтобы прокрутка к разделу сработала
+    // меню открыли из окна каталога, а ссылка ведёт к разделу страницы («Как заказать», «Шоурум»…): окна закрываем, раздел — в начало экрана
+    const h = a.getAttribute('href'), el = /^#[a-z][\w-]*$/.test(h) && document.getElementById(h.slice(1));
+    if (el && $('dialog[open]')) {
+      e.preventDefault();
+      R.replace(h); PD.close(false); LB.close(false); View.close(false);
+      requestAnimationFrame(() => el.scrollIntoView({ block: 'start' }));
+    }
   });
 
   /* ---------- Закрытие уровней: ✕, Esc, щелчок мимо панели корзины ---------- */
@@ -1569,6 +1675,8 @@
     if (it && ITEM.has(it.dataset.item)) { e.preventDefault(); R.go(`#item-${it.dataset.item}`, it); return; }
     const wk = e.target.closest('[data-work]');
     if (wk && WORK.has(wk.dataset.work)) { e.preventDefault(); R.workN = +wk.dataset.workN || 0; R.go(`#work-${wk.dataset.work}`, wk); return; }
+    // «Каталог» в нижней панели окна каталога: окно закрыть, плитки категорий — в начало экрана
+    if (e.target.closest('[data-to-catalog]')) { e.preventDefault(); R.toCatalog(); return; }
     // «Подобрать ткань в шоуруме» (экран «Ткани»): окна закрыть, к разделу «Шоурум»
     const ts = e.target.closest('[data-to-showroom]');
     if (ts) {
@@ -1589,26 +1697,41 @@
   });
   window.addEventListener('popstate', () => R.apply(false));
 
-  /* ---------- Шапка: прозрачная над видео, прячется при прокрутке вниз; липкая плашка (телефон) ---------- */
-  const hdr = $('#hdr'), hero = $('.hero'), bar = $('#mbar'), showroom = $('#showroom');
-  const darkZones = $$('.biz, .foot');
+  /* ---------- Шапка: прозрачная над первым экраном, прячется при прокрутке вниз; нижнее меню телефона (DESIGN.md 4.1, 4.3) ---------- */
+  const hdr = $('#hdr'), hero = $('.hero'), bar = $('#mbar');
+  const darkZones = $$('.biz, .foot, [data-hdr="dark"]');   // тёмные блоки: над ними шапка и нижнее меню тоже тёмные
   let lastY = window.scrollY, raf = 0;
-  function updateBar() {
+  /* нижнее меню видно с первой секунды и не прячется при прокрутке. Спрятано (.is-off): открыто любое окно; в кадре «Шоурум», подвал
+     или пара «WhatsApp · Позвонить» (.cta-split) — там свои кнопки; ширина от 900 px (там его нет вовсе) */
+  const ends = new Set();
+  function syncBar() {
     if (!bar) { updateFab(false); return; }
-    const vh = window.innerHeight;
-    // над чёрной полосой «Для бизнеса» плашка тоже чёрная (как шапка) — без белой полосы поперёк
-    const by = vh - bar.offsetHeight / 2;
-    bar.classList.toggle('is-dark', darkZones.some((el) => { const r = el.getBoundingClientRect(); return r.top < by && r.bottom > by; }));
-    const on = mqPhone.matches && window.scrollY > hero.offsetHeight * 0.85 && !$('dialog[open]') && showroom.getBoundingClientRect().top > vh * 0.92;
-    if (on !== bar.classList.contains('is-on')) {
-      bar.classList.toggle('is-on', on);
-      bar.setAttribute('aria-hidden', String(!on));
-      $$('a', bar).forEach((a) => { a.tabIndex = on ? 0 : -1; });
+    const off = !mqPhone.matches || ends.size > 0 || !!$('dialog[open]');
+    if (off !== bar.classList.contains('is-off')) {
+      bar.classList.toggle('is-off', off);
+      bar.setAttribute('aria-hidden', String(off));
+      $$('a, button', bar).forEach((el) => { el.tabIndex = off ? -1 : 0; });
     }
-    updateFab(on);
+    updateFab(!off || ends.size > 0);   // плавающий WhatsApp не нужен ни рядом с панелью, ни там, где у блока свои кнопки
   }
-  /* плавающая кнопка WhatsApp (css: .wa-fab): после 400 px прокрутки, не под открытым окном и не вместе с плашкой .mbar (в ней WhatsApp уже есть);
-     на странице конструктора этого скрипта нет — там своя полоса */
+  function updateBar() {
+    if (bar) {
+      // над чёрной полосой «Для бизнеса» панель тоже чёрная (как шапка) — без белой полосы поперёк
+      const by = window.innerHeight - bar.offsetHeight / 2;
+      bar.classList.toggle('is-dark', darkZones.some((el) => { const r = el.getBoundingClientRect(); return r.top < by && r.bottom > by; }));
+    }
+    syncBar();
+  }
+  if (hasIO) {
+    const endsIO = new IntersectionObserver((es) => {
+      es.forEach((e) => { if (e.isIntersecting) ends.add(e.target); else ends.delete(e.target); });
+      syncBar();
+    }, { rootMargin: '0px 0px -8% 0px' });
+    $$('.showroom, .foot, .cta-split').forEach((el) => endsIO.observe(el));
+  }
+  mqPhone.addEventListener('change', syncBar);
+  /* плавающая кнопка WhatsApp (css: .wa-fab) — только компьютер: после 400 px прокрутки, не под открытым окном, не у «Шоурума» и подвала.
+     На телефоне её нет (css display: none): WhatsApp — главная ячейка нижнего меню. На странице конструктора этого скрипта нет */
   const fab = document.createElement('a');
   fab.className = 'wa-fab'; fab.href = waUrl(CONFIG.msg.general); fab.target = '_blank'; fab.rel = 'noopener';
   fab.setAttribute('aria-label', T ? (T['Написать в WhatsApp'] || 'Message on WhatsApp') : 'Написать в WhatsApp');
@@ -1616,7 +1739,7 @@
   fab.tabIndex = -1; fab.setAttribute('aria-hidden', 'true');
   document.body.appendChild(fab);
   function updateFab(barOn) {
-    const on = window.scrollY > 400 && !$('dialog[open]') && !barOn;
+    const on = !mqPhone.matches && window.scrollY > 400 && !$('dialog[open]') && !barOn;
     if (on !== fab.classList.contains('is-on')) { fab.classList.toggle('is-on', on); fab.tabIndex = on ? 0 : -1; fab.setAttribute('aria-hidden', String(!on)); }
     // над чёрными «Для бизнеса» и подвалом — белая кнопка с чёрным значком (иначе чёрный круг сливается с фоном)
     const fy = window.innerHeight - 20 - 26;
@@ -1627,7 +1750,7 @@
     raf = requestAnimationFrame(() => {
       raf = 0;
       const y = window.scrollY, heroH = hero.offsetHeight;
-      // шапка прозрачна только в самом верху: обложка белая, а диван при прокрутке уходит вверх — под шапкой ему нужен фон
+      // шапка прозрачна только в самом верху (y < 8); дальше — подложка с размытием и линия
       const over = y < 8;
       hdr.classList.toggle('is-over', over);
       hdr.classList.toggle('is-scrolled', y > 8);   // линия под шапкой — только когда страница прокручена
@@ -1635,8 +1758,9 @@
       // зашла под шапку (а не с середины шапки — иначе на 30 px прокрутки белая полоса висит над чёрным)
       const hh = hdr.offsetHeight, mid = hh / 2;
       hdr.classList.toggle('is-dark', !over && darkZones.some((el) => { const r = el.getBoundingClientRect(); return r.top <= hh && r.bottom > mid; }));
-      if (over || y < lastY - 6) hdr.classList.remove('is-hidden');
-      else if (y > lastY + 6 && y > heroH && !hdr.contains(document.activeElement)) hdr.classList.add('is-hidden');
+      const busy = hdr.contains(document.activeElement) || !!$('dialog[open]');
+      if (over || y < lastY - 6) hdr.classList.remove('is-hidden');                    // вверх на 6 px — вернулась
+      else if (y > lastY + 6 && y > heroH && !busy) hdr.classList.add('is-hidden');    // вниз на 6 px, ниже первого экрана — ушла
       lastY = y;
       updateBar();
     });

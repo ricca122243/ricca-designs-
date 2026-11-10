@@ -1,10 +1,12 @@
-/* RICCA DESIGNS — первый экран (index.html #top, css/hero.css). Вариант задаёт адрес, как ?bg=white в js/site.js: ?hero=1 (по умолчанию) —
-   четыре реальные работы медленной сменой кадров: 6 с кадр, 1,2 с переход (CSS), пауза при наведении, в фоновой вкладке и когда экран
-   прокручен; prefers-reduced-motion и экономия трафика — только первый кадр, смена кадров руками по точкам; кнопка «пауза» (WCAG 2.2.2).
-   Грузится первым только первый кадр (preload в <head>), остальные — после него (data-src → src). ?hero=2 — ролик во весь экран из
-   <template id="hero-tpl">: постер сразу (LCP), ролик muted loop playsinline, на телефоне файл hero-mobile; играет только в кадре.
+/* RICCA DESIGNS — первый экран (index.html #top, css/hero.css; DESIGN.md 4.4). Вариант задаёт адрес, как ?bg=white в js/site.js.
+   По умолчанию (html[data-hero="2"]) — ролик во весь экран: постер стоит в разметке (LCP), ролик muted loop playsinline, на телефоне
+   файл hero-mobile; играет только в кадре и в активной вкладке; кнопка «пауза» (WCAG 2.2.2).
+   ?hero=1 — смена реальных работ из <template id="hero-slides">: 6 с кадр, 1,2 с переход (CSS), пауза при наведении, в фоновой вкладке
+   и когда экран прокручен; prefers-reduced-motion и экономия трафика — только первый кадр, смена руками по точкам и свайпом.
+   Телефон (≤ 599 px): кадры с data-phone="0" не показываем — изделие в них не поднять выше текста (css/hero.css, --base).
+   Грузится первым только первый кадр, остальные — после него (data-src → src).
    Атрибут html[data-hero] ставит строка в #top до разметки — при переходах по #адресам ?hero остаётся в адресе сам.
-   Разметку точек и паузы вставляет этот скрипт: без него ряд пуст, виден первый кадр. Подписи — RU/EN по lang страницы (en.html). */
+   Разметку точек и паузы вставляет этот скрипт: без него ряд пуст, виден постер. Подписи — RU/EN по lang страницы (en.html). */
 (() => {
   'use strict';
   const root = document.documentElement, hero = document.querySelector('.hero');
@@ -17,7 +19,7 @@
     : { frames: 'Кадры с работами', frame: (i, n) => `Кадр ${i} из ${n}`, stop: 'Остановить смену кадров', play: 'Запустить смену кадров', vStop: 'Остановить видео', vPlay: 'Включить видео' };
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = !!(navigator.connection && navigator.connection.saveData);
-  if (!root.dataset.hero && /[?&]hero=2(?:&|$)/.test(location.search)) root.dataset.hero = '2';   // страховка, если строка в #top не выполнилась
+  if (!root.dataset.hero) root.dataset.hero = /[?&]hero=1(?:&|$)/.test(location.search) ? '1' : '2';   // страховка, если строка в #top не выполнилась
   const pad = (n) => String(n).padStart(2, '0');
   const ico = (id) => `<svg class="ico" aria-hidden="true"><use href="#${id}"/></svg>`;
   // кнопка пауза/пуск: aria-pressed — «остановлено»
@@ -30,16 +32,22 @@
     if ('IntersectionObserver' in window) new IntersectionObserver((es) => { seen.view = es[0].isIntersecting; onChange(); }, { threshold: .15 }).observe(hero);
   };
 
-  if (root.dataset.hero === '2') video(); else slides();
+  if (root.dataset.hero === '1') slides(); else video();
 
-  /* ---------- Вариант 1: четыре работы ---------- */
+  /* ---------- Вариант ?hero=1: реальные работы ---------- */
   function slides() {
+    const tpl = document.getElementById('hero-slides');
+    if (!tpl) return;
+    media.insertBefore(tpl.content.cloneNode(true), media.querySelector('.hero__shade'));   // кадры — под градиентом
+    media.querySelectorAll('.hero__poster, .hero__video').forEach((el) => el.remove());
+    // телефон: кадры, где изделие остаётся под текстом, не показываем
+    if (window.matchMedia('(max-width: 599px)').matches) media.querySelectorAll('.hero__slide[data-phone="0"]').forEach((li) => li.remove());
     const list = Array.from(hero.querySelectorAll('.hero__slide'));
     const n = list.length;
     if (n < 2) return;
     let i = 0, timer = 0, hover = false, userPaused = reduce || saveData, fading = 0;
     const DWELL = 6000, FADE = reduce ? 0 : 1250;
-    // остальные кадры: src из data-src — только после первого (он LCP, ему вся полоса)
+    // остальные кадры: src из data-src — только после первого (ему вся полоса)
     const arm = (li) => { const img = li.querySelector('img'); if (!img || img.getAttribute('src') || !img.dataset.src) return; img.sizes = img.dataset.sizes || '100vw'; img.srcset = img.dataset.srcset || ''; img.src = img.dataset.src; };
     const loadRest = () => list.slice(1).forEach(arm);
     const first = list[0].querySelector('img');
@@ -54,6 +62,7 @@
       dots.append(b);
     });
     const go = (k) => {
+      k = ((k % n) + n) % n;
       if (k === i) return;
       const cur = list[i], nxt = list[k];
       arm(nxt);
@@ -83,15 +92,20 @@
       hero.addEventListener('mouseenter', () => { hover = true; stop(); });
       hero.addEventListener('mouseleave', () => { hover = false; run(); });
     }
+    // свайп по кадру (палец): влево — следующий, вправо — предыдущий; вертикальная прокрутка страницы не задета
+    let sx = null, sy = 0;
+    media.parentNode.addEventListener('touchstart', (e) => { const t = e.touches[0]; if (e.target.closest('a, button')) { sx = null; return; } sx = t.clientX; sy = t.clientY; }, { passive: true });
+    media.parentNode.addEventListener('touchend', (e) => {
+      if (sx == null) return;
+      const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy; sx = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) { go(i + (dx < 0 ? 1 : -1)); run(); }
+    }, { passive: true });
     watch(run);
     run();
   }
 
-  /* ---------- Вариант 2: ролик ---------- */
+  /* ---------- По умолчанию: ролик ---------- */
   function video() {
-    const tpl = document.getElementById('hero-tpl');
-    if (!tpl) return;
-    media.insertBefore(tpl.content.cloneNode(true), media.querySelector('.hero__shade'));   // постер и ролик — под градиентом
     const v = media.querySelector('.hero__video');
     if (!v) return;
     const phone = window.matchMedia('(max-width: 767px)').matches;

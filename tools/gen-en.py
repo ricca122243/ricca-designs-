@@ -94,6 +94,15 @@ TEXT = {
     'Пн–Вс&nbsp;10:00–20:00': 'Mon–Sun&nbsp;10:00–20:00',
     'Задать вопрос': 'Ask a question',
     '© 2026 RICCA&nbsp;DESIGNS · Алматы': '© 2026 RICCA&nbsp;DESIGNS · Almaty',
+    # телефон, 10 ноября: первый экран (DESIGN.md 4.4), нижнее меню, «Популярные модели», строки окна модели, переключатель сетки
+    'Ателье&nbsp;· Алматы': 'Atelier&nbsp;· Almaty',
+    'Меню': 'Menu',
+    'Популярные модели': 'Popular models',
+    'Весь каталог': 'Full catalogue',
+    'По&nbsp;две в&nbsp;ряд': 'Two per row',
+    'Любой&nbsp;— под заказ': 'Any&nbsp;— made to order',
+    'Выбрать': 'Choose',
+    'Собрать похожий': 'Build a similar one',
 }
 ATTR = {
     'Модульный диван Денвер в рогожке цвета мокко — работа ателье': 'Denver modular sofa in mocha hopsack — the atelier\'s work',
@@ -120,6 +129,9 @@ ATTR = {
  'Пара кресел в изумрудном велюре в интерьере — работа ателье': 'A pair of armchairs in emerald velour in an interior — made by the atelier',
  'Кровать с округлым изголовьем — работа ателье': 'Bed with a rounded headboard — made by the atelier',
  'Банкетка в молочном букле — работа ателье': 'Bench in milky bouclé — made by the atelier',
+ # телефон, 10 ноября
+ 'Быстрые действия': 'Quick actions', 'Популярные модели': 'Popular models', 'Работы по видам': 'Works by type', 'Каталог': 'Catalogue',
+ 'Позвонить: +7 (707) 955-08-08': 'Call: +7 (707) 955-08-08',
 }
 
 # --- фрагменты разметки, где в английском другой порядок слов: ↗ у ELUNA «приклеена» к последнему слову названия (.tile__nw),
