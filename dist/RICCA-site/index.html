@@ -2,7 +2,7 @@
 <html lang="ru" class="no-js">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-aY0RCLQg5f+iUdlhdjtUpErFUHCZMOQ7LYomT2Oma50=' 'sha256-p4sG7M7JH1qw5CgLf+PhXWO7AvZy60DgBYUQOzV1gwY='; default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' blob: data:; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-GHHpUHZ+CHMmu4m7Sxr0P1YOvLM9V4+/VoYTluiqGhA=' 'sha256-aY0RCLQg5f+iUdlhdjtUpErFUHCZMOQ7LYomT2Oma50='; default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' blob: data:; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; upgrade-insecure-requests">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Мягкая мебель на заказ в Алматы — диваны, кровати, кресла · RICCA DESIGNS</title>
 <meta name="description" content="RICCA DESIGNS — ателье мягкой мебели в Алматы: диваны, кровати и кресла на заказ по вашему фото, эскизу или проекту. Любой размер и ткань, своё производство, шоурум на Навои, 208/2. Гарантия 5 лет, доставка по Казахстану и за рубеж.">
@@ -35,14 +35,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="RICCA">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<!-- первый кадр первого экрана (реальная работа, см. #top) = LCP: грузится первым; srcset и sizes те же, что у <img> -->
-<link rel="preload" as="image" href="img/works/C9h3Txai1KF-1-800.webp" imagesrcset="img/works/C9h3Txai1KF-1-800.webp 800w, img/works/C9h3Txai1KF-1-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
+<!-- первый кадр первого экрана (постер ролика, см. #top) = LCP: грузится первым; телефон и компьютер — свой файл, как в <picture> -->
+<link rel="preload" as="image" href="video/hero-mobile-poster.webp" media="(max-width: 767px)" fetchpriority="high">
+<link rel="preload" as="image" href="video/hero-desktop-poster.webp" media="(min-width: 768px)" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts-v3.css?v=9f57ed9080">
-<link rel="stylesheet" href="css/site.css?v=9f57ed9080">
-<link rel="stylesheet" href="css/hero.css?v=9f57ed9080">
-<link rel="stylesheet" href="css/home.css?v=9f57ed9080">
+<link rel="stylesheet" href="css/fonts-v3.css?v=4326cd5150">
+<link rel="stylesheet" href="css/site.css?v=4326cd5150">
+<link rel="stylesheet" href="css/hero.css?v=4326cd5150">
+<link rel="stylesheet" href="css/home.css?v=4326cd5150">
 <script>
 /* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,6 с). Не играем: повторный визит в этой сессии,
    prefers-reduced-motion, вход по ссылке с #якорем (Instagram → #catalog/sofas), недоступный sessionStorage.
@@ -121,52 +122,50 @@
       <button class="icon-btn hdr__sl" type="button" id="cart-open" aria-haspopup="dialog" aria-label="Корзина, пусто">
         <svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span class="hdr__count" id="cart-count" aria-hidden="true" hidden>0</span>
       </button>
-      <button class="icon-btn hdr__menu" type="button" id="menu-open" aria-haspopup="dialog" aria-label="Меню">
-        <svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg>
-      </button>
     </div>
   </div>
 </header>
 
 <main id="main">
 
-<!-- ═════════ 1. ВХОД (9 ноября, решение владельца № 26: на первом экране — реальные работы). Фото во весь экран, текст слева внизу
-     на мягком градиенте, ≤ 12 слов, без бегущей строки. Два варианта на выбор заказчика — css/hero.css, js/hero.js:
-     ?hero=1 (по умолчанию) — четыре реальные работы из js/works-data.js медленной сменой кадров (светлые, чистые кадры без людей и надписей;
-     грузится первым только первый — preload в <head>, остальные без src до загрузки первого); ?hero=2 — ролик рендеров партнёра
-     video/hero-* из шаблона hero-tpl (постер первым, на телефоне файл hero-mobile). Строка ниже ставит html[data-hero] до разметки.
-     Высота min(100svh, 900px) / телефон 78svh задана в CSS — при загрузке ничего не сдвигается. Ряд .hero__nav (точки, счётчик, пауза)
-     заполняет js/hero.js. js/site.js от первого экрана нужен только .hero (высота — для шапки и плашки). ═════════ -->
-<script>if (/[?&]hero=2(?:&|$)/.test(location.search)) document.documentElement.dataset.hero = '2';</script>
+<!-- ═════════ 1. ВХОД (DESIGN.md 4.4, 10 ноября). Кадр во весь экран, текст слева внизу — не больше 40 % кадра: подпись-капитель с точками
+     и паузой в одной строке, заголовок двумя строками из-под маски, две равные кнопки. Градиент — только нижние 45 %. css/hero.css, js/hero.js.
+     По умолчанию — ролик (постер первым; телефон — файл hero-mobile), владелец: первый экран с фото работ «не очень».
+     ?hero=1 — прежняя смена реальных работ из <template id="hero-slides"> (js/works-data.js; data-phone="0" — кадр не идёт на телефон:
+     изделие в нём не поднять выше текста; --pos-m — точка привязки кадра на телефоне). Строка ниже ставит html[data-hero] до разметки;
+     без JS виден постер. Высота min(100svh, 900px) / телефон 78svh задана в CSS — при загрузке ничего не сдвигается.
+     Ряд .hero__nav (точки, счётчик, пауза) заполняет js/hero.js. js/site.js от первого экрана нужен только .hero (высота — для шапки). ═════════ -->
+<script>document.documentElement.dataset.hero = /[?&]hero=1(?:&|$)/.test(location.search) ? '1' : '2';</script>
 <section class="hero" id="top" aria-labelledby="hero-title">
   <div class="hero__media" aria-hidden="true">
-    <ul class="hero__slides">
-      <li class="hero__slide is-on" style="--pos: 50% 50%"><img src="img/works/C9h3Txai1KF-1-800.webp" srcset="img/works/C9h3Txai1KF-1-800.webp 800w, img/works/C9h3Txai1KF-1-1600.webp 1600w" sizes="100vw" width="1600" height="1600" alt="" fetchpriority="high" decoding="async"></li>
-      <li class="hero__slide" style="--pos: 50% 55%"><img data-src="img/works/DdAJz7PiC61-6-800.webp" data-srcset="img/works/DdAJz7PiC61-6-800.webp 600w, img/works/DdAJz7PiC61-6-1600.webp 1200w" data-sizes="100vw" width="1200" height="1600" alt="" fetchpriority="low" decoding="async"></li>
-      <li class="hero__slide" style="--pos: 50% 58%"><img data-src="img/works/C0EZbsnoxni-1-800.webp" data-srcset="img/works/C0EZbsnoxni-1-800.webp 800w, img/works/C0EZbsnoxni-1-1600.webp 1200w" data-sizes="100vw" width="1200" height="1200" alt="" fetchpriority="low" decoding="async"></li>
-      <li class="hero__slide" style="--pos: 50% 50%"><img data-src="img/works/DKkV-ORIobz-1-800.webp" data-srcset="img/works/DKkV-ORIobz-1-800.webp 640w, img/works/DKkV-ORIobz-1-1600.webp 1280w" data-sizes="100vw" width="1280" height="1600" alt="" fetchpriority="low" decoding="async"></li>
-    </ul>
-    <template id="hero-tpl">
-      <picture class="hero__poster">
-        <source media="(max-width: 767px)" srcset="video/hero-mobile-poster.webp" type="image/webp">
-        <img src="video/hero-desktop-poster.webp" width="1600" height="900" alt="" fetchpriority="high" decoding="async">
-      </picture>
-      <video class="hero__video" muted loop playsinline preload="none" tabindex="-1" data-desktop="video/hero-desktop" data-mobile="video/hero-mobile"></video>
+    <picture class="hero__poster">
+      <source media="(max-width: 767px)" srcset="video/hero-mobile-poster.webp" type="image/webp">
+      <img src="video/hero-desktop-poster.webp" width="1600" height="900" alt="" fetchpriority="high" decoding="async">
+    </picture>
+    <video class="hero__video" muted loop playsinline preload="none" tabindex="-1" data-desktop="video/hero-desktop" data-mobile="video/hero-mobile"></video>
+    <template id="hero-slides">
+      <ul class="hero__slides">
+        <li class="hero__slide is-on" style="--pos: 50% 50%; --pos-m: 78% 100%"><img src="img/works/C9h3Txai1KF-1-800.webp" srcset="img/works/C9h3Txai1KF-1-800.webp 800w, img/works/C9h3Txai1KF-1-1600.webp 1600w" sizes="100vw" width="1600" height="1600" alt="" fetchpriority="high" decoding="async"></li>
+        <li class="hero__slide" data-phone="0" style="--pos: 50% 55%"><img data-src="img/works/DdAJz7PiC61-6-800.webp" data-srcset="img/works/DdAJz7PiC61-6-800.webp 600w, img/works/DdAJz7PiC61-6-1600.webp 1200w" data-sizes="100vw" width="1200" height="1600" alt="" fetchpriority="low" decoding="async"></li>
+        <li class="hero__slide" style="--pos: 50% 58%; --pos-m: 46% 100%"><img data-src="img/works/C0EZbsnoxni-1-800.webp" data-srcset="img/works/C0EZbsnoxni-1-800.webp 800w, img/works/C0EZbsnoxni-1-1600.webp 1200w" data-sizes="100vw" width="1200" height="1200" alt="" fetchpriority="low" decoding="async"></li>
+        <li class="hero__slide" data-phone="0" style="--pos: 50% 50%"><img data-src="img/works/DKkV-ORIobz-1-800.webp" data-srcset="img/works/DKkV-ORIobz-1-800.webp 640w, img/works/DKkV-ORIobz-1-1600.webp 1280w" data-sizes="100vw" width="1280" height="1600" alt="" fetchpriority="low" decoding="async"></li>
+      </ul>
     </template>
     <span class="hero__shade"></span>
   </div>
-  <div class="hero__front"><div class="wrap hero__grid">
-    <div class="hero__text">
-      <h1 class="hero__title" id="hero-title">Мягкая мебель на&nbsp;заказ</h1>
-      <p class="hero__lead">Своё ателье в&nbsp;Алматы</p>
-      <div class="hero__cta">
-        <a class="btn btn--fill" href="#catalog">Каталог</a>
-        <a class="btn btn--line" href="configurator.html">Собрать в&nbsp;3D</a>
-      </div>
+  <span class="hero__base" data-hdr="dark" aria-hidden="true"></span>
+  <div class="hero__front"><div class="wrap">
+    <div class="hero__top"><p class="hero__eye">Ателье&nbsp;· Алматы</p><div class="hero__nav"></div></div>
+    <h1 class="hero__title" id="hero-title">
+      <span class="hero__ln"><span>Мягкая мебель</span></span>
+      <span class="hero__ln"><span>на&nbsp;заказ</span></span>
+    </h1>
+    <div class="hero__cta">
+      <a class="btn btn--fill" href="#catalog">Каталог</a>
+      <a class="btn btn--line" href="configurator.html">Собрать в&nbsp;3D</a>
     </div>
-    <div class="hero__nav"></div>
   </div></div>
-  <script src="js/hero.js?v=9f57ed9080" defer></script>
+  <script src="js/hero.js?v=4326cd5150" defer></script>
 </section>
 
 <!-- ═════════ 2. КАТАЛОГ: пять плиток категорий. Нажали плитку — экран категории (#catalog/sofas): сетка реальных работ и три действия
@@ -174,7 +173,8 @@
      (js/site.js ставит первое фото первой работы категории из js/works-data.js; линейный рисунок в HTML — запас, если работ нет),
      у «Тканей» — мозаика настоящих тканей из js/fabrics-data.js, у ELUNA — постер заказчика «Манифест» (решения № 8, № 26 — не менять).
      Только мягкая мебель (столов и стульев нет — владелец, 13 октября). Ряд 1 — три плитки 4 : 5, ряд 2 — две широкие 2 : 1 (Ткани, ELUNA);
-     телефон: Диваны во всю ширину, затем пары. Главная «фото вместо текста» (День 3): под плитками ничего нет — одна строка сверху. ═════════ -->
+     телефон (10 ноября): Диваны · Кровати · Кресла — три в ряд квадратами (категория — в одно касание), под ними пара «Ткани» и ELUNA, как были;
+     заголовок и строка на телефоне скрыты (css/home.css) — плитки сразу под первым экраном. ═════════ -->
 <section class="sec cat" id="catalog" aria-labelledby="cat-title">
   <div class="wrap">
     <header class="shead rv">
@@ -214,18 +214,16 @@
   </div>
 </section>
 
-<!-- ═════════ 3. НАШИ РАБОТЫ: реальные фото работ ателье из Instagram @ricca.designs (js/works-data.js; выборка и подписи —
-     tools/media-v3/works-selection.json). Сетку из 8 лучших работ (компьютер 4 колонки, телефон 2) строит js/site.js в [data-works-row]
-     (контейнер, id и атрибуты не менять); кадр открывает окно работы (#work-<id>). «Все работы» — экран со всеми работами (#catalog/works).
-     Нет данных — js/site.js убирает раздел и пункты меню [data-works-link]. ═════════ -->
-<section class="sec works" id="works" aria-labelledby="works-title" hidden>
+<!-- ═════════ 3. ПОПУЛЯРНЫЕ МОДЕЛИ (10 ноября): сразу под плитками — четыре модели каталога на светлом подиуме (js/models-data.js; список
+     POPULAR в js/site.js, сетку строит он же в [data-pop-row]); телефон — одна крупная, пара, одна крупная (css .wk--rhythm, DESIGN.md 4.5).
+     Нет данных — js/site.js убирает раздел. «Весь каталог» открывает экран «Диваны» — там же переключаются остальные категории. ═════════ -->
+<section class="sec pop" id="popular" aria-labelledby="pop-title" hidden>
   <div class="wrap">
     <header class="shead rv">
-      <h2 class="title" id="works-title">Наши работы</h2>
-      <p class="shead__line">Готовые изделия&nbsp;— фото из&nbsp;Instagram @ricca.designs.</p>
+      <h2 class="title" id="pop-title">Популярные модели</h2>
     </header>
-    <ul class="works__strip rv" data-works-row role="list" aria-label="Работы ателье"></ul>
-    <p class="works__foot rv"><a class="btn btn--line" href="#catalog/works">Все работы<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+    <ul class="pop__row" data-pop-row role="list" aria-label="Популярные модели"></ul>
+    <p class="works__foot rv"><a class="btn btn--line" href="#catalog/sofas">Весь каталог<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
   </div>
 </section>
 
@@ -242,7 +240,24 @@
   </div>
 </section>
 
-<!-- ═════════ 5. КАК ЗАКАЗАТЬ: слева реальная работа (угловой модульный диван, Instagram C7E_JvdoXM-), справа три шага в ряд и WhatsApp «по фото» ═════════ -->
+<!-- ═════════ 5. НАШИ РАБОТЫ: реальные фото работ ателье из Instagram @ricca.designs (js/works-data.js; выборка и подписи —
+     tools/media-v3/works-selection.json). Сетку лучших работ (компьютер 8 в 4 колонки, телефон 4 в 2) строит js/site.js в [data-works-row]
+     (контейнер, id и атрибуты не менять); кадр открывает окно работы (#work-<id>). Под заголовком — фишки [data-works-chips] (строит js/site.js):
+     «Все · Диваны · Кровати · Кресла» со счётчиками — сразу экран «Наши работы» с этим фильтром (#catalog/works/категория).
+     Нет данных — js/site.js убирает раздел и пункты меню [data-works-link]. Раздел стоит после конструктора: сначала модели, потом интерьеры. ═════════ -->
+<section class="sec works" id="works" aria-labelledby="works-title" hidden>
+  <div class="wrap">
+    <header class="shead rv">
+      <h2 class="title" id="works-title">Наши работы</h2>
+      <p class="shead__line">Готовые изделия&nbsp;— фото из&nbsp;Instagram @ricca.designs.</p>
+      <nav class="chips" data-works-chips aria-label="Работы по видам" hidden></nav>
+    </header>
+    <ul class="works__strip rv" data-works-row role="list" aria-label="Работы ателье"></ul>
+    <p class="works__foot rv"><a class="btn btn--line" href="#catalog/works">Все работы<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+  </div>
+</section>
+
+<!-- ═════════ 6. КАК ЗАКАЗАТЬ: слева реальная работа (угловой модульный диван, Instagram C7E_JvdoXM-), справа три шага в ряд и WhatsApp «по фото» ═════════ -->
 <section class="sec how" id="process" aria-labelledby="proc-title">
   <div class="wrap how__in">
     <div class="how__text">
@@ -257,7 +272,7 @@
   </div>
 </section>
 
-<!-- ═════════ 6. АТЕЛЬЕ: две строки и ролик производства (478 × 850, только малым форматом; телефон — рядом с текстом, css/home.css).
+<!-- ═════════ 7. АТЕЛЬЕ: две строки и ролик производства (478 × 850, только малым форматом; телефон — рядом с текстом, css/home.css).
      ИИ-мастерская (img/projects/atelier-wide) не используется: выдавала бы себя за настоящее ателье. ═════════ -->
 <section class="sec atelier" id="atelier" aria-labelledby="atelier-title">
   <div class="wrap atelier__in">
@@ -275,7 +290,7 @@
   </div>
 </section>
 
-<!-- ═════════ 7. ДЛЯ БИЗНЕСА: чёрная полоса — две строки и WhatsApp, справа реальная работа (пара кресел в интерьере, Instagram DFSkt4qNMkT) ═════════ -->
+<!-- ═════════ 8. ДЛЯ БИЗНЕСА: чёрная полоса — две строки и WhatsApp, справа реальная работа (пара кресел в интерьере, Instagram DFSkt4qNMkT) ═════════ -->
 <section class="biz" id="business" aria-labelledby="biz-title">
   <div class="wrap biz__in biz__in--photo">
     <div class="biz__text rv">
@@ -288,7 +303,7 @@
   </div>
 </section>
 
-<!-- ═════════ 8. ГЕОГРАФИЯ (просьба владельца, BRIEF «КАРТА»): точечная карта мира (img/map/world-dots.svg, viewBox 0 -1 147 72),
+<!-- ═════════ 9. ГЕОГРАФИЯ (просьба владельца, BRIEF «КАРТА»): точечная карта мира (img/map/world-dots.svg, viewBox 0 -1 147 72),
      точка Алматы и тонкие дуги на другие континенты. Стран, сроков и цен доставки не называем — не подтверждены.
      Дуги рисуются при появлении раздела (js/site.js: .geo__map.is-pre → снятие класса), reduced motion — статично ═════════ -->
 <section class="sec geo" id="geo" aria-labelledby="geo-title">
@@ -330,7 +345,7 @@
   </div>
 </section>
 
-<!-- ═════════ 9. ВОПРОСЫ: четыре закрытых details (summary.qa__q + p.qa__a), слева реальная работа (кровать с округлым изголовьем,
+<!-- ═════════ 10. ВОПРОСЫ: четыре закрытых details (summary.qa__q + p.qa__a), слева реальная работа (кровать с округлым изголовьем,
      Instagram C5oOF25o4K8). Ответы — из прежнего текста, ≤ 20 слов. Сборка (tools/build-ricca-dist.sh) собирает из вопросов разметку
      schema.org для поисковиков; её шаблон ждёт h3.qa__q — для summary.qa__q шаблон нужно поправить (см. отчёт Дня 3). ═════════ -->
 <section class="sec faq" id="faq" aria-labelledby="faq-title">
@@ -442,35 +457,48 @@
 </footer>
 
 
-<!-- Липкая плашка телефона: после входа; прячется у шоурума и подвала, в меню и окнах; над «Для бизнеса» — чёрная -->
-<div class="mbar" id="mbar" aria-hidden="true">
-  <a class="btn" href="https://wa.me/77079550808" data-wa="general" tabindex="-1"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
-  <a class="btn" href="#showroom" tabindex="-1">Шоурум</a>
-</div>
+<!-- Нижнее меню телефона (DESIGN.md 4.3): три ячейки «Каталог · WhatsApp · Меню», видно с первой секунды, при прокрутке не прячется;
+     прячется в открытых окнах, у шоурума и подвала (там свои кнопки) и при открытой клавиатуре; над чёрным блоком — чёрное.
+     В окне каталога (dialog#view) — такая же панель .mbar--view внутри окна: окно лежит в верхнем слое и закрыло бы эту -->
+<nav class="mbar" id="mbar" aria-label="Быстрые действия">
+  <a class="mbar__i" href="#catalog">Каталог</a>
+  <a class="mbar__i mbar__i--main" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
+  <button class="mbar__i" type="button" id="mbar-menu" data-open-menu aria-haspopup="dialog">Меню</button>
+</nav>
 
-<!-- ═════════ Окна. Все — <dialog>; «Назад», Esc и ✕ закрывают уровень; адрес: #catalog/<категория>, #item-<id>, #work-<id> (работа из Instagram) ═════════ -->
+<!-- ═════════ Окна. Все — dialog; «Назад», Esc и ✕ закрывают уровень; адрес: #catalog/категория, #item-id, #work-id (работа из Instagram) ═════════ -->
 
-<!-- Меню (телефон и планшет) -->
+<!-- Меню (телефон и планшет; DESIGN.md 4.2): всё прижато к низу окна — под большой палец. Ярус 1 — четыре крупных слова каталога
+     (над ними тихая ссылка «Каталог» на плитки); ярус 2 — остальные ссылки в две колонки, «Собрать в 3D» первой; внизу WhatsApp и звонок -->
 <dialog class="menu" id="menu" aria-label="Меню">
   <div class="menu__bar wrap">
     <span class="logo__text" aria-hidden="true"><span class="logo__name">RICCA</span><span class="logo__sub">DESIGNS&nbsp;•&nbsp;ALMATY</span></span>
     <button class="icon-btn" type="button" data-close aria-label="Закрыть меню"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
   </div>
-  <nav class="menu__list wrap" aria-label="Разделы">
-    <a href="#catalog">Каталог</a>
-    <a href="#works" data-works-link hidden>Наши работы</a>
-    <a href="#process">Как заказать</a>
-    <a href="#atelier">Ателье</a>
-    <a href="#business">Для бизнеса</a>
-    <a href="#faq">Вопросы</a>
-    <a href="#showroom">Шоурум</a>
-    <a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">ELUNA<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — сайт матрасов, откроется в&nbsp;новой вкладке</span></a>
-    <a class="menu__lang" href="/en" hreflang="en" lang="en">English</a>
-    <button class="menu__sl" type="button" data-open-cart>Корзина <span data-cart-mn></span></button>
-  </nav>
-  <div class="menu__foot wrap">
-    <a class="btn btn--fill btn--wide" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Написать в&nbsp;WhatsApp</a>
-    <a class="menu__tel" href="tel:+77079550808" data-tel="main">+7&nbsp;(707)&nbsp;955-08-08</a>
+  <div class="menu__body wrap">
+    <nav class="menu__main" aria-label="Каталог">
+      <a class="menu__all" href="#catalog">Каталог<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <a class="menu__row" style="--i:0" href="#catalog/sofas"><span>Диваны</span></a>
+      <a class="menu__row" style="--i:1" href="#catalog/beds"><span>Кровати</span></a>
+      <a class="menu__row" style="--i:2" href="#catalog/armchairs"><span>Кресла</span></a>
+      <a class="menu__row" style="--i:3" href="#catalog/fabrics"><span>Ткани</span></a>
+    </nav>
+    <nav class="menu__more" aria-label="Разделы">
+      <a href="configurator.html">Собрать в&nbsp;3D</a>
+      <a href="#catalog/works" data-works-link hidden>Наши работы</a>
+      <a href="#process">Как заказать</a>
+      <a href="#atelier">Ателье</a>
+      <a href="#business">Для бизнеса</a>
+      <a href="#faq">Вопросы</a>
+      <a href="#showroom">Шоурум</a>
+      <a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">ELUNA<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — сайт матрасов, откроется в&nbsp;новой вкладке</span></a>
+      <a class="menu__lang" href="/en" hreflang="en" lang="en">English</a>
+      <button class="menu__sl" type="button" data-open-cart>Корзина <span data-cart-mn></span></button>
+    </nav>
+    <div class="menu__foot">
+      <a class="btn btn--fill" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Написать в&nbsp;WhatsApp</a>
+      <a class="btn btn--line menu__call" href="tel:+77079550808" data-tel="main" aria-label="Позвонить: +7 (707) 955-08-08"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg></a>
+    </div>
   </div>
 </dialog>
 
@@ -488,11 +516,17 @@
     <header class="view__head">
       <h2 class="title" id="view-title" tabindex="-1" autofocus>Каталог</h2>
       <p class="view__n" data-view-n></p>
+      <button class="caps-link view__cols" type="button" data-view-cols aria-pressed="false" hidden>По&nbsp;две в&nbsp;ряд</button>
     </header>
     <div class="view__tabs" data-view-tabs role="group" aria-label="Тип" hidden></div>
     <div data-view-content></div>
     <p class="view__foot" data-view-foot><a class="caps-link" data-view-wa href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-view-wa-label>Обсудить в&nbsp;WhatsApp</span></a></p>
   </div>
+  <nav class="mbar mbar--view" aria-label="Быстрые действия">
+    <a class="mbar__i" href="#catalog" data-to-catalog>Каталог</a>
+    <a class="mbar__i mbar__i--main" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
+    <button class="mbar__i" type="button" data-open-menu aria-haspopup="dialog">Меню</button>
+  </nav>
 </dialog>
 
 <!-- Окно изделия: все фото (свайп, стрелки, миниатюры, ←/→); справа — название, тип, факты из js/catalog-data.js (габариты, механизм,
@@ -575,15 +609,24 @@
   <div class="lb__in">
     <div class="lb__stage" data-lb-stage>
       <div class="lb__frame" data-lb-frame><img data-lb-img alt="" width="1280" height="1600"></div>
+      <img class="lb__next" data-lb-next alt="" aria-hidden="true" hidden>
+      <span class="lb__pill" data-lb-pill aria-hidden="true" hidden></span>
       <button class="pd__arrow pd__arrow--prev" type="button" data-lb-step="-1" aria-label="Предыдущее фото"><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
       <button class="pd__arrow pd__arrow--next" type="button" data-lb-step="1" aria-label="Следующее фото"><svg class="ico" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
     </div>
     <div class="lb__thumbs pd__thumbs" data-lb-thumbs role="group" aria-label="Фото изделия" hidden></div>
+    <div class="lb__dots" data-lb-dots aria-hidden="true" hidden></div>
     <div class="lb__bar">
       <div class="lb__cap">
         <h2 class="lb__title" id="lb-title" data-lb-title tabindex="-1" autofocus></h2>
         <p class="lb__piece" id="lb-sub" data-lb-piece></p>
         <p class="lb__count" data-lb-count aria-live="polite"></p>
+        <ul class="lb__rows" data-lb-rows role="list">
+          <li data-lb-row="size"><span class="lb__r"><span class="lb__rk">Размер</span><span class="lb__rv">Любой&nbsp;— под заказ</span></span></li>
+          <li data-lb-row="fabric"><a class="lb__r" href="#catalog/fabrics"><span class="lb__rk">Ткань</span><span class="lb__rv">Выбрать</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li><a class="lb__r" data-lb-3d href="configurator.html"><span class="lb__rk">3D</span><span class="lb__rv">Собрать похожий</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li data-lb-row="ig"><a class="lb__r" data-lb-ig href="https://instagram.com/ricca.designs" target="_blank" rel="noopener"><span class="lb__rk">Instagram</span><span class="lb__rv">Смотреть</span><svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
+        </ul>
         <details class="pd__more lb__more" data-lb-more hidden><summary>Подробнее<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="lb__info" data-lb-info></div></details>
         <details class="pd__more nb-comp-d" data-lb-comp-d hidden><summary>Состав<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="nb-comp-box" data-lb-comp></div></details>
       </div>
@@ -631,15 +674,15 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__open" id="toast-open">Открыть</button></div>
 
-<script src="js/lang.js?v=9f57ed9080" defer></script>
-<script src="js/catalog-data.js?v=9f57ed9080" defer></script>
-<script src="js/works-data.js?v=9f57ed9080" defer></script>
-<script src="js/models-data.js?v=9f57ed9080" defer></script>
-<script src="js/fabrics-data.js?v=9f57ed9080" defer></script>
-<script src="js/cart.js?v=9f57ed9080" defer></script>
-<script src="js/site.js?v=9f57ed9080" defer></script>
-<script src="js/content-data.js?v=9f57ed9080" defer></script>
-<script src="js/composition-data.js?v=9f57ed9080" defer></script>
-<script src="js/blocks.js?v=9f57ed9080" defer></script>
+<script src="js/lang.js?v=4326cd5150" defer></script>
+<script src="js/catalog-data.js?v=4326cd5150" defer></script>
+<script src="js/works-data.js?v=4326cd5150" defer></script>
+<script src="js/models-data.js?v=4326cd5150" defer></script>
+<script src="js/fabrics-data.js?v=4326cd5150" defer></script>
+<script src="js/cart.js?v=4326cd5150" defer></script>
+<script src="js/site.js?v=4326cd5150" defer></script>
+<script src="js/content-data.js?v=4326cd5150" defer></script>
+<script src="js/composition-data.js?v=4326cd5150" defer></script>
+<script src="js/blocks.js?v=4326cd5150" defer></script>
 </body>
 </html>

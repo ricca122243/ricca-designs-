@@ -112,16 +112,18 @@
     const base = phone ? v.dataset.mobile : v.dataset.desktop;
     const webm = !!v.canPlayType && v.canPlayType('video/webm; codecs="vp9"') !== '';
     const add = (ext, type) => { const s = document.createElement('source'); s.src = `${base}.${ext}`; s.type = type; v.append(s); };
-    let userPaused = reduce || saveData;
-    v.muted = true; v.loop = true; v.playsInline = true; v.preload = userPaused ? 'none' : 'auto';
+    let userPaused = reduce || saveData, ready = false;
+    v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'none';
     if (webm) add('webm', 'video/webm; codecs="vp9"');
     add('mp4', 'video/mp4');
     const pp = ppBtn(); setPP(pp, !userPaused, [T.vStop, T.vPlay]); nav.append(pp);
-    const play = () => { if (userPaused || !seen.tab || !seen.view) return; const p = v.play(); if (p && p.catch) p.catch(() => { userPaused = true; setPP(pp, false, [T.vStop, T.vPlay]); }); };
+    const play = () => { if (!ready || userPaused || !seen.tab || !seen.view) return; const p = v.play(); if (p && p.catch) p.catch(() => { userPaused = true; setPP(pp, false, [T.vStop, T.vPlay]); }); };
     const pause = () => { if (!v.paused) v.pause(); };
     v.addEventListener('playing', () => v.classList.add('is-playing'));
-    pp.addEventListener('click', () => { userPaused = !userPaused; setPP(pp, !userPaused, [T.vStop, T.vPlay]); if (userPaused) pause(); else { v.preload = 'auto'; play(); } });
+    pp.addEventListener('click', () => { userPaused = !userPaused; setPP(pp, !userPaused, [T.vStop, T.vPlay]); if (userPaused) pause(); else { ready = true; v.preload = 'auto'; play(); } });
     watch(() => (seen.tab && seen.view ? play() : pause()));
-    play();
+    // ролик (1,7–2,9 МБ) начинает грузиться после загрузки страницы: постер, шрифты и плитки каталога идут первыми («фото долго загружаются»)
+    const start = () => { ready = true; if (!userPaused) v.preload = 'auto'; play(); };
+    if (document.readyState === 'complete') start(); else window.addEventListener('load', start, { once: true });
   }
 })();

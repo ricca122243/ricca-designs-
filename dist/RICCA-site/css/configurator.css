@@ -34,19 +34,21 @@
   color-scheme: light;
   font-synthesis: none;
 }
+/* телефон: шапка 56 px и не липкая (DESIGN.md 4.1, п. 1), окно 3D липнет к верху экрана и занимает 36 % высоты —
+   полосы видов под ним больше нет (кнопка «Вид» в углу окна), поэтому холст выше прежнего, а шагам достаётся больше места */
 @media (max-width: 899px) {
-  :root { --hdr: 64px; --vp-h: clamp(220px, 40svh, 380px); --bar: calc(64px + env(safe-area-inset-bottom)); }
+  :root { --hdr: 56px; --vp-h: clamp(220px, 36svh, 380px); --bar: calc(64px + env(safe-area-inset-bottom)); }
 }
 html[data-bg="white"] { --product-bg: #FFFFFF; }   /* вариант «белый» для сравнения: configurator.html?bg=white (атрибут ставит скрипт в <head>) */
-@media (max-width: 899px) and (max-height: 700px) { :root { --vp-h: 34svh; } .vp .vp__fab { display: none; } .vp .vp__toast { top: auto; bottom: 58px; } }
-/* короткое окно в руке (Instagram, Safari с панелями, SE): окну 3D — не меньше 220 px, иначе над полосой видов диван совсем мелкий.
+/* низкий экран в руке (320 × 568): окно 3D 180 px (холст всё равно выше прежних 164 px) — оба ряда типов видны над плашкой.
    Телефон боком (ниже 500 px) — прежние 34 %, чтобы под окном 3D оставалось место для шагов */
-@media (max-width: 899px) and (max-height: 700px) and (min-height: 500px) { :root { --vp-h: max(220px, 36svh); } }
+@media (max-width: 899px) and (max-height: 599px) { :root { --vp-h: 180px; } }
+@media (max-width: 899px) and (max-height: 499px) { :root { --vp-h: 34svh; } }
 
 /* ---------- основа ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: calc(var(--hdr) + 16px); }
-@media (max-width: 899px) { html { scroll-padding-top: calc(var(--hdr) + var(--vp-h)); scroll-padding-bottom: var(--bar); } }
+@media (max-width: 899px) { html { scroll-padding-top: var(--vp-h); scroll-padding-bottom: var(--bar); } }
 html.is-locked { overflow: hidden; }
 body {
   margin: 0; background: var(--paper); color: var(--ink);
@@ -125,10 +127,19 @@ html.is-scrolled .hdr { border-bottom-color: var(--line); }
   .logo__rule { height: 22px; }
   .logo__name { font-size: 13px; letter-spacing: .38em; }
   .logo__sub { font-size: 6.5px; letter-spacing: .3em; }
-  .hdr__nav { gap: 6px; margin-right: -10px; }
+  /* шапка в потоке: уходит вместе со страницей, окно 3D липнет к самому верху (WhatsApp и «Далее» — в нижней плашке) */
+  .hdr { position: static; background: var(--paper); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  html.is-scrolled .hdr { border-bottom-color: transparent; }
+  .hdr__row { gap: 12px; }
+  .logo { flex: none; }
+  .hdr__nav { gap: 2px; margin-right: -10px; min-width: 0; }
   .hdr__nav a::after { display: none; }
-  .hdr__back { padding: 0 8px; }
-  .hdr__wa { width: 44px; justify-content: center; }
+  /* «‹ Кровать Bukel» / «‹ Назад» / «‹ Каталог» — обычным регистром 13 px: название изделия читается и умещается в одну строку */
+  .hdr__nav .hdr__back { min-width: 44px; padding: 0 8px 0 4px; gap: 6px; font: 500 13px/1.2 var(--sans); letter-spacing: 0; text-transform: none; }
+  .hdr__back .ico { width: 16px; height: 16px; margin-left: 0; }
+  .hdr__back-t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hdr__back:active { opacity: .6; }
+  .hdr__wa { flex: none; width: 44px; justify-content: center; }
   .hdr__wa .ico { width: 20px; height: 20px; }
   .hdr__wa-t { display: none; }
 }
@@ -182,6 +193,7 @@ html[data-bg="white"] .vp__stage canvas { filter: brightness(1.06); }
 .vp__views button[aria-checked="true"] { background: var(--noir); color: var(--on-noir); }
 @media (hover: hover) { .vp__views button[aria-checked="false"]:hover { color: var(--ink); } }
 
+.vp__view { display: none; }   /* телефон: одна кнопка вместо полосы видов (правила — в блоке «Телефон») */
 .vp__tools { position: absolute; z-index: 3; top: 16px; right: 16px; display: flex; background: rgba(255, 255, 255, .92); border: 1px solid var(--line); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .vp__tool { display: grid; place-items: center; width: 44px; height: 44px; color: var(--ink); transition: background var(--t) var(--ease), color var(--t) var(--ease); }
 .vp__tool + .vp__tool { border-left: 1px solid var(--line); }
@@ -346,6 +358,7 @@ html[data-font="b"] .step__t { font: 400 26px/1 var(--serif); letter-spacing: 0;
 .fab__col-n { font: 400 13px/1.3 var(--sans); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .fab__col-f { grid-column: 1 / -1; font: 400 13px/1.5 var(--sans); color: var(--ink-2); }
 .fab__facts { display: none; }
+.fab__cur { display: none; }   /* телефон: выбранный цвет строкой над образцами (правила — в блоке «Телефон») */
 @media (max-width: 899px) { .fab__facts { display: block; margin-top: 8px; font: 400 13px/1.5 var(--sans); color: var(--ink-2); } .fab__facts:empty { display: none; } }
 /* образцы ткани — квадраты со скруглением 2 px (прямые углы, как у плиток и кнопок) */
 .fab__sw { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 6px 4px; margin-top: 22px; }
@@ -441,6 +454,7 @@ html[data-font="b"] .rp__h { font: 400 26px/1 var(--serif); letter-spacing: 0; }
 .logo--foot .logo__mono { width: 44px; }
 .foot__line { justify-self: end; font: 400 14px/1.6 var(--sans); color: var(--on-noir); text-align: right; }
 .foot__line a { display: inline-flex; align-items: center; min-height: 44px; }
+.foot__lng { display: none; }   /* телефон: «RU | EN» из шапки переезжает сюда (правила — в блоке «Телефон») */
 .foot__note { grid-column: 1 / -1; padding-top: 22px; border-top: 1px solid rgba(255, 255, 255, .14); font: 400 13px/1.6 var(--sans); color: var(--on-noir-2); }
 @media (hover: hover) { .foot a { transition: opacity var(--t); } .foot a:hover { opacity: .7; } }
 
@@ -450,29 +464,47 @@ html[data-font="b"] .rp__h { font: 400 26px/1 var(--serif); letter-spacing: 0; }
 .bar { display: none; }
 
 @media (max-width: 899px) {
-  /* телефон: короткое вступление — шаг 1 виден на первом экране */
-  .intro { padding: 16px 0 0; }
-  .intro__kicker { margin-bottom: 6px; }
-  .title { font-size: 32px; }                    /* страница-инструмент: окно 3D должно остаться на первом экране — заголовок меньше, чем на главной */
+  /* телефон: вступление — только вкладки режима. Заголовок страницы оставлен экранному диктору (он повторял то, что видно и так),
+     поэтому окно 3D начинается на 108 px, а не на 205, и оба ряда типов видны над плашкой уже в окне Instagram (390 × 700) */
+  .intro { padding: 4px 0 0; }
+  .js .intro__title { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }   /* без JS заголовок виден: страница без скрипта — только он и вкладки */
+  .title { font-size: 32px; }
   html[data-font="b"] .title { font-size: 36px; }
   .intro__lead { display: none; }
-  .modes { margin-top: 10px; gap: 28px; border-bottom: 0; }
+  .modes { margin-top: 0; gap: 28px; border-bottom: 0; }
   .work { display: block; padding-bottom: 72px; }
-  .vp { top: var(--hdr); z-index: 20; min-height: 0; margin-inline: calc(-1 * var(--pad)); border-bottom: 1px solid var(--line); }
-  .vp__views { top: auto; bottom: 6px; left: 50%; transform: translateX(-50%); }
-  /* модель: у видов своя полоса под 3D — кнопки не ложатся на ножки и передний край; камера кадрирует по высоте холста (stage.js) */
-  .cfg[data-mode="model"] .vp__stage { bottom: 56px; }
-  .vp__stage { --stage-pad-top: 56px; }   /* полоса размеров и кнопок окна сверху: виды «Спереди / Сбоку / Сверху» кадрируются ниже неё (stage.js) */
-  .vp__views button { padding: 0 12px; }
+  .vp { top: 0; z-index: 20; min-height: 0; margin-inline: calc(-1 * var(--pad)); border-bottom: 1px solid var(--line); }
+  /* вид: одна кнопка слева вверху — «3D ›», касание ведёт по кругу 3D → Спереди → Сбоку → Сверху (app.js → syncVp).
+     Полосы из четырёх кнопок под моделью больше нет: холст — во всю высоту окна */
+  .vp__views { display: none; }
+  .vp__view { position: absolute; z-index: 3; top: 10px; left: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 46px; height: 46px; padding: 0 10px 0 12px; background: rgba(255, 255, 255, .92); border: 1px solid var(--line); color: var(--ink); font: 500 13px/1 var(--sans); letter-spacing: .01em; white-space: nowrap; transition: background var(--t) var(--ease); }
+  .vp__view .ico { width: 12px; height: 12px; color: var(--ink-2); }
+  .vp__view:active, .vp__tool:not([aria-pressed="true"]):active { background: var(--paper-2); }
+  .vp.no-3d .vp__view { display: none; }
+  .vp__stage { --stage-pad-top: 58px; }   /* кнопки окна сверху: виды «Спереди / Сбоку / Сверху» кадрируются ниже них (stage.js) */
   .vp__tools { top: 10px; right: 10px; }
-  .vp__size { top: 22px; bottom: auto; left: 16px; right: auto; font-size: 12px; }
-  .vp__fab { left: 10px; top: 46px; bottom: auto; max-width: calc(100% - 80px); min-height: 40px; padding: 2px 10px 2px 2px; font-size: 11px; }
-  .vp__fab-c { width: 34px; height: 34px; }
-  .vp__toast { left: 10px; top: auto; bottom: 58px; max-width: calc(100% - 20px); padding: 7px 10px; font-size: 11px; }   /* над видами, на пустом полу — не на модели и не на кнопках */
-  .vp__pt { left: 10px; right: 10px; bottom: 62px; }
+  #t-drawing { display: none; }           /* «Чертёж» на телефоне — в нижней плашке на каждом шаге и в итоге; в окне 3D остаются «Размеры», фото и сброс вида */
+  .vp__size { left: 16px; right: auto; bottom: 12px; font-size: 13px; }   /* габарит — слева внизу, на свободном полу */
+  .vp__fab { display: none; }             /* ткань крупно — строкой над образцами в шаге «Ткань» (#fab-cur) */
+  .vp__toast { left: 10px; top: auto; bottom: 38px; max-width: calc(100% - 20px); padding: 8px 10px; font-size: 13px; }   /* над габаритом, на пустом полу — не на кнопках */
+  .vp__pt { left: 10px; right: 10px; bottom: 10px; }
   .vp__ph-ico { width: 88px; height: 88px; }
+  /* модель, плоские виды: внизу холста — полоса под габарит; вертикальный свайп по окну 3D листает страницу, а не наклоняет модель
+     (горизонтальный — вращает, два пальца — приближают; !important — строчный стиль ставит OrbitControls). В «Комнате» мебель тянут
+     пальцем по полу — там холст по-прежнему не отдаёт жесты странице */
+  .cfg[data-mode="model"] .vp__stage canvas { touch-action: pan-y !important; }
+  .cfg[data-mode="model"] #vp:not([data-view="3d"]) .vp__stage { bottom: 30px; }
+  /* «Размеры» включены: окно 3D не ниже 280 px, габарит убран (он есть в размерных линиях). В плоских видах холст отступает от краёв
+     окна — размерные ряды рисуются в этой рамке (слой размеров шире холста, фон окна и холста одного цвета) и не режутся краем;
+     сверху остаются только «Вид» и «Размеры» по углам, чтобы верхний ряд не уходил под кнопки */
+  .cfg[data-mode="model"] #vp[data-dims] { height: max(var(--vp-h), 280px); }
+  .cfg[data-mode="model"] #vp[data-dims] .vp__size { display: none; }
+  .cfg[data-mode="model"] #vp[data-dims]:not([data-view="3d"]) .vp__stage { top: 44px; right: 20px; bottom: 32px; left: 30px; --stage-pad-top: 0px; }
+  .cfg[data-mode="model"] #vp[data-dims]:not([data-view="3d"]) :is(#t-photo, #t-frame) { display: none; }
+  .cfg[data-mode="model"] #vp[data-dims]:not([data-view="3d"]) .vp__view { padding: 0 8px; }   /* уже и без стрелки: левый конец верхнего ряда не под кнопкой */
+  .cfg[data-mode="model"] #vp[data-dims]:not([data-view="3d"]) .vp__view .ico { display: none; }
   .panel { padding-top: 8px; }
-  .step { scroll-margin-top: calc(var(--hdr) + var(--vp-h)); }
+  .step { scroll-margin-top: var(--vp-h); }
   .step:first-child { border-top: 0; }
   .step__head, .step:first-child .step__head { min-height: 56px; padding: 0; align-items: center; cursor: pointer; }
   .step__t { font-size: 18px; }
@@ -482,16 +514,26 @@ html[data-font="b"] .rp__h { font: 400 26px/1 var(--serif); letter-spacing: 0; }
   .step__v { max-width: 50%; }
   .step__body { padding: 6px 0 32px; }
   .step__next { display: none; }                 /* «Далее» — в нижней плашке */
-  /* тип — те же группы в два ряда, без прокрутки (кровать и кресло раньше были за краем): диваны вчетвером, ниже кровать, кресло и пуф */
-  .types { gap: 14px 8px; }
-  .types__g { gap: 6px; }
-  .types__l { font-size: 10px; letter-spacing: .1em; }
-  .type { min-height: 92px; padding: 10px 3px 9px; gap: 6px; }
-  .type__ico { width: 40px; height: 40px; }
+  /* тип — те же группы в два ряда 4 + 3, без прокрутки: диваны вчетвером, ниже кровать, кресло и пуф. Подписи групп на телефоне
+     скрыты (группу показывают сам ряд и значок), плитки ниже — «Кровать» видна над плашкой, не дожидаясь прокрутки */
+  .types { gap: 8px; }
+  .types__g { display: block; }
+  .types__l { display: none; }
+  .type { min-height: 72px; padding: 8px 3px 7px; gap: 4px; }
+  .type:active { background: var(--paper-2); }
+  .type__ico { width: 36px; height: 36px; }
   .type__t { font-size: 11.5px; }
-  /* ткань: вкладки с подсказкой прокрутки, коллекции — одной строкой чипов, описание — только у выбранной */
-  .fab__tabs { gap: 20px; -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
-  .fab__tab { font-size: 13px; }
+  .type__x { display: none; }             /* «Пуф / банкетка» → «Пуф»: подпись в одну строку, плитки ряда одной высоты */
+  .step__n, .opt__l, .sum__lbl { font-size: 12px; }   /* капитель на телефоне — 12 px (DESIGN.md 2.2) */
+  .sum__id { font-size: 13px; letter-spacing: .04em; }
+  .sum__count { font-size: 12px; }
+  /* ткань: вкладки и коллекции — строками, которые листаются вбок; затухание справа — только пока справа есть что листать
+     (app.js → syncFades ставит .is-more), иначе последняя вкладка выглядела выключенной. Описание — только у выбранной коллекции */
+  .fab__tabs { gap: 6px; }
+  .fab__tabs.is-more, .fab__cols.is-more { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent); }
+  .fab__tab { min-width: 56px; padding: 0 8px; font-size: 13px; }
+  .fab__tab:first-child { margin-left: -8px; }   /* слово первой вкладки — по левому краю колонки, поле касания шире слова */
+  .fab__tab::after { left: 8px; right: 8px; }
   .fab__cols { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 4px 0 2px; margin-top: 12px; }
   .fab__cols::-webkit-scrollbar { display: none; }
   .fab__col { flex: none; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid var(--line-2); transition: background var(--t), color var(--t), border-color var(--t); }
@@ -502,6 +544,21 @@ html[data-font="b"] .rp__h { font: 400 26px/1 var(--serif); letter-spacing: 0; }
   .fld__scale { display: none; }                 /* 140 … 400 под каждым ползунком: пределы и так держит поле */
   .intro__kicker { display: none; }              /* «Конструктор» над «Соберите свою мебель» */
   .fab__cols + .fab__sw { margin-top: 12px; }
+  /* выбранный цвет — одной строкой над образцами: название слева, «Крупно +» справа; вся строка открывает образец 4 : 3 во всю ширину */
+  .fab__cur { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; min-height: 44px; margin-top: 4px; text-align: left; }
+  .fab__cur-t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 14px/1.3 var(--sans); }
+  .fab__cur-b { flex: none; display: inline-flex; align-items: center; gap: 8px; font: 500 13px/1 var(--sans); color: var(--ink-2); }
+  .fab__cur-b .ico { width: 12px; height: 12px; }
+  .fab__cur:active { opacity: .6; }
+  /* образцы 56 px, пять в ряд (на 320 px — 49 px), у выбранного — рамка 2 px; долгое касание — образец крупно */
+  .fab__sw, .fab__cols + .fab__sw { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px 8px; margin-top: 4px; }
+  .sw { min-height: 0; padding: 4px 0; touch-action: manipulation; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+  .sw__c { width: 100%; max-width: 56px; height: auto; aspect-ratio: 1; }
+  .sw[aria-checked="true"] .sw__c { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink); }
+  .sw:active .sw__c { transform: scale(.96); }
+  .sw__n { display: none; }
+  .fab__pv { display: none; }             /* название — в строке над образцами, крупный образец — в окне «ткань крупно» */
+  @media (prefers-reduced-motion: no-preference) { .fab__cols.is-peek > .fab__col { animation: cols-peek 700ms var(--ease) 1; } }
   .dlg__svg { display: none; }
   .rp:first-child { padding-top: 24px; }
   .foot { padding: 56px 0 calc(48px + env(safe-area-inset-bottom)); }
@@ -509,13 +566,19 @@ html[data-font="b"] .rp__h { font: 400 26px/1 var(--serif); letter-spacing: 0; }
   .foot__line { justify-self: start; text-align: left; }
   /* поле касания телефона 44 px остаётся, но строку подвала не раздувает */
   .foot__line a { min-height: 0; padding-block: 12px; margin-block: -12px; }
+  .foot__lng { display: inline-flex; align-items: center; gap: 4px; margin-left: -8px; font: 500 12px/1 var(--sans); letter-spacing: .12em; }
+  .foot__lng a { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; padding-left: .12em; color: var(--on-noir-2); }
+  .foot__lng a[aria-current="true"] { color: var(--on-noir); }
+  .foot__lng > span { color: var(--on-noir-2); opacity: .5; }
 
   /* три кнопки: «Чертёж» и «У себя дома» — по содержимому (значок над подписью), «Далее» / «В WhatsApp» — всё остальное */
   .bar { position: fixed; z-index: 50; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 8px; height: var(--bar); padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: rgba(255, 255, 255, .9); border-top: 1px solid var(--line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
   .bar .btn { min-height: 48px; padding: 0 12px; }
-  /* «Чертёж» и «У себя дома» — значок над подписью 10 px обычным регистром (капитель 8 px на 320 px читалась хуже) */
-  .bar .bar__b { display: grid; justify-items: center; align-content: center; gap: 5px; min-width: 60px; padding: 0 10px; font-size: 10px; line-height: 1; letter-spacing: .01em; }
-  .bar .bar__b .ico { width: 18px; height: 18px; }
+  /* «Чертёж» и «Дома» — значок над подписью 13 px обычным регистром (было 10 px и «У себя дома»: мелко; полное название — в aria-label) */
+  .bar .bar__b { display: grid; justify-items: center; align-content: center; gap: 3px; min-width: 60px; padding: 0 10px; font-size: 13px; line-height: 1; letter-spacing: 0; }
+  .bar .bar__b .ico { width: 16px; height: 16px; }
+  .bar .btn--line:active { background: var(--paper-2); }
+  .bar .btn--fill:active { background: #2A2A2A; }
   .bar__t { white-space: nowrap; }
   .bar .bar__next { gap: 8px; padding: 0 12px; font-size: 14px; white-space: nowrap; }
   .bar__n { font-weight: 400; font-size: 12px; opacity: .7; font-variant-numeric: tabular-nums; }
@@ -530,13 +593,12 @@ html[data-font="b"] .rp__h { font: 400 26px/1 var(--serif); letter-spacing: 0; }
   .opts .chips:has(> .chip:nth-child(5)) > .chip { padding-inline: 16px; }   /* 5 вариантов (ножки кресла) — 3 + 2, а не 4 + 1 */
 }
 @media (max-width: 380px) {
-  .vp__views button { padding: 0 9px; font-size: 11px; }
-  .types { gap: 12px 6px; }
+  .types { gap: 6px; }
   .types__row { gap: 6px; }
   .type__t { font-size: 10.5px; }
   /* плашка: «Далее: форма» без счётчика шагов и теснее — три кнопки умещаются и на 320 px */
   .bar { gap: 6px; }
-  .bar .bar__b { min-width: 54px; padding: 0 8px; font-size: 9.5px; }
+  .bar .bar__b { min-width: 54px; padding: 0 8px; }
   .bar .bar__next { padding: 0 10px; gap: 6px; font-size: 13px; }
   .bar__n { display: none; }
   .bar #bar-wa { padding: 0 10px; gap: 6px; font-size: 13px; white-space: nowrap; }   /* «To WhatsApp» на 320 px — в одну строку */
@@ -549,8 +611,11 @@ html[data-font="b"] .rp__h { font: 400 26px/1 var(--serif); letter-spacing: 0; }
   .rp__dims { grid-template-columns: 1fr 1fr; }
   .bar .btn { gap: 8px; }
 }
-/* 320 px: четыре кнопки окна 3D (с «Чертежом») не наезжают на габарит слева; плитки типа — подпись чуть мельче, «П-образный» в одну строку */
-@media (max-width: 359px) { .vp__tool { width: 38px; } .vp__size { font-size: 11px; letter-spacing: 0; } .type__t { font-size: 10px; } .types__l { letter-spacing: .08em; } }
+/* 320 px: плитки типа — подпись чуть мельче, «П-образный» в одну строку (кнопки окна 3D — полные 44 px: «Чертёж» ушёл в плашку) */
+@media (max-width: 359px) { .type__t { font-size: 10px; } }
+/* низкий экран (320 × 568): плитки типа 64 px — оба ряда над плашкой */
+@media (max-width: 899px) and (max-height: 599px) { .type { min-height: 64px; padding: 6px 3px 5px; gap: 3px; } .type__ico { width: 32px; height: 32px; } }
+@keyframes cols-peek { 0%, 100% { transform: none; } 45% { transform: translateX(-24px); } }
 
 /* ==========================================================================
    ОКНА (чертёж, AR)
@@ -577,6 +642,11 @@ html[data-font="b"] .dlg__hdr .caps { font: 400 26px/1 var(--serif); letter-spac
 @media (max-width: 599px) { .dlg__zoom { left: 6px; top: 6px; width: 32px; min-height: 32px; padding: 0; justify-content: center; } .dlg__zoom span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
 .dlg__zoom .ico { width: 14px; height: 14px; }
 .ar__copy { margin-top: 12px; }
+/* «ткань крупно»: настоящий образец 4 : 3 во всю ширину окна (на телефоне 350 × 263), под ним — тип и износостойкость */
+.fz { display: grid; gap: 12px; }
+.fz img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; background: var(--paper-2); }
+.fz__f { font: 400 14px/1.5 var(--sans); color: var(--ink-2); }
+.fz__f:empty { display: none; }
 .dlg__fine { font: 400 13px/1.5 var(--sans); color: var(--ink-2); }
 
 .ar__steps { display: grid; gap: 0; counter-reset: ar; border-top: 1px solid var(--line); }
@@ -592,8 +662,8 @@ html[data-font="b"] .dlg__hdr .caps { font: 400 26px/1 var(--serif); letter-spac
 .ar__desk:has(.ar__qr[hidden]) { grid-template-columns: 1fr; }
 
 @media (max-width: 899px) {
-  .dlg--ar { width: 100%; max-width: 100%; max-height: 92vh; margin: auto 0 0; }
-  .dlg--ar .dlg__in { padding: 20px 20px calc(24px + env(safe-area-inset-bottom)); }
+  .dlg--ar, .dlg--fab { width: 100%; max-width: 100%; max-height: 92vh; margin: auto 0 0; }
+  .dlg--ar .dlg__in, .dlg--fab .dlg__in { padding: 20px 20px calc(24px + env(safe-area-inset-bottom)); }
   .dlg--drawing { width: 100%; max-width: 100%; height: 100%; max-height: 100%; margin: 0; }
   .dlg--drawing .dlg__in { min-height: 100%; align-content: start; padding: 16px 16px calc(20px + env(safe-area-inset-bottom)); }
   .dlg__acts .btn { flex: 1 1 100%; }
@@ -609,10 +679,20 @@ html[data-font="b"] .dlg__hdr .caps { font: 400 26px/1 var(--serif); letter-spac
   .dlg--drawing .dlg__pan { position: static; grid-area: 1 / 1 / 2 / 3; display: flex; padding: 14px 16px 0; overflow: auto hidden; overscroll-behavior-x: contain; scrollbar-width: none; }
   .dlg--drawing .dlg__pan::-webkit-scrollbar { display: none; }
   .dlg--drawing .dlg__pan img { flex: none; width: auto; height: 100%; max-width: none; margin: auto; box-shadow: 0 1px 2px rgba(17, 17, 17, .06), 0 10px 28px rgba(17, 17, 17, .08); }
-  .dlg--drawing .dlg__hint { display: flex; align-items: center; gap: 8px; grid-area: 2 / 1; align-self: center; padding: 0 12px 0 16px; font: 400 12px/1.4 var(--sans); color: var(--ink-2); }
+  .dlg--drawing .dlg__hint { display: flex; align-items: center; gap: 8px; grid-area: 2 / 1; align-self: center; padding: 0 12px 0 16px; font: 400 13px/1.4 var(--sans); color: var(--ink-2); }
   .dlg--drawing .dlg__hint .ico { width: 14px; height: 14px; }
-  .dlg--drawing .dlg__zoom { position: static; grid-area: 2 / 2; width: auto; min-height: 36px; margin: 10px 16px 12px 0; padding: 0 12px; }
+  .dlg--drawing .dlg__zoom { position: static; grid-area: 2 / 2; width: auto; min-height: 44px; margin: 8px 16px 8px 0; padding: 0 14px; font-size: 13px; }
   .dlg--drawing .dlg__zoom span { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+}
+/* «Крупно» на телефоне — увеличение внутри окна (раньше — PNG в новой вкладке: во встроенном браузере Instagram вкладок нет).
+   Лист вчетверо шире окна (размерные числа ≈ 11 px вместо 4), двигается пальцем в обе стороны, щипок — ещё крупнее;
+   повторное касание кнопки («Весь лист») или листа возвращает общий вид (app.js → zoomDrawing) */
+@media (max-width: 899px) {
+  .dlg--drawing .dlg__sheet.is-zoom .dlg__pan { display: block; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y pinch-zoom; scrollbar-width: none; }
+  .dlg--drawing .dlg__sheet.is-zoom .dlg__pan img { display: block; width: max(400%, 1400px); height: auto; max-width: none; margin: 0; object-fit: fill; cursor: zoom-out; }
+  .dlg--drawing .dlg__zoom { min-width: 44px; min-height: 44px; font-size: 13px; }   /* и лёжа, где кнопка лежит на листе */
+  .dlg--drawing .dlg__zoom[aria-pressed="true"] { background: var(--noir); border-color: var(--noir); color: var(--on-noir); }
+  .dlg--drawing .dlg__zoom:active { opacity: .7; }
 }
 
 /* ==========================================================================
@@ -621,7 +701,7 @@ html[data-font="b"] .dlg__hdr .caps { font: 400 26px/1 var(--serif); letter-spac
 /* наведение — 220 мс (--t); появление окон — 360–400 мс, без масштабирования; при prefers-reduced-motion всё выключено */
 @media (prefers-reduced-motion: no-preference) {
   .dlg[open] { animation: dlg-in 360ms var(--ease); }
-  @media (max-width: 899px) { .dlg--ar[open] { animation: sheet-in 400ms var(--ease); } }
+  @media (max-width: 899px) { .dlg--ar[open], .dlg--fab[open] { animation: sheet-in 400ms var(--ease); } }
 }
 @keyframes dlg-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
@@ -736,7 +816,7 @@ html[data-font="b"] .dlg__hdr .caps { font: 400 26px/1 var(--serif); letter-spac
 .hdr__nav .hdr__lng a[aria-current="true"] { opacity: 1; }
 .hdr__lng > span { opacity: .3; }
 @media (hover: hover) { .hdr__nav .hdr__lng a:hover { opacity: 1; } }
-@media (max-width: 899px) { .hdr__lng { margin-right: 2px; } }
-/* узкий телефон: «Каталог» — только стрелкой (подпись остаётся для экранного диктора), иначе WhatsApp уходит за край */
-@media (max-width: 419px) { .hdr__nav .hdr__back { width: 44px; padding: 0; justify-content: center; font-size: 0; letter-spacing: 0; } .hdr__nav .hdr__back .ico { width: 18px; height: 18px; margin: 0; } }
-@media (max-width: 359px) { .hdr__lng { letter-spacing: .08em; } .hdr__nav .hdr__lng a { min-width: 26px; } }
+/* телефон: языка в шапке нет (он в подвале) — место отдано ссылке назад с названием изделия: «‹ Кровать Bukel».
+   На 320 px от названия остаётся имя модели («‹ Bukel»): слово «Кровать» скрыто, но читается экранным диктором */
+@media (max-width: 899px) { .hdr .hdr__lng { display: none; } }
+@media (max-width: 359px) { .hdr__back-k { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }

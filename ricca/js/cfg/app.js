@@ -617,7 +617,7 @@ function renderFabCur() {
   const nm = `${f.collectionTitle} · ${f.colour}`;
   $('#fab-cur-t').textContent = nm; b.setAttribute('aria-label', `${nm}: показать ткань крупно`);
 }
-let fabZoomAt = 0;
+let fabHoldAt = 0;   // когда окно открыли долгим касанием: палец ещё лежит, его «нажатие» по фону окно не закрывает
 function openFabZoom() {
   const f = shownFabric(); if (!f) return;
   const img = $('#fz-img'), t = lib.types.find((x) => x.id === f.typeId), c = t && t.collections.find((x) => x.id === f.collectionId);
@@ -625,7 +625,7 @@ function openFabZoom() {
   img.alt = `${f.typeTitle} ${f.collectionTitle}, цвет «${f.colour}»${f.finish ? `, ${f.finish}` : ''}`;
   $('#fz-title').textContent = `${f.collectionTitle} · ${f.colour}`;
   $('#fz-f').textContent = [f.kindTitle && !/:/.test(f.kindTitle) ? cap(f.kindTitle) : f.typeTitle, c && c.facts, f.finish].filter(Boolean).join(' · ');
-  fabZoomAt = performance.now(); openDialog($('#dlg-fab'));
+  openDialog($('#dlg-fab'));
 }
 /* телефон: вкладки типов и чипы коллекций листаются вбок — затухание справа только пока справа есть что листать (css: .is-more) */
 function syncFades() { for (const el of [$('#fab-tabs'), $('#fab-cols')]) if (el) el.classList.toggle('is-more', el.scrollWidth - el.clientWidth - el.scrollLeft > 4); }
@@ -1415,7 +1415,7 @@ function bind() {
     const b = e.target.closest('[data-fslug]'); clearTimeout(lpT); lpDone = false;
     if (!b || e.pointerType !== 'touch') return;
     lpXY = [e.clientX, e.clientY];
-    lpT = setTimeout(() => { lpDone = true; setFabric(b.dataset.fslug); openFabZoom(); }, 480);
+    lpT = setTimeout(() => { lpDone = true; fabHoldAt = performance.now(); setFabric(b.dataset.fslug); openFabZoom(); }, 480);
   });
   fsw.addEventListener('pointermove', (e) => { if (lpXY && Math.hypot(e.clientX - lpXY[0], e.clientY - lpXY[1]) > 10) clearTimeout(lpT); });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => fsw.addEventListener(ev, () => clearTimeout(lpT)));
@@ -1463,7 +1463,7 @@ function bind() {
   $('#dd-send').addEventListener('click', sendDrawing);
   $$('dialog').forEach((dlg) => {
     dlg.addEventListener('click', (e) => {
-      if (dlg.id === 'dlg-fab' && performance.now() - fabZoomAt < 500) return;   // палец ещё лежит после долгого касания — его «нажатие» окно не закрывает
+      if (e.target === dlg && dlg.id === 'dlg-fab' && performance.now() - fabHoldAt < 700) return;
       if (e.target === dlg || e.target.closest('[data-close]')) closeDialog(dlg);
     });
     dlg.addEventListener('close', () => onDialogClosed(dlg));

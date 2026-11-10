@@ -45,7 +45,7 @@
   color-scheme: light;
   font-synthesis: none;
 }
-@media (max-width: 899px) { :root { --hdr: 64px; } }
+@media (max-width: 899px) { :root { --hdr: 56px; } }   /* телефон: шапка 56 px + нижнее меню 56 px = 112 px из 700 (DESIGN.md 4.1) */
 html[data-font="b"] { --f-display: var(--serif); --w-display: 400; --k-display: 1.12; --ls-h1: -.005em; --lh-h1: 1.02; --ls-h2: -.005em; --lh-h2: 1.05; }   /* вариант Б: index.html?font=b */
 html[data-bg="white"] { --product-bg: #FFFFFF; }   /* вариант «белый» для сравнения: index.html?bg=white (атрибут ставит js/site.js) */
 
@@ -53,7 +53,7 @@ html[data-bg="white"] { --product-bg: #FFFFFF; }   /* вариант «белы�
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* телефон: фокус и якоря не уходят под шапку и липкую плашку (WCAG 2.4.11) */
-@media (max-width: 899px) { html { scroll-padding-top: var(--hdr); scroll-padding-bottom: calc(64px + env(safe-area-inset-bottom)); } }
+@media (max-width: 899px) { html { scroll-padding-top: var(--hdr); scroll-padding-bottom: calc(64px + env(safe-area-inset-bottom)); } }   /* 64 = нижнее меню 56 px + запас */
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 html.is-locked { overflow: hidden; }
 body {
@@ -138,6 +138,11 @@ textarea.fld { min-height: 64px; resize: vertical; }
 .hdr.is-scrolled { border-bottom-color: var(--line); }   /* линия — только когда страница прокручена (js/site.js) */
 .hdr.is-dark { background: rgba(17, 17, 17, .82); border-color: transparent; color: var(--on-noir); }   /* над «Для бизнеса» и подвалом — без белой полосы */
 .hdr.is-hidden { transform: translateY(-101%); }
+.no-js .hdr { background: var(--paper); border-bottom-color: var(--line); }   /* без JS класс is-over не снимется — шапка сплошная, а не прозрачная поверх текста */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hdr:not(.is-over) { background: var(--paper); }
+  .hdr.is-dark { background: var(--noir); }
+}
 .hdr__row { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .logo { display: inline-flex; align-items: center; gap: 14px; min-height: 44px; }
 .logo__mono { width: 40px; height: auto; aspect-ratio: 521.1 / 256.9; fill: currentColor; }
@@ -177,10 +182,8 @@ html:not([data-font="b"])[lang="en"] .hero__cover .hero__title { row-gap: calc(v
 .hdr .hdr__count { background: var(--ink); color: var(--paper); }
 .hdr.is-over .hdr__count, .hdr.is-dark .hdr__count { background: var(--on-noir); color: #111; }
 .view__bar .hdr__count { background: var(--ink); color: var(--paper); }
-.hdr__menu { display: none; }
 @media (max-width: 899px) {
-  .hdr__nav { display: none; }
-  .hdr__menu { display: inline-grid; }
+  .hdr__nav { display: none; }   /* меню телефона открывает ячейка «Меню» нижней панели (.mbar); бургера в шапке нет */
   .hdr { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
   .logo__mono { width: 34px; flex: none; }
   .logo { gap: 12px; }
@@ -270,6 +273,14 @@ html[data-font="b"] .hero__ln--2 { font-style: italic; }   /* курсивная
 body { counter-reset: sec 1; }
 .sec h2.title[id$="-title"]::before { counter-increment: sec; content: "№ " counter(sec, decimal-leading-zero); content: "№ " counter(sec, decimal-leading-zero) / "";
   display: block; margin-bottom: clamp(12px, 1.4vw, 18px); font: 500 12px/1 var(--sans); font-variant-numeric: lining-nums tabular-nums; letter-spacing: .12em; color: var(--ink-2); }
+/* телефон (владелец: «между текстами очень большое пространство»): раздел открывается одним заголовком — без номера над ним и без
+   строки-пояснения под ним; заголовок → содержимое 24 px (DESIGN.md 2.3: текст → сетка 24–32 px). Между разделами — прежние --sec.
+   «Шоурум» не трогаем (владелец: «в самом низу всё было хорошо») — его номер остаётся; номера остальных спрятаны так, чтобы счётчик шёл дальше */
+@media (max-width: 599.98px) {
+  .sec:not(.showroom) h2.title[id$="-title"]::before { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip: rect(0 0 0 0); }
+  .shead { gap: 12px; margin-bottom: 24px; }
+  .shead > .shead__line { display: none; }
+}
 
 /* ==========================================================================
    2. ВСТУПЛЕНИЕ + НОВОСТИ + ФАКТЫ
@@ -396,18 +407,23 @@ body { counter-reset: sec 1; }
 /* 600–1099: «Ткани» в паре с «Креслами» — рамка как у соседней плитки модели (4 : 3), иначе ряд разной высоты */
 @media (min-width: 600px) and (max-width: 1099.98px) { .tiles > li:nth-child(3):has(.tile__img--model) + li .tile__img { aspect-ratio: 4 / 3; } }
 @media (max-width: 599.98px) {
-  .tiles { gap: 40px 16px; }
-  .tiles > li:first-child { grid-column: 1 / -1; }
-  /* Диваны во всю ширину: рамка 3 : 2, а не 4 : 5 — без пустой коробки вокруг небольшого рисунка (svg: xMidYMid slice);
-     с фото модели — низкая 16 : 9 (диван длинный и невысокий: в 4 : 3 он тонкой полоской в пустом поле; фон кадра ровный — обрезка не видна) */
-  .tiles > li:first-child .tile__img--draw { aspect-ratio: 3 / 2; }
-  .tiles > li:first-child .tile__img--model { aspect-ratio: 16 / 9; }
-  .tiles > li.tiles__eluna { grid-column: span 1; }
+  /* телефон: Диваны · Кровати · Кресла — в один ряд (квадрат с изделием целиком и название), до категории одно касание без прокрутки;
+     «Ткани» и ELUNA — парой под ними, как были (4 : 5, название и строка). Шесть колонок: по две на плитку ряда, по три на плитку пары */
+  .tiles { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 40px 16px; }
+  .tiles > li, .tiles > li:nth-child(-n+3) { grid-column: span 2; }
+  .tiles > li:nth-child(n+4), .tiles > li.tiles__eluna { grid-column: span 3; }
+  .tiles > li:nth-child(-n+3) .tile__img { aspect-ratio: 1; }
+  .tiles > li:nth-child(-n+3) .tile__img--model img { object-fit: contain; }   /* кадр 4 : 3 в квадрате — изделие целиком, поля сливаются с подиумом (darken) */
+  .tiles > li:nth-child(-n+3) .tile__cap { margin-top: 8px; }
+  .tiles > li:nth-child(-n+3) .tile__name { font-size: 16px; }
+  .tiles > li:nth-child(-n+3) .tile__sub { display: none; }
   .tiles__eluna .tile__img { aspect-ratio: 4 / 5; }
   .tiles__eluna .tile__img img { object-position: 50% 50%; }
   /* все плитки одинаково: название / описание — каждое своей строкой, без висящей «·» */
   .tile__cap { display: grid; justify-items: start; gap: 2px; margin-top: 12px; }
   .tile__name { font-size: 20px; }
+  .tile { -webkit-tap-highlight-color: transparent; }
+  .tile:active .tile__img { opacity: .9; }
   .tile__sub { margin-top: 2px; font-size: 14px; line-height: 1.5; }
   .tile__n { display: block; color: var(--ink); }
   .tile__dot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -458,6 +474,15 @@ body { counter-reset: sec 1; }
   .wk__s { margin-top: 2px; font-size: 13px; }
 }
 @media (max-width: 359px) { .wk__t { font-size: 15px; } }   /* 320: две колонки по 134 px — «Кровать с панельным изголовьем» в три строки, не в четыре */
+/* нажатие — единственный отклик на телефоне (DESIGN.md 4.5): фото чуть бледнеет */
+.wk__a { -webkit-tap-highlight-color: transparent; }
+.wk__img { transition: opacity 100ms linear; }
+.wk__a:active .wk__img { opacity: .9; }
+/* ритм на телефоне (DESIGN.md 4.5): каждая третья карточка — во всю ширину: одна большая, потом пара малых */
+@media (max-width: 899.98px) {
+  .wk--rhythm > li:nth-child(3n + 1) { grid-column: 1 / -1; }
+  .wk--rhythm > li:last-child:nth-child(3n + 2) { grid-column: 1 / -1; }   /* последняя осталась одна — тоже большая */
+}
 
 /* ── Карточка модели: изделие крупно (≈ 86 % ширины, js/site.js zoomAttr) на светло-сером «подиуме» (--product-bg), при наведении —
    второй ракурс; подпись: вид мебели капителью, название — антиквой, строка формы — тихим серым. Фон предметных кадров (#FAFBF8)
@@ -483,6 +508,26 @@ html[data-bg="white"] :is(.wk__a--model .wk__img, .tile__img--model, .lb__stage.
   .wk__a--model .wk__t { font-size: 20px; }
   .wk__a--model .wk__s { margin-top: 4px; font-size: 13px; }
 }
+/* телефон: карточка модели — фото и две строки. Вид мебели («ДИВАН») над названием не повторяем на каждой карточке — он в заголовке окна;
+   подпись — одна строка, лишнее в «…» (целиком — в окне модели). Малая карточка (по две в ряд) — название 16 px, большая карточка
+   ритма — 20 px. Ритм на экранах «Диваны» и «Кровати» — по умолчанию, «По две в ряд» — переключателем [data-view-cols] (js/site.js) */
+@media (max-width: 599.98px) {
+  .wk__cap { width: 100%; min-width: 0; margin-top: 10px; }
+  .wk__a--model .wk__k { display: none; }
+  .wk__a--model .wk__t { margin-top: 0; font-size: 16px; line-height: 1.25; }
+  .wk__a--model .wk__s { max-width: 100%; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wk--rhythm > li:nth-child(3n + 1) .wk__a--model .wk__t, .wk--rhythm > li:last-child:nth-child(3n + 2) .wk__a--model .wk__t { font-size: 20px; line-height: 1.2; }
+}
+/* фишки под заголовком «Наши работы» на главной (телефон): сразу экран работ с этим фильтром — тот же рисунок, что у вкладок окна (.view__tabs) */
+.chips { display: none; }
+@media (max-width: 899.98px) {
+  .chips { display: flex; gap: 0 20px; max-width: 100%; margin: -6px 0 -10px; overflow-x: auto; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chips a { flex: none; display: inline-flex; align-items: center; min-height: 44px; font: 500 14px/1 var(--sans); color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; text-decoration-color: var(--line-2); -webkit-tap-highlight-color: transparent; }
+  .chips a:active { opacity: .6; }
+  .chips__n { margin-left: 6px; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+}
+@media (max-width: 599.98px) { .works .wk > li:nth-child(n+5) { display: none; } }   /* телефон: четыре работы и кнопка «Все работы» — остальные на экране работ */
 
 /* ==========================================================================
    3a. ЛЮБОЙ СТИЛЬ, ЛЮБАЯ МОДЕЛЬ — заголовок слева; справа строка, три шага под тонкими линиями, WhatsApp «по фото»
@@ -737,18 +782,30 @@ html[data-bg="white"] :is(.wk__a--model .wk__img, .tile__img--model, .lb__stage.
 }
 
 /* ==========================================================================
-   Липкая плашка (телефон)
+   Нижнее меню телефона (DESIGN.md 4.3): три ячейки «Каталог · WhatsApp · Меню», 56 px + безопасная зона. Видно с первой секунды,
+   при прокрутке не прячется; .is-off (js/site.js) — открыто окно, в кадре «Шоурум» или подвал (там свои кнопки). Клавиатура открыта
+   (книжный экран ниже 520 px) — панели нет. Над чёрным блоком — чёрное. В окне каталога — такая же панель .mbar--view внутри окна
+   (окно лежит в верхнем слое браузера): прилипает к низу окна, пока листают модели
    ========================================================================== */
-.mbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 55; display: none; grid-template-columns: 1fr 1fr; padding: 0 0 env(safe-area-inset-bottom); background: var(--paper); border-top: 1px solid var(--line); transform: translateY(105%); transition: transform 500ms var(--ease), background-color 400ms var(--ease); }
-.mbar .btn { min-height: 52px; padding: 0 12px; border: 0; background: transparent; color: var(--ink); }
-.mbar .btn + .btn { border-left: 1px solid var(--line); }
-.mbar.is-on { transform: none; }
-.mbar .btn:focus-visible { outline-offset: -6px; }   /* кнопки — до края экрана: рамка фокуса внутрь, видна целиком */
-@media (max-width: 899px) { .mbar { display: grid; } }
-/* над чёрной полосой «Для бизнеса» плашка тоже чёрная (как шапка) — без белой полосы поперёк */
-.mbar.is-dark { background: var(--noir); border-top-color: rgba(255,255,255,.14); }
-.mbar.is-dark .btn { color: var(--on-noir); }
-.mbar.is-dark .btn + .btn { border-left-color: rgba(255,255,255,.14); }
+.mbar { display: none; }
+@media (max-width: 899px) {
+  .mbar { position: fixed; inset: auto 0 0; z-index: 55; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); height: calc(56px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); background: var(--paper); border-top: 1px solid var(--line); transition: transform 400ms var(--ease), background-color 400ms var(--ease); }
+  .mbar.is-off { transform: translateY(100%); }
+  .mbar__i { display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; color: var(--ink); font: 500 12px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; -webkit-tap-highlight-color: transparent; }
+  .mbar__i .ico { width: 18px; height: 18px; }
+  .mbar__i + .mbar__i { border-left: 1px solid var(--line); }
+  .mbar__i:active { background: var(--paper-2); }
+  .mbar__i--main { background: var(--ink); color: var(--paper); }
+  .mbar__i--main:active { background: var(--ink-hover); }
+  .mbar__i:focus-visible { outline: 2px solid currentColor; outline-offset: -6px; }
+  .mbar.is-dark { background: var(--noir); border-top-color: rgba(255, 255, 255, .14); }
+  .mbar.is-dark .mbar__i { color: var(--on-noir); border-left-color: rgba(255, 255, 255, .14); }
+  .mbar.is-dark .mbar__i--main { background: var(--on-noir); color: var(--ink); }
+  .no-js .mbar button { display: none; }   /* без JS меню не открыть: остаются «Каталог» и WhatsApp, по половине ширины */
+  .mbar--view { position: sticky; inset: auto 0 0; z-index: 6; }   /* панель окна каталога: в потоке последней, прилипает к низу окна */
+}
+@media (max-width: 359px) { .mbar__i .ico { display: none; } }   /* 320: слово WHATSAPP без значка */
+@media (max-width: 899px) and (max-height: 520px) and (orientation: portrait) { .mbar { display: none; } }   /* клавиатура открыта; телефон на боку (844 × 390) сюда не попадает — иначе в нём не осталось бы входа в меню */
 
 /* ==========================================================================
    ОКНА — общая основа
@@ -762,17 +819,36 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .menu.is-in, .view.is-in, .pd.is-in, .lb.is-in, .sl.is-in { opacity: 1; transform: none; }
 .view::backdrop, .pd::backdrop, .lb::backdrop, .menu::backdrop { background: var(--paper); }
 
-/* меню */
-.menu { overflow-y: auto; }
-.menu__bar { height: var(--hdr); display: flex; align-items: center; justify-content: space-between; }
+/* меню телефона (DESIGN.md 4.2): окно проявляется за 200 мс; всё содержимое прижато к низу — под большой палец. Ярус 1 — четыре крупных
+   слова каталога, строки поднимаются из маски (450 мс, очередь 50 мс); над ними тихая ссылка «Каталог» (плитки на главной).
+   Ярус 2 — остальные ссылки в две колонки, 15 px, строки 44 px. Низ — WhatsApp и звонок в один ряд, прилипает к низу окна:
+   на низком экране список листается под ним, кнопка всегда на виду. Закрытие — окно гаснет целиком, строки стоят */
+.menu { overflow-y: auto; transition: opacity 200ms var(--ease); }
+.menu[open] { display: flex; flex-direction: column; }
+.menu__bar { flex: none; height: var(--hdr); display: flex; align-items: center; justify-content: space-between; }   /* полоса не сжимается, когда содержимое выше экрана */
 .menu__bar .icon-btn { margin-right: -10px; }
 .menu__bar .logo__name { font-size: 13px; letter-spacing: .38em; }
 .menu__bar .logo__sub { font-size: 6.5px; letter-spacing: .3em; }
-.menu__list { display: grid; gap: 2px; padding: clamp(24px, 6vh, 72px) 0 32px; }
-.menu__list a, .menu__sl { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; font: 400 24px/1.1 var(--sans); letter-spacing: -.02em; text-align: left; justify-self: start; }
-.menu__list .ico { width: 16px; height: 16px; }
-.menu__foot { display: grid; gap: 16px; justify-items: center; padding-bottom: 40px; }
-.menu__tel { display: inline-flex; align-items: center; min-height: 44px; font: 400 15px/1 var(--sans); letter-spacing: .06em; }
+.menu__body { flex: 1 0 auto; display: flex; flex-direction: column; gap: 24px; }
+.menu__main { display: grid; justify-items: start; margin-top: auto; }   /* прижимает список к низу; при нехватке места отступ станет 0, и окно листается с первой строки */
+.menu__all { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: 500 12px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+.menu__all .ico { width: 14px; height: 14px; }
+.menu__row { display: block; overflow: hidden; min-height: 52px; color: var(--ink); font: var(--w-display) clamp(32px, 9.5vw, 44px)/52px var(--f-display); letter-spacing: var(--ls-h2); -webkit-tap-highlight-color: transparent; }
+.menu__row > span { display: block; transform: translateY(105%); transition: transform 450ms var(--ease); transition-delay: calc(var(--i) * 50ms + 50ms); }
+.menu.is-in .menu__row > span { transform: none; }
+.menu__more { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.menu__more a, .menu__more button { display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; font: 500 15px/1.2 var(--sans) !important; letter-spacing: 0; color: var(--ink-2); text-align: left; -webkit-tap-highlight-color: transparent; }   /* !important снимает прежний размер .menu__lang */
+.menu__more .ico { width: 14px; height: 14px; }
+.menu__foot { position: sticky; bottom: 0; display: flex; gap: 8px; margin-top: -12px; padding: 12px 0 calc(16px + env(safe-area-inset-bottom)); background: var(--paper); }
+.menu__foot .btn--fill { flex: 1 1 0; min-width: 0; }
+.menu__call { flex: none; width: 50px; padding: 0; }
+.menu__call .ico { width: 18px; height: 18px; }
+.menu__more, .menu__foot { opacity: 0; transition: opacity 250ms var(--ease) 200ms; }
+.menu.is-in .menu__more, .menu.is-in .menu__foot { opacity: 1; }
+.menu__row:active, .menu__all:active, .menu__more a:active, .menu__more button:active { opacity: .6; }
+/* закрытие: окно гаснет 200 мс, содержимое стоит и прячется сразу после этого, без обратной очереди */
+.menu:not(.is-in) .menu__row > span { transition: transform 0s linear 200ms; }
+.menu:not(.is-in) .menu__more, .menu:not(.is-in) .menu__foot { transition: opacity 0s linear 200ms; }
 
 /* экран категории / тканей / работ */
 .view { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
@@ -785,6 +861,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .view__head { display: grid; gap: 14px; justify-items: start; text-align: left; margin-bottom: clamp(40px, 4.5vw, 64px); }   /* одна ось слева, как на главной (.shead) */
 .view__head .title:focus, .pd__title:focus, .lb__title:focus { outline: none; }
 .view__n { font: 400 12px/1.5 var(--sans); color: var(--ink-2); letter-spacing: .06em; text-wrap: balance; }
+.view__cols { display: none; }   /* «По две в ряд / Крупнее» — только телефон, экраны моделей (js/site.js) */
 .view__tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 28px; margin: 0 auto clamp(48px, 5vw, 80px); }
 .view__tabs button { position: relative; min-width: 44px; min-height: 44px; font: 500 14px/1 var(--sans); letter-spacing: 0; color: var(--ink-2); transition: color 200ms; }
 .view__tabs button::after { content: ''; position: absolute; left: 0; right: 0; bottom: 11px; height: 1px; background: var(--ink); transform: scaleX(0); transform-origin: left; transition: transform 250ms var(--ease); }
@@ -796,7 +873,20 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   .view__tabs { position: sticky; top: var(--hdr); z-index: 4; flex-wrap: nowrap; justify-content: flex-start; gap: 0 22px; overflow-x: auto; scrollbar-width: none;
     margin: 0 calc(-1 * var(--pad)) 32px; padding: 2px var(--pad); background: var(--paper); }
   .view__tabs::-webkit-scrollbar { display: none; }
-  .view__tabs button { flex: none; }
+  .view__tabs button { flex: none; -webkit-tap-highlight-color: transparent; }
+  .view__tabs.is-cats { margin-bottom: 20px; }
+  .view.is-scrolled .view__tabs.is-cats { box-shadow: 0 1px 0 var(--line); }
+  .view__n { font-size: 13px; letter-spacing: .02em; }
+  .kind__note { font-size: 13px; }
+}
+@media (max-width: 389px) { .view__tabs:not(.is-fab) { gap: 0 16px; } .chips { gap: 0 16px; } }   /* 375: четыре фишки — в ширину экрана, без обрезанной последней */
+/* фишки категорий «Диваны · Кровати · Кресла · Ткани» в окне моделей — только телефон: на компьютере категории меняют из шапки */
+@media (min-width: 768px) { .view__tabs.is-cats { display: none; } }
+@media (max-width: 599.98px) {
+  .view__head { grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 16px; }
+  .view__head .title { grid-column: 1 / -1; }
+  .view__cols { display: inline-flex; margin-block: -12px; white-space: nowrap; }   /* зона нажатия 44 px, строка остаётся высотой текста */
+  .view__cols::after { bottom: 11px; }
 }
 /* Экран категории: сверху сетка работ (.wk), ниже под тонкой линией — «На заказ»: слева абзац и что шьём, справа три действия;
    телефон — столбиком */
@@ -938,7 +1028,6 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   .fl__end-btns { display: grid; width: 100%; }
   /* вкладки тканей: все пять типов на 390; на 360/320 у правого края видно начало «Экокожи» — знак, что ряд листается */
   .view__tabs.is-fab { gap: 0 14px; }
-  .view__tabs.is-fab button { letter-spacing: .12em; }
   /* ряд шире экрана (EN «Faux leather» на 390–402) — вкладка тает в поле страницы, а не упирается буквой в край экрана
      («FAUX LEATHE» читалось как опечатка): видно, что ряд листается. Затухание — только в полях (--pad), поэтому ряд,
      который помещается (RU на 390+), не меняется; долистали до конца — последняя вкладка видна целиком */
@@ -946,9 +1035,8 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
     mask-image: linear-gradient(90deg, transparent, #000 var(--pad), #000 calc(100% - var(--pad)), transparent); }
   .view.is-scrolled .view__tabs.is-fab { box-shadow: inset 0 -1px 0 var(--line); }   /* маска срезает всё за рамкой ряда — линия «прилипли» внутрь */
   html[lang="en"] .view__tabs.is-fab { gap: 0 12px; }   /* EN длиннее («Faux leather»): чуть плотнее — все пять вкладок видны на 390+ (на 402+ — без затухания) */
-  html[lang="en"] .view__tabs.is-fab button { letter-spacing: .08em; }
 }
-@media (max-width: 389px) { .fl__end-btns .btn { padding-inline: 12px; gap: 10px; letter-spacing: .12em; white-space: nowrap; } }   /* 360/320: «Помогите подобрать ткань» — в одну строку */
+@media (max-width: 389px) { .fl__end-btns .btn { padding-inline: 12px; gap: 10px; white-space: nowrap; } }   /* 360/320: «Помогите подобрать ткань» — в одну строку */
 
 /* окно изделия */
 .pd { overflow-y: auto; overscroll-behavior: contain; }
@@ -1078,27 +1166,48 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   .lb__bar { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
   .lb__acts { justify-content: flex-start; }
 }
+.lb__next, .lb__pill, .lb__dots, .lb__rows { display: none; }   /* счётчик на фото, точки и строки под названием — только телефон (ниже) */
+/* раскрывашка (DESIGN.md 4.6): открывается сразу — высоту не анимируем; содержимое проявляется за 250 мс, «+» поворачивается за 300 мс */
+.pd__more summary .ico { transition-duration: 300ms; }
+.pd__more[open] > :not(summary) { animation: more-in 250ms var(--ease) both; }
+@keyframes more-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 @media (max-width: 599px) {
-  .lb__stage { padding: calc(var(--hdr) - 4px) 0 12px; }
+  /* телефон: окно работы и окно модели листаются целиком. Сверху фото во всю ширину в своей пропорции (высоту сцены --lb-h ставит
+     js/site.js: модель 4 : 3 — 390 × 292, работа 4 : 5 — 390 × 487; не выше экрана без полосы действий), на фото — счётчик «1 / 5»;
+     ниже миниатюры (модель) или штрихи (работа), название, строки-ссылки, «Подробнее». «Хочу такой» и «В корзину» прилипают к низу —
+     всегда на экране. «Подробнее» раскрывается вниз: сцена своей высоты не меняет, то, что выше, не прыгает */
+  .lb__in { display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  .lb__stage { flex: none; height: var(--lb-h, 75vw); padding: 0; }
   .lb__stage .pd__arrow { display: none; }
-  .lb__bar { padding-top: 14px; gap: 12px; }
-  .lb__acts { gap: 4px 8px; }
-  .lb__acts .btn { flex: 1 1 calc(50% - 4px); padding: 0 10px; letter-spacing: .14em; }
-  .lb__3d { margin: 4px 0 0; white-space: nowrap; letter-spacing: .14em; }
-  /* «Смотреть в Instagram» — всегда своей строкой под «Собрать похожий в 3D»: рядом с капсом ссылки слипались (зазор 8 px,
-     разные базовые линии и подчёркивания), а влезали в строку или нет — смотря по языку и ширине телефона. Перенос — пустой
-     ::after на всю ширину перед ссылкой (order): зона нажатия — по тексту, а не вся строка; −8 px съедают два row-gap */
-  .lb__acts:has(.lb__ig:not([hidden]))::after { content: ''; order: 1; flex-basis: 100%; }
-  .lb__ig { order: 2; margin: -8px 0 0; min-height: 40px; }
-  /* модель каталога: сцена занимает всё место над миниатюрами и подписью (не меньше кадра 4:3 с шапкой — на коротком экране окно
-     прокручивается), фото целиком по центру; ниже — миниатюры на том же подиуме, подпись и кнопки — внизу (под палец) */
-  .lb--model .lb__in { grid-template-rows: minmax(min(calc(75vw + var(--hdr)), 50dvh), 1fr) auto auto; overflow-y: auto; overscroll-behavior: contain; }
-  .lb--model .lb__stage { padding: calc(var(--hdr) - 4px) 0 8px; }
-  .lb--model .lb__thumbs { display: flex; padding: 4px 16px 14px; background: var(--product-bg); }
+  .lb__pill { position: absolute; right: 8px; bottom: 8px; z-index: 2; display: block; padding: 7px 9px; background: rgba(255, 255, 255, .9); color: var(--ink); font: 500 13px/1 var(--sans); letter-spacing: .04em; font-variant-numeric: tabular-nums lining-nums; pointer-events: none; }
+  .lb__next { position: absolute; left: 100%; top: 0; z-index: 1; display: block; width: 100%; height: 100%; max-width: none; object-fit: contain; pointer-events: none; }
+  /* первый показ работы с несколькими фото: кадр на 24 px сдвигается влево — выглядывает следующее фото, и возвращается (один раз за визит) */
+  .lb__stage.is-peek > .lb__frame, .lb__stage.is-peek > .lb__next { animation: lb-peek 700ms var(--ease-io) 450ms both; }
+  .lb__dots { flex: none; display: flex; justify-content: center; gap: 6px; padding: 12px var(--pad) 0; }
+  .lb__dots i { width: 16px; height: 2px; background: var(--line-2); transition: background-color 200ms var(--ease); }
+  .lb__dots i.is-on { background: var(--ink); }
+  .lb--model .lb__thumbs { flex: none; display: flex; padding: 4px 16px 14px; background: var(--product-bg); }
   .lb--model .lb__thumbs .pd__thumb { width: 64px; height: 48px; }
-  .lb--model .lb__bar { grid-row: 3; }
+  .lb__bar { flex: 1 0 auto; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0; padding: 16px var(--pad) 0; border-top: 0; }
+  .lb--model .lb__bar { border-top: 1px solid var(--line); }
+  .lb__count { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* счётчик — на фото; строка остаётся для чтения с экрана */
+  .lb__rows { display: grid; margin-top: 14px; border-top: 1px solid var(--line); }
+  .lb__rows > li { border-bottom: 1px solid var(--line); }
+  .lb__r { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; align-items: center; column-gap: 12px; min-height: 48px; -webkit-tap-highlight-color: transparent; }
+  .lb__rk { font: 500 12px/1.5 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+  .lb__rv { font: 400 14px/1.4 var(--sans); color: var(--ink); }
+  .lb__r .ico { width: 14px; height: 14px; }
+  a.lb__r:active { background: var(--paper-2); }
+  .lb__more, .lb .nb-comp-d { max-width: none; margin-top: 0; border-top: 0; border-bottom: 1px solid var(--line); }
+  .lb__cap { padding-bottom: 20px; }
+  .lb__acts { position: sticky; bottom: 0; z-index: 3; flex-wrap: nowrap; gap: 8px; margin: auto calc(-1 * var(--pad)) 0; padding: 8px var(--pad) calc(8px + env(safe-area-inset-bottom)); background: var(--paper); border-top: 1px solid var(--line); }
+  .lb__acts .btn { flex: 1 1 0; min-width: 0; padding: 0 10px; white-space: nowrap; }
+  .lb__acts .lb__3d, .lb__acts .lb__ig { display: none; }   /* «Собрать похожий в 3D» и Instagram — строками под названием */
+  .lb__close { top: 6px; right: 6px; }
+  .lb.is-scrolled .lb__close { background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }   /* над текстом — сплошная, с волосяной рамкой */
 }
-@media (max-width: 359px) { .lb__acts .btn { gap: 8px; padding: 0 8px; letter-spacing: .1em; } }   /* 320: обе кнопки («Хочу такой», «Add to cart») — в одну строку */
+@keyframes lb-peek { 0%, 100% { transform: none; } 50% { transform: translateX(-24px); } }
+@media (max-width: 359px) { .lb__acts .btn { gap: 8px; padding: 0 8px; } }   /* 320: обе кнопки («Хочу такой», «Add to cart») — в одну строку */
 
 /* подборка — панель справа (телефон — на весь экран) */
 .sl { position: fixed; inset: 0 0 0 auto; width: min(440px, 100%); height: 100%; height: 100dvh; display: flex; flex-direction: column; transform: translateX(24px); box-shadow: -1px 0 0 var(--line); }
@@ -1148,12 +1257,13 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .cart__after-b { display: flex; align-items: center; gap: 20px; }
 .cart__after-b .btn { min-height: 44px; }
 .cart__after:not([hidden]) ~ .sl__clear { display: none; }
+@media (max-width: 899px) { .cart__nb, .sl__m, .cart__note, .cart__split { font-size: 13px; } }   /* телефон: подписи не мельче 13 px */
 @media (max-width: 599px) {
   .sl__head { padding-left: var(--pad); }
   .cart .sl__list, .cart__form, .cart .sl__empty { padding-inline: var(--pad); }
   .sl__foot { padding-inline: var(--pad); }
 }
-@media (max-width: 419px) { .cart__sends .btn { letter-spacing: .14em; padding: 0 12px; } }
+@media (max-width: 419px) { .cart__sends .btn { padding: 0 12px; } }
 @media (max-height: 520px) { .cart:has(.cart__form :focus) .cart__foot { display: none; } }   /* клавиатура открыта — место форме */
 @media (max-width: 359px) { .cart__send-tail { display: none; } }   /* 320 px: «Отправить в WhatsApp» — в одну строку */
 
@@ -1162,6 +1272,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 #toast-text { min-width: 0; white-space: normal; }
 .toast__open { min-height: 44px; padding: 0 12px; font: 500 13px/1 var(--sans); letter-spacing: 0; text-decoration: underline; text-underline-offset: 4px; }
 dialog .toast { position: fixed; }
+@media (max-width: 899px) { .toast { bottom: calc(72px + env(safe-area-inset-bottom)); } }   /* телефон: сообщение «В корзине…» — на 16 px выше нижнего меню (.mbar, 56 px) */
 
 /* ==========================================================================
    ВХОД-ЗАНАВЕС (≤ 1,6 с): белый экран → монограмма RD | RICCA проявляется → занавес уходит вверх вместе с ней → видео;
@@ -1191,9 +1302,9 @@ dialog .toast { position: fixed; }
 .js .rv { transition: opacity 350ms var(--ease), transform 350ms var(--ease); }
 
 /* ==========================================================================
-   Плавающая кнопка WhatsApp (разметку вставляет js/site.js: .wa-fab): чёрный круг 52 px справа снизу с учётом safe-area;
-   на компьютере — с подписью «Написать»; появляется после 400 px прокрутки, скрыта при открытом окне (<dialog>) и когда на телефоне
-   показана нижняя плашка .mbar (там уже есть WhatsApp). На странице конструктора site.js не подключён — кнопки там нет
+   Плавающая кнопка WhatsApp (разметку вставляет js/site.js: .wa-fab) — только компьютер: чёрная капсула 52 px справа снизу с подписью
+   «Написать»; появляется после 400 px прокрутки, скрыта при открытом окне (<dialog>), у «Шоурума» и подвала (там свои кнопки).
+   На телефоне её нет: WhatsApp — главная ячейка нижнего меню .mbar. На странице конструктора site.js не подключён — кнопки там нет
    ========================================================================== */
 .wa-fab { position: fixed; right: max(20px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom)); z-index: 54; display: inline-flex; align-items: center; gap: 10px; height: var(--fab); min-width: var(--fab); padding: 0; border-radius: calc(var(--fab) / 2); background: var(--noir); color: var(--on-noir); box-shadow: 0 8px 24px rgba(10, 10, 10, .18);
   opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity 250ms var(--ease), transform 250ms var(--ease), visibility 0s 250ms, background-color 200ms; }
@@ -1204,7 +1315,7 @@ dialog .toast { position: fixed; }
 .wa-fab.is-dark { background: var(--on-noir); color: var(--ink); box-shadow: 0 8px 24px rgba(0, 0, 0, .35); }   /* над чёрными блоками (js/site.js) */
 @media (hover: hover) { .wa-fab:hover { background: var(--ink-hover); } .wa-fab.is-dark:hover { background: #FFFFFF; } }
 @media (min-width: 900px) { .wa-fab .ico { margin-inline: 14px 0; } .wa-fab__t { display: inline; } }
-@media (max-width: 899px) { .wa-fab { right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); } }
+@media (max-width: 899px) { .wa-fab { display: none; } }   /* телефон: WhatsApp — главная ячейка нижнего меню (.mbar), у «Шоурума» и подвала свои кнопки */
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; transition-delay: 0ms !important; scroll-behavior: auto !important; }
@@ -1231,6 +1342,7 @@ dialog .toast { position: fixed; }
 .hdr__lng > span { opacity: .3; }
 @media (hover: hover) { .hdr__lng a:hover { opacity: 1; } }
 .hdr__nav .hdr__lang { display: none; }
+@media (max-width: 899px) { .hdr__lng { margin-right: 8px; } .hdr__lng a { min-width: 44px; margin-inline: -6px; } }   /* зона нажатия RU и EN — 44 × 44 px, на вид шаг прежний */
 @media (max-width: 359px) { .hdr .hdr__lng { display: none; } }   /* 320 px: логотипу не хватало места (знак сжимался до 1 px) — RU | EN остаётся в меню (.menu__lang) */
 
 /* обложка: третья кнопка «Собрать в 3D»; на телефоне — во всю ширину вторым рядом */

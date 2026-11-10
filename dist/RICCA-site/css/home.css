@@ -14,11 +14,19 @@
 .how__cta, .cfg__text .btn, .biz__text .btn { margin-top: 4px; }
 @media (max-width: 599.98px) { .how__cta .btn, .cfg__text .btn, .biz__text .btn, .works__foot .btn, .foot__show .btn, .foot__contacts .btn { width: 100%; } }
 
-/* ---------- каталог: телефон — ряды плитки плотнее, заголовок ближе (раздел ≈ 1,2 экрана) ---------- */
-@media (max-width: 599.98px) { .cat .tiles { row-gap: 32px; } .cat .shead { margin-bottom: 32px; } }
+/* ---------- каталог: телефон — плитки сразу под первым экраном: заголовок «Каталог» остаётся только для чтения с экрана (слово уже есть
+   в нижнем меню и в меню), верхний отступ 16 px — на первом экране 390 × 700 под кадром видны верхи трёх плиток категорий;
+   после «Каталог» из нижнего меню все пять плиток — на одном экране ---------- */
+@media (max-width: 599.98px) {
+  .cat { padding-top: 16px; }
+  .cat .shead { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .cat .tiles { row-gap: 24px; }
+}
 
-/* ---------- наши работы: заголовок и строка (.shead), сетка .wk из js/site.js, под ней кнопка «Все работы» ---------- */
+/* ---------- популярные модели: четыре модели каталога той же сеткой .wk (js/site.js); телефон — большая, пара, большая (.wk--rhythm) ----------
+   наши работы: заголовок и фишки-фильтры (.shead, .chips), сетка .wk из js/site.js; под сетками — кнопка */
 .works__foot { display: flex; margin-top: clamp(40px, 4.4vw, 64px); }
+@media (max-width: 599.98px) { .works__foot { margin-top: 28px; } }
 
 /* ---------- конструктор: эскиз на сером подиуме слева (7 колонок), текст справа по центру высоты; телефон — столбиком ---------- */
 .cfg__in { align-items: center; }

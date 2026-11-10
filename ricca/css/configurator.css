@@ -139,7 +139,7 @@ html.is-scrolled .hdr { border-bottom-color: var(--line); }
   .hdr__back .ico { width: 16px; height: 16px; margin-left: 0; }
   .hdr__back-t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .hdr__back:active { opacity: .6; }
-  .hdr__wa { width: 44px; justify-content: center; }
+  .hdr__wa { flex: none; width: 44px; justify-content: center; }
   .hdr__wa .ico { width: 20px; height: 20px; }
   .hdr__wa-t { display: none; }
 }
@@ -499,9 +499,10 @@ html[data-font="b"] .rp__h { font: 400 26px/1 var(--serif); letter-spacing: 0; }
      сверху остаются только «Вид» и «Размеры» по углам, чтобы верхний ряд не уходил под кнопки */
   .cfg[data-mode="model"] #vp[data-dims] { height: max(var(--vp-h), 280px); }
   .cfg[data-mode="model"] #vp[data-dims] .vp__size { display: none; }
-  .cfg[data-mode="model"] #vp[data-dims]:not([data-view="3d"]) .vp__stage { top: 44px; right: 16px; bottom: 32px; left: 28px; --stage-pad-top: 0px; }
+  .cfg[data-mode="model"] #vp[data-dims]:not([data-view="3d"]) .vp__stage { top: 44px; right: 20px; bottom: 32px; left: 30px; --stage-pad-top: 0px; }
   .cfg[data-mode="model"] #vp[data-dims]:not([data-view="3d"]) :is(#t-photo, #t-frame) { display: none; }
-  .cfg[data-mode="model"] #vp[data-dims]:not([data-view="3d"]) .vp__view { gap: 4px; padding: 0 6px 0 8px; }   /* уже: левый конец верхнего ряда не под кнопкой */
+  .cfg[data-mode="model"] #vp[data-dims]:not([data-view="3d"]) .vp__view { padding: 0 8px; }   /* уже и без стрелки: левый конец верхнего ряда не под кнопкой */
+  .cfg[data-mode="model"] #vp[data-dims]:not([data-view="3d"]) .vp__view .ico { display: none; }
   .panel { padding-top: 8px; }
   .step { scroll-margin-top: var(--vp-h); }
   .step:first-child { border-top: 0; }
@@ -689,6 +690,7 @@ html[data-font="b"] .dlg__hdr .caps { font: 400 26px/1 var(--serif); letter-spac
 @media (max-width: 899px) {
   .dlg--drawing .dlg__sheet.is-zoom .dlg__pan { display: block; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y pinch-zoom; scrollbar-width: none; }
   .dlg--drawing .dlg__sheet.is-zoom .dlg__pan img { display: block; width: max(400%, 1400px); height: auto; max-width: none; margin: 0; object-fit: fill; cursor: zoom-out; }
+  .dlg--drawing .dlg__zoom { min-width: 44px; min-height: 44px; font-size: 13px; }   /* и лёжа, где кнопка лежит на листе */
   .dlg--drawing .dlg__zoom[aria-pressed="true"] { background: var(--noir); border-color: var(--noir); color: var(--on-noir); }
   .dlg--drawing .dlg__zoom:active { opacity: .7; }
 }

@@ -65,7 +65,7 @@
   const plural3 = (n, f) => T ? (n === 1 ? tr(f[0]) : tr(f[2])) : f[n % 10 === 1 && n % 100 !== 11 ? 0 : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2)];
   const waUrl = (text) => `https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(text)}`;
   const mqPhone = window.matchMedia('(max-width: 899px)');
-  const mqSmall = window.matchMedia('(max-width: 599.98px)');   // телефон: карточки по одной, окно работы листается (css/site.css)
+  const mqSmall = window.matchMedia('(max-width: 599.98px)');   // телефон: ритм сетки моделей, окна работы и модели листаются (css/site.css)
 
   /* ---------- Данные каталога ---------- */
   /* Только мягкая мебель (владелец, 13 октября: «мы столы и стулья не делаем»): категории chairs и tables на сайт не идут, даже если
@@ -1317,7 +1317,7 @@
       wa.href = waOf(w);
       waT.textContent = tr`Хочу ${want(w)}`;
       wa.setAttribute('aria-label', tr`Хочу ${want(w)}: ${label(w)} — написать в WhatsApp`);
-      t3s.forEach((a) => { a.href = `configurator.html#cfg=v1~${/~|^t\./.test(w.cfg || '') ? w.cfg : 't.' + encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}`; });
+      t3s.forEach((a) => { a.href = `configurator.html#cfg=v1~${/~|^t\./.test(w.cfg || '') ? w.cfg : 't.' + encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}&from=work-${encodeURIComponent(w.id)}`; });   // &from — конструктор покажет «‹ Кровать Bukel» и вернёт в это окно
       igs.forEach((a) => { a.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; a.hidden = !!w.model; });   // у моделей каталога поста нет
       // строки под названием (телефон): у модели — «Размер — любой», «Ткань — выбрать», «3D»; у работы — «3D» и Instagram
       [['size', !w.model], ['fabric', !w.model], ['ig', !!w.model]].forEach(([k, off]) => { const li = rowOf(k); if (li) li.hidden = off; });
