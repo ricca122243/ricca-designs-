@@ -1483,3 +1483,8 @@ img { -webkit-user-drag: none; user-select: none; }
 .lb__row { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font: 400 14px/1.5 var(--sans); }
 .lb__row dt { color: var(--ink-2); } .lb__row dd { margin: 0; }
 @media (max-width: 599.98px) { .lb__more { max-width: none; } .lb__row { grid-template-columns: 96px minmax(0, 1fr); font-size: 13.5px; } }
+
+/* окно изделия на телефоне (жалоба 10 ноября, встроенный браузер Instagram на iPhone: окно «съезжало» вбок, справа белая полоса):
+   кадр шире рамки не должен давать прокрутку — clip вместо hidden (hidden остаётся прокручиваемым программно и жестом) */
+@supports (overflow: clip) { .lb__stage, .lb__frame { overflow: clip; } .lb, .lb__in { overflow-x: clip; } }
+.lb { overscroll-behavior: contain; max-width: 100vw; }
