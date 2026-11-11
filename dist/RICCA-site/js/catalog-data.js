@@ -127,6 +127,7 @@ window.RICCA_MODEL_NAMES = {
   'armchair-20': 'Galso',     // кресло · низкое, округлая спинка
   'armchair-21': 'Savro',     // кресло · с высокой спинкой, на деревянных ножках
   'armchair-22': 'Ronso',     // кресло · на металлической раме
+  'armchair-23': 'Rulso',     // кресло · широкое, с круглой подушкой
   'bench-01': 'Lineo',     // банкетка · простёганная, на цоколе
   /* стулья */
   'chair-01': 'Senvi',    // стул · опоры-панели
@@ -155,7 +156,7 @@ window.RICCA_MODEL_READINGS = {
   Anvel: 'Анвель', Mival: 'Миваль', Tirel: 'Тирель', Razel: 'Разель', Varel: 'Варель', Godal: 'Годаль',
   Zural: 'Зураль', Ormel: 'Ормель', Dorel: 'Дорель', Linel: 'Линель', Novel: 'Новель', Grafel: 'Графель', Bukel: 'Букель', Sarel: 'Сарель', Lapel: 'Лапель', Rovel: 'Ровель', Darvel: 'Дарвель', Tavel: 'Тавель',
   /* кресла */
-  Velso: 'Вельсо', Runvo: 'Рунво', Lirso: 'Лирсо', Zirvo: 'Зирво', Nimso: 'Нимсо', Novro: 'Новро', Kalvo: 'Кальво', Nervo: 'Нерво', Tovro: 'Товро', Ovro: 'Овро', Nocto: 'Нокто', Lesvo: 'Лесво', Mirto: 'Мирто', Pelso: 'Пелсо', Kvado: 'Квадо', Ovalo: 'Овало', Galso: 'Гальсо', Savro: 'Савро', Ronso: 'Ронсо', Lineo: 'Линео',
+  Velso: 'Вельсо', Runvo: 'Рунво', Lirso: 'Лирсо', Zirvo: 'Зирво', Nimso: 'Нимсо', Novro: 'Новро', Kalvo: 'Кальво', Nervo: 'Нерво', Tovro: 'Товро', Ovro: 'Овро', Nocto: 'Нокто', Lesvo: 'Лесво', Mirto: 'Мирто', Pelso: 'Пелсо', Kvado: 'Квадо', Ovalo: 'Овало', Galso: 'Гальсо', Savro: 'Савро', Ronso: 'Ронсо', Rulso: 'Рульсо', Lineo: 'Линео',
   /* стулья */
   Senvi: 'Сенви', Sulmi: 'Сульми', Tanvi: 'Танви', Nelsi: 'Нельси', Kosvi: 'Косви', Zanli: 'Занли', Tilvi: 'Тильви',
   Munsi: 'Мунси',
@@ -421,6 +422,9 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-sofa-22-o-r.webp", "src600": "img/catalog/p-sofa-22-o-r-600.webp", "alt": "Диван с цельной округлой спинкой в сером букле, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.246], "w": 1457, "h": 1093},
       {"src": "img/catalog/p-sofa-22-o2-r.webp", "src600": "img/catalog/p-sofa-22-o2-r-600.webp", "alt": "Диван с цельной округлой спинкой в сером букле, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.28], "w": 1501, "h": 1126},
       {"src": "img/catalog/p-sofa-22-d1.webp", "src600": "img/catalog/p-sofa-22-d1-600.webp", "alt": "Подлокотник и подушка сиденья: букле крупно — деталь", "studio": true, "box": [0.855, 0.524], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-sofa-22-s1-r.webp", "src600": "img/catalog/p-sofa-22-s1-r-600.webp", "alt": "Тот же диван в шалфейном букле, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.246], "w": 1457, "h": 1093},
+      {"src": "img/catalog/p-sofa-22-s2-r.webp", "src600": "img/catalog/p-sofa-22-s2-r-600.webp", "alt": "Диван в шалфейном букле, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.28], "w": 1266, "h": 950},
+      {"src": "img/catalog/p-sofa-22-s3.webp", "src600": "img/catalog/p-sofa-22-s3-600.webp", "alt": "Подлокотник и подушка сиденья: шалфейное букле крупно — деталь", "studio": true, "box": [0.855, 0.523], "w": 1280, "h": 1280},
       {"src": "img/catalog/p-sofa-22-hd.webp", "src600": "img/catalog/p-sofa-22-hd-600.webp", "alt": "Диван в серо-голубой ткани — на светлом фоне", "studio": true, "box": [0.614, 0.238], "w": 1800, "h": 1350}
     ],
     description: "Цельная плавная спинка, которая переходит в подлокотники.",
@@ -444,6 +448,9 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-sofa-23-o-r.webp", "src600": "img/catalog/p-sofa-23-o-r-600.webp", "alt": "Диван с округлыми подушками в жёлтой ткани на тонких ножках — на светлом фоне", "studio": true, "box": [0.76, 0.331], "w": 1349, "h": 1012},
       {"src": "img/catalog/p-sofa-23-o2-r.webp", "src600": "img/catalog/p-sofa-23-o2-r-600.webp", "alt": "Диван с округлыми подушками в жёлтой ткани, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.366], "w": 1492, "h": 1119},
       {"src": "img/catalog/p-sofa-23-d1.webp", "src600": "img/catalog/p-sofa-23-d1-600.webp", "alt": "Подлокотник и подушка в жёлтой ткани «ёлочка» — деталь", "studio": true, "box": [0.83, 0.609], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-sofa-23-g1-r.webp", "src600": "img/catalog/p-sofa-23-g1-r-600.webp", "alt": "Тот же диван в зелёном твиде, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.33], "w": 1349, "h": 1012},
+      {"src": "img/catalog/p-sofa-23-g2-r.webp", "src600": "img/catalog/p-sofa-23-g2-r-600.webp", "alt": "Диван в зелёном твиде, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.365], "w": 1489, "h": 1117},
+      {"src": "img/catalog/p-sofa-23-g3.webp", "src600": "img/catalog/p-sofa-23-g3-600.webp", "alt": "Подлокотник и подушки: зелёный твид крупно — деталь", "studio": true, "box": [0.83, 0.605], "w": 1280, "h": 1280},
       {"src": "img/catalog/p-sofa-23-hd.webp", "src600": "img/catalog/p-sofa-23-hd-600.webp", "alt": "Диван в коралловой ткани с подушками-шарами — на светлом фоне", "studio": true, "box": [0.6, 0.3], "w": 1800, "h": 1350}
     ],
     description: "Спинка из двух мягких «волн», подушки-шары и тонкий металлический каркас.",
@@ -582,6 +589,7 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-bed-09-o-r.webp", "src600": "img/catalog/p-bed-09-o-r-600.webp", "alt": "Кровать с изголовьем-«капсулой» в шалфейном букле на круглых опорах, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.445], "w": 1439, "h": 1079},
       {"src": "img/catalog/p-bed-09-o2-r.webp", "src600": "img/catalog/p-bed-09-o2-r-600.webp", "alt": "Та же кровать, вид сбоку: изголовье-«капсула» и валик — на светлом фоне", "studio": true, "box": [0.76, 0.382], "w": 1312, "h": 984},
       {"src": "img/catalog/p-bed-09-d1.webp", "src600": "img/catalog/p-bed-09-d1-600.webp", "alt": "Изголовье-«капсула» и круглая опора: букле крупно — деталь", "studio": true, "box": [0.996, 0.759], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-bed-09-b1-r.webp", "src600": "img/catalog/p-bed-09-b1-r-600.webp", "alt": "Та же кровать в светло-голубом букле, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.444], "w": 1437, "h": 1078},
       {"src": "img/catalog/p-bed-09-5-hd.webp", "src600": "img/catalog/p-bed-09-5-hd-600.webp", "alt": "Кровать в шалфейной ткани на круглых опорах — на светлом фоне", "studio": true, "box": [0.456, 0.207], "w": 2400, "h": 1800},
       {"src": "img/catalog/p-bed-09-2-hd.webp", "src600": "img/catalog/p-bed-09-2-hd-600.webp", "alt": "Кровать в шалфейной ткани с подъёмным механизмом, основание до пола — на светлом фоне", "studio": true, "box": [0.595, 0.26], "w": 2400, "h": 1800},
       {"src": "img/catalog/p-bed-09-3-hd.webp", "src600": "img/catalog/p-bed-09-3-hd-600.webp", "alt": "Кровать в шалфейной ткани, вид спереди — на светлом фоне", "studio": true, "box": [0.36, 0.243], "w": 2400, "h": 1800}
@@ -980,6 +988,8 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-armchair-09-o2-r.webp", "src600": "img/catalog/p-armchair-09-o2-r-600.webp", "alt": "То же кресло, вид сверху — на светлом фоне", "studio": true, "box": [0.418, 0.68], "w": 1618, "h": 1214},
       {"src": "img/catalog/p-armchair-09-o3-r.webp", "src600": "img/catalog/p-armchair-09-o3-r-600.webp", "alt": "Кресло в оливково-коричневом велюре, вид спереди — на светлом фоне", "studio": true, "box": [0.457, 0.68], "w": 1294, "h": 970},
       {"src": "img/catalog/p-armchair-09-p1-r.webp", "src600": "img/catalog/p-armchair-09-p1-r-600.webp", "alt": "То же кресло в пыльно-розовом букле — на светлом фоне", "studio": true, "box": [0.534, 0.68], "w": 1304, "h": 978},
+      {"src": "img/catalog/p-armchair-09-p2-r.webp", "src600": "img/catalog/p-armchair-09-p2-r-600.webp", "alt": "Кресло в пыльно-розовом букле, вид сверху — на светлом фоне", "studio": true, "box": [0.419, 0.68], "w": 1369, "h": 1027},
+      {"src": "img/catalog/p-armchair-09-p3-r.webp", "src600": "img/catalog/p-armchair-09-p3-r-600.webp", "alt": "Кресло в пыльно-розовом букле, вид спереди — на светлом фоне", "studio": true, "box": [0.46, 0.68], "w": 1292, "h": 969},
       {"src": "img/catalog/p-armchair-09-hd.webp", "src600": "img/catalog/p-armchair-09-hd-600.webp", "alt": "Кресло в зелёной ткани в мелкую клетку — на светлом фоне", "studio": true, "box": [0.699, 0.76], "w": 2400, "h": 1800},
       {"src": "img/catalog/p-armchair-09-2-hd.webp", "src600": "img/catalog/p-armchair-09-2-hd-600.webp", "alt": "Кресло, вид спереди — на светлом фоне", "studio": true, "box": [0.605, 0.76], "w": 2400, "h": 1800}
     ],
@@ -1003,7 +1013,10 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-armchair-10-o-r.webp", "src600": "img/catalog/p-armchair-10-o-r-600.webp", "alt": "Кресло с подлокотниками-валиками в коричневом велюре — на светлом фоне", "studio": true, "box": [0.563, 0.68], "w": 1763, "h": 1322},
       {"src": "img/catalog/p-armchair-10-o2-r.webp", "src600": "img/catalog/p-armchair-10-o2-r-600.webp", "alt": "Кресло с подлокотниками-валиками, вид спереди — на светлом фоне", "studio": true, "box": [0.658, 0.68], "w": 1210, "h": 908},
-      {"src": "img/catalog/p-armchair-10-d1.webp", "src600": "img/catalog/p-armchair-10-d1-600.webp", "alt": "Спинка-валик и подлокотник крупно: велюр и кант — деталь", "studio": true, "box": [0.95, 0.835], "w": 1280, "h": 1264}
+      {"src": "img/catalog/p-armchair-10-d1.webp", "src600": "img/catalog/p-armchair-10-d1-600.webp", "alt": "Спинка-валик и подлокотник крупно: велюр и кант — деталь", "studio": true, "box": [0.95, 0.835], "w": 1280, "h": 1264},
+      {"src": "img/catalog/p-armchair-10-g1-r.webp", "src600": "img/catalog/p-armchair-10-g1-r-600.webp", "alt": "То же кресло в тёмно-сером велюре — на светлом фоне", "studio": true, "box": [0.685, 0.681], "w": 927, "h": 695},
+      {"src": "img/catalog/p-armchair-10-g2-r.webp", "src600": "img/catalog/p-armchair-10-g2-r-600.webp", "alt": "Кресло в тёмно-сером велюре, вид сверху — на светлом фоне", "studio": true, "box": [0.56, 0.68], "w": 1765, "h": 1324},
+      {"src": "img/catalog/p-armchair-10-g3-r.webp", "src600": "img/catalog/p-armchair-10-g3-r-600.webp", "alt": "Кресло в тёмно-сером велюре, вид спереди — на светлом фоне", "studio": true, "box": [0.656, 0.68], "w": 1212, "h": 909}
     ],
     description: "Мягкое основание-цилиндр и подлокотники-валики в бордовом велюре.",
     options: ["Размер под человека", "Ткань из палитры", "Ткань или кожа"],
@@ -2078,6 +2091,27 @@ window.RICCA_CATALOG = [
     delivery: "По Казахстану и за рубеж"
   },
   {
+    id: "armchair-23",
+    cfg: "t.armchair~f.classic~as.wide~lg.metal~lf.black~lh.16",
+    category: "armchairs",
+    tags: [],
+    type: "Кресло",
+    subtitle: "Широкое · с круглой подушкой",
+    photos: [
+      {"src": "img/catalog/p-armchair-23-r.webp", "src600": "img/catalog/p-armchair-23-r-600.webp", "alt": "Широкое кресло с округлыми подлокотниками и круглой подушкой в разноцветном твиде на тонких розовых ножках — на светлом фоне", "studio": true, "box": [0.76, 0.511], "w": 1255, "h": 941},
+      {"src": "img/catalog/p-armchair-23-d1-r.webp", "src600": "img/catalog/p-armchair-23-d1-r-600.webp", "alt": "То же кресло, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.591], "w": 1043, "h": 782},
+      {"src": "img/catalog/p-armchair-23-d2.webp", "src600": "img/catalog/p-armchair-23-d2-600.webp", "alt": "Подлокотник, круглая подушка и сиденье: твид крупно — деталь", "studio": true, "box": [0.726, 0.656], "w": 1170, "h": 1170}
+    ],
+    description: "Широкое кресло на тонких металлических ножках: мягкие округлые подлокотники, спинка-подушка и круглая подушка в комплекте. Показано в разноцветном твиде, ножки — розовые.",
+    options: ["Размер под человека", "Ткань из палитры", "Ткань или кожа"],
+    sizes: "Под человека и комнату: глубину и высоту посадки согласуем на проекте.",
+    materials: "Из палитры тканей и кож в шоуруме: образцы можно потрогать и сравнить рядом.",
+    filling: "Подбираем под желаемую посадку — мягче или плотнее.",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "5 лет",
+    delivery: "По Казахстану и за рубеж"
+  },
+  {
     id: "pouf-01",
     cfg: "t.pouf",
     category: "armchairs",
@@ -2228,7 +2262,7 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-sofa-45-r.webp", "src600": "img/catalog/p-sofa-45-r-600.webp", "alt": "Низкий угловой диван со спинкой из двух валиков в серо-зелёной ткани — на светлом фоне", "studio": true, "box": [0.76, 0.43], "w": 1497, "h": 1123},
       {"src": "img/catalog/p-sofa-45-d1.webp", "src600": "img/catalog/p-sofa-45-d1-600.webp", "alt": "Угол дивана: секция и валики спинки — деталь", "studio": true, "box": [0.824, 0.621], "w": 887, "h": 887},
-      {"src": "img/catalog/p-sofa-45-d2-c-c-c-c-c-c.webp", "src600": "img/catalog/p-sofa-45-d2-c-c-c-c-c-c-600.webp", "alt": "Край дивана и валики спинки — деталь", "studio": true, "box": [0.837, 0.675], "w": 890, "h": 890}
+      {"src": "img/catalog/p-sofa-45-d2-c-c-c-c-c-c-c.webp", "src600": "img/catalog/p-sofa-45-d2-c-c-c-c-c-c-c-600.webp", "alt": "Край дивана и валики спинки — деталь", "studio": true, "box": [0.837, 0.675], "w": 890, "h": 890}
     ],
     description: "Низкий диван из двух секций без ножек: спинка — два длинных валика один над другим. Показан в серо-зелёной ткани с мелкой крапинкой.",
     options: ["Две секции", "Угол слева или справа", "Ткань или кожа"],
