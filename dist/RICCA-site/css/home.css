@@ -106,3 +106,16 @@ details.qa .qa__a { margin: 0; padding: 0 44px 20px 0; font-size: 15px; }
 
 /* ателье: ролик вертикальный (478 × 850) — на компьютере крупнее, по центру правой половины */
 @media (min-width: 768px) { .atelier__film { max-width: 420px; justify-self: center; } .atelier__film video { width: 100%; height: auto; } }
+
+/* «В деталях» (под плитками каталога): модель крупно и два кадра деталей. Телефон — три группы столбиком, планшет — по две, компьютер — четыре в ряд */
+.dt { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(32px, 3vw, 48px) 16px; margin: 0; padding: 0; list-style: none; }
+.wk.dt__big { display: block; margin: 0; }
+.dt__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.dt__ph { display: block; aspect-ratio: 1; overflow: hidden; background: var(--product-bg); }
+.dt__ph img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: darken; transition: transform 600ms var(--ease); }
+.dt__ph:active { opacity: .8; }
+@media (hover: hover) { .dt__ph:hover img { transform: scale(1.04); } }
+@media (max-width: 1199px) { .dt { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 599px) { .dt { grid-template-columns: 1fr; gap: 32px; } .dt__g:nth-child(n+4) { display: none; } }
+/* телефон: у «Вопросов» фото нет — список сразу под заголовком */
+@media (max-width: 899px) { .faq__pic { display: none; } }

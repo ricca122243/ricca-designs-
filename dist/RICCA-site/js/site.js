@@ -229,7 +229,7 @@
      браузер брал малый файл 900 px (≈ 40 КБ; плотность 2–2,5x — резко), а не 2400 px (≈ 300 КБ): десять диванов по 300 КБ — те самые
      «фото долго загружаются». workPic умножает sizes на масштаб изделия (--z × 0,92) — делим на него же: итог всегда 296 px × плотность ≤ 900 */
   const PHONE_BIG = 'big';
-  const bigSizes = (z) => `${Math.floor(296 / (Math.max(1, z) * 0.92))}px`;
+  const bigSizes = () => '92vw';   // 11 ноября: владелец — «качество фото плохое»: большая карточка берёт крупный файл (на экране 3x малый 900 px растягивался до ×2)
   const bigAt = (i, n) => i % 3 === 0 || (i === n - 1 && i % 3 === 1);   // какие карточки ритма большие: 1-я, 4-я, 7-я… и последняя, если осталась одна
   // обложки плиток каталога: реальное фото вместо линейного рисунка; рисунок — в DRAW (миниатюра заявки «по вашему проекту»).
   // телефон (< 600 px, css/site.css): Диваны · Кровати · Кресла — три в ряд (≈ 30vw); 600–767 — парами (≈ 43vw)
@@ -283,15 +283,17 @@
   })();
   /* «Популярные модели» на главной (сразу под плитками): четыре модели каталога на подиуме — те же карточки и то же окно, что на экранах
      категорий. Телефон: большая, пара, большая (css .wk--rhythm) — у больших sizes PHONE_BIG. Список — здесь; модели нет в данных — пропускаем */
-  const POPULAR = ['m-sofa-01', 'm-bed-01', 'm-armchair-01', 'm-sofa-19'];
+  /* «В деталях» (11 ноября, фото прислал владелец): модель крупно и два кадра деталей — ткань, шов, ножка. Нажатие открывает окно изделия на этом кадре.
+     Запись: [модель, номер крупного кадра, номера кадров-деталей]. Плитки каталога показывают другие модели — повтора нет */
+  const DETAILS = [['m-sofa-28', 1, [2, 4]], ['m-sofa-39', 3, [4, 5]], ['m-sofa-42', 0, [1, 3]], ['m-sofa-30', 0, [4, 5]]];
   (() => {
     const sec = $('#popular'), row = sec && $('[data-pop-row]', sec);
     if (!row) return;
-    const list = POPULAR.map((id) => MODELS.find((w) => w.id === id)).filter(Boolean);
+    const list = DETAILS.map(([id, n, d]) => { const w = MODELS.find((x) => x.id === id); return w && w.photos[n] && d.every((k) => w.photos[k]) ? [w, n, d] : null; }).filter(Boolean);
     if (list.length < 2) { sec.remove(); return; }
-    row.classList.add('wk', 'wk--rhythm');
-    row.innerHTML = list.map((w, i) => workCard(w, 0, WK_SIZES, false, true, false, bigAt(i, list.length) ? PHONE_BIG : '43vw')).join('');
-    Array.from(row.children).forEach((li) => li.classList.add('rv'));
+    row.classList.add('dt');
+    const ph = (w, k) => { const q = w.photos[k], t = p800(q); return `<a class="dt__ph" href="#work-${esc(w.id)}" data-work="${esc(w.id)}" data-work-n="${k}" aria-haspopup="dialog" aria-label="${esc(w.title)} — ${tr('деталь')}"><img src="${esc(q.src800)}" srcset="${esc(q.src800)} ${t.w}w, ${esc(q.src)} ${q.w}w" sizes="(min-width: 1200px) 12vw, (min-width: 600px) 23vw, 46vw" width="${t.w}" height="${t.h}" alt="" loading="lazy" decoding="async"></a>`; };
+    row.innerHTML = list.map(([w, n, d]) => `<li class="dt__g rv"><ul class="wk dt__big" role="list">${workCard(w, n, WK_SIZES, false, false, false, PHONE_BIG)}</ul><div class="dt__pair">${d.map((k) => ph(w, k)).join('')}</div></li>`).join('');
     sec.hidden = false;
   })();
 
@@ -1324,6 +1326,7 @@
       /* «Подробнее» модели каталога (владелец, 9 ноября: «информации нет — пусть будет свёрнуто, захочет — откроет»):
          описание и карточка из RICCA_CATALOG по id; на /en данные не переведены — блок скрыт */
       const moreD = $('[data-lb-more]', dlg);
+      if (moreD && !moreD._sc) { moreD._sc = 1; moreD.addEventListener('toggle', () => { if (moreD.open && matchMedia('(max-width: 899px)').matches) moreD.scrollIntoView({ block: 'start', behavior: 'smooth' }); }); }   // телефон: раскрытый текст не остаётся под кнопками
       if (moreD) {
         const it = w.model && window.RICCA_LANG !== 'en' ? (window.RICCA_CATALOG || []).find((x) => x.id === String(w.id).replace(/^m-/, '')) : null;
         moreD.open = false;
@@ -1662,6 +1665,7 @@
   };
   $$('dialog').forEach((d) => {
     d.addEventListener('cancel', (e) => { e.preventDefault(); if (closers[d.id]) closers[d.id](); });
+    d.addEventListener('close', () => { d.classList.remove('is-in'); lock(); });   // окно закрыл сам браузер (два Esc подряд, системное «назад») — снять блокировку прокрутки и вернуть нижнее меню
     d.addEventListener('click', (e) => {
       if (e.target.closest('[data-close]')) { e.preventDefault(); if (closers[d.id]) closers[d.id](); }
       else if (e.target === d && d.id === 'cart') closers.cart();
@@ -1727,7 +1731,7 @@
       es.forEach((e) => { if (e.isIntersecting) ends.add(e.target); else ends.delete(e.target); });
       syncBar();
     }, { rootMargin: '0px 0px -8% 0px' });
-    $$('.showroom, .foot, .cta-split').forEach((el) => endsIO.observe(el));
+    $$('.showroom__b, .foot, .cta-split').forEach((el) => endsIO.observe(el));   // у «Шоурума» — только когда видны его кнопки: пока читают «Вопросы», меню под рукой
   }
   mqPhone.addEventListener('change', syncBar);
   /* плавающая кнопка WhatsApp (css: .wa-fab) — только компьютер: после 400 px прокрутки, не под открытым окном, не у «Шоурума» и подвала.

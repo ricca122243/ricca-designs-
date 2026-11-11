@@ -90,7 +90,7 @@ html[lang="en"] .hero__title { font-size: min(var(--h1), 8.4vw); }   /* «Uphols
 @media (max-width: 359px) {
   .hero__eye { display: none; }
   .hero__front > .wrap { position: relative; }
-  .hero__top { position: absolute; right: 0; bottom: 79px; margin: 0; }
+  .hero__top { position: absolute; right: 0; bottom: 79px; margin: 0; z-index: 1; }   /* z-index: строка заголовка (слой анимации) не перекрывает паузу и точки */
 }
 
 /* вход: кадр виден сразу (LCP не ждёт анимации). Строки заголовка поднимаются из маски: 700 мс, вторая на 90 мс позже; подпись с точками
@@ -105,4 +105,10 @@ html[lang="en"] .hero__title { font-size: min(var(--h1), 8.4vw); }   /* «Uphols
 @media (prefers-reduced-motion: reduce) {
   .hero__slide, .hero__video, .hero__dot::before { transition: none; }
   .js .hero__ln > span, .js .hero__top, .js .hero__cta { animation: none; }
+}
+
+/* телефон (11 ноября): «Каталог» уже есть в нижнем меню прямо под кадром — на первом экране одна кнопка, без повтора */
+@media (max-width: 899px) {
+  .hero__cta .btn--fill { display: none; }
+  .hero__cta .btn--line { flex: 0 0 auto; min-width: 180px; }
 }

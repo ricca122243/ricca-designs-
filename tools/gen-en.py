@@ -98,6 +98,7 @@ TEXT = {
     'Ателье&nbsp;· Алматы': 'Atelier&nbsp;· Almaty',
     'Меню': 'Menu',
     'Популярные модели': 'Popular models',
+    'В&nbsp;деталях': 'In&nbsp;detail',
     'Весь каталог': 'Full catalogue',
     'По&nbsp;две в&nbsp;ряд': 'Two per row',
     'Любой&nbsp;— под заказ': 'Any&nbsp;— made to order',
@@ -130,7 +131,7 @@ ATTR = {
  'Кровать с округлым изголовьем — работа ателье': 'Bed with a rounded headboard — made by the atelier',
  'Банкетка в молочном букле — работа ателье': 'Bench in milky bouclé — made by the atelier',
  # телефон, 10 ноября
- 'Быстрые действия': 'Quick actions', 'Популярные модели': 'Popular models', 'Работы по видам': 'Works by type', 'Каталог': 'Catalogue',
+ 'Быстрые действия': 'Quick actions', 'Популярные модели': 'Popular models', 'Модели в деталях': 'Models in detail', 'Работы по видам': 'Works by type', 'Каталог': 'Catalogue',
  'Позвонить: +7 (707) 955-08-08': 'Call: +7 (707) 955-08-08',
 }
 
