@@ -169,9 +169,9 @@
   const SMALL = window.matchMedia('(max-width: 767px)');   // телефон: только файлы 800 px (так же — ткани, FC_PHONE)
   const p800 = (p) => ({ w: p.w800 || p.w, h: p.h800 || p.h });
   /* предметный кадр модели: крупнее в рамке 4 : 3 (доля предмета ≈ 86 % ширины) — масштаб по box, как в окне изделия */
-  const MODEL_FILL = 0.86;
+  const MODEL_FILL = 0.78;   // 11 ноября, владелец: фото «не приближено и не далеко» — изделие занимает ≈ 78 % ширины рамки (было 86 %)
   const studio = (p) => !!(p && p.studio && Array.isArray(p.box) && p.w && p.h);
-  const zoomOf = (p, fill = MODEL_FILL, vfill = 0.68) => {
+  const zoomOf = (p, fill = MODEL_FILL, vfill = 0.72) => {
     if (!studio(p)) return 1;
     const ar = p.w / p.h, iw = Math.min(1, ar / (4 / 3)), ih = Math.min(1, (4 / 3) / ar);   // высокие (кресла) — не выше ≈ 68 % рамки
     return Math.max(1, Math.min(fill / (p.box[0] * iw), vfill / (p.box[1] * ih), 2.2));
@@ -1121,7 +1121,7 @@
       frame.style.height = `${Math.round((p.h || 1500) * k)}px`;
       frame.classList.toggle('is-studio', !!p.studio);
       gallery.classList.toggle('is-studio', !!p.studio);   // предметный кадр — на одном тоне с панелью, без «коробки в коробке»
-      if (p.studio) img.style.setProperty('--z', fitZoom(p, p.w / p.h, 0.86).toFixed(3)); else img.style.removeProperty('--z');
+      if (p.studio) img.style.setProperty('--z', fitZoom(p, p.w / p.h, 0.8).toFixed(3)); else img.style.removeProperty('--z');
     }
     function show(i) {
       const ph = cur.photos;
@@ -1270,7 +1270,7 @@
       const bb = p.studio && Array.isArray(p.bbox) && p.bbox.length === 4 ? p.bbox : null;
       if (bb) {
         const bw = Math.max(0.05, bb[2] - bb[0]) * p.w, bh = Math.max(0.05, bb[3] - bb[1]) * p.h;
-        const phone = sw < 600, fit = Math.min((phone ? 0.86 : 0.72) * sw / bw, (phone ? 0.78 : 0.76) * sh / bh);
+        const phone = sw < 600, fit = Math.min((phone ? 0.8 : 0.72) * sw / bw, (phone ? 0.74 : 0.76) * sh / bh);
         k = Math.max(k, Math.min(fit, 1.15 / dpr, 1.1, 1600 / p.w));
       }
       const iw = Math.round(p.w * k), ih = Math.round(p.h * k), fw = Math.min(iw, sw), fh = Math.min(ih, sh);

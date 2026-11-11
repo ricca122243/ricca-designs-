@@ -38,10 +38,10 @@
 <!-- первый кадр первого экрана (постер ролика, см. #top) = LCP: грузится первым; телефон и компьютер — свой файл, как в <picture> -->
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts-v3.css?v=2e731ab253">
-<link rel="stylesheet" href="css/site.css?v=2e731ab253">
-<link rel="stylesheet" href="css/hero.css?v=2e731ab253">
-<link rel="stylesheet" href="css/home.css?v=2e731ab253">
+<link rel="stylesheet" href="css/fonts-v3.css?v=763a254d96">
+<link rel="stylesheet" href="css/site.css?v=763a254d96">
+<link rel="stylesheet" href="css/hero.css?v=763a254d96">
+<link rel="stylesheet" href="css/home.css?v=763a254d96">
 <script>
 /* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,6 с). Не играем: повторный визит в этой сессии,
    prefers-reduced-motion, вход по ссылке с #якорем (Instagram → #catalog/sofas), недоступный sessionStorage.
@@ -163,7 +163,7 @@
       <a class="btn btn--line" href="configurator.html">Собрать в&nbsp;3D</a>
     </div>
   </div></div>
-  <script src="js/hero.js?v=2e731ab253" defer></script>
+  <script src="js/hero.js?v=763a254d96" defer></script>
 </section>
 
 <!-- ═════════ 2. КАТАЛОГ: пять плиток категорий. Нажали плитку — экран категории (#catalog/sofas): сетка реальных работ и три действия
@@ -243,7 +243,7 @@
       <h2 class="title" id="pop-title">В&nbsp;деталях</h2>
     </header>
     <ul class="pop__row" data-pop-row role="list" aria-label="Модели в деталях"></ul>
-    <p class="works__foot rv"><a class="btn btn--line" href="#catalog/sofas">Весь каталог<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+    <p class="works__foot rv"><a class="more" href="#catalog/sofas">Весь каталог</a></p>
   </div>
 </section>
 
@@ -273,7 +273,7 @@
       <nav class="chips" data-works-chips aria-label="Работы по видам" hidden></nav>
     </header>
     <ul class="works__strip rv" data-works-row role="list" aria-label="Работы ателье"></ul>
-    <p class="works__foot rv"><a class="btn btn--line" href="#catalog/works">Все работы<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+    <p class="works__foot rv"><a class="more" href="#catalog/works">Все работы</a></p>
   </div>
 </section>
 
@@ -298,8 +298,8 @@
   <div class="wrap atelier__in">
     <div class="atelier__text rv">
       <h2 class="title" id="atelier-title">Ателье</h2>
-      <p class="atelier__lead">Делаем мебель сами&nbsp;— в&nbsp;своём ателье в&nbsp;Алматы.</p>
-      <p class="atelier__p">Каркас, раскрой, пошив, обивка, сборка&nbsp;— полный цикл.</p>
+      <p class="txt">Делаем мебель сами&nbsp;— в&nbsp;своём ателье в&nbsp;Алматы: каркас, раскрой, пошив, обивка и&nbsp;сборка.</p>
+      <a class="more" href="#showroom">Приехать в&nbsp;шоурум</a>
     </div>
     <div class="atelier__grid">
       <figure class="atelier__ph atelier__ph--land rv"><img src="img/process/land-sewing.webp" width="956" height="598" alt="Пошив: ткань под лапкой швейной машины" loading="lazy" decoding="async"></figure>
@@ -706,15 +706,15 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__open" id="toast-open">Открыть</button></div>
 
-<script src="js/lang.js?v=2e731ab253" defer></script>
-<script src="js/catalog-data.js?v=2e731ab253" defer></script>
-<script src="js/works-data.js?v=2e731ab253" defer></script>
-<script src="js/models-data.js?v=2e731ab253" defer></script>
-<script src="js/fabrics-data.js?v=2e731ab253" defer></script>
-<script src="js/cart.js?v=2e731ab253" defer></script>
-<script src="js/site.js?v=2e731ab253" defer></script>
-<script src="js/content-data.js?v=2e731ab253" defer></script>
-<script src="js/composition-data.js?v=2e731ab253" defer></script>
-<script src="js/blocks.js?v=2e731ab253" defer></script>
+<script src="js/lang.js?v=763a254d96" defer></script>
+<script src="js/catalog-data.js?v=763a254d96" defer></script>
+<script src="js/works-data.js?v=763a254d96" defer></script>
+<script src="js/models-data.js?v=763a254d96" defer></script>
+<script src="js/fabrics-data.js?v=763a254d96" defer></script>
+<script src="js/cart.js?v=763a254d96" defer></script>
+<script src="js/site.js?v=763a254d96" defer></script>
+<script src="js/content-data.js?v=763a254d96" defer></script>
+<script src="js/composition-data.js?v=763a254d96" defer></script>
+<script src="js/blocks.js?v=763a254d96" defer></script>
 </body>
 </html>

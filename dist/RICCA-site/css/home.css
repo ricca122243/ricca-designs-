@@ -214,3 +214,19 @@ html:not([data-hero="0"]) .intro__title { position: absolute; width: 1px; height
 /* номера разделов: заголовок «Каталог» скрыт (первый экран — категории) и номер не занимает — счёт начинаем с 2, чтобы у «Шоурума» остался «№ 09» */
 body { counter-reset: sec 2; }
 @media (min-width: 768px) { .atelier__ph--port { aspect-ratio: 4 / 5; } }   /* компьютер: три кадра в ряд, не выше экрана */
+
+/* ───── СВОЙ СТИЛЬ RICCA (владелец, 11 ноября: «текст не приближён и не далеко — в нормальном положении; фото так же; нужен свой стиль») ─────
+   1. Текст раздела: заголовок 28 px лёгким начертанием, под ним ОДИН абзац 15 px обычным начертанием и основным цветом — не крупный и не серый мелкий.
+   2. Знак RICCA — маленький чёрный квадрат перед ссылкой прописными («■ ВЕСЬ КАТАЛОГ»): углы у нас прямые. Так оформлены второстепенные переходы;
+      кнопка — только у главного действия раздела.
+   3. Фото: изделие занимает ≈ 78 % ширины рамки (js/site.js MODEL_FILL) — не «в упор» и не мелко; кадры разделов — во всю ширину колонки, без обрезки сюжета. */
+.txt, .shead__line, .geo__line, .biz__line { font: 400 15px/1.6 var(--sans); letter-spacing: 0; color: var(--ink); max-width: 36em; text-wrap: pretty; }
+.biz__line { color: var(--on-noir); }
+@media (min-width: 900px) { .txt, .shead__line, .geo__line, .biz__line { font-size: 16px; } }
+.more { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; font: 500 12.5px/1.2 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); -webkit-tap-highlight-color: transparent; }
+.more::before { content: ''; flex: none; width: 7px; height: 7px; background: currentColor; transition: transform 300ms var(--ease); }
+.more:active { opacity: .6; }
+@media (hover: hover) { .more:hover::before { transform: scale(1.6); } }
+.works__foot { margin-top: 20px; }
+@media (max-width: 599.98px) { .works__foot { margin-top: 16px; } .how__steps li { font-size: 16px; } }
+.intro__title { font-size: clamp(28px, 7.6vw, 56px); }
