@@ -492,8 +492,12 @@ window.RICCA_COMPOSITION = {
     { model_id: "armchair-17", type: "armchair", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Lesvo
     { model_id: "armchair-18", type: "armchair", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Mirto
     { model_id: "armchair-19", type: "armchair", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Pelso
+    { model_id: "armchair-20", type: "armchair", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Galso
+    { model_id: "armchair-21", type: "armchair", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Savro
     { model_id: "pouf-01", type: "pouf", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Kvado
+    { model_id: "bench-01", type: "pouf", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Lineo
     { model_id: "sofa-41", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Tarva
+    { model_id: "sofa-44", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Morva
     { model_id: "sofa-42", type: "sofa", verified: false, softness: 3, seat_height: 2, layers: {} },   // Norva
     { model_id: "sofa-43", type: "modular", verified: false, softness: 3, seat_height: 3, layers: {} },   // Sorva
   ]
