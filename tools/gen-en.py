@@ -99,7 +99,7 @@ TEXT = {
     'Меню': 'Menu',
     'Популярные модели': 'Popular models',
     'В&nbsp;деталях': 'In&nbsp;detail',
-    'Делаем мебель сами&nbsp;— в&nbsp;своём ателье в&nbsp;Алматы: каркас, раскрой, пошив, обивка и&nbsp;сборка.': 'We make the furniture ourselves&nbsp;— in&nbsp;our own atelier in&nbsp;Almaty: frame, cutting, sewing, upholstery and&nbsp;assembly.',
+    'Делаем мебель сами&nbsp;— в&nbsp;своём ателье в&nbsp;Алматы: каркас, раскрой, пошив, обивка и&nbsp;сборка. Оборудование&nbsp;— SCM и&nbsp;Dürkopp.': 'We make the furniture ourselves&nbsp;— in&nbsp;our own atelier in&nbsp;Almaty: frame, cutting, sewing, upholstery and&nbsp;assembly. Equipment&nbsp;— SCM and&nbsp;Dürkopp.',
     'Приехать в&nbsp;шоурум': 'Visit the&nbsp;showroom',
     'Мягкая мебель на&nbsp;заказ&nbsp;— под&nbsp;ваш размер и&nbsp;ткань': 'Upholstered furniture made to&nbsp;order&nbsp;— your size, your fabric',
     'Матрасы': 'Mattresses', '3D-конструктор': '3D&nbsp;builder',

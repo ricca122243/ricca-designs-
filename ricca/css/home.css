@@ -254,3 +254,14 @@ body { counter-reset: sec 2; }
 .atelier__ph--hero { aspect-ratio: 2400 / 1792; }
 .atelier__ph--hero img { filter: none; }
 @media (min-width: 900px) { .atelier__grid--one { max-width: 1040px; } }   /* компьютер: кадр не выше экрана */
+
+/* меню на низком экране (320 × 568): нижний блок с WhatsApp не прилипает — иначе закрывает последние строки списка */
+@media (max-height: 620px) { .menu__foot { position: static; margin-top: 0; } }
+/* ателье: набор кадров одного стиля с подписями (общий вид — во всю ширину, остальные — по два в ряд на компьютере, по одному на телефоне) */
+.atelier__grid--set { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 28px 24px; max-width: none; }
+.atelier__grid--set > .atelier__ph--hero { grid-column: 1 / -1; }
+.atelier__grid--set .atelier__ph { aspect-ratio: auto; background: none; overflow: visible; }
+.atelier__grid--set .atelier__ph img { aspect-ratio: 4 / 3; height: auto; filter: none; background: var(--paper-2); }
+.atelier__cap { display: flex; align-items: center; gap: 10px; padding-top: 12px; font: 500 12px/1.3 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
+.atelier__cap::before { content: ''; flex: none; width: 6px; height: 6px; background: currentColor; }
+@media (max-width: 767px) { .atelier__grid--set { grid-template-columns: minmax(0, 1fr) !important; } }

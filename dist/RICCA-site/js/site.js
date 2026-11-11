@@ -293,7 +293,7 @@
     const sec = $('#picks'), row = sec && $('[data-picks-row]', sec);
     if (!row) return;
     const seen = new Set();
-    const list = PICKS.map(([id, n, d, l]) => { const w = MODELS.find((x) => x.id === id); if (!w || !w.photos[n] || seen.has(id)) return null; seen.add(id); return [w, n, d, l]; }).filter(Boolean);
+    const list = PICKS.map(([id, n, d, l]) => { const w = MODELS.find((x) => x.id === id); if (!w || !w.photos[n] || seen.has(id)) return null; seen.add(id); const sc = d ? -1 : w.photos.findIndex((q) => q.scene); return [w, sc >= 0 ? sc : n, d, l]; }).filter(Boolean);
     if (list.length < 3) { sec.remove(); return; }
     row.classList.remove('strip'); row.classList.add('pm');
     row.innerHTML = list.map(([w, n, d, l]) => {
@@ -489,6 +489,7 @@
     }
     requestAnimationFrame(() => requestAnimationFrame(() => dlg.classList.add('is-in')));
     lock();
+    if (dlg.id === 'menu' || dlg.id === 'cart') { try { history.pushState({ rd: R.depth(), ov: dlg.id }, ''); } catch (_) { /* file:// */ } }   // «назад» закроет меню или корзину, а не уведёт со страницы
   }
   function hideDlg(dlg, focus = true) {
     if (!dlg || !dlg.open) return;
@@ -1254,7 +1255,7 @@
     // «Хочу такой / такую / такие» — по роду: кровать, банкетка — такую; пара кресел — такие
     const want = (w) => (w.cat === 'beds' || /^(Банкетка|Bench)/.test(w.title) ? tr('такую') : /^(Пара|A pair)(?:\s|$)/.test(w.title) ? tr('такие') : tr('такой'));
     const link = (w) => (/^https?:$/.test(location.protocol) ? `${location.origin}${location.pathname}#work-${w.id}` : '');
-    const waOf = (w) => { const u = link(w); return waUrl(tr`Здравствуйте! Хочу ${want(w)} же: ${lcFirst(w.title)}${w.sub ? ` (${w.sub})` : ''}. Подскажите, пожалуйста, цену и что нужно для расчёта.${u ? `\n${u}` : ''}`); };
+    const waOf = (w) => { const u = link(w); return waUrl(tr`Здравствуйте! Хочу ${want(w)} же: ${window.RICCA_LANG === 'en' ? w.title : lcFirst(w.title)}${w.sub ? ` (${w.sub})` : ''}. Подскажите, пожалуйста, цену и что нужно для расчёта.${u ? `\n${u}` : ''}`); };
     const label = (w) => `${w.title}${w.sub ? `, ${w.sub}` : ''}`;
     const inCart = (w) => !!(RC && RC.list().some((x) => x.kind === 'catalog' && x.id === w.id));
     // файл под рамку: 1600, если 800 px мало для рамки на этом экране (телефон с плотностью 3x — тоже: владелец 14 окт.,
@@ -1676,12 +1677,13 @@
   });
 
   /* ---------- Закрытие уровней: ✕, Esc, щелчок мимо панели корзины ---------- */
+  const ovBack = (id) => { if (history.state && history.state.ov === id) history.back(); };   // закрыли крестиком или Esc — убрать запись-слой из истории
   const closers = {
     view: () => R.closeTo(View.parentHash()),
     product: () => R.closeTo(View.isOpen() ? View.hash() : '#catalog'),
     lightbox: () => R.closeTo(View.isOpen() ? View.hash() : '#works'),
-    cart: () => CART.close(),
-    menu: () => hideDlg(menu)
+    cart: () => { CART.close(); ovBack('cart'); },
+    menu: () => { hideDlg(menu); ovBack('menu'); }
   };
   $$('dialog').forEach((d) => {
     d.addEventListener('cancel', (e) => { e.preventDefault(); if (closers[d.id]) closers[d.id](); });
@@ -1719,7 +1721,11 @@
       R.go(h, a);
     }
   });
-  window.addEventListener('popstate', () => R.apply(false));
+  window.addEventListener('popstate', () => {
+    const ov = ['cart', 'menu'].map((id) => document.getElementById(id)).find((d) => d && d.open);
+    if (ov) { if (ov.id === 'cart') CART.close(); else hideDlg(ov); return; }   // «назад» при открытом меню или корзине — закрыть слой
+    R.apply(false);
+  });
 
   /* ---------- Шапка: прозрачная над первым экраном, прячется при прокрутке вниз; нижнее меню телефона (DESIGN.md 4.1, 4.3) ---------- */
   const hdr = $('#hdr'), hero = $('.hero'), bar = $('#mbar');

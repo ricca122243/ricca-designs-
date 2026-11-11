@@ -56,6 +56,7 @@ for it in cat:
         if ph_['studio']:
             bb = bbox_of(f)
             if bb: ph_['bbox'] = bb   # границы изделия — окно изделия кадрирует по ним (js/site.js layout())
+        if p.get('scene'): ph_['scene'] = True   # кадр-сцена (изделие в интерьере ателье) — для карточек «Популярные модели»
         photos.append(ph_)
     if not photos: continue
     cfg = it.get('cfg') or ('corner' if 'corner' in it.get('tags', []) and it['category'] == 'sofas' else CFG[it['category']])   # cfg модели — готовый рецепт для 3D
