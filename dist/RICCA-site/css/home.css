@@ -248,3 +248,9 @@ body { counter-reset: sec 2; }
 /* подпись на кадре детали — белая бирка в углу (на пёстрой и тёмной ткани строка без подложки не читается) */
 .pm__da .wk__cap { top: 0; left: 0; right: auto; padding: 9px 14px; background: var(--paper); }
 .pm__da.is-light .wk__t { color: var(--ink); }
+
+/* ателье: кадры одного стиля — светлый лофт, дуб, чёрный металл (владелец утвердил 11 ноября). Кадр во всю ширину колонки, в своих пропорциях, без фильтра */
+.atelier__grid--one { grid-template-columns: minmax(0, 1fr) !important; }
+.atelier__ph--hero { aspect-ratio: 2400 / 1792; }
+.atelier__ph--hero img { filter: none; }
+@media (min-width: 900px) { .atelier__grid--one { max-width: 1040px; } }   /* компьютер: кадр не выше экрана */
