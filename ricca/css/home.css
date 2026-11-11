@@ -297,3 +297,16 @@ body { counter-reset: sec 2; }
 .cfg__pic--cover { padding: 0 !important; border: 1px solid var(--line); background: var(--product-bg); overflow: hidden; }
 .cfg__pic--cover img { display: block; width: 100%; height: auto; }
 @media (min-width: 900px) { .cfg__pic--cover { grid-column: 1 / span 6; } .cfg__in { align-items: center; } }
+
+/* ───── 11 ноября, владелец: «все фотографии без прямых углов, без краёв — чтобы аккуратно» ─────
+   У всех фото и карточек с фото — мягкое скругление (10 px, на компьютере 12 px) и никаких рамок-линий. Кнопки, поля и значки остаются прямыми.
+   Отменяет для фото прежнее «углы 0» (13 октября — отклонены были арки и капсулы; небольшое скругление — новое решение) */
+:root { --r-photo: 10px; }
+@media (min-width: 900px) { :root { --r-photo: 12px; } }
+.wk__img, .tile__img, .model__img, .pm__da, .dt__ph, .atelier__ph, .atl__pic, .cfg__pic, .biz__post a, .faq__pic, .how__pic, .biz__pic,
+.fab__photos figure, .fab__sw img, .fc__frame, .pd__frame, .lb__frame { border-radius: var(--r-photo); }
+.atl__pic, .atelier__ph { overflow: hidden; }
+.pd__thumb, .sl__img { border-radius: 6px; }
+.cfg__pic--cover { border: 0; }
+/* бирка на кадре детали: небольшая белая плашка внутри кадра (была полоса во всю ширину) */
+.pm__da .wk__cap { top: 12px; left: 12px; right: auto; width: auto; max-width: calc(100% - 24px); padding: 7px 12px; border-radius: 6px; background: var(--paper); }
