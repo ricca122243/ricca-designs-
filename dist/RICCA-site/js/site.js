@@ -489,7 +489,7 @@
     }
     requestAnimationFrame(() => requestAnimationFrame(() => dlg.classList.add('is-in')));
     lock();
-    if (dlg.id === 'menu' || dlg.id === 'cart') { try { history.pushState({ rd: R.depth(), ov: dlg.id }, ''); } catch (_) { /* file:// */ } }   // «назад» закроет меню или корзину, а не уведёт со страницы
+    if (dlg.id === 'menu' || dlg.id === 'cart' || dlg.id === 'atl') { try { history.pushState({ rd: R.depth(), ov: dlg.id }, ''); } catch (_) { /* file:// */ } }   // «назад» закроет меню или корзину, а не уведёт со страницы
   }
   function hideDlg(dlg, focus = true) {
     if (!dlg || !dlg.open) return;
@@ -1663,6 +1663,8 @@
   /* открывают ячейки «Меню» нижних панелей ([data-open-menu]: на странице и в окне каталога) — бургера в шапке нет (DESIGN.md 4.1, 4.3) */
   const menu = $('#menu');
   $$('[data-open-menu]').forEach((b) => b.addEventListener('click', (e) => showDlg(menu, e.currentTarget)));
+  /* окно «Ателье подробно»: открывает ссылка «Подробнее об ателье» ([data-open-atl]); закрывают ✕, «Главная», Esc и «назад» */
+  $$('[data-open-atl]').forEach((b) => b.addEventListener('click', (e) => { const d = $('#atl'); if (!d) return; e.preventDefault(); d.scrollTop = 0; showDlg(d, e.currentTarget); }));
   menu.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
@@ -1683,7 +1685,8 @@
     product: () => R.closeTo(View.isOpen() ? View.hash() : '#catalog'),
     lightbox: () => R.closeTo(View.isOpen() ? View.hash() : '#works'),
     cart: () => { CART.close(); ovBack('cart'); },
-    menu: () => { hideDlg(menu); ovBack('menu'); }
+    menu: () => { hideDlg(menu); ovBack('menu'); },
+    atl: () => { hideDlg($('#atl')); ovBack('atl'); }
   };
   $$('dialog').forEach((d) => {
     d.addEventListener('cancel', (e) => { e.preventDefault(); if (closers[d.id]) closers[d.id](); });
@@ -1722,7 +1725,7 @@
     }
   });
   window.addEventListener('popstate', () => {
-    const ov = ['cart', 'menu'].map((id) => document.getElementById(id)).find((d) => d && d.open);
+    const ov = ['cart', 'menu', 'atl'].map((id) => document.getElementById(id)).find((d) => d && d.open);
     if (ov) { if (ov.id === 'cart') CART.close(); else hideDlg(ov); return; }   // «назад» при открытом меню или корзине — закрыть слой
     R.apply(false);
   });
