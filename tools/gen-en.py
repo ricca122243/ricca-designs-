@@ -133,7 +133,7 @@ ATTR = {
  'Кровать с округлым изголовьем — работа ателье': 'Bed with a rounded headboard — made by the atelier',
  'Банкетка в молочном букле — работа ателье': 'Bench in milky bouclé — made by the atelier',
  # телефон, 10 ноября
- 'Быстрые действия': 'Quick actions', 'Популярные модели': 'Popular models', 'Модели в деталях': 'Models in detail', 'Пошив: ткань под лапкой швейной машины': 'Sewing: fabric under the machine foot', 'Раскрой ткани ножницами': 'Cutting fabric with shears', 'Обивка: мастер крепит ткань': 'Upholstery: fixing the fabric', 'Работы по видам': 'Works by type', 'Каталог': 'Catalogue',
+ 'Быстрые действия': 'Quick actions', 'Популярные модели': 'Popular models', 'Модели в деталях': 'Models in detail', 'Публикация RICCA HoReCa': 'RICCA HoReCa post', 'RICCA DESIGNS × HoReCa — мастерская ателье': 'RICCA DESIGNS × HoReCa — the atelier workshop', 'Комплектация объектов коммерческой недвижимости': 'Furnishing commercial property', 'Для кого: архитекторы, девелоперы, застройщики, управляющие компании, отели, рестораны': 'Who it is for: architects, developers, builders, management companies, hotels, restaurants', 'Сроки производства — от 25 до 45 рабочих дней': 'Production time — 25 to 45 working days', 'Наши проекты: частные дома, гостиницы, рестораны, апарт-комплексы': 'Our projects: private houses, hotels, restaurants, apartment complexes', 'Пошив: ткань под лапкой швейной машины': 'Sewing: fabric under the machine foot', 'Раскрой ткани ножницами': 'Cutting fabric with shears', 'Обивка: мастер крепит ткань': 'Upholstery: fixing the fabric', 'Работы по видам': 'Works by type', 'Каталог': 'Catalogue',
  'Позвонить: +7 (707) 955-08-08': 'Call: +7 (707) 955-08-08',
 }
 

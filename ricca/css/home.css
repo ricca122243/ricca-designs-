@@ -162,3 +162,21 @@ html:not([data-hero="0"]) .intro__title { position: absolute; width: 1px; height
   .atelier__ph--port { display: none; }
   .sec.atelier .atelier__grid .atelier__film { aspect-ratio: 4 / 5; }
 }
+
+/* «Для бизнеса»: публикация ricca.horeca — пять слайдов 3 : 4 лентой (листается вбок, следующий выглядывает); кнопки WhatsApp и Instagram в ряд */
+.biz__post { grid-column: 8 / -1; display: flex; gap: 10px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.biz__post::-webkit-scrollbar { display: none; }
+.biz__post > li { flex: 0 0 78%; scroll-snap-align: start; }
+.biz__post a { display: block; aspect-ratio: 941 / 1254; overflow: hidden; background: #1A1A1A; }
+.biz__post img { width: 100%; height: 100%; object-fit: cover; }
+.biz__btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
+.biz .btn--line { color: var(--on-noir); border-color: rgba(255, 255, 255, .5); background: transparent; }
+@media (hover: hover) { .biz .btn--line:hover { background: var(--on-noir); border-color: var(--on-noir); color: var(--ink); } }
+@media (max-width: 899px) {
+  .biz__post { grid-column: 1 / -1; order: -1; margin: 0 calc(var(--pad) * -1); padding: 0 var(--pad); scroll-padding-left: var(--pad); }
+  .biz__post > li { flex-basis: 74vw; max-width: 360px; }
+}
+@media (max-width: 599.98px) { .biz__btns { width: 100%; } .biz__text .biz__btns .btn { flex: 1 1 0; width: auto; min-width: 0; padding-inline: 12px; margin-top: 0; } }
+.biz__text > * { grid-column: 1 / -1; }   /* заголовок задаёт сетке колонки (site.css) — строка и кнопки идут каждая своим рядом, а не бок о бок */
+@media (max-width: 599.98px) { .biz__text .biz__btns .btn { gap: 6px; font-size: 14px; white-space: nowrap; } }
+@media (max-width: 359px) { .biz__btns { flex-direction: column; } .biz__text .biz__btns .btn { flex: none; width: 100%; } }   /* 320: кнопки одна под другой — «Обсудить проект» не обрезается */
