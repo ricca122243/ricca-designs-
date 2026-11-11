@@ -169,9 +169,9 @@
   const SMALL = window.matchMedia('(max-width: 767px)');   // телефон: только файлы 800 px (так же — ткани, FC_PHONE)
   const p800 = (p) => ({ w: p.w800 || p.w, h: p.h800 || p.h });
   /* предметный кадр модели: крупнее в рамке 4 : 3 (доля предмета ≈ 86 % ширины) — масштаб по box, как в окне изделия */
-  const MODEL_FILL = 0.78;   // 11 ноября, владелец: фото «не приближено и не далеко» — изделие занимает ≈ 78 % ширины рамки (было 86 %)
+  const MODEL_FILL = 0.72;   // 11 ноября, владелец (по снимкам ориентира): вокруг изделия свободно — оно занимает ≈ 72 % ширины рамки
   const studio = (p) => !!(p && p.studio && Array.isArray(p.box) && p.w && p.h);
-  const zoomOf = (p, fill = MODEL_FILL, vfill = 0.72) => {
+  const zoomOf = (p, fill = MODEL_FILL, vfill = 0.66) => {
     if (!studio(p)) return 1;
     const ar = p.w / p.h, iw = Math.min(1, ar / (4 / 3)), ih = Math.min(1, (4 / 3) / ar);   // высокие (кресла) — не выше ≈ 68 % рамки
     return Math.max(1, Math.min(fill / (p.box[0] * iw), vfill / (p.box[1] * ih), 2.2));
@@ -285,14 +285,23 @@
   /* «Популярные модели» на главной (сразу под плитками): четыре модели каталога на подиуме — те же карточки и то же окно, что на экранах
      категорий. Телефон: большая, пара, большая (css .wk--rhythm) — у больших sizes PHONE_BIG. Список — здесь; модели нет в данных — пропускаем */
   /* «Популярные модели» — лента из моделей, фото которых выбрал владелец (11 ноября): листается вбок, под фото только название */
-  const DETAILS = [['m-sofa-28', 1, [2, 4]], ['m-sofa-39', 3, [4, 5]], ['m-sofa-42', 0, [1, 3]], ['m-sofa-30', 0, [3, 4]]];
-  const PICKS = ['m-bed-27', 'm-sofa-37', 'm-sofa-33', 'm-bed-26', 'm-sofa-36', 'm-sofa-31', 'm-armchair-14', 'm-sofa-43', 'm-bed-25', 'm-sofa-32'];   // без двойников: Plava — секция того же дивана, что Kubva; Grafel почти как Dorel (владелец: «один диван повторился»)
+  const DETAILS = [];   // блок «В деталях» убран: кадры деталей стоят в «Популярных моделях» через одну карточку
+  const PICKS = [['m-sofa-37', 0], ['m-sofa-28', 4, 'd', 'l'], ['m-bed-27', 0], ['m-sofa-39', 5, 'd'], ['m-sofa-33', 0], ['m-sofa-31', 2, 'd']];
+  /* «Популярные модели» как у ориентира (владелец, 11 ноября): карточки во всю ширину, по одной в ряд — изделие на светлом поле, название в углу карточки;
+     через одну — крупный кадр детали. Запись: [модель, номер кадра, 'd' — деталь во всю карточку, 'l' — светлая подпись на тёмной ткани]. Модель — один раз */
   (() => {
     const sec = $('#picks'), row = sec && $('[data-picks-row]', sec);
     if (!row) return;
-    const list = [...new Set(PICKS)].filter((id) => !DETAILS.some((d) => d[0] === id)).map((id) => MODELS.find((w) => w.id === id)).filter(Boolean);   // одна модель — один раз на главной: без повторов в ленте и без моделей блока «В деталях»
+    const seen = new Set();
+    const list = PICKS.map(([id, n, d, l]) => { const w = MODELS.find((x) => x.id === id); if (!w || !w.photos[n] || seen.has(id)) return null; seen.add(id); return [w, n, d, l]; }).filter(Boolean);
     if (list.length < 3) { sec.remove(); return; }
-    row.innerHTML = list.map((w) => workCard(w, 0, WK_SIZES, false, false, false, '72vw')).join('');
+    row.classList.remove('strip'); row.classList.add('pm');
+    row.innerHTML = list.map(([w, n, d, l]) => {
+      if (!d) return workCard(w, n, WK_SIZES, false, false, false, PHONE_BIG);
+      const q = w.photos[n], t = p800(q);
+      return `<li class="pm__d"><a class="wk__a pm__da${l ? ' is-light' : ''}" href="#work-${esc(w.id)}" data-work="${esc(w.id)}" data-work-n="${n}" aria-haspopup="dialog"><img src="${esc(q.src800)}" srcset="${esc(q.src800)} ${t.w}w, ${esc(q.src)} ${q.w}w" sizes="(min-width: 1200px) 30vw, (min-width: 768px) 46vw, 92vw" width="${t.w}" height="${t.h}" alt="" loading="lazy" decoding="async"><span class="wk__cap"><span class="wk__t">${typo(w.title)}</span></span></a></li>`;
+    }).join('');
+    Array.from(row.children).forEach((li) => li.classList.add('rv'));
     sec.hidden = false;
   })();
   /* «В деталях» (11 ноября, фото прислал владелец): модель крупно и два кадра деталей — ткань, шов, ножка. Нажатие открывает окно изделия на этом кадре.
