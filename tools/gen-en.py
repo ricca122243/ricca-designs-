@@ -100,6 +100,20 @@ TEXT = {
     'Популярные модели': 'Popular models',
     'В&nbsp;деталях': 'In&nbsp;detail',
     # окно «Ателье подробно» (11 ноября)
+    'Своё производство в&nbsp;Алматы&nbsp;— от&nbsp;чертежа до&nbsp;сборки.': 'Our own production in&nbsp;Almaty&nbsp;— from drawing to&nbsp;assembly.',
+    'Мебель делаем сами&nbsp;— в&nbsp;своём ателье в&nbsp;Алматы, от&nbsp;чертежа до&nbsp;сборки.': 'We make the furniture ourselves&nbsp;— in&nbsp;our own atelier in&nbsp;Almaty, from drawing to&nbsp;assembly.',
+    'Фанера и&nbsp;массив дерева. Детали вырезает станок с&nbsp;ЧПУ SCM&nbsp;— точно по&nbsp;чертежу.': 'Plywood and&nbsp;solid wood. Parts are cut on&nbsp;an&nbsp;SCM CNC machine&nbsp;— exactly to&nbsp;the drawing.',
+    'В&nbsp;основании&nbsp;— пружины «змейка» или ремни, сверху&nbsp;— упругий пенополиуретан. Мягче или плотнее&nbsp;— решаете вы.': 'Zigzag springs or&nbsp;webbing in&nbsp;the base, resilient foam on&nbsp;top. Softer or&nbsp;firmer&nbsp;— you decide.',
+    'Ткань выбираете в&nbsp;шоуруме, кроим её по&nbsp;лекалам модели.': 'You choose the&nbsp;fabric in&nbsp;the showroom; we cut it&nbsp;to&nbsp;the model’s patterns.',
+    'Шьём на&nbsp;промышленных машинах Dürkopp&nbsp;Adler.': 'Sewn on&nbsp;industrial Dürkopp&nbsp;Adler machines.',
+    'Ткань без складок, швы по&nbsp;линии. Собираем, проверяем, упаковываем.': 'Fabric without creases, seams in&nbsp;line. We assemble, check and&nbsp;pack.',
+    'Размеры по&nbsp;чертежу': 'Dimensions to&nbsp;the drawing',
+    'Ровные швы': 'Straight seams',
+    'Ткань без складок': 'Fabric without creases',
+    'Плавные механизмы': 'Smooth mechanisms',
+    'Доставка по&nbsp;Казахстану и&nbsp;за&nbsp;рубеж': 'Delivery across Kazakhstan and&nbsp;abroad',
+    'На&nbsp;связи в&nbsp;WhatsApp': 'In&nbsp;touch on&nbsp;WhatsApp',
+    'Гарантия&nbsp;— 5&nbsp;лет': 'Warranty&nbsp;— 5&nbsp;years',
     'Каждое изделие начинается с&nbsp;чертежа под вашу комнату. Размеры, посадку и&nbsp;ткань согласуем до&nbsp;начала работы и&nbsp;показываем модель в&nbsp;3D&nbsp;— в&nbsp;работу оно идёт только после вашего «да».': 'Every piece starts with a&nbsp;drawing for your room. We agree the&nbsp;dimensions, the&nbsp;seat and&nbsp;the fabric before work begins and&nbsp;show the&nbsp;model in&nbsp;3D&nbsp;— it&nbsp;goes into production only after your “yes”.',
     'В&nbsp;ателье работает итальянское и&nbsp;немецкое оборудование: станок с&nbsp;ЧПУ SCM для дерева и&nbsp;швейные машины Dürkopp&nbsp;Adler.': 'The&nbsp;atelier runs Italian and&nbsp;German equipment: an&nbsp;SCM CNC machine for wood and&nbsp;Dürkopp&nbsp;Adler sewing machines.',
     'Станок задаёт точность. Форму, посадку и&nbsp;характер изделию дают руки мастера': 'The&nbsp;machine sets the&nbsp;precision. Shape, seat and&nbsp;character come from the&nbsp;craftsman’s hands',
@@ -266,6 +280,7 @@ d['areaServed'] = [{'@type': 'City', 'name': 'Almaty'}, {'@type': 'Country', 'na
 for c in d.get('contactPoint', []): c['availableLanguage'] = ['ru', 'en']
 d['inLanguage'] = 'en'
 page = page[:m.start(2)] + json.dumps(d, ensure_ascii=False, separators=(',', ':')) + page[m.end(2):]
+page = page.replace('img/cfg/cover-800.webp', 'img/cfg/cover-en-800.webp').replace('img/cfg/cover.webp', 'img/cfg/cover-en.webp')   # обложка конструктора — с английскими подписями
 open(ROOT + 'en.html', 'w', encoding='utf-8').write(page)
 left = sorted(set(re.findall(r'>([^<>]*[А-Яа-яЁё][^<>]*)<', page[page.index('<body'):])))
 print('en.html записан;', 'непереведённых фрагментов:', len(missed)); [print('  ', x[:120]) for x in missed[:40]]

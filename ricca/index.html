@@ -247,10 +247,9 @@
      файлы img/sketch/*.svg собраны скриптом, см. отчёт Дня 3) на сером подиуме, справа — заголовок, строка, кнопка в configurator.html ═════════ -->
 <section class="sec cfg" id="configurator" aria-labelledby="cfg-title">
   <div class="wrap cfg__in">
-    <a class="cfg__pic rv" href="configurator.html" tabindex="-1" aria-hidden="true"><img src="img/sketch/corner.svg" width="137" height="87" alt="" loading="lazy" decoding="async"></a>
+    <a class="cfg__pic cfg__pic--cover rv" href="configurator.html" tabindex="-1" aria-hidden="true"><img src="img/cfg/cover-800.webp" srcset="img/cfg/cover-800.webp 800w, img/cfg/cover.webp 1600w" sizes="(min-width: 900px) 56vw, 92vw" width="1600" height="1528" alt="" loading="lazy" decoding="async"></a>
     <div class="cfg__text rv">
       <h2 class="title" id="cfg-title">Соберите свою мебель в&nbsp;3D</h2>
-      <p class="shead__line">Размер, ткань и&nbsp;чертёж&nbsp;— за&nbsp;минуту.</p>
       <a class="btn btn--fill" href="configurator.html">Открыть конструктор<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
   </div>
@@ -294,7 +293,7 @@
   <div class="wrap atelier__in">
     <div class="atelier__text rv">
       <h2 class="title" id="atelier-title">Ателье</h2>
-      <p class="txt">Делаем мебель сами&nbsp;— в&nbsp;своём ателье в&nbsp;Алматы: каркас, раскрой, пошив, обивка и&nbsp;сборка. Оборудование&nbsp;— SCM и&nbsp;Dürkopp.</p>
+      <p class="txt">Своё производство в&nbsp;Алматы&nbsp;— от&nbsp;чертежа до&nbsp;сборки.</p>
       <a class="more" href="#atelier" data-open-atl aria-haspopup="dialog">Подробнее об&nbsp;ателье</a>
     </div>
     <!-- ателье: кадры в одном стиле (владелец, 11 ноября: «вот это другое дело, теперь всё в этом стиле»). Первый кадр — общий вид; остальные добавляются сюда же -->
@@ -310,7 +309,6 @@
     <div class="biz__text rv">
       <h2 class="label biz__label" id="biz-title">Для бизнеса</h2>
       <p class="biz__head">RICCA HoReCa&nbsp;— отели, рестораны, <span class="nowrap">апарт-комплексы</span> и&nbsp;офисы.</p>
-      <p class="biz__line">Изготовим по&nbsp;вашему проекту, размерам и&nbsp;спецификации.</p>
       <div class="biz__btns">
         <a class="btn btn--noir" href="https://wa.me/77079550808" data-wa="business"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Обсудить проект</a>
         <a class="btn btn--line" href="https://www.instagram.com/ricca.horeca/" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-instagram"/></svg>Instagram</a>
@@ -334,7 +332,6 @@
   <div class="wrap">
     <div class="geo__head">
       <div class="geo__a rv"><h2 class="title" id="geo-title">Работаем по&nbsp;всему миру</h2></div>
-      <div class="geo__b rv"><p class="geo__line">Шьём в&nbsp;Алматы&nbsp;— доставим в&nbsp;любую страну.</p></div>
     </div>
     <figure class="geo__map" aria-hidden="true">
       <img src="img/map/world-dots.svg" width="1470" height="720" alt="" loading="lazy" decoding="async">
@@ -504,59 +501,55 @@
   </div>
   <div class="wrap atl__body">
     <h2 class="atl__title">Ателье RICCA DESIGNS</h2>
-    <p class="txt">Мебель делаем сами&nbsp;— в&nbsp;своём ателье в&nbsp;Алматы. Проект, каркас, раскрой, пошив, обивка и&nbsp;сборка проходят в&nbsp;одних руках, поэтому за&nbsp;результат отвечаем мы, а&nbsp;не&nbsp;подрядчик.</p>
-    <p class="txt">Каждое изделие начинается с&nbsp;чертежа под вашу комнату. Размеры, посадку и&nbsp;ткань согласуем до&nbsp;начала работы и&nbsp;показываем модель в&nbsp;3D&nbsp;— в&nbsp;работу оно идёт только после вашего «да».</p>
-    <p class="txt">В&nbsp;ателье работает итальянское и&nbsp;немецкое оборудование: станок с&nbsp;ЧПУ SCM для дерева и&nbsp;швейные машины Dürkopp&nbsp;Adler.</p>
+    <p class="txt">Мебель делаем сами&nbsp;— в&nbsp;своём ателье в&nbsp;Алматы, от&nbsp;чертежа до&nbsp;сборки.</p>
     <figure class="atl__pic"><img src="img/process/atelier-01-1000.webp" srcset="img/process/atelier-01-1000.webp 1000w, img/process/atelier-01.webp 2400w" sizes="(min-width: 960px) 880px, 92vw" width="2400" height="1792" alt="Ателье: диван в работе на подиуме, стол с инструментом и рулоны ткани" loading="lazy" decoding="async"></figure>
     <p class="atl__quote">Станок задаёт точность. Форму, посадку и&nbsp;характер изделию дают руки мастера</p>
     <section class="atl__sec">
       <p class="atl__n">01&nbsp;· Каркас</p>
       <h3 class="atl__h">Основа, которая держит форму</h3>
-      <p class="txt">В&nbsp;основе каркаса&nbsp;— фанера и&nbsp;массив дерева. Детали вырезает станок с&nbsp;ЧПУ SCM: радиусы и&nbsp;пазы получаются точно по&nbsp;чертежу, детали сходятся без подгонки.</p>
-      <p class="txt">Каркас собираем вручную и&nbsp;сверяем с&nbsp;чертежом: углы, диагонали, жёсткость. После сборки шлифуем кромки&nbsp;— ткань ложится ровно и&nbsp;не&nbsp;протирается на&nbsp;углах.</p>
+      <p class="txt">Фанера и&nbsp;массив дерева. Детали вырезает станок с&nbsp;ЧПУ SCM&nbsp;— точно по&nbsp;чертежу.</p>
       <figure class="atl__pic"><img src="img/process/atelier-02-cnc-1000.webp" srcset="img/process/atelier-02-cnc-1000.webp 1000w, img/process/atelier-02-cnc.webp 2000w" sizes="(min-width: 960px) 880px, 92vw" width="2000" height="1493" alt="Станок с ЧПУ вырезает детали каркаса из листа фанеры" loading="lazy" decoding="async"></figure>
     </section>
     <section class="atl__sec">
       <p class="atl__n">02&nbsp;· Посадка</p>
       <h3 class="atl__h">Мягкость подбираем под вас</h3>
-      <p class="txt">В&nbsp;основании сиденья&nbsp;— пружины «змейка» или мебельные ремни. Они принимают нагрузку на&nbsp;себя и&nbsp;не&nbsp;дают сиденью провисать.</p>
-      <p class="txt">Сверху&nbsp;— пенополиуретан высокой упругости и&nbsp;мягкий верхний слой, который сглаживает форму. Подушки спинки наполняем холлофайбером: они мягкие и&nbsp;легко взбиваются. Плотность подбираем под желаемую посадку&nbsp;— мягче или плотнее.</p>
+      <p class="txt">В&nbsp;основании&nbsp;— пружины «змейка» или ремни, сверху&nbsp;— упругий пенополиуретан. Мягче или плотнее&nbsp;— решаете вы.</p>
     </section>
     <section class="atl__sec">
       <p class="atl__n">03&nbsp;· Ткань, раскрой, пошив</p>
       <h3 class="atl__h">Крой по&nbsp;лекалам, строчка к&nbsp;строчке</h3>
-      <p class="txt">Ткань или кожу выбираете в&nbsp;шоуруме из&nbsp;палитры образцов&nbsp;— их&nbsp;можно потрогать и&nbsp;сравнить рядом. Затем размечаем и&nbsp;кроим её по&nbsp;лекалам модели: следим за&nbsp;направлением ворса и&nbsp;рисунком, чтобы на&nbsp;готовом изделии всё сошлось на&nbsp;швах.</p>
+      <p class="txt">Ткань выбираете в&nbsp;шоуруме, кроим её по&nbsp;лекалам модели.</p>
       <figure class="atl__pic"><img src="img/process/atelier-03-cut-1000.webp" srcset="img/process/atelier-03-cut-1000.webp 1000w, img/process/atelier-03-cut.webp 2000w" sizes="(min-width: 960px) 880px, 92vw" width="2000" height="1493" alt="Разметка ткани мелом на раскройном столе" loading="lazy" decoding="async"></figure>
-      <p class="txt">Чехлы шьём на&nbsp;промышленных машинах Dürkopp&nbsp;Adler. Они дают ровную строчку на&nbsp;плотных мебельных тканях и&nbsp;коже.</p>
+      <p class="txt">Шьём на&nbsp;промышленных машинах Dürkopp&nbsp;Adler.</p>
       <figure class="atl__pic"><img src="img/process/atelier-04-sew-1000.webp" srcset="img/process/atelier-04-sew-1000.webp 1000w, img/process/atelier-04-sew.webp 2000w" sizes="(min-width: 960px) 880px, 92vw" width="2000" height="1493" alt="Промышленная швейная машина: руки ведут ткань под иглой" loading="lazy" decoding="async"></figure>
     </section>
     <section class="atl__sec">
       <p class="atl__n">04&nbsp;· Обивка и&nbsp;сборка</p>
       <h3 class="atl__h">Обтяжка&nbsp;— вручную</h3>
-      <p class="txt">Мастер обтягивает изделие руками: ткань без складок, швы по&nbsp;линии, подушки симметричны. Затем собираем, осматриваем и&nbsp;упаковываем к&nbsp;доставке.</p>
+      <p class="txt">Ткань без складок, швы по&nbsp;линии. Собираем, проверяем, упаковываем.</p>
       <figure class="atl__pic"><img src="img/process/atelier-05-uph-1000.webp" srcset="img/process/atelier-05-uph-1000.webp 1000w, img/process/atelier-05-uph.webp 2000w" sizes="(min-width: 960px) 880px, 92vw" width="2000" height="1493" alt="Мастер обтягивает подлокотник дивана тканью" loading="lazy" decoding="async"></figure>
     </section>
     <section class="atl__sec">
       <p class="atl__n">Качество</p>
       <h3 class="atl__h">Что проверяем перед отправкой</h3>
       <ul class="atl__list" role="list">
-        <li>Размеры&nbsp;— по&nbsp;согласованному чертежу</li>
-        <li>Швы ровные, рисунок ткани сходится</li>
-        <li>Ткань натянута без складок и&nbsp;перекосов</li>
-        <li>Изделие стоит ровно, механизмы работают плавно</li>
+        <li>Размеры по&nbsp;чертежу</li>
+        <li>Ровные швы</li>
+        <li>Ткань без складок</li>
+        <li>Плавные механизмы</li>
       </ul>
     </section>
     <section class="atl__sec">
       <p class="atl__n">Гарантия и&nbsp;доставка</p>
-      <h3 class="atl__h">Отвечаем за&nbsp;изделие и&nbsp;после покупки</h3>
+      <h3 class="atl__h">Гарантия&nbsp;— 5&nbsp;лет</h3>
       <ul class="atl__facts" role="list">
         <li><b>5&nbsp;лет</b><span>гарантия на&nbsp;мебель</span></li>
         <li><b>25–45</b><span>рабочих дней на&nbsp;изготовление</span></li>
         <li><b>Любой</b><span>размер&nbsp;— под вашу комнату</span></li>
       </ul>
       <ul class="atl__list" role="list">
-        <li>Доставка&nbsp;— по&nbsp;Казахстану и&nbsp;за&nbsp;рубеж</li>
-        <li>На&nbsp;связи в&nbsp;WhatsApp до&nbsp;и&nbsp;после заказа</li>
+        <li>Доставка по&nbsp;Казахстану и&nbsp;за&nbsp;рубеж</li>
+        <li>На&nbsp;связи в&nbsp;WhatsApp</li>
       </ul>
     </section>
     <p class="atl__cta">

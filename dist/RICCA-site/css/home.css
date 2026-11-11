@@ -292,3 +292,8 @@ body { counter-reset: sec 2; }
 .atl__quote { max-width: 17em; margin: clamp(56px, 8vw, 96px) auto 0; text-align: center; font: var(--w-display) clamp(23px, 6.2vw, 38px)/1.2 var(--f-display); letter-spacing: -.02em; color: var(--ink); text-wrap: balance; }
 .atl__sec .atl__facts { margin-top: 20px; border-bottom: 0; padding-bottom: 20px; }
 .atl__sec .atl__facts + .atl__list { margin-top: 0; }
+
+/* обложка блока «Конструктор» — настоящий снимок окна конструктора (3D-модель, размеры, ткань) вместо линейного эскиза; тонкая рамка, без полей */
+.cfg__pic--cover { padding: 0 !important; border: 1px solid var(--line); background: var(--product-bg); overflow: hidden; }
+.cfg__pic--cover img { display: block; width: 100%; height: auto; }
+@media (min-width: 900px) { .cfg__pic--cover { grid-column: 1 / span 6; } .cfg__in { align-items: center; } }
