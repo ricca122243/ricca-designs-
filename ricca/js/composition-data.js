@@ -480,6 +480,7 @@ window.RICCA_COMPOSITION = {
     { model_id: "bed-30", type: "bed", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "lift", "hidden": true}], en: [{"key": "lift", "hidden": true}] } },   // Sarel
     { model_id: "bed-31", type: "bed", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "lift", "hidden": true}], en: [{"key": "lift", "hidden": true}] } },   // Lapel
     { model_id: "bed-32", type: "bed", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "lift", "hidden": true}], en: [{"key": "lift", "hidden": true}] } },   // Rovel
+    { model_id: "bed-33", type: "bed", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "lift", "hidden": true}], en: [{"key": "lift", "hidden": true}] } },   // Darvel
     { model_id: "sofa-32", type: "modular", verified: false, softness: 4, seat_height: 2, layers: {} },   // Kubva
     { model_id: "sofa-33", type: "modular", verified: false, softness: 4, seat_height: 2, layers: {} },   // Grava
     { model_id: "sofa-34", type: "modular", verified: false, softness: 4, seat_height: 2, layers: {} },   // Plava
