@@ -285,18 +285,18 @@
   /* «Популярные модели» на главной (сразу под плитками): четыре модели каталога на подиуме — те же карточки и то же окно, что на экранах
      категорий. Телефон: большая, пара, большая (css .wk--rhythm) — у больших sizes PHONE_BIG. Список — здесь; модели нет в данных — пропускаем */
   /* «Популярные модели» — лента из моделей, фото которых выбрал владелец (11 ноября): листается вбок, под фото только название */
-  const PICKS = ['m-bed-27', 'm-sofa-37', 'm-sofa-33', 'm-bed-26', 'm-sofa-36', 'm-sofa-43', 'm-bed-25', 'm-sofa-34', 'm-bed-28', 'm-sofa-32'];
+  const DETAILS = [['m-sofa-28', 1, [2, 4]], ['m-sofa-39', 3, [4, 5]], ['m-sofa-42', 0, [1, 3]], ['m-sofa-30', 0, [3, 4]]];
+  const PICKS = ['m-bed-27', 'm-sofa-37', 'm-sofa-33', 'm-bed-26', 'm-sofa-36', 'm-sofa-31', 'm-armchair-14', 'm-sofa-43', 'm-bed-25', 'm-sofa-32'];   // без двойников: Plava — секция того же дивана, что Kubva; Grafel почти как Dorel (владелец: «один диван повторился»)
   (() => {
     const sec = $('#picks'), row = sec && $('[data-picks-row]', sec);
     if (!row) return;
-    const list = PICKS.map((id) => MODELS.find((w) => w.id === id)).filter(Boolean);
+    const list = [...new Set(PICKS)].filter((id) => !DETAILS.some((d) => d[0] === id)).map((id) => MODELS.find((w) => w.id === id)).filter(Boolean);   // одна модель — один раз на главной: без повторов в ленте и без моделей блока «В деталях»
     if (list.length < 3) { sec.remove(); return; }
     row.innerHTML = list.map((w) => workCard(w, 0, WK_SIZES, false, false, false, '72vw')).join('');
     sec.hidden = false;
   })();
   /* «В деталях» (11 ноября, фото прислал владелец): модель крупно и два кадра деталей — ткань, шов, ножка. Нажатие открывает окно изделия на этом кадре.
      Запись: [модель, номер крупного кадра, номера кадров-деталей]. Плитки каталога показывают другие модели — повтора нет */
-  const DETAILS = [['m-sofa-28', 1, [2, 4]], ['m-sofa-39', 3, [4, 5]], ['m-sofa-42', 0, [1, 3]], ['m-sofa-30', 0, [4, 5]]];
   (() => {
     const sec = $('#popular'), row = sec && $('[data-pop-row]', sec);
     if (!row) return;
