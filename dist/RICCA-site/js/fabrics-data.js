@@ -49,6 +49,7 @@
  */
 window.RICCA_FABRIC_LIBRARY = {
   "types": [
+    {"id": "exclusive", "title": "Эксклюзивные", "collections": [{"id": "exclusive", "title": "RICCA EXCLUSIVE", "kind": "букле", "facts": [], "texture": "img/fabrics/exclusive/01-1200.webp", "colours": [{"name": "Графит с молочным", "src900": "img/fabrics/exclusive/01-1200.webp", "src450": "img/fabrics/exclusive/01-600.webp", "src240": "img/fabrics/exclusive/01-160.webp", "hex": "#696662"}, {"name": "Кремовый", "src900": "img/fabrics/exclusive/02-1200.webp", "src450": "img/fabrics/exclusive/02-600.webp", "src240": "img/fabrics/exclusive/02-160.webp", "hex": "#9d8f81"}, {"name": "Терракотовый", "src900": "img/fabrics/exclusive/03-1200.webp", "src450": "img/fabrics/exclusive/03-600.webp", "src240": "img/fabrics/exclusive/03-160.webp", "hex": "#cf502e"}]}]},
     {
       "id": "velur",
       "title": "Велюр",

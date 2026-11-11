@@ -139,7 +139,7 @@
     'Тонкое изголовье с кантом · на металлических ножках': 'Slim piped headboard · on metal legs', 'Обволакивающее изголовье · цоколь': 'Wraparound headboard · plinth',
     'Скруглённое изголовье · кожа': 'Rounded headboard · leather', 'Букле · на высоких металлических ножках': 'Bouclé · on tall metal legs',
     'Модульный · угловой, со столиком': 'Modular · corner, with a side table', 'Кушетка · модуль без спинки': 'Daybed · backless module',
-    'Модульный · скруглённые секции': 'Modular · rounded sections', 'Угловой · на подиуме': 'Corner · on a plinth', 'Радиусный · на подиуме': 'Curved · on a plinth', 'Низкое · на деревянных ножках': 'Low · on wooden legs', 'Изголовье-подушка · кожаная рама': 'Cushion headboard · leather frame',
+    'Модульный · скруглённые секции': 'Modular · rounded sections', 'Угловой · на подиуме': 'Corner · on a plinth', 'Радиусный · на подиуме': 'Curved · on a plinth', 'Изголовье из двух подушек · «гусиная лапка»': 'Two-cushion headboard · houndstooth', 'Округлое · из трёх объёмов': 'Rounded · three volumes', 'Квадратный · на металлическом основании': 'Square · on a metal base', 'Низкое · на деревянных ножках': 'Low · on wooden legs', 'Изголовье-подушка · кожаная рама': 'Cushion headboard · leather frame',
     'Модульный · шерпа': 'Modular · sherpa', 'Скруглённый край · на конусных ножках': 'Rounded end · on tapered legs',
     'Угловой · округлая секция и кушетка': 'Corner · rounded section and daybed', 'Широкое · букле, на металлических ножках': 'Wide · bouclé, on metal legs',
     'Модульный · с валиками, дугой или прямой': 'Modular · with bolsters, curved or straight', 'Прямой · двухместный, на чёрных ножках': 'Straight · two-seater, on black legs',
@@ -152,7 +152,7 @@
     'Для отдыха: округлые, на цоколе': 'Lounge: rounded, on a plinth', 'Реальные изделия ателье': 'Real pieces by the atelier', 'Велюр, букле, шенилл': 'Velour, bouclé, chenille',
     'Ортопедические, на своём сайте': 'Orthopaedic, on their own website',
   };
-  const FAB_TYPES = { 'Велюр': 'Velour', 'Букле': 'Bouclé', 'Шенилл': 'Chenille', 'Замша': 'Suede', 'Экокожа': 'Faux leather', 'САМБИЯ': 'SAMBIA' };
+  const FAB_TYPES = { 'Эксклюзивные': 'Exclusive', 'Велюр': 'Velour', 'Букле': 'Bouclé', 'Шенилл': 'Chenille', 'Замша': 'Suede', 'Экокожа': 'Faux leather', 'САМБИЯ': 'SAMBIA' };
   const FAB_KINDS = {
     'букле': 'bouclé', 'велюр': 'velour', 'велюр в рубчик': 'ribbed velour', 'искусственная замша': 'faux suede', 'микровелюр': 'microvelour',
     'микровелюр с муаром': 'microvelour with moiré', 'шенилл': 'chenille',
@@ -162,14 +162,14 @@
     'Медный меланж': 'Copper mélange', 'Чёрно-бежевая полоса': 'Black and beige stripe', 'Светло-серый меланж': 'Light grey mélange', 'Тёмно-синий': 'Navy',
     'Серо-голубой меланж': 'Grey-blue mélange', 'Льняной': 'Linen', 'Дымчатый с розовой нитью': 'Smoky with pink thread', 'Песочный с белой нитью': 'Sand with white thread',
     'Серый твид': 'Grey tweed', 'Белый с чёрными пятнами': 'White with black spots', 'Чёрно-белый узор': 'Black and white pattern', 'Оливковый с розовым': 'Olive with pink',
-    'Чёрный с белыми пятнами': 'Black with white spots', 'Пыльная роза': 'Dusty rose', 'Морская волна': 'Teal', 'Чёрный': 'Black',
+    'Чёрный с белыми пятнами': 'Black with white spots', 'Пыльная роза': 'Dusty rose', 'Графит с молочным': 'Graphite with milk', 'Кремовый': 'Cream', 'Терракотовый': 'Terracotta', 'Морская волна': 'Teal', 'Чёрный': 'Black',
     'Красная': 'Red', 'Сливочная': 'Cream', 'Мокко': 'Mocha', 'Бордо': 'Burgundy', 'Коралловая': 'Coral', 'Оранжевая': 'Orange', 'Белая': 'White',
     'Бежевая, гладкая': 'Beige, smooth', 'Слоновая кость, гладкая': 'Ivory, smooth', 'Графит, винтаж': 'Graphite, vintage', 'Крем, винтаж': 'Cream, vintage' };   // цвета коллекции RICCA
   const sub = (s) => String(s || '').split(', ').map((p) => p.split(' и ').map((w) => WORDS[w] || w).join(' and ')).join(', ');
   const modelTitle = (t) => {
-    const m = /^(Диван|Кресло|Кровать) (.+)$/.exec(t || '');
+    const m = /^(Диван|Кресло|Кровать|Пуф) (.+)$/.exec(t || '');
     if (!m) return WORK_TITLES[t] || t;
-    const kind = { 'Диван': 'sofa', 'Кресло': 'armchair', 'Кровать': 'bed' }[m[1]];
+    const kind = { 'Диван': 'sofa', 'Кресло': 'armchair', 'Кровать': 'bed', 'Пуф': 'pouf' }[m[1]];
     const no = /^№\s*(\d+)$/.exec(m[2]);
     return no ? `${kind.replace(/^./, (c) => c.toUpperCase())} No. ${no[1]}` : `${m[2]} ${kind}`;
   };
