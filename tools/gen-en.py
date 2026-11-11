@@ -99,6 +99,8 @@ TEXT = {
     'Меню': 'Menu',
     'Популярные модели': 'Popular models',
     'В&nbsp;деталях': 'In&nbsp;detail',
+    'Мягкая мебель на&nbsp;заказ&nbsp;— под&nbsp;ваш размер и&nbsp;ткань': 'Upholstered furniture made to&nbsp;order&nbsp;— your size, your fabric',
+    'Матрасы': 'Mattresses', '3D-конструктор': '3D&nbsp;builder',
     'Весь каталог': 'Full catalogue',
     'По&nbsp;две в&nbsp;ряд': 'Two per row',
     'Любой&nbsp;— под заказ': 'Any&nbsp;— made to order',
@@ -131,7 +133,7 @@ ATTR = {
  'Кровать с округлым изголовьем — работа ателье': 'Bed with a rounded headboard — made by the atelier',
  'Банкетка в молочном букле — работа ателье': 'Bench in milky bouclé — made by the atelier',
  # телефон, 10 ноября
- 'Быстрые действия': 'Quick actions', 'Популярные модели': 'Popular models', 'Модели в деталях': 'Models in detail', 'Работы по видам': 'Works by type', 'Каталог': 'Catalogue',
+ 'Быстрые действия': 'Quick actions', 'Популярные модели': 'Popular models', 'Модели в деталях': 'Models in detail', 'Пошив: ткань под лапкой швейной машины': 'Sewing: fabric under the machine foot', 'Раскрой ткани ножницами': 'Cutting fabric with shears', 'Обивка: мастер крепит ткань': 'Upholstery: fixing the fabric', 'Работы по видам': 'Works by type', 'Каталог': 'Catalogue',
  'Позвонить: +7 (707) 955-08-08': 'Call: +7 (707) 955-08-08',
 }
 

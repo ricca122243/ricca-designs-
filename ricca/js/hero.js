@@ -19,7 +19,7 @@
     : { frames: 'Кадры с работами', frame: (i, n) => `Кадр ${i} из ${n}`, stop: 'Остановить смену кадров', play: 'Запустить смену кадров', vStop: 'Остановить видео', vPlay: 'Включить видео' };
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = !!(navigator.connection && navigator.connection.saveData);
-  if (!root.dataset.hero) root.dataset.hero = /[?&]hero=1(?:&|$)/.test(location.search) ? '1' : '2';   // страховка, если строка в #top не выполнилась
+  if (!root.dataset.hero) root.dataset.hero = (location.search.match(/[?&]hero=([12])(?:&|$)/) || [0, '0'])[1];   // страховка, если строка в #top не выполнилась
   const pad = (n) => String(n).padStart(2, '0');
   const ico = (id) => `<svg class="ico" aria-hidden="true"><use href="#${id}"/></svg>`;
   // кнопка пауза/пуск: aria-pressed — «остановлено»
@@ -32,7 +32,7 @@
     if ('IntersectionObserver' in window) new IntersectionObserver((es) => { seen.view = es[0].isIntersecting; onChange(); }, { threshold: .15 }).observe(hero);
   };
 
-  if (root.dataset.hero === '1') slides(); else video();
+  if (root.dataset.hero === '1') slides(); else if (root.dataset.hero === '2') video();   // '0' — кадра нет (первый экран — заголовок и категории)
 
   /* ---------- Вариант ?hero=1: реальные работы ---------- */
   function slides() {

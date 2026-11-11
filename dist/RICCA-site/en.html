@@ -2,7 +2,7 @@
 <html lang="en" class="no-js">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-GHHpUHZ+CHMmu4m7Sxr0P1YOvLM9V4+/VoYTluiqGhA=' 'sha256-aY0RCLQg5f+iUdlhdjtUpErFUHCZMOQ7LYomT2Oma50='; default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' blob: data:; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-aY0RCLQg5f+iUdlhdjtUpErFUHCZMOQ7LYomT2Oma50=' 'sha256-jn70OqkHT1Jpw/jGnODQw5EelnEn0VEubRCe42g9V4Q='; default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' blob: data:; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; upgrade-insecure-requests">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Custom upholstered furniture in Almaty — sofas, beds, armchairs · RICCA DESIGNS</title>
 <meta name="description" content="RICCA DESIGNS — an upholstered furniture atelier in Almaty, Kazakhstan: sofas, beds and armchairs made to order from your photo, sketch or project. Any size and fabric, our own production, showroom at 208/2 Navoi St. 5-year warranty, delivery across Kazakhstan and worldwide.">
@@ -36,14 +36,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="RICCA">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="preload" as="image" href="video/hero-mobile-poster.webp" media="(max-width: 767px)" fetchpriority="high">
-<link rel="preload" as="image" href="video/hero-desktop-poster.webp" media="(min-width: 768px)" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts-v3.css?v=4b7fc729a5">
-<link rel="stylesheet" href="css/site.css?v=4b7fc729a5">
-<link rel="stylesheet" href="css/hero.css?v=4b7fc729a5">
-<link rel="stylesheet" href="css/home.css?v=4b7fc729a5">
+<link rel="stylesheet" href="css/fonts-v3.css?v=0691bb752d">
+<link rel="stylesheet" href="css/site.css?v=0691bb752d">
+<link rel="stylesheet" href="css/hero.css?v=0691bb752d">
+<link rel="stylesheet" href="css/home.css?v=0691bb752d">
 <script>
 /* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,6 с). Не играем: повторный визит в этой сессии,
    prefers-reduced-motion, вход по ссылке с #якорем (Instagram → #catalog/sofas), недоступный sessionStorage.
@@ -126,7 +124,7 @@
 
 <main id="main">
 
-<script>document.documentElement.dataset.hero = /[?&]hero=1(?:&|$)/.test(location.search) ? '1' : '2';</script>
+<script>document.documentElement.dataset.hero = (location.search.match(/[?&]hero=([12])(?:&|$)/) || [0, '0'])[1];</script>
 <section class="hero" id="top" aria-labelledby="hero-title">
   <div class="hero__media" aria-hidden="true">
     <picture class="hero__poster">
@@ -147,20 +145,31 @@
   <span class="hero__base" data-hdr="dark" aria-hidden="true"></span>
   <div class="hero__front"><div class="wrap">
     <div class="hero__top"><p class="hero__eye">Atelier&nbsp;· Almaty</p><div class="hero__nav"></div></div>
-    <h1 class="hero__title" id="hero-title">
+    <p class="hero__title" id="hero-title">
       <span class="hero__ln"><span>Upholstered furniture</span></span>
       <span class="hero__ln"><span>made to&nbsp;order</span></span>
-    </h1>
+    </p>
     <div class="hero__cta">
       <a class="btn btn--fill" href="#catalog">Catalogue</a>
       <a class="btn btn--line" href="/en/configurator">Build in&nbsp;3D</a>
     </div>
   </div></div>
-  <script src="js/hero.js?v=4b7fc729a5" defer></script>
+  <script src="js/hero.js?v=0691bb752d" defer></script>
 </section>
 
 <section class="sec cat" id="catalog" aria-labelledby="cat-title">
   <div class="wrap">
+        <div class="intro">
+      <h1 class="intro__title" id="intro-title">Upholstered furniture made to&nbsp;order&nbsp;— your size, your fabric</h1>
+      <ul class="cats" role="list">
+        <li><a class="cats__a" href="#catalog/sofas"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M22 40V18a4 4 0 0 1 4-4h68a4 4 0 0 1 4 4v22M60 14v36"/><path d="M22 56H12a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v24M98 56h10a4 4 0 0 0 4-4V32a4 4 0 0 0-4-4h-6a4 4 0 0 0-4 4v24"/><path d="M22 40h76v10H22zM22 56h76M14 56v6M106 56v6"/></svg><span class="cats__t">Sofas</span></a></li>
+        <li><a class="cats__a" href="#catalog/beds"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M14 50V16a4 4 0 0 1 4-4h84a4 4 0 0 1 4 4v34"/><rect x="26" y="26" width="30" height="14" rx="3"/><rect x="64" y="26" width="30" height="14" rx="3"/><path d="M18 40h84v10H18zM12 50h96v8H12zM18 58v5M102 58v5"/></svg><span class="cats__t">Beds</span></a></li>
+        <li><a class="cats__a" href="#catalog/armchairs"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M40 40V18a4 4 0 0 1 4-4h32a4 4 0 0 1 4 4v22"/><path d="M40 56h-8a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v24M80 56h8a4 4 0 0 0 4-4V32a4 4 0 0 0-4-4h-4a4 4 0 0 0-4 4v24"/><path d="M40 40h40v10H40zM40 56h40M33 56v6M87 56v6"/></svg><span class="cats__t">Armchairs</span></a></li>
+        <li><a class="cats__a" href="#catalog/fabrics"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><ellipse cx="22" cy="20" rx="5" ry="8"/><path d="M22 12h70a5 8 0 0 1 0 16H22"/><path d="M34 28v30q10 6 20 0t20 0t20 0V28M48 28v29M62 28v31M76 28v29"/></svg><span class="cats__t">Fabrics</span></a></li>
+        <li><a class="cats__a" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M16 38l18-14h70l-18 14zM16 38h70v14H16zM86 38l18-14v14l-18 14"/><path d="M24 45h54" stroke-dasharray="3 4"/></svg><span class="cats__t">Mattresses</span></a></li>
+        <li><a class="cats__a" href="/en/configurator"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M60 10l32 15-32 15-32-15zM28 25v26l32 15V40M92 25v26L60 66"/><path d="M60 40v26" stroke-dasharray="3 4"/></svg><span class="cats__t">3D&nbsp;builder</span></a></li>
+      </ul>
+    </div>
     <header class="shead rv">
       <h2 class="title" id="cat-title">Catalogue</h2>
       <p class="shead__line" data-cat-line>Sofas, beds, armchairs&nbsp;— any size and&nbsp;fabric.</p>
@@ -261,12 +270,17 @@
       <p class="atelier__lead">We make the furniture ourselves&nbsp;— in&nbsp;our own atelier in&nbsp;Almaty.</p>
       <p class="atelier__p">Frame, cutting, sewing, upholstery, assembly&nbsp;— the full cycle.</p>
     </div>
-    <figure class="atelier__film rv" data-autovideo>
-      <video muted playsinline loop preload="none" data-poster="video/production-poster.webp" width="478" height="850" data-src="video/production" data-src-phone="video/production-phone" disablepictureinpicture aria-label="Video: how we make furniture — frame, cutting, sewing, upholstery and assembly"></video>
-      <button class="vbtn vbtn--corner" type="button" data-vtoggle aria-pressed="false" aria-label="Stop the atelier video" hidden>
-        <svg class="ico ico--pause" aria-hidden="true"><use href="#i-pause"/></svg><svg class="ico ico--play" aria-hidden="true"><use href="#i-play"/></svg>
-      </button>
-    </figure>
+    <div class="atelier__grid">
+      <figure class="atelier__film rv" data-autovideo>
+        <video muted playsinline loop preload="none" data-poster="video/production-poster.webp" width="478" height="850" data-src="video/production" data-src-phone="video/production-phone" disablepictureinpicture aria-label="Video: how we make furniture — frame, cutting, sewing, upholstery and assembly"></video>
+        <button class="vbtn vbtn--corner" type="button" data-vtoggle aria-pressed="false" aria-label="Stop the atelier video" hidden>
+          <svg class="ico ico--pause" aria-hidden="true"><use href="#i-pause"/></svg><svg class="ico ico--play" aria-hidden="true"><use href="#i-play"/></svg>
+        </button>
+      </figure>
+      <figure class="atelier__ph rv"><img src="img/process/step-02-sewing.webp" width="478" height="850" alt="Sewing: fabric under the machine foot" loading="lazy" decoding="async"></figure>
+      <figure class="atelier__ph rv"><img src="img/process/step-07-cutting.webp" width="478" height="850" alt="Cutting fabric with shears" loading="lazy" decoding="async"></figure>
+      <figure class="atelier__ph rv"><img src="img/process/step-08-upholstery.webp" width="478" height="850" alt="Upholstery: fixing the fabric" loading="lazy" decoding="async"></figure>
+    </div>
   </div>
 </section>
 
@@ -628,16 +642,16 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__open" id="toast-open">Open</button></div>
 
-<script src="js/lang.js?v=4b7fc729a5" defer></script>
-<script src="js/catalog-data.js?v=4b7fc729a5" defer></script>
-<script src="js/works-data.js?v=4b7fc729a5" defer></script>
-<script src="js/models-data.js?v=4b7fc729a5" defer></script>
-<script src="js/fabrics-data.js?v=4b7fc729a5" defer></script>
-<script src="js/lang-en.js?v=4b7fc729a5" defer></script>
-<script src="js/cart.js?v=4b7fc729a5" defer></script>
-<script src="js/site.js?v=4b7fc729a5" defer></script>
-<script src="js/content-data.js?v=4b7fc729a5" defer></script>
-<script src="js/composition-data.js?v=4b7fc729a5" defer></script>
-<script src="js/blocks.js?v=4b7fc729a5" defer></script>
+<script src="js/lang.js?v=0691bb752d" defer></script>
+<script src="js/catalog-data.js?v=0691bb752d" defer></script>
+<script src="js/works-data.js?v=0691bb752d" defer></script>
+<script src="js/models-data.js?v=0691bb752d" defer></script>
+<script src="js/fabrics-data.js?v=0691bb752d" defer></script>
+<script src="js/lang-en.js?v=0691bb752d" defer></script>
+<script src="js/cart.js?v=0691bb752d" defer></script>
+<script src="js/site.js?v=0691bb752d" defer></script>
+<script src="js/content-data.js?v=0691bb752d" defer></script>
+<script src="js/composition-data.js?v=0691bb752d" defer></script>
+<script src="js/blocks.js?v=0691bb752d" defer></script>
 </body>
 </html>

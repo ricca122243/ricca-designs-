@@ -1745,6 +1745,7 @@
     $$('.showroom__b, .foot, .cta-split').forEach((el) => endsIO.observe(el));   // у «Шоурума» — только когда видны его кнопки: пока читают «Вопросы», меню под рукой
   }
   mqPhone.addEventListener('change', syncBar);
+  document.addEventListener('click', (e) => { const a = e.target.closest('a[href="#top"]'); if (a && root.dataset.hero === '0') { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); } });   // кадра первого экрана нет — «наверх» ведёт к началу страницы
   /* плавающая кнопка WhatsApp (css: .wa-fab) — только компьютер: после 400 px прокрутки, не под открытым окном, не у «Шоурума» и подвала.
      На телефоне её нет (css display: none): WhatsApp — главная ячейка нижнего меню. На странице конструктора этого скрипта нет */
   const fab = document.createElement('a');
