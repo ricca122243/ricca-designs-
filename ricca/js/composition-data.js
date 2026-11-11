@@ -481,6 +481,7 @@ window.RICCA_COMPOSITION = {
     { model_id: "bed-31", type: "bed", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "lift", "hidden": true}], en: [{"key": "lift", "hidden": true}] } },   // Lapel
     { model_id: "bed-32", type: "bed", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "lift", "hidden": true}], en: [{"key": "lift", "hidden": true}] } },   // Rovel
     { model_id: "bed-33", type: "bed", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "lift", "hidden": true}], en: [{"key": "lift", "hidden": true}] } },   // Darvel
+    { model_id: "bed-34", type: "bed", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "lift", "hidden": true}], en: [{"key": "lift", "hidden": true}] } },   // Tavel
     { model_id: "sofa-32", type: "modular", verified: false, softness: 4, seat_height: 2, layers: {} },   // Kubva
     { model_id: "sofa-33", type: "modular", verified: false, softness: 4, seat_height: 2, layers: {} },   // Grava
     { model_id: "sofa-34", type: "modular", verified: false, softness: 4, seat_height: 2, layers: {} },   // Plava
@@ -496,6 +497,7 @@ window.RICCA_COMPOSITION = {
     { model_id: "armchair-19", type: "armchair", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Pelso
     { model_id: "armchair-20", type: "armchair", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Galso
     { model_id: "armchair-21", type: "armchair", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Savro
+    { model_id: "armchair-22", type: "armchair", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Ronso
     { model_id: "pouf-01", type: "pouf", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Kvado
     { model_id: "pouf-02", type: "pouf", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Ovalo
     { model_id: "bench-01", type: "pouf", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Lineo
