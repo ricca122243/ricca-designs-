@@ -119,3 +119,10 @@ details.qa .qa__a { margin: 0; padding: 0 44px 20px 0; font-size: 15px; }
 @media (max-width: 599px) { .dt { grid-template-columns: 1fr; gap: 32px; } .dt__g:nth-child(n+4) { display: none; } }
 /* телефон: у «Вопросов» фото нет — список сразу под заголовком */
 @media (max-width: 899px) { .faq__pic { display: none; } }
+
+/* лента «Популярные модели»: один ряд, листается вбок с доводкой; телефон — карточка 72vw, следующая выглядывает */
+.wk.strip { display: flex; gap: 12px; margin: 0 calc(var(--pad) * -1); padding: 0 var(--pad); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: var(--pad); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.wk.strip::-webkit-scrollbar { display: none; }
+.wk.strip > li { flex: 0 0 72vw; max-width: 340px; scroll-snap-align: start; }
+@media (min-width: 900px) { .wk.strip { gap: 16px; } .wk.strip > li { flex-basis: 23%; } }
+.pop--strip { padding-bottom: 0; }

@@ -40,10 +40,10 @@
 <link rel="preload" as="image" href="video/hero-desktop-poster.webp" media="(min-width: 768px)" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts-v3.css?v=01713fb42f">
-<link rel="stylesheet" href="css/site.css?v=01713fb42f">
-<link rel="stylesheet" href="css/hero.css?v=01713fb42f">
-<link rel="stylesheet" href="css/home.css?v=01713fb42f">
+<link rel="stylesheet" href="css/fonts-v3.css?v=da6f48e5bf">
+<link rel="stylesheet" href="css/site.css?v=da6f48e5bf">
+<link rel="stylesheet" href="css/hero.css?v=da6f48e5bf">
+<link rel="stylesheet" href="css/home.css?v=da6f48e5bf">
 <script>
 /* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,6 с). Не играем: повторный визит в этой сессии,
    prefers-reduced-motion, вход по ссылке с #якорем (Instagram → #catalog/sofas), недоступный sessionStorage.
@@ -165,7 +165,7 @@
       <a class="btn btn--line" href="configurator.html">Собрать в&nbsp;3D</a>
     </div>
   </div></div>
-  <script src="js/hero.js?v=01713fb42f" defer></script>
+  <script src="js/hero.js?v=da6f48e5bf" defer></script>
 </section>
 
 <!-- ═════════ 2. КАТАЛОГ: пять плиток категорий. Нажали плитку — экран категории (#catalog/sofas): сетка реальных работ и три действия
@@ -217,6 +217,15 @@
 <!-- ═════════ 3. ПОПУЛЯРНЫЕ МОДЕЛИ (10 ноября): сразу под плитками — четыре модели каталога на светлом подиуме (js/models-data.js; список
      POPULAR в js/site.js, сетку строит он же в [data-pop-row]); телефон — одна крупная, пара, одна крупная (css .wk--rhythm, DESIGN.md 4.5).
      Нет данных — js/site.js убирает раздел. «Весь каталог» открывает экран «Диваны» — там же переключаются остальные категории. ═════════ -->
+<section class="sec pop pop--strip" id="picks" aria-labelledby="picks-title" hidden>
+  <div class="wrap">
+    <header class="shead rv">
+      <h2 class="title" id="picks-title">Популярные модели</h2>
+    </header>
+    <ul class="wk strip" data-picks-row role="list" aria-label="Популярные модели"></ul>
+  </div>
+</section>
+
 <section class="sec pop" id="popular" aria-labelledby="pop-title" hidden>
   <div class="wrap">
     <header class="shead rv">
@@ -674,15 +683,15 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__open" id="toast-open">Открыть</button></div>
 
-<script src="js/lang.js?v=01713fb42f" defer></script>
-<script src="js/catalog-data.js?v=01713fb42f" defer></script>
-<script src="js/works-data.js?v=01713fb42f" defer></script>
-<script src="js/models-data.js?v=01713fb42f" defer></script>
-<script src="js/fabrics-data.js?v=01713fb42f" defer></script>
-<script src="js/cart.js?v=01713fb42f" defer></script>
-<script src="js/site.js?v=01713fb42f" defer></script>
-<script src="js/content-data.js?v=01713fb42f" defer></script>
-<script src="js/composition-data.js?v=01713fb42f" defer></script>
-<script src="js/blocks.js?v=01713fb42f" defer></script>
+<script src="js/lang.js?v=da6f48e5bf" defer></script>
+<script src="js/catalog-data.js?v=da6f48e5bf" defer></script>
+<script src="js/works-data.js?v=da6f48e5bf" defer></script>
+<script src="js/models-data.js?v=da6f48e5bf" defer></script>
+<script src="js/fabrics-data.js?v=da6f48e5bf" defer></script>
+<script src="js/cart.js?v=da6f48e5bf" defer></script>
+<script src="js/site.js?v=da6f48e5bf" defer></script>
+<script src="js/content-data.js?v=da6f48e5bf" defer></script>
+<script src="js/composition-data.js?v=da6f48e5bf" defer></script>
+<script src="js/blocks.js?v=da6f48e5bf" defer></script>
 </body>
 </html>

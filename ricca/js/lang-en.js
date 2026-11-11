@@ -139,7 +139,7 @@
     'Тонкое изголовье с кантом · на металлических ножках': 'Slim piped headboard · on metal legs', 'Обволакивающее изголовье · цоколь': 'Wraparound headboard · plinth',
     'Скруглённое изголовье · кожа': 'Rounded headboard · leather', 'Букле · на высоких металлических ножках': 'Bouclé · on tall metal legs',
     'Модульный · угловой, со столиком': 'Modular · corner, with a side table', 'Кушетка · модуль без спинки': 'Daybed · backless module',
-    'Модульный · скруглённые секции': 'Modular · rounded sections', 'Угловой · на подиуме': 'Corner · on a plinth',
+    'Модульный · скруглённые секции': 'Modular · rounded sections', 'Угловой · на подиуме': 'Corner · on a plinth', 'Радиусный · на подиуме': 'Curved · on a plinth',
     'Модульный · шерпа': 'Modular · sherpa', 'Скруглённый край · на конусных ножках': 'Rounded end · on tapered legs',
     'Угловой · округлая секция и кушетка': 'Corner · rounded section and daybed', 'Широкое · букле, на металлических ножках': 'Wide · bouclé, on metal legs',
     'Модульный · с валиками, дугой или прямой': 'Modular · with bolsters, curved or straight', 'Прямой · двухместный, на чёрных ножках': 'Straight · two-seater, on black legs',

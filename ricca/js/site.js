@@ -234,8 +234,9 @@
   // обложки плиток каталога: реальное фото вместо линейного рисунка; рисунок — в DRAW (миниатюра заявки «по вашему проекту»).
   // телефон (< 600 px, css/site.css): Диваны · Кровати · Кресла — три в ряд (≈ 30vw); 600–767 — парами (≈ 43vw)
   const DRAW = {};
+  const TILE_COVER = { sofas: 'm-sofa-35', beds: 'm-bed-27' };   // обложки плиток — из фото, которые выбрал владелец (11 ноября)
   $$('.tile[data-cat]').forEach((a) => {
-    const cat = a.dataset.cat, box = $('.tile__img--draw', a), w = MODELS.find((x) => x.cat === cat) || WORKS.find((x) => x.cat === cat);
+    const cat = a.dataset.cat, box = $('.tile__img--draw', a), w = MODELS.find((x) => x.id === TILE_COVER[cat]) || MODELS.find((x) => x.cat === cat) || WORKS.find((x) => x.cat === cat);
     if (!box || !w || !KINDS[cat]) return;
     const svg = $('.draw', box);
     if (svg) DRAW[cat] = svg.cloneNode(true);
@@ -283,6 +284,16 @@
   })();
   /* «Популярные модели» на главной (сразу под плитками): четыре модели каталога на подиуме — те же карточки и то же окно, что на экранах
      категорий. Телефон: большая, пара, большая (css .wk--rhythm) — у больших sizes PHONE_BIG. Список — здесь; модели нет в данных — пропускаем */
+  /* «Популярные модели» — лента из моделей, фото которых выбрал владелец (11 ноября): листается вбок, под фото только название */
+  const PICKS = ['m-bed-27', 'm-sofa-37', 'm-sofa-33', 'm-bed-26', 'm-sofa-36', 'm-sofa-43', 'm-bed-25', 'm-sofa-34', 'm-bed-28', 'm-sofa-32'];
+  (() => {
+    const sec = $('#picks'), row = sec && $('[data-picks-row]', sec);
+    if (!row) return;
+    const list = PICKS.map((id) => MODELS.find((w) => w.id === id)).filter(Boolean);
+    if (list.length < 3) { sec.remove(); return; }
+    row.innerHTML = list.map((w) => workCard(w, 0, WK_SIZES, false, false, false, '72vw')).join('');
+    sec.hidden = false;
+  })();
   /* «В деталях» (11 ноября, фото прислал владелец): модель крупно и два кадра деталей — ткань, шов, ножка. Нажатие открывает окно изделия на этом кадре.
      Запись: [модель, номер крупного кадра, номера кадров-деталей]. Плитки каталога показывают другие модели — повтора нет */
   const DETAILS = [['m-sofa-28', 1, [2, 4]], ['m-sofa-39', 3, [4, 5]], ['m-sofa-42', 0, [1, 3]], ['m-sofa-30', 0, [4, 5]]];

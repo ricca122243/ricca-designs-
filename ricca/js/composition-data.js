@@ -490,5 +490,6 @@ window.RICCA_COMPOSITION = {
     { model_id: "armchair-17", type: "armchair", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Lesvo
     { model_id: "sofa-41", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Tarva
     { model_id: "sofa-42", type: "sofa", verified: false, softness: 3, seat_height: 2, layers: {} },   // Norva
+    { model_id: "sofa-43", type: "modular", verified: false, softness: 3, seat_height: 3, layers: {} },   // Sorva
   ]
 };
