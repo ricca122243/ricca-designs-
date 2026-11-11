@@ -285,3 +285,10 @@ body { counter-reset: sec 2; }
 .atl__list li { padding: 13px 0; border-top: 1px solid var(--line); font: 400 15px/1.5 var(--sans); color: var(--ink); text-wrap: pretty; }
 .atl__cta { display: flex; flex-wrap: wrap; gap: 12px; margin: clamp(48px, 6vw, 72px) 0 0; }
 @media (max-width: 599.98px) { .atl__cta .btn { flex: 1 1 100%; } }
+
+/* окно «Ателье подробно», вторая редакция (владелец прислал образец страницы производства): связный текст абзацами, крупная фраза по центру, кадры между абзацами */
+.atl .txt + .txt { margin-top: 12px; }
+.atl .atl__pic + .txt { margin-top: 28px; }
+.atl__quote { max-width: 17em; margin: clamp(56px, 8vw, 96px) auto 0; text-align: center; font: var(--w-display) clamp(23px, 6.2vw, 38px)/1.2 var(--f-display); letter-spacing: -.02em; color: var(--ink); text-wrap: balance; }
+.atl__sec .atl__facts { margin-top: 20px; border-bottom: 0; padding-bottom: 20px; }
+.atl__sec .atl__facts + .atl__list { margin-top: 0; }
