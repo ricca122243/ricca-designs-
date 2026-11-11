@@ -498,6 +498,8 @@ window.RICCA_COMPOSITION = {
     { model_id: "bench-01", type: "pouf", verified: false, softness: 3, seat_height: 3, layers: { ru: [{"key": "legs", "name": "Ножки: металл [ОТДЕЛКА]"}], en: [{"key": "legs", "name": "Legs: metal [ОТДЕЛКА]"}] } },   // Lineo
     { model_id: "sofa-41", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Tarva
     { model_id: "sofa-44", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Morva
+    { model_id: "sofa-46", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Kamra
+    { model_id: "sofa-45", type: "modular", verified: false, softness: 3, seat_height: 3, layers: {} },   // Terva
     { model_id: "sofa-42", type: "sofa", verified: false, softness: 3, seat_height: 2, layers: {} },   // Norva
     { model_id: "sofa-43", type: "modular", verified: false, softness: 3, seat_height: 3, layers: {} },   // Sorva
   ]
