@@ -1307,8 +1307,8 @@ window.RICCA_CATALOG = [
     type: "Диван",
     subtitle: "Прямой · раскладной, с подголовниками",
     photos: [
-      {"src": "img/catalog/p-sofa-29-d1-e-r.webp", "src600": "img/catalog/p-sofa-29-d1-e-r-600.webp", "alt": "Диван в сером, сложен — на светлом фоне", "studio": true, "box": [0.76, 0.375], "w": 1921, "h": 1441},
       {"src": "img/catalog/p-sofa-29-o-e-r.webp", "src600": "img/catalog/p-sofa-29-o-e-r-600.webp", "alt": "Раскладной диван в светло-серой ткани, разложенный, с подголовниками — на светлом фоне", "studio": true, "box": [0.719, 0.68], "w": 1720, "h": 1290},
+      {"src": "img/catalog/p-sofa-29-d1-e-r.webp", "src600": "img/catalog/p-sofa-29-d1-e-r-600.webp", "alt": "Диван в сером, сложен — на светлом фоне", "studio": true, "box": [0.76, 0.375], "w": 1921, "h": 1441},
       {"src": "img/catalog/p-sofa-29-d2-e-r.webp", "src600": "img/catalog/p-sofa-29-d2-e-r-600.webp", "alt": "Диван разложен, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.499], "w": 1818, "h": 1364},
       {"src": "img/catalog/p-sofa-29-d3-r.webp", "src600": "img/catalog/p-sofa-29-d3-r-600.webp", "alt": "Угловой вариант с оттоманкой — на светлом фоне", "studio": true, "box": [0.76, 0.312], "w": 2011, "h": 1508},
       {"src": "img/catalog/p-sofa-29-d4-r.webp", "src600": "img/catalog/p-sofa-29-d4-r-600.webp", "alt": "Угловой вариант: спальное место выдвинуто — на светлом фоне", "studio": true, "box": [0.76, 0.315], "w": 2025, "h": 1519}

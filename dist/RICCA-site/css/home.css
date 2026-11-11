@@ -180,3 +180,37 @@ html:not([data-hero="0"]) .intro__title { position: absolute; width: 1px; height
 .biz__text > * { grid-column: 1 / -1; }   /* заголовок задаёт сетке колонки (site.css) — строка и кнопки идут каждая своим рядом, а не бок о бок */
 @media (max-width: 599.98px) { .biz__text .biz__btns .btn { gap: 6px; font-size: 14px; white-space: nowrap; } }
 @media (max-width: 359px) { .biz__btns { flex-direction: column; } .biz__text .biz__btns .btn { flex: none; width: 100%; } }   /* 320: кнопки одна под другой — «Обсудить проект» не обрезается */
+
+/* ───── 11 ноября, вечер: «всё это эстетично увеличить, между ярлыками добавить место, сделать аккуратно» ─────
+   Категории первого экрана: рисунок крупнее и плотнее линией, между рядами и до подписи — больше воздуха */
+.intro__title { margin-bottom: clamp(52px, 7vw, 96px); }
+.cats { gap: 60px 16px; }
+.cats__a { gap: 24px; }
+.cats__i { width: min(172px, 92%); stroke-width: 1.5; }
+.cats__t { font-size: 14px; letter-spacing: .14em; }
+@media (min-width: 768px) { .cats { gap: 72px 32px; } }
+@media (max-width: 359px) { .cats { gap: 48px 12px; } .cats__t { font-size: 13px; letter-spacing: .1em; } }
+/* лента «Популярные модели»: карточка крупнее */
+@media (max-width: 899px) { .wk.strip { gap: 14px; } .wk.strip > li { flex-basis: 80vw; max-width: 380px; } }
+/* «Наши работы» на телефоне: вместо мелкой сетки 2 × 2 — крупные кадры лентой (листается вбок, следующий выглядывает) */
+@media (max-width: 767px) {
+  .works [data-works-row] { display: flex; gap: 12px; margin: 0 calc(var(--pad) * -1); padding: 0 var(--pad); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: var(--pad); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .works [data-works-row]::-webkit-scrollbar { display: none; }
+  .works [data-works-row] > li { display: block !important; flex: 0 0 74vw; max-width: 360px; scroll-snap-align: start; }
+}
+/* «Как заказать» на телефоне: три шага строками, а не тремя тесными колонками */
+@media (max-width: 599.98px) {
+  .how__steps { grid-template-columns: minmax(0, 1fr); }
+  .how__steps li { grid-template-columns: 44px minmax(0, 1fr); align-items: baseline; gap: 0; padding: 18px 0; font-size: 17px; line-height: 1.4; text-wrap: pretty; }
+  .how__steps li:last-child { border-bottom: 1px solid var(--line); }
+  .how__n { font-size: 13px; }
+}
+/* ателье без ролика: телефон — горизонтальный, высокий, горизонтальный; компьютер — три вертикальных в ряд */
+.atelier__ph--tall { display: none; aspect-ratio: 4 / 5; }
+.atelier__ph--tall img { object-position: 50% 30%; }
+@media (max-width: 767px) { .atelier__ph--tall { display: block; } .atelier__grid { gap: 14px; } }
+@media (min-width: 900px) { .atelier__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 768px) and (max-width: 899px) { .atelier__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* номера разделов: заголовок «Каталог» скрыт (первый экран — категории) и номер не занимает — счёт начинаем с 2, чтобы у «Шоурума» остался «№ 09» */
+body { counter-reset: sec 2; }
+@media (min-width: 768px) { .atelier__ph--port { aspect-ratio: 4 / 5; } }   /* компьютер: три кадра в ряд, не выше экрана */
