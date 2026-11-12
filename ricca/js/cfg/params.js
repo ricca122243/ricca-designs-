@@ -28,8 +28,8 @@ export const OPTIONS = {
   side: { left: 'угол слева', right: 'угол справа' },
   form: { L: 'Г-образный', chaise: 'с шезлонгом', classic: 'классическое', round: 'округлое', square: 'квадратный', bench: 'банкетка' },
   chaise: { none: 'без шезлонга', left: 'шезлонг слева', right: 'шезлонг справа' },
-  hbStyle: { plain: 'гладкое', channels: 'вертикальная простёжка', capitone: 'каретная стяжка', wings: 'с «ушками»' },
-  base: { legs: 'ножки', plinth: 'цоколь', four: 'четыре ножки', pedestal: 'опора' },
+  hbStyle: { plain: 'гладкое', channels: 'вертикальная простёжка', capitone: 'каретная стяжка', wings: 'с «ушками»', frame: 'рама со вставкой', pillows: 'две подушки', straps: 'подушки на ремнях' },
+  base: { legs: 'ножки', plinth: 'цоколь', four: 'четыре ножки', pedestal: 'опора', float: 'парящее', podium: 'подиум' },
   lift: { false: 'без механизма', true: 'подъёмный механизм — обсудим' },
   top: { smooth: 'гладкий', capitone: 'каретная стяжка' },
 };
@@ -42,7 +42,23 @@ export const ARMCHAIR_ROUND_ARMW = R(0.12, 0.22, 0.15);
 /* высота ног по виду опоры */
 export const LEGH_BY_KIND = { hidden: R(0.02, 0.02, 0.02), metal: R(0.08, 0.20, 0.12), wood: R(0.08, 0.20, 0.12), plinth: R(0.04, 0.12, 0.08), disc: R(0.08, 0.20, 0.12) };
 export const HIDDEN_LEG_H = 0.02;
-export const HBT_BY_STYLE = { plain: 0.08, channels: 0.10, capitone: 0.10, wings: 0.12 };
+export const HBT_BY_STYLE = { plain: 0.08, channels: 0.10, capitone: 0.10, wings: 0.12, frame: 0.12, pillows: 0.14, straps: 0.08 };
+/* кровать: дополнительные формы. Значение по умолчанию = прежний вид; такие ключи normalize убирает из параметров,
+   поэтому старые ссылки, их номер (cfgId) и вид не меняются. Коды в адресе — k*: ks, ki, kw, kl, kb, kd, kr, kg, kc */
+export const BED_EXTRA = { hbShape: 'rect', hbInsert: 'auto', hbWrap: 'none', hbLean: 'none', hbRim: 'none', hbDepth: 0, railShape: 'box', legKind: 'cone', pipeTone: 'match' };
+export const BED_EXTRA_VALUES = {
+  hbShape: ['rect', 'round', 'arch', 'capsule', 'wave'], hbInsert: ['auto', 'plain', 'channels', 'hchannels', 'capitone'],
+  hbWrap: ['none', 'shell', 'wings'], hbLean: ['none', 'lean', 'deep'], hbRim: ['none', 'roll'], railShape: ['box', 'soft', 'split'],
+  legKind: ['cone', 'metal', 'disc', 'runner'], pipeTone: ['match', 'dark'],
+};
+export const BED_OPTIONS = {
+  hbShape: { rect: 'прямоугольное', round: 'скруглённые углы', arch: 'арка', capsule: 'капсула', wave: 'волна' },
+  hbInsert: { auto: 'по стилю', plain: 'гладкая', channels: 'вертикальная простёжка', hchannels: 'горизонтальная простёжка', capitone: 'каретная стяжка' },
+  hbWrap: { none: 'прямые', shell: '«раковина»', wings: 'загнуты по краям' }, hbLean: { none: 'прямо', lean: 'наклон 8°', deep: 'наклон 15°' },
+  hbRim: { none: 'без валика', roll: 'валик по краю' }, railShape: { box: 'прямые', soft: 'объёмные округлые', split: 'округлые, две половины' },
+  legKind: { cone: 'конусные', metal: 'тонкие металлические', disc: 'круглые опоры', runner: 'полозья' }, pipeTone: { match: 'в цвет ткани', dark: 'контрастный тёмный' },
+};
+const BED_LEAN = { none: 0, lean: 0.14, deep: 0.26 };   // радианы
 export const SOFA_H_LOW = 0.74, SOFA_H_HIGH = 0.88, ARMCHAIR_H_LOW = 0.76, ARMCHAIR_H_HIGH = 1.00;
 /* только мягкая мебель: столы и стулья ателье не делает (старые ссылки с ними открываются диваном) */
 export const REMOVED_TYPES = ['chair', 'table'];
@@ -61,8 +77,8 @@ export const RANGES = {
     legH: LEGH_BY_KIND.hidden, qty: R(1, 30, 1, 1),
   },
   bed: {
-    mw: R(0.80, 2.20, 1.60), ml: R(1.80, 2.20, 2.00), hbH: R(0.95, 1.60, 1.20), hbOver: R(0, 0.20, 0), frameT: R(0.04, 0.12, 0.06),
-    railH: R(0.25, 0.45, 0.35), legH: R(0.04, 0.16, 0.10), qty: R(1, 30, 1, 1),
+    mw: R(0.80, 2.20, 1.60), ml: R(1.80, 2.20, 2.00), hbH: R(0.60, 1.60, 1.20), hbOver: R(0, 0.20, 0), frameT: R(0.04, 0.30, 0.06),
+    railH: R(0.25, 0.45, 0.35), legH: R(0.04, 0.16, 0.10), hbDepth: R(0.06, 0.30, 0.10), qty: R(1, 30, 1, 1),
   },
   armchair: {
     w: R(0.70, 1.10, 0.84), d: R(0.75, 1.00, 0.86), h: R(0.70, 1.10, 0.80), seatH: R(0.38, 0.48, 0.42), seatD: R(0.46, 0.62, 0.56),
@@ -79,7 +95,7 @@ export function rangeOf(type, key, params = {}) {
   const p = { ...DEFAULTS[type], ...params };
   if (key === 'armW') return type === 'armchair' && p.armStyle === 'round' ? ARMCHAIR_ROUND_ARMW : ARMW_BY_STYLE[p.armStyle] || RANGES[type].armW;
   if (key === 'legH') {
-    if (type === 'bed') return p.base === 'plinth' ? R(0.04, 0.12, 0.10) : R(0.08, 0.16, 0.10);
+    if (type === 'bed') return p.base === 'plinth' || p.base === 'float' || p.base === 'podium' ? R(0.04, 0.12, 0.10) : p.legKind === 'disc' ? R(0.03, 0.10, 0.05) : R(0.08, 0.25, 0.10);
     if (type === 'armchair' || type === 'pouf') return RANGES[type].legH || null;
     return LEGH_BY_KIND[p.legs] || RANGES[type].legH;
   }
@@ -149,7 +165,13 @@ export function normalize(type, params = {}) {
   }
   if (type === 'modular') { p.modules = Math.round(p.modules); p.w = cm(p.modules * p.moduleW + 2 * p.armW); }
   if (type === 'bed') {
-    p.hbT = HBT_BY_STYLE[p.hbStyle] || 0.10;
+    /* дополнительные формы: значение по умолчанию не храним (прежний вид, прежний номер варианта) */
+    if (typeof p.hbDepth === 'string') { const n = parseFloat(p.hbDepth.replace(',', '.')); p.hbDepth = Number.isFinite(n) ? n : 0; }
+    for (const k of Object.keys(BED_EXTRA)) {
+      if (!(k in p)) continue;
+      if (k === 'hbDepth' ? !(p[k] > 0) : !BED_EXTRA_VALUES[k].includes(p[k]) || p[k] === BED_EXTRA[k]) delete p[k];
+    }
+    p.hbT = p.hbDepth > 0 ? p.hbDepth : HBT_BY_STYLE[p.hbStyle] || 0.10;
     if (p.hbStyle === 'wings' && !(params && params.hbOver > 0)) p.hbOver = Math.max(p.hbOver, 0.10);
     p.w = p.mw + 2 * p.frameT + 2 * p.hbOver; p.d = p.ml + p.frameT + p.hbT; p.h = p.hbH;
   }
@@ -553,26 +575,83 @@ function partsModular(p) {
 
 function partsBed(p) {
   const { items, add } = mk();
-  const hbT = HBT_BY_STYLE[p.hbStyle] || 0.10;
+  const x = { ...BED_EXTRA, ...p };   // дополнительные формы (по умолчанию — прежний вид)
+  const hbT = p.hbDepth > 0 ? p.hbDepth : HBT_BY_STYLE[p.hbStyle] || 0.10;
   const W = p.mw + 2 * p.frameT + 2 * p.hbOver, L = p.ml + p.frameT + hbT;
   const baseY = p.base === 'legs' ? p.legH : p.legH;
   const fx0 = p.hbOver, fx1 = W - p.hbOver; // рама
   const mattT = 0.22, mTop = p.railH + 0.12;
-  const hb0 = p.base === 'legs' ? p.legH : 0.012;
+  const podium = p.base === 'podium', podOv = podium ? 0.10 : 0;
+  const hb0 = p.base === 'legs' || podium ? p.legH : 0.012;
   const wings = p.hbStyle === 'wings';
   const wingW = wings ? clamp(p.hbOver + p.frameT, 0.10, 0.20) : 0;
+  /* наклон (верх уходит назад на leanD), загнутые вперёд края (wrapD), форма верхнего края — одна «деформация» на все
+     детали изголовья (furniture3d: bedWarp): в координатах изголовья целиком, поэтому рама, вставка и «ушки» гнутся вместе */
+  const leanD = Math.tan(BED_LEAN[x.hbLean] || 0) * (p.hbH - hb0);
+  const wrapD = x.hbWrap === 'shell' ? clamp(W * 0.11, 0.12, 0.24) : x.hbWrap === 'wings' ? 0.14 : 0;
+  const warpOn = leanD > 0 || wrapD > 0 || x.hbShape !== 'rect';
+  const pipeX = x.pipeTone === 'dark' ? { pipeTone: 'dark' } : {};
+  const pipe = { piping: !!p.piping, ...pipeX };
+  const insertTuft = x.hbInsert === 'auto' ? (wings ? 'channels' : undefined) : x.hbInsert === 'plain' ? undefined : x.hbInsert;
+  const hbPart = (id, x0, x1, y0, y1, z0, z1, extra = {}, own = false) => {
+    const it = box(id, 'headboard', 'fabric', x0, x1, y0, y1, z0 - leanD, z1 + wrapD, extra);
+    if (warpOn) {
+      it.warp = {
+        T: z1 - z0, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, zOff: (leanD - wrapD) / 2,
+        X0: own ? x0 : 0, X1: own ? x1 : W, Y0: own ? y0 : hb0, Y1: own ? y1 : p.hbH, shape: x.hbShape,
+        lean: leanD, LY0: hb0, LY1: p.hbH, wrap: wrapD, wrapKind: x.hbWrap, wrapU0: wings ? 1 - (2 * wingW) / W : 0.62, wrapY0: mTop - 0.12,
+        GX0: 0, GX1: W,
+      };
+    }
+    if (x.hbRim === 'roll') it.rim = 0.02;
+    return add(it);
+  };
   if (wings) {
-    add(box('headboard', 'headboard', 'fabric', wingW - 0.004, W - wingW + 0.004, hb0, p.hbH - 0.03, 0, hbT, { r: 0.03, crown: 0.01, piping: !!p.piping }));
-    add(box('wing-l', 'headboard', 'fabric', 0, wingW, hb0, p.hbH, 0, hbT + 0.04, { r: 0.045, crown: 0.01, piping: !!p.piping, wing: 'l' }));
-    add(box('wing-r', 'headboard', 'fabric', W - wingW, W, hb0, p.hbH, 0, hbT + 0.04, { r: 0.045, crown: 0.01, piping: !!p.piping, wing: 'r' }));
+    hbPart('headboard', wingW - 0.004, W - wingW + 0.004, hb0, p.hbH - 0.03, 0, hbT, { r: 0.03, crown: 0.01, ...pipe });
+    hbPart('wing-l', 0, wingW, hb0, p.hbH, 0, hbT + 0.04, { r: 0.045, crown: 0.01, ...pipe, wing: 'l' });
+    hbPart('wing-r', W - wingW, W, hb0, p.hbH, 0, hbT + 0.04, { r: 0.045, crown: 0.01, ...pipe, wing: 'r' });
+  } else if (p.hbStyle === 'frame') {
+    /* П-образная рама (бока и верх) и утопленная на 3 см вставка: гладкая, простёжка или стяжка */
+    const fw = clamp(W * 0.05, 0.08, 0.12);
+    hbPart('headboard', fw - 0.004, W - fw + 0.004, hb0, p.hbH - fw + 0.004, 0, hbT - 0.03, { r: 0.03, crown: insertTuft ? 0.01 : 0.02, ...pipe, tufting: insertTuft });
+    hbPart('hb-frame-t', 0, W, p.hbH - fw, p.hbH, 0, hbT, { r: 0.035, crown: 0.006, ...pipe, wing: 't' });
+    hbPart('hb-frame-l', 0, fw, hb0, p.hbH - fw + 0.004, 0, hbT, { r: 0.035, crown: 0.006, ...pipe, wing: 'l' });
+    hbPart('hb-frame-r', W - fw, W, hb0, p.hbH - fw + 0.004, 0, hbT, { r: 0.035, crown: 0.006, ...pipe, wing: 'r' });
+  } else if (p.hbStyle === 'pillows') {
+    /* изголовье из отдельных мягких панелей-подушек (две, у узкой кровати — одна); снизу, за матрасом, — щит-основа */
+    const n = p.mw >= 1.2 ? 2 : 1, g = 0.012, pw = (W - g * (n - 1)) / n, y0 = Math.max(hb0, p.railH - 0.06);
+    if (y0 > hb0 + 0.01) add(box('hb-board', 'headboard', 'fabric', 0.01, W - 0.01, hb0, y0 + 0.02, 0, hbT * 0.5, { r: 0.015 }));
+    for (let i = 0; i < n; i++) hbPart(n > 1 ? `headboard-${i + 1}` : 'headboard', i * (pw + g), i * (pw + g) + pw, y0, p.hbH, 0, hbT, { r: 0.03, crown: 0.03, ...pipe, tufting: insertTuft, panel: true }, true);
+  } else if (p.hbStyle === 'straps') {
+    /* щит и подвесные подушки на ремнях (подушки над матрасом, ремни перекинуты через верх щита) */
+    hbPart('headboard', 0, W, hb0, p.hbH, 0, hbT, { r: 0.035, crown: 0.01, ...pipe });
+    const n = p.mw >= 1.2 ? 2 : 1, mg = 0.05, g = 0.03, iw = W - 2 * p.hbOver - 2 * p.frameT, pw = (iw - 2 * mg - g * (n - 1)) / n;
+    const yT = p.hbH - 0.09, ph = clamp((p.hbH - mTop) * 0.62, 0.28, 0.55), yB = Math.max(mTop + 0.02, yT - ph);
+    for (let i = 0; i < n; i++) {
+      const xa = fx0 + p.frameT + mg + i * (pw + g), xb = xa + pw;
+      add(box(`hb-pillow-${i + 1}`, 'headboard', 'fabric', xa, xb, yB, yT, hbT, hbT + 0.13, { r: 0.05, crown: 0.03, ...pipe, panel: true }));
+      for (const [k, sx] of [[1, xa + pw * 0.22], [2, xb - pw * 0.22]]) {
+        add(box(`strap-${i + 1}-${k}`, 'strap', 'tape', sx - 0.02, sx + 0.02, yT - 0.05, p.hbH - 0.02, hbT, hbT + 0.008, { r: 0.002 }));
+        add(box(`strap-${i + 1}-${k}t`, 'strap', 'tape', sx - 0.02, sx + 0.02, p.hbH - 0.01, p.hbH, 0.015, hbT - 0.005, { r: 0.002 }));
+      }
+    }
   } else {
-    add(box('headboard', 'headboard', 'fabric', 0, W, hb0, p.hbH, 0, hbT, { r: p.hbStyle === 'plain' ? 0.035 : 0.03, crown: 0.01, piping: !!p.piping, tufting: p.hbStyle === 'channels' ? 'channels' : p.hbStyle === 'capitone' ? 'capitone' : undefined }));
+    hbPart('headboard', 0, W, hb0, p.hbH, 0, hbT, { r: p.hbStyle === 'plain' ? 0.035 : 0.03, crown: 0.01, ...pipe, tufting: p.hbStyle === 'channels' ? 'channels' : p.hbStyle === 'capitone' ? 'capitone' : undefined });
   }
-  if (wings) items.find((i) => i.id === 'headboard').tufting = 'channels';
-  add(box('rail-l', 'rail', 'fabric', fx0, fx0 + p.frameT, baseY, p.railH, hbT, L, { r: 0.02, piping: !!p.piping }));
-  add(box('rail-r', 'rail', 'fabric', fx1 - p.frameT, fx1, baseY, p.railH, hbT, L, { r: 0.02, piping: !!p.piping }));
-  add(box('rail-foot', 'rail', 'fabric', fx0 + p.frameT - 0.002, fx1 - p.frameT + 0.002, baseY, p.railH, L - p.frameT, L, { r: 0.02, piping: !!p.piping }));
-  add(box('frame', 'frame', 'fabric', fx0 + p.frameT, fx1 - p.frameT, baseY, mTop - mattT, hbT, L - p.frameT, { r: 0.01 }));
+  if (wings) items.find((i) => i.id === 'headboard').tufting = insertTuft;
+  if (x.railShape === 'box') {
+    add(box('rail-l', 'rail', 'fabric', fx0, fx0 + p.frameT, baseY, p.railH, hbT, L, { r: 0.02, ...pipe }));
+    add(box('rail-r', 'rail', 'fabric', fx1 - p.frameT, fx1, baseY, p.railH, hbT, L, { r: 0.02, ...pipe }));
+    add(box('rail-foot', 'rail', 'fabric', fx0 + p.frameT - 0.002, fx1 - p.frameT + 0.002, baseY, p.railH, L - p.frameT, L, { r: 0.02, ...pipe }));
+    add(box('frame', 'frame', 'fabric', fx0 + p.frameT, fx1 - p.frameT, baseY, mTop - mattT, hbT, L - p.frameT, { r: 0.01 }));
+  } else {
+    /* объёмное округлое основание: одно мягкое тело (или две половины с разделением по центру изножья) */
+    const so = { r: 0.02, ...pipe, softBase: clamp(p.frameT, 0.04, 0.30) };
+    if (x.railShape === 'split') {
+      add(box('base-l', 'rail', 'fabric', fx0, W / 2 - 0.003, baseY, p.railH, hbT, L, so));
+      add(box('base-r', 'rail', 'fabric', W / 2 + 0.003, fx1, baseY, p.railH, hbT, L, so));
+    } else add(box('base', 'rail', 'fabric', fx0, fx1, baseY, p.railH, hbT, L, so));
+  }
   add(box('mattress', 'mattress', 'mattress', fx0 + p.frameT + 0.004, fx1 - p.frameT - 0.004, mTop - mattT, mTop, hbT + 0.004, L - p.frameT - 0.004, { r: 0.05, crown: 0.008, piping: true, quilt: true }));
   /* для вида (decor: не в габарите, чертеже и списке): одеяло и две подушки у изголовья */
   {
@@ -588,7 +667,7 @@ function partsBed(p) {
     const c = Math.cos(rotX), s = Math.sin(rotX);
     let yMin = Infinity, zMin = Infinity;
     for (const yy of [-pt / 2, pt / 2]) for (const zz of [-ph / 2, ph / 2]) { yMin = Math.min(yMin, yy * c - zz * s); zMin = Math.min(zMin, yy * s + zz * c); }
-    const pcy = mTop - yMin - 0.012, pcz = hbT + 0.006 - zMin;
+    const pcy = mTop - yMin - 0.012, pcz = hbT + (p.hbStyle === 'straps' ? 0.13 : 0) + 0.006 - zMin;
     for (const [i, cx] of [[1, (mx0 + mx1) / 2 - mw / 4], [2, (mx0 + mx1) / 2 + mw / 4]]) {
       if (mw < 1.2 && i === 2) break;
       const x = mw < 1.2 ? (mx0 + mx1) / 2 : cx;
@@ -596,6 +675,11 @@ function partsBed(p) {
     }
   }
   if (p.base === 'plinth') add(box('plinth', 'plinth', 'fabric', fx0 + 0.05, fx1 - 0.05, 0, p.legH, hbT + 0.04, L - 0.05, { r: 0.01 }));
+  /* «парящее» основание: глубоко утопленный тёмный цоколь — в тени, кровать будто висит */
+  else if (p.base === 'float') add(box('plinth', 'plinth', 'support', fx0 + 0.18, fx1 - 0.18, 0, p.legH, hbT + 0.14, L - 0.24, { r: 0.008 }));
+  /* подиум: низкая платформа шире кровати (выступ 10 см по бокам и в изножье) */
+  else if (podium) add(box('podium', 'plinth', 'fabric', fx0 - podOv, fx1 + podOv, 0, p.legH, 0, L + podOv, { r: 0.015 }));
+  else if (x.legKind !== 'cone') bedLegs(p, x.legKind, fx0, fx1, hbT, L, W, add);
   else {
     const lp = { legs: 'wood', legH: p.legH };
     legsFor(lp, p.legH, [{ x0: fx0, x1: fx1, z0: hbT, z1: L }], add);
@@ -614,8 +698,9 @@ function partsBed(p) {
   dims.push(D('hbH', 'Изголовье', 'front', 'y', [W, 0, 0], [W, p.hbH, 0], 0, 'right'));
   dims.push(D('railH', 'Высота царги', 'front', 'y', [0, 0, L], [0, p.railH, L], 1, 'left'));
   dims.push(D('mTop', 'Верх матраса', 'front', 'y', [0, 0, L], [0, mTop, L], 0, 'left'));
-  dims.push(D('legH', p.base === 'legs' ? 'Ножки' : 'Цоколь', 'front', 'y', [0, 0, L], [0, p.legH, L], 2, 'left'));
-  dims.push(D('l', 'Длина', 'side', 'z', [0, 0, 0], [0, 0, L], 0, 'bottom'));
+  dims.push(D('legH', p.base === 'legs' ? 'Ножки' : podium ? 'Подиум' : 'Цоколь', 'front', 'y', [0, 0, L], [0, p.legH, L], 2, 'left'));
+  if (podium) dims.push(D('podium', 'Подиум', 'front', 'x', [fx0 - podOv, 0, L + podOv], [fx1 + podOv, 0, L + podOv], 0, 'bottom'));
+  dims.push(D('l', 'Длина', 'side', 'z', [0, 0, -leanD], [0, 0, L + podOv], 0, 'bottom'));
   dims.push(D('hbT', 'Изголовье', 'side', 'z', [0, baseY, 0], [0, baseY, hbT], 1, 'bottom'));
   if (wings) dims.push(D('wingT', 'Ушки', 'side', 'z', [0, p.hbH, 0], [0, p.hbH, hbT + 0.04], 1, 'top'));
   dims.push(D('ml', 'Матрас', 'side', 'z', [0, baseY, hbT], [0, baseY, L - p.frameT], 1, 'bottom'));

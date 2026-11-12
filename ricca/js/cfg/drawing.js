@@ -571,6 +571,179 @@ function drawView(W, labels, V, X, Y, { cfg, pr, type, params, opts, withTitle =
   W('</g>');
 }
 
+/* эскиз 3/4 в прямоугольнике (ax, ay, aw, ah): штрихованный фон-прямоугольник за изделием (как в эскизе от руки), сам эскиз —
+   карандашом (render() → pencilSketch), размеры в перспективе. lim — пределы фона по x, box0 — фон без эскиза, clip — рамка линий построения */
+function drawSketch(W, opts, { ax, ay, aw, ah, lim, box0, clip, dimFs = 3, dimOff = 1.9 }) {
+  const sk = opts.sketch;
+  const k = sk ? Math.min(aw / sk.w, ah / sk.h) : 1, ox = sk ? ax + (aw - sk.w * k) / 2 : ax, oy = sk ? ay + (ah - sk.h * k) / 2 : ay;
+  const M = (q) => [ox + q[0] * k, oy + q[1] * k];
+  let bx0 = box0[0], bx1 = box0[1], by0 = ay + ah * 0.12, by1 = ay + ah * 0.66;
+  if (sk) {
+    const [o0, o1] = [M([sk.obj[0], sk.obj[1]]), M([sk.obj[2], sk.obj[3]])], ow = o1[0] - o0[0], oh = o1[1] - o0[1];
+    bx0 = Math.max(lim[0], o0[0] - ow * 0.05); bx1 = Math.min(lim[1], o1[0] + ow * 0.03); by0 = Math.max(ay + 1, o0[1] - oh * 0.12); by1 = o0[1] + oh * 0.55;
+  }
+  W(`<rect x="${n2(bx0)}" y="${n2(by0)}" width="${n2(bx1 - bx0)}" height="${n2(by1 - by0)}" fill="url(#hxx)"/>`);
+  W(`<path class="cl" d="M${n2(bx0 - 3)} ${n2(by0)}H${n2(bx1 + 2)}M${n2(bx0)} ${n2(by0 - 2.5)}V${n2(by1 + 3)}M${n2(bx1)} ${n2(by0 - 3)}V${n2(by1 + 2)}M${n2(bx0 - 2)} ${n2(by1)}H${n2(bx1 + 3)}"/>`);
+  /* линии построения: рёбра габаритного «ящика» в перспективе с выходом за углы — как в эскизе от руки (за рисунком) */
+  if (sk && sk.box8) {
+    const P8 = sk.box8.map(M), E = [[0, 1], [1, 3], [3, 2], [2, 0], [0, 4], [1, 5], [2, 6], [3, 7], [4, 5], [5, 7], [7, 6], [6, 4]];
+    const ext = (p, q, f) => [p[0] + (p[0] - q[0]) * f, p[1] + (p[1] - q[1]) * f];
+    W(`<clipPath id="rc"><rect x="${n2(clip[0])}" y="${n2(clip[1])}" width="${n2(clip[2])}" height="${n2(clip[3])}"/></clipPath>`);
+    W(`<path class="cl" clip-path="url(#rc)" style="stroke:#A3A3A3;stroke-width:.09" d="${E.map(([i, j]) => { const a = ext(P8[i], P8[j], 0.14), b = ext(P8[j], P8[i], 0.14); return `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`; }).join('')}"/>`);
+  }
+  W(picTag(n2(ax), n2(ay), n2(aw), n2(ah), 'xMidYMid meet', opts.render3qDataUrl, opts.render3qMask, 'pm-3q'));
+  if (sk) for (const d of sk.dims) {
+    const a = M(d.a), b = M(d.b), ea = M(d.ea), eb = M(d.eb), n = d.n, o = 1.1;
+    const ang = Math.atan2(eb[1] - ea[1], eb[0] - ea[0]), ux = Math.cos(ang), uy = Math.sin(ang);
+    const tick = (q) => `M${n2(q[0] - (ux - uy) * 0.7)} ${n2(q[1] - (uy + ux) * 0.7)}L${n2(q[0] + (ux - uy) * 0.7)} ${n2(q[1] + (uy + ux) * 0.7)}`;
+    /* выносные — с зазором от изделия (как в черчении): от 40 % выноса до чуть дальше размерной */
+    const ga = [a[0] + (ea[0] - a[0]) * 0.4, a[1] + (ea[1] - a[1]) * 0.4], gb = [b[0] + (eb[0] - b[0]) * 0.4, b[1] + (eb[1] - b[1]) * 0.4];
+    W(`<path class="dl" d="M${n2(ga[0])} ${n2(ga[1])}L${n2(ea[0] + n[0] * o)} ${n2(ea[1] + n[1] * o)}M${n2(gb[0])} ${n2(gb[1])}L${n2(eb[0] + n[0] * o)} ${n2(eb[1] + n[1] * o)}M${n2(ea[0] - ux * 1.2)} ${n2(ea[1] - uy * 1.2)}L${n2(eb[0] + ux * 1.2)} ${n2(eb[1] + uy * 1.2)}"/>`);
+    W(`<path class="tk" d="${tick(ea)}${tick(eb)}"/>`);
+    let deg = (ang * 180) / Math.PI; if (deg > 60) deg -= 180; if (deg <= -120) deg += 180;   // вертикаль — снизу вверх, как в черчении
+    const t = [(ea[0] + eb[0]) / 2 + n[0] * dimOff, (ea[1] + eb[1]) / 2 + n[1] * dimOff];
+    W(`<text class="hand" text-anchor="middle" dominant-baseline="middle" transform="translate(${n2(t[0])} ${n2(t[1])}) rotate(${n2(deg)})" style="font-size:${n2(dimFs)}px">${esc(d.text)}</text>`);
+  }
+}
+
+/* ---------- телефонный лист: узкий и длинный ----------
+   Ширина 80 мм ложится на экран 320–430 px целиком (4–5 px на мм): размерные числа ≈ 12 px, без прокрутки вбок.
+   Сверху вниз: название и №, эскиз 3/4, виды спереди / сбоку / сверху — каждый во всю ширину (свой масштаб), короткая
+   спецификация, примечания, контакт. Без рамки и штампа — только тонкие линейки между частями */
+const PSHEET = { w: 80, m: 4 };
+const SCALES_P = [5, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 75, 80, 90, 100, 120, 150];
+function portraitSheet({ cfg, type, params, pr, title, id, date, lines, noteText, opts }) {
+  const PW = PSHEET.w, PM = PSHEET.m, AW = PW - 2 * PM;
+  /* высоты сиденья, подлокотника, ножек (слева у вида спереди) — на вид сбоку, к фронту: на узком листе ряды выносных слева
+     съедали полвида спереди; у вида сбоку место есть. Такой же размер у вида сбоку уже есть — не повторяем */
+  const sideLabels = new Set(pr.dims.filter((d) => d.view === 'side' && d.axis === 'y').map((d) => d.label));
+  pr = { ...pr, dims: pr.dims.flatMap((d) => {
+    if (d.view !== 'front' || d.axis !== 'y' || d.place !== 'left') return [d];
+    return sideLabels.has(d.label) ? [] : [{ ...d, view: 'side', place: 'right' }];
+  }) };
+  const fits = (V) => V.ext.l + V.Wv + V.ext.r <= AW + 1e-6;
+  /* самый крупный масштаб, при котором вид с размерами помещается по ширине и подписи не сталкиваются */
+  const fitView = (view) => {
+    let fb = null;
+    for (const d of SCALES_P) {
+      let V = layoutView(view, pr, d);
+      if (!fits(V) || V.Hv > AW * 1.2) continue;
+      for (let it = 0; it < 6 && V.conflicts; it++) {
+        const bump = {}; for (const p of V.placed) if (p.conflict) bump[p.e.d.id] = it + 1;
+        const V2 = layoutView(view, pr, d, bump); if (!fits(V2)) break; V = V2;
+      }
+      if (!V.conflicts) return V;
+      if (!fb) fb = V;
+    }
+    return fb || layoutView(view, pr, SCALES_P[SCALES_P.length - 1]);
+  };
+  const views = ['front', 'side', 'top'].map(fitView);
+  const body = [], labels = [];
+  const B = (s) => body.push(s);
+  const txt = (x, y, s, st, anchor) => B(`<text x="${n2(x)}" y="${n2(y)}"${anchor ? ` text-anchor="${anchor}"` : ''} style="${st}">${esc(s)}</text>`);
+  const rule = (y) => B(`<line class="tl" x1="${PM}" y1="${n2(y)}" x2="${PW - PM}" y2="${n2(y)}" style="stroke:#C9C9C9;stroke-width:.12"/>`);
+  const CAP = 'font-size:2.15px;font-weight:600;letter-spacing:.3px;fill:#555';
+
+  /* шапка: RICCA DESIGNS · № и дата; название; назначение листа */
+  let y = PM + 3;
+  txt(PM, y, 'RICCA DESIGNS', 'font-size:2px;font-weight:600;letter-spacing:.45px');
+  txt(PW - PM, y, `№ ${id} · ${date}`, 'font-size:2.1px;font-weight:500;fill:#555', 'end');
+  y += 6.6;
+  const tl = clampLines(wrap(title, AW, 3.8, 600), 2, AW, 3.8, 600);
+  tl.forEach((l, i) => txt(PM, y + i * 4.6, l, 'font-size:3.8px;font-weight:600'));
+  y += (tl.length - 1) * 4.6 + 4.4;
+  txt(PM, y, 'Схема для согласования. Размеры в см', 'font-size:2.3px;font-weight:400;fill:#555');
+  y += 3.6;
+
+  /* эскиз 3/4 */
+  if (opts.render3qDataUrl) {
+    rule(y);
+    txt(PM, y + 5, 'ЭСКИЗ · ВИД 3/4', CAP);
+    const sk = opts.sketch, ah = sk ? Math.min(AW * 0.8, (AW * sk.h) / sk.w) : AW * 0.62, ay = y + 7.5;
+    drawSketch(B, opts, { ax: PM, ay, aw: AW, ah, lim: [PM - 1, PW - PM + 1], box0: [PM + 4, PW - PM - 4], clip: [0, ay - 1, PW, ah + 2] });
+    y = ay + ah + 2;
+  }
+
+  /* виды — один под другим, каждый во всю ширину */
+  const VT = { front: 'Вид спереди', side: 'Вид сбоку', top: 'Вид сверху' };
+  const sideNote = viewSideNote(type, params);
+  const placedViews = {};
+  for (const V of views) {
+    rule(y);
+    const cy = y + 5, vt = (VT[V.view] + (V.view === 'top' && sideNote ? ` · ${sideNote}` : '')).toUpperCase();
+    txt(PM, cy, vt, CAP);
+    txt(PW - PM, cy, `М 1:${V.den}`, 'font-size:2.1px;font-weight:500;fill:#777', 'end');
+    labels.push({ view: V.view, id: '_title', text: vt, box: { x0: PM, x1: PM + textWidth(vt, 2.15, 600, 0.3), y0: cy - 1.7, y1: cy + 0.4 } });
+    const X = PM + (AW - (V.ext.l + V.Wv + V.ext.r)) / 2 + V.ext.l, Y = cy + 4 + V.ext.t;
+    drawView(B, labels, V, X, Y, { cfg, pr, type, params, opts, withTitle: false });
+    placedViews[V.view] = { V, X, Y };
+    y = Y + V.Hv + V.ext.b + 3;
+  }
+
+  /* короткая спецификация: изделие, габариты, ткань, № */
+  rule(y);
+  txt(PM, y + 5, 'СПЕЦИФИКАЦИЯ', CAP);
+  y += 7.5;
+  const bb = cfg.dims && cfg.dims.w ? cfg.dims : pr.bbox;
+  const rows = [{ label: 'Изделие', value: title }];
+  if (bb && bb.w) rows.push({ label: 'Габариты', value: `${fmtLen(bb.w)} × ${fmtLen(bb.d)} × ${fmtLen(bb.h)} см`, sub: 'ширина × глубина × высота' });
+  for (const r of lines) if (['Модель', 'Матрас', 'Шезлонг', 'Ткань', 'Пожелание'].includes(r.label) || (r.label === 'Количество' && String(r.value) !== '1')) rows.push(r);
+  rows.push({ label: '№ схемы', value: id });
+  const LW = 19, VX = PM + LW, VFS = 2.6, VLH = 3.35;
+  rows.forEach((r, ri) => {
+    if (ri) rule(y);
+    const isFab = r.label === 'Ткань' && opts.swatchDataUrl;
+    const vw = AW - LW - (isFab ? 8.5 : 0);
+    const ls = clampLines(wrap(r.value, vw, VFS, ri === 0 ? 600 : 400), r.label === 'Пожелание' ? 6 : 4, vw, VFS, ri === 0 ? 600 : 400);
+    const ll = wrap(r.label.toUpperCase(), LW - 1.5, 1.9, 600);
+    const top = y + 1.6;
+    ll.forEach((l, j) => txt(PM, top + 2 + j * 2.5, l, 'font-size:1.9px;font-weight:600;letter-spacing:.15px;fill:#666'));
+    let vx = VX;
+    if (isFab) {
+      B(`<image x="${n2(VX)}" y="${n2(top - 0.3)}" width="7" height="7" preserveAspectRatio="xMidYMid slice" xlink:href="${opts.swatchDataUrl}" href="${opts.swatchDataUrl}"/>`);
+      B(`<rect x="${n2(VX)}" y="${n2(top - 0.3)}" width="7" height="7" fill="none" stroke="#999" stroke-width=".1"/>`);
+      vx += 8.5;
+    }
+    ls.forEach((l, j) => txt(vx, top + 2.1 + j * VLH, l, `font-size:${VFS}px;font-weight:${ri === 0 ? 600 : 400}`));
+    let h = ls.length * VLH;
+    if (r.sub) { txt(vx, top + 2.1 + h - 0.2, r.sub, 'font-size:2px;font-weight:400;fill:#666'); h += 2.8; }
+    y += Math.max(h, ll.length * 2.5, isFab ? 7.4 : 0) + 2.6;
+  });
+
+  /* примечания */
+  if (noteText) {
+    rule(y); y += 4.6;
+    const nl = clampLines(wrap(noteText, AW, 2.3, 400), 10, AW, 2.3, 400);
+    nl.forEach((l, i) => { txt(PM, y + i * 3.1, l, 'font-size:2.3px;font-weight:400'); labels.push({ view: 'sheet', id: '_note' + i, text: l, box: { x0: PM, x1: PM + textWidth(l, 2.3, 400), y0: y + i * 3.1 - 1.7, y1: y + i * 3.1 + 0.5 } }); });
+    y += (nl.length - 1) * 3.1 + 1.6;
+  }
+
+  /* контакт: монограмма, телефон; оговорка */
+  rule(y += 2);
+  const mw = 10, mh = (mw * 256.9) / 521.1;
+  B(`<g transform="translate(${n2(PM)} ${n2(y + 3)}) scale(${n2(mw / 521.1)})"><path fill="${INK}" d="${MONO_D}"/></g>`);
+  txt(PM + mw + 3, y + 4.6, 'RICCA DESIGNS · ALMATY', 'font-size:2px;font-weight:600;letter-spacing:.4px');
+  txt(PM + mw + 3, y + 8.1, '+7 (707) 955-08-08 · WhatsApp', 'font-size:2.3px;font-weight:500');
+  y += 3 + Math.max(mh, 6) + 4.4;
+  const dl = wrap('Это схема для подбора формы, размера и ткани; детали согласуем с мастером.', AW, 2.1, 400);
+  dl.forEach((l, i) => txt(PM, y + i * 2.9, l, 'font-size:2.1px;font-weight:400;fill:#444'));
+  y += (dl.length - 1) * 2.9 + PM + 1;
+  const SH = Math.ceil(y);
+
+  const out = [];
+  sheetHead((s) => out.push(s), PW, SH, id, title, opts);
+  out.push(...body, '</svg>');
+  const s = out.join('\n');
+  const dens = views.map((V) => V.den);
+  return {
+    svg: globalThis.RICCA_CFG_TR ? globalThis.RICCA_CFG_TR.svg(s) : s, scale: `М 1:${Math.max(...dens)}`, den: Math.max(...dens), id, date, title,
+    labels, rows: rows.map((r) => ({ label: r.label, value: r.value })), portrait: true, sheet: { w: PW, h: SH },
+    views: Object.fromEntries(Object.entries(placedViews).map(([k, p]) => [k, [p.X, p.Y]])),
+    viewBoxes: Object.fromEntries(Object.entries(placedViews).map(([k, { V, X, Y }]) => [k, { x0: X - V.ext.l, y0: Y - V.ext.t, x1: X + V.Wv + V.ext.r, y1: Y + V.Hv + V.ext.b, obj: { x0: X, y0: Y, x1: X + V.Wv, y1: Y + V.Hv } }])),
+    conflicts: views.reduce((a, V) => a + V.conflicts, 0),
+  };
+}
+
 /* ---------- лист ---------- */
 export function layoutSheet(cfg, partsResult, opts = {}) {
   const type = cfg.type;
@@ -757,7 +930,7 @@ export function layoutSheet(cfg, partsResult, opts = {}) {
     labels, rows: trows.map((r) => ({ label: r.label, value: r.value, lines: r.ls })),
     views: { front: pos.front, side: pos.side, top: pos.top },
     viewBoxes: Object.fromEntries([F, S, T].map((V) => [V.view, { x0: pos[V.view][0] - V.ext.l, y0: pos[V.view][1] - V.ext.t, x1: pos[V.view][0] + V.Wv + V.ext.r, y1: pos[V.view][1] + V.Hv + V.ext.b, obj: { x0: pos[V.view][0], y0: pos[V.view][1], x1: pos[V.view][0] + V.Wv, y1: pos[V.view][1] + V.Hv } }])),
-    field: { ...FIELD, y1: fieldY1 },
+    field: { ...FIELD, y1: fieldY1 }, sheet: { w: SHEET.w, h: SHEET.h },
   };
 }
 
@@ -1083,7 +1256,8 @@ function picTag(x, y, w, h, par, url, mask, id) {
   if (!mask) return img(url);
   return `<mask id="${id}" maskUnits="userSpaceOnUse" x="${x}" y="${y}" width="${w}" height="${h}">${img(mask)}</mask>${img(url, ` mask="url(#${id})"`)}`;
 }
-export async function render(cfg, { stage = null, render3q = null, onProgress = null, signal = null, budgetMs = 0 } = {}) {
+/* portrait: телефонный лист (узкий, виды один под другим) — см. portraitSheet */
+export async function render(cfg, { stage = null, render3q = null, onProgress = null, signal = null, budgetMs = 0, portrait = false } = {}) {
   const type = cfg.type;
   const params = normalize(type, cfg.params || {});
   const pr = partsOf(type, params);
@@ -1185,10 +1359,12 @@ export async function render(cfg, { stage = null, render3q = null, onProgress = 
   }
   try { if (cfg.fabric && cfg.fabric.src450) swatchDataUrl = await imageToJpegDataUrl(cfg.fabric.src450, 120, 120, 0.88, true); } catch (e) { swatchDataUrl = null; }
   const css = await fontCss();
-  const res = layoutSheet({ ...cfg, params }, pr, { render3qDataUrl, render3qMask, swatchDataUrl, sketch, viewPics, fontCss: css });
-  const svg = res.svg;
+  const res = layoutSheet({ ...cfg, params }, pr, { render3qDataUrl, render3qMask, swatchDataUrl, sketch, viewPics, fontCss: css, portrait });
+  const svg = res.svg, sw = res.sheet.w, shh = res.sheet.h;
+  /* телефонный лист длинный: не больше ≈ 14 млн точек (Safari на iPhone не рисует холст больше 16,7 млн) */
   async function toPNG(width = 3508) {
-    const height = Math.round((width * SHEET.h) / SHEET.w);
+    width = Math.min(width, Math.floor(Math.sqrt((14e6 * sw) / shh)));
+    const height = Math.round((width * shh) / sw);
     const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
     try {
       const img = new Image();
@@ -1202,7 +1378,7 @@ export async function render(cfg, { stage = null, render3q = null, onProgress = 
       return await new Promise((r) => c.toBlob((b) => r(b), 'image/png'));
     } finally { URL.revokeObjectURL(url); }
   }
-  return { svg, toPNG, scale: res.scale, id: res.id, layout: res, complete: !use3d || !!(render3qDataUrl && viewPics.front && viewPics.side && viewPics.top) };
+  return { svg, toPNG, scale: res.scale, id: res.id, layout: res, portrait: !!res.portrait, complete: !use3d || !!(render3qDataUrl && viewPics.front && viewPics.side && viewPics.top) };
 }
 
 export { pencilFromPasses };
