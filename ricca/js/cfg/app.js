@@ -42,10 +42,48 @@ const CHIP = {
   armStyle: { none: 'Без' }, backLook: { low: 'Низкая', high: 'Высокая' }, sections: { auto: 'Авто' },
   lift: { false: 'Без механизма', true: 'Подъёмный' }, piping: { false: 'Без канта', true: 'С кантом' },
   arms: { none: 'Без подлокотников', thin: 'Полукресло' },
+  /* кровать */
+  hbStyle: { frame: 'Рама', pillows: 'Две подушки', straps: 'На ремнях' }, base: { float: 'Парящее', podium: 'Подиум' },
+  hbShape: { rect: 'Прямое', round: 'Скруглённое', arch: 'Арка', capsule: 'Капсула', wave: 'Волна' },
+  hbInsert: { plain: 'Гладкая', channels: 'Вертикальная', hchannels: 'Горизонтальная', capitone: 'Стяжка' },
+  railShape: { box: 'Прямые', soft: 'Округлые', split: 'Две половины' }, legKind: { cone: 'Конусные', metal: 'Тонкие', disc: 'Опоры-шайбы', runner: 'Полозья' },
+  hbWrap: { none: 'Прямые', shell: 'Раковина', wings: 'Загнуты' }, hbLean: { none: 'Прямо', lean: '8°', deep: '15°' },
+  hbRim: { none: 'Нет', roll: 'Валик' }, pipeTone: { match: 'В цвет ткани', dark: 'Тёмный' },
+  /* диваны: дополнительные формы */
+  sfShell: { none: 'Обычный', soft: 'Оболочка', oval: 'Овал' }, sfArmSide: { both: 'С двух сторон', left: 'Слева', right: 'Справа' },
+  sfOpen: { none: 'Нет', left: 'Слева', right: 'Справа', all: 'Без спинки' }, sfBack: { std: 'Обычная', roll: 'Один валик', roll2: 'Два валика', pebble: 'Подушки' },
+  sfPuff: { std: 'Обычные', puff: 'Пухлые' }, sfTuft: { none: 'Нет', channels: 'Вертикальная', grid: 'Клетками' },
+  sfDecorKind: { square: 'Квадратные', roll: 'Валики', ball: 'Шары' }, sfLegShape: { straight: 'Прямые', cone: 'Конусные', block: 'Бруски', sled: 'Полозья', frame: 'Рама' },
+  sfPlinth: { fabric: 'В ткани', wood: 'Дерево', podium: 'Подиум' }, sfLayout: { row: 'В ряд', cornerL: 'Угол слева', cornerR: 'Угол справа', arc: 'Дугой' },
 };
 const chipLabel = (type, key, v) => (CHIP[key] && CHIP[key][String(v)]) || cap(optLabel(type, key, v));
 
 const row = (key, label, values, extra = {}) => ({ key, label, values, ...extra });
+/* кровать: дополнительные формы — значение по умолчанию в параметрах не хранится (params.js → BED_EXTRA) */
+const bedEff = (p, key) => (key === 'hbInsert' && (p[key] === undefined || p[key] === 'auto') ? (p.hbStyle === 'wings' ? 'channels' : 'plain') : p[key] !== undefined ? p[key] : (P.BED_EXTRA || {})[key]);
+const bedRow = (key, label, values, extra = {}) => row(key, label, values, { get: (p) => bedEff(p, key), ...extra });
+/* диваны: дополнительные формы (params.js → SF_OPTS); значение по умолчанию в параметрах не хранится (старые ссылки и номера — прежние) */
+const sfV = (p, key) => (P.sfVal ? P.sfVal(p, key) : p[key]);
+const sfRow = (key, label, values, extra = {}) => row(key, label, values, { get: (p) => sfV(p, key), ...extra });
+const sfNoShell = (p) => sfV(p, 'sfShell') === 'none';
+const SF_ROWS = (t) => [
+  ...(t === 'sofa' ? [sfRow('sfShell', 'Корпус', () => ['none', 'soft', 'oval'], { more: true })] : []),
+  ...(t === 'modular' ? [sfRow('sfLayout', 'Сборка', () => ['row', 'cornerL', 'cornerR', 'arc'], { more: true, when: (p) => p.chaise === 'none' })] : []),
+  ...(t !== 'ushape' ? [sfRow('sfArmSide', 'Подлокотник', () => ['both', 'left', 'right'], { more: true, when: (p) => p.armStyle !== 'none' && sfNoShell(p) })] : []),
+  ...(t !== 'ushape' ? [sfRow('sfOpen', 'Край без спинки', (p) => (t === 'corner' ? ['none', p.side === 'right' ? 'left' : 'right'] : t === 'sofa' ? ['none', 'left', 'right', 'all'] : ['none', 'left', 'right']), { more: true, when: sfNoShell })] : []),
+  ...(t === 'sofa' || t === 'modular' ? [sfRow('sfBack', 'Вид спинки', () => ['std', 'roll', 'roll2', 'pebble'], { more: true, when: sfNoShell })] : []),
+  sfRow('sfPuff', 'Подушки', () => ['std', 'puff'], { more: true }),
+  sfRow('sfTuft', 'Простёжка', () => ['none', 'channels', 'grid'], { more: true }),
+  { ...sfRow('sfDecor', 'Декоративные подушки', null, { more: true }), count: [0, 6] },
+  sfRow('sfDecorKind', 'Вид декоративных подушек', () => ['square', 'roll', 'ball'], { more: true, when: (p) => sfV(p, 'sfDecor') > 0 }),
+];
+/* опоры дивана: форма ножек (только для видимых ножек), отделка цоколя, отделки металла шире */
+const SF_LEGS = (t) => [
+  sfRow('sfLegShape', 'Форма ножек', (p) => (p.legs === 'metal' ? ['straight', 'cone', 'block', 'sled', ...(t === 'sofa' ? ['frame'] : [])] : ['straight', 'cone', 'block']), { when: (p) => p.legs === 'metal' || p.legs === 'wood' }),
+  sfRow('sfPlinth', 'Цоколь', () => ['fabric', 'wood', 'podium'], { when: (p) => p.legs === 'plinth' }),
+  row('legFinish', 'Отделка ножек', (p) => (p.legs === 'metal' ? [...METAL, ...(P.SF_METAL_EXTRA || [])].filter((v, i, a) => a.indexOf(v) === i) : WOOD),
+    { when: (p) => p.legs === 'metal' || p.legs === 'wood' || (p.legs === 'plinth' && sfV(p, 'sfPlinth') !== 'fabric') }),
+];
 const ROWS = {
   arm: (t) => row('armStyle', 'Подлокотники', (p) => (t === 'armchair' && p.form === 'round' ? ['thin', 'wide', 'round'] : ['none', 'thin', 'wide', 'round'])),
   look: () => row('backLook', 'Спинка', () => ['low', 'high'], { get: (p, t) => (backLook(t, p) === 'низкая' ? 'low' : 'high') }),
@@ -58,12 +96,22 @@ const ROWS = {
   pipe: () => row('piping', 'Кант', () => [false, true]),
 };
 const FORM = {
-  sofa: [ROWS.arm('sofa'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect('sofa'), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
-  corner: [row('side', 'Угол', () => ['left', 'right']), row('form', 'Форма', () => ['L', 'chaise']), ROWS.arm('corner'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect('corner'), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
-  ushape: [ROWS.arm('ushape'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect('ushape'), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
-  modular: [row('modules', 'Модулей', null, { count: [2, 6] }), row('chaise', 'Шезлонг', () => ['none', 'left', 'right']), ROWS.arm('modular'), ROWS.backC(), ROWS.legs(), ROWS.fin(), ROWS.pipe()],
-  bed: [row('hbStyle', 'Изголовье', () => ['plain', 'channels', 'capitone', 'wings']), row('base', 'Основание', () => ['plinth', 'legs']),
-    row('legFinish', 'Отделка ножек', () => [...WOOD, ...METAL], { when: (p) => p.base === 'legs' }), row('lift', 'Подъёмный механизм', () => [false, true]), ROWS.pipe()],
+  sofa: [ROWS.arm('sofa'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect('sofa'), ROWS.legs(), ...SF_LEGS('sofa'), ROWS.pipe(), ...SF_ROWS('sofa')],
+  corner: [row('side', 'Угол', () => ['left', 'right']), row('form', 'Форма', () => ['L', 'chaise']), ROWS.arm('corner'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect('corner'), ROWS.legs(), ...SF_LEGS('corner'), ROWS.pipe(), ...SF_ROWS('corner')],
+  ushape: [ROWS.arm('ushape'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect('ushape'), ROWS.legs(), ...SF_LEGS('ushape'), ROWS.pipe(), ...SF_ROWS('ushape')],
+  modular: [row('modules', 'Модулей', null, { count: [2, 6] }), row('chaise', 'Шезлонг', () => ['none', 'left', 'right']), ROWS.arm('modular'), ROWS.backC(), ROWS.legs(), ...SF_LEGS('modular'), ROWS.pipe(), ...SF_ROWS('modular')],
+  bed: [row('hbStyle', 'Изголовье', () => ['plain', 'channels', 'capitone', 'wings', 'frame', 'pillows', 'straps']),
+    bedRow('hbShape', 'Форма изголовья', () => ['rect', 'round', 'arch', 'capsule', 'wave']),
+    bedRow('hbInsert', 'Вставка', () => ['plain', 'channels', 'hchannels', 'capitone'], { when: (p) => ['plain', 'wings', 'frame', 'pillows'].includes(p.hbStyle) }),
+    row('base', 'Основание', () => ['plinth', 'legs', 'float', 'podium']),
+    bedRow('legKind', 'Ножки', () => ['cone', 'metal', 'disc', 'runner'], { when: (p) => p.base === 'legs' }),
+    row('legFinish', 'Отделка ножек', () => [...WOOD, ...METAL, 'chrome'], { when: (p) => p.base === 'legs' }),
+    bedRow('railShape', 'Боковины', () => ['box', 'soft', 'split']),
+    row('lift', 'Подъёмный механизм', () => [false, true]), ROWS.pipe(),
+    bedRow('pipeTone', 'Цвет канта', () => ['match', 'dark'], { when: (p) => p.piping, more: true }),
+    bedRow('hbWrap', 'Края изголовья', () => ['none', 'shell', 'wings'], { more: true }),
+    bedRow('hbLean', 'Наклон изголовья', () => ['none', 'lean', 'deep'], { more: true }),
+    bedRow('hbRim', 'Валик по краю изголовья', () => ['none', 'roll'], { more: true })],
   armchair: [row('form', 'Форма', () => ['classic', 'round']), ROWS.arm('armchair'), ROWS.look(), { ...ROWS.backC(), when: (p) => p.form !== 'round' }, ROWS.legs(['hidden', 'metal', 'wood', 'plinth', 'disc']), ROWS.fin(), ROWS.pipe()],
   pouf: [row('form', 'Форма', () => ['round', 'square', 'bench']), row('top', 'Верх', () => ['smooth', 'capitone']), ROWS.legs(['hidden', 'wood', 'metal']), ROWS.fin(), ROWS.pipe()],
 };
@@ -78,15 +126,16 @@ const SIZE = {
   ushape: [fld('w', 'Ширина'), fld('l', 'Боковые стороны'), ...SOFA_FIELDS().slice(1)],
   modular: [fld('moduleW', 'Ширина модуля'), fld('chaiseL', 'Глубина шезлонга', (p) => p.chaise !== 'none'), ...SOFA_FIELDS().slice(1)],
   bed: [fld('mw', 'Ширина матраса'), fld('ml', 'Длина матраса'), fld('hbH', 'Высота изголовья'), fld('hbOver', 'Выступ изголовья'),
-    fld('frameT', 'Боковина'), fld('railH', 'Высота царги'), fld('legH', 'Высота ножек', (p) => p.base === 'legs')],
+    fld('frameT', 'Боковина'), fld('railH', 'Высота царги'), fld('legH', (p) => (p.base === 'legs' ? 'Высота ножек' : p.base === 'podium' ? 'Высота подиума' : 'Высота цоколя'), (p) => p.base !== 'plinth'), fld('hbDepth', 'Толщина изголовья')],
   /* округлое кресло: оболочка вместо подлокотников — её толщина и высота спереди */
   armchair: [...SOFA_FIELDS().slice(0, 5), fld('armW', (p) => (p.form === 'round' ? 'Толщина оболочки' : 'Ширина подлокотника'), (p) => p.armStyle !== 'none'),
     fld('armH', (p) => (p.form === 'round' ? 'Высота оболочки спереди' : 'Высота подлокотника'), (p) => p.armStyle !== 'none'), fld('legH', legLabel, (p) => p.legs !== 'hidden')],
   pouf: [fld('w', (p) => ({ round: 'Диаметр', square: 'Сторона', bench: 'Длина' }[p.form] || 'Ширина')), fld('d', 'Глубина', (p) => p.form === 'bench'), fld('h', 'Высота'), fld('legH', 'Высота ножек', (p) => p.legs !== 'hidden')],
 };
 /* «Ещё размеры» (свёрнуто): посадка, подлокотники, ножки, царга — главное на экране: габарит, матрас, изголовье */
-const SIZE_MORE = new Set(['seatH', 'seatD', 'armW', 'armH', 'legH', 'hbOver', 'frameT', 'railH']);
+const SIZE_MORE = new Set(['seatH', 'seatD', 'armW', 'armH', 'legH', 'hbOver', 'frameT', 'railH', 'hbDepth']);
 let sizeMoreOpen = false;
+let formMoreOpen = false;   // шаг «Форма»: группа «Ещё настройки» (редкие опции) остаётся открытой при перерисовке
 const KEY_CHIPS = { bed: { mw: [90, 120, 140, 160, 180, 200], ml: [190, 200, 210] } };
 const lbl = (f, p) => (typeof f.label === 'function' ? f.label(p) : f.label);
 const rangeOf = (type, key, p) => (P.rangeOf ? P.rangeOf(type, key, p) : null) || (P.RANGES[type] && P.RANGES[type][key]) || { min: 0.02, max: 6, def: p[key] };
@@ -103,6 +152,14 @@ function sideEffects(type, key, v, p) {
     else { const r = rangeOf(type, 'legH', p); if (r && (p.legH < r.min || p.legH > r.max)) p.legH = r.def; }
   }
   if (type === 'bed' && key === 'base') { const r = rangeOf(type, 'legH', p); if (r) p.legH = r.def; if (v === 'legs' && !p.legFinish) p.legFinish = 'oak'; }
+  if (type === 'bed' && key === 'legKind') {
+    const r = rangeOf(type, 'legH', p); if (r && (v === 'disc' || p.legH < r.min || p.legH > r.max)) p.legH = r.def;
+    if ((v === 'metal' || v === 'runner') && WOOD.includes(p.legFinish)) p.legFinish = 'black';
+  }
+  /* диваны (sf*): значение по умолчанию не храним; цоколь из дерева — деревянная отделка */
+  if (/^sf/.test(key) && P.SF_DEF && String(P.SF_DEF[key]) === String(v)) delete p[key];
+  if (key === 'sfPlinth' && v !== 'fabric' && !WOOD.includes(p.legFinish)) p.legFinish = 'walnut';
+  if (key === 'legs' && v === 'plinth' && p.sfPlinth && !WOOD.includes(p.legFinish)) p.legFinish = 'walnut';
   if (type === 'corner' && key === 'form') p.l = def('l');
   if (type === 'pouf' && key === 'form') {
     p.w = def('w'); p.d = v === 'bench' ? 0.45 : p.w; p.legs = v === 'bench' ? 'wood' : 'hidden'; p.legFinish = 'oak';
@@ -325,7 +382,7 @@ async function loadExactGroup(m) {
     const legs = /legs/.test(o.name) || (o.parent && /legs/.test(o.parent.name));
     /* кровати: матрас, одеяло и подушки — отдельная сетка «bedding» (tools/media-v3/model3d-bedding.py): белые, не цвета ткани */
     const bedding = /bedding/.test(o.name) || (o.parent && /bedding/.test(o.parent.name));
-    o.userData.matKey = legs ? 'legs' : bedding ? 'mattress' : 'fabric'; o.castShadow = true; o.receiveShadow = !legs;
+    o.userData.matKey = legs ? 'legs' : bedding ? 'mattress' : 'fabric'; o.castShadow = true; o.receiveShadow = false;   // 12 ноября: обивка точной модели не принимает тени (на телефонах — серые пятна от подушек); тень на полу остаётся
     o.geometry = o.geometry.clone(); prepExactGeo(THREE, o.geometry, k);
   });
   return wrap;
@@ -452,10 +509,11 @@ function renderForm() {
   /* точная модель: показываем только то, что на ней реально меняется (отделка ножек — если ножки видны);
      прежде серые неактивные кнопки формы выглядели как «не работают» (жалоба 15 окт.) — форму меняет кнопка «Собрать из деталей» */
   const exLegs = ex && exactHasLegs();
-  const html = (FORM[t] || []).filter((r) => (!r.when || r.when(p)) && (!ex || (r.key === 'legFinish' && exLegs))).map((r) => {
+  const vis = (FORM[t] || []).filter((r) => (!r.when || r.when(p)) && (!ex || (r.key === 'legFinish' && exLegs)));
+  const cells = vis.map((r) => {
     const off = ex && !EXACT_ROWS.has(r.key) ? ' disabled' : '';
     if (r.count) {
-      const v = p[r.key];
+      const v = r.get ? r.get(p, t) : p[r.key];
       return `<div class="opt" data-row="${r.key}"><p class="opt__l" id="ol-${r.key}">${esc(r.label)}</p>
         <div class="num num--sm" role="group" aria-labelledby="ol-${r.key}">
           <button class="num__b" type="button" data-count="${r.key}" data-d="-1" aria-label="Меньше" ${v <= r.count[0] || off ? 'disabled' : ''}>${ico('i-minus')}</button>
@@ -467,10 +525,14 @@ function renderForm() {
     const vals = r.values(p);
     return `<div class="opt" data-row="${r.key}"><p class="opt__l" id="ol-${r.key}">${esc(r.label)}</p>
       <div class="chips" role="radiogroup" aria-labelledby="ol-${r.key}">${vals.map((v) => `<button class="chip" type="button" role="radio" aria-checked="${String(v) === String(cur)}" data-opt="${r.key}" data-v="${esc(String(v))}"${off}>${esc(chipLabel(t, r.key, v))}</button>`).join('')}</div></div>`;
-  }).join('');
+  });
+  /* редкие настройки (row.more) — в свёрнутой группе «Ещё настройки», как «Ещё размеры» в шаге «Размер» */
+  const moreHtml = cells.filter((_, i) => vis[i].more).join('');
+  const html = cells.filter((_, i) => !vis[i].more).join('') + (moreHtml ? `<details class="flds__more opts__more"${formMoreOpen ? ' open' : ''}><summary class="flds__sum">Ещё настройки<svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>${moreHtml}</details>` : '');
   const note = ex ? `<div class="xn"><p class="xn__t">${html.includes('data-row="legFinish"') ? 'Меняются размер, ткань и цвет ножек.' : 'Меняются размер и ткань.'}</p>
     <button class="caps-link xn__b" type="button" data-exact-off>Изменить форму<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>` : '';
   $('#opts').innerHTML = note + html;
+  const om = $('#opts .opts__more'); if (om) om.addEventListener('toggle', () => { formMoreOpen = om.open; });
 }
 function setOption(key, raw) {
   const t = state.type;
@@ -478,6 +540,7 @@ function setOption(key, raw) {
   const vals = row0 && row0.values ? row0.values(state.params) : [];
   const v = vals.find((x) => String(x) === raw);
   if (v === undefined) return;
+  if (row0.more) formMoreOpen = true;
   const p = { ...state.params };
   if (key !== 'backLook') p[key] = v;
   sideEffects(t, key, v, p);
@@ -492,6 +555,7 @@ function setCount(key, d) {
   const row0 = (FORM[state.type] || []).find((r) => r.key === key); if (!row0) return;
   const v = Math.max(row0.count[0], Math.min(row0.count[1], (state.params[key] || row0.count[0]) + d));
   if (v === state.params[key]) return;
+  if (row0.more) formMoreOpen = true;
   applyParams(state.type, { ...state.params, [key]: v });
   setState({}, { structural: true });
   const el = $(`[data-count="${key}"][data-d="${d}"]`); if (el && !el.disabled) el.focus({ preventScroll: true });
@@ -536,7 +600,7 @@ function renderSize() {
 function syncSize(all = false) {
   const t = state.type, p = state.params;
   $$('#flds .fld').forEach((el) => {
-    const key = el.dataset.key; const v = p[key];
+    const key = el.dataset.key; const v = p[key] === undefined && key === 'hbDepth' ? p.hbT : p[key];   // толщина изголовья: не задана — по стилю
     const inp = $('.fld__i', el), rng = $('.fld__r', el);
     const r = rangeOf(t, key, p);
     if (all || document.activeElement !== inp) { if (!state.inputErr[key]) inp.value = typeof v === 'number' ? fmtIn(v) : ''; }
@@ -997,6 +1061,8 @@ function drawingCfg(stalled = false) {
 }
 let drawingJob = null, drawingLast = null, drawingSeq = 0;
 const drawingKey = (c) => { const { id: _i, date: _d, ...rest } = c; return JSON.stringify(rest); };
+/* узкое окно (телефон в руке): лист «в столбик» — виды один под другим во всю ширину (drawing.js → portraitSheet) */
+const drawingTall = () => window.innerWidth < 700;
 async function openDrawing() {
   if (hasErrors()) return;
   /* только последнее открытие трогает лист: старый расчёт (закрыли и открыли другой вариант) молча уходит */
@@ -1007,6 +1073,8 @@ async function openDrawing() {
   const ph = mqPhone.matches, send = $('#dd-send'), png = $('#dd-png');
   send.classList.toggle('btn--fill', ph); send.classList.toggle('btn--line', !ph); png.classList.toggle('btn--fill', !ph); png.classList.toggle('btn--line', ph);
   if (ph) send.parentNode.insertBefore(send, png); else png.parentNode.insertBefore(png, send);
+  const tall = drawingTall(), R = { portrait: tall }, busy = $('#dd-busy');
+  dlg.classList.toggle('is-tall', tall); busy.hidden = true; drawingFit();
   /* точная модель ещё грузится (1,8 МБ на мобильной сети) — дождаться, иначе эскизы снимутся с «собранной» кровати,
      а модель подменится посреди съёмки. Но не дольше 8 с: сеть «повисла» — лист без 3D-эскизов, а не вечное ожидание */
   let stalled = false;
@@ -1016,24 +1084,38 @@ async function openDrawing() {
     if (!dlg.open || !mine()) return;
   }
   flushRebuild();   // ввели размер и сразу нажали «Чертёж»: иначе эскиз — со старой модели, а цифры — новые
-  const cfg = drawingCfg(stalled), key = drawingKey(cfg);
+  const cfg = drawingCfg(stalled), key = drawingKey(cfg) + (tall ? '|tall' : '');
   const show = (d) => { img.src = d.url; img.hidden = false; wait.hidden = true; ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = false; }); $('#dd-open').hidden = false; };
   const put = (res, k) => {
     if (drawing && drawing.url) URL.revokeObjectURL(drawing.url);
     drawing = { ...res, url: URL.createObjectURL(new Blob([res.svg], { type: 'image/svg+xml' })), id: cfg.id, key: k };
     if (dlg.open) show(drawing);
   };
-  const fail = (e) => { console.warn('drawing', e); if (mine()) wait.textContent = 'Чертёж пока не получилось подготовить. Отправьте вариант в WhatsApp — мастер пришлёт схему.'; };
+  const fail = (e) => { console.warn('drawing', e); if (mine()) busy.hidden = true; if (mine() && !drawingShown()) wait.textContent = 'Чертёж пока не получилось подготовить. Отправьте вариант в WhatsApp — мастер пришлёт схему.'; };
   ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = true; });
   $('#dd-hint').hidden = true; zoomDrawing(false);
   /* тот же вариант — готовый чертёж сразу */
   if (drawing && drawing.key === key) { openDialog(dlg); show(drawing); return; }
-  img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…';
-  openDialog(dlg);
+  if (!(dlg.open && drawingShown())) { img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…'; }
+  if (!dlg.open) openDialog(dlg);
   if (stalled) {   // лист с векторными видами — за доли секунды; не запоминаем, чтобы потом снять с точной модели
-    try { const res = await (await import('./drawing.js')).render(cfg, {}); if (mine()) put(res, null); } catch (e) { fail(e); }
+    try { const res = await (await import('./drawing.js')).render(cfg, R); if (mine()) put(res, null); } catch (e) { fail(e); return; }
+    /* модель догрузится — перерисуем с эскизами карандашом (окно открыто — лист остаётся на месте) */
+    if (!mine()) return;
+    $('span', busy).textContent = 'Рисуем эскиз…'; busy.hidden = false;
+    const ok = await Promise.race([Promise.resolve(exactLoading).then(() => true, () => false), new Promise((r) => setTimeout(r, 60000, false))]);
+    if (!mine()) return;
+    if (ok && dlg.open && exact && exact.id === activeModel) openDrawing(); else busy.hidden = true;
     return;
   }
+  /* сразу — лист с векторными видами (доли секунды): окно не стоит пустым, пока снимаются эскизы карандашом; готовые эскизы
+     заменят его. Кнопки работают уже с ним. Съёмка эскизов ждёт его: она надолго занимает телефон, и лист иначе появлялся
+     только вместе с эскизами (на медленном телефоне — десятки секунд «Готовим чертёж…») */
+  let final = false;
+  const quick = import('./drawing.js').then((m) => m.render(cfg, R)).then((q) => {
+    if (!mine() || final || !dlg.open) return;
+    put(q, null); $('span', busy).textContent = 'Рисуем эскиз…'; busy.hidden = false;
+  }).catch((e) => console.warn('drawing quick', e));
   /* один расчёт за раз: повторное нажатие того же варианта ждёт уже начатый; новый ждёт, пока отменённый отпустит сцену */
   if (!drawingJob || drawingJob.key !== key || drawingJob.ac.signal.aborted) {
     const ac = new AbortController(), prev = drawingLast;
@@ -1041,14 +1123,16 @@ async function openDrawing() {
     if (drawingJob) drawingJob.ac.abort();
     job.p = (async () => {
       if (prev) await prev.catch(() => {});
+      await quick;
+      await new Promise((r) => { requestAnimationFrame(() => setTimeout(r, 0)); setTimeout(r, 250); });   // лист успел нарисоваться
       const mod = await import('./drawing.js');
-      if (ac.signal.aborted) return mod.render(cfg, {});
+      if (ac.signal.aborted) return mod.render(cfg, R);
       let res;
       try {
-        res = await mod.render(cfg, { stage, signal: ac.signal, budgetMs: 12000, onProgress: (i, n) => { if (drawingJob === job) wait.textContent = `Готовим чертёж · ${i + 1}/${n}`; } });
+        res = await mod.render(cfg, { ...R, stage, signal: ac.signal, budgetMs: 25000, onProgress: (i, n) => { if (drawingJob === job) { wait.textContent = `Готовим чертёж · ${i + 1}/${n}`; $('span', busy).textContent = `Рисуем эскиз · ${i + 1}/${n}`; } } });
       } catch (e) {
         console.warn('drawing 3d', e);
-        res = { ...(await mod.render(cfg, {})), complete: false };   // без 3D-эскизов (векторные виды) — за доли секунды; не запоминаем — в следующий раз попробуем снова
+        res = { ...(await mod.render(cfg, R)), complete: false };   // без 3D-эскизов (векторные виды) — за доли секунды; не запоминаем — в следующий раз попробуем снова
       }
       return res;
     })();
@@ -1058,18 +1142,66 @@ async function openDrawing() {
   /* закрыли окно — расчёт не нужен (если тут же открыли снова — dlg.open, пусть идёт) */
   dlg.addEventListener('close', () => { if (drawingJob === job && !dlg.open) { job.ac.abort(); drawingJob = null; } }, { once: true });
   try {
-    /* страховка: что бы ни случилось со сценой — через 20 с от нажатия лист без 3D-эскизов */
-    let res = await Promise.race([job.p, new Promise((r) => setTimeout(r, Math.max(4000, 20000 - (Date.now() - t0)), null))]);
+    /* страховка: что бы ни случилось со сценой — через 45 с от нажатия лист без 3D-эскизов. Раньше было 20 с: на медленном
+       телефоне эскизы не успевали, и у части моделей лист так и оставался без них, хотя был почти готов. Ждать не мешает —
+       лист с видами и размерами уже на экране и кнопки работают */
+    let res = await Promise.race([job.p, new Promise((r) => setTimeout(r, Math.max(4000, 45000 - (Date.now() - t0)), null))]);
     if (!mine()) return;
-    if (!res) { job.ac.abort(); res = await (await import('./drawing.js')).render(cfg, {}); if (!mine()) return; }
+    if (!res) { job.ac.abort(); res = await (await import('./drawing.js')).render(cfg, R); if (!mine()) return; }
     if (drawingJob === job) drawingJob = null;
+    final = true; busy.hidden = true;
+    const z = drawingZ;
     put(res, res.complete && !job.ac.signal.aborted ? key : null);
+    if (z > 1) requestAnimationFrame(() => drawingFit(z));   // клиент разглядывал крупно — не сбрасываем
   } catch (e) { fail(e); }
 }
 /* телефон в руке: лист во всю высоту окна шире экрана и листается в сторону — подсказка, только когда листать есть куда */
 function syncDrawingHint() {
   const pan = $('#dd-pan'), hint = $('#dd-hint'); if (!pan || !hint) return;
-  hint.hidden = $('#dd-img').hidden || $('#dd-sheet').classList.contains('is-zoom') || pan.scrollWidth <= pan.clientWidth + 8;
+  hint.hidden = $('#dd-img').hidden || $('#dlg-drawing').classList.contains('is-tall') || $('#dd-sheet').classList.contains('is-zoom') || pan.scrollWidth <= pan.clientWidth + 8;
+}
+const drawingShown = () => !$('#dd-img').hidden;
+/* лист «в столбик»: по ширине экрана (z = 1), крупнее — щипком, двойным касанием или «Крупно» (до ×4); двигается пальцем.
+   (cx, cy) — точка экрана, которая остаётся на месте. Прокрутка — родная (надёжно на iPhone), масштаб — ширина картинки */
+let drawingZ = 1;
+function drawingFit(z = 1, cx = null, cy = null) {
+  const sheet = $('#dd-sheet'), pan = $('#dd-pan'), img = $('#dd-img'), b = $('#dd-open');
+  z = Math.max(1, Math.min(4, z));
+  const pr = pan.getBoundingClientRect(), r0 = img.getBoundingClientRect();
+  if (cx == null) { cx = pr.left + pr.width / 2; cy = pr.top + Math.min(pr.height, Math.max(0, r0.bottom - pr.top)) / 2; }
+  const fx = r0.width ? (cx - r0.left) / r0.width : 0.5, fy = r0.height ? (cy - r0.top) / r0.height : 0;
+  drawingZ = z; sheet.style.setProperty('--dz', String(z));
+  if (!$('#dlg-drawing').classList.contains('is-tall')) return;
+  const r1 = img.getBoundingClientRect();
+  if (z === 1) pan.scrollLeft = 0; else pan.scrollLeft += r1.left + fx * r1.width - cx;
+  pan.scrollTop += r1.top + fy * r1.height - cy;
+  const on = z > 1.01;
+  b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Показать чертёж по ширине экрана' : 'Показать чертёж крупно');
+  $('span', b).textContent = on ? 'По ширине' : 'Крупно';
+  $('use', b).setAttribute('href', on ? `${ICONS}#i-minus` : '#i-plus');
+}
+/* щипок и двойное касание (только лист «в столбик»; браузерный масштаб страницы отключён css: touch-action) */
+function drawingGestures() {
+  const pan = $('#dd-pan'), tall = () => $('#dlg-drawing').classList.contains('is-tall') && drawingShown();
+  let pinch = null, tap = null;
+  const two = (e) => { const [a, b] = e.touches; return { d: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) || 1, x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 }; };
+  pan.addEventListener('touchstart', (e) => { if (!tall()) return; if (e.touches.length === 2) { const t = two(e); pinch = { d0: t.d, z0: drawingZ }; tap = null; } }, { passive: true });
+  pan.addEventListener('touchmove', (e) => {
+    if (!pinch || e.touches.length !== 2) return;
+    e.preventDefault();
+    const t = two(e); drawingFit(pinch.z0 * (t.d / pinch.d0), t.x, t.y);
+  }, { passive: false });
+  pan.addEventListener('touchend', (e) => {
+    if (pinch) { if (e.touches.length < 2) { pinch = null; if (drawingZ < 1.08) drawingFit(1); } return; }
+    if (!tall() || e.touches.length || e.changedTouches.length !== 1) return;
+    const c = e.changedTouches[0], now = performance.now();
+    if (tap && now - tap.t < 320 && Math.hypot(c.clientX - tap.x, c.clientY - tap.y) < 32) {
+      e.preventDefault(); tap = null;
+      drawingFit(drawingZ > 1.01 ? 1 : 2.5, c.clientX, c.clientY);
+    } else tap = { t: now, x: c.clientX, y: c.clientY };
+  }, { passive: false });
+  pan.addEventListener('gesturestart', (e) => { if (tall()) e.preventDefault(); });   // Safari: не масштабировать страницу
+  pan.addEventListener('dblclick', (e) => { if (tall()) drawingFit(drawingZ > 1.01 ? 1 : 2.5, e.clientX, e.clientY); });
 }
 /* «Крупно» на телефоне — увеличение внутри окна: во встроенном браузере Instagram новая вкладка не открывается, и клиент оставался
    с голой картинкой вне конструктора. Лист вчетверо шире окна (css: .is-zoom), двигается пальцем в обе стороны, щипком — ещё крупнее;
@@ -1092,7 +1224,8 @@ function zoomDrawing(on, at) {
     pan.scrollLeft += r1.left + fx * r1.width - px; pan.scrollTop += r1.top + fy * r1.height - py;
   } else { pan.scrollLeft = 0; pan.scrollTop = 0; syncDrawingHint(); }
 }
-async function drawingPng() { const b = await drawing.toPNG(3508); return b; }
+/* лист «в столбик» — 1600 px в ширину (≈ 1600 × 5000): в WhatsApp читается как на экране; широкий лист — A4 300 dpi */
+async function drawingPng() { const b = await drawing.toPNG(drawing.portrait ? 1600 : 3508); return b; }
 /* чертёж во весь экран: PNG в новой вкладке — можно увеличить пальцами */
 async function openDrawingFull() {
   if (!drawing) return;
@@ -1449,8 +1582,9 @@ function bind() {
   $('#ph-save').addEventListener('click', photoSave); $('#ph-wa').addEventListener('click', photoSend);
   $('#bar-next').addEventListener('click', () => { const n = +$('#bar-next').dataset.goto; if (n) openStep(n); });
   $('#ar-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(variantLink()); toast('Ссылка скопирована'); } catch (e) { toast('Скопируйте адрес из строки браузера'); } });
-  $('#dd-open').addEventListener('click', () => (mqPhone.matches ? zoomDrawing(!drawingZoomed()) : openDrawingFull()));
-  $('#dd-img').addEventListener('click', (e) => { if ($('#dd-open').hidden) return; if (mqPhone.matches) zoomDrawing(!drawingZoomed(), e); else openDrawingFull(); });
+  $('#dd-open').addEventListener('click', () => ($('#dlg-drawing').classList.contains('is-tall') ? drawingFit(drawingZ > 1.01 ? 1 : 2.5) : mqPhone.matches ? zoomDrawing(!drawingZoomed()) : openDrawingFull()));
+  $('#dd-img').addEventListener('click', (e) => { if ($('#dd-open').hidden || $('#dlg-drawing').classList.contains('is-tall')) return; if (mqPhone.matches) zoomDrawing(!drawingZoomed(), e); else openDrawingFull(); });
+  drawingGestures();
   $('#dd-img').addEventListener('load', syncDrawingHint); window.addEventListener('resize', syncDrawingHint);
   $('#dd-pan').addEventListener('scroll', () => { if ($('#dd-pan').scrollLeft > 24) $('#dd-hint').hidden = true; }, { passive: true });   // уже листают — подсказка не нужна
   $('#vp-fab').addEventListener('click', seatCloseUp);

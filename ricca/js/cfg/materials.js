@@ -556,7 +556,7 @@ export function woodMaterial(tone = 'oak') {
 }
 
 /* ---------- металл (шлифованный) ---------- */
-const METAL = { black: '#1E1E1E', gold: '#D2B07A' };
+const METAL = { black: '#1E1E1E', gold: '#D2B07A', chrome: '#D9DCDF', bronze: '#8A6A4A', bordeaux: '#5A1E26' };   // chrome — кровати и диваны; bronze, bordeaux (крашеный) — диваны
 const metalCache = new Map();
 /* у металла своя сила отражений: без собственной envMap three берёт scene.environmentIntensity (0,55) — stage.js передаёт студию сюда */
 let envTex = null;
@@ -575,12 +575,13 @@ function brushedTex(N, roughBase = 0.32) {
 export function metalMaterial(finish = 'black') {
   if (!METAL[finish]) finish = 'black';
   if (metalCache.has(finish)) return metalCache.get(finish);
-  const t = brushedTex(256, finish === 'gold' ? 0.22 : 0.35);
+  const t = brushedTex(256, finish === 'gold' ? 0.22 : finish === 'chrome' ? 0.12 : 0.35);
   const m = new THREE.MeshPhysicalMaterial({
     color: new THREE.Color(METAL[finish]), metalness: 1, roughness: 1, roughnessMap: t.rough,
     normalMap: t.normal, normalScale: new THREE.Vector2(0.15, 0.15), anisotropy: 0.6, anisotropyRotation: Math.PI / 2,
   });
   if (finish === 'black') { m.metalness = 0.85; }
+  if (finish === 'bordeaux') { m.metalness = 0.35; m.normalScale.set(0.05, 0.05); }   // крашеная труба: полуматовая эмаль
   m.envMapIntensity = finish === 'gold' ? 1.8 : 1.4;   // металл живёт отражениями студии
   if (envTex) m.envMap = envTex;
   m.name = 'metal-' + finish; m.userData = { kind: 'metal', finish };
@@ -661,6 +662,7 @@ export function materialSet(cfg = {}) {
   if (type === 'bed') legs = p.base === 'legs' ? (METAL[fin] && !WOOD[fin] ? metalMaterial(fin) : woodMaterial(WOOD[fin] ? fin : 'oak')) : metalMaterial('black');
   else if (p.legs === 'metal' || p.legs === 'disc') legs = metalMaterial(METAL[fin] ? fin : 'black');
   else if (p.legs === 'wood') legs = woodMaterial(WOOD[fin] ? fin : 'oak');
+  else if (p.legs === 'plinth' && p.sfPlinth && p.sfPlinth !== 'fabric') legs = woodMaterial(WOOD[fin] ? fin : 'blackwood');   // диван: цоколь из дерева / подиум
   else legs = metalMaterial('black');
   return { fabric, legs, top: null, mattress: mattressMaterial(), tape: tapeMaterial() };
 }

@@ -277,7 +277,9 @@ function chainTexts(dims) {
 /* ---------- раскладка одного вида при масштабе 1:den ---------- */
 const AX = { front: { x: 'h', y: 'v' }, side: { z: 'h', y: 'v' }, top: { x: 'h', z: 'v' } };
 
-function layoutView(view, pr, den, bump = {}) {
+/* met — ряды размеров плотнее (телефонный лист): { off, step } вместо OFF0, STEP */
+function layoutView(view, pr, den, bump = {}, met = null) {
+  const off0 = met ? met.off : OFF0, step = met ? met.step : STEP;
   const k = 1000 / den;                         // м → мм на листе
   const bbW = pr._bounds;
   const P = projector(view, bbW);
@@ -315,7 +317,7 @@ function layoutView(view, pr, den, bump = {}) {
     sides[side].push({ d, side, orient, c1, c2, text: dimText(d) });
   }
   const tw = (t) => textWidth(t, FS, 500) * 1.03;
-  const rowLine = (side, row) => (side === 'bottom' ? Hv + OFF0 + STEP * row : side === 'right' ? Wv + OFF0 + STEP * row : -(OFF0 + STEP * row));
+  const rowLine = (side, row) => (side === 'bottom' ? Hv + off0 + step * row : side === 'right' ? Wv + off0 + step * row : -(off0 + step * row));
   /* выносные линии всех размеров стороны — заранее (для проверки текста) */
   const extOf = (e, line) => {
     const out = [];
@@ -349,10 +351,17 @@ function layoutView(view, pr, den, bump = {}) {
       /* вынос чуть дальше (если рядом соседний вынос) */
       out.push(mk(e.c2 + 3.2 + w / 2, [e.c2, e.c2 + 3.6 + w]), mk(e.c1 - 3.2 - w / 2, [e.c1 - 3.6 - w, e.c1]));
     }
+    /* узкий лист: подпись короткого размера — не вбок за габарит вида (вид от этого мельчает), а над своим отрезком,
+       при тесноте — рядом выше */
+    if (met && !fits && e.orient === 'h') {
+      const inb = (c) => c.box.x0 >= -0.5 && c.box.x1 <= Wv + 0.5;
+      const m0 = Math.max(w / 2, Math.min(Wv - w / 2, mid));
+      return [...out.filter(inb), mk(m0, null), ...out.filter((c) => !inb(c))];
+    }
     return out;
   };
   const collides = (box, segs, own) => {
-    for (const b of labelBoxes) if (boxHit(box, b)) return true;
+    for (const b of labelBoxes) if (boxHit(box, b, met ? met.gap : PAD)) return true;
     for (const s of segsAll) if (s.owner !== own && segHitsBox(s.s, box)) return true;
     for (const p of placed) for (const s of segs) if (p.e !== own && segHitsBox(s, p.box)) return true;
     return false;
@@ -611,6 +620,7 @@ function drawSketch(W, opts, { ax, ay, aw, ah, lim, box0, clip, dimFs = 3, dimOf
    Сверху вниз: название и №, эскиз 3/4, виды спереди / сбоку / сверху — каждый во всю ширину (свой масштаб), короткая
    спецификация, примечания, контакт. Без рамки и штампа — только тонкие линейки между частями */
 const PSHEET = { w: 80, m: 4 };
+const MET_P = { off: 6, step: 5.8, gap: 1.6 };   // gap — зазор между подписями: «16» и «69,3» не читаются как одно число
 const SCALES_P = [5, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 75, 80, 90, 100, 120, 150];
 function portraitSheet({ cfg, type, params, pr, title, id, date, lines, noteText, opts }) {
   const PW = PSHEET.w, PM = PSHEET.m, AW = PW - 2 * PM;
@@ -626,16 +636,16 @@ function portraitSheet({ cfg, type, params, pr, title, id, date, lines, noteText
   const fitView = (view) => {
     let fb = null;
     for (const d of SCALES_P) {
-      let V = layoutView(view, pr, d);
-      if (!fits(V) || V.Hv > AW * 1.2) continue;
+      let V = layoutView(view, pr, d, {}, MET_P);
+      if (!fits(V) || V.Hv > AW * 0.8) continue;   // высокий вид (кресло спереди, круглый пуф сверху) — не во весь экран по высоте
       for (let it = 0; it < 6 && V.conflicts; it++) {
         const bump = {}; for (const p of V.placed) if (p.conflict) bump[p.e.d.id] = it + 1;
-        const V2 = layoutView(view, pr, d, bump); if (!fits(V2)) break; V = V2;
+        const V2 = layoutView(view, pr, d, bump, MET_P); if (!fits(V2)) break; V = V2;
       }
       if (!V.conflicts) return fb && V.Wv < fb.Wv * 0.6 ? fb : V;   // без столкновений, но вдвое мельче — лучше крупный
       if (!fb) fb = V;
     }
-    return fb || layoutView(view, pr, SCALES_P[SCALES_P.length - 1]);
+    return fb || layoutView(view, pr, SCALES_P[SCALES_P.length - 1], {}, MET_P);
   };
   const views = ['front', 'side', 'top'].map(fitView);
   const body = [], labels = [];
@@ -754,7 +764,10 @@ export function layoutSheet(cfg, partsResult, opts = {}) {
   /* точная модель (как на фото): рисунок — настоящая форма, а цепочки размеров собраны по деталям конструктора и с ней не
      совпадают (секции, подлокотники) — оставляем только габариты: ширину, глубину, высоту */
   const dimsSrc = cfg.exact ? src.dims.filter((d) => !(d.tier >= 1) && /^(Ширина|Ширина \(изголовье\)|Глубина|Высота|Длина|Длина шезлонга|Изголовье)$/.test(d.label)) : src.dims;
-  const pr = { ...src, items: src.items.filter((it) => !it.decor && !it.support).map((it) => ({ ...it, _bb: itemBounds(it) })), dims: chainTexts(dimsSrc.map((d) => ({ ...d }))) };
+  /* деталь с неготовыми числами (новая форма в работе) — не на чертёж: иначе NaN в габарите портит весь лист */
+  const okIt = (it) => ['x', 'y', 'z', 'sx', 'sy', 'sz'].every((k) => Number.isFinite(it[k]));
+  const okD = (d) => [d.a, d.b].every((q) => Array.isArray(q) && q.every(Number.isFinite));
+  const pr = { ...src, items: src.items.filter((it) => !it.decor && !it.support && okIt(it)).map((it) => ({ ...it, _bb: itemBounds(it) })), dims: chainTexts(dimsSrc.filter(okD).map((d) => ({ ...d }))) };
   const all = boundsOf(pr.items.flatMap((it) => [it._bb.min, it._bb.max]));
   pr._bounds = all;
 

@@ -4,7 +4,7 @@
    (автоисправление + короткая заметка) → «нестандартный размер» для значений вне диапазона интерфейса.
    Единицы: метры. Заметки — по-русски, в сантиметрах. */
 
-import { normalize, RANGES, DEFAULTS, rangeOf, dims as dimsOf, armDef, HIDDEN_LEG_H, LEGH_BY_KIND } from './params.js';
+import { normalize, RANGES, DEFAULTS, rangeOf, dims as dimsOf, armDef, HIDDEN_LEG_H, LEGH_BY_KIND, sfClean } from './params.js';
 
 export const MSG_HARD = 'Такой размер не подходит для одного изделия — напишите нам, обсудим.';
 export const MSG_NONSTD = 'Нестандартный размер — уточним с мастером';
@@ -24,7 +24,7 @@ const NAMES = {
   w: 'Ширина', d: 'Глубина', l: 'Длина второй стороны', h: 'Высота', seatH: 'Высота сиденья', seatD: 'Глубина сиденья',
   armW: 'Ширина подлокотника', armH: 'Высота подлокотника', legH: 'Высота ножек', chaiseW: 'Ширина шезлонга', chaiseL: 'Глубина шезлонга',
   moduleW: 'Ширина модуля', mw: 'Ширина матраса', ml: 'Длина матраса', hbH: 'Высота изголовья', hbOver: 'Выступ изголовья',
-  frameT: 'Боковина', railH: 'Высота царги',
+  frameT: 'Боковина', railH: 'Высота царги', hbDepth: 'Толщина изголовья',
 };
 /* подписи, зависящие от типа и выбора: «Длина» у банкетки, «Диаметр» у круглого пуфа, «Высота цоколя» */
 function nameOf(type, k, p) {
@@ -45,11 +45,11 @@ const ENUMS = {
   corner: { ...SOFA_ENUM, side: ['left', 'right'], form: ['L', 'chaise'] },
   ushape: SOFA_ENUM,
   modular: { armStyle: ARM, backCushions: ['fixed', 'loose'], legs: LEGS4, chaise: ['none', 'left', 'right'] },
-  bed: { hbStyle: ['plain', 'channels', 'capitone', 'wings'], base: ['legs', 'plinth'] },
+  bed: { hbStyle: ['plain', 'channels', 'capitone', 'wings', 'frame', 'pillows', 'straps'], base: ['legs', 'plinth', 'float', 'podium'] },
   armchair: { form: ['classic', 'round'], armStyle: ARM, backCushions: ['fixed', 'loose'], legs: [...LEGS4, 'disc'] },
   pouf: { form: ['round', 'square', 'bench'], top: ['smooth', 'capitone'], legs: LEGS4 },
 };
-const METAL = ['black', 'gold'], WOOD = ['oak', 'walnut', 'blackwood'];
+const METAL = ['black', 'gold', 'chrome', 'bronze', 'bordeaux'], WOOD = ['oak', 'walnut', 'blackwood'];   // хром, бронза, бордо — отделки металла диванов (sf)
 
 /* производные ключи (их пересчитывает normalize) */
 const DERIVED = { bed: ['w', 'd', 'h', 'hbT'], modular: ['w'], pouf: ['d'] };
@@ -78,7 +78,7 @@ export function validate(type, params = {}) {
   for (const k of Object.keys(en)) if (!en[k].includes(p[k])) p[k] = D[k];
   if ('legFinish' in p) {
     /* кровать: в «Форме» есть и дерево, и металл — металл раньше сбрасывался на дуб */
-    const pool = type === 'bed' ? [...WOOD, ...METAL] : p.legs === 'metal' || p.legs === 'disc' ? METAL : p.legs === 'wood' ? WOOD : null;
+    const pool = type === 'bed' ? [...WOOD, ...METAL, 'chrome'] : p.legs === 'metal' || p.legs === 'disc' ? METAL : p.legs === 'wood' ? WOOD : null;
     if (pool && !pool.includes(p.legFinish)) p.legFinish = pool[0];
   }
   if (SOFA_FAMILY.has(type) && p.sections !== 'auto') {
@@ -121,6 +121,7 @@ export function validate(type, params = {}) {
 
   /* ---------- 2. согласование ---------- */
   if (SOFA_FAMILY.has(type) || type === 'armchair') sofaRules(type, p, raw, note, fail, set);
+  if (SOFA_FAMILY.has(type)) sfClean(type, p); else sfClean('', p);   // диваны: дополнительные формы (sf*) — только применимые
   if (type === 'bed') bedRules(p, raw, note, fail, set);
   if (type === 'pouf') poufRules(p, note, set);
 
@@ -271,9 +272,11 @@ function bedRules(p, raw, note, fail, set) {
     if (p.railH - 0.15 >= 0.04 - EPS) { set('legH', p.railH - 0.15); note('legH', `${p.base === 'legs' ? 'Ножки уменьшены' : 'Цоколь уменьшен'} до ${cmTxt(p.legH)} — царга выше на 15 см`); }
     else { set('legH', 0.04); set('railH', 0.19); note('railH', `Высота царги увеличена до ${cmTxt(p.railH)} — под ней ${p.base === 'legs' ? 'ножки' : 'цоколь'}`); }
   }
-  /* изголовье выше матраса хотя бы на 30 см (верх матраса = царга + 12 см) */
-  const minHb = p.railH + 0.12 + 0.30;
-  if (p.hbH < minHb - EPS) { set('hbH', minHb); note('hbH', `Высота изголовья увеличена до ${cmTxt(p.hbH)} — выше матраса на 30 см`); }
+  /* изголовье выше матраса хотя бы на 10 см (верх матраса = царга + 12 см); низкие изголовья кроватей-коробов — можно */
+  const minHb = p.railH + 0.12 + 0.10;
+  if (p.hbH < minHb - EPS) { set('hbH', minHb); note('hbH', `Высота изголовья увеличена до ${cmTxt(p.hbH)} — выше матраса на 10 см`); }
+  /* толщина изголовья (если задана): 4–40 см */
+  if (p.hbDepth !== undefined && (!(p.hbDepth >= 0.04 - EPS) || p.hbDepth > 0.40 + EPS)) { fail('hbDepth'); delete p.hbDepth; }
 }
 
 /* ---------- пуф / банкетка ---------- */

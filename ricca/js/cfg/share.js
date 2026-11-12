@@ -2,7 +2,7 @@
    Единицы: в параметрах — метры, в адресе и тексте — сантиметры. Формат адреса (SPEC §3.3):
    #cfg=v1~t.corner~s.left~w.280~…~fb.velur/alba/molochnyy~nt.<encodeURIComponent, ≤ 140> */
 
-import { parts as partsOf, DEFAULTS as PDEF } from './params.js';
+import { parts as partsOf, DEFAULTS as PDEF, BED_OPTIONS, HBT_BY_STYLE } from './params.js';
 
 export const WA_NUMBER = '77079550808';                     // как в js/site.js (CONFIG.wa)
 export const waUrl = (text) => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
@@ -13,10 +13,14 @@ export const SHORT = {
   backCushions: 'bc', seatCushions: 'sc', sections: 'n', legs: 'lg', legFinish: 'lf', legH: 'lh', piping: 'p', qty: 'q', fabric: 'fb', note: 'nt',
   chaiseW: 'cw', modules: 'mo', moduleW: 'mm', chaise: 'ch', chaiseL: 'cl',
   mw: 'mw', ml: 'ml', hbStyle: 'hs', hbH: 'hh', hbOver: 'ho', frameT: 'ft', railH: 'rh', base: 'b', lift: 'lt',
+  /* кровать: формы изголовья и основания (коды k*) */
+  hbShape: 'ks', hbInsert: 'ki', hbWrap: 'kw', hbLean: 'kl', hbRim: 'kb', hbDepth: 'kd', railShape: 'kr', legKind: 'kg', pipeTone: 'kc',
   shape: 'sp', topT: 'tt', top: 'tp', topTone: 'tn', legW: 'lw', legInset: 'li', arms: 'ar', backShape: 'bs',
+  /* диваны: дополнительные формы (коды v*; params.js → SF_OPTS) */
+  sfShell: 'vs', sfArmSide: 'va', sfOpen: 'vo', sfBack: 'vb', sfPuff: 'vp', sfTuft: 'vt', sfDecor: 'vd', sfDecorKind: 'vk', sfLegShape: 'vl', sfPlinth: 'vc', sfLayout: 'vm',
 };
 const LONG = Object.fromEntries(Object.entries(SHORT).map(([k, v]) => [v, k]));
-const COUNT_KEYS = new Set(['sections', 'modules', 'qty']);           // целые числа, не длины
+const COUNT_KEYS = new Set(['sections', 'modules', 'qty', 'sfDecor']);           // целые числа, не длины
 const BOOL_KEYS = new Set(['piping', 'lift']);
 const DERIVED = new Set(['hbT', 'backLook', 'qty']);                   // не пишем в адрес (qty — отдельно, «q.»)
 /* выводятся из других ключей (params.js → normalize) — тоже не пишем */
@@ -112,17 +116,30 @@ const COMMON = {
   backCushions: { fixed: 'цельная спинка', loose: 'съёмные подушки' },
   seatCushions: { single: 'одна подушка', sections: 'по секциям' },
   legs: { hidden: 'скрытые', metal: 'металл', wood: 'дерево', plinth: 'цоколь', disc: 'диск-опора' },
-  legFinish: { black: 'чёрный', gold: 'золотистый', oak: 'светлое дерево', walnut: 'орех', blackwood: 'тёмное дерево' },
+  legFinish: { black: 'чёрный', gold: 'золотистый', oak: 'светлое дерево', walnut: 'орех', blackwood: 'тёмное дерево', chrome: 'хром', bronze: 'бронза', bordeaux: 'бордо' },
   piping: { true: 'с кантом', false: 'без канта' },
   side: { left: 'угол слева', right: 'угол справа' },
+  /* диваны: дополнительные формы */
+  sfShell: { none: 'обычный', soft: 'оболочка', oval: 'оболочка-овал' },
+  sfArmSide: { both: 'с двух сторон', left: 'только слева', right: 'только справа' },
+  sfOpen: { none: 'нет', left: 'слева', right: 'справа', all: 'без спинки' },
+  sfBack: { std: 'обычная', roll: 'валик', roll2: 'два валика', pebble: 'отдельные подушки' },
+  sfPuff: { std: 'обычные', puff: 'пухлые' },
+  sfTuft: { none: 'без простёжки', channels: 'вертикальная простёжка', grid: 'простёжка клетками' },
+  sfDecorKind: { square: 'квадратные', roll: 'валики', ball: 'шары' },
+  sfLegShape: { straight: 'прямые', cone: 'конусные наклонные', block: 'бруски', sled: 'полозья', frame: 'рама из трубы' },
+  sfPlinth: { fabric: 'в ткани', wood: 'дерево', podium: 'подиум' },
+  sfLayout: { row: 'в ряд', cornerL: 'углом слева', cornerR: 'углом справа', arc: 'дугой' },
 };
 export const VOCAB = {
   _: COMMON,
   corner: { form: { L: 'Г-образный', chaise: 'с шезлонгом' } },
   modular: { chaise: { none: 'без шезлонга', left: 'шезлонг слева', right: 'шезлонг справа' } },
   bed: {
-    hbStyle: { plain: 'гладкое', channels: 'вертикальная простёжка', capitone: 'каретная стяжка', wings: 'с «ушками»' },
-    base: { legs: 'ножки', plinth: 'цоколь' }, lift: { false: 'без механизма', true: 'подъёмный механизм' },
+    hbStyle: { plain: 'гладкое', channels: 'вертикальная простёжка', capitone: 'каретная стяжка', wings: 'с «ушками»', frame: 'рама со вставкой', pillows: 'две подушки', straps: 'подушки на ремнях' },
+    base: { legs: 'ножки', plinth: 'цоколь', float: 'парящее', podium: 'подиум' }, lift: { false: 'без механизма', true: 'подъёмный механизм' },
+    legFinish: { ...COMMON.legFinish, chrome: 'хром' },
+    ...BED_OPTIONS,
   },
   armchair: { form: { classic: 'классическое', round: 'округлое' } },
   pouf: { form: { round: 'круглый', square: 'квадратный', bench: 'банкетка' }, top: { smooth: 'гладкий', capitone: 'каретная стяжка' } },
@@ -136,7 +153,7 @@ export const optLabel = (type, key, value) => {
 const SOFAS = new Set(['sofa', 'corner', 'ushape', 'modular']);
 const LOW_HIGH = { sofa: 0.80, corner: 0.80, ushape: 0.80, modular: 0.80, armchair: 0.85 };
 export const backLook = (type, p) => (p.h < (LOW_HIGH[type] || 0.8) - 1e-9 ? 'низкая' : 'высокая');
-const HBT = { plain: 0.08, channels: 0.10, capitone: 0.10, wings: 0.12 };
+const HBT = HBT_BY_STYLE;
 
 /* подушки сиденья — считаем по деталям модели (params.js → parts), один источник правды с 3D и чертежом */
 export function seatCushions(type, p) {
@@ -169,8 +186,9 @@ export function titleOf(type, p = {}) {
 function legsLine(type, p) {
   const legs = p.legs;
   if (!legs || legs === 'hidden') return 'скрытые';
+  if (legs === 'plinth' && p.sfPlinth) return `цоколь — ${optLabel(type, 'sfPlinth', p.sfPlinth)}, ${optLabel(type, 'legFinish', p.legFinish)}, ${fmtCm(p.legH)} см`;
   if (legs === 'plinth') return `цоколь, ${fmtCm(p.legH)} см`;
-  return [optLabel(type, 'legs', legs), p.legFinish ? optLabel(type, 'legFinish', p.legFinish) : '', p.legH ? `${fmtCm(p.legH)} см` : ''].filter(Boolean).join(', ');
+  return [optLabel(type, 'legs', legs), p.sfLegShape ? optLabel(type, 'sfLegShape', p.sfLegShape) : '', p.legFinish ? optLabel(type, 'legFinish', p.legFinish) : '', p.legH ? `${fmtCm(p.legH)} см` : ''].filter(Boolean).join(', ');
 }
 function armsLine(type, p) {
   if (!p.armStyle || p.armStyle === 'none') return 'без подлокотников';
@@ -212,17 +230,33 @@ export function summaryLines(state, { dims = null } = {}) {
     add('Спинка', `${backLook(t, p)}, ${optLabel(t, 'backCushions', t === 'armchair' && p.form === 'round' ? 'fixed' : p.backCushions)}`);
     if (t !== 'armchair' && t !== 'modular' && p.seatCushions) add('Сиденье', seatLine(t, p));
     add('Ножки', legsLine(t, p));
+    /* диваны: дополнительные формы — только если выбраны (у прежних вариантов текст прежний) */
+    if (SOFAS.has(t)) {
+      if (p.sfShell) add('Корпус', optLabel(t, 'sfShell', p.sfShell));
+      if (p.sfArmSide) add('Подлокотник', optLabel(t, 'sfArmSide', p.sfArmSide));
+      if (p.sfOpen) add('Край без спинки', optLabel(t, 'sfOpen', p.sfOpen));
+      if (p.sfBack) add('Вид спинки', optLabel(t, 'sfBack', p.sfBack));
+      if (p.sfPuff) add('Подушки', optLabel(t, 'sfPuff', p.sfPuff));
+      if (p.sfTuft) add('Простёжка', optLabel(t, 'sfTuft', p.sfTuft));
+      if (p.sfLayout) add('Сборка', optLabel(t, 'sfLayout', p.sfLayout));
+      if (p.sfDecor > 0) add('Декоративные подушки', `${p.sfDecor}, ${optLabel(t, 'sfDecorKind', p.sfDecorKind || 'square')}`);
+    }
     add('Кант', p.piping ? 'есть' : 'нет');
   }
   if (t === 'bed') {
-    const hbT = HBT[p.hbStyle] || 0.10;
+    const hbT = p.hbDepth > 0 ? p.hbDepth : HBT[p.hbStyle] || 0.10;
     const W = dims ? dims.w : p.mw + 2 * p.frameT + 2 * (p.hbOver || 0);
     const Lg = dims ? dims.d : p.ml + p.frameT + hbT;
     add('Матрас', `${fmtCm(p.mw)} × ${fmtCm(p.ml)} см`);
     add('Размер', `${fmtCm(W)} × ${fmtCm(Lg)} см, высота изголовья ${fmtCm(p.hbH)} см`);
-    add('Изголовье', `${optLabel(t, 'hbStyle', p.hbStyle)}, высота ${fmtCm(p.hbH)} см${p.hbOver ? `, выступ ${fmtCm(p.hbOver)} см` : ''}`);
-    add('Царга', `высота ${fmtCm(p.railH)} см, боковина ${fmtCm(p.frameT)} см`);
-    add('Основание', p.base === 'legs' ? `ножки, ${optLabel(t, 'legFinish', p.legFinish)}, ${fmtCm(p.legH)} см` : 'цоколь');
+    /* дополнительные формы — только если выбраны (у прежних вариантов текст прежний) */
+    const ex = (k) => (p[k] && p[k] !== 'none' && p[k] !== 'auto' && p[k] !== 'rect' && p[k] !== 'box' && p[k] !== 'cone' && p[k] !== 'match' ? optLabel(t, k, p[k]) : '');
+    const hbX = [ex('hbShape') && `форма — ${ex('hbShape')}`, ex('hbInsert') && `вставка — ${ex('hbInsert')}`, ex('hbWrap') && `края — ${ex('hbWrap')}`, ex('hbLean'), ex('hbRim'),
+      p.hbDepth > 0 ? `толщина ${fmtCm(p.hbDepth)} см` : ''].filter(Boolean).join(', ');
+    add('Изголовье', `${optLabel(t, 'hbStyle', p.hbStyle)}, высота ${fmtCm(p.hbH)} см${p.hbOver ? `, выступ ${fmtCm(p.hbOver)} см` : ''}${hbX ? `, ${hbX}` : ''}`);
+    add('Царга', `высота ${fmtCm(p.railH)} см, боковина ${fmtCm(p.frameT)} см${ex('railShape') ? `, ${ex('railShape')}` : ''}`);
+    add('Основание', p.base === 'legs' ? `ножки${ex('legKind') ? ` ${ex('legKind')}` : ''}, ${optLabel(t, 'legFinish', p.legFinish)}, ${fmtCm(p.legH)} см` : p.base === 'float' ? `парящее (утопленный тёмный цоколь), ${fmtCm(p.legH)} см` : p.base === 'podium' ? `подиум, ${fmtCm(p.legH)} см` : 'цоколь');
+    if (p.piping && p.pipeTone === 'dark') add('Цвет канта', 'контрастный тёмный');
     if (p.lift) add('Подъёмный механизм', 'обсудим');
     add('Кант', p.piping ? 'есть' : 'нет');
   }
