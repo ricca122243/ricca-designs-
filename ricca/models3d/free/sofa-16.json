@@ -1,4 +1,4 @@
-{"id":"sofa-16","size":[3.0, 1.65, 0.8],"view":{"az": 0, "el": 2},"fab":"alba:2","legs":{"kind": "metal", "finish": "black"},"items":[
+{"id":"sofa-16","size":[3.0, 1.65, 0.8],"view":{"az": 0, "el": 2},"fab":"alba:16","legs":{"kind": "metal", "finish": "black"},"items":[
 {"id":"plat","p":[0,0.1275,0.5],"s":[3.0,0.035,1.0],"rx":0.02,"rz":0.02,"rTop":0.012,"rBottom":0.02,"m":"fabric"},
 {"id":"plat-ch","p":[-1.0425,0.1275,1.175],"s":[0.915,0.035,0.95],"rx":0.02,"rz":0.02,"rTop":0.012,"rBottom":0.02},
 {"id":"arm-r","p":[1.375,0.3225,0.5],"s":[0.25,0.355,1.0],"rx":0.07,"rxBack":0.035,"rz":0.03,"rzBack":0.03,"rTop":0.04,"rBottom":0.01,"crown":0.004,"bulge":0.003,"piping":true,"edgeAxis":"z"},
