@@ -469,6 +469,7 @@ async function loadExactGroup(m) {
   const k = Math.max(d.w || 0, d.d || 0, 0.5) / Math.max(size.x, size.z, 0.01);
   const wrap = new THREE.Group(); wrap.name = `exact:${m.id}`;
   wrap.userData.base = { w: size.x * k, d: size.z * k, h: size.y * k, rw: d.w, rd: d.d, rh: d.h };   // размеры модели и рецепта в метрах
+  wrap.userData.view = m.view || null; wrap.userData.light = m.light || null;   // ракурс и свет как на главном фото (поле view / light в каталоге)
   g.scale.setScalar(k); g.position.set(-c.x * k, -box.min.y * k, -c.z * k); wrap.add(g);
   g.traverse((o) => {
     if (!o.isMesh) return;

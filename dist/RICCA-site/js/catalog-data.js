@@ -474,6 +474,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-23",
     glb: "models3d/sofa-23.glb",
+    view: { az: 0, el: 6, fov: 18, zoom: 1.1 },
     cfg: "t.sofa~w.220~as.round~aw.22~ah.62~h.90~bc.loose~n.2~lg.metal~lf.gold~lh.8~vl.sled~vp.puff",
     fab: "noble:10",
     category: "sofas",
@@ -1100,6 +1101,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-10",
     glb: "models3d/armchair-10.glb",
+    view: { az: -15, el: 8, fov: 20, zoom: 1.05 },
     cfg: "t.armchair~f.drum~w.90~d.85~h.74~sh.44~sd.56~as.round~aw.18~ah.64~lg.hidden",
     fab: "alba:22",
     category: "armchairs",
@@ -1126,6 +1128,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-11",
     glb: "models3d/armchair-11.glb",
+    view: { az: 30, el: 6, fov: 20, zoom: 1.05 },
     cfg: "t.armchair~f.pebble~w.80~d.85~h.95~sh.42~sd.58~as.none~lg.wood~lf.blackwood~lh.14~ql.barrel",
     fab: "ricca-leather:8",
     category: "armchairs",
@@ -1376,6 +1379,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-24",
     glb: "models3d/sofa-24.glb",
+    view: { az: -18, el: 10, fov: 20, zoom: 1.1 },
     cfg: "t.modular~mo.3~mm.95~ch.right~as.none~h.68~lg.hidden~vp.puff~vd.2",
     fab: "torrens-plain:1",
     category: "sofas",
@@ -1400,6 +1404,7 @@ window.RICCA_CATALOG = [
     cfg: "t.corner~f.chaise~s.left~w.320~l.170~as.thin~aw.10~ah.58~bc.loose~n.2~lg.metal~lf.black~lh.14~va.left~vo.right~vd.1",
     fab: "eclipse:8",
     glb: "models3d/sofa-25.glb",
+    view: { az: 0, el: 6, fov: 18, zoom: 1.1 },
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
@@ -1582,6 +1587,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-14",
     glb: "models3d/armchair-14.glb",
+    view: { az: -25, el: 6, fov: 20, zoom: 1.05 },
     cfg: "t.armchair~f.round~w.95~d.90~h.100~sh.44~sd.56~as.round~aw.16~ah.80~lg.metal~lf.black~lh.18~ql.splay~qs.wide~qb.lumbar",
     fab: "torrens:9",
     category: "armchairs",
@@ -1692,6 +1698,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-26",
     glb: "models3d/bed-26.glb",
+    view: { az: -40, el: 9, fov: 34, zoom: 1.15 },
     cfg: "t.bed~hs.plain~ks.round~hh.110~ft.5~rh.32~b.legs~kg.metal~lf.black~lh.16~p.1",
     fab: "molly:17",
     category: "beds",
@@ -1713,6 +1720,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-27",
     glb: "models3d/bed-27.glb",
+    view: { az: -40, el: 9, fov: 34, zoom: 1.15 },
     cfg: "t.bed~hs.wings~ki.plain~kw.wings~hh.125~ho.12~ft.8~rh.38~b.plinth~lh.4",
     fab: "torrens:2",
     category: "beds",
@@ -1739,6 +1747,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-28",
     glb: "models3d/bed-28.glb",
+    view: { az: -38, el: 12, fov: 34, zoom: 1.15 },
     cfg: "t.bed~mw.180~hs.plain~ks.round~hh.100~ft.14~rh.40~b.plinth~lh.4~kr.split~kd.20",
     fab: "molly:22",
     category: "beds",
@@ -1761,6 +1770,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-29",
     glb: "models3d/bed-29.glb",
+    view: { az: -40, el: 9, fov: 34, zoom: 1.15 },
     cfg: "t.bed~mw.180~hs.plain~hh.105~ft.6~rh.38~b.legs~kg.metal~lf.black~lh.20",
     fab: "lucky:1",
     category: "beds",
@@ -2034,6 +2044,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-37",
     glb: "models3d/sofa-37.glb",
+    view: { az: -8, el: 6, fov: 18, zoom: 1.1 },
     cfg: "t.corner~f.chaise~s.left~w.300~l.160~as.round~aw.18~ah.60~bc.loose~lg.metal~lf.black~lh.14~vd.3",
     fab: "eclipse:8",
     category: "sofas",
@@ -2055,6 +2066,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-38",
     glb: "models3d/sofa-38.glb",
+    view: { az: -25, el: 10, fov: 20, zoom: 1.1 },
     cfg: "t.corner~f.L~s.left~w.320~l.200~as.thin~aw.12~ah.58~bc.loose~lg.metal~lf.gold~lh.12~va.left~vo.right~vd.3",
     fab: "beauty:2",
     category: "sofas",
@@ -2098,6 +2110,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-39",
     glb: "models3d/sofa-39.glb",
+    view: { az: 25, el: 12, fov: 22, zoom: 1.1 },
     cfg: "t.modular~mo.3~mm.95~as.none~bc.fixed~h.80~lg.hidden~vm.arc~vb.roll2",
     fab: "eclipse:1",
     category: "sofas",
@@ -2127,6 +2140,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-40",
     glb: "models3d/sofa-40.glb",
+    view: { az: 0, el: 5, fov: 18, zoom: 1.1 },
     cfg: "t.sofa~w.210~as.thin~aw.14~ah.62~h.85~bc.loose~n.2~lg.metal~lf.black~lh.14~vd.2",
     fab: "pique:13",
     category: "sofas",
