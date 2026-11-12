@@ -13,10 +13,10 @@
  },
  "fab": "molly:10",
  "measure": {
-  "seatH": 0.36,
+  "seatH": 0.37,
   "armH": 0.61,
-  "armW": 0.29,
-  "seatD": 0.71
+  "armW": 0.36,
+  "seatD": 0.7
  },
  "items": [
   {
@@ -36,92 +36,76 @@
    "rBottom": 0.003
   },
   {
-   "id": "armL",
+   "id": "arm",
    "p": [
-    -1.165,
+    -1.13,
     0.31,
     0.5
    ],
    "s": [
-    0.29,
+    0.36,
     0.6,
     1.0
    ],
-   "rxBack": 0.13,
-   "rx": 0.05,
-   "rz": 0.07,
-   "rzBack": 0.24,
-   "rTop": 0.12,
-   "rBottom": 0.05,
-   "bulge": 0.008
-  },
-  {
-   "id": "armR",
-   "p": [
-    1.165,
-    0.31,
-    0.5
-   ],
-   "s": [
-    0.29,
-    0.6,
-    1.0
-   ],
-   "rx": 0.13,
-   "rxBack": 0.05,
-   "rz": 0.07,
-   "rzBack": 0.24,
-   "rTop": 0.12,
-   "rBottom": 0.05,
-   "bulge": 0.008
+   "rx": 0.03,
+   "rxBack": 0.17,
+   "rz": 0.17,
+   "rzBack": 0.17,
+   "rTop": 0.1,
+   "rBottom": 0.04,
+   "bulge": 0.008,
+   "noOcc": true,
+   "mirror": "x"
   },
   {
    "id": "back",
    "p": [
-    -0.5125,
+    -0.4775,
     0.31,
-    0.145
+    0.15
    ],
    "s": [
-    1.015,
+    0.957,
     0.6,
-    0.29
+    0.3
    ],
-   "rx": 0.05,
-   "rz": 0.09,
+   "rx": 0.03,
+   "rz": 0.06,
    "rzBack": 0.05,
-   "rTop": 0.11,
+   "rTop": 0.1,
    "rBottom": 0.03,
-   "crown": 0.02,
+   "crown": 0.012,
    "crownFace": "z",
-   "bulge": 0.004,
-   "mirror": "x"
+   "noOcc": true,
+   "mirror": "x",
+   "rxBack": 0.03
   },
   {
    "id": "seat",
    "p": [
-    -0.51,
-    0.18,
+    -0.4765,
+    0.185,
     0.645
    ],
    "s": [
-    1.0,
-    0.35,
+    0.953,
+    0.36,
     0.71
    ],
-   "rx": 0.07,
-   "rz": 0.12,
-   "rzBack": 0.05,
+   "rx": 0.05,
+   "rz": 0.15,
+   "rzBack": 0.04,
    "rTop": 0.12,
-   "rBottom": 0.06,
-   "crown": 0.025,
+   "rBottom": 0.07,
+   "crown": 0.022,
    "crownFace": "y",
    "bulge": 0.012,
    "mirror": "x"
   }
  ],
  "light": {
-  "az": -25,
-  "contrast": 0.55
+  "az": -20,
+  "contrast": 0.6,
+  "exposure": 1.0
  }
 }

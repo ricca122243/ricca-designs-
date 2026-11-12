@@ -38,7 +38,7 @@ def product_lab(path, shot=False):
     if len(col) >= 0.25 * len(labs) and len(col) < 0.9 * len(labs): labs = col
     else:
         # серая или тёмная обивка рядом с белой постелью: считаем только то, что темнее постели
-        dark = [v for v in labs if v[0] < 72]; light = [v for v in labs if v[0] > 82]
+        dark = [v for v in labs if v[0] < 72]; light = [v for v in labs if v[0] > 88 and math.hypot(v[1], v[2]) < 6]   # белая постель: очень светлая и почти без цвета
         if len(dark) >= 0.2 * len(labs) and len(light) >= 0.2 * len(labs): labs = dark
     med = lambda k: sorted(v[k] for v in labs)[len(labs) // 2]
     return (med(0), med(1), med(2))
