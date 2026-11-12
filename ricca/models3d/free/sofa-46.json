@@ -7,9 +7,11 @@
  ],
  "view": {
   "az": 0,
-  "el": 3
+  "el": 2,
+  "fov": 16,
+  "zoom": 1.2
  },
- "fab": "coco:3",
+ "fab": "noble:18",
  "items": [
   {
    "id": "base",
@@ -141,5 +143,10 @@
    "rTop": 0.003,
    "rBottom": 0.003
   }
- ]
+ ],
+ "light": {
+  "az": -25,
+  "contrast": 0.55,
+  "exposure": 0.9
+ }
 }
