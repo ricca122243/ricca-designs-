@@ -289,14 +289,16 @@
      категорий. Телефон: большая, пара, большая (css .wk--rhythm) — у больших sizes PHONE_BIG. Список — здесь; модели нет в данных — пропускаем */
   /* «Популярные модели» — лента из моделей, фото которых выбрал владелец (11 ноября): листается вбок, под фото только название */
   const DETAILS = [];   // блок «В деталях» убран: кадры деталей стоят в «Популярных моделях» через одну карточку
-  const PICKS = [['m-sofa-23', 0], ['m-sofa-01', 0], ['m-sofa-02', 0], ['m-sofa-20', 0]];   // 12 ноября: только кадры владельца у бетонной стены — один вид у всех карточек (крупные планы убраны: «надо в едином смысле»)
+  /* 12 ноября (вечер), владелец: «только белый фон и диван… схожие фотографии… самые лучшие фото диванов, кровати» — шесть предметных кадров
+     на белом фоне в одном виде: диваны спереди, кровати в три четверти; кадры у бетонной стены и крупные планы убраны */
+  const PICKS = [['m-sofa-23', 0], ['m-sofa-01', 0], ['m-bed-04', 0], ['m-sofa-22', 0], ['m-sofa-46', 0], ['m-bed-35', 0]];
   /* «Популярные модели» как у ориентира (владелец, 11 ноября): карточки во всю ширину, по одной в ряд — изделие на светлом поле, название в углу карточки;
      через одну — крупный кадр детали. Запись: [модель, номер кадра, 'd' — деталь во всю карточку, 'l' — светлая подпись на тёмной ткани]. Модель — один раз */
   (() => {
     const sec = $('#picks'), row = sec && $('[data-picks-row]', sec);
     if (!row) return;
     const seen = new Set();
-    const list = PICKS.map(([id, n, d, l]) => { const w = MODELS.find((x) => x.id === id); if (!w || !w.photos[n] || seen.has(id)) return null; seen.add(id); const sc = d ? -1 : w.photos.findIndex((q) => q.scene); return [w, sc >= 0 ? sc : n, d, l]; }).filter(Boolean);
+    const list = PICKS.map(([id, n, d, l]) => { const w = MODELS.find((x) => x.id === id); if (!w || !w.photos[n] || seen.has(id)) return null; seen.add(id); const st = d ? -1 : w.photos.findIndex((q) => q.studio && !q.scene); return [w, st >= 0 ? st : n, d, l]; }).filter(Boolean);
     if (list.length < 3) { sec.remove(); return; }
     row.classList.remove('strip'); row.classList.add('pm');
     row.innerHTML = list.map(([w, n, d, l]) => {

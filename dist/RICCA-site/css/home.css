@@ -333,4 +333,4 @@ body { counter-reset: sec 2; }
 }
 
 /* «Популярные модели» — четыре кадра одного вида (изделие у бетонной стены): на широком экране в один ряд */
-@media (min-width: 1200px) { .wk.pm { grid-template-columns: repeat(4, minmax(0, 1fr)); } .wk.pm .pm__da { aspect-ratio: 4 / 5; } }
+@media (min-width: 1200px) { .wk.pm { grid-template-columns: repeat(3, minmax(0, 1fr)); } .wk.pm .pm__da { aspect-ratio: 4 / 5; } }   /* шесть карточек: три в ряд, два ряда */
