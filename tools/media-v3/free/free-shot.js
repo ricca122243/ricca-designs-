@@ -6,7 +6,7 @@ global.window = {}; require('/home/user/ricca-designs-/ricca/js/catalog-data.js'
 (async () => {
   const [out, ...ids] = process.argv.slice(2); const B = process.env.BASE || 'http://localhost:8826'; const VIEW = process.env.VIEW || '';
   const br = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-  const ctx = await br.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: +(process.env.DPR || 2), isMobile: true, hasTouch: true, serviceWorkers: 'block', reducedMotion: 'reduce' });
+  const ctx = await br.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: +(process.env.DPR || 2), isMobile: process.env.PHONE !== '0', hasTouch: process.env.PHONE !== '0', serviceWorkers: 'block', reducedMotion: 'reduce' });   // PHONE=0 — то же окно, но как компьютер (с затенением AO)
   for (const id of ids) {
     const m = (window.RICCA_CATALOG_ALL || window.RICCA_CATALOG).find((x) => x.id === id); const p = await ctx.newPage(); const errs = [];
     p.on('pageerror', (e) => errs.push(e.message.slice(0, 200))); p.on('console', (c) => { if (c.type() === 'error' || /exact|3D /.test(c.text())) errs.push(c.text().slice(0, 200)); });

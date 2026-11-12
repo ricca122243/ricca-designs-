@@ -423,7 +423,7 @@ async function loadFreeGroup(m) {
   /* модель построена в метрах и показывается как есть; размеры клиента растягивают её относительно размеров рецепта (rw, rd, rh) */
   wrap.userData.base = { w: size.x, d: size.z, h: size.y, rw: d.w, rd: d.d, rh: d.h };
   window.RICCA_FREE_DIMS = { id: m.id, w: size.x, d: size.z, h: size.y, rw: d.w, rd: d.d, rh: d.h };   // для проверки: габарит модели и рецепта
-  wrap.userData.view = spec.view || null; wrap.userData.free = true;
+  wrap.userData.view = spec.view || null; wrap.userData.light = spec.light || null; wrap.userData.free = true;
   wrap.userData.freeDims = freeDims(spec.measure, d);
   g.position.set(-c.x, -box.min.y, -c.z); wrap.add(g);
   return wrap;
@@ -498,7 +498,7 @@ function exactHasLegs() {
   if (g) g.traverse((o) => { if (o.isMesh && o.userData.matKey === 'legs') has = true; });
   return has;
 }
-function dropExact() { activeModel = null; exact = null; exactLoading = null; if (stage && stage.setDir3) stage.setDir3(null); renderModels(); }
+function dropExact() { activeModel = null; exact = null; exactLoading = null; if (stage && stage.setDir3) stage.setDir3(null); if (stage && stage.setLight) stage.setLight(null); renderModels(); }
 const EXACT_ROWS = new Set(['legFinish']);   // что можно менять у точной модели в «Форме» (вид ножек у модели из фото не меняется — только цвет)
 const isExact = () => !!(activeModel && catalogModels().some((m) => m.id === activeModel && m.glb));
 const isFreeModel = () => !!(activeModel && catalogModels().some((m) => m.id === activeModel && /\.json$/.test(m.glb || '')));
@@ -512,7 +512,8 @@ function useExact(m) {
     exact = { id: m.id, group: g }; rebuild(); renderForm(); if (photoApi && state.mode === 'photo') photoApi.refresh();   // renderForm: «Отделка ножек» — только когда ножки у модели есть
     /* ручная модель открывается в ракурсе своего фото (view в файле модели) */
     const v = g.userData.view;
-    if (stage && stage.setDir3) stage.setDir3(v ? v.az : null, v ? v.el : null, v ? v.fov : 0);
+    if (stage && stage.setDir3) stage.setDir3(v ? v.az : null, v ? v.el : null, v ? v.fov : 0, v ? v.zoom : 1);
+    if (stage && stage.setLight) stage.setLight(g.userData.light || null);   // свет как на фото модели (light в файле)
     if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced, reset: !!v }));
   }).catch((e) => { console.warn('exact', e); if (exactLoading === my) { exactLoading = null; rebuild(); toast('Точная модель не загрузилась — показываем похожую', 3500); } });
 }

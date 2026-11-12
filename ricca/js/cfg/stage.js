@@ -185,10 +185,19 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   const radius = () => Math.max(0.3, size.length() / 2);
   /* угловые, П-образные и с шезлонгом (глубина > 1,4 м) — камера выше, чтобы читался план; длинные — плотнее в кадре */
   /* свой ракурс модели («как на фото», app.js → setDir3): азимут от фронта и высота камеры, в градусах */
-  let dirOv = null, fovOv = 0;
+  let dirOv = null, fovOv = 0, lightOv = null, zoomOv = 1;
+  /* свет модели: az — с какой стороны ключевой свет (градусы от фронта, плюс — справа), contrast 0…1 — насколько глубже тени
+     (меньше рассеянного света, сильнее ключевой), high — выше или ниже источник (1 — обычный) */
+  function setLight(o) {
+    lightOv = o && (o.az != null || o.contrast > 0 || o.exposure > 0) ? { az: o.az == null ? null : +o.az, contrast: Math.min(1, Math.max(0, +o.contrast || 0)), high: o.high > 0 ? +o.high : 1, exposure: o.exposure >= 0.5 && o.exposure <= 1.5 ? +o.exposure : 1 } : null;
+    renderer.toneMappingExposure = LIGHT.exposure * (lightOv ? lightOv.exposure : 1);
+    const c = lightOv ? lightOv.contrast : 0, mix = (a, b) => a + (b - a) * c;
+    scene.environmentIntensity = mix(LIGHT.env, 0.2); hemi.intensity = mix(LIGHT.hemi, 0.1); key.intensity = mix(LIGHT.key, 2.4); fill.intensity = mix(LIGHT.fill, 0.12); rim.intensity = mix(LIGHT.rim, 0.3);
+    fitLight(); shadowDirty = true; requestRender();
+  }
   const fov3 = () => fovOv || FOV;   // угол обзора 3D-вида: у ручной модели — как у её фото (view.fov), иначе обычный
   const dir3q = () => (dirOv ? dirAt(dirOv[0], dirOv[1]) : dirAt(AZ, size.z > 1.4 ? EL_PLAN : EL));
-  function setDir3(az, el, fov) { dirOv = az == null ? null : [THREE.MathUtils.degToRad(az), THREE.MathUtils.degToRad(el == null ? 12 : el)]; fovOv = az != null && fov >= 8 && fov <= 60 ? fov : 0; }
+  function setDir3(az, el, fov, zoom) { dirOv = az == null ? null : [THREE.MathUtils.degToRad(az), THREE.MathUtils.degToRad(el == null ? 12 : el)]; fovOv = az != null && fov >= 8 && fov <= 60 ? fov : 0; zoomOv = az != null && zoom >= 0.6 && zoom <= 1.6 ? zoom : 1; }
   const fillFor = () => (W < 600 ? 0.7 : size.x / Math.max(0.01, size.y) > 2.2 ? 0.84 : 0.74);   // телефон: снизу кнопки видов
   const aimOf = () => center.clone().add(new THREE.Vector3(0, size.y * 0.06, 0));
   /* расстояние, при котором габарит занимает fill кадра по ширине и высоте */
@@ -205,7 +214,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     }
     return dist;
   }
-  const framingDist = (dir) => fitDistance(dir || dir3q(), fov3(), W / H, fillFor());
+  const framingDist = (dir) => fitDistance(dir || dir3q(), fov3(), W / H, Math.min(0.96, fillFor() * zoomOv));   // zoomOv — крупность ручной модели в кадре (view.zoom)
   /* полувысота кадра для оси вида */
   function orthoHalf(v, pad = padTop) {
     const ext = v === 'front' ? [size.x, size.y] : v === 'side' ? [size.z, size.y] : [size.x, size.z];
@@ -292,7 +301,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   function fitLight() {
     const r = Math.max(1, radius() * 1.4);
     /* ключевой свет: высоко, спереди-слева — короткая мягкая тень под изделием, без «плиты» сбоку */
-    key.position.set(center.x + r * LIGHT.kx, r * LIGHT.ky, center.z + r * LIGHT.kz);
+    /* свет ручной модели (setLight): ключевой — с заданной стороны, как на её фото; иначе обычный, слева спереди */
+    if (lightOv && lightOv.az != null) { const kr = Math.hypot(LIGHT.kx, LIGHT.kz), ka = THREE.MathUtils.degToRad(lightOv.az); key.position.set(center.x + r * kr * Math.sin(ka), r * LIGHT.ky * (lightOv.high || 1), center.z + r * kr * Math.cos(ka)); }
+    else key.position.set(center.x + r * LIGHT.kx, r * LIGHT.ky, center.z + r * LIGHT.kz);
     key.target.position.copy(center);
     fill.position.copy(center).add(dirAt(AZ + THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(25)).multiplyScalar(r * 3));
     fill.target.position.copy(center);
@@ -610,7 +621,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     /* рамка только нужных сеток (например, кровать без одеяла и подушек — одеяло свисает шире рамы) */
     boxOf(keep) { const b = new THREE.Box3(); if (object) { object.updateMatrixWorld(true); object.traverse((o) => { if (o.isMesh && keep(o)) b.expandByObject(o); }); } return b; },
     supportsPhotoreal: false,
-    setObject, setView, frame, setDir3, setDims, setStudio, snapshot, resize,
+    setObject, setView, frame, setDir3, setLight, setDims, setStudio, snapshot, resize,
     /* снаружи (комната двигает мебель): сцена могла измениться — тени пересчитать; markShadows=false — только перерисовать */
     requestRender: (markShadows = true) => { if (markShadows) shadowDirty = true; requestRender(); },
     cancelAnim() { anim = null; },

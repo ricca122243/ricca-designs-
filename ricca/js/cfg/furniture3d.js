@@ -5,7 +5,7 @@
    угол с отдельными радиусами по осям; плотность сетки в зоне скругления — равномерная по углу. */
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { parts, normalize, dims as dimsOf } from './params.js';
+import { parts, normalize, dims as dimsOf, itemBounds } from './params.js';
 import { seamMaterial, pipingMaterial, decorMaterial, lightMaterial } from './materials.js';
 
 export { TYPES, OPTIONS, RANGES, DEFAULTS, PRESETS, normalize, parts, dims, labelOf, rangeOf, itemBounds } from './params.js';
@@ -996,7 +996,35 @@ export function partsFromSpec(spec) {
     items.push({ ...base, role: s.role || 'free', shape: 'free', free: f });
   };
   (spec.items || []).forEach((s, i) => { one(s, i, false); if (s.mirror === 'x') one(s, i, true); });
+  if (spec.autoOcc !== false) freeAutoOcc(items);
   return { items, dims: [] };
+}
+/* контактное затенение ручной модели: там, где деталь лежит на соседней, прижата к ней или стоит на полу, полоса у стыка темнее —
+   тень в складке, как на фото (на телефоне общего затенения AO нет, без этого детали сливаются в один ровный тон).
+   Считается по габаритам; у детали с наклоном оси не совпадают с миром — её пропускаем. Своё occ или noOcc: true у детали — не трогаем */
+function freeAutoOcc(items) {
+  const bb = items.map((it) => itemBounds(it)), AX = ['x', 'y', 'z'];
+  items.forEach((A, i) => {
+    const f = A.free;
+    if (!f || f.k !== 'box' || f.occ || f.noOcc || !['fabric', 'fabricL', 'fabric2'].includes(A.mat)) return;
+    if (A.rotX || A.rotZ || Math.abs(Math.sin(A.rotY || 0)) > 1e-3) return;
+    const a = bb[i], bands = [];
+    for (let k = 0; k < 3; k++) for (const side of [-1, 1]) {
+      const fa = side < 0 ? a.min[k] : a.max[k], [u, v] = [0, 1, 2].filter((q) => q !== k);
+      const area = (a.max[u] - a.min[u]) * (a.max[v] - a.min[v]); let cover = 0;
+      items.forEach((B, j) => {
+        if (j === i || (B.decor && !A.decor) || B.mat === 'legs') return;
+        const b = bb[j], hit = side < 0 ? b.max[k] > fa - 0.015 && b.min[k] < fa - 0.02 : b.min[k] < fa + 0.015 && b.max[k] > fa + 0.02;
+        if (!hit) return;
+        const ou = Math.min(a.max[u], b.max[u]) - Math.max(a.min[u], b.min[u]), ov = Math.min(a.max[v], b.max[v]) - Math.max(a.min[v], b.min[v]);
+        if (ou > 0 && ov > 0) cover += ou * ov;
+      });
+      if (k === 1 && side < 0 && fa < 0.035) cover = Math.max(cover, area * 0.6);   // стоит на полу
+      const c = Math.min(1, cover / Math.max(area, 1e-6));
+      if (c > 0.18) bands.push([AX[k], side, 0, k === 1 ? 0.07 : 0.09, 0.3 + 0.45 * c]);
+    }
+    if (bands.length) A.free = { ...f, occ: bands };
+  });
 }
 
 function itemGeometry(it, quality, type, dense = 1) {
