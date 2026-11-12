@@ -510,6 +510,10 @@ window.RICCA_COMPOSITION = {
     { model_id: "sofa-44", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Morva
     { model_id: "sofa-46", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Kamra
     { model_id: "sofa-47", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Ronva
+    { model_id: "sofa-48", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Lenva
+    { model_id: "sofa-49", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Bolva
+    { model_id: "sofa-50", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Kanva
+    { model_id: "sofa-51", type: "sofa", verified: false, softness: 3, seat_height: 3, layers: {} },   // Stegva
     { model_id: "sofa-45", type: "modular", verified: false, softness: 3, seat_height: 3, layers: {} },   // Terva
     { model_id: "sofa-42", type: "sofa", verified: false, softness: 3, seat_height: 2, layers: {} },   // Norva
     { model_id: "sofa-43", type: "modular", verified: false, softness: 3, seat_height: 3, layers: {} },   // Sorva

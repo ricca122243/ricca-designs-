@@ -10,6 +10,7 @@
   window.RICCA_LANG = 'en';
   window.RICCA_T = {
     'Подробнее': 'Details',
+    '3D-модель: {}': '3D model: {0}', 'Чертёж: {}': 'Drawing: {0}',   // окно модели: «3D-модель» и «Чертёж» (12 ноября)
     'Написать': 'Message', 'Написать в WhatsApp': 'Message on WhatsApp',   // плавающая кнопка WhatsApp (site.js)
     // готовые тексты WhatsApp (CONFIG.msg)
     'Здравствуйте! Хочу узнать о мебели RICCA на заказ.': "Hello! I'd like to know more about RICCA custom furniture.",
@@ -31,7 +32,7 @@
     // виды мебели (KINDS)
     'Шьём диваны': 'We make sofas', 'диван': 'a sofa', 'Диван': 'Sofa',
     'Шьём кровати': 'We make beds', 'кровать': 'a bed', 'Кровать': 'Bed',
-    'Шьём кресла': 'We make armchairs', 'кресло': 'an armchair', 'Кресло': 'Armchair', ['Кресла и' + NB + 'пуфы']: 'Armchairs and' + NB + 'poufs',
+    'Шьём кресла': 'We make armchairs', ['Шьём пуфы и' + NB + 'банкетки']: 'We make poufs and' + NB + 'benches', 'Пуфы': 'Poufs', 'Банкетки': 'Benches', ['Под' + NB + 'размер комнаты']: 'Sized to' + NB + 'your room', 'пуф или банкетку': 'a pouf or a bench', 'Пуф': 'Pouf', 'Здравствуйте! Интересует пуф или банкетка. Пришлите, пожалуйста, подборку.': 'Hello! I am interested in a pouf or a bench. Please send me a selection.', 'кресло': 'an armchair', 'Кресло': 'Armchair', ['Кресла и' + NB + 'пуфы']: 'Armchairs and' + NB + 'poufs',
     'Прямые': 'Straight', ['Угловые и' + NB + 'П-образные']: 'Corner and' + NB + 'U-shaped', 'Модульные': 'Modular', 'Раскладные': 'Sofa beds',
     ['С' + NB + 'подъёмным механизмом']: 'With a' + NB + 'lift-up mechanism', 'Без механизма': 'Without a mechanism',
     ['На' + NB + 'ножках или на' + NB + 'цоколе']: 'On' + NB + 'legs or on' + NB + 'a plinth', 'Под размер вашего матраса': 'Sized to your mattress',
@@ -139,15 +140,15 @@
     'Тонкое изголовье с кантом · на металлических ножках': 'Slim piped headboard · on metal legs', 'Обволакивающее изголовье · цоколь': 'Wraparound headboard · plinth',
     'Скруглённое изголовье · кожа': 'Rounded headboard · leather', 'Букле · на высоких металлических ножках': 'Bouclé · on tall metal legs',
     'Модульный · угловой, со столиком': 'Modular · corner, with a side table', 'Кушетка · модуль без спинки': 'Daybed · backless module',
-    'Модульный · скруглённые секции': 'Modular · rounded sections', 'Угловой · на подиуме': 'Corner · on a plinth', 'Радиусный · на подиуме': 'Curved · on a plinth', 'Мягкая · на круглых опорах': 'Upholstered · on round feet', 'На двух рамах-опорах': 'On two frame supports', 'Изголовье волной · на низком основании': 'Wave-shaped headboard · on a low base', 'Круглый · разной высоты': 'Round · in different heights', 'Широкое · с круглой подушкой': 'Wide · with a round cushion', 'Высокое изголовье · широкие боковины': 'Tall headboard · wide side panels', 'На металлической раме': 'On a metal frame', 'Низкая · прямое изголовье': 'Low · straight headboard', 'Овальный · с кантом': 'Oval · with piping', 'Наклонное изголовье · кожа и ткань': 'Slanted headboard · leather and fabric', 'Двухместный · на металлической раме': 'Two-seater · on a metal frame', 'Низкий · спинка из валиков': 'Low · bolster back', 'Двухместный · спинка из двух подушек': 'Two-seater · two-cushion back', 'Низкое · округлая спинка': 'Low · rounded back', 'С высокой спинкой · на деревянных ножках': 'High back · on wooden legs', 'Простёганная · на цоколе': 'Channel-stitched · on a plinth', 'Двухместный · с высокой спинкой': 'Two-seater · high back', 'Изголовье из двух подушек · «гусиная лапка»': 'Two-cushion headboard · houndstooth', 'Округлое · из трёх объёмов': 'Rounded · three volumes', 'Квадратный · на металлическом основании': 'Square · on a metal base', 'Низкое · на деревянных ножках': 'Low · on wooden legs', 'Изголовье-подушка · кожаная рама': 'Cushion headboard · leather frame',
+    'Модульный · скруглённые секции': 'Modular · rounded sections', 'Угловой · на подиуме': 'Corner · on a plinth', 'Радиусный · на подиуме': 'Curved · on a plinth', 'С валиком · на деревянной раме': 'With a bolster · on a wooden frame', 'Двухсекционный · гранёные боковины': 'Two sections · faceted sides', 'Угловой · с контрастным кантом': 'Corner · with contrast piping', 'Модульный · простёганный': 'Modular · quilted', 'Мягкая · на круглых опорах': 'Upholstered · on round feet', 'На двух рамах-опорах': 'On two frame supports', 'Изголовье волной · на низком основании': 'Wave-shaped headboard · on a low base', 'Круглый · разной высоты': 'Round · in different heights', 'Широкое · с круглой подушкой': 'Wide · with a round cushion', 'Высокое изголовье · широкие боковины': 'Tall headboard · wide side panels', 'На металлической раме': 'On a metal frame', 'Низкая · прямое изголовье': 'Low · straight headboard', 'Овальный · с кантом': 'Oval · with piping', 'Наклонное изголовье · кожа и ткань': 'Slanted headboard · leather and fabric', 'Двухместный · на металлической раме': 'Two-seater · on a metal frame', 'Низкий · спинка из валиков': 'Low · bolster back', 'Двухместный · спинка из двух подушек': 'Two-seater · two-cushion back', 'Низкое · округлая спинка': 'Low · rounded back', 'С высокой спинкой · на деревянных ножках': 'High back · on wooden legs', 'Простёганная · на цоколе': 'Channel-stitched · on a plinth', 'Двухместный · с высокой спинкой': 'Two-seater · high back', 'Изголовье из двух подушек · «гусиная лапка»': 'Two-cushion headboard · houndstooth', 'Округлое · из трёх объёмов': 'Rounded · three volumes', 'Квадратный · на металлическом основании': 'Square · on a metal base', 'Низкое · на деревянных ножках': 'Low · on wooden legs', 'Изголовье-подушка · кожаная рама': 'Cushion headboard · leather frame',
     'Модульный · шерпа': 'Modular · sherpa', 'Скруглённый край · на конусных ножках': 'Rounded end · on tapered legs',
     'Угловой · округлая секция и кушетка': 'Corner · rounded section and daybed', 'Широкое · букле, на металлических ножках': 'Wide · bouclé, on metal legs',
     'Модульный · с валиками, дугой или прямой': 'Modular · with bolsters, curved or straight', 'Прямой · двухместный, на чёрных ножках': 'Straight · two-seater, on black legs',
     'С кантом · на тонких металлических ножках': 'Piped · on slim metal legs',
     'Прямой · трёхместный, кожаный корпус': 'Straight · three-seater, leather body',
   };
-  const CAT_LABELS = { 'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла': 'Armchairs', 'Стулья': 'Chairs', 'Столы': 'Tables', 'Наши работы': 'Our works', 'Ткани': 'Fabrics', 'Матрасы ELUNA': 'ELUNA mattresses' };
-  const CAT_DESCS = {
+  const CAT_LABELS = { 'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла': 'Armchairs', 'Пуфы и банкетки': 'Poufs and benches', 'Стулья': 'Chairs', 'Столы': 'Tables', 'Наши работы': 'Our works', 'Ткани': 'Fabrics', 'Матрасы ELUNA': 'ELUNA mattresses' };
+  const CAT_DESCS = { 'Пуфы, банкетки, под размер комнаты': 'Poufs and benches, sized to your room',
     'Прямые, угловые, модульные, раскладные': 'Straight, corner, modular, sofa beds', 'С подъёмным механизмом и без': 'With or without a lift-up mechanism',
     'Для отдыха: округлые, на цоколе': 'Lounge: rounded, on a plinth', 'Реальные изделия ателье': 'Real pieces by the atelier', 'Велюр, букле, шенилл': 'Velour, bouclé, chenille',
     'Ортопедические, на своём сайте': 'Orthopaedic, on their own website',
@@ -167,9 +168,9 @@
     'Бежевая, гладкая': 'Beige, smooth', 'Слоновая кость, гладкая': 'Ivory, smooth', 'Графит, винтаж': 'Graphite, vintage', 'Крем, винтаж': 'Cream, vintage' };   // цвета коллекции RICCA
   const sub = (s) => String(s || '').split(', ').map((p) => p.split(' и ').map((w) => WORDS[w] || w).join(' and ')).join(', ');
   const modelTitle = (t) => {
-    const m = /^(Диван|Кресло|Кровать|Пуф|Банкетка) (.+)$/.exec(t || '');
+    const m = /^(Диван|Кресло|Кровать|Пуф|Банкетка|Кушетка) (.+)$/.exec(t || '');
     if (!m) return WORK_TITLES[t] || t;
-    const kind = { 'Диван': 'sofa', 'Кресло': 'armchair', 'Кровать': 'bed', 'Пуф': 'pouf', 'Банкетка': 'bench' }[m[1]];
+    const kind = { 'Диван': 'sofa', 'Кресло': 'armchair', 'Кровать': 'bed', 'Пуф': 'pouf', 'Банкетка': 'bench', 'Кушетка': 'daybed' }[m[1]];
     const no = /^№\s*(\d+)$/.exec(m[2]);
     return no ? `${kind.replace(/^./, (c) => c.toUpperCase())} No. ${no[1]}` : `${m[2]} ${kind}`;
   };

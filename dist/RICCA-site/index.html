@@ -38,10 +38,10 @@
 <!-- первый кадр первого экрана (постер ролика, см. #top) = LCP: грузится первым; телефон и компьютер — свой файл, как в <picture> -->
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts-v3.css?v=f3987feb7e">
-<link rel="stylesheet" href="css/site.css?v=f3987feb7e">
-<link rel="stylesheet" href="css/hero.css?v=f3987feb7e">
-<link rel="stylesheet" href="css/home.css?v=f3987feb7e">
+<link rel="stylesheet" href="css/fonts-v3.css?v=6b575d8999">
+<link rel="stylesheet" href="css/site.css?v=6b575d8999">
+<link rel="stylesheet" href="css/hero.css?v=6b575d8999">
+<link rel="stylesheet" href="css/home.css?v=6b575d8999">
 <script>
 /* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,6 с). Не играем: повторный визит в этой сессии,
    prefers-reduced-motion, вход по ссылке с #якорем (Instagram → #catalog/sofas), недоступный sessionStorage.
@@ -120,6 +120,8 @@
       <button class="icon-btn hdr__sl" type="button" id="cart-open" aria-haspopup="dialog" aria-label="Корзина, пусто">
         <svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span class="hdr__count" id="cart-count" aria-hidden="true" hidden>0</span>
       </button>
+      <!-- меню телефона и планшета (12 ноября, владелец: «меню — рядом с корзиной, три полоски»); на компьютере пункты стоят в шапке -->
+      <button class="icon-btn icon-btn--menu" type="button" id="menu-open" data-open-menu aria-haspopup="dialog" aria-label="Меню"><span class="burger" aria-hidden="true"><i></i><i></i><i></i></span></button>
     </div>
   </div>
 </header>
@@ -163,7 +165,7 @@
       <a class="btn btn--line" href="configurator.html">Собрать в&nbsp;3D</a>
     </div>
   </div></div>
-  <script src="js/hero.js?v=f3987feb7e" defer></script>
+  <script src="js/hero.js?v=6b575d8999" defer></script>
 </section>
 
 <!-- ═════════ 2. КАТАЛОГ: пять плиток категорий. Нажали плитку — экран категории (#catalog/sofas): сетка реальных работ и три действия
@@ -183,6 +185,7 @@
         <li><a class="cats__a" href="#catalog/sofas"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M22 40V18a4 4 0 0 1 4-4h68a4 4 0 0 1 4 4v22M60 14v36"/><path d="M22 56H12a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v24M98 56h10a4 4 0 0 0 4-4V32a4 4 0 0 0-4-4h-6a4 4 0 0 0-4 4v24"/><path d="M22 40h76v10H22zM22 56h76M14 56v6M106 56v6"/></svg><span class="cats__t">Диваны</span></a></li>
         <li><a class="cats__a" href="#catalog/beds"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M14 50V16a4 4 0 0 1 4-4h84a4 4 0 0 1 4 4v34"/><rect x="26" y="26" width="30" height="14" rx="3"/><rect x="64" y="26" width="30" height="14" rx="3"/><path d="M18 40h84v10H18zM12 50h96v8H12zM18 58v5M102 58v5"/></svg><span class="cats__t">Кровати</span></a></li>
         <li><a class="cats__a" href="#catalog/armchairs"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M40 40V18a4 4 0 0 1 4-4h32a4 4 0 0 1 4 4v22"/><path d="M40 56h-8a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v24M80 56h8a4 4 0 0 0 4-4V32a4 4 0 0 0-4-4h-4a4 4 0 0 0-4 4v24"/><path d="M40 40h40v10H40zM40 56h40M33 56v6M87 56v6"/></svg><span class="cats__t">Кресла</span></a></li>
+        <li><a class="cats__a" href="#catalog/poufs"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><rect x="10" y="32" width="62" height="16" rx="5"/><path d="M18 48v12M64 48v12M31 32v16M51 32v16"/><path d="M84 60V44a8 8 0 0 1 8-8h10a8 8 0 0 1 8 8v16z"/></svg><span class="cats__t">Пуфы и&nbsp;банкетки</span></a></li>
         <li><a class="cats__a" href="#catalog/fabrics"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><ellipse cx="22" cy="20" rx="5" ry="8"/><path d="M22 12h70a5 8 0 0 1 0 16H22"/><path d="M34 28v30q10 6 20 0t20 0t20 0V28M48 28v29M62 28v31M76 28v29"/></svg><span class="cats__t">Ткани</span></a></li>
         <li><a class="cats__a" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M16 38l18-14h70l-18 14zM16 38h70v14H16zM86 38l18-14v14l-18 14"/><path d="M24 45h54" stroke-dasharray="3 4"/></svg><span class="cats__t">Матрасы</span></a></li>
         <li><a class="cats__a" href="configurator.html"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M60 10l32 15-32 15-32-15zM28 25v26l32 15V40M92 25v26L60 66"/><path d="M60 40v26" stroke-dasharray="3 4"/></svg><span class="cats__t">3D-конструктор</span></a></li>
@@ -254,7 +257,7 @@
     <a class="cfg__pic cfg__pic--cover rv" href="configurator.html" tabindex="-1" aria-hidden="true"><img src="img/cfg/cover-800.webp" srcset="img/cfg/cover-800.webp 800w, img/cfg/cover.webp 1600w" sizes="(min-width: 900px) 56vw, 92vw" width="1600" height="1528" alt="" loading="lazy" decoding="async"></a>
     <div class="cfg__text rv">
       <h2 class="title" id="cfg-title">Соберите свою мебель в&nbsp;3D</h2>
-      <a class="btn btn--fill" href="configurator.html">Открыть конструктор<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <a class="btn btn--fill" href="configurator.html">Открыть конструктор</a>
     </div>
   </div>
 </section>
@@ -432,6 +435,7 @@
           <li><a href="#catalog/sofas">Мягкая мебель</a></li>
           <li><a href="#catalog/beds">Дизайнерские кровати</a></li>
           <li><a href="#catalog/armchairs">Кресла для&nbsp;отдыха</a></li>
+          <li><a href="#catalog/poufs">Пуфы и&nbsp;банкетки</a></li>
           <li><a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">Ортопедические матрасы<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — сайт ELUNA, откроется в&nbsp;новой вкладке</span></a></li>
         </ul>
       </nav>
@@ -482,19 +486,13 @@
 </footer>
 
 
-<!-- Нижнее меню телефона (DESIGN.md 4.3): три ячейки «Каталог · WhatsApp · Меню», видно с первой секунды, при прокрутке не прячется;
-     прячется в открытых окнах, у шоурума и подвала (там свои кнопки) и при открытой клавиатуре; над чёрным блоком — чёрное.
-     В окне каталога (dialog#view) — такая же панель .mbar--view внутри окна: окно лежит в верхнем слое и закрыло бы эту -->
-<nav class="mbar" id="mbar" aria-label="Быстрые действия">
-  <a class="mbar__i" href="#catalog">Каталог</a>
-  <a class="mbar__i mbar__i--main" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
-  <button class="mbar__i" type="button" id="mbar-menu" data-open-menu aria-haspopup="dialog">Меню</button>
-</nav>
+<!-- Нижней панели больше нет (12 ноября): меню и корзина — в шапке, WhatsApp — квадратная кнопка справа внизу (.wa-fab, вставляет js/site.js) -->
 
 <!-- ═════════ Окна. Все — dialog; «Назад», Esc и ✕ закрывают уровень; адрес: #catalog/категория, #item-id, #work-id (работа из Instagram) ═════════ -->
 
-<!-- Меню (телефон и планшет; DESIGN.md 4.2): всё прижато к низу окна — под большой палец. Ярус 1 — четыре крупных слова каталога
-     (над ними тихая ссылка «Каталог» на плитки); ярус 2 — остальные ссылки в две колонки, «Собрать в 3D» первой; внизу WhatsApp и звонок -->
+<!-- Меню (телефон и планшет; DESIGN.md 4.2, 12 ноября): открывает «три полоски» в шапке рядом с корзиной. Всё прижато к низу окна —
+     под большой палец. Ярус 1 — каталог крупно: Диваны, Кровати, Кресла и пуфы, Ткани, 3D-конструктор; ярус 2 — разделы в две колонки;
+     строка «язык · корзина»; внизу WhatsApp и звонок -->
 <!-- ═════════ ОКНО «АТЕЛЬЕ ПОДРОБНО» (владелец, 11 ноября: на главной — коротко и кнопка «Подробнее», всё подробное — здесь).
      Кадры — визуализации в едином стиле, утверждены владельцем. Факты: гарантия 5 лет (подвал сайта), срок 25–45 рабочих дней (публикация
      ricca.horeca), оборудование SCM и Dürkopp Adler (BRIEF). Открывает [data-open-atl] (js/site.js), «назад» закрывает ═════════ -->
@@ -570,24 +568,23 @@
   </div>
   <div class="menu__body wrap">
     <nav class="menu__main" aria-label="Каталог">
-      <a class="menu__all" href="#catalog">Каталог<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
       <a class="menu__row" style="--i:0" href="#catalog/sofas"><span>Диваны</span></a>
       <a class="menu__row" style="--i:1" href="#catalog/beds"><span>Кровати</span></a>
       <a class="menu__row" style="--i:2" href="#catalog/armchairs"><span>Кресла</span></a>
-      <a class="menu__row" style="--i:3" href="#catalog/fabrics"><span>Ткани</span></a>
+      <a class="menu__row" style="--i:3" href="#catalog/poufs"><span>Пуфы и&nbsp;банкетки</span></a>
+      <a class="menu__row" style="--i:4" href="#catalog/fabrics"><span>Ткани</span></a>
+      <a class="menu__row" style="--i:5" href="configurator.html"><span>3D-конструктор</span></a>
     </nav>
     <nav class="menu__more" aria-label="Разделы">
-      <a href="configurator.html">Собрать в&nbsp;3D</a>
       <a href="#catalog/works" data-works-link hidden>Наши работы</a>
-      <a href="#process">Как заказать</a>
       <a href="#atelier">Ателье</a>
       <a href="#business">Для бизнеса</a>
-      <a href="#faq">Вопросы</a>
-      <a href="#showroom">Шоурум</a>
-      <a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">ELUNA<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — сайт матрасов, откроется в&nbsp;новой вкладке</span></a>
+      <a href="#showroom">Шоурум и&nbsp;контакты</a>
+    </nav>
+    <div class="menu__util">
       <a class="menu__lang" href="/en" hreflang="en" lang="en">English</a>
       <button class="menu__sl" type="button" data-open-cart>Корзина <span data-cart-mn></span></button>
-    </nav>
+    </div>
     <div class="menu__foot">
       <a class="btn btn--fill" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Написать в&nbsp;WhatsApp</a>
       <a class="btn btn--line menu__call" href="tel:+77079550808" data-tel="main" aria-label="Позвонить: +7 (707) 955-08-08"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg></a>
@@ -602,7 +599,8 @@
     <button class="view__back" type="button" data-close><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg><span data-view-back>Каталог</span></button>
     <span class="view__end">
       <button class="icon-btn hdr__sl" type="button" data-open-cart aria-haspopup="dialog" aria-label="Корзина, пусто"><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span class="hdr__count" data-cart-vn aria-hidden="true" hidden>0</span></button>
-      <button class="icon-btn" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+      <button class="icon-btn icon-btn--menu" type="button" data-open-menu aria-haspopup="dialog" aria-label="Меню"><span class="burger" aria-hidden="true"><i></i><i></i><i></i></span></button>
+      <button class="icon-btn view__x" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
     </span>
   </div>
   <div class="wrap view__body">
@@ -615,11 +613,8 @@
     <div data-view-content></div>
     <p class="view__foot" data-view-foot><a class="caps-link" data-view-wa href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-view-wa-label>Обсудить в&nbsp;WhatsApp</span></a></p>
   </div>
-  <nav class="mbar mbar--view" aria-label="Быстрые действия">
-    <a class="mbar__i" href="#catalog" data-to-catalog>Каталог</a>
-    <a class="mbar__i mbar__i--main" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
-    <button class="mbar__i" type="button" data-open-menu aria-haspopup="dialog">Меню</button>
-  </nav>
+  <!-- WhatsApp в окне каталога (телефон): та же квадратная кнопка, что на странице; прячется, когда в кадре своя ссылка WhatsApp окна (js/site.js) -->
+  <a class="wa-fab wa-fab--view" href="https://wa.me/77079550808" data-wa="general" aria-label="Написать в WhatsApp" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
 </dialog>
 
 <!-- Окно изделия: все фото (свайп, стрелки, миниатюры, ←/→); справа — название, тип, факты из js/catalog-data.js (габариты, механизм,
@@ -695,8 +690,9 @@
   </div>
 </dialog>
 
-<!-- Работа (готовый каталог): все фото работы целиком (свайп, стрелки, ←/→), счётчик, название и ткань; «Хочу такой» (WhatsApp со ссылкой
-     #work-<id>), «В корзину», «Собрать похожий в 3D» (конструктор с ближайшим типом), «Смотреть в Instagram». Строит js/site.js (LB) -->
+<!-- Работа или модель каталога: все фото целиком (свайп, стрелки, ←/→), счётчик, название и ткань; «3D-модель» и «Чертёж» (конструктор
+     с рецептом модели), «Хочу такой» (WhatsApp со ссылкой #work-<id>), «В корзину», «Смотреть в Instagram», «Рекомендуем к этой модели».
+     Строит js/site.js (LB) -->
 <dialog class="lb" id="lightbox" aria-labelledby="lb-title" aria-describedby="lb-sub">
   <button class="icon-btn lb__close" type="button" data-close aria-label="Закрыть"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
   <div class="lb__in">
@@ -714,19 +710,27 @@
         <h2 class="lb__title" id="lb-title" data-lb-title tabindex="-1" autofocus></h2>
         <p class="lb__piece" id="lb-sub" data-lb-piece></p>
         <p class="lb__count" data-lb-count aria-live="polite"></p>
+        <!-- два действия рядом (12 ноября): 3D-модель — конструктор с рецептом модели; чертёж — тот же адрес + &draw=1 (js/site.js) -->
+        <div class="lb__tools" role="group" aria-label="Модель в конструкторе">
+          <a class="btn btn--line btn--s" data-lb-3d href="configurator.html">3D-модель</a>
+          <a class="btn btn--line btn--s" data-lb-draw href="configurator.html">Чертёж</a>
+        </div>
         <ul class="lb__rows" data-lb-rows role="list">
           <li data-lb-row="size"><span class="lb__r"><span class="lb__rk">Размер</span><span class="lb__rv">Любой&nbsp;— под заказ</span></span></li>
           <li data-lb-row="fabric"><a class="lb__r" href="#catalog/fabrics"><span class="lb__rk">Ткань</span><span class="lb__rv">Выбрать</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-          <li><a class="lb__r" data-lb-3d href="configurator.html"><span class="lb__rk">3D</span><span class="lb__rv">Собрать похожий</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
           <li data-lb-row="ig"><a class="lb__r" data-lb-ig href="https://instagram.com/ricca.designs" target="_blank" rel="noopener"><span class="lb__rk">Instagram</span><span class="lb__rv">Смотреть</span><svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
         </ul>
         <details class="pd__more lb__more" data-lb-more hidden><summary>Подробнее<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="lb__info" data-lb-info></div></details>
         <details class="pd__more nb-comp-d" data-lb-comp-d hidden><summary>Состав<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="nb-comp-box" data-lb-comp></div></details>
       </div>
+      <!-- «Рекомендуем к этой модели» (12 ноября): до трёх карточек из w.rel (js/models-data.js), иначе — три следующие модели той же категории -->
+      <section class="rec" data-lb-rec aria-labelledby="rec-t" hidden>
+        <h3 class="rec__t" id="rec-t">Рекомендуем к&nbsp;этой модели</h3>
+        <ul class="rec__row wk" data-lb-rec-row role="list"></ul>
+      </section>
       <div class="lb__acts">
         <a class="btn btn--fill" data-lb-wa href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-lb-wa-t>Хочу такой</span><span class="sr-only"> (откроется в&nbsp;WhatsApp)</span></a>
         <button class="btn btn--line" type="button" data-lb-cart aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span>В&nbsp;корзину</span></button>
-        <a class="caps-link lb__3d" data-lb-3d href="configurator.html">Собрать похожий в&nbsp;3D<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         <a class="lb__ig" data-lb-ig href="https://instagram.com/ricca.designs" target="_blank" rel="noopener">Смотреть в&nbsp;Instagram<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a>
       </div>
     </div>
@@ -767,15 +771,15 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__open" id="toast-open">Открыть</button></div>
 
-<script src="js/lang.js?v=f3987feb7e" defer></script>
-<script src="js/catalog-data.js?v=f3987feb7e" defer></script>
-<script src="js/works-data.js?v=f3987feb7e" defer></script>
-<script src="js/models-data.js?v=f3987feb7e" defer></script>
-<script src="js/fabrics-data.js?v=f3987feb7e" defer></script>
-<script src="js/cart.js?v=f3987feb7e" defer></script>
-<script src="js/site.js?v=f3987feb7e" defer></script>
-<script src="js/content-data.js?v=f3987feb7e" defer></script>
-<script src="js/composition-data.js?v=f3987feb7e" defer></script>
-<script src="js/blocks.js?v=f3987feb7e" defer></script>
+<script src="js/lang.js?v=6b575d8999" defer></script>
+<script src="js/catalog-data.js?v=6b575d8999" defer></script>
+<script src="js/works-data.js?v=6b575d8999" defer></script>
+<script src="js/models-data.js?v=6b575d8999" defer></script>
+<script src="js/fabrics-data.js?v=6b575d8999" defer></script>
+<script src="js/cart.js?v=6b575d8999" defer></script>
+<script src="js/site.js?v=6b575d8999" defer></script>
+<script src="js/content-data.js?v=6b575d8999" defer></script>
+<script src="js/composition-data.js?v=6b575d8999" defer></script>
+<script src="js/blocks.js?v=6b575d8999" defer></script>
 </body>
 </html>

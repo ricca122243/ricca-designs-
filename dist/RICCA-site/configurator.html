@@ -23,8 +23,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts-v3.css?v=f3987feb7e">
-<link rel="stylesheet" href="css/configurator.css?v=f3987feb7e">
+<link rel="stylesheet" href="css/fonts-v3.css?v=6b575d8999">
+<link rel="stylesheet" href="css/configurator.css?v=6b575d8999">
 <script>
 /* как js/site.js на главной: вариант шрифтов ?font=a|b → html[data-font] (Б — антиква в заголовках, css/configurator.css) и фон за изделием
    ?bg=white → html[data-bg] (белый вместо светло-серого); при смене #cfg=… строка запроса остаётся — атрибуты держатся. Линия под шапкой —
@@ -38,17 +38,17 @@
 })(document.documentElement, location.search);
 </script>
 <script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
-<link rel="modulepreload" href="js/cfg/app.js?v=f3987feb7e">
-<link rel="modulepreload" href="js/cfg/params.js?v=f3987feb7e">
-<link rel="modulepreload" href="js/cfg/validate.js?v=f3987feb7e">
-<link rel="modulepreload" href="js/cfg/share.js?v=f3987feb7e">
-<link rel="modulepreload" href="js/cfg/fabrics.js?v=f3987feb7e">
-<script defer src="js/fabrics-data.js?v=f3987feb7e"></script>
-<script defer src="js/catalog-data.js?v=f3987feb7e"></script>
-<script defer src="js/cfg-en.js?v=f3987feb7e"></script><!-- английская версия (/en/configurator): переводит интерфейс; на русской странице ничего не делает -->
-<script defer src="js/lang-en.js?v=f3987feb7e"></script><!-- названия тканей и моделей по-английски — тоже только на /en/configurator -->
-<script defer src="js/lang.js?v=f3987feb7e"></script><!-- переключатель RU | EN, память выбора языка, защита фото -->
-<script type="module" src="js/cfg/app.js?v=f3987feb7e"></script>
+<link rel="modulepreload" href="js/cfg/app.js?v=6b575d8999">
+<link rel="modulepreload" href="js/cfg/params.js?v=6b575d8999">
+<link rel="modulepreload" href="js/cfg/validate.js?v=6b575d8999">
+<link rel="modulepreload" href="js/cfg/share.js?v=6b575d8999">
+<link rel="modulepreload" href="js/cfg/fabrics.js?v=6b575d8999">
+<script defer src="js/fabrics-data.js?v=6b575d8999"></script>
+<script defer src="js/catalog-data.js?v=6b575d8999"></script>
+<script defer src="js/cfg-en.js?v=6b575d8999"></script><!-- английская версия (/en/configurator): переводит интерфейс; на русской странице ничего не делает -->
+<script defer src="js/lang-en.js?v=6b575d8999"></script><!-- названия тканей и моделей по-английски — тоже только на /en/configurator -->
+<script defer src="js/lang.js?v=6b575d8999"></script><!-- переключатель RU | EN, память выбора языка, защита фото -->
+<script type="module" src="js/cfg/app.js?v=6b575d8999"></script>
 </head>
 <body>
 <a class="skip" href="#steps">Перейти к&nbsp;параметрам</a>
@@ -345,7 +345,7 @@
 </div>
 </footer>
 
-<!-- плашка телефона: на каждом шаге модели — «Чертёж» и «Дома» («У себя дома»: значок над короткой подписью 13 px), справа — «Далее: …» или «В WhatsApp» -->
+<!-- плашка телефона: «Чертёж» — всегда (каждый шаг модели, комната, фото); «Дома» («У себя дома») — в модели; справа — «Далее: …» или «В WhatsApp» -->
 <div class="bar" id="bar">
 <button class="btn btn--line bar__b" type="button" id="bar-draw" data-drawing><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-drawing"/></svg><span class="bar__t">Чертёж</span></button>
 <button class="btn btn--line bar__b" type="button" id="bar-ar" aria-label="У себя дома"><svg class="ico" aria-hidden="true"><use href="img/cfg/icons.svg#i-ar"/></svg><span class="bar__t">Дома</span></button>

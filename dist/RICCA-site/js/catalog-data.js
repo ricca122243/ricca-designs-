@@ -21,7 +21,7 @@
       чтение кириллицей — в RICCA_MODEL_READINGS.
    3. Поля:
         id          — категория и номер: 'sofa-24'. Без названия номер на сайте («№ 24») берётся из id. Ссылка на окно изделия — #item-sofa-24.
-        category    — ключ из RICCA_CATALOG_CATEGORIES: 'sofas' | 'beds' | 'armchairs' | 'chairs' | 'tables'
+        category    — ключ из RICCA_CATALOG_CATEGORIES: 'sofas' | 'beds' | 'armchairs' | 'poufs' | 'chairs' | 'tables'
         tags        — подфильтры (только у диванов): 'straight' (прямые), 'corner' (угловые и с шезлонгом), 'modular', 'foldout'
                       (раскладные). У кроватей 'lift' / 'nolift' — пока не показываются (фильтр не нужен), но пусть остаются.
         type        — слово перед номером или названием: 'Диван', 'Кровать', 'Кресло', 'Пуф', 'Стул', 'Стол'.
@@ -75,6 +75,10 @@ window.RICCA_MODEL_NAMES = {
   'sofa-45': 'Terva',     // диван · низкий, спинка из валиков
   'sofa-46': 'Kamra',     // диван · двухместный, спинка из двух подушек
   'sofa-47': 'Ronva',     // диван · двухместный, на металлической раме
+  'sofa-48': 'Lenva',     // кушетка · с валиком, на деревянной раме
+  'sofa-49': 'Bolva',     // диван · двухсекционный, гранёные боковины
+  'sofa-50': 'Kanva',     // диван · угловой, с контрастным кантом
+  'sofa-51': 'Stegva',     // диван · модульный, простёганный
   /* кровати */
   'bed-01': 'Zenal',      // кровать · с подъёмным механизмом или без
   'bed-02': 'Irmel',      // кровать · с подъёмным механизмом
@@ -153,7 +157,7 @@ window.RICCA_MODEL_NAMES = {
 window.RICCA_MODEL_READINGS = {
   /* диваны */
   Svira: 'Свира', Talna: 'Тальна', Desva: 'Десва', Zerla: 'Зерла', Semra: 'Семра', Nemva: 'Немва', Rasma: 'Расма',
-  Inza: 'Инза', Livsa: 'Ливса', Venra: 'Венра', Rulva: 'Рульва', Lanva: 'Ланва', Torsa: 'Торса', Molva: 'Мольва', Orsa: 'Орса', Kalva: 'Кальва', Delva: 'Дельва', Serva: 'Серва', Solva: 'Сольва', Kubva: 'Кубва', Grava: 'Грава', Plava: 'Плава', Mirva: 'Мирва', Tedva: 'Тедва', Arva: 'Арва', Belva: 'Бельва', Dalma: 'Дальма', Zivra: 'Зивра', Tarva: 'Тарва', Norva: 'Норва', Sorva: 'Сорва', Morva: 'Морва', Terva: 'Терва', Kamra: 'Камра', Ronva: 'Ронва',
+  Inza: 'Инза', Livsa: 'Ливса', Venra: 'Венра', Rulva: 'Рульва', Lanva: 'Ланва', Torsa: 'Торса', Molva: 'Мольва', Orsa: 'Орса', Kalva: 'Кальва', Delva: 'Дельва', Serva: 'Серва', Solva: 'Сольва', Kubva: 'Кубва', Grava: 'Грава', Plava: 'Плава', Mirva: 'Мирва', Tedva: 'Тедва', Arva: 'Арва', Belva: 'Бельва', Dalma: 'Дальма', Zivra: 'Зивра', Tarva: 'Тарва', Norva: 'Норва', Sorva: 'Сорва', Morva: 'Морва', Terva: 'Терва', Kamra: 'Камра', Ronva: 'Ронва', Lenva: 'Ленва', Bolva: 'Больва', Kanva: 'Канва', Stegva: 'Стегва',
   /* кровати */
   Zenal: 'Зеналь', Irmel: 'Ирмель', Zovel: 'Зовель', Olsal: 'Ольсаль', Ivel: 'Ивель', Usnel: 'Уснель', Nisel: 'Нисель',
   Ozrel: 'Озрель', Avsel: 'Авсель', Tumel: 'Тумель', Unsal: 'Унсаль', Remal: 'Ремаль', Isval: 'Исваль',
@@ -184,6 +188,8 @@ window.RICCA_CATALOG_CATEGORIES = {
   armchairs: { label: 'Кресла', cover: 'img/catalog/cover-armchairs', viz: true,
     coverAlt: 'Визуализация: кресло в молочной обивке на чёрной раме у окна',
     desc: 'Для отдыха: округлые, на цоколе' },
+  poufs: { label: 'Пуфы и банкетки',   /* 12 ноября: свой раздел и своя кнопка на первом экране (раньше были внутри «Кресел») */
+    desc: 'Пуфы, банкетки, под размер комнаты' },
   chairs: { label: 'Стулья', cover: 'img/catalog/cover-chairs', viz: true,
     coverAlt: 'Визуализация: спинка и ножки полукресла в светлом букле, крупно',
     desc: 'С подлокотниками и без' },
@@ -205,29 +211,21 @@ window.RICCA_CATALOG = [
   /* ═════════ ДИВАНЫ (12) ═════════ */
   {
     id: "sofa-01",
-    cfg: "t.modular~mo.4~ch.right~as.wide~lg.hidden",
+    cfg: "t.modular~mo.2~mm.105~ch.none~as.wide~aw.26~ah.64~h.72~bc.fixed~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
     subtitle: "Модульный · прямой или угловой",
     photos: [
       {"src": "img/catalog/p-sofa-01-o-r.webp", "src600": "img/catalog/p-sofa-01-o-r-600.webp", "alt": "Модульный диван в красном твиде, две секции — на светлом фоне", "studio": true, "box": [0.76, 0.237], "w": 1386, "h": 1040},
+      {"src": "img/catalog/p-sofa-01-s1.webp", "src600": "img/catalog/p-sofa-01-s1-600.webp", "alt": "Модульный диван с шезлонгом в серо-голубой ткани у бетонной стены", "w": 960, "h": 1280, "scene": true},
       {"src": "img/catalog/p-sofa-01-o4-r.webp", "src600": "img/catalog/p-sofa-01-o4-r-600.webp", "alt": "Модульный диван в красном твиде, две секции, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.289], "w": 1384, "h": 1038},
       {"src": "img/catalog/p-sofa-01-o5-r.webp", "src600": "img/catalog/p-sofa-01-o5-r-600.webp", "alt": "Модульный диван в красном твиде, две секции, вид сверху — на светлом фоне", "studio": true, "box": [0.76, 0.509], "w": 1532, "h": 1149},
       {"src": "img/catalog/p-sofa-01-o2-r.webp", "src600": "img/catalog/p-sofa-01-o2-r-600.webp", "alt": "Модульный диван в красном твиде, три секции, вид сверху — на светлом фоне", "studio": true, "box": [0.76, 0.456], "w": 1542, "h": 1156},
       {"src": "img/catalog/p-sofa-01-o3-r.webp", "src600": "img/catalog/p-sofa-01-o3-r-600.webp", "alt": "Модульный диван в красном твиде с открытым краем — на светлом фоне", "studio": true, "box": [0.76, 0.22], "w": 1536, "h": 1152},
       {"src": "img/catalog/p-sofa-01-t1-r.webp", "src600": "img/catalog/p-sofa-01-t1-r-600.webp", "alt": "Модульный диван в твиде с крапинкой, три секции, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.186], "w": 1516, "h": 1137},
       {"src": "img/catalog/p-sofa-01-t2-r.webp", "src600": "img/catalog/p-sofa-01-t2-r-600.webp", "alt": "Модульный диван в твиде с крапинкой, три секции, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.249], "w": 1546, "h": 1160},
-      {"src": "img/catalog/p-sofa-01-t3.webp", "src600": "img/catalog/p-sofa-01-t3-600.webp", "alt": "Подлокотник и секция: твид с крапинкой крупно — деталь", "studio": true, "box": [0.95, 0.847], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-sofa-01-c-hd.webp", "src600": "img/catalog/p-sofa-01-c-hd-600.webp", "alt": "Диван, длинная сборка секций — на светлом фоне", "studio": true, "box": [0.791, 0.193], "w": 1800, "h": 1350},
-      {"src": "img/catalog/p-sofa-01-g-hd.webp", "src600": "img/catalog/p-sofa-01-g-hd-600.webp", "alt": "Диван с открытым краем — на светлом фоне", "studio": true, "box": [0.752, 0.203], "w": 2400, "h": 1800},
-      {"src": "img/catalog/p-sofa-01-d-hd.webp", "src600": "img/catalog/p-sofa-01-d-hd-600.webp", "alt": "Диван с шезлонгом — на светлом фоне", "studio": true, "box": [0.758, 0.187], "w": 1800, "h": 1350},
-      {"src": "img/catalog/p-sofa-01-b-hd.webp", "src600": "img/catalog/p-sofa-01-b-hd-600.webp", "alt": "Диван из трёх секций в терракотовой ткани — на светлом фоне", "studio": true, "box": [0.775, 0.179], "w": 1800, "h": 1350},
-      {"src": "img/catalog/p-sofa-01-f-hd.webp", "src600": "img/catalog/p-sofa-01-f-hd-600.webp", "alt": "Диван: спинки по краям и низкая секция в центре — на светлом фоне", "studio": true, "box": [0.643, 0.163], "w": 1800, "h": 1350},
-      {"src": "img/catalog/p-sofa-01-k-hd.webp", "src600": "img/catalog/p-sofa-01-k-hd-600.webp", "alt": "Длинный диван в бежевой ткани — на светлом фоне", "studio": true, "box": [0.705, 0.189], "w": 1800, "h": 1350},
-      {"src": "img/catalog/p-sofa-01-m-hd.webp", "src600": "img/catalog/p-sofa-01-m-hd-600.webp", "alt": "Диван в пудрово-розовой ткани с низкой секцией между спинками — на светлом фоне", "studio": true, "box": [0.797, 0.161], "w": 2400, "h": 1800},
-      {"src": "img/catalog/p-sofa-01-q-hd.webp", "src600": "img/catalog/p-sofa-01-q-hd-600.webp", "alt": "Прямой диван с низкими подлокотниками — на светлом фоне", "studio": true, "box": [0.652, 0.206], "w": 2400, "h": 1800},
-      {"src": "img/catalog/p-sofa-01-r-hd.webp", "src600": "img/catalog/p-sofa-01-r-hd-600.webp", "alt": "Диван с открытым краем в шалфейной ткани — на светлом фоне", "studio": true, "box": [0.712, 0.214], "w": 2400, "h": 1800}
+      {"src": "img/catalog/p-sofa-01-t3-a.webp", "src600": "img/catalog/p-sofa-01-t3-a-600.webp", "alt": "Подлокотник и секция: твид с крапинкой крупно — деталь", "studio": true, "box": [0.606, 0.72], "w": 2008, "h": 1506}
     ],
     description: "Модульный диван из мягких секций: собирается прямым, угловым или с открытым краем — под вашу комнату.",
     options: ["Модульный", "Размер под комнату", "Ткань или кожа"],
@@ -240,13 +238,14 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-02",
-    cfg: "t.corner~f.chaise~s.right~as.wide~lg.hidden~bc.loose",
+    cfg: "t.corner~f.chaise~s.left~w.300~l.165~as.thin~aw.10~ah.60~bc.loose~n.2~lg.plinth~lh.6",
     category: "sofas",
     tags: ["corner", "straight"],
     type: "Диван",
     subtitle: "С шезлонгом или прямой",
     photos: [
       {"src": "img/catalog/p-sofa-02-hd.webp", "src600": "img/catalog/p-sofa-02-hd-600.webp", "alt": "Диван с контрастными боковинами — на светлом фоне", "studio": true, "box": [0.799, 0.292], "w": 2400, "h": 1800},
+      {"src": "img/catalog/p-sofa-02-s1.webp", "src600": "img/catalog/p-sofa-02-s1-600.webp", "alt": "Диван с шезлонгом и приставным столиком из дерева у бетонной стены", "w": 960, "h": 1280, "scene": true},
       {"src": "img/catalog/p-sofa-02-2-hd.webp", "src600": "img/catalog/p-sofa-02-2-hd-600.webp", "alt": "Диван с шезлонгом — на светлом фоне", "studio": true, "box": [0.753, 0.329], "w": 2400, "h": 1800},
       {"src": "img/catalog/p-sofa-02-3-hd.webp", "src600": "img/catalog/p-sofa-02-3-hd-600.webp", "alt": "Прямой диван — на светлом фоне", "studio": true, "box": [0.658, 0.241], "w": 1800, "h": 1350}
     ],
@@ -261,18 +260,17 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-03",
-    cfg: "t.sofa~w.240~as.wide~lg.metal~lf.black",
+    cfg: "t.sofa~w.230~as.round~aw.26~ah.72~h.74~bc.fixed~sc.single~p.1~lg.hidden",
     category: "sofas",
     tags: ["foldout", "straight"],
     type: "Диван",
     subtitle: "Прямой · раскладной",
     photos: [
-      {"src": "img/catalog/p-sofa-03-hd.webp", "src600": "img/catalog/p-sofa-03-hd-600.webp", "alt": "Диван в светлой ткани с кантом — на светлом фоне", "studio": true, "box": [0.758, 0.297], "w": 1800, "h": 1350},
+      {"src": "img/catalog/p-sofa-03-3-hd.webp", "src600": "img/catalog/p-sofa-03-3-hd-600.webp", "alt": "Диван в тёмной фактурной ткани — на светлом фоне", "studio": true, "box": [0.577, 0.232], "w": 2400, "h": 1800},
       {"src": "img/catalog/p-sofa-03-y1.webp", "src600": "img/catalog/p-sofa-03-y1-600.webp", "alt": "Диван с цельной округлой спинкой и кантом в жёлтой ткани с плетёным узором", "w": 1000, "h": 750},
       {"src": "img/catalog/p-sofa-03-y2.webp", "src600": "img/catalog/p-sofa-03-y2-600.webp", "alt": "Тот же диван в жёлтой ткани, вид спереди", "w": 1000, "h": 750},
       {"src": "img/catalog/p-sofa-03-y3.webp", "src600": "img/catalog/p-sofa-03-y3-600.webp", "alt": "Боковина с кантом и край сиденья: ткань крупно — деталь", "w": 1000, "h": 1000},
-      {"src": "img/catalog/p-sofa-03-2-hd.webp", "src600": "img/catalog/p-sofa-03-2-hd-600.webp", "alt": "Диван в разложенном виде — на светлом фоне", "studio": true, "box": [0.795, 0.649], "w": 2400, "h": 1800},
-      {"src": "img/catalog/p-sofa-03-3-hd.webp", "src600": "img/catalog/p-sofa-03-3-hd-600.webp", "alt": "Диван в тёмной фактурной ткани — на светлом фоне", "studio": true, "box": [0.577, 0.232], "w": 2400, "h": 1800}
+      {"src": "img/catalog/p-sofa-03-2-hd.webp", "src600": "img/catalog/p-sofa-03-2-hd-600.webp", "alt": "Диван в разложенном виде — на светлом фоне", "studio": true, "box": [0.795, 0.649], "w": 2400, "h": 1800}
     ],
     description: "Цельная округлая спинка с тонким кантом по краю; раскладывается в спальное место.",
     options: ["Раскладной механизм", "Размер под комнату", "Ткань из палитры"],
@@ -286,7 +284,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-16",
-    cfg: "t.corner~f.chaise~s.left~as.thin~lg.metal~lf.black",
+    cfg: "t.corner~f.chaise~s.left~w.300~l.165~as.wide~aw.20~ah.58~bc.loose~n.2~lg.metal~lf.black~lh.6",
     category: "sofas",
     tags: ["foldout", "straight", "corner"],
     type: "Диван",
@@ -294,8 +292,6 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-sofa-16-o-r.webp", "src600": "img/catalog/p-sofa-16-o-r-600.webp", "alt": "Диван с шезлонгом в оливково-бежевом велюре на тонких металлических опорах, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.255], "w": 1516, "h": 1137},
       {"src": "img/catalog/p-sofa-16-o2-r.webp", "src600": "img/catalog/p-sofa-16-o2-r-600.webp", "alt": "Тот же диван в разложенном виде: спальное место — на светлом фоне", "studio": true, "box": [0.76, 0.461], "w": 1549, "h": 1162},
-      {"src": "img/catalog/p-sofa-16-hd.webp", "src600": "img/catalog/p-sofa-16-hd-600.webp", "alt": "Диван в светлой ткани — на светлом фоне", "studio": true, "box": [0.757, 0.321], "w": 1800, "h": 1350},
-      {"src": "img/catalog/p-sofa-16-2-hd.webp", "src600": "img/catalog/p-sofa-16-2-hd-600.webp", "alt": "Диван в разложенном виде — на светлом фоне", "studio": true, "box": [0.764, 0.659], "w": 2400, "h": 1800},
       {"src": "img/catalog/p-sofa-16-5-hd.webp", "src600": "img/catalog/p-sofa-16-5-hd-600.webp", "alt": "Диван с шезлонгом в светло-серой ткани — на светлом фоне", "studio": true, "box": [0.634, 0.234], "w": 2400, "h": 1800},
       {"src": "img/catalog/p-sofa-16-6-hd.webp", "src600": "img/catalog/p-sofa-16-6-hd-600.webp", "alt": "Диван в серой ткани, вид сбоку — на светлом фоне", "studio": true, "box": [0.353, 0.174], "w": 2400, "h": 1800}
     ],
@@ -311,7 +307,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-17",
-    cfg: "t.sofa~w.230~as.wide~bc.fixed~lg.wood~lf.oak",
+    cfg: "t.sofa~w.230~d.100~as.round~aw.22~ah.72~h.74~bc.fixed~sc.sections~n.2~lg.hidden",
     category: "sofas",
     tags: ["foldout", "straight"],
     type: "Диван",
@@ -320,11 +316,10 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-sofa-17-o-r.webp", "src600": "img/catalog/p-sofa-17-o-r-600.webp", "alt": "Диван с округлыми боковинами в двух тканях: терракотовое сиденье и горчичная «раковина» спинки — на светлом фоне", "studio": true, "box": [0.76, 0.559], "w": 1366, "h": 1024},
       {"src": "img/catalog/p-sofa-17-o2-r.webp", "src600": "img/catalog/p-sofa-17-o2-r-600.webp", "alt": "Тот же диван в двух тканях, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.24], "w": 1397, "h": 1048},
       {"src": "img/catalog/p-sofa-17-t1-r.webp", "src600": "img/catalog/p-sofa-17-t1-r-600.webp", "alt": "Тот же диван в терракотовой ткани с горчичными валиками спинки, вид сверху — на светлом фоне", "studio": true, "box": [0.76, 0.559], "w": 1363, "h": 1022},
-      {"src": "img/catalog/p-sofa-17-t2.webp", "src600": "img/catalog/p-sofa-17-t2-600.webp", "alt": "Боковина-«лепесток», сиденье и горчичный валик: ткань крупно — деталь", "studio": true, "box": [0.643, 0.488], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-sofa-17-t2-a.webp", "src600": "img/catalog/p-sofa-17-t2-a-600.webp", "alt": "Боковина-«лепесток», сиденье и горчичный валик: ткань крупно — деталь", "studio": true, "box": [0.711, 0.72], "w": 1157, "h": 868},
       {"src": "img/catalog/p-sofa-17-g1-r.webp", "src600": "img/catalog/p-sofa-17-g1-r-600.webp", "alt": "Тот же диван в серых тканях: тёмное сиденье, светлые боковины и валики — на светлом фоне", "studio": true, "box": [0.76, 0.309], "w": 1357, "h": 1018},
       {"src": "img/catalog/p-sofa-17-hd.webp", "src600": "img/catalog/p-sofa-17-hd-600.webp", "alt": "Диван в тёмной ткани со светлыми боковинами — на светлом фоне", "studio": true, "box": [0.56, 0.263], "w": 2400, "h": 1800},
-      {"src": "img/catalog/p-sofa-17-2-hd.webp", "src600": "img/catalog/p-sofa-17-2-hd-600.webp", "alt": "Диван в разложенном виде — на светлом фоне", "studio": true, "box": [0.802, 0.649], "w": 2400, "h": 1800},
-      {"src": "img/catalog/p-sofa-17-3-hd.webp", "src600": "img/catalog/p-sofa-17-3-hd-600.webp", "alt": "Диван: механизм раскладывания — на светлом фоне", "studio": true, "box": [0.729, 0.31], "w": 1800, "h": 1350}
+      {"src": "img/catalog/p-sofa-17-2-hd.webp", "src600": "img/catalog/p-sofa-17-2-hd-600.webp", "alt": "Диван в разложенном виде — на светлом фоне", "studio": true, "box": [0.802, 0.649], "w": 2400, "h": 1800}
     ],
     description: "Округлые боковины-«лепестки» и мягкая спинка; можно сочетать две ткани.",
     options: ["Раскладной механизм", "Две ткани", "Размер под комнату"],
@@ -338,7 +333,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-18",
-    cfg: "t.sofa~w.200~as.thin~lg.metal~lf.black",
+    cfg: "t.sofa~w.220~as.wide~aw.25~ah.72~h.74~bc.fixed~n.2~p.1~lg.hidden",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -361,7 +356,7 @@ window.RICCA_CATALOG = [
   // TODO (заказчик): на чертеже общая ширина 2600 мм — уточнить габарит
   {
     id: "sofa-19",
-    cfg: "t.sofa~w.240~as.round~lg.wood~lf.walnut",
+    cfg: "t.sofa~w.230~as.round~aw.30~ah.60~h.80~bc.loose~n.2~lg.hidden",
     category: "sofas",
     tags: ["straight", "corner"],
     type: "Диван",
@@ -383,24 +378,23 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-20",
-    cfg: "t.corner~f.chaise~s.right~as.wide~lg.hidden",
+    cfg: "t.sofa~w.240~as.thin~aw.16~ah.70~h.85~bc.loose~n.3~lg.metal~lf.black~lh.14",
     category: "sofas",
     tags: ["corner", "straight"],
     type: "Диван",
     subtitle: "Прямой, с шезлонгом или угловой",
     photos: [
       {"src": "img/catalog/p-sofa-20-g1-r.webp", "src600": "img/catalog/p-sofa-20-g1-r-600.webp", "alt": "Трёхместный диван в оливковом велюре на тонких металлических ножках, основание — в светлой ткани с рисунком — на светлом фоне", "studio": true, "box": [0.76, 0.369], "w": 1332, "h": 999},
+      {"src": "img/catalog/p-sofa-20-w1.webp", "src600": "img/catalog/p-sofa-20-w1-600.webp", "alt": "Двухместный диван в бордовой ткани у бетонной стены", "w": 1024, "h": 1280, "scene": true},
       {"src": "img/catalog/p-sofa-20-g2-r.webp", "src600": "img/catalog/p-sofa-20-g2-r-600.webp", "alt": "Тот же диван в оливковом велюре, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.324], "w": 1436, "h": 1077},
-      {"src": "img/catalog/p-sofa-20-g3.webp", "src600": "img/catalog/p-sofa-20-g3-600.webp", "alt": "Подлокотник, подушки и основание в ткани с рисунком: велюр крупно — деталь", "studio": true, "box": [0.754, 0.522], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-sofa-20-g3-a.webp", "src600": "img/catalog/p-sofa-20-g3-a-600.webp", "alt": "Подлокотник, подушки и основание в ткани с рисунком: велюр крупно — деталь", "studio": true, "box": [0.779, 0.72], "w": 1239, "h": 929},
       {"src": "img/catalog/p-sofa-20-p1-r.webp", "src600": "img/catalog/p-sofa-20-p1-r-600.webp", "alt": "Угловой вариант того же дивана в двух тканях с мелким рисунком, розовой и красной, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.255], "w": 1545, "h": 1159},
-      {"src": "img/catalog/p-sofa-20-p2.webp", "src600": "img/catalog/p-sofa-20-p2-600.webp", "alt": "Подлокотник и подушки: розовая ткань с мелким рисунком и красное основание крупно — деталь", "studio": true, "box": [0.78, 0.555], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-sofa-20-p2-a.webp", "src600": "img/catalog/p-sofa-20-p2-a-600.webp", "alt": "Подлокотник и подушки: розовая ткань с мелким рисунком и красное основание крупно — деталь", "studio": true, "box": [0.759, 0.72], "w": 1317, "h": 988},
       {"src": "img/catalog/p-sofa-20-y1-r.webp", "src600": "img/catalog/p-sofa-20-y1-r-600.webp", "alt": "Угловой диван в жёлтой рогожке, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.254], "w": 1546, "h": 1160},
       {"src": "img/catalog/p-sofa-20-y2-r.webp", "src600": "img/catalog/p-sofa-20-y2-r-600.webp", "alt": "Угловой диван в жёлтой рогожке, вид сверху — на светлом фоне", "studio": true, "box": [0.76, 0.375], "w": 1541, "h": 1156},
       {"src": "img/catalog/p-sofa-20-s1-r.webp", "src600": "img/catalog/p-sofa-20-s1-r-600.webp", "alt": "Трёхместный диван в ткани в мелкую полоску, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.324], "w": 1436, "h": 1077},
       {"src": "img/catalog/p-sofa-20-s2-r.webp", "src600": "img/catalog/p-sofa-20-s2-r-600.webp", "alt": "Трёхместный диван в ткани в мелкую полоску, вид сверху — на светлом фоне", "studio": true, "box": [0.76, 0.595], "w": 1288, "h": 966},
-      {"src": "img/catalog/p-sofa-20-m1-r.webp", "src600": "img/catalog/p-sofa-20-m1-r-600.webp", "alt": "Диван с шезлонгом в светло-мятной ткани, подушки спинки — в ткани с синим рисунком — на светлом фоне", "studio": true, "box": [0.76, 0.3], "w": 1433, "h": 1075},
-      {"src": "img/catalog/p-sofa-20-2-hd.webp", "src600": "img/catalog/p-sofa-20-2-hd-600.webp", "alt": "Прямой диван в бордовой ткани — на светлом фоне", "studio": true, "box": [0.553, 0.308], "w": 1800, "h": 1350},
-      {"src": "img/catalog/p-sofa-20-hd.webp", "src600": "img/catalog/p-sofa-20-hd-600.webp", "alt": "Диван с шезлонгом в оливковом велюре — на светлом фоне", "studio": true, "box": [0.644, 0.257], "w": 2400, "h": 1800}
+      {"src": "img/catalog/p-sofa-20-m1-r.webp", "src600": "img/catalog/p-sofa-20-m1-r-600.webp", "alt": "Диван с шезлонгом в светло-мятной ткани, подушки спинки — в ткани с синим рисунком — на светлом фоне", "studio": true, "box": [0.76, 0.3], "w": 1433, "h": 1075}
     ],
     description: "Прямые подлокотники, высокие подушки спинки, тонкие металлические ножки.",
     options: ["Прямой, с шезлонгом или угловой", "Размер под комнату", "Ткань или кожа"],
@@ -413,7 +407,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-21",
-    cfg: "t.sofa~w.220~as.wide~bc.loose~lg.plinth~lh.8",
+    hidden: true,
+    cfg: "t.sofa~w.200~as.round~aw.18~ah.60~h.82~bc.loose~n.2~lg.wood~lf.blackwood~lh.8",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -432,7 +427,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-22",
-    cfg: "t.sofa~w.220~as.round~lg.metal~lf.gold",
+    cfg: "t.sofa~w.250~as.round~aw.30~ah.68~h.70~bc.fixed~n.2~lg.hidden",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -440,14 +435,13 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-sofa-22-o-r.webp", "src600": "img/catalog/p-sofa-22-o-r-600.webp", "alt": "Диван с цельной округлой спинкой в сером букле, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.246], "w": 1457, "h": 1093},
       {"src": "img/catalog/p-sofa-22-o2-r.webp", "src600": "img/catalog/p-sofa-22-o2-r-600.webp", "alt": "Диван с цельной округлой спинкой в сером букле, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.28], "w": 1501, "h": 1126},
-      {"src": "img/catalog/p-sofa-22-d1.webp", "src600": "img/catalog/p-sofa-22-d1-600.webp", "alt": "Подлокотник и подушка сиденья: букле крупно — деталь", "studio": true, "box": [0.855, 0.524], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-sofa-22-d1-a.webp", "src600": "img/catalog/p-sofa-22-d1-a-600.webp", "alt": "Подлокотник и подушка сиденья: букле крупно — деталь", "studio": true, "box": [0.881, 0.72], "w": 1243, "h": 932},
       {"src": "img/catalog/p-sofa-22-s1-r.webp", "src600": "img/catalog/p-sofa-22-s1-r-600.webp", "alt": "Тот же диван в шалфейном букле, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.246], "w": 1457, "h": 1093},
       {"src": "img/catalog/p-sofa-22-s2-r.webp", "src600": "img/catalog/p-sofa-22-s2-r-600.webp", "alt": "Диван в шалфейном букле, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.28], "w": 1266, "h": 950},
-      {"src": "img/catalog/p-sofa-22-s3.webp", "src600": "img/catalog/p-sofa-22-s3-600.webp", "alt": "Подлокотник и подушка сиденья: шалфейное букле крупно — деталь", "studio": true, "box": [0.855, 0.523], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-sofa-22-s3-a.webp", "src600": "img/catalog/p-sofa-22-s3-a-600.webp", "alt": "Подлокотник и подушка сиденья: шалфейное букле крупно — деталь", "studio": true, "box": [0.881, 0.72], "w": 1243, "h": 932},
       {"src": "img/catalog/p-sofa-22-m1-r.webp", "src600": "img/catalog/p-sofa-22-m1-r-600.webp", "alt": "Тот же диван в сливово-розовой ткани, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.242], "w": 1409, "h": 1057},
       {"src": "img/catalog/p-sofa-22-m2-r.webp", "src600": "img/catalog/p-sofa-22-m2-r-600.webp", "alt": "Диван в сливово-розовой ткани, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.279], "w": 1391, "h": 1043},
-      {"src": "img/catalog/p-sofa-22-m3.webp", "src600": "img/catalog/p-sofa-22-m3-600.webp", "alt": "Подлокотник и подушка сиденья: сливово-розовая ткань крупно — деталь", "studio": true, "box": [0.856, 0.418], "w": 1170, "h": 1170},
-      {"src": "img/catalog/p-sofa-22-hd.webp", "src600": "img/catalog/p-sofa-22-hd-600.webp", "alt": "Диван в серо-голубой ткани — на светлом фоне", "studio": true, "box": [0.614, 0.238], "w": 1800, "h": 1350}
+      {"src": "img/catalog/p-sofa-22-m3-a.webp", "src600": "img/catalog/p-sofa-22-m3-a-600.webp", "alt": "Подлокотник и подушка сиденья: сливово-розовая ткань крупно — деталь", "studio": true, "box": [0.9, 0.586], "w": 1112, "h": 834}
     ],
     description: "Цельная плавная спинка, которая переходит в подлокотники.",
     options: ["Прямой", "Размер под комнату", "Ткань из палитры"],
@@ -461,22 +455,22 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-23",
     glb: "models3d/sofa-23.glb",
-    cfg: "t.sofa~w.230~as.wide~lg.hidden",
+    cfg: "t.sofa~w.220~as.round~aw.22~ah.62~h.90~bc.loose~n.2~lg.metal~lf.gold~lh.12",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
     subtitle: "Прямой",
     photos: [
       {"src": "img/catalog/p-sofa-23-o-r.webp", "src600": "img/catalog/p-sofa-23-o-r-600.webp", "alt": "Диван с округлыми подушками в жёлтой ткани на тонких ножках — на светлом фоне", "studio": true, "box": [0.76, 0.331], "w": 1349, "h": 1012},
+      {"src": "img/catalog/p-sofa-23-s1.webp", "src600": "img/catalog/p-sofa-23-s1-600.webp", "alt": "Диван в красном твиде с подушками-шарами у бетонной стены", "w": 1024, "h": 1280, "scene": true},
       {"src": "img/catalog/p-sofa-23-o2-r.webp", "src600": "img/catalog/p-sofa-23-o2-r-600.webp", "alt": "Диван с округлыми подушками в жёлтой ткани, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.366], "w": 1492, "h": 1119},
       {"src": "img/catalog/p-sofa-23-y3-r.webp", "src600": "img/catalog/p-sofa-23-y3-r-600.webp", "alt": "Диван в жёлтой ткани с подушками-шарами, вид сверху — на светлом фоне", "studio": true, "box": [0.748, 0.68], "w": 1337, "h": 1003},
-      {"src": "img/catalog/p-sofa-23-d1.webp", "src600": "img/catalog/p-sofa-23-d1-600.webp", "alt": "Подлокотник и подушка в жёлтой ткани «ёлочка» — деталь", "studio": true, "box": [0.83, 0.609], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-sofa-23-d1-a.webp", "src600": "img/catalog/p-sofa-23-d1-a-600.webp", "alt": "Подлокотник и подушка в жёлтой ткани «ёлочка» — деталь", "studio": true, "box": [0.738, 0.72], "w": 1441, "h": 1081},
       {"src": "img/catalog/p-sofa-23-c1-r.webp", "src600": "img/catalog/p-sofa-23-c1-r-600.webp", "alt": "Компактный вариант того же дивана: цельная спинка и одно сиденье, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.411], "w": 1280, "h": 960},
       {"src": "img/catalog/p-sofa-23-c2-r.webp", "src600": "img/catalog/p-sofa-23-c2-r-600.webp", "alt": "Компактный вариант дивана, вид сверху — на светлом фоне", "studio": true, "box": [0.74, 0.68], "w": 1355, "h": 1016},
       {"src": "img/catalog/p-sofa-23-g1-r.webp", "src600": "img/catalog/p-sofa-23-g1-r-600.webp", "alt": "Тот же диван в зелёном твиде, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.33], "w": 1349, "h": 1012},
       {"src": "img/catalog/p-sofa-23-g2-r.webp", "src600": "img/catalog/p-sofa-23-g2-r-600.webp", "alt": "Диван в зелёном твиде, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.365], "w": 1489, "h": 1117},
-      {"src": "img/catalog/p-sofa-23-g3.webp", "src600": "img/catalog/p-sofa-23-g3-600.webp", "alt": "Подлокотник и подушки: зелёный твид крупно — деталь", "studio": true, "box": [0.83, 0.605], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-sofa-23-hd.webp", "src600": "img/catalog/p-sofa-23-hd-600.webp", "alt": "Диван в коралловой ткани с подушками-шарами — на светлом фоне", "studio": true, "box": [0.6, 0.3], "w": 1800, "h": 1350}
+      {"src": "img/catalog/p-sofa-23-g3-a.webp", "src600": "img/catalog/p-sofa-23-g3-a-600.webp", "alt": "Подлокотник и подушки: зелёный твид крупно — деталь", "studio": true, "box": [0.742, 0.72], "w": 1433, "h": 1075}
     ],
     description: "Спинка из двух мягких «волн», подушки-шары и тонкий металлический каркас.",
     options: ["Прямой", "Размер под комнату", "Ткань из палитры"],
@@ -491,7 +485,7 @@ window.RICCA_CATALOG = [
   /* ═════════ КРОВАТИ (20) ═════════ */
   {
     id: "bed-01",
-    cfg: "t.bed~hs.channels~b.plinth~lt.1",
+    cfg: "t.bed~hs.plain~hh.105~ho.5~ft.5~rh.30~b.plinth~lh.10~p.1~lt.1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -501,7 +495,7 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-bed-01-d1-r.webp", "src600": "img/catalog/p-bed-01-d1-r-600.webp", "alt": "Кровать в светлом букле с тёмным кантом, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.517], "w": 1453, "h": 1090},
       {"src": "img/catalog/p-bed-01-m1-r.webp", "src600": "img/catalog/p-bed-01-m1-r-600.webp", "alt": "Та же кровать с основанием до пола, в кремовой ткани с тёмным кантом — на светлом фоне", "studio": true, "box": [0.76, 0.412], "w": 1512, "h": 1134},
       {"src": "img/catalog/p-bed-01-m2-r.webp", "src600": "img/catalog/p-bed-01-m2-r-600.webp", "alt": "Кровать с основанием до пола, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.548], "w": 1407, "h": 1055},
-      {"src": "img/catalog/p-bed-01-m3.webp", "src600": "img/catalog/p-bed-01-m3-600.webp", "alt": "Изголовье и основание с кантом, вид спереди — деталь", "studio": true, "box": [0.726, 0.77], "w": 1280, "h": 1280}
+      {"src": "img/catalog/p-bed-01-m3-a.webp", "src600": "img/catalog/p-bed-01-m3-a-600.webp", "alt": "Изголовье и основание с кантом, вид спереди — деталь", "studio": true, "box": [0.509, 0.72], "w": 1824, "h": 1368}
     ],
     description: "«Парящее» основание и изголовье с тонким контрастным кантом.",
     options: ["С механизмом или без", "Размер под матрас", "Ткань или кожа"],
@@ -515,7 +509,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-02",
-    cfg: "t.bed~hs.capitone~b.plinth~lt.1",
+    cfg: "t.bed~hs.plain~hh.100~ho.3~ft.12~rh.42~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -535,16 +529,15 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-03",
-    cfg: "t.bed~hs.plain~b.legs~lf.oak~lt.0",
+    cfg: "t.bed~hs.wings~hh.105~ho.8~ft.6~rh.30~b.legs~lf.black~lh.12",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
     subtitle: "На опорах или на цоколе с механизмом",
     photos: [
       {"src": "img/catalog/p-bed-03-o-r.webp", "src600": "img/catalog/p-bed-03-o-r-600.webp", "alt": "Кровать с изголовьем-«раковиной» в серо-синем велюре на тонких металлических опорах — на светлом фоне", "studio": true, "box": [0.76, 0.331], "w": 1505, "h": 1129},
-      {"src": "img/catalog/p-bed-03-d1.webp", "src600": "img/catalog/p-bed-03-d1-600.webp", "alt": "Изголовье сбоку: мягкая вставка в загнутой «раковине» — деталь", "studio": true, "box": [0.912, 0.76], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-03-d2.webp", "src600": "img/catalog/p-bed-03-d2-600.webp", "alt": "Изголовье и основание в серо-синем велюре, вид спереди — деталь", "studio": true, "box": [0.748, 0.643], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-03-hd.webp", "src600": "img/catalog/p-bed-03-hd-600.webp", "alt": "Кровать на опорах, без подъёмного механизма, в серо-бежевой ткани — на светлом фоне", "studio": true, "box": [0.683, 0.37], "w": 1800, "h": 1350},
+      {"src": "img/catalog/p-bed-03-d1-a.webp", "src600": "img/catalog/p-bed-03-d1-a-600.webp", "alt": "Изголовье сбоку: мягкая вставка в загнутой «раковине» — деталь", "studio": true, "box": [0.811, 0.9], "w": 1441, "h": 1081},
+      {"src": "img/catalog/p-bed-03-d2-a.webp", "src600": "img/catalog/p-bed-03-d2-a-600.webp", "alt": "Изголовье и основание в серо-синем велюре, вид спереди — деталь", "studio": true, "box": [0.629, 0.72], "w": 1524, "h": 1143},
       {"src": "img/catalog/p-bed-03-2-hd.webp", "src600": "img/catalog/p-bed-03-2-hd-600.webp", "alt": "Кровать на цоколе с подъёмным механизмом, в тёмно-серой меланжевой ткани — на светлом фоне", "studio": true, "box": [0.573, 0.341], "w": 2400, "h": 1800}
     ],
     description: "Изголовье с загнутыми «крыльями».",
@@ -559,7 +552,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-04",
-    cfg: "t.bed~hs.wings~b.plinth~lt.1",
+    cfg: "t.bed~hs.plain~hh.105~ft.5~rh.30~b.legs~lf.black~lh.12~p.1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -567,13 +560,12 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-bed-04-o-r.webp", "src600": "img/catalog/p-bed-04-o-r-600.webp", "alt": "Кровать в зелёном велюре с красным кантом на тонких металлических ножках — на светлом фоне", "studio": true, "box": [0.76, 0.395], "w": 1466, "h": 1100},
       {"src": "img/catalog/p-bed-04-o2-r.webp", "src600": "img/catalog/p-bed-04-o2-r-600.webp", "alt": "Кровать в зелёном велюре с красным кантом, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.516], "w": 1372, "h": 1029},
-      {"src": "img/catalog/p-bed-04-d1.webp", "src600": "img/catalog/p-bed-04-d1-600.webp", "alt": "Изголовье с кантом в зелёном велюре, вид сбоку — деталь", "studio": true, "box": [0.83, 0.845], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-04-d2.webp", "src600": "img/catalog/p-bed-04-d2-600.webp", "alt": "Угол кровати в зелёном велюре с красным кантом — деталь", "studio": true, "box": [0.723, 0.759], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-bed-04-d1-a.webp", "src600": "img/catalog/p-bed-04-d1-a-600.webp", "alt": "Изголовье с кантом в зелёном велюре, вид сбоку — деталь", "studio": true, "box": [0.663, 0.9], "w": 1603, "h": 1202},
+      {"src": "img/catalog/p-bed-04-d2-a.webp", "src600": "img/catalog/p-bed-04-d2-a-600.webp", "alt": "Угол кровати в зелёном велюре с красным кантом — деталь", "studio": true, "box": [0.514, 0.72], "w": 1800, "h": 1350},
       {"src": "img/catalog/p-bed-04-s1-r.webp", "src600": "img/catalog/p-bed-04-s1-r-600.webp", "alt": "Та же кровать на низком основании: светло-зелёная ткань с тёмно-зелёным кантом — на светлом фоне", "studio": true, "box": [0.76, 0.413], "w": 1372, "h": 1029},
       {"src": "img/catalog/p-bed-04-s2-r.webp", "src600": "img/catalog/p-bed-04-s2-r-600.webp", "alt": "Кровать в светло-зелёной ткани с кантом, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.573], "w": 1236, "h": 927},
-      {"src": "img/catalog/p-bed-04-s3.webp", "src600": "img/catalog/p-bed-04-s3-600.webp", "alt": "Изголовье и основание с кантом, вид спереди — деталь", "studio": true, "box": [0.63, 0.708], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-04-s4.webp", "src600": "img/catalog/p-bed-04-s4-600.webp", "alt": "Изголовье сбоку: кант по краю — деталь", "studio": true, "box": [0.809, 0.888], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-04-2-hd.webp", "src600": "img/catalog/p-bed-04-2-hd-600.webp", "alt": "Кровать в горчичной ткани на тонких металлических ножках — на светлом фоне", "studio": true, "box": [0.552, 0.287], "w": 2400, "h": 1800}
+      {"src": "img/catalog/p-bed-04-s3-a.webp", "src600": "img/catalog/p-bed-04-s3-a-600.webp", "alt": "Изголовье и основание с кантом, вид спереди — деталь", "studio": true, "box": [0.481, 0.72], "w": 1677, "h": 1258},
+      {"src": "img/catalog/p-bed-04-s4-a.webp", "src600": "img/catalog/p-bed-04-s4-a-600.webp", "alt": "Изголовье сбоку: кант по краю — деталь", "studio": true, "box": [0.615, 0.9], "w": 1684, "h": 1263}
     ],
     description: "Прямые линии и контрастный кант по изголовью и основанию.",
     options: ["С механизмом или без", "Размер под матрас", "Ткань или кожа"],
@@ -588,7 +580,7 @@ window.RICCA_CATALOG = [
   // TODO (заказчик): есть ли подъёмный механизм
   {
     id: "bed-05",
-    cfg: "t.bed~hs.plain~hh.140~b.plinth",
+    cfg: "t.bed~hs.plain~hh.125~ho.2~ft.12~rh.32~b.legs~lf.black~lh.8",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -607,7 +599,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-09",
-    cfg: "t.bed~hs.plain~b.legs~lf.black~lh.12",
+    cfg: "t.bed~hs.plain~hh.100~ho.12~ft.6~rh.30~b.legs~lf.black~lh.8",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -617,14 +609,14 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-bed-09-b1-r.webp", "src600": "img/catalog/p-bed-09-b1-r-600.webp", "alt": "Та же кровать в светло-голубом букле, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.444], "w": 1437, "h": 1078},
       {"src": "img/catalog/p-bed-09-o-r.webp", "src600": "img/catalog/p-bed-09-o-r-600.webp", "alt": "Кровать с изголовьем-«капсулой» в шалфейном букле на круглых опорах, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.445], "w": 1439, "h": 1079},
       {"src": "img/catalog/p-bed-09-o2-r.webp", "src600": "img/catalog/p-bed-09-o2-r-600.webp", "alt": "Та же кровать, вид сбоку: изголовье-«капсула» и валик — на светлом фоне", "studio": true, "box": [0.76, 0.382], "w": 1312, "h": 984},
-      {"src": "img/catalog/p-bed-09-d1.webp", "src600": "img/catalog/p-bed-09-d1-600.webp", "alt": "Изголовье-«капсула» и круглая опора: букле крупно — деталь", "studio": true, "box": [0.996, 0.759], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-bed-09-d1-a.webp", "src600": "img/catalog/p-bed-09-d1-a-600.webp", "alt": "Изголовье-«капсула» и круглая опора: букле крупно — деталь", "studio": true, "box": [0.885, 0.9], "w": 1440, "h": 1080},
       {"src": "img/catalog/p-bed-09-m1-r.webp", "src600": "img/catalog/p-bed-09-m1-r-600.webp", "alt": "Та же кровать с основанием до пола, в оливково-серой ткани — на светлом фоне", "studio": true, "box": [0.76, 0.369], "w": 1495, "h": 1121},
-      {"src": "img/catalog/p-bed-09-m2.webp", "src600": "img/catalog/p-bed-09-m2-600.webp", "alt": "Изголовье-«капсула» и основание до пола, вид спереди — деталь", "studio": true, "box": [0.809, 0.719], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-09-m3.webp", "src600": "img/catalog/p-bed-09-m3-600.webp", "alt": "Изголовье сбоку и основание до пола — деталь", "studio": true, "box": [0.998, 0.872], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-bed-09-m2-a.webp", "src600": "img/catalog/p-bed-09-m2-a-600.webp", "alt": "Изголовье-«капсула» и основание до пола, вид спереди — деталь", "studio": true, "box": [0.608, 0.72], "w": 1704, "h": 1278},
+      {"src": "img/catalog/p-bed-09-m3-a.webp", "src600": "img/catalog/p-bed-09-m3-a-600.webp", "alt": "Изголовье сбоку и основание до пола — деталь", "studio": true, "box": [0.773, 0.9], "w": 1653, "h": 1240},
       {"src": "img/catalog/p-bed-09-y1-r.webp", "src600": "img/catalog/p-bed-09-y1-r-600.webp", "alt": "Та же кровать в жёлтом букле на круглых опорах — на светлом фоне", "studio": true, "box": [0.76, 0.332], "w": 1571, "h": 1178},
       {"src": "img/catalog/p-bed-09-y2-r.webp", "src600": "img/catalog/p-bed-09-y2-r-600.webp", "alt": "Кровать в жёлтом букле, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.383], "w": 1312, "h": 984},
-      {"src": "img/catalog/p-bed-09-y3.webp", "src600": "img/catalog/p-bed-09-y3-600.webp", "alt": "Изголовье-«капсула» и круглая опора в жёлтом букле, вид спереди — деталь", "studio": true, "box": [0.818, 0.649], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-09-y4.webp", "src600": "img/catalog/p-bed-09-y4-600.webp", "alt": "Изголовье сбоку и валик в жёлтом букле — деталь", "studio": true, "box": [0.996, 0.759], "w": 1280, "h": 1280}
+      {"src": "img/catalog/p-bed-09-y3-a.webp", "src600": "img/catalog/p-bed-09-y3-a-600.webp", "alt": "Изголовье-«капсула» и круглая опора в жёлтом букле, вид спереди — деталь", "studio": true, "box": [0.68, 0.72], "w": 1539, "h": 1154},
+      {"src": "img/catalog/p-bed-09-y4-a.webp", "src600": "img/catalog/p-bed-09-y4-a-600.webp", "alt": "Изголовье сбоку и валик в жёлтом букле — деталь", "studio": true, "box": [0.885, 0.9], "w": 1440, "h": 1080}
     ],
     description: "Изголовье-«капсула» шире кровати.",
     options: ["С механизмом или без", "Размер под матрас", "Ткань или кожа"],
@@ -638,21 +630,19 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-10",
-    cfg: "t.bed~hs.channels~b.legs~lf.black~lh.14",
+    cfg: "t.bed~hs.plain~hh.100~ho.3~ft.5~rh.29~b.legs~lf.black~lh.14",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
     subtitle: "На тонких ножках или с механизмом",
     photos: [
       {"src": "img/catalog/p-bed-10-o-r.webp", "src600": "img/catalog/p-bed-10-o-r-600.webp", "alt": "Кровать со скруглённым изголовьем в синем велюре на тонких металлических ножках — на светлом фоне", "studio": true, "box": [0.76, 0.379], "w": 1426, "h": 1070},
-      {"src": "img/catalog/p-bed-10-d1.webp", "src600": "img/catalog/p-bed-10-d1-600.webp", "alt": "Изголовье со скруглённым углом в синем велюре и тонкая металлическая ножка — деталь", "studio": true, "box": [0.791, 0.868], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-10-d2.webp", "src600": "img/catalog/p-bed-10-d2-600.webp", "alt": "Угол кровати в синем велюре, вид спереди — деталь", "studio": true, "box": [0.717, 0.739], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-bed-10-d1-a.webp", "src600": "img/catalog/p-bed-10-d1-a-600.webp", "alt": "Изголовье со скруглённым углом в синем велюре и тонкая металлическая ножка — деталь", "studio": true, "box": [0.615, 0.9], "w": 1648, "h": 1236},
+      {"src": "img/catalog/p-bed-10-d2-a.webp", "src600": "img/catalog/p-bed-10-d2-a-600.webp", "alt": "Угол кровати в синем велюре, вид спереди — деталь", "studio": true, "box": [0.524, 0.72], "w": 1752, "h": 1314},
       {"src": "img/catalog/p-bed-10-n0-r.webp", "src600": "img/catalog/p-bed-10-n0-r-600.webp", "alt": "Кровать со скруглённым изголовьем в тёмно-синей ткани на тонких ножках — на светлом фоне", "studio": true, "box": [0.76, 0.43], "w": 1270, "h": 952},
       {"src": "img/catalog/p-bed-10-n1-r.webp", "src600": "img/catalog/p-bed-10-n1-r-600.webp", "alt": "Кровать со скруглённым изголовьем в тёмно-синей ткани, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.549], "w": 1421, "h": 1066},
-      {"src": "img/catalog/p-bed-10-n2.webp", "src600": "img/catalog/p-bed-10-n2-600.webp", "alt": "Изголовье сбоку и тонкая ножка: тёмно-синяя ткань — деталь", "studio": true, "box": [0.82, 0.955], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-10-n3.webp", "src600": "img/catalog/p-bed-10-n3-600.webp", "alt": "Скруглённый угол изголовья и основание, вид спереди — деталь", "studio": true, "box": [0.695, 0.866], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-10-hd.webp", "src600": "img/catalog/p-bed-10-hd-600.webp", "alt": "Кровать на тонких ножках в цвет изголовья, без подъёмного механизма; изголовье в малиновой ткани — на светлом фоне", "studio": true, "box": [0.588, 0.293], "w": 2400, "h": 1800},
-      {"src": "img/catalog/p-bed-10-2-hd.webp", "src600": "img/catalog/p-bed-10-2-hd-600.webp", "alt": "Кровать с подъёмным механизмом, в серо-бежевой ткани — на светлом фоне", "studio": true, "box": [0.566, 0.298], "w": 2400, "h": 1800}
+      {"src": "img/catalog/p-bed-10-n2-a.webp", "src600": "img/catalog/p-bed-10-n2-a-600.webp", "alt": "Изголовье сбоку и тонкая ножка: тёмно-синяя ткань — деталь", "studio": true, "box": [0.58, 0.9], "w": 1811, "h": 1358},
+      {"src": "img/catalog/p-bed-10-n3-a.webp", "src600": "img/catalog/p-bed-10-n3-a-600.webp", "alt": "Скруглённый угол изголовья и основание, вид спереди — деталь", "studio": true, "box": [0.433, 0.72], "w": 2056, "h": 1542}
     ],
     description: "Округлое изголовье; ножки можно в цвет изголовья.",
     options: ["С механизмом или без", "Размер под матрас", "Ткань или кожа"],
@@ -666,7 +656,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-11",
-    cfg: "t.bed~hs.capitone~b.plinth~lt.1",
+    hidden: true,
+    cfg: "t.bed~hs.plain~hh.125~p.1~ft.6~rh.38~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -687,7 +678,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-12",
-    cfg: "t.bed~hs.channels~b.plinth~lt.1~hh.110",
+    hidden: true,
+    cfg: "t.bed~hs.channels~hh.115~ft.10~rh.40~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -708,7 +700,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-13",
-    cfg: "t.bed~hs.plain~b.plinth~lt.1~p.1",
+    hidden: true,
+    cfg: "t.bed~hs.plain~hh.100~ft.8~rh.38~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -729,16 +722,15 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-14",
-    cfg: "t.bed~hs.wings~b.plinth~lt.1~hh.130",
+    cfg: "t.bed~hs.wings~hh.130~ho.8~ft.5~rh.30~b.legs~lf.black~lh.12",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
     subtitle: "С подъёмным механизмом или без",
     photos: [
       {"src": "img/catalog/p-bed-14-o-r.webp", "src600": "img/catalog/p-bed-14-o-r-600.webp", "alt": "Кровать в коричневой коже с изголовьем в ткани «гусиная лапка», на тонких металлических ножках — на светлом фоне", "studio": true, "box": [0.76, 0.44], "w": 1339, "h": 1004},
-      {"src": "img/catalog/p-bed-14-2-hd.webp", "src600": "img/catalog/p-bed-14-2-hd-600.webp", "alt": "Кровать на тонких ножках: коричневая рама изголовья и серая вставка — на светлом фоне", "studio": true, "box": [0.555, 0.301], "w": 1800, "h": 1350},
       {"src": "img/catalog/p-bed-14-d1-r.webp", "src600": "img/catalog/p-bed-14-d1-r-600.webp", "alt": "Кровать, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.573], "w": 1237, "h": 928},
-      {"src": "img/catalog/p-bed-14-d2.webp", "src600": "img/catalog/p-bed-14-d2-600.webp", "alt": "Угол кровати: кожа, ткань «гусиная лапка» и металлическая ножка — деталь", "studio": true, "box": [0.726, 0.896], "w": 1170, "h": 1125}
+      {"src": "img/catalog/p-bed-14-d2-a.webp", "src600": "img/catalog/p-bed-14-d2-a-600.webp", "alt": "Угол кровати: кожа, ткань «гусиная лапка» и металлическая ножка — деталь", "studio": true, "box": [0.455, 0.72], "w": 1867, "h": 1400}
     ],
     description: "Мягкая вставка в изголовье-раме, контрастные ткани.",
     options: ["С механизмом или без", "Размер под матрас", "Ткань или кожа"],
@@ -752,7 +744,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-15",
-    cfg: "t.bed~hs.plain~b.legs~lf.oak~lh.14",
+    hidden: true,
+    cfg: "t.bed~hs.plain~hh.105~ft.8~rh.38~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -773,7 +766,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-16",
-    cfg: "t.bed~hs.channels~b.plinth~lt.1~hh.130",
+    hidden: true,
+    cfg: "t.bed~hs.channels~hh.100~ft.8~rh.33~b.plinth~lh.6~lt.1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -793,15 +787,15 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-17",
-    cfg: "t.bed~hs.capitone~b.plinth~lt.1~hh.125",
+    cfg: "t.bed~hs.wings~hh.130~ho.12~ft.8~rh.38~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
     subtitle: "С подъёмным механизмом",
     photos: [
       {"src": "img/catalog/p-bed-17-o-r.webp", "src600": "img/catalog/p-bed-17-o-r-600.webp", "alt": "Кровать в оливковом велюре: подушки изголовья на кожаных ремнях — на светлом фоне", "studio": true, "box": [0.76, 0.461], "w": 1505, "h": 1129},
-      {"src": "img/catalog/p-bed-17-d1.webp", "src600": "img/catalog/p-bed-17-d1-600.webp", "alt": "Подушка изголовья на кожаных ремнях с пряжками, вид спереди — деталь", "studio": true, "box": [0.746, 0.845], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-17-d2.webp", "src600": "img/catalog/p-bed-17-d2-600.webp", "alt": "Изголовье сбоку: подушки на ремнях и валик — деталь", "studio": true, "box": [0.923, 1.0], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-bed-17-d1-a.webp", "src600": "img/catalog/p-bed-17-d1-a-600.webp", "alt": "Подушка изголовья на кожаных ремнях с пряжками, вид спереди — деталь", "studio": true, "box": [0.477, 0.72], "w": 2001, "h": 1501},
+      {"src": "img/catalog/p-bed-17-d2-a.webp", "src600": "img/catalog/p-bed-17-d2-a-600.webp", "alt": "Изголовье сбоку: подушки на ремнях и валик — деталь", "studio": true, "box": [0.692, 1.0], "w": 1707, "h": 1280},
       {"src": "img/catalog/p-bed-17-hd.webp", "src600": "img/catalog/p-bed-17-hd-600.webp", "alt": "Кровать — на светлом фоне", "studio": true, "box": [0.533, 0.318], "w": 2400, "h": 1800}
     ],
     description: "Подушки изголовья на кожаных ремнях.",
@@ -816,7 +810,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-18",
-    cfg: "t.bed~hs.plain~b.plinth~lt.1~ho.10",
+    cfg: "t.bed~hs.plain~hh.95~ho.3~ft.10~rh.40~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -825,7 +819,7 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-bed-18-o-r.webp", "src600": "img/catalog/p-bed-18-o-r-600.webp", "alt": "Низкая кровать в оливковой ткани — на светлом фоне", "studio": true, "box": [0.76, 0.307], "w": 1505, "h": 1129},
       {"src": "img/catalog/p-bed-18-g1-r.webp", "src600": "img/catalog/p-bed-18-g1-r-600.webp", "alt": "Та же кровать в сером букле — на светлом фоне", "studio": true, "box": [0.76, 0.326], "w": 1462, "h": 1096},
       {"src": "img/catalog/p-bed-18-g2-r.webp", "src600": "img/catalog/p-bed-18-g2-r-600.webp", "alt": "Кровать в сером букле, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.435], "w": 1397, "h": 1048},
-      {"src": "img/catalog/p-bed-18-g3.webp", "src600": "img/catalog/p-bed-18-g3-600.webp", "alt": "Изголовье с боковиной-клином в сером букле — деталь", "studio": true, "box": [0.877, 0.716], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-bed-18-g3-a.webp", "src600": "img/catalog/p-bed-18-g3-a-600.webp", "alt": "Изголовье с боковиной-клином в сером букле — деталь", "studio": true, "box": [0.828, 0.9], "w": 1357, "h": 1018},
       {"src": "img/catalog/p-bed-18-d1-r.webp", "src600": "img/catalog/p-bed-18-d1-r-600.webp", "alt": "Та же кровать в синей ткани — на светлом фоне", "studio": true, "box": [0.76, 0.308], "w": 1503, "h": 1127}
     ],
     description: "Низкое изголовье, которое плавно переходит в основание.",
@@ -840,7 +834,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-19",
-    cfg: "t.bed~hs.channels~b.plinth~lt.1~ho.15",
+    hidden: true,
+    cfg: "t.bed~hs.channels~hh.105~ft.8~rh.35~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -860,7 +855,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-20",
-    cfg: "t.bed~hs.wings~b.plinth~lt.1",
+    hidden: true,
+    cfg: "t.bed~hs.wings~hh.115~ho.8~ft.6~rh.36~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -880,7 +876,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-21",
-    cfg: "t.bed~hs.capitone~b.plinth~lt.1~hh.140",
+    hidden: true,
+    cfg: "t.bed~hs.wings~hh.105~ho.8~ft.6~rh.36~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -900,7 +897,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-22",
-    cfg: "t.bed~hs.plain~b.plinth~lt.1~hh.100",
+    hidden: true,
+    cfg: "t.bed~hs.plain~hh.120~p.1~ft.6~rh.38~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -921,7 +919,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-23",
-    cfg: "t.bed~hs.channels~b.plinth~lt.1~ho.20",
+    hidden: true,
+    cfg: "t.bed~hs.plain~hh.120~ho.2~p.1~ft.6~rh.38~b.plinth~lh.4~lt.1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -943,8 +942,9 @@ window.RICCA_CATALOG = [
   /* ═════════ КРЕСЛА ═════════ */
   {
     id: "armchair-01",
+    hidden: true,
     glb: "models3d/armchair-01.glb",
-    cfg: "t.armchair~f.round~as.round~lg.disc~lf.black",
+    cfg: "t.armchair~f.round~w.100~d.90~h.72~sh.40~sd.58~as.round~aw.22~ah.70~bc.fixed~lg.disc~lf.black~lh.8",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -963,7 +963,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-07",
-    cfg: "t.armchair~f.classic~as.thin~lg.metal~lf.black~lh.16",
+    cfg: "t.armchair~f.classic~w.95~d.85~h.74~sh.44~sd.58~as.round~aw.18~ah.70~bc.fixed~lg.metal~lf.black~lh.18",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -973,7 +973,7 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-armchair-07-o4-r.webp", "src600": "img/catalog/p-armchair-07-o4-r-600.webp", "alt": "Кресло в светлой ткани с мелким рисунком, вид сверху — на светлом фоне", "studio": true, "box": [0.483, 0.68], "w": 1620, "h": 1215},
       {"src": "img/catalog/p-armchair-07-b1-r.webp", "src600": "img/catalog/p-armchair-07-b1-r-600.webp", "alt": "То же кресло в коричневом твиде — на светлом фоне", "studio": true, "box": [0.675, 0.68], "w": 1186, "h": 890},
       {"src": "img/catalog/p-armchair-07-b2-r.webp", "src600": "img/catalog/p-armchair-07-b2-r-600.webp", "alt": "Кресло в коричневом твиде, вид сверху — на светлом фоне", "studio": true, "box": [0.489, 0.68], "w": 1612, "h": 1209},
-      {"src": "img/catalog/p-armchair-07-b3.webp", "src600": "img/catalog/p-armchair-07-b3-600.webp", "alt": "Спинка, сиденье и ножки: коричневый твид крупно — деталь", "studio": true, "box": [0.941, 0.979], "w": 1280, "h": 1280},
+      {"src": "img/catalog/p-armchair-07-b3-a.webp", "src600": "img/catalog/p-armchair-07-b3-a-600.webp", "alt": "Спинка, сиденье и ножки: коричневый твид крупно — деталь", "studio": true, "box": [0.648, 0.9], "w": 1859, "h": 1394},
       {"src": "img/catalog/p-armchair-07-h1-r.webp", "src600": "img/catalog/p-armchair-07-h1-r-600.webp", "alt": "То же кресло в зелёно-белой ткани «гусиная лапка» — на светлом фоне", "studio": true, "box": [0.525, 0.68], "w": 1506, "h": 1130},
       {"src": "img/catalog/p-armchair-07-h2-r.webp", "src600": "img/catalog/p-armchair-07-h2-r-600.webp", "alt": "Кресло в зелёно-белой ткани, вид сверху — на светлом фоне", "studio": true, "box": [0.41, 0.68], "w": 1910, "h": 1432},
       {"src": "img/catalog/p-armchair-07-h3-r.webp", "src600": "img/catalog/p-armchair-07-h3-r-600.webp", "alt": "Кресло в зелёно-белой ткани, вид спереди — на светлом фоне", "studio": true, "box": [0.523, 0.68], "w": 1490, "h": 1118},
@@ -982,7 +982,7 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-armchair-07-t3-r.webp", "src600": "img/catalog/p-armchair-07-t3-r-600.webp", "alt": "Кресло в двух тканях, вид спереди — на светлом фоне", "studio": true, "box": [0.522, 0.68], "w": 1494, "h": 1120},
       {"src": "img/catalog/p-armchair-07-o2-r.webp", "src600": "img/catalog/p-armchair-07-o2-r-600.webp", "alt": "То же кресло в оранжево-красной ткани с рисунком, вид спереди — на светлом фоне", "studio": true, "box": [0.663, 0.68], "w": 1367, "h": 1025},
       {"src": "img/catalog/p-armchair-07-o3-r.webp", "src600": "img/catalog/p-armchair-07-o3-r-600.webp", "alt": "Кресло в оранжево-красной ткани, вид сверху — на светлом фоне", "studio": true, "box": [0.485, 0.68], "w": 1908, "h": 1431},
-      {"src": "img/catalog/p-armchair-07-d1.webp", "src600": "img/catalog/p-armchair-07-d1-600.webp", "alt": "Спинка и ножки: ткань с рисунком крупно — деталь", "studio": true, "box": [0.924, 0.983], "w": 1280, "h": 1280}
+      {"src": "img/catalog/p-armchair-07-d1-a.webp", "src600": "img/catalog/p-armchair-07-d1-a-600.webp", "alt": "Спинка и ножки: ткань с рисунком крупно — деталь", "studio": true, "box": [0.508, 0.72], "w": 2329, "h": 1747}
     ],
     description: "Мягкая чаша на тонких тёмных ножках.",
     options: ["Размер под человека", "Ткань из палитры", "Ткань или кожа"],
@@ -995,15 +995,15 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-08",
-    cfg: "t.armchair~f.classic~as.wide~lg.plinth~lh.8",
+    cfg: "t.armchair~f.classic~w.105~d.95~h.82~sh.42~sd.58~as.wide~aw.26~ah.68~bc.fixed~lg.plinth~lf.black~lh.4",
     category: "armchairs",
     tags: [],
     type: "Кресло",
     subtitle: "На низком цоколе",
     photos: [
-      {"src": "img/catalog/p-armchair-08-hd.webp", "src600": "img/catalog/p-armchair-08-hd-600.webp", "alt": "Кресло в розовом букле — на светлом фоне", "studio": true, "box": [0.74, 0.684], "w": 2400, "h": 1800},
-      {"src": "img/catalog/p-armchair-08-2-hd.webp", "src600": "img/catalog/p-armchair-08-2-hd-600.webp", "alt": "Кресло в оливковой ткани — на светлом фоне", "studio": true, "box": [0.74, 0.683], "w": 2400, "h": 1800},
-      {"src": "img/catalog/p-armchair-08-3-hd.webp", "src600": "img/catalog/p-armchair-08-3-hd-600.webp", "alt": "Кресло в оливковой ткани, вид спереди — на светлом фоне", "studio": true, "box": [0.726, 0.76], "w": 2400, "h": 1800}
+      {"src": "img/catalog/p-armchair-08-o-r.webp", "src600": "img/catalog/p-armchair-08-o-r-600.webp", "alt": "Широкое низкое кресло с подлокотниками-подушками на тёмном цоколе, в твиде с крапинкой — на светлом фоне", "studio": true, "box": [0.76, 0.644], "w": 1016, "h": 762},
+      {"src": "img/catalog/p-armchair-08-o2-r.webp", "src600": "img/catalog/p-armchair-08-o2-r-600.webp", "alt": "То же кресло, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.67], "w": 958, "h": 718},
+      {"src": "img/catalog/p-armchair-08-d1-a.webp", "src600": "img/catalog/p-armchair-08-d1-a-600.webp", "alt": "Подлокотник, сиденье и цоколь: твид крупно — деталь", "studio": true, "box": [0.498, 0.72], "w": 1375, "h": 1031}
     ],
     description: "Кресло из мягких объёмов на низком цоколе.",
     options: ["Размер под человека", "Ткань из палитры", "Ткань или кожа"],
@@ -1016,7 +1016,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-09",
-    cfg: "t.armchair~f.round~as.round~lg.wood~lf.oak",
+    cfg: "t.armchair~f.round~w.85~d.85~h.80~sh.42~sd.56~as.round~aw.16~ah.62~lg.plinth~lf.black~lh.4",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1043,7 +1043,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-10",
     glb: "models3d/armchair-10.glb",
-    cfg: "t.armchair~f.classic~as.round~aw.20~lg.wood~lf.walnut",
+    cfg: "t.armchair~f.classic~w.90~d.85~h.74~sh.44~sd.56~as.round~aw.18~ah.66~bc.fixed~lg.hidden",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1051,7 +1051,7 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-armchair-10-o-r.webp", "src600": "img/catalog/p-armchair-10-o-r-600.webp", "alt": "Кресло с подлокотниками-валиками в коричневом велюре — на светлом фоне", "studio": true, "box": [0.563, 0.68], "w": 1763, "h": 1322},
       {"src": "img/catalog/p-armchair-10-o2-r.webp", "src600": "img/catalog/p-armchair-10-o2-r-600.webp", "alt": "Кресло с подлокотниками-валиками, вид спереди — на светлом фоне", "studio": true, "box": [0.658, 0.68], "w": 1210, "h": 908},
-      {"src": "img/catalog/p-armchair-10-d1.webp", "src600": "img/catalog/p-armchair-10-d1-600.webp", "alt": "Спинка-валик и подлокотник крупно: велюр и кант — деталь", "studio": true, "box": [0.95, 0.835], "w": 1280, "h": 1264},
+      {"src": "img/catalog/p-armchair-10-d1-a.webp", "src600": "img/catalog/p-armchair-10-d1-a-600.webp", "alt": "Спинка-валик и подлокотник крупно: велюр и кант — деталь", "studio": true, "box": [0.777, 0.9], "w": 1564, "h": 1173},
       {"src": "img/catalog/p-armchair-10-g1-r.webp", "src600": "img/catalog/p-armchair-10-g1-r-600.webp", "alt": "То же кресло в тёмно-сером велюре — на светлом фоне", "studio": true, "box": [0.685, 0.681], "w": 927, "h": 695},
       {"src": "img/catalog/p-armchair-10-g2-r.webp", "src600": "img/catalog/p-armchair-10-g2-r-600.webp", "alt": "Кресло в тёмно-сером велюре, вид сверху — на светлом фоне", "studio": true, "box": [0.56, 0.68], "w": 1765, "h": 1324},
       {"src": "img/catalog/p-armchair-10-g3-r.webp", "src600": "img/catalog/p-armchair-10-g3-r-600.webp", "alt": "Кресло в тёмно-сером велюре, вид спереди — на светлом фоне", "studio": true, "box": [0.656, 0.68], "w": 1212, "h": 909}
@@ -1068,7 +1068,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-11",
     glb: "models3d/armchair-11.glb",
-    cfg: "t.armchair~f.classic~as.wide~lg.wood~lf.blackwood~lh.12",
+    cfg: "t.armchair~f.classic~w.80~d.85~h.95~sh.42~sd.58~as.none~bc.fixed~lg.wood~lf.blackwood~lh.12",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1076,8 +1076,7 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-armchair-11-o-r.webp", "src600": "img/catalog/p-armchair-11-o-r-600.webp", "alt": "Кресло с круглой спинкой и сиденьем-подушкой на массивных деревянных ножках, ткань с плетёным узором — на светлом фоне", "studio": true, "box": [0.614, 0.68], "w": 1127, "h": 845},
       {"src": "img/catalog/p-armchair-11-o2-r.webp", "src600": "img/catalog/p-armchair-11-o2-r-600.webp", "alt": "Кресло с круглой спинкой, вид спереди — на светлом фоне", "studio": true, "box": [0.46, 0.681], "w": 1382, "h": 1036},
-      {"src": "img/catalog/p-armchair-11-o3-r.webp", "src600": "img/catalog/p-armchair-11-o3-r-600.webp", "alt": "Кресло с круглой спинкой, вид сзади сбоку — на светлом фоне", "studio": true, "box": [0.618, 0.68], "w": 1141, "h": 856},
-      {"src": "img/catalog/p-armchair-11-hd.webp", "src600": "img/catalog/p-armchair-11-hd-600.webp", "alt": "Кресло: сиденье-подушка и круглая спинка в ткани с плетёным узором на массивных ножках — на светлом фоне", "studio": true, "box": [0.666, 0.76], "w": 1800, "h": 1350}
+      {"src": "img/catalog/p-armchair-11-o3-r.webp", "src600": "img/catalog/p-armchair-11-o3-r-600.webp", "alt": "Кресло с круглой спинкой, вид сзади сбоку — на светлом фоне", "studio": true, "box": [0.618, 0.68], "w": 1141, "h": 856}
     ],
     description: "Сиденье-подушка и круглая спинка в ткани с плетёным узором на четырёх массивных ножках.",
     options: ["Размер под человека", "Ткань из палитры", "Ткань или кожа"],
@@ -1318,14 +1317,14 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-24",
     glb: "models3d/sofa-24.glb",
-    cfg: "t.modular~mo.3~ch.left~as.wide~h.68~lg.hidden",
+    cfg: "t.modular~mo.3~mm.95~ch.right~as.none~h.68~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
     subtitle: "Модульный · низкий, с шезлонгом",
     photos: [
       {"src": "img/catalog/p-sofa-24-o-e-r.webp", "src600": "img/catalog/p-sofa-24-o-e-r-600.webp", "alt": "Низкий модульный диван с шезлонгом в бежевой ткани — на светлом фоне", "studio": true, "box": [0.76, 0.368], "w": 1686, "h": 1264},
-      {"src": "img/catalog/p-sofa-24-d1-e.webp", "src600": "img/catalog/p-sofa-24-d1-600.webp", "alt": "Скруглённые секции и подушки в молочном букле — деталь", "studio": true, "box": [1.0, 0.801], "w": 1280, "h": 1920}
+      {"src": "img/catalog/p-sofa-24-d1-e-a.webp", "src600": "img/catalog/p-sofa-24-d1-e-a-600.webp", "alt": "Скруглённые секции и подушки в молочном букле — деталь", "studio": true, "box": [0.564, 0.9], "w": 2271, "h": 1703}
     ],
     description: "Низкий модульный диван с мягкими скруглёнными секциями и шезлонгом. Глубокая посадка, подушки свободной формы — собирается прямым или угловым под вашу комнату.",
     options: ["Модульный", "Шезлонг слева или справа", "Ткань или кожа"],
@@ -1338,15 +1337,14 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-25",
-    cfg: "t.corner~f.chaise~s.left~as.thin~lg.metal~lf.black~bc.loose",
+    cfg: "t.corner~f.chaise~s.left~w.320~l.170~as.thin~aw.10~ah.58~bc.loose~n.2~lg.metal~lf.black~lh.14",
     glb: "models3d/sofa-25.glb",
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
     subtitle: "Угловой · на чёрных ножках",
     photos: [
-      {"src": "img/catalog/p-sofa-25-o-e-r.webp", "src600": "img/catalog/p-sofa-25-o-e-r-600.webp", "alt": "Угловой диван с шезлонгом на чёрных ножках в серо-бежевой ткани — на светлом фоне", "studio": true, "box": [0.76, 0.319], "w": 1816, "h": 1362},
-      {"src": "img/catalog/p-sofa-25-2-hd.webp", "src600": "img/catalog/p-sofa-25-2-hd-600.webp", "alt": "Угловой диван Torsa в светлой ткани, шезлонг слева — на светлом фоне", "studio": true, "box": [0.74, 0.291], "w": 1800, "h": 1350}
+      {"src": "img/catalog/p-sofa-25-o-e-r.webp", "src600": "img/catalog/p-sofa-25-o-e-r-600.webp", "alt": "Угловой диван с шезлонгом на чёрных ножках в серо-бежевой ткани — на светлом фоне", "studio": true, "box": [0.76, 0.319], "w": 1816, "h": 1362}
     ],
     description: "Угловой диван с шезлонгом на тонких чёрных ножках: лёгкий силуэт, три мягкие спинки и широкая открытая секция для отдыха.",
     options: ["Угловой", "Шезлонг слева или справа", "Раскладной — по запросу"],
@@ -1359,7 +1357,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-26",
-    cfg: "t.modular~mo.3~ch.right~as.wide~lg.hidden",
+    cfg: "t.modular~mo.3~mm.95~ch.left~as.round~aw.18~ah.58~h.72~lg.hidden~p.1",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1380,7 +1378,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-27",
-    cfg: "t.sofa~w.260~as.round~aw.30~bc.fixed~sc.sections~n.3~lg.hidden",
+    cfg: "t.sofa~w.300~d.105~as.round~aw.32~ah.62~h.78~bc.loose~n.3~lg.plinth~lh.6",
     category: "sofas",
     tags: ["modular"],
     type: "Диван",
@@ -1399,7 +1397,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-28",
-    cfg: "t.sofa~w.220~as.thin~lg.metal~lf.black",
+    cfg: "t.sofa~w.200~as.thin~aw.10~ah.75~h.95~bc.fixed~sc.single~lg.metal~lf.black~lh.20",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -1407,9 +1405,9 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-sofa-28-hd.webp", "src600": "img/catalog/p-sofa-28-hd-600.webp", "alt": "Двухместный диван в терракотовом букле на чёрной металлической базе — на светлом фоне", "studio": true, "box": [0.721, 0.461], "w": 2400, "h": 1800},
       {"src": "img/catalog/p-sofa-28-d1-e.webp", "src600": "img/catalog/p-sofa-28-d1-600.webp", "alt": "Диван с высокой спинкой в терракотовом букле, вид три четверти — на светлом фоне", "studio": true, "box": [0.537, 0.661], "w": 1920, "h": 1440},
-      {"src": "img/catalog/p-sofa-28-d2-e.webp", "src600": "img/catalog/p-sofa-28-d2-600.webp", "alt": "Край сиденья и чёрная металлическая ножка — деталь", "studio": true, "box": [0.659, 0.997], "w": 1440, "h": 1920},
-      {"src": "img/catalog/p-sofa-28-d3-e.webp", "src600": "img/catalog/p-sofa-28-d3-600.webp", "alt": "Спинка и подлокотник, вид сверху — деталь", "studio": true, "box": [0.925, 0.895], "w": 1440, "h": 1920},
-      {"src": "img/catalog/p-sofa-28-d4-e.webp", "src600": "img/catalog/p-sofa-28-d4-600.webp", "alt": "Терракотовое букле крупно — фактура ткани", "studio": true, "box": [1.0, 1.0], "w": 1438, "h": 1920}
+      {"src": "img/catalog/p-sofa-28-d2-e-a.webp", "src600": "img/catalog/p-sofa-28-d2-e-a-600.webp", "alt": "Край сиденья и чёрная металлическая ножка — деталь", "studio": true, "box": [0.336, 0.9], "w": 2831, "h": 2123},
+      {"src": "img/catalog/p-sofa-28-d3-e-a.webp", "src600": "img/catalog/p-sofa-28-d3-e-a-600.webp", "alt": "Спинка и подлокотник, вид сверху — деталь", "studio": true, "box": [0.524, 0.9], "w": 2543, "h": 1907},
+      {"src": "img/catalog/p-sofa-28-d4-e-a.webp", "src600": "img/catalog/p-sofa-28-d4-e-a-600.webp", "alt": "Терракотовое букле крупно — фактура ткани", "studio": true, "box": [0.562, 1.0], "w": 2560, "h": 1920}
     ],
     description: "Двухместный диван с высокой обволакивающей спинкой и одной цельной подушкой сиденья на тонкой чёрной металлической базе. В паре — кресло Kalvo.",
     options: ["Двухместный", "Металлическая база", "Ткань или кожа"],
@@ -1422,7 +1420,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-29",
-    cfg: "t.sofa~w.240~as.wide~h.88~lg.metal~lf.black",
+    cfg: "t.sofa~w.240~as.wide~aw.18~ah.62~h.88~bc.loose~n.2~lg.metal~lf.black~lh.8",
     category: "sofas",
     tags: ["straight", "foldout"],
     type: "Диван",
@@ -1446,7 +1444,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-30",
-    cfg: "t.corner~f.chaise~s.right~as.wide~lg.metal~lf.black",
+    cfg: "t.corner~f.chaise~s.left~w.280~l.160~as.wide~aw.20~ah.62~bc.loose~n.2~lg.hidden",
     category: "sofas",
     tags: ["corner", "foldout"],
     type: "Диван",
@@ -1455,8 +1453,8 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-sofa-30-o-e-r.webp", "src600": "img/catalog/p-sofa-30-o-e-r-600.webp", "alt": "Угловой диван с шезлонгом в серой ткани — на светлом фоне", "studio": true, "box": [0.76, 0.378], "w": 2099, "h": 1574},
       {"src": "img/catalog/p-sofa-30-2-2-e.webp", "src600": "img/catalog/p-sofa-30-2-2-600.webp", "alt": "Тот же диван в разложенном виде — на светлом фоне", "studio": true, "box": [0.74, 0.296], "w": 1800, "h": 1350},
       {"src": "img/catalog/p-sofa-30-3-hd.webp", "src600": "img/catalog/p-sofa-30-3-hd-600.webp", "alt": "Диван Serva в светло-сером меланже, шезлонг справа — на светлом фоне", "studio": true, "box": [0.741, 0.306], "w": 2400, "h": 1800},
-      {"src": "img/catalog/p-sofa-30-d1-e.webp", "src600": "img/catalog/p-sofa-30-d1-600.webp", "alt": "Подлокотник и подушка в сером меланже — деталь", "studio": true, "box": [0.6, 0.927], "w": 1918, "h": 1920},
-      {"src": "img/catalog/p-sofa-30-d2-e.webp", "src600": "img/catalog/p-sofa-30-d2-600.webp", "alt": "Угол сиденья и шов крупно — фактура ткани", "studio": true, "box": [1.0, 0.973], "w": 1920, "h": 1920}
+      {"src": "img/catalog/p-sofa-30-d1-e-a.webp", "src600": "img/catalog/p-sofa-30-d1-e-a-600.webp", "alt": "Подлокотник и подушка в сером меланже — деталь", "studio": true, "box": [0.437, 0.9], "w": 2635, "h": 1976},
+      {"src": "img/catalog/p-sofa-30-d2-e-a.webp", "src600": "img/catalog/p-sofa-30-d2-e-a-600.webp", "alt": "Угол сиденья и шов крупно — фактура ткани", "studio": true, "box": [0.693, 0.9], "w": 2772, "h": 2079}
     ],
     description: "Угловой диван с шезлонгом и раскладным механизмом: днём — три мягкие спинки и подушки на подлокотниках, ночью — широкое ровное спальное место. Шезлонг слева или справа.",
     options: ["Угловой", "Раскладной", "Шезлонг слева или справа"],
@@ -1470,7 +1468,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-12",
-    cfg: "t.armchair~f.classic~as.thin~bc.loose~lg.metal~lf.black~h.90",
+    cfg: "t.armchair~f.round~w.100~d.90~h.95~sh.44~sd.56~as.round~aw.16~ah.70~bc.loose~lg.metal~lf.black~lh.20",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1489,7 +1487,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-13",
-    cfg: "t.armchair~f.classic~as.wide~lg.metal~lf.gold~lh.16",
+    cfg: "t.armchair~f.classic~w.85~d.90~h.80~sh.44~sd.58~as.thin~aw.8~ah.64~bc.loose~lg.metal~lf.black~lh.12",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1509,7 +1507,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-14",
     glb: "models3d/armchair-14.glb",
-    cfg: "t.armchair~f.classic~as.wide~h.100~lg.metal~lf.black",
+    cfg: "t.armchair~f.round~w.95~d.90~h.100~sh.44~sd.56~as.round~aw.16~ah.70~bc.loose~lg.metal~lf.black~lh.18",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1528,7 +1526,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-24",
-    cfg: "t.bed~hs.plain~hh.95~b.plinth",
+    hidden: true,
+    cfg: "t.bed~mw.180~hs.plain~hh.95~ft.12~rh.40~b.plinth~lh.4",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1548,6 +1547,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-15",
+    hidden: true,
     cfg: "t.armchair~f.round~as.round~lg.disc~lf.black",
     category: "armchairs",
     tags: [],
@@ -1567,15 +1567,15 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-31",
-    cfg: "t.corner~f.L~s.right~as.thin~lg.wood~lf.blackwood",
+    cfg: "t.corner~f.chaise~s.left~w.300~l.165~as.thin~aw.12~ah.62~bc.loose~n.2~lg.wood~lf.blackwood~lh.14",
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
     subtitle: "Угловой · на конусных ножках",
     photos: [
       {"src": "img/catalog/p-sofa-31-o-e-r.webp", "src600": "img/catalog/p-sofa-31-o-e-r-600.webp", "alt": "Угловой диван с шезлонгом в золотистом шенилле на чёрных конусных ножках — на светлом фоне", "studio": true, "box": [0.76, 0.332], "w": 1770, "h": 1328},
-      {"src": "img/catalog/p-sofa-31-d1-e.webp", "src600": "img/catalog/p-sofa-31-d1-600.webp", "alt": "Подлокотник и подушка в жёлтом шенилле — деталь", "studio": true, "box": [0.762, 0.776], "w": 1620, "h": 2025},
-      {"src": "img/catalog/p-sofa-31-d2-e.webp", "src600": "img/catalog/p-sofa-31-d2-600.webp", "alt": "Спинка сзади и валики-подголовники — деталь", "studio": true, "box": [0.95, 0.929], "w": 1620, "h": 2025}
+      {"src": "img/catalog/p-sofa-31-d1-e-a.webp", "src600": "img/catalog/p-sofa-31-d1-e-a-600.webp", "alt": "Подлокотник и подушка в жёлтом шенилле — деталь", "studio": true, "box": [0.425, 0.72], "w": 2909, "h": 2182},
+      {"src": "img/catalog/p-sofa-31-d2-e-a.webp", "src600": "img/catalog/p-sofa-31-d2-e-a-600.webp", "alt": "Спинка сзади и валики-подголовники — деталь", "studio": true, "box": [0.552, 0.9], "w": 2787, "h": 2090}
     ],
     description: "Угловой диван с шезлонгом на конусных чёрных ножках: три мягкие спинки, строгие подлокотники и широкая секция для отдыха. Показан в фактурном шенилле.",
     options: ["Угловой", "Шезлонг слева или справа", "Ткань или кожа"],
@@ -1588,13 +1588,14 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-25",
-    cfg: "t.bed~hs.plain~hh.110~b.plinth~p.1",
+    cfg: "t.bed~mw.180~hs.plain~hh.100~ft.12~rh.40~b.plinth~lh.4",
     category: "beds",
     tags: [],
     type: "Кровать",
     subtitle: "Мягкое основание · присборенная обивка",
     photos: [
-      {"src": "img/catalog/p-bed-25-o-e-r.webp", "src600": "img/catalog/p-bed-25-o-e-r-600.webp", "alt": "Кровать с объёмным мягким основанием и присборенным изголовьем в графитовом велюре — на светлом фоне", "studio": true, "box": [0.76, 0.444], "w": 1850, "h": 1388}
+      {"src": "img/catalog/p-bed-25-o-e-r.webp", "src600": "img/catalog/p-bed-25-o-e-r-600.webp", "alt": "Кровать с объёмным мягким основанием и присборенным изголовьем в графитовом велюре — на светлом фоне", "studio": true, "box": [0.76, 0.444], "w": 1850, "h": 1388},
+      {"src": "img/catalog/p-bed-24-hd.webp", "src600": "img/catalog/p-bed-24-hd-600.webp", "alt": "Та же кровать в серо-бежевой ткани — на светлом фоне", "studio": true, "box": [0.741, 0.43], "w": 2400, "h": 1800}
     ],
     description: "Кровать с мягким объёмным основанием и наклонным изголовьем в присборенной обивке: тканевый цоколь, без ножек. Показана в графитовом велюре.",
     options: ["Под размер матраса", "С подъёмным механизмом или без", "Велюр или другая ткань"],
@@ -1609,7 +1610,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-26",
     glb: "models3d/bed-26.glb",
-    cfg: "t.bed~hs.plain~hh.105~b.legs~lf.black~lh.16~p.1",
+    cfg: "t.bed~hs.plain~hh.110~ft.5~rh.32~b.legs~lf.black~lh.16~p.1",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1629,14 +1630,14 @@ window.RICCA_CATALOG = [
   {
     id: "bed-27",
     glb: "models3d/bed-27.glb",
-    cfg: "t.bed~hs.wings~hh.120~ho.20~b.plinth",
+    cfg: "t.bed~hs.wings~hh.125~ho.12~ft.8~rh.38~b.plinth~lh.4",
     category: "beds",
     tags: [],
     type: "Кровать",
     subtitle: "Обволакивающее изголовье · цоколь",
     photos: [
       {"src": "img/catalog/p-bed-27-o-e-r.webp", "src600": "img/catalog/p-bed-27-o-e-r-600.webp", "alt": "Кровать с высоким обволакивающим изголовьем в молочной ткани — на светлом фоне", "studio": true, "box": [0.76, 0.506], "w": 1867, "h": 1400},
-      {"src": "img/catalog/p-bed-27-d1-e-c.webp", "src600": "img/catalog/p-bed-27-d1-e-c-600.webp", "alt": "Изголовье с «ушами» в коричневой рогожке — деталь", "studio": true, "box": [0.794, 0.77], "w": 1536, "h": 1920},
+      {"src": "img/catalog/p-bed-27-d1-e-c-a.webp", "src600": "img/catalog/p-bed-27-d1-e-c-a-600.webp", "alt": "Изголовье с «ушами» в коричневой рогожке — деталь", "studio": true, "box": [0.557, 0.9], "w": 2189, "h": 1642},
       {"src": "img/catalog/p-bed-27-i1.webp", "src600": "img/catalog/p-bed-27-i1-600.webp", "alt": "Кровать с высоким изголовьем с «ушами» в белой ткани", "w": 1280, "h": 960},
       {"src": "img/catalog/p-bed-27-i3.webp", "src600": "img/catalog/p-bed-27-i3-600.webp", "alt": "Кровать с высоким изголовьем с «ушами» в белой ткани, вид спереди", "w": 1280, "h": 960},
       {"src": "img/catalog/p-bed-27-i2.webp", "src600": "img/catalog/p-bed-27-i2-600.webp", "alt": "Угол кровати: изголовье с «ушами» и царга — деталь", "w": 1280, "h": 1280}
@@ -1654,7 +1655,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-28",
     glb: "models3d/bed-28.glb",
-    cfg: "t.bed~hs.plain~hh.115~b.plinth",
+    cfg: "t.bed~mw.180~hs.plain~hh.100~ft.12~rh.40~b.plinth~lh.4",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1675,7 +1676,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-29",
     glb: "models3d/bed-29.glb",
-    cfg: "t.bed~hs.plain~hh.110~b.legs~lf.black~lh.16",
+    cfg: "t.bed~mw.180~hs.plain~hh.105~ft.6~rh.33~b.legs~lf.black~lh.16",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1695,7 +1696,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-30",
-    cfg: "t.bed~hs.plain~hh.95~b.plinth",
+    cfg: "t.bed~mw.180~hs.plain~hh.100~ft.12~rh.40~b.plinth~lh.4",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1715,15 +1716,15 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-31",
-    cfg: "t.bed~hs.plain~hh.105~b.legs~lf.black~lh.16~p.1",
+    cfg: "t.bed~mw.180~hs.channels~hh.105~ft.5~rh.30~b.legs~lf.black~lh.12",
     category: "beds",
     tags: [],
     type: "Кровать",
     subtitle: "Изголовье из двух подушек · «гусиная лапка»",
     photos: [
       {"src": "img/catalog/p-bed-31-r.webp", "src600": "img/catalog/p-bed-31-r-600.webp", "alt": "Кровать в светлой ткани с изголовьем из двух подушек в «гусиную лапку», на тонких ножках — на светлом фоне", "studio": true, "box": [0.76, 0.486], "w": 1389, "h": 1042},
-      {"src": "img/catalog/p-bed-31-d1.webp", "src600": "img/catalog/p-bed-31-d1-600.webp", "alt": "Изголовье сбоку: подушка в «гусиную лапку» и валик — деталь", "studio": true, "box": [0.852, 0.882], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-31-d2.webp", "src600": "img/catalog/p-bed-31-d2-600.webp", "alt": "Угол кровати: изголовье, царга и металлическая ножка — деталь", "studio": true, "box": [0.745, 0.748], "w": 1280, "h": 1280}
+      {"src": "img/catalog/p-bed-31-d1-a.webp", "src600": "img/catalog/p-bed-31-d1-a-600.webp", "alt": "Изголовье сбоку: подушка в «гусиную лапку» и валик — деталь", "studio": true, "box": [0.652, 0.9], "w": 1672, "h": 1254},
+      {"src": "img/catalog/p-bed-31-d2-a.webp", "src600": "img/catalog/p-bed-31-d2-a-600.webp", "alt": "Угол кровати: изголовье, царга и металлическая ножка — деталь", "studio": true, "box": [0.537, 0.72], "w": 1775, "h": 1331}
     ],
     description: "Кровать на тонких металлических ножках с изголовьем из двух мягких подушек. Показана в светлой ткани, изголовье — в «гусиную лапку».",
     options: ["Под размер матраса", "С подъёмным механизмом или без", "Ткань или кожа"],
@@ -1737,7 +1738,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-32",
-    cfg: "t.bed~hs.plain~hh.105~b.legs~lf.black~lh.16~p.1",
+    cfg: "t.bed~hs.wings~hh.110~ho.8~ft.5~rh.30~b.legs~lf.black~lh.12",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1745,7 +1746,7 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-bed-32-r.webp", "src600": "img/catalog/p-bed-32-r-600.webp", "alt": "Кровать с наклонным изголовьем в коричневой коже и светлой вставкой из ткани, на тонких ножках — на светлом фоне", "studio": true, "box": [0.76, 0.441], "w": 1499, "h": 1124},
       {"src": "img/catalog/p-bed-32-d1-r.webp", "src600": "img/catalog/p-bed-32-d1-r-600.webp", "alt": "Кровать с наклонным изголовьем, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.589], "w": 1361, "h": 1021},
-      {"src": "img/catalog/p-bed-32-d2.webp", "src600": "img/catalog/p-bed-32-d2-600.webp", "alt": "Изголовье сбоку: кожаная «раковина» и мягкая вставка из ткани — деталь", "studio": true, "box": [0.886, 0.981], "w": 1280, "h": 1280}
+      {"src": "img/catalog/p-bed-32-d2-a.webp", "src600": "img/catalog/p-bed-32-d2-a-600.webp", "alt": "Изголовье сбоку: кожаная «раковина» и мягкая вставка из ткани — деталь", "studio": true, "box": [0.609, 0.9], "w": 1861, "h": 1396}
     ],
     description: "Кровать на тонких металлических ножках: изголовье — наклонная «раковина» в коже с мягкой вставкой из ткани. Показана в коричневой коже.",
     options: ["Под размер матраса", "С подъёмным механизмом или без", "Ткань или кожа"],
@@ -1759,7 +1760,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-33",
-    cfg: "t.bed~hs.plain~b.plinth~lt.1",
+    cfg: "t.bed~mw.180~hs.plain~hh.95~ft.12~rh.42~b.plinth~lh.4",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1781,7 +1782,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-34",
-    cfg: "t.bed~hs.wings~b.legs~lf.black~lh.16",
+    cfg: "t.bed~hs.wings~hh.125~ho.15~ft.6~rh.32~b.legs~lf.black~lh.14",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1789,7 +1790,7 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-bed-34-r.webp", "src600": "img/catalog/p-bed-34-r-600.webp", "alt": "Кровать с высоким изголовьем в широких наклонных боковинах, две серые ткани, на тонких ножках — на светлом фоне", "studio": true, "box": [0.76, 0.459], "w": 1539, "h": 1154},
       {"src": "img/catalog/p-bed-34-d1-r.webp", "src600": "img/catalog/p-bed-34-d1-r-600.webp", "alt": "Та же кровать, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.655], "w": 1305, "h": 979},
-      {"src": "img/catalog/p-bed-34-d2.webp", "src600": "img/catalog/p-bed-34-d2-600.webp", "alt": "Изголовье сбоку: мягкая панель и тёмная боковина — деталь", "studio": true, "box": [0.948, 1.0], "w": 1080, "h": 1080}
+      {"src": "img/catalog/p-bed-34-d2-a.webp", "src600": "img/catalog/p-bed-34-d2-a-600.webp", "alt": "Изголовье сбоку: мягкая панель и тёмная боковина — деталь", "studio": true, "box": [0.75, 1.0], "w": 1440, "h": 1080}
     ],
     description: "Кровать на тонких металлических ножках: высокое изголовье из двух мягких панелей в широких наклонных боковинах. Показана в двух серых тканях — светлой и тёмной.",
     options: ["Под размер матраса", "С подъёмным механизмом или без", "Ткань или кожа"],
@@ -1803,7 +1804,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-35",
-    cfg: "t.bed~hs.plain~b.plinth~lt.1",
+    cfg: "t.bed~hs.plain~hh.140~ho.2~ft.8~rh.28~b.plinth~lh.4",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1811,8 +1812,8 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-bed-35-r.webp", "src600": "img/catalog/p-bed-35-r-600.webp", "alt": "Кровать на низком основании с высоким изголовьем, верхний край которого вырезан волной, в светлой ткани — на светлом фоне", "studio": true, "box": [0.76, 0.448], "w": 1504, "h": 1128},
       {"src": "img/catalog/p-bed-35-d1-r.webp", "src600": "img/catalog/p-bed-35-d1-r-600.webp", "alt": "Та же кровать, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.604], "w": 1351, "h": 1013},
-      {"src": "img/catalog/p-bed-35-d2.webp", "src600": "img/catalog/p-bed-35-d2-600.webp", "alt": "Изголовье сбоку: волнистый край и фактура ткани — деталь", "studio": true, "box": [0.858, 0.939], "w": 1280, "h": 1280},
-      {"src": "img/catalog/p-bed-35-d3.webp", "src600": "img/catalog/p-bed-35-d3-600.webp", "alt": "Изголовье и основание, вид спереди — деталь", "studio": true, "box": [0.628, 0.764], "w": 1280, "h": 1280}
+      {"src": "img/catalog/p-bed-35-d2-a.webp", "src600": "img/catalog/p-bed-35-d2-a-600.webp", "alt": "Изголовье сбоку: волнистый край и фактура ткани — деталь", "studio": true, "box": [0.494, 0.72], "w": 2224, "h": 1668},
+      {"src": "img/catalog/p-bed-35-d3-a.webp", "src600": "img/catalog/p-bed-35-d3-a-600.webp", "alt": "Изголовье и основание, вид спереди — деталь", "studio": true, "box": [0.443, 0.72], "w": 1813, "h": 1360}
     ],
     description: "Кровать на низком основании до пола с высоким изголовьем: его верхний край вырезан плавной волной. Показана в светлой ткани с мелким тёмным штрихом.",
     options: ["Под размер матраса", "С подъёмным механизмом или без", "Ткань или кожа"],
@@ -1826,7 +1827,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-32",
-    cfg: "t.modular~mo.4~ch.right~as.wide~lg.hidden",
+    cfg: "t.modular~mo.4~mm.100~ch.left~as.wide~aw.20~ah.55~h.66~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1845,7 +1846,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-33",
-    cfg: "t.modular~mo.3~ch.left~h.66~lg.hidden",
+    cfg: "t.modular~mo.3~mm.100~ch.left~as.wide~aw.18~ah.55~h.66~lg.hidden~p.1",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1866,7 +1867,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-34",
-    cfg: "t.pouf~f.bench~w.160~d.60~h.42~lg.hidden",
+    cfg: "t.pouf~f.bench~w.180~d.95~h.42~lg.hidden",
     category: "sofas",
     tags: ["modular"],
     type: "Диван",
@@ -1885,7 +1886,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-35",
-    cfg: "t.modular~mo.3~ch.none~as.round~lg.hidden",
+    cfg: "t.modular~mo.2~mm.100~ch.right~as.round~aw.20~ah.60~h.70~bc.fixed~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1905,7 +1906,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-36",
-    cfg: "t.modular~mo.3~ch.right~as.wide~lg.hidden",
+    cfg: "t.modular~mo.3~mm.95~ch.right~as.wide~aw.22~ah.60~h.66~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1925,7 +1926,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-37",
     glb: "models3d/sofa-37.glb",
-    cfg: "t.corner~f.chaise~s.left~as.round~lg.metal~lf.black",
+    cfg: "t.corner~f.chaise~s.left~w.300~l.160~as.round~aw.18~ah.60~bc.loose~lg.metal~lf.black~lh.14",
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
@@ -1945,14 +1946,14 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-38",
     glb: "models3d/sofa-38.glb",
-    cfg: "t.corner~f.chaise~s.right~as.round~lg.metal~lf.gold",
+    cfg: "t.corner~f.L~s.left~w.320~l.200~as.thin~aw.12~ah.58~bc.loose~lg.metal~lf.gold~lh.12",
     category: "sofas",
     tags: ["corner", "modular"],
     type: "Диван",
     subtitle: "Угловой · округлая секция и кушетка",
     photos: [
       {"src": "img/catalog/p-sofa-38-hd.webp", "src600": "img/catalog/p-sofa-38-hd-600.webp", "alt": "Угловой диван в белом букле с округлой секцией и кушеткой на латунных ножках — на светлом фоне", "studio": true, "box": [0.74, 0.403], "w": 2400, "h": 1800},
-      {"src": "img/catalog/p-sofa-38-d1.webp", "src600": "img/catalog/p-sofa-38-d1-600.webp", "alt": "Округлая секция и подушки в молочной ткани — деталь", "studio": true, "box": [1.0, 0.999], "w": 2000, "h": 2250}
+      {"src": "img/catalog/p-sofa-38-d1-a.webp", "src600": "img/catalog/p-sofa-38-d1-a-600.webp", "alt": "Округлая секция и подушки в молочной ткани — деталь", "studio": true, "box": [0.667, 0.999], "w": 3000, "h": 2250}
     ],
     description: "Угловой диван в белом букле: округлая секция со спинкой, длинная низкая кушетка с подлокотником и тонкие латунные ножки. Галерейный силуэт для большой гостиной.",
     options: ["Угловой", "Латунные или чёрные ножки", "Букле или другая ткань"],
@@ -1965,7 +1966,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-16",
-    cfg: "t.armchair~f.classic~as.wide~w.100~lg.metal~lf.black",
+    cfg: "t.armchair~f.classic~w.105~d.90~h.76~sh.44~sd.58~as.wide~aw.20~ah.64~bc.loose~lg.metal~lf.black~lh.12",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1985,7 +1986,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-39",
     glb: "models3d/sofa-39.glb",
-    cfg: "t.modular~mo.3~as.round~bc.fixed~h.68~lg.hidden",
+    cfg: "t.modular~mo.3~mm.95~as.none~bc.fixed~h.68~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1995,11 +1996,11 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-sofa-39-2-hd.webp", "src600": "img/catalog/p-sofa-39-2-hd-600.webp", "alt": "Один модуль дивана: квадратное сиденье и два валика — на светлом фоне", "studio": true, "box": [0.668, 0.76], "w": 2400, "h": 1800},
       {"src": "img/catalog/p-sofa-39-3-hd.webp", "src600": "img/catalog/p-sofa-39-3-hd-600.webp", "alt": "Тот же диван в обратной расцветке: белые пятна на чёрном — на светлом фоне", "studio": true, "box": [0.74, 0.246], "w": 2400, "h": 1800},
       {"src": "img/catalog/p-sofa-39-d1-e-r.webp", "src600": "img/catalog/p-sofa-39-d1-e-r-600.webp", "alt": "Диван с валиками в бежевом жаккарде, вид сверху — на светлом фоне", "studio": true, "box": [0.436, 0.68], "w": 2659, "h": 1994},
-      {"src": "img/catalog/p-sofa-39-d2-e.webp", "src600": "img/catalog/p-sofa-39-d2-600.webp", "alt": "Валики спинки и скруглённый край — деталь", "studio": true, "box": [0.814, 0.61], "w": 1440, "h": 1920},
-      {"src": "img/catalog/p-sofa-39-d3-e.webp", "src600": "img/catalog/p-sofa-39-d3-600.webp", "alt": "Жаккард с рельефным рисунком крупно — фактура ткани", "studio": true, "box": [1.0, 1.0], "w": 1440, "h": 1920},
+      {"src": "img/catalog/p-sofa-39-d2-e-a.webp", "src600": "img/catalog/p-sofa-39-d2-e-a-600.webp", "alt": "Валики спинки и скруглённый край — деталь", "studio": true, "box": [0.541, 0.72], "w": 2171, "h": 1628},
+      {"src": "img/catalog/p-sofa-39-d3-e-a.webp", "src600": "img/catalog/p-sofa-39-d3-e-a-600.webp", "alt": "Жаккард с рельефным рисунком крупно — фактура ткани", "studio": true, "box": [0.519, 0.9], "w": 2775, "h": 2081},
       {"src": "img/catalog/p-sofa-39-d4-e-r.webp", "src600": "img/catalog/p-sofa-39-d4-e-r-600.webp", "alt": "Две секции с валиками в ткани с коричневым рисунком — на светлом фоне", "studio": true, "box": [0.76, 0.362], "w": 1796, "h": 1347},
       {"src": "img/catalog/p-sofa-39-d5-e-r.webp", "src600": "img/catalog/p-sofa-39-d5-e-r-600.webp", "alt": "Две секции с валиками в бордовом бархате в полоску — на светлом фоне", "studio": true, "box": [0.76, 0.384], "w": 1705, "h": 1279},
-      {"src": "img/catalog/p-sofa-39-d6-e.webp", "src600": "img/catalog/p-sofa-39-d6-600.webp", "alt": "Валики в бордовом бархате в полоску крупно — фактура ткани", "studio": true, "box": [1.0, 1.0], "w": 1536, "h": 1920}
+      {"src": "img/catalog/p-sofa-39-d6-e-a.webp", "src600": "img/catalog/p-sofa-39-d6-e-a-600.webp", "alt": "Валики в бордовом бархате в полоску крупно — фактура ткани", "studio": true, "box": [0.6, 1.0], "w": 2560, "h": 1920}
     ],
     description: "Модульный диван из низких квадратных и клиновидных секций: каждая — с двумя мягкими валиками вместо спинки. Собирается дугой, прямым или углом; один модуль — самостоятельное кресло-пуф. Показан в двухцветном букле с пятнами.",
     options: ["Модульный", "Валики-подголовники", "Дугой, прямой или углом"],
@@ -2013,7 +2014,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-40",
     glb: "models3d/sofa-40.glb",
-    cfg: "t.sofa~w.180~as.thin~lg.metal~lf.black",
+    cfg: "t.sofa~w.210~as.thin~aw.14~ah.62~h.85~bc.loose~n.2~lg.metal~lf.black~lh.14",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2032,7 +2033,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-17",
-    cfg: "t.armchair~f.classic~as.thin~p.1~lg.metal~lf.black~lh.16",
+    cfg: "t.armchair~f.classic~w.85~d.88~h.74~sh.44~sd.58~as.thin~aw.10~ah.62~bc.loose~p.1~lg.metal~lf.black~lh.16",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2051,14 +2052,14 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-18",
-    cfg: "t.armchair~f.classic~as.wide~lg.wood~lf.blackwood~lh.12",
+    cfg: "t.armchair~f.classic~w.70~d.80~h.76~sh.42~sd.58~as.none~bc.loose~lg.wood~lf.blackwood~lh.8",
     category: "armchairs",
     tags: [],
     type: "Кресло",
     subtitle: "Низкое · на деревянных ножках",
     photos: [
       {"src": "img/catalog/p-armchair-18-e-r.webp", "src600": "img/catalog/p-armchair-18-e-r-600.webp", "alt": "Низкое кресло в чёрно-белой ткани «зигзаг» на чёрных деревянных ножках — на светлом фоне", "studio": true, "box": [0.479, 0.68], "w": 1504, "h": 1128},
-      {"src": "img/catalog/p-armchair-18-d1-e.webp", "src600": "img/catalog/p-armchair-18-d1-600.webp", "alt": "Два кресла, вид сверху сбоку — на светлом фоне", "studio": true, "box": [0.954, 0.686], "w": 1536, "h": 1920}
+      {"src": "img/catalog/p-armchair-18-d1-e-a.webp", "src600": "img/catalog/p-armchair-18-d1-e-a-600.webp", "alt": "Два кресла, вид сверху сбоку — на светлом фоне", "studio": true, "box": [0.602, 0.72], "w": 2435, "h": 1826}
     ],
     description: "Низкое кресло с округлым сиденьем и небольшой мягкой спинкой на чёрных деревянных ножках. Показано в чёрно-белой ткани с рисунком «зигзаг».",
     options: ["Размер под человека", "Ткань из палитры", "Ткань или кожа"],
@@ -2071,7 +2072,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-19",
-    cfg: "t.armchair~f.classic~as.wide",
+    cfg: "t.armchair~f.round~w.100~d.90~h.72~sh.40~sd.58~as.round~aw.22~ah.70~lg.hidden",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2093,7 +2094,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-20",
-    cfg: "t.armchair~f.round",
+    cfg: "t.armchair~f.round~w.95~d.88~h.72~sh.42~sd.60~as.round~aw.22~ah.64~lg.hidden",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2113,7 +2114,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-21",
-    cfg: "t.armchair~f.classic~as.wide~lg.wood~lf.blackwood~lh.12",
+    cfg: "t.armchair~f.classic~w.75~d.85~h.100~sh.42~sd.56~as.none~bc.fixed~lg.wood~lf.walnut~lh.20",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2134,7 +2135,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-22",
-    cfg: "t.armchair~f.classic~as.wide~lg.metal~lf.black~lh.16",
+    cfg: "t.armchair~f.round~w.90~d.82~h.74~sh.44~sd.56~as.round~aw.14~ah.70~lg.metal~lf.black~lh.20",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2153,7 +2154,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-23",
-    cfg: "t.armchair~f.classic~as.wide~lg.metal~lf.black~lh.16",
+    cfg: "t.armchair~f.classic~w.110~d.90~h.70~sh.42~sd.58~as.round~aw.22~ah.62~bc.loose~lg.metal~lf.gold~lh.10",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2162,7 +2163,7 @@ window.RICCA_CATALOG = [
       {"src": "img/catalog/p-armchair-23-r.webp", "src600": "img/catalog/p-armchair-23-r-600.webp", "alt": "Широкое кресло с округлыми подлокотниками и круглой подушкой в разноцветном твиде на тонких розовых ножках — на светлом фоне", "studio": true, "box": [0.76, 0.511], "w": 1255, "h": 941},
       {"src": "img/catalog/p-armchair-23-d3-r.webp", "src600": "img/catalog/p-armchair-23-d3-r-600.webp", "alt": "То же кресло, вид сверху — на светлом фоне", "studio": true, "box": [0.665, 0.68], "w": 1398, "h": 1048},
       {"src": "img/catalog/p-armchair-23-d1-r.webp", "src600": "img/catalog/p-armchair-23-d1-r-600.webp", "alt": "То же кресло, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.591], "w": 1043, "h": 782},
-      {"src": "img/catalog/p-armchair-23-d2.webp", "src600": "img/catalog/p-armchair-23-d2-600.webp", "alt": "Подлокотник, круглая подушка и сиденье: твид крупно — деталь", "studio": true, "box": [0.726, 0.656], "w": 1170, "h": 1170}
+      {"src": "img/catalog/p-armchair-23-d2-a.webp", "src600": "img/catalog/p-armchair-23-d2-a-600.webp", "alt": "Подлокотник, круглая подушка и сиденье: твид крупно — деталь", "studio": true, "box": [0.599, 0.72], "w": 1420, "h": 1065}
     ],
     description: "Широкое кресло на тонких металлических ножках: мягкие округлые подлокотники, спинка-подушка и круглая подушка в комплекте. Показано в разноцветном твиде, ножки — розовые.",
     options: ["Размер под человека", "Ткань из палитры", "Ткань или кожа"],
@@ -2175,14 +2176,14 @@ window.RICCA_CATALOG = [
   },
   {
     id: "pouf-01",
-    cfg: "t.pouf",
-    category: "armchairs",
+    cfg: "t.pouf~f.square~w.90~h.38~tp.smooth~lg.metal~lf.black~lh.8~p.0",
+    category: "poufs",
     tags: [],
     type: "Пуф",
     subtitle: "Квадратный · на металлическом основании",
     photos: [
       {"src": "img/catalog/p-pouf-01-r.webp", "src600": "img/catalog/p-pouf-01-r-600.webp", "alt": "Квадратный пуф в серо-коричневой рогожке на чёрном металлическом основании — на светлом фоне", "studio": true, "box": [0.76, 0.468], "w": 1359, "h": 1019},
-      {"src": "img/catalog/p-pouf-01-d1.webp", "src600": "img/catalog/p-pouf-01-d1-600.webp", "alt": "Угол пуфа: рогожка крупно и металлическая опора — деталь", "studio": true, "box": [1.0, 0.538], "w": 1280, "h": 1280}
+      {"src": "img/catalog/p-pouf-01-d1-a.webp", "src600": "img/catalog/p-pouf-01-d1-a-600.webp", "alt": "Угол пуфа: рогожка крупно и металлическая опора — деталь", "studio": true, "box": [1.0, 0.718], "w": 1280, "h": 960}
     ],
     description: "Низкий квадратный пуф на тонком металлическом основании. Показан в серо-коричневой рогожке.",
     options: ["Размер под комнату", "Металлическое основание", "Ткань или кожа"],
@@ -2195,14 +2196,14 @@ window.RICCA_CATALOG = [
   },
   {
     id: "pouf-02",
-    cfg: "t.pouf~f.round",
-    category: "armchairs",
+    cfg: "t.pouf~f.round~w.70~h.42~lg.hidden~p.1",
+    category: "poufs",
     tags: [],
     type: "Пуф",
     subtitle: "Овальный · с кантом",
     photos: [
       {"src": "img/catalog/p-pouf-02-r.webp", "src600": "img/catalog/p-pouf-02-r-600.webp", "alt": "Овальный пуф в горчичной ткани с кантом по швам — на светлом фоне", "studio": true, "box": [0.76, 0.652], "w": 1062, "h": 796},
-      {"src": "img/catalog/p-pouf-02-d1.webp", "src600": "img/catalog/p-pouf-02-d1-600.webp", "alt": "Край пуфа: кант и фактура ткани крупно — деталь", "studio": true, "box": [0.834, 0.869], "w": 1280, "h": 1280}
+      {"src": "img/catalog/p-pouf-02-d1-a.webp", "src600": "img/catalog/p-pouf-02-d1-a-600.webp", "alt": "Край пуфа: кант и фактура ткани крупно — деталь", "studio": true, "box": [0.519, 0.72], "w": 2056, "h": 1542}
     ],
     description: "Мягкий овальный пуф без ножек, швы подчёркнуты кантом. Показан в горчичной ткани.",
     options: ["Размер под комнату", "Кант в цвет или контрастный", "Ткань или кожа"],
@@ -2215,8 +2216,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "pouf-03",
-    cfg: "t.pouf~f.round",
-    category: "armchairs",
+    cfg: "t.pouf~f.round~w.50~h.40~lg.hidden~p.0",
+    category: "poufs",
     tags: [],
     type: "Пуф",
     subtitle: "Круглый · разной высоты",
@@ -2235,8 +2236,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bench-01",
-    cfg: "t.pouf~f.bench",
-    category: "armchairs",
+    cfg: "t.pouf~f.bench~w.150~d.50~h.42~lg.plinth~lf.black~lh.6~p.0",
+    category: "poufs",
     tags: [],
     type: "Банкетка",
     subtitle: "Простёганная · на цоколе",
@@ -2255,8 +2256,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bench-02",
-    cfg: "t.pouf~f.bench",
-    category: "armchairs",
+    cfg: "t.pouf~f.bench~w.150~d.55~h.42~lg.wood~lf.blackwood~lh.6~p.0",
+    category: "poufs",
     tags: [],
     type: "Банкетка",
     subtitle: "Мягкая · на круглых опорах",
@@ -2276,8 +2277,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bench-03",
-    cfg: "t.pouf~f.bench",
-    category: "armchairs",
+    cfg: "t.pouf~f.bench~w.120~d.50~h.45~lg.metal~lf.black~lh.16~p.0",
+    category: "poufs",
     tags: [],
     type: "Банкетка",
     subtitle: "На двух рамах-опорах",
@@ -2296,14 +2297,14 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-41",
-    cfg: "t.sofa~w.240~as.wide~sc.sections~n.3~lg.metal~lf.black",
+    cfg: "t.sofa~w.230~as.thin~aw.10~ah.62~h.80~bc.loose~n.3~lg.plinth~lh.6",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
     subtitle: "Прямой · трёхместный, кожаный корпус",
     photos: [
       {"src": "img/catalog/p-sofa-41-hd.webp", "src600": "img/catalog/p-sofa-41-hd-600.webp", "alt": "Трёхместный диван в сером меланже с кожаным корпусом и цоколем — на светлом фоне", "studio": true, "box": [0.74, 0.382], "w": 1800, "h": 1350},
-      {"src": "img/catalog/p-sofa-41-i1-e.webp", "src600": "img/catalog/p-sofa-41-i1-600.webp", "alt": "Трёхместный диван в кожаном корпусе на сером фоне", "w": 1534, "h": 1920}
+      {"src": "img/catalog/p-sofa-41-i1-e.webp", "src600": "img/catalog/p-sofa-41-i1-600.webp", "alt": "Трёхместный диван в кожаном корпусе на сером фоне", "w": 1534, "h": 1920, "scene": true}
     ],
     description: "Трёхместный диван с низким кожаным корпусом и мягкими подушками в фактурной ткани: сочетание двух материалов — гладкая кожа подлокотников и цоколя, меланжевая ткань сидений и спинок.",
     options: ["Трёхместный или двухместный", "Кожа + ткань или одна ткань", "Низкий цоколь"],
@@ -2316,16 +2317,16 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-42",
-    cfg: "t.corner~s.left~as.wide~lg.hidden",
+    cfg: "t.corner~f.L~s.right~w.320~l.220~as.wide~aw.20~ah.60~h.78~bc.loose~lg.plinth~lh.6",
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
     subtitle: "Угловой · на подиуме",
     photos: [
       {"src": "img/catalog/p-sofa-42-e.webp", "src600": "img/catalog/p-sofa-42-600.webp", "alt": "Угловой диван на подиуме в тёмно-серой ткани «ёлочка» — на светлом фоне", "studio": true, "box": [0.922, 0.374], "w": 1731, "h": 1299},
-      {"src": "img/catalog/p-sofa-42-d1-e.webp", "src600": "img/catalog/p-sofa-42-d1-600.webp", "alt": "Подлокотник и подиум — деталь", "studio": true, "box": [0.88, 0.557], "w": 1440, "h": 1920},
-      {"src": "img/catalog/p-sofa-42-d2-e.webp", "src600": "img/catalog/p-sofa-42-d2-600.webp", "alt": "Спинка сзади и подушки — деталь", "studio": true, "box": [0.854, 0.823], "w": 1440, "h": 1920},
-      {"src": "img/catalog/p-sofa-42-d3-e.webp", "src600": "img/catalog/p-sofa-42-d3-600.webp", "alt": "Ткань «ёлочка» крупно — угол сиденья", "studio": true, "box": [1.0, 1.0], "w": 1440, "h": 1920}
+      {"src": "img/catalog/p-sofa-42-d1-e-a.webp", "src600": "img/catalog/p-sofa-42-d1-e-a-600.webp", "alt": "Подлокотник и подиум — деталь", "studio": true, "box": [0.639, 0.72], "w": 1984, "h": 1488},
+      {"src": "img/catalog/p-sofa-42-d2-e-a.webp", "src600": "img/catalog/p-sofa-42-d2-e-a-600.webp", "alt": "Спинка сзади и подушки — деталь", "studio": true, "box": [0.525, 0.9], "w": 2341, "h": 1756},
+      {"src": "img/catalog/p-sofa-42-d3-e-a.webp", "src600": "img/catalog/p-sofa-42-d3-e-a-600.webp", "alt": "Ткань «ёлочка» крупно — угол сиденья", "studio": true, "box": [0.562, 1.0], "w": 2560, "h": 1920}
     ],
     description: "Низкий угловой диван на подиуме: широкое сиденье-лежак с одной стороны, прямой подлокотник с другой, свободные подушки спинки. Показан в тёмно-серой ткани «ёлочка».",
     options: ["Угол слева или справа", "Размер под комнату", "Ткань или кожа"],
@@ -2338,7 +2339,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-43",
-    cfg: "t.modular~mo.3~ch.left~as.wide~lg.hidden",
+    cfg: "t.modular~mo.3~mm.100~ch.left~as.thin~aw.15~ah.60~h.78~lg.plinth~lh.6",
     category: "sofas",
     tags: ["modular"],
     type: "Диван",
@@ -2357,7 +2358,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-44",
-    cfg: "t.sofa~w.160~lg.hidden",
+    cfg: "t.sofa~w.160~as.thin~aw.10~ah.105~h.110~bc.fixed~sc.single~lg.hidden",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2377,15 +2378,15 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-45",
-    cfg: "t.modular~mo.3~ch.left~h.66~lg.hidden",
+    cfg: "t.modular~mo.3~mm.100~ch.left~as.none~bc.fixed~h.66~lg.hidden",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
     subtitle: "Низкий · спинка из валиков",
     photos: [
       {"src": "img/catalog/p-sofa-45-r.webp", "src600": "img/catalog/p-sofa-45-r-600.webp", "alt": "Низкий угловой диван со спинкой из двух валиков в серо-зелёной ткани — на светлом фоне", "studio": true, "box": [0.76, 0.43], "w": 1497, "h": 1123},
-      {"src": "img/catalog/p-sofa-45-d1.webp", "src600": "img/catalog/p-sofa-45-d1-600.webp", "alt": "Угол дивана: секция и валики спинки — деталь", "studio": true, "box": [0.824, 0.621], "w": 887, "h": 887},
-      {"src": "img/catalog/p-sofa-45-d2-c-c-c-c-c-c-c-c-c-c-c.webp", "src600": "img/catalog/p-sofa-45-d2-c-c-c-c-c-c-c-c-c-c-c-600.webp", "alt": "Край дивана и валики спинки — деталь", "studio": true, "box": [0.837, 0.675], "w": 890, "h": 890}
+      {"src": "img/catalog/p-sofa-45-d1-a.webp", "src600": "img/catalog/p-sofa-45-d1-a-600.webp", "alt": "Угол дивана: секция и валики спинки — деталь", "studio": true, "box": [0.717, 0.72], "w": 1020, "h": 765},
+      {"src": "img/catalog/p-sofa-45-d2-c-c-c-c-c-c-c-c-c-c-c-a.webp", "src600": "img/catalog/p-sofa-45-d2-c-c-c-c-c-c-c-c-c-c-c-a-600.webp", "alt": "Край дивана и валики спинки — деталь", "studio": true, "box": [0.669, 0.72], "w": 1113, "h": 835}
     ],
     description: "Низкий диван из двух секций без ножек: спинка — два длинных валика один над другим. Показан в серо-зелёной ткани с мелкой крапинкой.",
     options: ["Две секции", "Угол слева или справа", "Ткань или кожа"],
@@ -2398,7 +2399,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-46",
-    cfg: "t.sofa~w.180~lg.hidden",
+    cfg: "t.sofa~w.180~as.none~h.85~bc.loose~n.2~lg.hidden",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2406,7 +2407,7 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-sofa-46-r.webp", "src600": "img/catalog/p-sofa-46-r-600.webp", "alt": "Двухместный диван с округлым основанием и спинкой из двух подушек в баклажановом букле — на светлом фоне", "studio": true, "box": [0.76, 0.463], "w": 1342, "h": 1006},
       {"src": "img/catalog/p-sofa-46-d1-r.webp", "src600": "img/catalog/p-sofa-46-d1-r-600.webp", "alt": "Диван в баклажановом букле, вид сбоку — на светлом фоне", "studio": true, "box": [0.76, 0.548], "w": 1221, "h": 916},
-      {"src": "img/catalog/p-sofa-46-d2.webp", "src600": "img/catalog/p-sofa-46-d2-600.webp", "alt": "Подушка спинки и край сиденья: букле крупно — деталь", "studio": true, "box": [0.81, 0.796], "w": 1280, "h": 1280}
+      {"src": "img/catalog/p-sofa-46-d2-a.webp", "src600": "img/catalog/p-sofa-46-d2-a-600.webp", "alt": "Подушка спинки и край сиденья: букле крупно — деталь", "studio": true, "box": [0.549, 0.72], "w": 1889, "h": 1417}
     ],
     description: "Двухместный диван с округлым основанием: спинка — две отдельные мягкие подушки. Показан в баклажановом букле.",
     options: ["Двухместный", "Округлое основание", "Ткань или кожа"],
@@ -2419,7 +2420,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-47",
-    cfg: "t.sofa~w.180~as.wide~lg.metal~lf.black",
+    cfg: "t.sofa~w.170~d.85~as.round~aw.25~ah.72~h.74~bc.fixed~sc.single~lg.metal~lf.black~lh.20",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2427,11 +2428,88 @@ window.RICCA_CATALOG = [
     photos: [
       {"src": "img/catalog/p-sofa-47-r.webp", "src600": "img/catalog/p-sofa-47-r-600.webp", "alt": "Двухместный округлый диван в терракотовом букле на бордовой металлической раме — на светлом фоне", "studio": true, "box": [0.76, 0.488], "w": 1384, "h": 1038},
       {"src": "img/catalog/p-sofa-47-d1-r.webp", "src600": "img/catalog/p-sofa-47-d1-r-600.webp", "alt": "Диван на металлической раме, вид спереди — на светлом фоне", "studio": true, "box": [0.76, 0.432], "w": 1234, "h": 926},
-      {"src": "img/catalog/p-sofa-47-d2.webp", "src600": "img/catalog/p-sofa-47-d2-600.webp", "alt": "Подлокотник и рама из трубы: букле крупно — деталь", "studio": true, "box": [0.846, 0.638], "w": 1280, "h": 1280}
+      {"src": "img/catalog/p-sofa-47-d2-a.webp", "src600": "img/catalog/p-sofa-47-d2-a-600.webp", "alt": "Подлокотник и рама из трубы: букле крупно — деталь", "studio": true, "box": [0.716, 0.72], "w": 1513, "h": 1135}
     ],
     description: "Компактный двухместный диван с округлым корпусом на раме из металлической трубы. Показан в терракотовом букле, рама — бордовая.",
     options: ["Двухместный", "Металлическая рама", "Ткань или кожа"],
     sizes: "Под ваш размер: ширину согласуем по планировке.",
+    materials: "Из палитры тканей и кож в шоуруме: образцы можно потрогать и сравнить рядом.",
+    filling: "Подбираем под желаемую посадку — мягче или плотнее.",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "5 лет",
+    delivery: "По Казахстану и за рубеж"
+  },
+  {
+    id: "sofa-48",
+    cfg: "t.pouf~f.bench~w.200~d.90~h.42~lg.hidden",
+    category: "sofas",
+    tags: [],
+    type: "Кушетка",
+    subtitle: "С валиком · на деревянной раме",
+    photos: [
+      {"src": "img/catalog/p-sofa-48-r.webp", "src600": "img/catalog/p-sofa-48-r-600.webp", "alt": "Кушетка без спинки на тонкой деревянной раме с валиком-подголовником, в серо-бежевой рогожке — на светлом фоне", "studio": true, "box": [0.76, 0.356], "w": 1493, "h": 1120},
+      {"src": "img/catalog/p-sofa-48-d1-a.webp", "src600": "img/catalog/p-sofa-48-d1-a-600.webp", "alt": "Валик на ремне, край матраса и деревянная рама крупно — деталь", "studio": true, "box": [0.794, 0.72], "w": 1325, "h": 994}
+    ],
+    description: "Кушетка без спинки на тонкой деревянной раме: мягкий матрас и валик-подголовник на ремне. Показана в серо-бежевой рогожке.",
+    options: ["Длина под комнату", "Валик слева или справа", "Ткань или кожа"],
+    sizes: "Под вашу комнату: длину и ширину согласуем на проекте.",
+    materials: "Из палитры тканей и кож в шоуруме: образцы можно потрогать и сравнить рядом.",
+    filling: "Подбираем под желаемую посадку — мягче или плотнее.",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "5 лет",
+    delivery: "По Казахстану и за рубеж"
+  },
+  {
+    id: "sofa-49",
+    cfg: "t.sofa~w.280~d.105~as.wide~aw.28~ah.55~h.72~bc.fixed~n.2~lg.hidden",
+    category: "sofas",
+    tags: ["straight"],
+    type: "Диван",
+    subtitle: "Двухсекционный · гранёные боковины",
+    photos: [
+      {"src": "img/catalog/p-sofa-49-r.webp", "src600": "img/catalog/p-sofa-49-r-600.webp", "alt": "Низкий диван из двух секций с гранёными боковинами и подлокотниками-подушками в горчичной ткани — на светлом фоне", "studio": true, "box": [0.76, 0.313], "w": 1567, "h": 1175}
+    ],
+    description: "Низкий диван из двух секций: скошенные, как грани, боковины, наклонная спинка и подлокотники-подушки. Показан в горчичной ткани.",
+    options: ["Две секции", "Размер под комнату", "Ткань или кожа"],
+    sizes: "Под ваш размер: ширину согласуем по планировке.",
+    materials: "Из палитры тканей и кож в шоуруме: образцы можно потрогать и сравнить рядом.",
+    filling: "Подбираем под желаемую посадку — мягче или плотнее.",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "5 лет",
+    delivery: "По Казахстану и за рубеж"
+  },
+  {
+    id: "sofa-50",
+    cfg: "t.corner~f.L~s.right~w.300~l.200~as.wide~aw.22~ah.66~h.70~bc.fixed~lg.hidden",
+    category: "sofas",
+    tags: ["corner", "modular"],
+    type: "Диван",
+    subtitle: "Угловой · с контрастным кантом",
+    photos: [
+      {"src": "img/catalog/p-sofa-50-r.webp", "src600": "img/catalog/p-sofa-50-r-600.webp", "alt": "Низкий угловой диван из двух секций в оливковом букле с тёмным кантом по краям — на светлом фоне", "studio": true, "box": [0.76, 0.278], "w": 1507, "h": 1130}
+    ],
+    description: "Низкий угловой диван из двух секций: спинка и боковины — единым корпусом, по краям — тёмный кант. Показан в оливковом букле.",
+    options: ["Две секции", "Угол слева или справа", "Кант в цвет или контрастный"],
+    sizes: "Под вашу комнату: число и состав секций собираем по планировке.",
+    materials: "Из палитры тканей и кож в шоуруме: образцы можно потрогать и сравнить рядом.",
+    filling: "Подбираем под желаемую посадку — мягче или плотнее.",
+    lead: "Называем после утверждения проекта и выбора ткани.",
+    warranty: "5 лет",
+    delivery: "По Казахстану и за рубеж"
+  },
+  {
+    id: "sofa-51",
+    cfg: "t.modular~mo.3~mm.100~ch.left~as.none~bc.fixed~h.62~lg.hidden",
+    category: "sofas",
+    tags: ["modular"],
+    type: "Диван",
+    subtitle: "Модульный · простёганный",
+    photos: [
+      {"src": "img/catalog/p-sofa-51-r.webp", "src600": "img/catalog/p-sofa-51-r-600.webp", "alt": "Низкий модульный диван без подлокотников, простёганный крупными клетками, в тёмно-серой ткани — на светлом фоне", "studio": true, "box": [0.76, 0.346], "w": 1424, "h": 1068}
+    ],
+    description: "Низкий модульный диван без подлокотников: сиденья и спинка простёганы крупными клетками. Показан в тёмно-серой ткани.",
+    options: ["Число секций под комнату", "Спинка на любой секции", "Ткань или кожа"],
+    sizes: "Под вашу комнату: число и состав секций собираем по планировке.",
     materials: "Из палитры тканей и кож в шоуруме: образцы можно потрогать и сравнить рядом.",
     filling: "Подбираем под желаемую посадку — мягче или плотнее.",
     lead: "Называем после утверждения проекта и выбора ткани.",
@@ -2450,6 +2528,9 @@ window.RICCA_CATALOG = [
     it.name = it.type + ' ' + it.short;
     it.reading = n ? String(rd[n] || '').trim() : '';
   });
+  /* hidden: true — модель снята с витрины (слабые фото или не в стиле); данные остаются здесь, полный список — RICCA_CATALOG_ALL */
+  window.RICCA_CATALOG_ALL = window.RICCA_CATALOG;
+  window.RICCA_CATALOG = window.RICCA_CATALOG.filter(function (it) { return !it.hidden; });
 })();
 
 /* Ткани — экран «Ткани» (плитка каталога). Образцы по семьям цвета (квадрат 600 px, в цвете, без подписей на фото).

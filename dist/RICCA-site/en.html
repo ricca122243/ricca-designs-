@@ -38,10 +38,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts-v3.css?v=f3987feb7e">
-<link rel="stylesheet" href="css/site.css?v=f3987feb7e">
-<link rel="stylesheet" href="css/hero.css?v=f3987feb7e">
-<link rel="stylesheet" href="css/home.css?v=f3987feb7e">
+<link rel="stylesheet" href="css/fonts-v3.css?v=6b575d8999">
+<link rel="stylesheet" href="css/site.css?v=6b575d8999">
+<link rel="stylesheet" href="css/hero.css?v=6b575d8999">
+<link rel="stylesheet" href="css/home.css?v=6b575d8999">
 <script>
 /* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,6 с). Не играем: повторный визит в этой сессии,
    prefers-reduced-motion, вход по ссылке с #якорем (Instagram → #catalog/sofas), недоступный sessionStorage.
@@ -118,6 +118,7 @@
       <button class="icon-btn hdr__sl" type="button" id="cart-open" aria-haspopup="dialog" aria-label="Cart, empty">
         <svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span class="hdr__count" id="cart-count" aria-hidden="true" hidden>0</span>
       </button>
+            <button class="icon-btn icon-btn--menu" type="button" id="menu-open" data-open-menu aria-haspopup="dialog" aria-label="Menu"><span class="burger" aria-hidden="true"><i></i><i></i><i></i></span></button>
     </div>
   </div>
 </header>
@@ -154,7 +155,7 @@
       <a class="btn btn--line" href="/en/configurator">Build in&nbsp;3D</a>
     </div>
   </div></div>
-  <script src="js/hero.js?v=f3987feb7e" defer></script>
+  <script src="js/hero.js?v=6b575d8999" defer></script>
 </section>
 
 <section class="sec cat" id="catalog" aria-labelledby="cat-title">
@@ -165,6 +166,7 @@
         <li><a class="cats__a" href="#catalog/sofas"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M22 40V18a4 4 0 0 1 4-4h68a4 4 0 0 1 4 4v22M60 14v36"/><path d="M22 56H12a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v24M98 56h10a4 4 0 0 0 4-4V32a4 4 0 0 0-4-4h-6a4 4 0 0 0-4 4v24"/><path d="M22 40h76v10H22zM22 56h76M14 56v6M106 56v6"/></svg><span class="cats__t">Sofas</span></a></li>
         <li><a class="cats__a" href="#catalog/beds"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M14 50V16a4 4 0 0 1 4-4h84a4 4 0 0 1 4 4v34"/><rect x="26" y="26" width="30" height="14" rx="3"/><rect x="64" y="26" width="30" height="14" rx="3"/><path d="M18 40h84v10H18zM12 50h96v8H12zM18 58v5M102 58v5"/></svg><span class="cats__t">Beds</span></a></li>
         <li><a class="cats__a" href="#catalog/armchairs"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M40 40V18a4 4 0 0 1 4-4h32a4 4 0 0 1 4 4v22"/><path d="M40 56h-8a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v24M80 56h8a4 4 0 0 0 4-4V32a4 4 0 0 0-4-4h-4a4 4 0 0 0-4 4v24"/><path d="M40 40h40v10H40zM40 56h40M33 56v6M87 56v6"/></svg><span class="cats__t">Armchairs</span></a></li>
+        <li><a class="cats__a" href="#catalog/poufs"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><rect x="10" y="32" width="62" height="16" rx="5"/><path d="M18 48v12M64 48v12M31 32v16M51 32v16"/><path d="M84 60V44a8 8 0 0 1 8-8h10a8 8 0 0 1 8 8v16z"/></svg><span class="cats__t">Poufs and&nbsp;benches</span></a></li>
         <li><a class="cats__a" href="#catalog/fabrics"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><ellipse cx="22" cy="20" rx="5" ry="8"/><path d="M22 12h70a5 8 0 0 1 0 16H22"/><path d="M34 28v30q10 6 20 0t20 0t20 0V28M48 28v29M62 28v31M76 28v29"/></svg><span class="cats__t">Fabrics</span></a></li>
         <li><a class="cats__a" href="https://ricca-designs.netlify.app" target="_blank" rel="noopener"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M16 38l18-14h70l-18 14zM16 38h70v14H16zM86 38l18-14v14l-18 14"/><path d="M24 45h54" stroke-dasharray="3 4"/></svg><span class="cats__t">Mattresses</span></a></li>
         <li><a class="cats__a" href="/en/configurator"><svg class="cats__i" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><path d="M60 10l32 15-32 15-32-15zM28 25v26l32 15V40M92 25v26L60 66"/><path d="M60 40v26" stroke-dasharray="3 4"/></svg><span class="cats__t">3D&nbsp;builder</span></a></li>
@@ -231,7 +233,7 @@
     <a class="cfg__pic cfg__pic--cover rv" href="/en/configurator" tabindex="-1" aria-hidden="true"><img src="img/cfg/cover-en-800.webp" srcset="img/cfg/cover-en-800.webp 800w, img/cfg/cover-en.webp 1600w" sizes="(min-width: 900px) 56vw, 92vw" width="1600" height="1528" alt="" loading="lazy" decoding="async"></a>
     <div class="cfg__text rv">
       <h2 class="title" id="cfg-title">Build your own furniture in&nbsp;3D</h2>
-      <a class="btn btn--fill" href="/en/configurator">Open the configurator<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <a class="btn btn--fill" href="/en/configurator">Open the configurator</a>
     </div>
   </div>
 </section>
@@ -389,6 +391,7 @@
           <li><a href="#catalog/sofas">Upholstered furniture</a></li>
           <li><a href="#catalog/beds">Designer beds</a></li>
           <li><a href="#catalog/armchairs">Lounge armchairs</a></li>
+          <li><a href="#catalog/poufs">Poufs and&nbsp;benches</a></li>
           <li><a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">Orthopaedic mattresses<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — ELUNA website, opens in&nbsp;a new tab</span></a></li>
         </ul>
       </nav>
@@ -438,11 +441,6 @@
 </footer>
 
 
-<nav class="mbar" id="mbar" aria-label="Quick actions">
-  <a class="mbar__i" href="#catalog">Catalogue</a>
-  <a class="mbar__i mbar__i--main" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
-  <button class="mbar__i" type="button" id="mbar-menu" data-open-menu aria-haspopup="dialog">Menu</button>
-</nav>
 
 
 <dialog class="atl" id="atl" aria-label="About the atelier in detail">
@@ -517,24 +515,23 @@
   </div>
   <div class="menu__body wrap">
     <nav class="menu__main" aria-label="Catalogue">
-      <a class="menu__all" href="#catalog">Catalogue<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
       <a class="menu__row" style="--i:0" href="#catalog/sofas"><span>Sofas</span></a>
       <a class="menu__row" style="--i:1" href="#catalog/beds"><span>Beds</span></a>
       <a class="menu__row" style="--i:2" href="#catalog/armchairs"><span>Armchairs</span></a>
-      <a class="menu__row" style="--i:3" href="#catalog/fabrics"><span>Fabrics</span></a>
+      <a class="menu__row" style="--i:3" href="#catalog/poufs"><span>Poufs and&nbsp;benches</span></a>
+      <a class="menu__row" style="--i:4" href="#catalog/fabrics"><span>Fabrics</span></a>
+      <a class="menu__row" style="--i:5" href="/en/configurator"><span>3D&nbsp;builder</span></a>
     </nav>
     <nav class="menu__more" aria-label="Sections">
-      <a href="/en/configurator">Build in&nbsp;3D</a>
       <a href="#catalog/works" data-works-link hidden>Our works</a>
-      <a href="#process">How to order</a>
       <a href="#atelier">Atelier</a>
       <a href="#business">For business</a>
-      <a href="#faq">Questions</a>
-      <a href="#showroom">Showroom</a>
-      <a href="https://ricca-designs.netlify.app" target="_blank" rel="noopener">ELUNA<svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> — mattress website, opens in&nbsp;a new tab</span></a>
+      <a href="#showroom">Showroom &amp; contacts</a>
+    </nav>
+    <div class="menu__util">
       <a class="menu__lang" href="/" hreflang="ru" lang="ru">Русский</a>
       <button class="menu__sl" type="button" data-open-cart>Cart <span data-cart-mn></span></button>
-    </nav>
+    </div>
     <div class="menu__foot">
       <a class="btn btn--fill" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>Message on&nbsp;WhatsApp</a>
       <a class="btn btn--line menu__call" href="tel:+77079550808" data-tel="main" aria-label="Call: +7 (707) 955-08-08"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg></a>
@@ -547,7 +544,8 @@
     <button class="view__back" type="button" data-close><svg class="ico" aria-hidden="true"><use href="#i-chev-l"/></svg><span data-view-back>Catalogue</span></button>
     <span class="view__end">
       <button class="icon-btn hdr__sl" type="button" data-open-cart aria-haspopup="dialog" aria-label="Cart, empty"><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span class="hdr__count" data-cart-vn aria-hidden="true" hidden>0</span></button>
-      <button class="icon-btn" type="button" data-close aria-label="Close"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+      <button class="icon-btn icon-btn--menu" type="button" data-open-menu aria-haspopup="dialog" aria-label="Menu"><span class="burger" aria-hidden="true"><i></i><i></i><i></i></span></button>
+      <button class="icon-btn view__x" type="button" data-close aria-label="Close"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
     </span>
   </div>
   <div class="wrap view__body">
@@ -560,11 +558,7 @@
     <div data-view-content></div>
     <p class="view__foot" data-view-foot><a class="caps-link" data-view-wa href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-view-wa-label>Discuss on&nbsp;WhatsApp</span></a></p>
   </div>
-  <nav class="mbar mbar--view" aria-label="Quick actions">
-    <a class="mbar__i" href="#catalog" data-to-catalog>Catalogue</a>
-    <a class="mbar__i mbar__i--main" href="https://wa.me/77079550808" data-wa="general"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>
-    <button class="mbar__i" type="button" data-open-menu aria-haspopup="dialog">Menu</button>
-  </nav>
+    <a class="wa-fab wa-fab--view" href="https://wa.me/77079550808" data-wa="general" aria-label="Message on WhatsApp" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
 </dialog>
 
 <dialog class="pd" id="product" aria-labelledby="pd-title">
@@ -654,19 +648,25 @@
         <h2 class="lb__title" id="lb-title" data-lb-title tabindex="-1" autofocus></h2>
         <p class="lb__piece" id="lb-sub" data-lb-piece></p>
         <p class="lb__count" data-lb-count aria-live="polite"></p>
+                <div class="lb__tools" role="group" aria-label="Model in the builder">
+          <a class="btn btn--line btn--s" data-lb-3d href="/en/configurator">3D model</a>
+          <a class="btn btn--line btn--s" data-lb-draw href="/en/configurator">Drawing</a>
+        </div>
         <ul class="lb__rows" data-lb-rows role="list">
           <li data-lb-row="size"><span class="lb__r"><span class="lb__rk">Size</span><span class="lb__rv">Any&nbsp;— made to order</span></span></li>
           <li data-lb-row="fabric"><a class="lb__r" href="#catalog/fabrics"><span class="lb__rk">Fabric</span><span class="lb__rv">Choose</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-          <li><a class="lb__r" data-lb-3d href="/en/configurator"><span class="lb__rk">3D</span><span class="lb__rv">Build a similar one</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
           <li data-lb-row="ig"><a class="lb__r" data-lb-ig href="https://instagram.com/ricca.designs" target="_blank" rel="noopener"><span class="lb__rk">Instagram</span><span class="lb__rv">View</span><svg class="ico" aria-hidden="true"><use href="#i-arrow-ne"/></svg><span class="sr-only"> (opens in&nbsp;a new tab)</span></a></li>
         </ul>
         <details class="pd__more lb__more" data-lb-more hidden><summary>Details<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="lb__info" data-lb-info></div></details>
         <details class="pd__more nb-comp-d" data-lb-comp-d hidden><summary>What it’s made of<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="nb-comp-box" data-lb-comp></div></details>
       </div>
+            <section class="rec" data-lb-rec aria-labelledby="rec-t" hidden>
+        <h3 class="rec__t" id="rec-t">You may also like</h3>
+        <ul class="rec__row wk" data-lb-rec-row role="list"></ul>
+      </section>
       <div class="lb__acts">
         <a class="btn btn--fill" data-lb-wa href="https://wa.me/77079550808" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span data-lb-wa-t>I want this</span><span class="sr-only"> (opens in&nbsp;WhatsApp)</span></a>
         <button class="btn btn--line" type="button" data-lb-cart aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span>Add to&nbsp;cart</span></button>
-        <a class="caps-link lb__3d" data-lb-3d href="/en/configurator">Build a similar one in&nbsp;3D<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         <a class="lb__ig" data-lb-ig href="https://instagram.com/ricca.designs" target="_blank" rel="noopener">View on&nbsp;Instagram<span class="sr-only"> (opens in&nbsp;a new tab)</span></a>
       </div>
     </div>
@@ -705,16 +705,16 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__open" id="toast-open">Open</button></div>
 
-<script src="js/lang.js?v=f3987feb7e" defer></script>
-<script src="js/catalog-data.js?v=f3987feb7e" defer></script>
-<script src="js/works-data.js?v=f3987feb7e" defer></script>
-<script src="js/models-data.js?v=f3987feb7e" defer></script>
-<script src="js/fabrics-data.js?v=f3987feb7e" defer></script>
-<script src="js/lang-en.js?v=f3987feb7e" defer></script>
-<script src="js/cart.js?v=f3987feb7e" defer></script>
-<script src="js/site.js?v=f3987feb7e" defer></script>
-<script src="js/content-data.js?v=f3987feb7e" defer></script>
-<script src="js/composition-data.js?v=f3987feb7e" defer></script>
-<script src="js/blocks.js?v=f3987feb7e" defer></script>
+<script src="js/lang.js?v=6b575d8999" defer></script>
+<script src="js/catalog-data.js?v=6b575d8999" defer></script>
+<script src="js/works-data.js?v=6b575d8999" defer></script>
+<script src="js/models-data.js?v=6b575d8999" defer></script>
+<script src="js/fabrics-data.js?v=6b575d8999" defer></script>
+<script src="js/lang-en.js?v=6b575d8999" defer></script>
+<script src="js/cart.js?v=6b575d8999" defer></script>
+<script src="js/site.js?v=6b575d8999" defer></script>
+<script src="js/content-data.js?v=6b575d8999" defer></script>
+<script src="js/composition-data.js?v=6b575d8999" defer></script>
+<script src="js/blocks.js?v=6b575d8999" defer></script>
 </body>
 </html>

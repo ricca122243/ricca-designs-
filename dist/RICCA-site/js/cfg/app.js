@@ -155,13 +155,14 @@ const hashOf = () => {
 const variantLink = () => (isHttp ? `${location.origin}${location.pathname}${hashOf()}` : '');
 /* «#cfg=…&f=alba:12», «#f=alba:12» (со страницы «Ткани»), «#room=…» → части */
 function parseHash(h) {
-  const out = { cfg: null, f: null, room: null, m: null, from: null };
+  const out = { cfg: null, f: null, room: null, m: null, from: null, draw: false };
   String(h || '').replace(/^#/, '').split('&').forEach((part) => {
     if (part.startsWith('cfg=')) out.cfg = part.slice(4);
     else if (part.startsWith('f=')) { try { out.f = decodeURIComponent(part.slice(2)); } catch (e) { out.f = part.slice(2); } }
     else if (part.startsWith('room=')) out.room = part.slice(5);
     else if (part.startsWith('m=')) out.m = part.slice(2);
     else if (part.startsWith('from=')) out.from = part.slice(5);
+    else if (part.startsWith('draw=')) out.draw = part.slice(5) !== '0';   // &draw=1 — сразу открыть «Чертёж» (прямая ссылка на чертёж модели)
   });
   return out;
 }
@@ -180,12 +181,13 @@ function fromCfgString(str) {
   qtyTouched = d.qty > 1;
   return true;
 }
-let arrivedFabric = null, pendingModel = null;   // точная модель из адреса (&m=…)         // ткань из ссылки «Примерить на мебели в 3D» (#f=…)
+let arrivedFabric = null, pendingModel = null, pendingDraw = false;   // точная модель из адреса (&m=…)         // ткань из ссылки «Примерить на мебели в 3D» (#f=…)
 function load() {
   const h = parseHash(location.hash);
   const fab = h.f ? findFabricShort(h.f, lib) : null;
   const lost = !!h.f && !fab;
   if (h.m) pendingModel = h.m;
+  pendingDraw = h.draw;
   if (h.cfg && fromCfgString(h.cfg)) {
     if (fab) { state.fabric = fab; state.fabricLost = false; }
     if (lost) { state.fabricLost = true; pendingToast = MSG_FAB_LOST; return 'fabric'; }
@@ -739,9 +741,9 @@ function syncBar() {
   const model = state.mode === 'model';
   const n = model ? nextStepFor() : 0;
   nb.hidden = !n; wa.hidden = !!n;
-  /* модель: слева в плашке на каждом шаге — «Чертёж» и «У себя дома» (раньше «Чертёж» был только на «Размере», и его искали; жалоба 1 нояб.).
-     Комната и фото — одна кнопка «В WhatsApp» (css прячет остальные) */
-  $('#bar-draw').hidden = !model; $('#bar-ar').hidden = !model;
+  /* «Чертёж» — в плашке всегда: на каждом шаге модели, в комнате и на фото (раньше был только на «Размере», потом только в модели,
+     и его искали; жалобы 1 и 12 нояб.). «У себя дома» — только в модели (css прячет её в комнате и на фото) */
+  $('#bar-draw').hidden = false; $('#bar-ar').hidden = !model;
   if (n) { $('#bar-next-t').textContent = `Далее: ${STEP_NAMES[n]}`; $('#bar-next-n').textContent = `${Math.max(1, Math.min(5, n - 1 || 1))}/5`; nb.dataset.goto = String(n); }
   syncBarAwaySoon();
 }
@@ -984,11 +986,13 @@ async function photoreal() {
 
 /* ═════════ «Чертёж» (js/cfg/drawing.js, лениво) ═════════ */
 let drawing = null;
-function drawingCfg() {
+/* stalled: точная модель ещё грузится (медленная сеть) — лист без 3D-эскизов, но размеры как у точной модели (только габариты),
+   иначе в спецификации «точная 3D-модель», а на видах — цепочки по деталям конструктора */
+function drawingCfg(stalled = false) {
   const d = new Date();
   return {
     ...cfgState(), id: id(), title: titleOf(state.type, state.params), lines: summaryLines(cfgState(), { dims: curDims() }),
-    notes: state.notes.slice(), dims: curDims(), exact: !!(exact && exact.id === activeModel), date: `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`,
+    notes: state.notes.slice(), dims: curDims(), exact: !!(exact && exact.id === activeModel) || (stalled && isExact()), date: `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`,
   };
 }
 let drawingJob = null, drawingLast = null, drawingSeq = 0;
@@ -1012,7 +1016,7 @@ async function openDrawing() {
     if (!dlg.open || !mine()) return;
   }
   flushRebuild();   // ввели размер и сразу нажали «Чертёж»: иначе эскиз — со старой модели, а цифры — новые
-  const cfg = drawingCfg(), key = drawingKey(cfg);
+  const cfg = drawingCfg(stalled), key = drawingKey(cfg);
   const show = (d) => { img.src = d.url; img.hidden = false; wait.hidden = true; ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = false; }); $('#dd-open').hidden = false; };
   const put = (res, k) => {
     if (drawing && drawing.url) URL.revokeObjectURL(drawing.url);
@@ -1218,7 +1222,7 @@ async function setMode(mode, { focus = false } = {}) {
   $('#main').dataset.mode = mode;
   $$('[data-mode-tab]').forEach((b) => { const on = b.dataset.modeTab === mode; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; });
   $('#steps').hidden = !model; $('#room-panel').hidden = !room; $('#photo-panel').hidden = !photo;
-  $('.vp__views').hidden = !model; $('#t-view').hidden = !model; $('#t-dims').hidden = !model; $('#t-drawing').hidden = !model; $('#vp-size').hidden = !model;
+  $('.vp__views').hidden = !model; $('#t-view').hidden = !model; $('#t-dims').hidden = !model; $('#vp-size').hidden = !model;   // «Чертёж» в окне 3D — во всех режимах
   syncVp();
   $('#photo-host').hidden = !photo; $('#ph-empty').hidden = !photo || !!(photoApi && photoApi.hasPhoto);
   if (focus) $(`[data-mode-tab="${mode}"]`).focus();
@@ -1524,6 +1528,7 @@ function bind() {
       renderFabChip();
       if ((fab && !ph.cfg) || lost) { openStep(4); revealFabric(); }
       if (pendingToast) toast(pendingToast, 3500);
+      if (ph.draw) openDrawing();
     }
     else if (ph.room) setMode('room');
   });
@@ -1552,6 +1557,7 @@ function init() {
     else if (src === 'hash') matchModel();
     if (state.mode === 'room') setMode('room');
     if (pendingToast) toast(pendingToast, 3500);
+    if (pendingDraw) { pendingDraw = false; openDrawing(); }   // точная модель уже грузится — openDrawing её дождётся
   });
   if (pendingToast && !stage) toast(pendingToast, 3500);
   /* пришли со страницы «Ткани» — сразу к шагу «Ткань» (на телефоне — под моделью, на компьютере — в колонке справа) */
