@@ -1870,8 +1870,9 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-35",
-    cfg: "t.bed~mw.180~hs.plain~ks.cloud~kd.12~hh.135~ho.10~ft.5~rh.25~kr.deck~b.plinth~lh.4",
+    cfg: "t.bed~ft.5~kd.12~hh.135~ho.10~ks.cloud~hs.plain~lh.4~mw.180~rh.25~kr.deck",
     fab: "timeless:1",
+    glb: "models3d/free/bed-35.json",
     category: "beds",
     tags: [],
     type: "Кровать",

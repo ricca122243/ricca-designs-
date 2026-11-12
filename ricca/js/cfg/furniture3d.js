@@ -981,14 +981,16 @@ export function partsFromSpec(spec) {
     if (k === 'bedset') {
       /* кровать: матрас с постелью — те же детали и пропорции, что у кроватей конструктора (params.js → partsBed).
          p: [x середины, верх матраса от пола, z начала матраса (лицо изголовья)], s: [ширина, толщина, длина матраса];
-         duvet: false — без покрывала, cover — доля длины под покрывалом (0.6), ov / ovz — свес по бокам и в ногах, pillows — 0, 1 или 2, pillowZ — отступ подушек от изголовья */
+         duvet: false — без покрывала, duvetWhite: true — белое покрывало (иначе серо-бежевый плед), sheet: true — матрас под простынёй, cover — доля длины под покрывалом (0.6), ov / ovz — свес по бокам и в ногах, pillows — 0, 1 или 2, pillowZ — отступ подушек от изголовья */
       if (mir) return;
       const [cx, mTop, z0] = p, [mw, mt, ml] = sz, mz1 = z0 + ml;
-      one({ id: `${id}-mattress`, k: 'part', role: 'mattress', m: 'mattress', p: [cx, mTop - mt / 2, z0 + ml / 2], s: [mw, mt, ml], r: 0.05, crown: 0.008, piping: true, quilt: true }, i, false);
+      /* sheet: true — матрас целиком под простынёй (гладкий белый лён, без стёжки и канта) */
+      if (s.sheet) one({ id: `${id}-mattress`, k: 'part', role: 'mattress', m: 'decor', p: [cx, mTop - mt / 2, z0 + ml / 2], s: [mw, mt, ml], r: 0.06, crown: 0.012 }, i, false);
+      else one({ id: `${id}-mattress`, k: 'part', role: 'mattress', m: 'mattress', p: [cx, mTop - mt / 2, z0 + ml / 2], s: [mw, mt, ml], r: 0.05, crown: 0.008, piping: true, quilt: true }, i, false);
       if (s.duvet !== false) {
         const cover = s.cover ?? 0.6, ov = s.ov ?? 0.16, ovz = s.ovz ?? 0.10, dz0 = mz1 - ml * cover;
-        one({ id: `${id}-duvet`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'duvet', p: [cx, mTop + 0.037, (dz0 + mz1 + ovz) / 2], s: [mw + 2 * ov, 0.082, mz1 + ovz - dz0], r: 0.035, crown: 0.025, drape: { x: ov + 0.01, z: ovz + 0.01, drop: s.drop ?? 0.105 } }, i, false);
-        one({ id: `${id}-fold`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'duvet', roll: true, p: [cx, mTop + 0.085, dz0 + 0.075], s: [mw + 0.06, 0.11, 0.19], r: 0.05, drape: { x: 0.14, z: 0, drop: 0.035 } }, i, false);
+        one({ id: `${id}-duvet`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'duvet', whiteDuvet: !!s.duvetWhite, p: [cx, mTop + 0.037, (dz0 + mz1 + ovz) / 2], s: [mw + 2 * ov, 0.082, mz1 + ovz - dz0], r: 0.035, crown: 0.025, drape: { x: ov + 0.01, z: ovz + 0.01, drop: s.drop ?? 0.105 } }, i, false);
+        one({ id: `${id}-fold`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'duvet', whiteDuvet: !!s.duvetWhite, roll: true, p: [cx, mTop + 0.085, dz0 + 0.075], s: [mw + 0.06, 0.11, 0.19], r: 0.05, drape: { x: 0.14, z: 0, drop: 0.035 } }, i, false);
       }
       const nP = s.pillows ?? 2;
       if (nP > 0) {
@@ -1276,7 +1278,7 @@ export function build(type, params, materials = {}, opts = {}) {
     if (prof) prof.geo += performance.now() - _t;
     if (it.tiltX) fitTilted(geo, it);
     /* покрывало — серо-бежевый лён (не белое на белом матрасе: кровать читается объёмом, как на фото работ) */
-    const mk = it.decorKind === 'duvet' ? 'throw' : it.mat;
+    const mk = it.decorKind === 'duvet' && !it.whiteDuvet ? 'throw' : it.mat;
     addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support', 'fabric2', 'matte'].includes(mk) ? mk : it.tone === 'light' || mk === 'fabricL' ? 'fabricL' : 'fabric', it, it.decor ? { decor: true } : null);
     /* кант и швы (у матраса — тёмная лента по верхней кромке; нижняя скрыта в раме) */
     const pipeMat = it.mat === 'mattress' || it.pipeTone === 'dark' ? 'tape' : 'fabric';
