@@ -97,6 +97,7 @@ export function rangeOf(type, key, params = {}) {
   if (type === 'armchair' && p.form === 'round' && (key === 'armW' || key === 'armH')) { const b = key === 'armH' ? RANGES.armchair.armH : p.armStyle === 'round' ? ARMCHAIR_ROUND_ARMW : ARMW_BY_STYLE[p.armStyle] || RANGES.armchair.armW; return { ...b, max: key === 'armH' ? 1.00 : 0.40 }; }
   if (type === 'armchair' && p.form === 'drum' && key === 'armW') return R(0.12, 0.28, 0.18);
   if (key === 'legH' && (type === 'armchair' || type === 'pouf') && ['ball', 'barrel'].includes(acVal(p, 'qLeg'))) return R(0.04, 0.16, 0.08);
+  if (key === 'legH' && (type === 'armchair' || type === 'pouf') && p.legs === 'plinth' && acVal(p, 'qPlinth') === 'dark') return R(0.03, 0.12, 0.05);
   if (type === 'pouf' && key === 'd' && p.form === 'oval') return R(0.35, 0.90, 0.50);
   if (key === 'armW') return type === 'armchair' && p.armStyle === 'round' ? ARMCHAIR_ROUND_ARMW : ARMW_BY_STYLE[p.armStyle] || RANGES[type].armW;
   if (key === 'legH') {
@@ -1269,7 +1270,7 @@ function armchairExtra(p) {
       armchairDecor(p, add, W / 2 + sx * 0.18, z0 + 0.02);
     }
     const ring = { cx: W / 2, cz: zc, A: W / 2, B, open, y: legH + Math.max(0.06, (p.armH - legH) * 0.5) };
-    const rect = { x0: W * 0.16, x1: W * 0.84, z0: 0.06, z1: d - 0.16 };
+    const kb = W * 0.34 * kAt(legH), rect = { x0: W / 2 - kb, x1: W / 2 + kb, z0: 0.06, z1: d - 0.16 };
     if (!armchairLegs(p, legH, rect, add, { ring, ellipse: true, ins: 0.0 })) legsFor({ legs: p.legs }, legH, [rect], add);
     const A = W / 2, sn = Math.sin(open / 2), zEnd = zc + (B - t / 2) * Math.cos(open / 2);
     const inner = (A - t) * sn;
