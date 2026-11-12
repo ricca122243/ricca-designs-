@@ -60,7 +60,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   if (!renderer.getContext()) throw new Error('webgl');
   /* чёткость: в покое — 2x (ткань и края чёткие), пока модель крутят — меньше (плавно, без лагов на телефоне) */
   /* компьютер: в покое всегда 2x, даже на экране 1x — кадр уменьшается браузером, края и мелкие швы без «лесенки» (жалоба 15 окт.) */
-  const dprFull = phone ? Math.min(window.devicePixelRatio || 1, 2) : 2, dprMove = Math.min(dprFull, phone ? 1 : 1.25);
+  /* телефон: в покое — до 3x (окно 3D маленькое, ~1,1 Мп: на экранах 3x кадр 2x выглядел мыльным — жалоба 12 ноября), в движении 1,5x */
+  const dprFull = phone ? Math.min(window.devicePixelRatio || 1, 3) : 2, dprMove = Math.min(dprFull, phone ? 1.5 : 1.25);
   renderer.setPixelRatio(dprFull);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
@@ -183,7 +184,10 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
 
   const radius = () => Math.max(0.3, size.length() / 2);
   /* угловые, П-образные и с шезлонгом (глубина > 1,4 м) — камера выше, чтобы читался план; длинные — плотнее в кадре */
-  const dir3q = () => dirAt(AZ, size.z > 1.4 ? EL_PLAN : EL);
+  /* свой ракурс модели («как на фото», app.js → setDir3): азимут от фронта и высота камеры, в градусах */
+  let dirOv = null;
+  const dir3q = () => (dirOv ? dirAt(dirOv[0], dirOv[1]) : dirAt(AZ, size.z > 1.4 ? EL_PLAN : EL));
+  function setDir3(az, el) { dirOv = az == null ? null : [THREE.MathUtils.degToRad(az), THREE.MathUtils.degToRad(el == null ? 12 : el)]; }
   const fillFor = () => (W < 600 ? 0.7 : size.x / Math.max(0.01, size.y) > 2.2 ? 0.84 : 0.74);   // телефон: снизу кнопки видов
   const aimOf = () => center.clone().add(new THREE.Vector3(0, size.y * 0.06, 0));
   /* расстояние, при котором габарит занимает fill кадра по ширине и высоте */
@@ -605,7 +609,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     /* рамка только нужных сеток (например, кровать без одеяла и подушек — одеяло свисает шире рамы) */
     boxOf(keep) { const b = new THREE.Box3(); if (object) { object.updateMatrixWorld(true); object.traverse((o) => { if (o.isMesh && keep(o)) b.expandByObject(o); }); } return b; },
     supportsPhotoreal: false,
-    setObject, setView, frame, setDims, setStudio, snapshot, resize,
+    setObject, setView, frame, setDir3, setDims, setStudio, snapshot, resize,
     /* снаружи (комната двигает мебель): сцена могла измениться — тени пересчитать; markShadows=false — только перерисовать */
     requestRender: (markShadows = true) => { if (markShadows) shadowDirty = true; requestRender(); },
     cancelAnim() { anim = null; },

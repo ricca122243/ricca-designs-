@@ -247,12 +247,13 @@ const hashOf = () => {
 const variantLink = () => (isHttp ? `${location.origin}${location.pathname}${hashOf()}` : '');
 /* «#cfg=…&f=alba:12», «#f=alba:12» (со страницы «Ткани»), «#room=…» → части */
 function parseHash(h) {
-  const out = { cfg: null, f: null, room: null, m: null, from: null, draw: false };
+  const out = { cfg: null, f: null, room: null, m: null, from: null, draw: false, free: null };
   String(h || '').replace(/^#/, '').split('&').forEach((part) => {
     if (part.startsWith('cfg=')) out.cfg = part.slice(4);
     else if (part.startsWith('f=')) { try { out.f = decodeURIComponent(part.slice(2)); } catch (e) { out.f = part.slice(2); } }
     else if (part.startsWith('room=')) out.room = part.slice(5);
     else if (part.startsWith('m=')) out.m = part.slice(2);
+    else if (part.startsWith('free=')) { try { out.free = decodeURIComponent(part.slice(5)); } catch (e) { out.free = null; } }
     else if (part.startsWith('from=')) out.from = part.slice(5);
     else if (part.startsWith('draw=')) out.draw = part.slice(5) !== '0';   // &draw=1 — сразу открыть «Чертёж» (прямая ссылка на чертёж модели)
   });
@@ -279,6 +280,8 @@ function load() {
   const fab = h.f ? findFabricShort(h.f, lib) : null;
   const lost = !!h.f && !fab;
   if (h.m) pendingModel = h.m;
+  /* предпросмотр ручной модели до записи в каталог: …&m=<id>&free=models3d/free/<файл>.json (только свой сайт, только папка models3d) */
+  if (h.m && h.free && /^models3d\/[\w\-./]+\.json$/.test(h.free) && !/\.\./.test(h.free)) { const mm = (window.RICCA_CATALOG || []).find((x) => x && x.id === h.m); if (mm) mm.glb = h.free; }
   pendingDraw = h.draw;
   if (h.cfg && fromCfgString(h.cfg)) {
     if (fab) { state.fabric = fab; state.fabricLost = false; }
@@ -372,7 +375,7 @@ function renderTypes() {
 const catalogModels = () => (Array.isArray(window.RICCA_CATALOG) ? window.RICCA_CATALOG : []).filter((m) => m && m.cfg && m.photos && m.photos.length && !/^(chairs|tables)$/.test(m.category));
 const modelName = (m) => { const nm = (window.RICCA_MODEL_NAMES || {})[m.id]; return nm ? `${m.type || ''} ${nm}`.trim() : `${m.type || ''} № ${m.id.split('-').pop()}`; };
 /* плашка в окне 3D после выбора модели: «Novel · точная модель» */
-const modelTag = (m) => `${(window.RICCA_MODEL_NAMES || {})[m.id] || modelName(m)} · ${m.glb ? 'точная модель' : 'собрано по фото'}`;
+const modelTag = (m) => `${(window.RICCA_MODEL_NAMES || {})[m.id] || modelName(m)} · ${m.glb ? (/\.json$/.test(m.glb) ? 'собрано вручную по фото' : 'точная модель') : 'собрано по фото'}`;
 /* тип по рецепту модели («t.corner~…» → corner) — как в applyModel */
 const recipeType = (m) => { try { return decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }).type || ''; } catch (e) { return ''; } };
 let activeModel = null, modelsType = '';
@@ -398,7 +401,31 @@ function renderModels() {
    Показывается вместо собранной из деталей, пока форму и размер не меняют (ткань и ножки меняются: детали fabric / legs). */
 let exact = null, exactLoading = null;
 const exactCache = new Map();
+/* «ручная» модель по фото: models3d/free/<id>.json — свободный список мягких форм (furniture3d.js → partsFromSpec).
+   Строится тем же движком, что и изделие из деталей: ткань, швы и ножки настоящие; форма — своя у каждой модели */
+async function loadFreeGroup(m) {
+  const THREE = await import('three');
+  let spec = exactCache.get(m.glb);
+  if (!spec) { const r = await fetch(m.glb, { cache: 'no-cache' }); if (!r.ok) throw new Error(`free ${r.status}`); spec = await r.json(); exactCache.set(m.glb, spec); }
+  const rc = decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }), rp = runValidate(rc.type, rc.params).params, q = quality();
+  const g = F.build(rc.type, rp, M.materialSet({ type: rc.type, params: rp, fabric: state.fabric, quality: q }), { quality: q, parts: F.partsFromSpec(spec) });
+  /* габарит — по изделию без декора (подушки-декор и плед в размер не входят) */
+  const box = new THREE.Box3(), bb = new THREE.Box3();
+  g.updateMatrixWorld(true);
+  g.traverse((o) => { if (o.isMesh && !o.userData.decor && o.userData.matKey !== 'decor' && o.userData.matKey !== 'throw') { o.geometry.computeBoundingBox(); bb.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld); box.union(bb); } });
+  if (box.isEmpty()) box.setFromObject(g);
+  const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+  const d = P.dims(rc.type, rp) || { w: size.x, d: size.z, h: size.y };
+  const wrap = new THREE.Group(); wrap.name = `exact:${m.id}`;
+  /* модель построена в метрах и показывается как есть; размеры клиента растягивают её относительно размеров рецепта (rw, rd, rh) */
+  wrap.userData.base = { w: size.x, d: size.z, h: size.y, rw: d.w, rd: d.d, rh: d.h };
+  window.RICCA_FREE_DIMS = { id: m.id, w: size.x, d: size.z, h: size.y, rw: d.w, rd: d.d, rh: d.h };   // для проверки: габарит модели и рецепта
+  wrap.userData.view = spec.view || null; wrap.userData.free = true;
+  g.position.set(-c.x, -box.min.y, -c.z); wrap.add(g);
+  return wrap;
+}
 async function loadExactGroup(m) {
+  if (/\.json(\?|$)/.test(m.glb)) return loadFreeGroup(m);
   const [THREE, { GLTFLoader }] = await Promise.all([import('three'), import('three/addons/loaders/GLTFLoader.js')]);
   let src = exactCache.get(m.glb);
   if (!src) { src = (await new GLTFLoader().loadAsync(m.glb)).scene; exactCache.set(m.glb, src); }
@@ -442,7 +469,7 @@ function exactHasLegs() {
   if (g) g.traverse((o) => { if (o.isMesh && o.userData.matKey === 'legs') has = true; });
   return has;
 }
-function dropExact() { activeModel = null; exact = null; exactLoading = null; renderModels(); }
+function dropExact() { activeModel = null; exact = null; exactLoading = null; if (stage && stage.setDir3) stage.setDir3(null); renderModels(); }
 const EXACT_ROWS = new Set(['legFinish']);   // что можно менять у точной модели в «Форме» (вид ножек у модели из фото не меняется — только цвет)
 const isExact = () => !!(activeModel && catalogModels().some((m) => m.id === activeModel && m.glb));
 const exactName = () => { const m = activeModel && catalogModels().find((x) => x.id === activeModel && x.glb); return m ? modelName(m) : ''; };
@@ -453,7 +480,10 @@ function useExact(m) {
   const my = exactLoading = loadExactGroup(m).then((g) => {
     if (exactLoading !== my || activeModel !== m.id) return;
     exact = { id: m.id, group: g }; rebuild(); renderForm(); if (photoApi && state.mode === 'photo') photoApi.refresh();   // renderForm: «Отделка ножек» — только когда ножки у модели есть
-    if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced }));
+    /* ручная модель открывается в ракурсе своего фото (view в файле модели) */
+    const v = g.userData.view;
+    if (stage && stage.setDir3) stage.setDir3(v ? v.az : null, v ? v.el : null);
+    if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced, reset: !!v }));
   }).catch((e) => { console.warn('exact', e); if (exactLoading === my) toast('Точная модель не загрузилась — показываем похожую', 3500); });
 }
 /* ссылка «Собрать похожий в 3D» с сайта: если параметры совпадают с рецептом модели — показать её точную модель */
