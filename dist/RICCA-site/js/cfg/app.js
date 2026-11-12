@@ -280,7 +280,7 @@ function renderTypes() {
 const catalogModels = () => (Array.isArray(window.RICCA_CATALOG) ? window.RICCA_CATALOG : []).filter((m) => m && m.cfg && m.photos && m.photos.length && !/^(chairs|tables)$/.test(m.category));
 const modelName = (m) => { const nm = (window.RICCA_MODEL_NAMES || {})[m.id]; return nm ? `${m.type || ''} ${nm}`.trim() : `${m.type || ''} № ${m.id.split('-').pop()}`; };
 /* плашка в окне 3D после выбора модели: «Novel · точная модель» */
-const modelTag = (m) => `${(window.RICCA_MODEL_NAMES || {})[m.id] || modelName(m)} · ${m.glb ? 'точная модель' : 'по мотивам'}`;
+const modelTag = (m) => `${(window.RICCA_MODEL_NAMES || {})[m.id] || modelName(m)} · ${m.glb ? 'точная модель' : 'собрано по фото'}`;
 /* тип по рецепту модели («t.corner~…» → corner) — как в applyModel */
 const recipeType = (m) => { try { return decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }).type || ''; } catch (e) { return ''; } };
 let activeModel = null, modelsType = '';
@@ -291,9 +291,11 @@ function renderModels() {
   modelsType = state.type;
   /* в полосе — только модели с точной 3D-моделью (models3d) и только выбранного типа: у «Углового» — угловые, у «Прямого» — прямые.
      Собранные «по мотивам» на фото не похожи и клиента путают; модели другого типа при его выборе исчезали бы без объяснения */
-  const list = catalogModels().filter((m) => m.glb && recipeType(m) === state.type);
+  /* 12 ноября (владелец: «на каждую модель свой 3D»): в полосе ВСЕ модели каталога этого типа. У каждой свой рецепт (cfg), подобранный под фото;
+     модели с точной сеткой (glb) идут первыми */
+  const list = catalogModels().filter((m) => recipeType(m) === state.type).sort((a, b) => (b.glb ? 1 : 0) - (a.glb ? 1 : 0));
   box.hidden = false;
-  if (!list.length) { box.innerHTML = '<p class="models__l models__l--none">Для этого типа точных моделей пока нет — соберите из деталей.</p>'; return; }
+  if (!list.length) { box.innerHTML = '<p class="models__l models__l--none">В каталоге таких моделей пока нет — соберите свою из деталей.</p>'; return; }
   box.innerHTML = `<p class="models__l" id="models-l">Модели из каталога</p><div class="models__row" role="group" aria-labelledby="models-l">${list.map((m) => {
     const ph = m.photos.find((x) => x.studio) || m.photos[0];
     return `<button class="model${m.glb ? ' model--exact' : ''}" type="button" data-model="${esc(m.id)}" aria-pressed="${m.id === activeModel}" title="${esc(m.subtitle || '')}">

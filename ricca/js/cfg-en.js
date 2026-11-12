@@ -84,6 +84,7 @@
     /* шаг «Тип»: группы плиток и короткие подписи (app.js → renderTypes) */
     'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла и пуфы': 'Armchairs and poufs', 'Прямой': 'Straight', 'Угловой': 'Corner', 'П-образный': 'U-shaped', 'Модульный': 'Modular',
     'Для этого типа точных моделей пока нет — соберите из деталей.': 'No exact models for this type yet — build it from parts.',
+    'В каталоге таких моделей пока нет — соберите свою из деталей.': 'No catalogue models of this type yet — build your own from parts.', 'собрано по фото': 'built from the photo',
     /* смена типа при точной модели (app.js → setType): «Диван Rulva — точная модель с фото, она бывает только прямой. Диван угловой соберём из деталей.» →
        «Rulva sofa is an exact model from a photo — it comes only as a straight sofa. Corner sofa — we’ll build it from parts.» (имя — правилом RE ниже) */
     ' — точная модель с фото, она ': ' is an exact model from a photo — it ', ' соберём из деталей.': ' — we’ll build it from parts.',

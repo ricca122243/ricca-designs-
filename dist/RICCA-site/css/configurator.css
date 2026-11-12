@@ -254,7 +254,7 @@ html[data-font="b"] .step__t { font: 400 26px/1 var(--serif); letter-spacing: 0;
 .xn { margin-bottom: 20px; padding: 14px 16px; border: 1px solid var(--line); background: var(--paper); }
 .xn__t { font: 400 14px/1.5 var(--sans); color: var(--ink-2); }
 .xn__b { margin-top: 8px; }
-.model--exact .model__img::after { content: '3D'; position: absolute; right: 4px; bottom: 4px; padding: 3px 5px; background: var(--noir); color: var(--on-noir); font: 500 9px/1 var(--sans); letter-spacing: .1em; }
+.models__row .model .model__img::after { content: '3D'; position: absolute; right: 4px; bottom: 4px; padding: 3px 5px; background: var(--noir); color: var(--on-noir); font: 500 9px/1 var(--sans); letter-spacing: .1em; }
 @media (hover: hover) { .model:hover .model__img { border-color: var(--ink); } }
 .step:first-child .step__head { padding-top: 0; }
 

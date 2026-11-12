@@ -366,6 +366,14 @@ function layoutView(view, pr, den, bump = {}, met = null) {
     for (const p of placed) for (const s of segs) if (p.e !== own && segHitsBox(s, p.box)) return true;
     return false;
   };
+  /* узкий лист: подпись сбоку от своего отрезка не должна занимать бо́льшую часть чужого короткого отрезка той же стороны
+     (кроме охватывающего, например общей ширины) — иначе «сид. 58» читается как размер соседнего отрезка «93» рядом выше.
+     Подпись у самой засечки длинного соседа («бок. 6» у края «160») — можно */
+  const foreign = (e, c) => {
+    if (!met || !c.ext) return false;
+    const [t0, t1] = e.orient === 'h' ? [c.box.x0, c.box.x1] : [c.box.y0, c.box.y1];
+    return sides[e.side].some((f) => f !== e && !(f.c1 <= e.c1 + 0.3 && f.c2 >= e.c2 - 0.3) && Math.min(t1, f.c2) - Math.max(t0, f.c1) > 0.5 * (f.c2 - f.c1));
+  };
   for (const side of ['bottom', 'right', 'left', 'top']) {
     const arr = sides[side];
     if (!arr.length) continue;
@@ -384,6 +392,7 @@ function layoutView(view, pr, den, bump = {}, met = null) {
           let ci = 0;
           for (const c of cands) {
             if (ci++ < skip && row === base) continue;
+            if (foreign(e, c)) continue;
             const ext = extOf(e, line);
             const dl = e.orient === 'h' ? [Math.min(e.c1, c.ext ? c.ext[0] : e.c1), line, Math.max(e.c2, c.ext ? c.ext[1] : e.c2), line] : [line, Math.min(e.c1, c.ext ? c.ext[0] : e.c1), line, Math.max(e.c2, c.ext ? c.ext[1] : e.c2)];
             const segs = [dl, ...ext];
