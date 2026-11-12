@@ -185,9 +185,10 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   const radius = () => Math.max(0.3, size.length() / 2);
   /* угловые, П-образные и с шезлонгом (глубина > 1,4 м) — камера выше, чтобы читался план; длинные — плотнее в кадре */
   /* свой ракурс модели («как на фото», app.js → setDir3): азимут от фронта и высота камеры, в градусах */
-  let dirOv = null;
+  let dirOv = null, fovOv = 0;
+  const fov3 = () => fovOv || FOV;   // угол обзора 3D-вида: у ручной модели — как у её фото (view.fov), иначе обычный
   const dir3q = () => (dirOv ? dirAt(dirOv[0], dirOv[1]) : dirAt(AZ, size.z > 1.4 ? EL_PLAN : EL));
-  function setDir3(az, el) { dirOv = az == null ? null : [THREE.MathUtils.degToRad(az), THREE.MathUtils.degToRad(el == null ? 12 : el)]; }
+  function setDir3(az, el, fov) { dirOv = az == null ? null : [THREE.MathUtils.degToRad(az), THREE.MathUtils.degToRad(el == null ? 12 : el)]; fovOv = az != null && fov >= 8 && fov <= 60 ? fov : 0; }
   const fillFor = () => (W < 600 ? 0.7 : size.x / Math.max(0.01, size.y) > 2.2 ? 0.84 : 0.74);   // телефон: снизу кнопки видов
   const aimOf = () => center.clone().add(new THREE.Vector3(0, size.y * 0.06, 0));
   /* расстояние, при котором габарит занимает fill кадра по ширине и высоте */
@@ -204,7 +205,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     }
     return dist;
   }
-  const framingDist = (dir) => fitDistance(dir || dir3q(), FOV, W / H, fillFor());
+  const framingDist = (dir) => fitDistance(dir || dir3q(), fov3(), W / H, fillFor());
   /* полувысота кадра для оси вида */
   function orthoHalf(v, pad = padTop) {
     const ext = v === 'front' ? [size.x, size.y] : v === 'side' ? [size.z, size.y] : [size.x, size.z];
@@ -309,10 +310,10 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       if (!isFinite(dir.x) || dir.lengthSq() < 0.5) dir.copy(dir3q());
       const fd = framingDist(dir);
       const aim = aimOf();
-      const to = { pos: aim.clone().add(dir.multiplyScalar(fd)), target: aim, fov: FOV };
+      const to = { pos: aim.clone().add(dir.multiplyScalar(fd)), target: aim, fov: fov3() };
       const fromOk = [persp.position.x, persp.position.y, persp.position.z, controls.target.x].every(Number.isFinite);
-      if (animate && fromOk && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, to.pos, to.target, FOV, 500, null);
-      else { persp.position.copy(to.pos); controls.target.copy(to.target); persp.fov = FOV; persp.updateProjectionMatrix(); controls.update(); }
+      if (animate && fromOk && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, to.pos, to.target, fov3(), 500, null);
+      else { persp.position.copy(to.pos); controls.target.copy(to.target); persp.fov = fov3(); persp.updateProjectionMatrix(); controls.update(); }
       controls.minDistance = fd * 0.6; controls.maxDistance = fd * 2.5;
     } else {
       ortho.zoom = 1; fitOrtho();
@@ -354,11 +355,11 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       const endDir = dir3q(), dist = framingDist(endDir);
       const startDir = persp.position.clone().sub(controls.target).normalize();
       const startHalf = Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)) * persp.position.distanceTo(controls.target);
-      const endHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * dist;
+      const endHalf = Math.tan(THREE.MathUtils.degToRad(fov3() / 2)) * dist;
       const finish = () => { emit('view', v); requestRender(); };
       const aim = aimOf();
-      if (instant) { persp.fov = FOV; persp.updateProjectionMatrix(); persp.position.copy(aim).add(endDir.multiplyScalar(dist)); controls.target.copy(aim); controls.update(); finish(); return; }
-      anim = { start: performance.now(), dur: 650, kind: 'toPersp', startDir, endDir, startHalf, endHalf, t0: controls.target.clone(), t1: aim, f0: persp.fov, f1: FOV, done: finish, cancelable: false };
+      if (instant) { persp.fov = fov3(); persp.updateProjectionMatrix(); persp.position.copy(aim).add(endDir.multiplyScalar(dist)); controls.target.copy(aim); controls.update(); finish(); return; }
+      anim = { start: performance.now(), dur: 650, kind: 'toPersp', startDir, endDir, startHalf, endHalf, t0: controls.target.clone(), t1: aim, f0: persp.fov, f1: fov3(), done: finish, cancelable: false };
       requestRender();
     }
   }
@@ -536,8 +537,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     const RW = Math.round(width * ss), RH = Math.round(height * ss);
     let cam;
     if (sv === '3q' || sv === '3d') {
-      cam = new THREE.PerspectiveCamera(FOV, RW / RH, 0.05, 200);
-      const dist = fitDistance(dir3q(), FOV, RW / RH, 0.8);
+      cam = new THREE.PerspectiveCamera(fov3(), RW / RH, 0.05, 200);
+      const dist = fitDistance(dir3q(), fov3(), RW / RH, 0.8);
       cam.position.copy(center).add(dir3q().multiplyScalar(dist)); cam.lookAt(center);
     } else if (sv === 'current') {
       cam = camera.clone(); if (cam.isPerspectiveCamera) { cam.aspect = RW / RH; } else { const h = (camera.top - camera.bottom) / 2 / camera.zoom; cam.left = -h * RW / RH; cam.right = h * RW / RH; cam.top = h; cam.bottom = -h; cam.zoom = 1; }
@@ -621,7 +622,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       if (!isFinite(dir.x) || dir.y < 0.15) dir = dir3q();
       const pos = t.clone().add(dir.multiplyScalar(dist));
       controls.minDistance = Math.min(controls.minDistance, dist * 0.6);
-      if (animate && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, pos, t, FOV, 700, null);
+      if (animate && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, pos, t, fov3(), 700, null);
       else { persp.position.copy(pos); controls.target.copy(t); controls.update(); applySeamLOD(persp, H); }
       requestRender();
     },

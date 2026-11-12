@@ -512,7 +512,7 @@ function useExact(m) {
     exact = { id: m.id, group: g }; rebuild(); renderForm(); if (photoApi && state.mode === 'photo') photoApi.refresh();   // renderForm: «Отделка ножек» — только когда ножки у модели есть
     /* ручная модель открывается в ракурсе своего фото (view в файле модели) */
     const v = g.userData.view;
-    if (stage && stage.setDir3) stage.setDir3(v ? v.az : null, v ? v.el : null);
+    if (stage && stage.setDir3) stage.setDir3(v ? v.az : null, v ? v.el : null, v ? v.fov : 0);
     if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced, reset: !!v }));
   }).catch((e) => { console.warn('exact', e); if (exactLoading === my) { exactLoading = null; rebuild(); toast('Точная модель не загрузилась — показываем похожую', 3500); } });
 }

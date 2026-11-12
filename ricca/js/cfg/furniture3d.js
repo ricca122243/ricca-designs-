@@ -870,8 +870,8 @@ const NEUTRAL = {};
 function neutral(key) {
   if (NEUTRAL[key]) return NEUTRAL[key];
   if (key === 'throw' || key === 'decor') { NEUTRAL[key] = decorMaterial(key); return NEUTRAL[key]; }   // лён / хлопок с плетением и складками
-  const c = { fabric: '#E6E1D8', legs: '#2B2B2B', top: '#C8A57A', mattress: '#F2F1EC', decor: '#EDEBE6', throw: '#C7C3BC', tape: '#4A4A4C', support: '#1A1A1A' }[key] || '#cccccc';
-  NEUTRAL[key] = new THREE.MeshPhysicalMaterial({ color: c, roughness: key === 'legs' ? 0.4 : key === 'support' ? 0.6 : key === 'decor' || key === 'throw' ? 0.95 : 0.85, metalness: key === 'legs' ? 0.8 : 0 });
+  const c = { fabric: '#E6E1D8', legs: '#2B2B2B', top: '#C8A57A', mattress: '#F2F1EC', decor: '#EDEBE6', throw: '#C7C3BC', tape: '#4A4A4C', support: '#1A1A1A', matte: '#131313' }[key] || '#cccccc';
+  NEUTRAL[key] = new THREE.MeshPhysicalMaterial({ color: c, roughness: key === 'legs' ? 0.4 : key === 'support' ? 0.6 : key === 'matte' ? 0.92 : key === 'decor' || key === 'throw' ? 0.95 : 0.85, metalness: key === 'legs' ? 0.8 : 0 });
   if (key === 'throw') { NEUTRAL[key].sheen = 0.6; NEUTRAL[key].sheenRoughness = 0.7; NEUTRAL[key].sheenColor = new THREE.Color('#E8E6E2'); }
   if (key === 'decor') { NEUTRAL[key].sheen = 0.4; NEUTRAL[key].sheenRoughness = 0.8; NEUTRAL[key].sheenColor = new THREE.Color('#FFFFFF'); }
   return NEUTRAL[key];
@@ -929,6 +929,12 @@ function freeRoundPath(pts, r, closed) {
   return out;
 }
 function freeGeometry(it, quality, dense) {
+  const g0 = freeGeometry0(it, quality, dense), pre = it.free.pre;
+  /* pre: [x, y, z] — поворот самой формы до общего поворота rot (например, развернуть подушку в её плоскости, а потом наклонить) */
+  if (g0 && pre) { if (pre[0]) g0.rotateX(pre[0] * D2R); if (pre[1]) g0.rotateY(pre[1] * D2R); if (pre[2]) g0.rotateZ(pre[2] * D2R); }
+  return g0;
+}
+function freeGeometry0(it, quality, dense) {
   const f = it.free;
   if (f.k === 'cyl') return softCyl(it.sx, it.sy, it.sz, { quality, crown: f.crown || 0, barrel: f.barrel || 0, rTop: f.rTop ?? f.r ?? 0.02, rBottom: f.rBottom ?? f.r ?? 0.015, tufting: f.tufting, seams: !!f.seamLine });
   if (f.k === 'leg') return legGeometry({ ...f, id: it.id, role: 'leg', sx: it.sx, sy: it.sy, sz: it.sz }, quality);
@@ -950,6 +956,19 @@ export function partsFromSpec(spec) {
     const k = s.k || 'box', sg = mir ? -1 : 1, rot = s.rot || [0, 0, 0];
     const id = (s.id || `${k}-${i}`) + (mir ? '-m' : '');
     let p = s.p || [0, 0, 0], sz = s.s || [0.1, 0.1, 0.1], f = { ...s, k };
+    if (k === 'ushell') {
+      /* цельная оболочка «спинка + две боковины» со скруглёнными углами в плане (та же сетка, что у диванов-оболочек конструктора):
+         W, D — габарит в плане, h — высота спинки, armH — высота боковин, tS / tB — толщина боковин и спинки, r (rx, rz) — радиус углов, y0 — низ */
+      const cl = (v, a, b) => Math.min(b, Math.max(a, v));
+      const W = s.W, Dd = s.D, tS = s.tS ?? 0.16, tB = s.tB ?? tS, h = s.h, armH = Math.min(s.armH ?? h, h), y0 = s.y0 ?? 0;
+      const rcx = cl(s.rx ?? s.r ?? 0.3, tS + 0.06, W / 2 - 0.05), rcz = cl(s.rz ?? s.r ?? 0.3, tB + 0.06, Dd - tS / 2 - 0.06);
+      const sh = { W, D: Dd, tS, tB, rcx, rcz, h, armH, y0 }, ox = (p[0] || 0) - W / 2, oz = p[2] || 0;
+      const put = (piece, role, x0, x1, ya, yb, z0, z1, extra) => items.push({ id: `${id}-${piece}`, role, mat: s.m || 'fabric', shape: 'sshell', sh, piece, x: (x0 + x1) / 2 + ox, y: (ya + yb) / 2, z: (z0 + z1) / 2 + oz, sx: x1 - x0, sy: yb - ya, sz: z1 - z0, rotY: 0, piping: !!s.piping, ...extra });
+      put('b', 'back', 0, W, y0, h, 0, rcz, { r: 0.08 });
+      put('l', 'arm', 0, tS, y0, armH, rcz, Dd, { r: Math.min(tS / 2, 0.12), armStyle: 'round' });
+      put('r', 'arm', W - tS, W, y0, armH, rcz, Dd, { r: Math.min(tS / 2, 0.12), armStyle: 'round' });
+      return;
+    }
     if (k === 'tube') {
       const pts = (s.pts || []).map((q) => [q[0] * sg, q[1], q[2]]);
       const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
@@ -962,11 +981,14 @@ export function partsFromSpec(spec) {
     if (mir) {
       if (f.warp) { f.warp = { ...f.warp }; if (f.warp.leanX) f.warp.leanX = -f.warp.leanX; for (const key of ['topProfile', 'frontProfile', 'backProfile']) if (f.warp[key]) f.warp[key] = f.warp[key].slice().reverse(); }
       if (f.splay) f.splay = [-f.splay[0], f.splay[1]];
+      if (f.rxBack != null) { const a = f.rx ?? f.r ?? 0.03; f.rx = f.rxBack; f.rxBack = a; }   // внешнее и внутреннее скругление меняются местами
+      if (f.pre) f.pre = [f.pre[0] || 0, -(f.pre[1] || 0), -(f.pre[2] || 0)];
     }
     const base = { id, mat: s.m || (k === 'leg' || k === 'tube' ? 'legs' : 'fabric'), x: p[0] * sg, y: p[1], z: p[2], sx: Math.max(0.002, sz[0]), sy: Math.max(0.002, sz[1]), sz: Math.max(0.002, sz[2]),
       rotX: (rot[0] || 0) * D2R, rotY: (rot[1] || 0) * D2R * sg, rotZ: (rot[2] || 0) * D2R * sg };
     if (s.decor) base.decor = true;
     if (s.piping) base.piping = true; if (s.seamLine && k !== 'cyl') base.seam = true; if (s.edgeAxis) base.edgeAxis = s.edgeAxis;
+    if (s.pipeTone === 'dark') base.pipeTone = 'dark'; if (s.edgeSign === 1 || s.edgeSign === -1) base.edgeSign = s.edgeSign;
     if (k === 'part') {   // деталь движка как есть (role, cushion, armStyle, puff, bolster, shape: 'cyl' …)
       const { k: _k, p: _p, s: _s, rot: _r, mirror: _m, m: _mm, id: _i, ...rest } = s;
       items.push({ role: 'frame', shape: 'roundbox', ...rest, ...base }); return;
@@ -1165,6 +1187,7 @@ export function build(type, params, materials = {}, opts = {}) {
     top: materials.top || neutral('top'), mattress: materials.mattress || neutral('mattress'),
     decor: materials.decor || neutral('decor'), throw: neutral('throw'), tape: materials.tape || neutral('tape'), support: neutral('support'),
     fabric2: materials.fabric2 || materials.fabric || neutral('fabric'),   // ручная модель: вторая ткань (fab2 в файле модели)
+    matte: neutral('matte'),   // ручная модель: матовый чёрный (цоколь, подпятники) — не блестит, как металл legs
   };
   const seamM = seamMaterial(M.fabric) || M.fabric;
   const pipeM = pipingMaterial(M.fabric) || M.fabric;
@@ -1195,7 +1218,7 @@ export function build(type, params, materials = {}, opts = {}) {
     if (it.tiltX) fitTilted(geo, it);
     /* покрывало — серо-бежевый лён (не белое на белом матрасе: кровать читается объёмом, как на фото работ) */
     const mk = it.decorKind === 'duvet' ? 'throw' : it.mat;
-    addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support', 'fabric2'].includes(mk) ? mk : it.tone === 'light' || mk === 'fabricL' ? 'fabricL' : 'fabric', it, it.decor ? { decor: true } : null);
+    addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support', 'fabric2', 'matte'].includes(mk) ? mk : it.tone === 'light' || mk === 'fabricL' ? 'fabricL' : 'fabric', it, it.decor ? { decor: true } : null);
     /* кант и швы (у матраса — тёмная лента по верхней кромке; нижняя скрыта в раме) */
     const pipeMat = it.mat === 'mattress' || it.pipeTone === 'dark' ? 'tape' : 'fabric';
     /* кровать: валик по краю изголовья (толстый кант в цвет ткани) */
@@ -1206,7 +1229,7 @@ export function build(type, params, materials = {}, opts = {}) {
     if (geo.userData.edgeLoop && (it.piping || it.seam) && quality !== 'low') {
       const axis = it.edgeAxis || (it.role === 'back' && it.cushion ? 'z' : it.role === 'headboard' ? 'z' : 'y');
       const pr2 = it.piping ? (it.mat === 'mattress' ? 0.005 : 0.004) : 0.0016;
-      const loops = it.role === 'headboard' || it.role === 'mattress' ? [1] : [1, -1];
+      const loops = it.edgeSign ? [it.edgeSign] : it.role === 'headboard' || it.role === 'mattress' ? [1] : [1, -1];
       for (const sgn of loops) {
         const tg = tubeAlong(geo.userData.edgeLoop(axis, sgn), pr2, quality, true, dense);
         if (tg && geo.userData.fitMatrix) tg.applyMatrix4(geo.userData.fitMatrix);
