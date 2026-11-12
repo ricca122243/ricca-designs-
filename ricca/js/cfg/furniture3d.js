@@ -981,7 +981,7 @@ export function partsFromSpec(spec) {
     if (k === 'bedset') {
       /* кровать: матрас с постелью — те же детали и пропорции, что у кроватей конструктора (params.js → partsBed).
          p: [x середины, верх матраса от пола, z начала матраса (лицо изголовья)], s: [ширина, толщина, длина матраса];
-         duvet: false — без покрывала, duvetWhite: true — белое покрывало (иначе серо-бежевый плед), sheet: true — матрас под простынёй, cover — доля длины под покрывалом (0.6), ov / ovz — свес по бокам и в ногах, pillows — 0, 1 или 2, pillowZ — отступ подушек от изголовья */
+         duvet: false — без покрывала, duvetWhite: true — белое покрывало (иначе серо-бежевый плед), sheet: true — матрас под простынёй, extras: true — ещё две подушки и валик, cover — доля длины под покрывалом (0.6), ov / ovz — свес по бокам и в ногах, pillows — 0, 1 или 2, pillowZ — отступ подушек от изголовья */
       if (mir) return;
       const [cx, mTop, z0] = p, [mw, mt, ml] = sz, mz1 = z0 + ml;
       /* sheet: true — матрас целиком под простынёй (гладкий белый лён, без стёжки и канта) */
@@ -999,6 +999,12 @@ export function partsFromSpec(spec) {
         for (const yy of [-pt / 2, pt / 2]) for (const zz of [-ph / 2, ph / 2]) { yMin = Math.min(yMin, yy * c - zz * sn); zMin = Math.min(zMin, yy * sn + zz * c); }
         const xs = nP === 1 || mw < 1.2 ? [cx] : [cx - mw / 4, cx + mw / 4];
         xs.forEach((x, n) => one({ id: `${id}-pillow${n + 1}`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [x, mTop - yMin - 0.012, z0 + (s.pillowZ ?? 0) + 0.006 - zMin], s: [pw, pt, ph], r: 0.03, rot: [-(90 + lean), 0, 0] }, i, false));
+      }
+      /* extras: true — как на студийных фото кроватей ателье: ещё две подушки поменьше перед большими и валик у правого края */
+      if (s.extras && mw >= 1.2) {
+        one({ id: `${id}-pf1`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [cx - 0.22 * mw, mTop + 0.18, z0 + 0.495], s: [0.62, 0.15, 0.40], r: 0.03, rot: [-118, 6, 0] }, i, false);
+        one({ id: `${id}-pf2`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [cx + 0.19 * mw, mTop + 0.18, z0 + 0.515], s: [0.62, 0.15, 0.40], r: 0.03, rot: [-118, -8, 0] }, i, false);
+        one({ id: `${id}-bolster`, k: 'cyl', m: 'decor', decor: true, p: [cx + 0.42 * mw, mTop + 0.08, z0 + 0.415], s: [0.16, 0.42, 0.16], rot: [90, 0, 12], rTop: 0.03, rBottom: 0.03 }, i, false);
       }
       return;
     }

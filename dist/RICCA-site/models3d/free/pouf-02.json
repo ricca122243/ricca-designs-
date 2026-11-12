@@ -1,0 +1,44 @@
+{
+ "id": "pouf-02",
+ "size": [
+  0.8,
+  0.6,
+  0.42
+ ],
+ "view": {
+  "az": 0,
+  "el": 3.5,
+  "fov": 20,
+  "zoom": 1.1
+ },
+ "light": {
+  "az": 20,
+  "contrast": 0.45,
+  "exposure": 0.95
+ },
+ "fab": "noble:10",
+ "measure": {
+  "seatH": 0.42
+ },
+ "items": [
+  {
+   "id": "body",
+   "k": "cyl",
+   "p": [
+    0,
+    0.21,
+    0.3
+   ],
+   "s": [
+    0.8,
+    0.42,
+    0.6
+   ],
+   "rTop": 0.21,
+   "rBottom": 0.19,
+   "barrel": 0.035,
+   "crown": 0.012,
+   "seamLine": true
+  }
+ ]
+}

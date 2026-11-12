@@ -33,6 +33,13 @@ def product_lab(path, shot=False):
     y0 = min(p[1] for p in pts); y1 = max(p[1] for p in pts)
     cut = y0 + (y1 - y0) * 0.78                     # низ — ножки и тень
     labs = [lab(px[x, y]) for x, y in pts if y <= cut]
+    # цветная обивка рядом с белой постелью или подушками (кровати): считаем только цветные точки
+    col = [v for v in labs if math.hypot(v[1], v[2]) > 10]
+    if len(col) >= 0.25 * len(labs) and len(col) < 0.9 * len(labs): labs = col
+    else:
+        # серая или тёмная обивка рядом с белой постелью: считаем только то, что темнее постели
+        dark = [v for v in labs if v[0] < 72]; light = [v for v in labs if v[0] > 82]
+        if len(dark) >= 0.2 * len(labs) and len(light) >= 0.2 * len(labs): labs = dark
     med = lambda k: sorted(v[k] for v in labs)[len(labs) // 2]
     return (med(0), med(1), med(2))
 
