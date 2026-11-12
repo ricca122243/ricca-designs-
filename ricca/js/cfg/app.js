@@ -240,9 +240,9 @@ const recipeDims = () => { try { return P.dims(state.type, state.params); } catc
    чертёж и сообщение в WhatsApp берут их; подстройка модели под размер (rebuild) — recipeDims */
 const curDims = () => {
   const d = recipeDims(); if (!d) return d;
+  const cm = (v) => Math.round(v * 100) / 100;   // до целого сантиметра: на чертеже и в подписи не «215,8» и не «330,7»
   const g = exact && exact.id === activeModel ? exact.group : null, b = g && g.userData.free && g.userData.base;
-  if (!b || !b.rw || !b.rd || !b.rh) return d;
-  const cm = (v) => Math.round(v * 100) / 100;   // до целого сантиметра: на чертеже не «215,8»
+  if (!b || !b.rw || !b.rd || !b.rh) return g ? { ...d, w: cm(d.w), d: cm(d.d), h: cm(d.h) } : d;
   return { ...d, w: cm(b.w * d.w / b.rw), d: cm(b.d * d.d / b.rd), h: cm(b.h * d.h / b.rh) };
 };
 const shownFabric = () => (state.fabricLost ? null : state.fabric);
