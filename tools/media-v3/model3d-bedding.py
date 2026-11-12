@@ -10,12 +10,16 @@
      Уверенные места закреплены: ниже бортика и за изголовьем — обивка; всё, что свисает за раму, — постель.
   3. Разрез графа (min-cut) по соседним граням: шов между соседями дешёвый на вогнутом изломе (стык одеяла с рамой,
      подушки с изголовьем) и дорогой на ровном месте — граница ложится по настоящему стыку, ровно, без зубцов.
-  4. Мелкие острова (< 40 см²) любой метки — в метку соседей.
+  4. Мелкие острова (< 40 см²) любой метки — в метку соседей; одиночные зубцы на границе — в метку соседок.
+Правка 12 нояб. (проверка): верх подушек, прижатых к изголовью, закреплён за постелью (грани смотрят вверх или вниз,
+а изголовье — вперёд), иначе на подушках оставались чёрные зубцы (Linel, Novel); габарит рамы берётся ниже бортика
+и по выпуклой оболочке — одеяло Novel, свисающее по бокам и на углы, иначе считалось рамой.
 Повторный запуск безопасен: если постель уже отделена, fabric + bedding сливаются обратно и делятся заново.
 Нужны: trimesh, numpy, scipy.
 Запуск: python3 tools/media-v3/model3d-bedding.py ricca/models3d/bed-26.glb [выход.glb]   (по умолчанию — поверх входа)."""
 import sys, numpy as np, trimesh, scipy.sparse as sp
 from scipy.sparse.csgraph import maximum_flow, breadth_first_order, connected_components
+from scipy.spatial import ConvexHull
 
 
 def load_whole(path):
@@ -50,12 +54,13 @@ def segment(g, S=0.02, TH=0.35):
     xin = np.percentile(ax[mtop], 99) if mtop.sum() > 50 else xmax - 0.03
     lim = min(xmax - 0.03, xin + 0.025)
     mt = np.percentile(c[mtop, 1], 90) if mtop.sum() > 50 else rail + 0.1
-    # габарит рамы под постелью — медиана по срезам (свисающее одеяло есть лишь в части срезов)
-    band = (c[:, 1] > rail - 0.07) & (c[:, 1] < rail - 0.015)
+    # габарит рамы под постелью — по срезам пониже бортика (одеяло может свисать на 4–5 см по всей длине — Novel)
+    # и по нижней четверти срезов (свисающее одеяло есть лишь в части срезов)
+    band = (c[:, 1] > rail - 0.10) & (c[:, 1] < rail - 0.05)
     xs = [ax[m].max() for z0 in np.linspace(zf + 0.1, zmax - 0.05, 25) for m in [band & (np.abs(c[:, 2] - z0) < 0.02)] if m.sum() > 5]
-    xframe = float(np.median(xs)) if xs else xmax
+    xframe = float(np.percentile(xs, 25)) if xs else xmax
     zz = [c[m, 2].max() for x0 in np.linspace(-xframe + 0.1, xframe - 0.1, 25) for m in [band & (np.abs(c[:, 0] - x0) < 0.02)] if m.sum() > 5]
-    zframe = float(np.median(zz)) if zz else zmax
+    zframe = float(np.percentile(zz, 25)) if zz else zmax
     # «ушки» изголовья: боковины выше матраса, выходящие вперёд; там постель не шире матраса
     wing = (c[:, 1] > mt + 0.08) & (ax > lim - 0.01) & (c[:, 2] > zhb + 0.03)
     zear = np.percentile(c[wing, 2], 99) + 0.02 if wing.sum() > 30 else -1e9
@@ -66,10 +71,19 @@ def segment(g, S=0.02, TH=0.35):
     p = 1 / (1 + np.exp(-d / S))
     a0 = area / area.mean()
     Cb = a0 * (1 - p); Cf = a0 * p                   # цена метки «постель» / «обивка»
-    outside = ((ax > xframe + 0.01) | (c[:, 2] > zframe + 0.01)) & (c[:, 1] > 0.03) & (c[:, 2] > zf + 0.05)   # свисает за раму
+    # след рамы сверху (выпуклая оболочка срезов пониже бортика, впереди изголовья): скруглённые углы рамы
+    # учтены — одеяло, свисающее на угол, тоже «за рамой»
+    fp = band & (c[:, 2] > zf + 0.05) & (ax < xframe + 0.005) & (c[:, 2] < zframe + 0.005)
+    hull = ConvexHull(c[fp][:, [0, 2]]); hd = (c[:, [0, 2]] @ hull.equations[:, :2].T + hull.equations[:, 2]).max(1)
+    outside = ((hd > 0.004) | (ax > xframe + 0.006) | (c[:, 2] > zframe + 0.006)) & (c[:, 1] > 0.03) & (c[:, 2] > zf + 0.05) & ~ear   # свисает за раму (боковины-ушки изголовья — не в счёт)
     hard_f = ((d < -0.05) & ~outside) | (dz < -0.006) | ((N[:, 2] > 0.7) & (np.abs(c[:, 2] - zhb) < 0.015) & (c[:, 1] > rail + 0.03))
     hard_f |= ear & (ax > lim - 0.045) & (np.abs(N[:, 0]) > 0.6) & (c[:, 1] > rail + 0.02)   # внутренняя сторона ушек
-    hard_b = ((d > 0.07) | outside) & ~hard_f
+    # верх и низ подушек, прижатых к изголовью: грани, смотрящие вверх или вниз, ниже верха изголовья — постель
+    # (передняя плоскость изголовья смотрит вперёд, даже наклонная: N.z > 0.75)
+    pil = (c[:, 1] > rail + 0.03) & (c[:, 1] < ymax - 0.04) & (ax < lim - 0.02) & (c[:, 2] > zhb - 0.004) & (N[:, 2] < 0.75) \
+        & ((N[:, 1] > 0.5) | (N[:, 1] < -0.3))
+    hard_f &= ~pil
+    hard_b = ((d > 0.07) | outside | pil) & ~hard_f
     Cb[hard_f] = 1e3; Cf[hard_b] = 1e3
     # шов между соседями: дёшев на вогнутом изломе, дорог на ровном и выпуклом месте
     adj = g.face_adjacency; ang = g.face_adjacency_angles; cvx = g.face_adjacency_convex
@@ -82,6 +96,13 @@ def segment(g, S=0.02, TH=0.35):
     G = sp.csr_matrix((cap, (rows, cols)), shape=(nf + 2, nf + 2)); G.sum_duplicates()
     R = G - maximum_flow(G, s, t, method='dinic').flow; R.data = np.maximum(R.data, 0); R.eliminate_zeros()
     bed = np.zeros(nf + 2, bool); bed[breadth_first_order(R, s, directed=True, return_predecessors=False)] = True; bed = bed[:nf]
+    # зубцы на границе: грань, у которой две или три соседки другой метки, — в метку соседок (кроме закреплённых)
+    free = ~(hard_f | hard_b)
+    for _ in range(6):
+        other = np.zeros(nf); np.add.at(other, adj[:, 0], bed[adj[:, 1]] != bed[adj[:, 0]]); np.add.at(other, adj[:, 1], bed[adj[:, 0]] != bed[adj[:, 1]])
+        flip = free & (other >= 2)
+        if not flip.any(): break
+        bed[flip] = ~bed[flip]
     # мелкие острова любой метки — в метку соседей
     for _ in range(3):
         for lab in (True, False):
@@ -90,7 +111,7 @@ def segment(g, S=0.02, TH=0.35):
             ca = np.bincount(cc[m], weights=area[m], minlength=n)
             small = np.zeros(nf, bool); small[m] = ca[cc[m]] < 0.004
             bed[small] = not lab
-    return bed, dict(rail=rail, headboard=zf, frame_w=xframe, ears=zear > -1e8)
+    return bed, dict(rail=rail, headboard=zf, frame_w=xframe, frame_z=zframe, mt=mt, lim=lim, zear=zear)
 
 
 def write(sc, g, bed, dst):

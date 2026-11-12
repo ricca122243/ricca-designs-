@@ -310,3 +310,8 @@ body { counter-reset: sec 2; }
 /* бирка на кадре детали: небольшая белая плашка внутри кадра (была полоса во всю ширину) */
 .pm__da .wk__cap { top: 12px; left: 12px; right: auto; width: auto; max-width: calc(100% - 24px); padding: 7px 12px; border-radius: 6px; background: var(--paper); }
 @media (max-width: 359px) { .how__cta .btn, .kind__acts .btn { font-size: 11px; letter-spacing: .06em; } }   /* 320: «Отправить фото в WhatsApp» — в одну строку (подписи кнопок с 12 ноября — капителью) */
+
+/* 12 ноября: на первом экране семь входов (добавлены «Пуфы и банкетки»). Нечётный последний — по центру своей строки, чтобы сетка не «хромала» */
+.cats > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (min-width: 768px) { .cats > li:last-child:nth-child(odd) { grid-column: auto; } .cats > li:last-child:nth-child(3n + 1) { grid-column: 2; } }
+@media (min-width: 1100px) { .cats { grid-template-columns: repeat(7, minmax(0, 1fr)); } .cats > li:last-child:nth-child(3n + 1) { grid-column: auto; } }

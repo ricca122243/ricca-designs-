@@ -69,7 +69,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin: 0; }
 ul, ol { padding: 0; list-style: none; }
 ::selection { background: var(--ink); color: var(--paper); }
-:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
+:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
 [hidden] { display: none !important; }
 .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 .sr-only { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -1129,7 +1129,6 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .lb__acts .btn { min-height: 48px; padding: 0 24px; }
 .lb__acts .btn--fill .ico, .lb__acts .btn--line .ico { width: 16px; height: 16px; }
 .lb__acts .btn--line[aria-pressed="true"] { background: var(--paper-2); }
-.lb__3d { margin-left: 14px; }
 .lb__ig { display: inline-flex; align-items: center; min-height: 44px; margin-left: 14px; font: 400 12px/1.4 var(--sans); color: var(--ink-2); letter-spacing: .02em; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; text-decoration-color: var(--line-2); }
 @media (hover: hover) { .lb__ig:hover { color: var(--ink); text-decoration-color: currentColor; } }
 .lb .toast { top: calc(64px + env(safe-area-inset-top)); bottom: auto; }   /* «В корзине: …» — сверху, под ✕: кнопки окна и «Собрать похожий в 3D» не закрываем (и на компьютере) */
@@ -1174,7 +1173,7 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
   .lb__cap { padding-bottom: 20px; }
   .lb__acts { position: sticky; bottom: 0; z-index: 3; flex-wrap: nowrap; gap: 8px; margin: auto calc(-1 * var(--pad)) 0; padding: 8px var(--pad) calc(8px + env(safe-area-inset-bottom)); background: var(--paper); border-top: 1px solid var(--line); }
   .lb__acts .btn { flex: 1 1 0; min-width: 0; padding: 0 10px; white-space: nowrap; }
-  .lb__acts .lb__3d, .lb__acts .lb__ig { display: none; }   /* «Собрать похожий в 3D» и Instagram — строками под названием */
+  .lb__acts .lb__ig { display: none; }   /* Instagram — строкой под названием */
   .lb__close { top: 6px; right: 6px; }
   .lb.is-scrolled .lb__close { background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }   /* над текстом — сплошная, с волосяной рамкой */
 }
@@ -1629,7 +1628,10 @@ img { -webkit-user-drag: none; user-select: none; }
 /* чипы каталога: капитель серым; выбранный — чёрным и со знаком (знак вырастает за 250 мс) */
 .view__tabs button, .chips a { display: inline-flex; align-items: center; gap: 8px; font: 500 12px/1 var(--sans); letter-spacing: var(--b-track); text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
 .view__tabs button::after { content: none; }
-.view__tabs button::before, .chips a::before { content: ''; flex: none; width: var(--mark); height: var(--mark); background: currentColor; transform: scale(0); transition: transform 250ms var(--ease); }
+.view__tabs button::before { content: ''; flex: none; width: var(--mark); height: var(--mark); background: currentColor; transform: scale(0); transition: transform 250ms var(--ease); }
+/* знак занимает место только у выбранной фишки: иначе четыре пустых места по 15 px выталкивают «Ткани» за край экрана 390.
+   Вкладки тканей (.is-fab) меняет прокрутка — там место держим, чтобы ряд не дёргался. Фишки главной (.chips) — ссылки, выбранной нет: знака нет */
+.view__tabs:not(.is-fab) button:not([aria-pressed="true"])::before { width: 0; margin-right: -8px; }
 .view__tabs button[aria-pressed="true"] { color: var(--ink); }
 .view__tabs button[aria-pressed="true"]::before { transform: none; }
 .view__tabs button:active, .chips a:active { opacity: .6; }
@@ -1662,7 +1664,10 @@ img { -webkit-user-drag: none; user-select: none; }
   .lb__rows { margin-top: 16px; }
   .lb__acts .btn { justify-content: flex-start; padding: 0 16px; }
 }
-@media (max-width: 359px) { .lb__tools .btn, .lb__acts .btn { padding-inline: 12px; gap: 10px; } }
+@media (max-width: 359px) {
+  .lb__tools .btn, .lb__acts .btn { padding-inline: 12px; gap: 10px; }
+  .lb__acts .btn { gap: 8px; padding-inline: 10px; letter-spacing: .05em; }   /* 320: «Хочу такую» со значком — с полем справа, а не впритык к краю */
+}
 
 /* ---------- «Рекомендуем к этой модели»: до трёх карточек каталога; телефон — лента пальцем ---------- */
 .rec { min-width: 0; }
@@ -1698,9 +1703,11 @@ img { -webkit-user-drag: none; user-select: none; }
 .wa-fab--view { display: none; z-index: 6; }
 @media (max-width: 899px) { .wa-fab--view { display: inline-flex; } }
 @media (prefers-reduced-motion: reduce) { .wa-fab, .wa-fab.is-on { transform: none; } }
-@media (max-width: 767px) { .view__tabs:not(.is-fab), .chips { gap: 0 20px; } }   /* капитель шире строчных: четыре чипа «Диваны · Кровати · Кресла · Ткани» в ширину 390 */
-@media (max-width: 389px) { .view__tabs:not(.is-fab), .chips { gap: 0 14px; } .view__tabs button, .chips a { letter-spacing: .08em; } }
+@media (max-width: 767px) { .view__tabs:not(.is-fab), .chips { gap: 0 24px; } }   /* капитель шире строчных: четыре чипа «Диваны · Кровати · Кресла · Ткани» в ширину 390 */
+@media (max-width: 389px) { .view__tabs:not(.is-fab), .chips { gap: 0 20px; } .view__tabs button, .chips a { letter-spacing: .08em; } }
+@media (max-width: 359px) { .view__tabs:not(.is-fab), .chips { gap: 0 14px; } .view__tabs:not(.is-fab) button, .chips a { font-size: 11px; } }   /* 320: все четыре — в строку */
 .menu__foot .btn--fill { white-space: nowrap; }
 @media (max-width: 359px) { .menu__foot .btn--fill { gap: 8px; padding-inline: 12px; font-size: 11px; letter-spacing: .08em; } }   /* 320: «Написать в WhatsApp» — в одну строку */
 @media (max-width: 359px) { .btn { gap: 10px; padding-inline: 14px; letter-spacing: .08em; } }   /* 320: длинные подписи («Отправить фото в WhatsApp») — в одну строку */
 .no-js .icon-btn--menu { display: none !important; }   /* без JS окно меню не открыть — разделы есть в подвале */
+.sl__foot .sl__clear { justify-self: start; }   /* «■ Очистить» — от левого края, как все действия системы (а не по центру под кнопкой) */

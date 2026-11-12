@@ -986,11 +986,13 @@ async function photoreal() {
 
 /* ═════════ «Чертёж» (js/cfg/drawing.js, лениво) ═════════ */
 let drawing = null;
-function drawingCfg() {
+/* stalled: точная модель ещё грузится (медленная сеть) — лист без 3D-эскизов, но размеры как у точной модели (только габариты),
+   иначе в спецификации «точная 3D-модель», а на видах — цепочки по деталям конструктора */
+function drawingCfg(stalled = false) {
   const d = new Date();
   return {
     ...cfgState(), id: id(), title: titleOf(state.type, state.params), lines: summaryLines(cfgState(), { dims: curDims() }),
-    notes: state.notes.slice(), dims: curDims(), exact: !!(exact && exact.id === activeModel), date: `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`,
+    notes: state.notes.slice(), dims: curDims(), exact: !!(exact && exact.id === activeModel) || (stalled && isExact()), date: `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`,
   };
 }
 let drawingJob = null, drawingLast = null, drawingSeq = 0;
@@ -1014,7 +1016,7 @@ async function openDrawing() {
     if (!dlg.open || !mine()) return;
   }
   flushRebuild();   // ввели размер и сразу нажали «Чертёж»: иначе эскиз — со старой модели, а цифры — новые
-  const cfg = drawingCfg(), key = drawingKey(cfg);
+  const cfg = drawingCfg(stalled), key = drawingKey(cfg);
   const show = (d) => { img.src = d.url; img.hidden = false; wait.hidden = true; ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = false; }); $('#dd-open').hidden = false; };
   const put = (res, k) => {
     if (drawing && drawing.url) URL.revokeObjectURL(drawing.url);

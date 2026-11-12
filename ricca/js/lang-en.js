@@ -32,7 +32,7 @@
     // виды мебели (KINDS)
     'Шьём диваны': 'We make sofas', 'диван': 'a sofa', 'Диван': 'Sofa',
     'Шьём кровати': 'We make beds', 'кровать': 'a bed', 'Кровать': 'Bed',
-    'Шьём кресла': 'We make armchairs', 'кресло': 'an armchair', 'Кресло': 'Armchair', ['Кресла и' + NB + 'пуфы']: 'Armchairs and' + NB + 'poufs',
+    'Шьём кресла': 'We make armchairs', ['Шьём пуфы и' + NB + 'банкетки']: 'We make poufs and' + NB + 'benches', 'Пуфы': 'Poufs', 'Банкетки': 'Benches', ['Под' + NB + 'размер комнаты']: 'Sized to' + NB + 'your room', 'пуф или банкетку': 'a pouf or a bench', 'Пуф': 'Pouf', 'Здравствуйте! Интересует пуф или банкетка. Пришлите, пожалуйста, подборку.': 'Hello! I am interested in a pouf or a bench. Please send me a selection.', 'кресло': 'an armchair', 'Кресло': 'Armchair', ['Кресла и' + NB + 'пуфы']: 'Armchairs and' + NB + 'poufs',
     'Прямые': 'Straight', ['Угловые и' + NB + 'П-образные']: 'Corner and' + NB + 'U-shaped', 'Модульные': 'Modular', 'Раскладные': 'Sofa beds',
     ['С' + NB + 'подъёмным механизмом']: 'With a' + NB + 'lift-up mechanism', 'Без механизма': 'Without a mechanism',
     ['На' + NB + 'ножках или на' + NB + 'цоколе']: 'On' + NB + 'legs or on' + NB + 'a plinth', 'Под размер вашего матраса': 'Sized to your mattress',
@@ -147,8 +147,8 @@
     'С кантом · на тонких металлических ножках': 'Piped · on slim metal legs',
     'Прямой · трёхместный, кожаный корпус': 'Straight · three-seater, leather body',
   };
-  const CAT_LABELS = { 'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла': 'Armchairs', 'Стулья': 'Chairs', 'Столы': 'Tables', 'Наши работы': 'Our works', 'Ткани': 'Fabrics', 'Матрасы ELUNA': 'ELUNA mattresses' };
-  const CAT_DESCS = {
+  const CAT_LABELS = { 'Диваны': 'Sofas', 'Кровати': 'Beds', 'Кресла': 'Armchairs', 'Пуфы и банкетки': 'Poufs and benches', 'Стулья': 'Chairs', 'Столы': 'Tables', 'Наши работы': 'Our works', 'Ткани': 'Fabrics', 'Матрасы ELUNA': 'ELUNA mattresses' };
+  const CAT_DESCS = { 'Пуфы, банкетки, под размер комнаты': 'Poufs and benches, sized to your room',
     'Прямые, угловые, модульные, раскладные': 'Straight, corner, modular, sofa beds', 'С подъёмным механизмом и без': 'With or without a lift-up mechanism',
     'Для отдыха: округлые, на цоколе': 'Lounge: rounded, on a plinth', 'Реальные изделия ателье': 'Real pieces by the atelier', 'Велюр, букле, шенилл': 'Velour, bouclé, chenille',
     'Ортопедические, на своём сайте': 'Orthopaedic, on their own website',

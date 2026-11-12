@@ -41,7 +41,7 @@ def bbox_of(f):
     if bb is None: return None
     return [round(float(bb[0]) / W, 3), round(float(bb[1]) / H, 3), round(float(bb[2]) / W, 3), round(float(bb[3]) / H, 3)]
 cat = js_to_json(block('RICCA_CATALOG')); names = js_to_json(block('RICCA_MODEL_NAMES'))
-CFG = {'sofas': 'sofa', 'beds': 'bed', 'armchairs': 'armchair'}
+CFG = {'sofas': 'sofa', 'beds': 'bed', 'armchairs': 'armchair', 'poufs': 'pouf'}
 out = []
 for it in cat:
     if it['category'] not in CFG or it.get('hidden'): continue   # hidden: true — модель снята с витрины (слабые фото или не в стиле)
@@ -83,10 +83,9 @@ def score(w):
 for w in out: w['_s'] = round(score(w), 2)
 order = {c: i for i, c in enumerate(CFG)}
 out.sort(key=lambda w: (order[w['cat']], -w['_s']))            # сортировка устойчивая: при равном счёте — прежний порядок
-seats = [w for w in out if w['cat'] == 'armchairs']
 pick = {'sofa': [w['id'] for w in out if w['cat'] == 'sofas'], 'bed': [w['id'] for w in out if w['cat'] == 'beds'],
-        'armchair': [w['id'] for w in seats if w['title'].startswith('Кресло')], 'small': [w['id'] for w in seats if not w['title'].startswith('Кресло')]}
-PLAN = {'sofas': ('armchair', 'small', 'sofa'), 'beds': ('small', 'armchair', 'bed'), 'armchairs': ('sofa', 'small', 'armchair')}
+        'armchair': [w['id'] for w in out if w['cat'] == 'armchairs'], 'small': [w['id'] for w in out if w['cat'] == 'poufs']}
+PLAN = {'sofas': ('armchair', 'small', 'sofa'), 'beds': ('small', 'armchair', 'bed'), 'armchairs': ('sofa', 'small', 'armchair'), 'poufs': ('sofa', 'armchair', 'small')}
 ids = {w['id'] for w in out}
 for i, w in enumerate(out):
     rel = ['m-' + x for x in PAIRS.get(w['id'][2:], []) if 'm-' + x in ids]

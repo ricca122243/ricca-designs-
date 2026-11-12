@@ -31,6 +31,7 @@
       sofas: tr('Здравствуйте! Интересует диван на заказ. Пришлите, пожалуйста, подборку и расскажите, что нужно для расчёта.'),
       beds: tr('Здравствуйте! Интересует кровать на заказ. Размер матраса: 1600 × 2000 / 1800 × 2000 / свой. Пришлите, пожалуйста, подборку.'),
       armchairs: tr('Здравствуйте! Интересует кресло. Пришлите, пожалуйста, подборку.'),
+      poufs: tr('Здравствуйте! Интересует пуф или банкетка. Пришлите, пожалуйста, подборку.'),
       fabrics: tr('Здравствуйте! Помогите подобрать ткань.'),
       photo: tr('Здравствуйте! Хочу заказать мебель по фото.'),
       projects: tr('Здравствуйте! Хочу обсудить мягкую мебель для своей комнаты: гостиная / спальня / кабинет / другое. Размеры и фото пришлю следующим сообщением.'),
@@ -145,7 +146,8 @@
   const KINDS = {
     sofas: { verb: tr('Шьём диваны'), what: ['Прямые', 'Угловые и\u00a0П-образные', 'Модульные', 'Раскладные'].map((s) => tr(s)), cfg: 'sofa', wa: tr('диван'), title: tr('Диван') },
     beds: { verb: tr('Шьём кровати'), what: ['С\u00a0подъёмным механизмом', 'Без механизма', 'На\u00a0ножках или на\u00a0цоколе', 'Под размер вашего матраса'].map((s) => tr(s)), cfg: 'bed', wa: tr('кровать'), title: tr('Кровать') },
-    armchairs: { verb: tr('Шьём кресла'), what: ['Кресла для\u00a0отдыха', 'Округлые, на\u00a0ножках или на\u00a0цоколе', 'Пуфы и\u00a0банкетки'].map((s) => tr(s)), cfg: 'armchair', wa: tr('кресло'), title: tr('Кресло'), label: tr('Кресла и\u00a0пуфы') },
+    armchairs: { verb: tr('Шьём кресла'), what: ['Кресла для\u00a0отдыха', 'Округлые, на\u00a0ножках или на\u00a0цоколе'].map((s) => tr(s)), cfg: 'armchair', wa: tr('кресло'), title: tr('Кресло') },
+    poufs: { verb: tr('Шьём пуфы и\u00a0банкетки'), what: ['Пуфы', 'Банкетки', 'Под\u00a0размер комнаты'].map((s) => tr(s)), cfg: 'pouf', wa: tr('пуф или банкетку'), title: tr('Пуф') },   // 12 ноября: свой раздел
   };
   const kindCartId = (cat) => `kind-${cat}`;
 
@@ -275,7 +277,7 @@
     const chips = $('[data-works-chips]', sec);
     if (chips) {
       const cnt = (c) => (c === 'all' ? WORKS : WORKS.filter((w) => w.cat === c)).length;
-      const cs = ['all', 'sofas', 'beds', 'armchairs'].filter((c) => cnt(c));
+      const cs = ['all', 'sofas', 'beds', 'armchairs', 'poufs'].filter((c) => cnt(c));
       chips.innerHTML = cs.map((c) => `<a href="#catalog/works${c === 'all' ? '' : `/${c}`}">${c === 'all' ? tr('Все') : typo(catLabel(c))}<span class="chips__n" aria-hidden="true">${cnt(c)}</span><span class="sr-only">: ${cnt(c)}</span></a>`).join('');
       chips.hidden = cs.length < 3;
     }
@@ -287,7 +289,7 @@
      категорий. Телефон: большая, пара, большая (css .wk--rhythm) — у больших sizes PHONE_BIG. Список — здесь; модели нет в данных — пропускаем */
   /* «Популярные модели» — лента из моделей, фото которых выбрал владелец (11 ноября): листается вбок, под фото только название */
   const DETAILS = [];   // блок «В деталях» убран: кадры деталей стоят в «Популярных моделях» через одну карточку
-  const PICKS = [['m-sofa-37', 0], ['m-sofa-28', 4, 'd', 'l'], ['m-bed-27', 0], ['m-sofa-39', 5, 'd'], ['m-sofa-33', 0], ['m-sofa-31', 2, 'd']];
+  const PICKS = [['m-sofa-23', 0], ['m-sofa-28', 4, 'd', 'l'], ['m-sofa-01', 0], ['m-bed-27', 0], ['m-sofa-02', 0], ['m-sofa-39', 5, 'd'], ['m-sofa-20', 0], ['m-sofa-33', 0]];   // 12 ноября: у Rulva, Svira, Talna и Inza — кадры владельца у бетонной стены
   /* «Популярные модели» как у ориентира (владелец, 11 ноября): карточки во всю ширину, по одной в ряд — изделие на светлом поле, название в углу карточки;
      через одну — крупный кадр детали. Запись: [модель, номер кадра, 'd' — деталь во всю карточку, 'l' — светлая подпись на тёмной ткани]. Модель — один раз */
   (() => {
@@ -562,7 +564,7 @@
       }
       // изделия с таким id нет (ссылка из прошлых версий): экран его категории по началу id, иначе — каталог
       if (r.item && !ITEM.has(r.item)) {
-        const cat = { sofa: 'sofas', bed: 'beds', armchair: 'armchairs' }[r.item.split('-')[0]];
+        const cat = { sofa: 'sofas', bed: 'beds', armchair: 'armchairs', pouf: 'poufs', bench: 'poufs' }[r.item.split('-')[0]];
         if (cat && CATS[cat] && !CATS[cat].href) { R.replace(`#catalog/${cat}`); return R.apply(false); }
         R.toCatalog(); return;
       }
@@ -614,7 +616,10 @@
       if (!vfab) return;
       const vh = dlg.clientHeight;
       const own = $$('a[href*="wa.me"]', dlg).some((a) => a !== vfab && a.offsetParent && (() => { const r = a.getBoundingClientRect(); return r.bottom > 0 && r.top < vh; })());
-      const on = mqPhone.matches && dlg.open && !own;
+      // кнопка окна («Собрать в 3D» и др.) под квадратом — квадрат уступает место
+      const f = vfab.getBoundingClientRect();
+      const under = $$('.btn', dlg).some((b) => { const r = b.getBoundingClientRect(); return r.width > 0 && r.bottom > f.top - 8 && r.top < f.bottom + 8 && r.right > f.left - 8; });
+      const on = mqPhone.matches && dlg.open && !own && !under;
       if (on !== vfab.classList.contains('is-on')) { vfab.classList.toggle('is-on', on); vfab.tabIndex = on ? 0 : -1; vfab.setAttribute('aria-hidden', String(!on)); }
     }
     const syncVfabSoon = () => { if (!vfRaf) vfRaf = requestAnimationFrame(syncVfab); };
@@ -623,9 +628,9 @@
        кресла — по две), переключатель «По две в ряд / Крупнее» рядом с числом моделей; выбор помнится в этом браузере (ricca:cols)
        и действует на все три категории */
     const COLS_KEY = 'ricca:cols';
-    const bigMode = (cat) => { const v = store.get(COLS_KEY, ''); return mqSmall.matches && (v ? v === 'big' : cat !== 'armchairs'); };
+    const bigMode = (cat) => { const v = store.get(COLS_KEY, ''); return mqSmall.matches && (v ? v === 'big' : cat !== 'armchairs' && cat !== 'poufs'); };
     /* фишки категорий в окне моделей (телефон): «Диваны 29 · Кровати 26 · Кресла 12 · Ткани» — сменить категорию, не закрывая окно */
-    const VCATS = ['sofas', 'beds', 'armchairs'];
+    const VCATS = ['sofas', 'beds', 'armchairs', 'poufs'];
     const catChips = (cat) => VCATS.filter((c) => MODELS.some((w) => w.cat === c)).map((c) => { const n = MODELS.filter((w) => w.cat === c).length; return `<button type="button" data-vcat="${c}" aria-pressed="${c === cat}">${typo(catLabel(c))}<span class="view__tabs-n" aria-hidden="true">${n}</span><span class="sr-only">: ${n}</span></button>`; }).join('')
       + (CATS.fabrics && FCOL.size ? `<button type="button" data-vcat="fabrics" aria-pressed="false">${typo(catLabel('fabrics'))}</button>` : '');
     const mark = '<span class="mark" aria-hidden="true">RICCA DESIGNS</span>';
@@ -661,7 +666,7 @@
        «Все · Диваны · Кровати · Кресла» со счётчиками (те же кнопки .view__tabs, что были у типов), в строке под заголовком — число
        показанных работ. Фильтр пишет адрес #catalog/works/<категория> (replace — «Назад» не ходит по фильтрам); по такой ссылке
        экран открывается сразу с этим фильтром. Фото — 800 px на телефоне и компьютере 1x (WK_SIZES), первые четыре — сразу */
-    const WCATS = ['sofas', 'beds', 'armchairs'];
+    const WCATS = ['sofas', 'beds', 'armchairs', 'poufs'];
     function renderWorks() {
       title.textContent = tr('Наши работы');
       tabs.classList.remove('is-fab', 'is-cats');
@@ -1248,8 +1253,8 @@
 
   /* ---------- Окно работы (готовый каталог): все фото работы целиком — свайп, стрелки, ←/→; счётчик, название и ткань.
      Действия: «Хочу такой» (WhatsApp: работа и ссылка #work-<id>), «В корзину» (строка корзины kind 'catalog' с этой работой;
-     уже в корзине — открывает корзину), «Собрать похожий в 3D» (конструктор с ближайшим типом: прямой / угловой / П-образный /
-     модульный диван, кровать, кресло, пуф), «Смотреть в Instagram» (пост работы). Esc, ✕ и «Назад» закрывают; фокус — в окне
+     уже в корзине — открывает корзину); под названием — «3D-модель» и «Чертёж» (конструктор с рецептом модели или ближайшим типом),
+     ниже — «Рекомендуем к этой модели»; «Смотреть в Instagram» (пост работы). Esc, ✕ и «Назад» закрывают; фокус — в окне
      (<dialog> модальный) и возвращается к карточке. Телефон — файл 800 px; компьютер — 800 или 1600 по ширине рамки;
      соседние фото грузятся заранее ---------- */
   const LB = (() => {
@@ -1295,6 +1300,8 @@
       if (sw <= 0 || sh <= 0) return;
       const dpr = window.devicePixelRatio || 1;
       let k = Math.min(sw / p.w, sh / p.h, 1.1, 1600 / p.w);
+      const sc = !!p.scene;   // кадр-сцена (изделие у стены): заполняет рамку целиком, без белых полей по бокам — стена уходит за край
+      if (sc) k = Math.max(sw / p.w, sh / p.h);
       const bb = p.studio && Array.isArray(p.bbox) && p.bbox.length === 4 ? p.bbox : null;
       if (bb) {
         const bw = Math.max(0.05, bb[2] - bb[0]) * p.w, bh = Math.max(0.05, bb[3] - bb[1]) * p.h;
@@ -1305,7 +1312,7 @@
       imgW = iw;
       frame.style.width = `${fw}px`; frame.style.height = `${fh}px`;
       if (iw > fw + 1 || ih > fh + 1) {   // кадр шире рамки — сдвигаем так, чтобы изделие стояло по центру, края кадра уходят за рамку
-        const cx = bb ? (bb[0] + bb[2]) / 2 * iw : iw / 2, cy = bb ? (bb[1] + bb[3]) / 2 * ih : ih / 2;
+        const cx = bb ? (bb[0] + bb[2]) / 2 * iw : iw / 2, cy = bb ? (bb[1] + bb[3]) / 2 * ih : ih * (sc ? 0.6 : 0.5);
         const left = Math.min(0, Math.max(fw - iw, fw / 2 - cx)), top = Math.min(0, Math.max(fh - ih, fh / 2 - cy));
         img.style.cssText = `position:absolute;left:${Math.round(left)}px;top:${Math.round(top)}px;width:${iw}px;height:${ih}px;max-width:none;`;
       } else img.style.cssText = '';
@@ -1801,10 +1808,19 @@
   fab.innerHTML = `<svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span class="wa-fab__t">${esc(T ? (T['Написать'] || 'Message') : 'Написать')}</span>`;
   fab.tabIndex = -1; fab.setAttribute('aria-hidden', 'true');
   document.body.appendChild(fab);
+  // кнопки, поля и вопросы страницы: когда такой элемент проходит под кнопкой WhatsApp, она уступает место — действие не закрыто
+  const fabAvoid = $$('.btn, .qa__q, input, select, textarea').filter((el) => !el.closest('dialog, .foot'));
+  function fabOverlaps() {
+    const f = fab.getBoundingClientRect(), m = 8;
+    return fabAvoid.some((el) => {
+      const r = el.getBoundingClientRect();
+      return r.width > 0 && r.bottom > f.top - m && r.top < f.bottom + m && r.right > f.left - m && r.left < f.right + m;
+    });
+  }
   function updateFab() {
     // телефон: видна, как только категории первого экрана (.intro) ушли выше кнопки — подписи «3D-конструктор» и «Ткани» она не закрывает
     const top = introEl ? introEl.getBoundingClientRect().bottom : 0;
-    const on = (mqPhone.matches ? top < window.innerHeight - 84 : window.scrollY > 400) && !$('dialog[open]') && !ends.size;
+    const on = (mqPhone.matches ? top < window.innerHeight - 84 : window.scrollY > 400) && !$('dialog[open]') && !ends.size && !fabOverlaps();
     if (on !== fab.classList.contains('is-on')) { fab.classList.toggle('is-on', on); fab.tabIndex = on ? 0 : -1; fab.setAttribute('aria-hidden', String(!on)); }
     // над чёрными «Для бизнеса» и подвалом — белая кнопка с чёрным значком (иначе чёрный квадрат сливается с фоном)
     const fr = fab.getBoundingClientRect(), fy = fr.top + fr.height / 2;
