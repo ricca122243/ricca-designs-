@@ -475,6 +475,7 @@ function exactHasLegs() {
 function dropExact() { activeModel = null; exact = null; exactLoading = null; if (stage && stage.setDir3) stage.setDir3(null); renderModels(); }
 const EXACT_ROWS = new Set(['legFinish']);   // что можно менять у точной модели в «Форме» (вид ножек у модели из фото не меняется — только цвет)
 const isExact = () => !!(activeModel && catalogModels().some((m) => m.id === activeModel && m.glb));
+const isFreeModel = () => !!(activeModel && catalogModels().some((m) => m.id === activeModel && /\.json$/.test(m.glb || '')));
 const exactName = () => { const m = activeModel && catalogModels().find((x) => x.id === activeModel && x.glb); return m ? modelName(m) : ''; };
 /* «Собрать из деталей»: клиент хочет другую форму — переходим на модель из деталей с теми же параметрами */
 function exactOff() { dropExact(); renderForm(); renderHeads(); setState({}, { structural: true }); toast('Собрано из деталей — меняйте форму'); }
@@ -487,7 +488,7 @@ function useExact(m) {
     const v = g.userData.view;
     if (stage && stage.setDir3) stage.setDir3(v ? v.az : null, v ? v.el : null);
     if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced, reset: !!v }));
-  }).catch((e) => { console.warn('exact', e); if (exactLoading === my) toast('Точная модель не загрузилась — показываем похожую', 3500); });
+  }).catch((e) => { console.warn('exact', e); if (exactLoading === my) { exactLoading = null; rebuild(); toast('Точная модель не загрузилась — показываем похожую', 3500); } });
 }
 /* ссылка «Собрать похожий в 3D» с сайта: если параметры совпадают с рецептом модели — показать её точную модель */
 function matchModel() {
@@ -930,6 +931,8 @@ function rebuild(q = quality()) {
     mats = M.materialSet(cfg);
     const ex = exact && exact.id === activeModel ? exact.group : null;
     const g = ex || F.build(state.type, state.params, mats, { quality: q });
+    /* ручная модель ещё грузится (доли секунды): сборку из деталей не показываем — иначе на миг мелькает другая форма */
+    if (!ex && exactLoading && isFreeModel()) g.visible = false;
     if (ex) {
       F.setMaterials(ex, mats);
       /* размеры клиента: модель растягивается по осям относительно размеров рецепта (форма — как на фото) */
