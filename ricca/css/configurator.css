@@ -714,6 +714,12 @@ html[data-font="b"] .dlg__hdr .caps { font: 400 26px/1 var(--serif); letter-spac
   .dlg--drawing.is-tall .dlg__busy { top: auto; right: auto; left: 12px; bottom: 12px; padding: 0 12px; min-height: 44px; display: flex; align-items: center; }
   .dlg--drawing.is-tall .dlg__busy[hidden] { display: none; }
 }
+/* низкий экран (iPhone SE и меньше): «Отправить» и «Скачать» — в один ряд, листу остаётся ≈ на 60 px больше */
+@media (max-width: 699px) and (max-height: 700px) {
+  .dlg--drawing.is-tall .dlg__acts { flex-wrap: nowrap; gap: 8px; }
+  .dlg--drawing.is-tall .dlg__acts .btn { flex: 1 1 0; min-width: 0; padding-inline: 8px; font-size: 13px; line-height: 1.2; white-space: normal; text-align: center; }
+  .dlg--drawing.is-tall .dlg__acts .btn .ico { display: none; }
+}
 
 /* ==========================================================================
    ДВИЖЕНИЕ
