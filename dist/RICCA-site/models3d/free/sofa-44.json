@@ -14,9 +14,9 @@
  "light": {
   "az": 30,
   "contrast": 0.7,
-  "exposure": 0.82
+  "exposure": 0.68
  },
- "fab": "molly:9",
+ "fab": "alba:19",
  "measure": {
   "seatH": 0.48,
   "seatD": 0.64,

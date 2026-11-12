@@ -189,6 +189,7 @@
  ],
  "light": {
   "az": 20,
-  "contrast": 0.45
+  "contrast": 0.45,
+  "exposure": 1.15
  }
 }

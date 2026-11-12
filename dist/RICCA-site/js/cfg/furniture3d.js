@@ -668,9 +668,10 @@ function sfShellFull(sh, quality) {
   arc(1, Math.PI / 2, 0, 'b');
   side(W, W - tS, rcz, zEnd, 'r');
   /* сечение: точки [ρ (0 снаружи … T внутри), y, верх?]; число точек одинаково на всех кольцах */
-  const yb = y0, rb = 0.015, nBc = q.nq, nW = Math.max(4, Math.ceil(h / q.sp)), nT = q.nq * 2, nF = 3;
+  /* ручные модели (ushell): sh.rt / sh.rb — радиус верха и низа сечения, sh.bulge — выпуклость наружной стенки («подушка»), sh.capL / sh.capP — длина и полнота торца боковины */
+  const yb = y0, nBc = q.nq * (sh.rb ? 2 : 1), nW = Math.max(4, Math.ceil(h / q.sp)), nT = q.nq * 2, nF = 3;
   const loop = (yTop, T) => {
-    const rt = Math.min(T / 2, 0.12), wallTop = yTop - rt, pts = [];
+    const rt = Math.min(T / 2, sh.rt ?? 0.12), rb = Math.min(sh.rb ?? 0.015, T / 2 - 0.002, (yTop - yb - rt) * 0.9), wallTop = yTop - rt, pts = [];
     for (let i = 0; i <= nBc; i++) { const a = (i / nBc) * Math.PI / 2; pts.push([rb - rb * Math.sin(a), yb + rb - rb * Math.cos(a), 0]); }
     for (let i = 1; i <= nW; i++) pts.push([0, yb + rb + ((wallTop - yb - rb) * i) / nW, 0]);
     for (let i = 1; i <= nT; i++) { const a = (i / nT) * Math.PI / 2; pts.push([rt - rt * Math.cos(a), wallTop + rt * Math.sin(a), 1]); }
@@ -679,7 +680,8 @@ function sfShellFull(sh, quality) {
     for (let i = 0; i < nW; i++) pts.push([T, wallTop - ((wallTop - yb - rb) * i) / nW, 0]);
     for (let i = 0; i <= nBc; i++) { const a = (i / nBc) * Math.PI / 2; pts.push([T - rb + rb * Math.cos(a), yb + rb - rb * Math.sin(a), 0]); }
     for (let i = 1; i < 4; i++) pts.push([T - rb - ((T - 2 * rb) * i) / 4, yb, 0]);
-    return { pts, rt };
+    if (sh.bulge) for (const pt of pts) { if (pt[0] >= T / 2) continue; const t = Math.min(1, Math.max(0, (pt[1] - yb) / (yTop - yb))); pt[0] -= sh.bulge * Math.pow(Math.sin(Math.PI * t), 0.75) * (1 - pt[0] / (T / 2)); }
+    return { pts, rt, rb };
   };
   /* кольца: торец слева (полукругом) — направляющая — торец справа */
   const nCap = Math.max(3, q.nq + 1);
@@ -695,10 +697,14 @@ function sfShellFull(sh, quality) {
     /* касательная направляющей (по росту индекса) */
     const a = path[Math.max(0, rg.i - 1)], b = path[Math.min(path.length - 1, rg.i + 1)];
     let tx = (b.O[0] + b.I[0] - a.O[0] - a.I[0]) / 2, tz = (b.O[1] + b.I[1] - a.O[1] - a.I[1]) / 2; const tl = Math.hypot(tx, tz) || 1; tx /= tl; tz /= tl;
-    const { pts, rt } = loop(pt.top, T);
+    const { pts, rt, rb: rb1 } = loop(pt.top, T);
     L = pts.length;
-    const phi = rg.cap * Math.PI / 2, sc = Math.cos(phi), ext = (T / 2) * Math.sin(phi) * rg.dir;
-    const cy = pt.top - rt;
+    const capL = sh.capL ?? T / 2, capP = sh.capP ?? 1;
+    const phi = rg.cap * Math.PI / 2, sc = Math.pow(Math.cos(phi), capP), ext = capL * Math.sin(phi) * rg.dir;
+    /* развёртка торца — по настоящей длине поверхности (вынос + сужение сечения), иначе рисунок ткани на торце сжимается в полосы */
+    let uCap = 0;
+    if (rg.cap) { const nK = Math.round(rg.cap * nCap); let e0 = 0, c0 = T / 2; for (let k = 1; k <= nK; k++) { const f = (k / nCap) * Math.PI / 2, e1 = capL * Math.sin(f), c1 = (T / 2) * Math.pow(Math.cos(f), capP); uCap += Math.hypot(e1 - e0, c1 - c0); e0 = e1; c0 = c1; } }
+    const cy = pt.top - rt, cyb = yb + rb1;
     const mx = (pt.O[0] + pt.I[0]) / 2, mz = (pt.O[1] + pt.I[1]) / 2;
     if (prevM && !rg.cap) uAcc += Math.hypot(mx - prevM[0], mz - prevM[1]);
     if (!rg.cap) prevM = [mx, mz];
@@ -707,11 +713,12 @@ function sfShellFull(sh, quality) {
       let [rho, y, top] = pts[j];
       rho = T / 2 + (rho - T / 2) * sc;
       if (top || y > cy) y = cy + (y - cy) * sc;
+      else if (sh.rb && y < cyb) y = cyb - (cyb - y) * sc;
       const x = pt.O[0] + ux * rho + tx * ext, z = pt.O[1] + uz * rho + tz * ext;
       if (j > 0) v += Math.hypot(x - px, y - py, z - pz);
       px = x; py = y; pz = z;
       positions.push(x, y, z);
-      uvs.push(uAcc + ext * (rg.dir || 0), v);
+      uvs.push(uAcc + uCap * (rg.dir || 0), v);
     }
   });
   const index = [];
@@ -962,11 +969,35 @@ export function partsFromSpec(spec) {
       const cl = (v, a, b) => Math.min(b, Math.max(a, v));
       const W = s.W, Dd = s.D, tS = s.tS ?? 0.16, tB = s.tB ?? tS, h = s.h, armH = Math.min(s.armH ?? h, h), y0 = s.y0 ?? 0;
       const rcx = cl(s.rx ?? s.r ?? 0.3, tS + 0.06, W / 2 - 0.05), rcz = cl(s.rz ?? s.r ?? 0.3, tB + 0.06, Dd - tS / 2 - 0.06);
-      const sh = { W, D: Dd, tS, tB, rcx, rcz, h, armH, y0 }, ox = (p[0] || 0) - W / 2, oz = p[2] || 0;
+      const sh = { W, D: Dd, tS, tB, rcx, rcz, h, armH, y0 };
+      if (s.rTop != null) sh.rt = s.rTop; if (s.rBottom != null) sh.rb = s.rBottom; if (s.bulge) sh.bulge = s.bulge; if (s.capL != null) sh.capL = s.capL; if (s.capP != null) sh.capP = s.capP;
+      const ox = (p[0] || 0) - W / 2, oz = p[2] || 0;
       const put = (piece, role, x0, x1, ya, yb, z0, z1, extra) => items.push({ id: `${id}-${piece}`, role, mat: s.m || 'fabric', shape: 'sshell', sh, piece, x: (x0 + x1) / 2 + ox, y: (ya + yb) / 2, z: (z0 + z1) / 2 + oz, sx: x1 - x0, sy: yb - ya, sz: z1 - z0, rotY: 0, piping: !!s.piping, ...extra });
       put('b', 'back', 0, W, y0, h, 0, rcz, { r: 0.08 });
       put('l', 'arm', 0, tS, y0, armH, rcz, Dd, { r: Math.min(tS / 2, 0.12), armStyle: 'round' });
       put('r', 'arm', W - tS, W, y0, armH, rcz, Dd, { r: Math.min(tS / 2, 0.12), armStyle: 'round' });
+      return;
+    }
+    if (k === 'bedset') {
+      /* кровать: матрас с постелью — те же детали и пропорции, что у кроватей конструктора (params.js → partsBed).
+         p: [x середины, верх матраса от пола, z начала матраса (лицо изголовья)], s: [ширина, толщина, длина матраса];
+         duvet: false — без покрывала, cover — доля длины под покрывалом (0.6), ov / ovz — свес по бокам и в ногах, pillows — 0, 1 или 2, pillowZ — отступ подушек от изголовья */
+      if (mir) return;
+      const [cx, mTop, z0] = p, [mw, mt, ml] = sz, mz1 = z0 + ml;
+      one({ id: `${id}-mattress`, k: 'part', role: 'mattress', m: 'mattress', p: [cx, mTop - mt / 2, z0 + ml / 2], s: [mw, mt, ml], r: 0.05, crown: 0.008, piping: true, quilt: true }, i, false);
+      if (s.duvet !== false) {
+        const cover = s.cover ?? 0.6, ov = s.ov ?? 0.16, ovz = s.ovz ?? 0.10, dz0 = mz1 - ml * cover;
+        one({ id: `${id}-duvet`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'duvet', p: [cx, mTop + 0.037, (dz0 + mz1 + ovz) / 2], s: [mw + 2 * ov, 0.082, mz1 + ovz - dz0], r: 0.035, crown: 0.025, drape: { x: ov + 0.01, z: ovz + 0.01, drop: s.drop ?? 0.105 } }, i, false);
+        one({ id: `${id}-fold`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'duvet', roll: true, p: [cx, mTop + 0.085, dz0 + 0.075], s: [mw + 0.06, 0.11, 0.19], r: 0.05, drape: { x: 0.14, z: 0, drop: 0.035 } }, i, false);
+      }
+      const nP = s.pillows ?? 2;
+      if (nP > 0) {
+        const pw = Math.min(0.7, mw / 2 - 0.04), ph = 0.50, pt = 0.17, lean = s.pillowLean ?? 20, rx = -(Math.PI / 2 + lean * D2R), c = Math.cos(rx), sn = Math.sin(rx);
+        let yMin = Infinity, zMin = Infinity;
+        for (const yy of [-pt / 2, pt / 2]) for (const zz of [-ph / 2, ph / 2]) { yMin = Math.min(yMin, yy * c - zz * sn); zMin = Math.min(zMin, yy * sn + zz * c); }
+        const xs = nP === 1 || mw < 1.2 ? [cx] : [cx - mw / 4, cx + mw / 4];
+        xs.forEach((x, n) => one({ id: `${id}-pillow${n + 1}`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [x, mTop - yMin - 0.012, z0 + (s.pillowZ ?? 0) + 0.006 - zMin], s: [pw, pt, ph], r: 0.03, rot: [-(90 + lean), 0, 0] }, i, false));
+      }
       return;
     }
     if (k === 'tube') {

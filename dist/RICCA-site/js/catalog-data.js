@@ -2453,7 +2453,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-44",
     cfg: "t.sofa~ah.105~aw.10~bc.fixed~h.116~lh.2~lg.hidden~sc.single~vt.channels~w.160",
-    fab: "molly:9",
+    fab: "alba:19",
     glb: "models3d/free/sofa-44.json",
     category: "sofas",
     tags: ["straight"],
@@ -2519,8 +2519,9 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-47",
-    cfg: "t.sofa~w.170~d.85~as.round~aw.25~ah.72~h.74~bc.fixed~sc.single~lg.metal~lf.bordeaux~lh.20~vl.frame~vs.soft",
-    fab: "ricca-leather:5",
+    cfg: "t.sofa~ah.72~as.round~aw.25~bc.fixed~d.85~h.74~lf.bordeaux~lh.18~sc.single~vl.frame~vs.soft~w.170",
+    fab: "molly:9",
+    glb: "models3d/free/sofa-47.json",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",

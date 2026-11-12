@@ -355,6 +355,7 @@
  ],
  "light": {
   "az": -25,
-  "contrast": 0.5
+  "contrast": 0.5,
+  "exposure": 1.12
  }
 }
