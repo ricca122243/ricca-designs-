@@ -269,8 +269,10 @@ function sofaRules(type, p, raw, note, fail, set) {
 function bedRules(p, raw, note, fail, set) {
   if (p.hbStyle === 'wings' && p.hbOver < 0.08 - EPS) { set('hbOver', 0.08); note('hbOver', `Выступ изголовья увеличен до ${cmTxt(p.hbOver)} — для «ушек» нужно не меньше 8 см`); }
   /* ножки/цоколь ниже царги хотя бы на 15 см */
-  if (p.legH > p.railH - 0.15 + EPS) {
-    if (p.railH - 0.15 >= 0.04 - EPS) { set('legH', p.railH - 0.15); note('legH', `${p.base === 'legs' ? 'Ножки уменьшены' : 'Цоколь уменьшен'} до ${cmTxt(p.legH)} — царга выше на 15 см`); }
+  /* платформа (deck) — тонкая плита: над ножками достаточно 10 см, у обычной царги — 15 см */
+  const railMin = p.railShape === 'deck' ? 0.10 : 0.15;
+  if (p.legH > p.railH - railMin + EPS) {
+    if (p.railH - railMin >= 0.04 - EPS) { set('legH', p.railH - railMin); note('legH', `${p.base === 'legs' ? 'Ножки уменьшены' : 'Цоколь уменьшен'} до ${cmTxt(p.legH)} — царга выше на ${Math.round(railMin * 100)} см`); }
     else { set('legH', 0.04); set('railH', 0.19); note('railH', `Высота царги увеличена до ${cmTxt(p.railH)} — под ней ${p.base === 'legs' ? 'ножки' : 'цоколь'}`); }
   }
   /* изголовье выше матраса хотя бы на 10 см (верх матраса = царга + 12 см); низкие изголовья кроватей-коробов — можно */

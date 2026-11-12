@@ -14,7 +14,7 @@ export const SHORT = {
   chaiseW: 'cw', modules: 'mo', moduleW: 'mm', chaise: 'ch', chaiseL: 'cl',
   mw: 'mw', ml: 'ml', hbStyle: 'hs', hbH: 'hh', hbOver: 'ho', frameT: 'ft', railH: 'rh', base: 'b', lift: 'lt',
   /* кровать: формы изголовья и основания (коды k*) */
-  hbShape: 'ks', hbInsert: 'ki', hbWrap: 'kw', hbLean: 'kl', hbRim: 'kb', hbDepth: 'kd', railShape: 'kr', legKind: 'kg', pipeTone: 'kc',
+  hbShape: 'ks', hbInsert: 'ki', hbWrap: 'kw', hbLean: 'kl', hbRim: 'kb', hbDepth: 'kd', railShape: 'kr', legKind: 'kg', pipeTone: 'kc', hbTone: 'kt',
   shape: 'sp', topT: 'tt', top: 'tp', topTone: 'tn', legW: 'lw', legInset: 'li', arms: 'ar', backShape: 'bs',
   /* диваны: дополнительные формы (коды v*; params.js → SF_OPTS) */
   sfShell: 'vs', sfArmSide: 'va', sfOpen: 'vo', sfBack: 'vb', sfPuff: 'vp', sfTuft: 'vt', sfDecor: 'vd', sfDecorKind: 'vk', sfLegShape: 'vl', sfPlinth: 'vc', sfLayout: 'vm',
@@ -145,7 +145,7 @@ export const VOCAB = {
     ...BED_OPTIONS,
   },
   armchair: { form: { classic: 'классическое', round: 'округлое', drum: 'барабан с валиками', pebble: '«капля»' }, ...{
-    qShell: { std: 'обычная', fan: 'раскрыта кверху' }, qSeat: { cushion: 'с подушкой', block: 'цельный блок' }, qBack: { std: 'подушка', none: 'без подушки', lumbar: 'поясничный валик' },
+    qShell: { std: 'обычная', fan: 'раскрыта кверху', wide: 'веер, короткие боковины' }, qSeat: { cushion: 'с подушкой', block: 'цельный блок' }, qBack: { std: 'подушка', none: 'без подушки', lumbar: 'поясничный валик' },
     qArmSide: { both: 'с двух сторон', left: 'только слева', right: 'только справа' }, qDecor: { none: 'нет', ball: 'круглая', roll: 'валик' } } },
   pouf: { form: { round: 'круглый', square: 'квадратный', bench: 'банкетка', oval: 'овальный' }, top: { smooth: 'гладкий', capitone: 'каретная стяжка', channels: 'вертикальные каналы' },
     qStack: { one: 'один', two: 'стопка из двух', three: 'стопка из трёх' }, qPlan: { rect: 'прямые', stadium: 'скруглённые' } },
@@ -266,7 +266,7 @@ export function summaryLines(state, { dims = null } = {}) {
     add('Размер', `${fmtCm(W)} × ${fmtCm(Lg)} см, высота изголовья ${fmtCm(p.hbH)} см`);
     /* дополнительные формы — только если выбраны (у прежних вариантов текст прежний) */
     const ex = (k) => (p[k] && p[k] !== 'none' && p[k] !== 'auto' && p[k] !== 'rect' && p[k] !== 'box' && p[k] !== 'cone' && p[k] !== 'match' ? optLabel(t, k, p[k]) : '');
-    const hbX = [ex('hbShape') && `форма — ${ex('hbShape')}`, ex('hbInsert') && `вставка — ${ex('hbInsert')}`, ex('hbWrap') && `края — ${ex('hbWrap')}`, ex('hbLean'), ex('hbRim'),
+    const hbX = [ex('hbShape') && `форма — ${ex('hbShape')}`, ex('hbInsert') && `вставка — ${ex('hbInsert')}`, ex('hbWrap') && `края — ${ex('hbWrap')}`, ex('hbLean'), ex('hbRim'), ex('hbTone'),
       p.hbDepth > 0 ? `толщина ${fmtCm(p.hbDepth)} см` : ''].filter(Boolean).join(', ');
     add('Изголовье', `${optLabel(t, 'hbStyle', p.hbStyle)}, высота ${fmtCm(p.hbH)} см${p.hbOver ? `, выступ ${fmtCm(p.hbOver)} см` : ''}${hbX ? `, ${hbX}` : ''}`);
     add('Царга', `высота ${fmtCm(p.railH)} см, боковина ${fmtCm(p.frameT)} см${ex('railShape') ? `, ${ex('railShape')}` : ''}`);

@@ -510,6 +510,27 @@ export function pipingMaterial(fabric) {
   return s;
 }
 
+/* вставка светлее (кровать: hbTone light): та же ткань, светлее — как ворс велюра против света */
+const lightCache = new WeakMap();
+export function lightMaterial(fabric) {
+  if (!fabric) return null;
+  if (lightCache.has(fabric)) return lightCache.get(fabric);
+  const s = fabric.clone();
+  /* во сколько раз светлее — по яркости самой ткани (hex образца): тёмная светлеет сильно, светлая — едва */
+  const bc = (fabric.userData && fabric.userData.baseColor) || fabric.color;
+  const lum = Math.max(0.02, 0.2126 * bc.r + 0.7152 * bc.g + 0.0722 * bc.b), k = (lum + 0.19 * (1 - lum)) / lum;
+  const tone = (c) => c.clone().multiplyScalar(k);
+  s.color = tone(fabric.color);
+  s.name = fabric.name + '-light';
+  lightCache.set(fabric, s);
+  if (fabric.userData && fabric.userData.ready) fabric.userData.ready.then(() => {
+    s.map = fabric.map; s.color = tone(fabric.color);
+    if (fabric.normalMap) { s.normalMap = fabric.normalMap; s.roughnessMap = fabric.roughnessMap; if (s.normalScale && fabric.normalScale) s.normalScale.copy(fabric.normalScale); }
+    s.needsUpdate = true;
+  });
+  return s;
+}
+
 /* ---------- дерево ---------- */
 const WOOD = { oak: '#C9AE87', walnut: '#5E4330', blackwood: '#2A2622' };
 const woodCache = new Map();

@@ -44,11 +44,11 @@ const CHIP = {
   arms: { none: 'Без подлокотников', thin: 'Полукресло' },
   /* кровать */
   hbStyle: { frame: 'Рама', pillows: 'Две подушки', straps: 'На ремнях' }, base: { float: 'Парящее', podium: 'Подиум' },
-  hbShape: { rect: 'Прямое', round: 'Скруглённое', arch: 'Арка', capsule: 'Капсула', wave: 'Волна' },
+  hbShape: { rect: 'Прямое', round: 'Скруглённое', arch: 'Арка', capsule: 'Капсула', wave: 'Волна', cloud: 'Облако' },
   hbInsert: { plain: 'Гладкая', channels: 'Вертикальная', hchannels: 'Горизонтальная', capitone: 'Стяжка' },
-  railShape: { box: 'Прямые', soft: 'Округлые', split: 'Две половины' }, legKind: { cone: 'Конусные', metal: 'Тонкие', disc: 'Опоры-шайбы', runner: 'Полозья' },
-  hbWrap: { none: 'Прямые', shell: 'Раковина', wings: 'Загнуты' }, hbLean: { none: 'Прямо', lean: '8°', deep: '15°' },
-  hbRim: { none: 'Нет', roll: 'Валик' }, pipeTone: { match: 'В цвет ткани', dark: 'Тёмный' },
+  railShape: { box: 'Прямые', soft: 'Округлые', split: 'Две половины', deck: 'Платформа' }, legKind: { cone: 'Конусные', metal: 'Тонкие', disc: 'Опоры-шайбы', runner: 'Полозья', blade: 'Плоские' },
+  hbWrap: { none: 'Прямые', shell: 'Раковина', wings: 'Загнуты', sail: 'Стенки клином' }, hbLean: { none: 'Прямо', lean: '8°', deep: '15°' },
+  hbRim: { none: 'Нет', roll: 'Валик' }, pipeTone: { match: 'В цвет ткани', dark: 'Тёмный' }, hbTone: { match: 'В цвет', light: 'Светлее' },
   /* диваны: дополнительные формы */
   sfShell: { none: 'Обычный', soft: 'Оболочка', oval: 'Овал' }, sfArmSide: { both: 'С двух сторон', left: 'Слева', right: 'Справа' },
   sfOpen: { none: 'Нет', left: 'Слева', right: 'Справа', all: 'Без спинки' }, sfBack: { std: 'Обычная', roll: 'Один валик', roll2: 'Два валика', pebble: 'Подушки' },
@@ -56,7 +56,7 @@ const CHIP = {
   sfDecorKind: { square: 'Квадратные', roll: 'Валики', ball: 'Шары' }, sfLegShape: { straight: 'Прямые', cone: 'Конусные', block: 'Бруски', sled: 'Полозья', frame: 'Рама' },
   /* кресло и пуф: дополнительные формы */
   qLeg: { straight: 'Прямые', splay: 'Наклонные', ball: 'Шары', barrel: 'Бочонки', cross: 'X-база', sled: 'Полозья', frame: 'Рама', ends: 'Рамы по торцам' },
-  qPlinth: { fabric: 'В ткани', dark: 'Тёмный' }, qShell: { std: 'Обычная', fan: 'Раскрыта кверху' }, qSeat: { cushion: 'С подушкой', block: 'Цельное' },
+  qPlinth: { fabric: 'В ткани', dark: 'Тёмный' }, qShell: { std: 'Обычная', fan: 'Раскрыта кверху', wide: 'Веер' }, qSeat: { cushion: 'С подушкой', block: 'Цельное' },
   qBack: { std: 'Подушка', none: 'Без подушки', lumbar: 'Поясничный валик' }, qArmSide: { both: 'С двух сторон', left: 'Слева', right: 'Справа' },
   qDecor: { none: 'Нет', ball: 'Круглая', roll: 'Подушка-валик' }, qStack: { one: 'Один', two: 'Два', three: 'Три' }, qPlan: { rect: 'Прямые', stadium: 'Скруглённые' },
   form: { drum: 'Барабан', pebble: 'Капля' }, top: { channels: 'Каналы' },
@@ -100,7 +100,7 @@ const AC_LEGS = (t) => [
   row('legFinish', 'Отделка ножек', (p) => (p.legs === 'metal' || p.legs === 'disc' ? [...METAL, ...(P.AC_METAL_EXTRA || [])].filter((v, i, a) => a.indexOf(v) === i) : WOOD), { when: (p) => p.legs === 'metal' || p.legs === 'wood' || p.legs === 'disc' }),
 ];
 const AC_ROWS = (t) => (t === 'armchair' ? [
-  acRow('qShell', 'Оболочка', () => ['std', 'fan'], { more: true, when: acRound }),
+  acRow('qShell', 'Оболочка', () => ['std', 'fan', 'wide'], { more: true, when: acRound }),
   acRow('qSeat', 'Сиденье', () => ['cushion', 'block'], { more: true, when: acRound }),
   acRow('qBack', 'Подушка спинки', () => ['std', 'none', 'lumbar'], { more: true, when: acRound }),
   acRow('qArmSide', 'Подлокотник', () => ['both', 'left', 'right'], { more: true, when: (p) => p.form === 'classic' && p.armStyle !== 'none' }),
@@ -126,15 +126,16 @@ const FORM = {
   ushape: [ROWS.arm('ushape'), ROWS.look(), ROWS.backC(), ROWS.seatC(), ROWS.sect('ushape'), ROWS.legs(), ...SF_LEGS('ushape'), ROWS.pipe(), ...SF_ROWS('ushape')],
   modular: [row('modules', 'Модулей', null, { count: [2, 6] }), row('chaise', 'Шезлонг', () => ['none', 'left', 'right']), ROWS.arm('modular'), ROWS.backC(), ROWS.legs(), ...SF_LEGS('modular'), ROWS.pipe(), ...SF_ROWS('modular')],
   bed: [row('hbStyle', 'Изголовье', () => ['plain', 'channels', 'capitone', 'wings', 'frame', 'pillows', 'straps']),
-    bedRow('hbShape', 'Форма изголовья', () => ['rect', 'round', 'arch', 'capsule', 'wave']),
+    bedRow('hbShape', 'Форма изголовья', () => ['rect', 'round', 'arch', 'capsule', 'wave', 'cloud']),
     bedRow('hbInsert', 'Вставка', () => ['plain', 'channels', 'hchannels', 'capitone'], { when: (p) => ['plain', 'wings', 'frame', 'pillows'].includes(p.hbStyle) }),
     row('base', 'Основание', () => ['plinth', 'legs', 'float', 'podium']),
-    bedRow('legKind', 'Ножки', () => ['cone', 'metal', 'disc', 'runner'], { when: (p) => p.base === 'legs' }),
-    row('legFinish', 'Отделка ножек', () => [...WOOD, ...METAL, 'chrome'], { when: (p) => p.base === 'legs' }),
-    bedRow('railShape', 'Боковины', () => ['box', 'soft', 'split']),
+    bedRow('legKind', 'Ножки', () => ['cone', 'metal', 'disc', 'runner', 'blade'], { when: (p) => p.base === 'legs' }),
+    row('legFinish', 'Отделка ножек', (p) => (['metal', 'runner', 'blade'].includes(bedEff(p, 'legKind')) ? [...METAL, 'chrome'] : [...WOOD, ...METAL, 'chrome']), { when: (p) => p.base === 'legs' }),   // тонкие металлические, полозья, пластины — без дерева
+    bedRow('railShape', 'Боковины', () => ['box', 'soft', 'split', 'deck']),
     row('lift', 'Подъёмный механизм', () => [false, true]), ROWS.pipe(),
     bedRow('pipeTone', 'Цвет канта', () => ['match', 'dark'], { when: (p) => p.piping, more: true }),
-    bedRow('hbWrap', 'Края изголовья', () => ['none', 'shell', 'wings'], { more: true }),
+    bedRow('hbWrap', 'Края изголовья', () => ['none', 'shell', 'wings', 'sail'], { more: true }),
+    bedRow('hbTone', 'Тон вставки', () => ['match', 'light'], { more: true }),
     bedRow('hbLean', 'Наклон изголовья', () => ['none', 'lean', 'deep'], { more: true }),
     bedRow('hbRim', 'Валик по краю изголовья', () => ['none', 'roll'], { more: true })],
   armchair: [row('form', 'Форма', () => ['classic', 'round', 'drum', 'pebble']), { ...ROWS.arm('armchair'), when: (p) => p.form === 'classic' || p.form === 'round' }, ROWS.look(), { ...ROWS.backC(), when: (p) => p.form === 'classic' },
@@ -181,7 +182,7 @@ function sideEffects(type, key, v, p) {
   if (type === 'bed' && key === 'base') { const r = rangeOf(type, 'legH', p); if (r) p.legH = r.def; if (v === 'legs' && !p.legFinish) p.legFinish = 'oak'; }
   if (type === 'bed' && key === 'legKind') {
     const r = rangeOf(type, 'legH', p); if (r && (v === 'disc' || p.legH < r.min || p.legH > r.max)) p.legH = r.def;
-    if ((v === 'metal' || v === 'runner') && WOOD.includes(p.legFinish)) p.legFinish = 'black';
+    if ((v === 'metal' || v === 'runner' || v === 'blade') && WOOD.includes(p.legFinish)) p.legFinish = 'black';
   }
   /* диваны (sf*): значение по умолчанию не храним; цоколь из дерева — деревянная отделка */
   if (/^sf/.test(key) && P.SF_DEF && String(P.SF_DEF[key]) === String(v)) delete p[key];

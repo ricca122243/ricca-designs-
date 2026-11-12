@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { parts, normalize, dims as dimsOf } from './params.js';
-import { seamMaterial, pipingMaterial, decorMaterial } from './materials.js';
+import { seamMaterial, pipingMaterial, decorMaterial, lightMaterial } from './materials.js';
 
 export { TYPES, OPTIONS, RANGES, DEFAULTS, PRESETS, normalize, parts, dims, labelOf, rangeOf, itemBounds } from './params.js';
 
@@ -268,6 +268,15 @@ function softBox(sx, sy, sz, o = {}) {
    w (params.js → partsBed: it.warp) в координатах изголовья целиком: X0..X1 × Y0..Y1 — контур (форма верхнего края),
    lean — верх уходит назад, wrap — края загнуты вперёд (выше wrapY0), zOff — центр панели в габарите детали.
    Работает в локальных координатах детали (центр — cx, cy); результат остаётся в габарите детали из params.js */
+/* «облако»: верхний край СНЯТ С ФОТО модели Ondel трассировкой (вид спереди, слева направо, 41 отсчёт; доля высоты от пола).
+   Не подбирать на глаз — контур совпадает с фото */
+const BED_CLOUD = [0.750, 0.765, 0.791, 0.809, 0.818, 0.821, 0.816, 0.803, 0.786, 0.779, 0.792, 0.822, 0.859, 0.894, 0.920, 0.935, 0.946, 0.954, 0.955, 0.954, 0.947,
+  0.935, 0.914, 0.874, 0.810, 0.776, 0.786, 0.827, 0.844, 0.835, 0.802, 0.777, 0.761, 0.755, 0.770, 0.832, 0.951, 0.992, 1.000, 0.990, 0.960];
+function bedCloudAt(t) {
+  const n = BED_CLOUD.length - 1, f0 = Math.min(1, Math.max(0, t)) * n, i = Math.min(n - 1, Math.floor(f0)), f = f0 - i;
+  const p0 = BED_CLOUD[Math.max(0, i - 1)], p1 = BED_CLOUD[i], p2 = BED_CLOUD[i + 1], p3 = BED_CLOUD[Math.min(n, i + 2)];
+  return 0.5 * (2 * p1 + (p2 - p0) * f + (2 * p0 - 5 * p1 + 4 * p2 - p3) * f * f + (3 * p1 - p0 - 3 * p2 + p3) * f * f * f);
+}
 function bedWarp(w) {
   const sx = w.X1 - w.X0, sy = w.Y1 - w.Y0, Hx = sx / 2;
   const shape = w.shape || 'rect';
@@ -275,8 +284,7 @@ function bedWarp(w) {
   const Rr = Math.min(0.28, sy * 0.35, sx * 0.25);
   const capT = Math.min(sy * 0.5, Hx * 0.9), capB = Math.min(sy * 0.3, Hx * 0.5);
   const archA = Math.min(0.32, sy * 0.3);
-  const nW = Math.max(3, Math.round(sx / 0.42)), ampW = Math.min(0.16, sy * 0.18);
-  const corner = (dx, R) => (dx <= 0 ? 0 : R - Math.sqrt(Math.max(0, R * R - dx * dx)));
+  const nW = Math.max(3, Math.round(sx / 0.42)), ampW = Math.min(0.16, sy * 0.18);  const corner = (dx, R) => (dx <= 0 ? 0 : R - Math.sqrt(Math.max(0, R * R - dx * dx)));
   const outline = (u) => {
     const ax = Math.abs(u) * Hx;
     let top = w.Y1, bot = w.Y0;
@@ -287,6 +295,9 @@ function bedWarp(w) {
       const t = (u + 1) / 2 * nW;
       const lobe = Math.pow(Math.abs(Math.sin(Math.PI * t)), 0.55);
       top -= ampW * (1 - lobe) + ampW * 0.7 * Math.pow(Math.abs(u), 4) + corner(ax - (Hx - 0.06), 0.06);
+    } else if (shape === 'cloud') {
+      /* «облако»: холмы разной высоты, самый высокий — у правого края (верх изголовья = его вершина) */
+      top -= Math.min((1 - bedCloudAt((u + 1) / 2)) * w.Y1, sy * 0.5) + corner(ax - (Hx - 0.07), 0.07);
     }
     return [top, Math.min(bot, top - 0.04)];
   };
@@ -301,6 +312,11 @@ function bedWarp(w) {
       yy = bot + ((wy - w.Y0) / sy) * (top - bot);
     }
     let z = P.z + (w.zOff || 0);
+    /* стенки-клином («раковина» sail): вылет стенки вперёд убывает от верха к низу */
+    if (w.taper) {
+      const tp = w.taper, t = Math.min(1, Math.max(0, (yy - tp.y0) / (tp.y1 - tp.y0)));
+      z = tp.z0 + (z + w.zc - tp.z0) * (tp.k + (1 - tp.k) * t) - w.zc;
+    }
     if (w.lean) z -= ((yy - w.LY0) / (w.LY1 - w.LY0)) * w.lean;
     if (w.wrap) {
       const ug = Math.abs((2 * wx - w.GX0 - w.GX1) / gx);
@@ -949,7 +965,15 @@ function itemGeometry(it, quality, type, dense = 1) {
     seams([['z', 1]]);
     /* кровать: панель-подушка (изголовье из подушек, подвесные подушки) — пухлая, с большим скруглением */
     if (it.panel) { o.rx = Math.min(0.08, it.sx * 0.2); o.rTop = Math.min(0.08, it.sy * 0.2); o.rBottom = Math.min(0.05, it.sy * 0.15); o.crown = it.tufting ? 0.012 : 0.035; o.crownP = 2.4; o.crownFace = 'z'; o.crownBack = 0.01; o.bulge = 0.008; }
-    if (it.warp) { o.rz = Math.min(0.045, it.warp.T * 0.45); o.warp = bedWarp(it.warp); return softBox(it.sx, it.sy, it.warp.T, o); }
+    /* «раковина» со стенками-клином: тонкие жёсткие стенки и задняя панель — малый радиус, без «подушки» */
+    if (it.sail) { o.rx = Math.min(0.022, it.sx * 0.42); o.rTop = 0.02; o.rBottom = 0.01; o.crown = 0; o.bulge = 0; }
+    if (it.warp) { o.rz = it.sail ? Math.min(0.022, it.warp.T * 0.42) : Math.min(0.045, it.warp.T * 0.45); o.warp = bedWarp(it.warp); return softBox(it.sx, it.sy, it.warp.T, o); }
+  }
+  /* кровать-платформа: плита (или короб до пола), матрас лежит сверху; it.deck — радиус углов в плане */
+  if (it.deck) {
+    o.rx = o.rz = Math.min(it.deck, it.sx * 0.2, it.sz * 0.2); o.rTop = Math.min(0.03, it.sy * 0.3); o.rBottom = Math.min(0.02, it.sy * 0.25);
+    o.crown = 0; o.bulge = 0.003; o.occ = [['y', -1, 0, 0.05, 0.4]];
+    return softBox(it.sx, it.sy, it.sz, o);
   }
   if (it.role === 'strap') { o.rx = o.rz = 0.002; o.rTop = o.rBottom = 0.002; }
   /* кровать: объёмное округлое основание (одно тело или две половины) — большой радиус, «подушечные» бока */
@@ -1042,10 +1066,11 @@ export function build(type, params, materials = {}, opts = {}) {
   };
   const seamM = seamMaterial(M.fabric) || M.fabric;
   const pipeM = pipingMaterial(M.fabric) || M.fabric;
+  const lightM = lightMaterial(M.fabric) || M.fabric;   // кровать: вставка изголовья светлее (it.tone === 'light')
   const meshes = [];
   const addMesh = (geo, matKey, it, extra) => {
     ensureSeamAttr(geo);
-    const mat = matKey === 'seam' ? seamM : matKey === 'piping' ? pipeM : M[matKey] || M.fabric;
+    const mat = matKey === 'seam' ? seamM : matKey === 'piping' ? pipeM : matKey === 'fabricL' ? lightM : M[matKey] || M.fabric;
     const mesh = new THREE.Mesh(geo, mat);
     mesh.castShadow = true; mesh.receiveShadow = true;
     mesh.userData = { partId: it.id, role: it.role, matKey, ...(extra || {}) };
@@ -1067,7 +1092,7 @@ export function build(type, params, materials = {}, opts = {}) {
     if (it.tiltX) fitTilted(geo, it);
     /* покрывало — серо-бежевый лён (не белое на белом матрасе: кровать читается объёмом, как на фото работ) */
     const mk = it.decorKind === 'duvet' ? 'throw' : it.mat;
-    addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support'].includes(mk) ? mk : 'fabric', it, it.decor ? { decor: true } : null);
+    addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support'].includes(mk) ? mk : it.tone === 'light' ? 'fabricL' : 'fabric', it, it.decor ? { decor: true } : null);
     /* кант и швы (у матраса — тёмная лента по верхней кромке; нижняя скрыта в раме) */
     const pipeMat = it.mat === 'mattress' || it.pipeTone === 'dark' ? 'tape' : 'fabric';
     /* кровать: валик по краю изголовья (толстый кант в цвет ткани) */
@@ -1128,7 +1153,7 @@ export function build(type, params, materials = {}, opts = {}) {
       e.geos.forEach((g) => { ensureSeamAttr(g); for (const n of Object.keys(g.attributes)) if (!attrs.includes(n)) g.deleteAttribute(n); if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]); });
       const merged = mergeGeometries(e.geos, false);
       e.geos.forEach((g) => g.dispose());
-      const mesh = new THREE.Mesh(merged, k === 'seam' ? seamM : k === 'piping' ? pipeM : M[k] || M.fabric);
+      const mesh = new THREE.Mesh(merged, k === 'seam' ? seamM : k === 'piping' ? pipeM : k === 'fabricL' ? lightM : M[k] || M.fabric);
       mesh.castShadow = mesh.receiveShadow = true;
       mesh.userData = { partId: 'merged-' + kk, partIds: [...new Set(e.ids)], matKey: k, merged: true, ...(det ? { detail: det } : {}) };
       group.add(mesh);
@@ -1143,11 +1168,13 @@ export function build(type, params, materials = {}, opts = {}) {
 export function setMaterials(group, materials = {}) {
   const seamM = materials.fabric ? seamMaterial(materials.fabric) : null;
   const pipeM = materials.fabric ? pipingMaterial(materials.fabric) : null;
+  const lightM = materials.fabric ? lightMaterial(materials.fabric) : null;
   group.traverse((o) => {
     if (!o.isMesh) return;
     const k = o.userData.matKey;
     if (k === 'seam' && seamM) o.material = seamM;
     else if (k === 'piping' && pipeM) o.material = pipeM;
+    else if (k === 'fabricL') { if (lightM) o.material = lightM; }
     else if (materials[k]) o.material = materials[k];
   });
 }

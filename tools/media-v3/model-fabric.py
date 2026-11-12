@@ -39,12 +39,15 @@ def dominant(path, bed):
     cnt = np.bincount(k, minlength=4).astype(float)
     cnt *= np.where(cen[:, 0] < 22, 0.35, 1.0)           # очень тёмная группа — чаще тень и ножки, чем ткань
     return cen[cnt.argmax()]
+# ткань задана вручную по фото (двухцветные и велюр — автоподбор берёт слишком тёмный тон)
+MANUAL = {'bed-03': 'torrens-plain:13'}
 p = 'ricca/js/catalog-data.js'; s = open(p, encoding='utf-8').read(); n = 0; rep = []
 for m in d['c']:
     if m.get('category') not in ('sofas', 'beds', 'armchairs', 'poufs') or not m.get('cfg'): continue
     ph = next((q for q in m['photos'] if q.get('studio')), m['photos'][0]); c = dominant('ricca/' + ph.get('src600', ph['src']), m['category'] == 'beds')
     if c is None: continue
     dE = np.sqrt(((FL - c) ** 2).sum(1)); k = int(dE.argmin()); ref = fabs[k][0]
+    if m['id'] in MANUAL: ref = MANUAL[m['id']]
     i = s.find(f'    id: "{m["id"]}",\n'); j = s.index('\n  }', i); blk = s[i:j]
     blk = re.sub(r'\n    fab: "[^"]*",', '', blk); blk = re.sub(r'(\n    cfg: "[^"]*",)', lambda mm: mm.group(1) + f'\n    fab: "{ref}",', blk, count=1)
     s = s[:i] + blk + s[j:]; n += 1; rep.append((m['id'], ref, round(float(dE[k]), 1)))

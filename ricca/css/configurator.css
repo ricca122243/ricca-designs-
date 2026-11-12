@@ -337,6 +337,9 @@ html[data-font="b"] .step__t { font: 400 26px/1 var(--serif); letter-spacing: 0;
 @media (hover: hover) { .flds__sum:hover .ico { color: var(--ink); } }
 .flds__more[open] > .flds__sum .ico { transform: rotate(180deg); }
 .flds__more > .fld:last-child { border-bottom: 0; }
+/* «Ещё настройки» в шаге «Форма»: ряды чипов с тем же шагом, что и вне группы (.opts — grid с gap 22px) */
+.opts__more > .opt + .opt { margin-top: 22px; }
+.opts__more > .opt:last-child { margin-bottom: 22px; }
 .size-more { margin-top: 24px; font: 400 14px/1.6 var(--sans); color: var(--ink-2); }
 .size-more a { display: inline-flex; align-items: center; min-height: 44px; padding: 0; color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 

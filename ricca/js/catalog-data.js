@@ -542,8 +542,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-03",
-    cfg: "t.bed~hs.plain~kw.shell~hh.100~ho.4~ft.5~rh.28~b.legs~kg.metal~lf.black~lh.12",
-    fab: "lucky:16",
+    cfg: "t.bed~mw.180~hs.plain~kw.sail~kt.light~kl.lean~kd.12~hh.90~ho.6~ft.7~rh.25~kr.deck~b.legs~kg.blade~lf.black~lh.14",
+    fab: "torrens-plain:13",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -995,7 +995,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-07",
-    cfg: "t.armchair~f.classic~w.95~d.85~h.74~sh.44~sd.58~as.round~aw.18~ah.70~bc.fixed~lg.metal~lf.black~lh.18",
+    cfg: "t.armchair~f.classic~w.95~d.85~h.74~sh.44~sd.58~as.round~aw.22~ah.70~bc.fixed~lg.metal~lf.black~lh.18~ql.splay~qa.right",
     fab: "ricca:4",
     category: "armchairs",
     tags: [],
@@ -1028,7 +1028,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-08",
-    cfg: "t.armchair~f.classic~w.105~d.95~h.82~sh.42~sd.58~as.wide~aw.26~ah.68~bc.fixed~lg.plinth~lf.black~lh.4",
+    cfg: "t.armchair~f.classic~w.105~d.95~h.80~sh.42~sd.58~as.wide~aw.27~ah.66~bc.fixed~lg.plinth~lf.black~lh.4~qp.dark",
     fab: "ricca-leather:8",
     category: "armchairs",
     tags: [],
@@ -1050,7 +1050,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-09",
-    cfg: "t.armchair~f.round~w.85~d.85~h.80~sh.42~sd.56~as.round~aw.16~ah.62~lg.plinth~lf.black~lh.4",
+    cfg: "t.armchair~f.round~w.85~d.85~h.80~sh.42~sd.56~as.round~aw.17~ah.62~lg.plinth~lf.black~lh.4~qp.dark~qb.none",
     fab: "ricca:17",
     category: "armchairs",
     tags: [],
@@ -1078,7 +1078,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-10",
     glb: "models3d/armchair-10.glb",
-    cfg: "t.armchair~f.classic~w.90~d.85~h.74~sh.44~sd.56~as.round~aw.18~ah.66~bc.fixed~lg.hidden",
+    cfg: "t.armchair~f.drum~w.90~d.85~h.74~sh.44~sd.56~as.round~aw.18~ah.64~lg.hidden",
     fab: "alba:22",
     category: "armchairs",
     tags: [],
@@ -1104,7 +1104,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-11",
     glb: "models3d/armchair-11.glb",
-    cfg: "t.armchair~f.classic~w.80~d.85~h.95~sh.42~sd.58~as.none~bc.fixed~lg.wood~lf.blackwood~lh.12",
+    cfg: "t.armchair~f.pebble~w.80~d.85~h.95~sh.42~sd.58~as.none~lg.wood~lf.blackwood~lh.14~ql.barrel",
     fab: "ricca-leather:8",
     category: "armchairs",
     tags: [],
@@ -1512,7 +1512,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-12",
-    cfg: "t.armchair~f.round~w.100~d.90~h.95~sh.44~sd.56~as.round~aw.16~ah.70~bc.loose~lg.metal~lf.black~lh.20",
+    cfg: "t.armchair~f.round~w.110~d.90~h.88~sh.44~sd.56~as.round~aw.16~ah.86~lg.metal~lf.black~lh.18~ql.cross~qs.wide~qb.lumbar",
     fab: "timeless:3",
     category: "armchairs",
     tags: [],
@@ -1553,7 +1553,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-14",
     glb: "models3d/armchair-14.glb",
-    cfg: "t.armchair~f.round~w.95~d.90~h.100~sh.44~sd.56~as.round~aw.16~ah.70~bc.loose~lg.metal~lf.black~lh.18",
+    cfg: "t.armchair~f.round~w.95~d.90~h.100~sh.44~sd.56~as.round~aw.16~ah.80~lg.metal~lf.black~lh.18~ql.splay~qs.wide~qb.lumbar",
     fab: "torrens:9",
     category: "armchairs",
     tags: [],
@@ -1864,7 +1864,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-35",
-    cfg: "t.bed~hs.plain~ks.wave~hh.140~ho.2~ft.8~rh.28~b.podium~lh.6",
+    cfg: "t.bed~mw.180~hs.plain~ks.cloud~kd.12~hh.135~ho.10~ft.5~rh.25~kr.deck~b.plinth~lh.4",
     fab: "timeless:1",
     category: "beds",
     tags: [],
@@ -2124,7 +2124,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-18",
-    cfg: "t.armchair~f.classic~w.70~d.80~h.76~sh.42~sd.58~as.none~bc.loose~lg.wood~lf.blackwood~lh.8",
+    cfg: "t.armchair~f.pebble~w.70~d.80~h.76~sh.42~sd.58~as.none~lg.wood~lf.blackwood~lh.8",
     fab: "molly:22",
     category: "armchairs",
     tags: [],
@@ -2145,7 +2145,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-19",
-    cfg: "t.armchair~f.round~w.100~d.90~h.72~sh.40~sd.58~as.round~aw.22~ah.70~lg.hidden",
+    cfg: "t.armchair~f.round~w.100~d.90~h.72~sh.40~sd.52~as.round~aw.25~ah.72~lg.hidden~qb.none",
     fab: "timeless:24",
     category: "armchairs",
     tags: [],
@@ -2168,7 +2168,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-20",
-    cfg: "t.armchair~f.round~w.95~d.88~h.72~sh.42~sd.60~as.round~aw.22~ah.64~lg.hidden",
+    cfg: "t.armchair~f.round~w.95~d.88~h.72~sh.42~sd.60~as.round~aw.22~ah.62~lg.hidden~qe.block~qb.none",
     fab: "exclusive:2",
     category: "armchairs",
     tags: [],
@@ -2189,7 +2189,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-21",
-    cfg: "t.armchair~f.classic~w.75~d.85~h.100~sh.42~sd.56~as.none~bc.fixed~lg.wood~lf.walnut~lh.20",
+    cfg: "t.armchair~f.classic~w.75~d.85~h.100~sh.42~sd.56~as.none~bc.fixed~lg.wood~lf.walnut~lh.18~ql.splay",
     fab: "timeless:5",
     category: "armchairs",
     tags: [],
@@ -2211,7 +2211,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-22",
-    cfg: "t.armchair~f.round~w.90~d.82~h.74~sh.44~sd.56~as.round~aw.14~ah.70~lg.metal~lf.black~lh.20",
+    cfg: "t.armchair~f.round~w.90~d.82~h.74~sh.44~sd.56~as.round~aw.14~ah.70~lg.metal~lf.bordeaux~lh.18~ql.frame",
     fab: "ricca:7",
     category: "armchairs",
     tags: [],
@@ -2231,7 +2231,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-23",
-    cfg: "t.armchair~f.classic~w.110~d.90~h.70~sh.42~sd.58~as.round~aw.22~ah.62~bc.loose~lg.metal~lf.gold~lh.10",
+    cfg: "t.armchair~f.classic~w.110~d.90~h.70~sh.42~sd.58~as.round~aw.22~ah.62~bc.loose~lg.metal~lf.pink~lh.10~qd.ball",
     fab: "coco:14",
     category: "armchairs",
     tags: [],
@@ -2254,7 +2254,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "pouf-01",
-    cfg: "t.pouf~f.square~w.90~h.38~tp.smooth~lg.metal~lf.black~lh.8~p.0",
+    cfg: "t.pouf~f.square~w.90~h.38~tp.smooth~lg.metal~lf.black~lh.8~p.0~ql.sled",
     fab: "sambia:9",
     category: "poufs",
     tags: [],
@@ -2275,7 +2275,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "pouf-02",
-    cfg: "t.pouf~f.round~w.70~h.42~lg.hidden~p.1",
+    cfg: "t.pouf~f.oval~w.80~d.60~h.42~lg.hidden~p.1",
     fab: "noble:10",
     category: "poufs",
     tags: [],
@@ -2296,7 +2296,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "pouf-03",
-    cfg: "t.pouf~f.round~w.50~h.40~lg.hidden~p.0",
+    cfg: "t.pouf~f.round~w.50~h.42~lg.hidden~p.0~zs.two",
     fab: "coco:9",
     category: "poufs",
     tags: [],
@@ -2317,7 +2317,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bench-01",
-    cfg: "t.pouf~f.bench~w.150~d.50~h.42~lg.plinth~lf.black~lh.6~p.0",
+    cfg: "t.pouf~f.bench~w.150~d.50~h.42~tp.channels~lg.plinth~lf.black~lh.6~p.0~qp.dark",
     fab: "pique:5",
     category: "poufs",
     tags: [],
@@ -2338,7 +2338,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bench-02",
-    cfg: "t.pouf~f.bench~w.150~d.55~h.42~lg.wood~lf.blackwood~lh.6~p.0",
+    cfg: "t.pouf~f.bench~w.150~d.55~h.42~lg.wood~lf.blackwood~lh.6~p.0~ql.ball~zp.stadium",
     fab: "sambia:8",
     category: "poufs",
     tags: [],
@@ -2360,7 +2360,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bench-03",
-    cfg: "t.pouf~f.bench~w.120~d.50~h.45~lg.metal~lf.black~lh.16~p.0",
+    cfg: "t.pouf~f.bench~w.120~d.50~h.45~lg.metal~lf.bronze~lh.16~p.0~ql.ends",
     fab: "alba:8",
     category: "poufs",
     tags: [],
