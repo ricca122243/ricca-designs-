@@ -127,7 +127,7 @@
     'На тонких ножках или с механизмом': 'On slim legs or with a mechanism', 'Округлое': 'Rounded', 'Округлое · песочная и меланжевая ткань': 'Rounded · sand and mélange fabric',
     'Округлое, на основании-диске': 'Rounded, on a disc base', 'Округлый · пыльно-розовый шенилл': 'Rounded · dusty pink chenille', 'Подлокотники-валики': 'Bolster armrests',
     'Прямой': 'Straight', 'Прямой · два размера': 'Straight · two sizes', 'Прямой · раскладной': 'Straight · sofa bed', 'С подъёмным механизмом': 'With a lift-up mechanism',
-    'С подъёмным механизмом или без': 'With or without a lift-up mechanism', 'С шезлонгом или прямой': 'With a chaise or straight',
+    'С подъёмным механизмом или без': 'With or without a lift-up mechanism', 'С шезлонгом или прямой': 'With a chaise or straight', 'Прямой, с шезлонгом или угловой': 'Straight, with a chaise or as a corner sofa',
     // новые модели 14 октября
     'Модульный · низкий, с шезлонгом': 'Modular · low, with a chaise', 'Угловой · на чёрных ножках': 'Corner · on black legs',
     'Модульный · с шезлонгом, букле': 'Modular · with a chaise, bouclé', 'Округлый · из трёх секций': 'Rounded · three sections',
