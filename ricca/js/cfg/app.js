@@ -54,6 +54,12 @@ const CHIP = {
   sfOpen: { none: 'Нет', left: 'Слева', right: 'Справа', all: 'Без спинки' }, sfBack: { std: 'Обычная', roll: 'Один валик', roll2: 'Два валика', pebble: 'Подушки' },
   sfPuff: { std: 'Обычные', puff: 'Пухлые' }, sfTuft: { none: 'Нет', channels: 'Вертикальная', grid: 'Клетками' },
   sfDecorKind: { square: 'Квадратные', roll: 'Валики', ball: 'Шары' }, sfLegShape: { straight: 'Прямые', cone: 'Конусные', block: 'Бруски', sled: 'Полозья', frame: 'Рама' },
+  /* кресло и пуф: дополнительные формы */
+  qLeg: { straight: 'Прямые', splay: 'Наклонные', ball: 'Шары', barrel: 'Бочонки', cross: 'X-база', sled: 'Полозья', frame: 'Рама', ends: 'Рамы по торцам' },
+  qPlinth: { fabric: 'В ткани', dark: 'Тёмный' }, qShell: { std: 'Обычная', fan: 'Раскрыта кверху' }, qSeat: { cushion: 'С подушкой', block: 'Цельное' },
+  qBack: { std: 'Подушка', none: 'Без подушки', lumbar: 'Поясничный валик' }, qArmSide: { both: 'С двух сторон', left: 'Слева', right: 'Справа' },
+  qDecor: { none: 'Нет', ball: 'Круглая', roll: 'Подушка-валик' }, qStack: { one: 'Один', two: 'Два', three: 'Три' }, qPlan: { rect: 'Прямые', stadium: 'Скруглённые' },
+  form: { drum: 'Барабан', pebble: 'Капля' }, top: { channels: 'Каналы' },
   sfPlinth: { fabric: 'В ткани', wood: 'Дерево', podium: 'Подиум' }, sfLayout: { row: 'В ряд', cornerL: 'Угол слева', cornerR: 'Угол справа', arc: 'Дугой' },
 };
 const chipLabel = (type, key, v) => (CHIP[key] && CHIP[key][String(v)]) || cap(optLabel(type, key, v));
@@ -84,6 +90,25 @@ const SF_LEGS = (t) => [
   row('legFinish', 'Отделка ножек', (p) => (p.legs === 'metal' ? [...METAL, ...(P.SF_METAL_EXTRA || [])].filter((v, i, a) => a.indexOf(v) === i) : WOOD),
     { when: (p) => p.legs === 'metal' || p.legs === 'wood' || (p.legs === 'plinth' && sfV(p, 'sfPlinth') !== 'fabric') }),
 ];
+/* кресло и пуф: дополнительные формы (params.js → AC_OPTS); значение по умолчанию в параметрах не хранится (старые ссылки и номера — прежние) */
+const acV = (p, key) => (P.acVal ? P.acVal(p, key) : p[key]);
+const acRow = (key, label, values, extra = {}) => row(key, label, values, { get: (p) => acV(p, key), ...extra });
+const acRound = (p) => p.form === 'round';
+const AC_LEGS = (t) => [
+  acRow('qLeg', 'Форма ножек', (p) => (P.acLegShapes ? P.acLegShapes(t, p) : ['straight']), { when: (p) => (p.legs === 'metal' || p.legs === 'wood') && !(t === 'armchair' && p.form === 'drum') }),
+  acRow('qPlinth', 'Цоколь', () => ['fabric', 'dark'], { when: (p) => p.legs === 'plinth' }),
+  row('legFinish', 'Отделка ножек', (p) => (p.legs === 'metal' || p.legs === 'disc' ? [...METAL, ...(P.AC_METAL_EXTRA || [])].filter((v, i, a) => a.indexOf(v) === i) : WOOD), { when: (p) => p.legs === 'metal' || p.legs === 'wood' || p.legs === 'disc' }),
+];
+const AC_ROWS = (t) => (t === 'armchair' ? [
+  acRow('qShell', 'Оболочка', () => ['std', 'fan'], { more: true, when: acRound }),
+  acRow('qSeat', 'Сиденье', () => ['cushion', 'block'], { more: true, when: acRound }),
+  acRow('qBack', 'Подушка спинки', () => ['std', 'none', 'lumbar'], { more: true, when: acRound }),
+  acRow('qArmSide', 'Подлокотник', () => ['both', 'left', 'right'], { more: true, when: (p) => p.form === 'classic' && p.armStyle !== 'none' }),
+  acRow('qDecor', 'Декоративная подушка', () => ['none', 'ball', 'roll'], { more: true }),
+] : [
+  acRow('qStack', 'Набор', () => ['one', 'two', 'three'], { more: true, when: (p) => p.form === 'round' || p.form === 'oval' }),
+  acRow('qPlan', 'Торцы', () => ['rect', 'stadium'], { more: true, when: (p) => p.form === 'bench' }),
+]);
 const ROWS = {
   arm: (t) => row('armStyle', 'Подлокотники', (p) => (t === 'armchair' && p.form === 'round' ? ['thin', 'wide', 'round'] : ['none', 'thin', 'wide', 'round'])),
   look: () => row('backLook', 'Спинка', () => ['low', 'high'], { get: (p, t) => (backLook(t, p) === 'низкая' ? 'low' : 'high') }),
@@ -112,8 +137,10 @@ const FORM = {
     bedRow('hbWrap', 'Края изголовья', () => ['none', 'shell', 'wings'], { more: true }),
     bedRow('hbLean', 'Наклон изголовья', () => ['none', 'lean', 'deep'], { more: true }),
     bedRow('hbRim', 'Валик по краю изголовья', () => ['none', 'roll'], { more: true })],
-  armchair: [row('form', 'Форма', () => ['classic', 'round']), ROWS.arm('armchair'), ROWS.look(), { ...ROWS.backC(), when: (p) => p.form !== 'round' }, ROWS.legs(['hidden', 'metal', 'wood', 'plinth', 'disc']), ROWS.fin(), ROWS.pipe()],
-  pouf: [row('form', 'Форма', () => ['round', 'square', 'bench']), row('top', 'Верх', () => ['smooth', 'capitone']), ROWS.legs(['hidden', 'wood', 'metal']), ROWS.fin(), ROWS.pipe()],
+  armchair: [row('form', 'Форма', () => ['classic', 'round', 'drum', 'pebble']), { ...ROWS.arm('armchair'), when: (p) => p.form === 'classic' || p.form === 'round' }, ROWS.look(), { ...ROWS.backC(), when: (p) => p.form === 'classic' },
+    ROWS.legs(['hidden', 'metal', 'wood', 'plinth', 'disc']), ...AC_LEGS('armchair'), ROWS.pipe(), ...AC_ROWS('armchair')],
+  pouf: [row('form', 'Форма', () => ['round', 'oval', 'square', 'bench']), row('top', 'Верх', (p) => (p.form === 'round' || p.form === 'oval' ? ['smooth', 'capitone'] : ['smooth', 'capitone', 'channels'])),
+    ROWS.legs(['hidden', 'wood', 'metal', 'plinth']), ...AC_LEGS('pouf'), ROWS.pipe(), ...AC_ROWS('pouf')],
 };
 
 const fld = (key, label, when) => ({ key, label, when });
@@ -128,9 +155,9 @@ const SIZE = {
   bed: [fld('mw', 'Ширина матраса'), fld('ml', 'Длина матраса'), fld('hbH', 'Высота изголовья'), fld('hbOver', 'Выступ изголовья'),
     fld('frameT', 'Боковина'), fld('railH', 'Высота царги'), fld('legH', (p) => (p.base === 'legs' ? 'Высота ножек' : p.base === 'podium' ? 'Высота подиума' : 'Высота цоколя'), (p) => p.base !== 'plinth'), fld('hbDepth', 'Толщина изголовья')],
   /* округлое кресло: оболочка вместо подлокотников — её толщина и высота спереди */
-  armchair: [...SOFA_FIELDS().slice(0, 5), fld('armW', (p) => (p.form === 'round' ? 'Толщина оболочки' : 'Ширина подлокотника'), (p) => p.armStyle !== 'none'),
-    fld('armH', (p) => (p.form === 'round' ? 'Высота оболочки спереди' : 'Высота подлокотника'), (p) => p.armStyle !== 'none'), fld('legH', legLabel, (p) => p.legs !== 'hidden')],
-  pouf: [fld('w', (p) => ({ round: 'Диаметр', square: 'Сторона', bench: 'Длина' }[p.form] || 'Ширина')), fld('d', 'Глубина', (p) => p.form === 'bench'), fld('h', 'Высота'), fld('legH', 'Высота ножек', (p) => p.legs !== 'hidden')],
+  armchair: [...SOFA_FIELDS().slice(0, 5), fld('armW', (p) => (p.form === 'round' ? 'Толщина оболочки' : 'Ширина подлокотника'), (p) => p.armStyle !== 'none' && p.form !== 'drum' && p.form !== 'pebble'),
+    fld('armH', (p) => (p.form === 'round' ? 'Высота оболочки спереди' : p.form === 'drum' ? 'Высота валиков' : 'Высота подлокотника'), (p) => p.armStyle !== 'none' && p.form !== 'pebble'), fld('legH', legLabel, (p) => p.legs !== 'hidden')],
+  pouf: [fld('w', (p) => ({ round: 'Диаметр', square: 'Сторона', bench: 'Длина' }[p.form] || 'Ширина')), fld('d', 'Глубина', (p) => p.form === 'bench' || p.form === 'oval'), fld('h', 'Высота'), fld('legH', 'Высота ножек', (p) => p.legs !== 'hidden')],
 };
 /* «Ещё размеры» (свёрнуто): посадка, подлокотники, ножки, царга — главное на экране: габарит, матрас, изголовье */
 const SIZE_MORE = new Set(['seatH', 'seatD', 'armW', 'armH', 'legH', 'hbOver', 'frameT', 'railH', 'hbDepth']);
@@ -169,6 +196,13 @@ function sideEffects(type, key, v, p) {
   if (type === 'armchair' && key === 'form' && v === 'round') { const mx = p.d - Math.max(0.10, p.armW || 0.15) - 0.02; if (p.seatD > mx) p.seatD = Math.round(mx * 100) / 100; }
   /* округлое кресло — цельная оболочка, съёмных подушек спинки у него нет */
   if (type === 'armchair' && key === 'form' && v === 'round') p.backCushions = 'fixed';
+  /* кресло и пуф (q*): значение по умолчанию не храним; «барабан» — с валиками, «капля» — без подлокотников; овальный пуф — своя глубина */
+  if (/^q[A-Z]/.test(key) && P.AC_DEF && String(P.AC_DEF[key]) === String(v)) delete p[key];
+  if (type === 'armchair' && key === 'form' && v === 'drum' && p.armStyle === 'none') { p.armStyle = 'round'; p.armW = 0.18; }
+  if (type === 'armchair' && key === 'form' && v === 'pebble') { p.armStyle = 'none'; p.armW = 0; }
+  if (type === 'pouf' && key === 'form' && v === 'oval') p.d = 0.5;
+  if (type === 'pouf' && key === 'form' && (v === 'round' || v === 'oval') && p.top === 'channels') p.top = 'smooth';
+  if (key === 'legs' && (type === 'armchair' || type === 'pouf')) { const r = rangeOf(type, 'legH', p); if (v !== 'hidden' && r && (p.legH < r.min || p.legH > r.max)) p.legH = r.def; }
 }
 
 /* ═════════ состояние ═════════ */

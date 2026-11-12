@@ -999,6 +999,8 @@ function drawingCfg(stalled = false) {
 }
 let drawingJob = null, drawingLast = null, drawingSeq = 0;
 const drawingKey = (c) => { const { id: _i, date: _d, ...rest } = c; return JSON.stringify(rest); };
+/* узкое окно (телефон в руке): лист «в столбик» — виды один под другим во всю ширину (drawing.js → portraitSheet) */
+const drawingTall = () => window.innerWidth < 700;
 async function openDrawing() {
   if (hasErrors()) return;
   /* только последнее открытие трогает лист: старый расчёт (закрыли и открыли другой вариант) молча уходит */
@@ -1009,6 +1011,8 @@ async function openDrawing() {
   const ph = mqPhone.matches, send = $('#dd-send'), png = $('#dd-png');
   send.classList.toggle('btn--fill', ph); send.classList.toggle('btn--line', !ph); png.classList.toggle('btn--fill', !ph); png.classList.toggle('btn--line', ph);
   if (ph) send.parentNode.insertBefore(send, png); else png.parentNode.insertBefore(png, send);
+  const tall = drawingTall(), R = { portrait: tall }, busy = $('#dd-busy');
+  dlg.classList.toggle('is-tall', tall); busy.hidden = true; drawingFit();
   /* точная модель ещё грузится (1,8 МБ на мобильной сети) — дождаться, иначе эскизы снимутся с «собранной» кровати,
      а модель подменится посреди съёмки. Но не дольше 8 с: сеть «повисла» — лист без 3D-эскизов, а не вечное ожидание */
   let stalled = false;
@@ -1018,24 +1022,38 @@ async function openDrawing() {
     if (!dlg.open || !mine()) return;
   }
   flushRebuild();   // ввели размер и сразу нажали «Чертёж»: иначе эскиз — со старой модели, а цифры — новые
-  const cfg = drawingCfg(stalled), key = drawingKey(cfg);
+  const cfg = drawingCfg(stalled), key = drawingKey(cfg) + (tall ? '|tall' : '');
   const show = (d) => { img.src = d.url; img.hidden = false; wait.hidden = true; ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = false; }); $('#dd-open').hidden = false; };
   const put = (res, k) => {
     if (drawing && drawing.url) URL.revokeObjectURL(drawing.url);
     drawing = { ...res, url: URL.createObjectURL(new Blob([res.svg], { type: 'image/svg+xml' })), id: cfg.id, key: k };
     if (dlg.open) show(drawing);
   };
-  const fail = (e) => { console.warn('drawing', e); if (mine()) wait.textContent = 'Чертёж пока не получилось подготовить. Отправьте вариант в WhatsApp — мастер пришлёт схему.'; };
+  const fail = (e) => { console.warn('drawing', e); if (mine()) busy.hidden = true; if (mine() && !drawingShown()) wait.textContent = 'Чертёж пока не получилось подготовить. Отправьте вариант в WhatsApp — мастер пришлёт схему.'; };
   ['#dd-png', '#dd-send', '#dd-svg'].forEach((s) => { $(s).disabled = true; });
   $('#dd-hint').hidden = true; zoomDrawing(false);
   /* тот же вариант — готовый чертёж сразу */
   if (drawing && drawing.key === key) { openDialog(dlg); show(drawing); return; }
-  img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…';
-  openDialog(dlg);
+  if (!(dlg.open && drawingShown())) { img.hidden = true; wait.hidden = false; wait.textContent = 'Готовим чертёж…'; }
+  if (!dlg.open) openDialog(dlg);
   if (stalled) {   // лист с векторными видами — за доли секунды; не запоминаем, чтобы потом снять с точной модели
-    try { const res = await (await import('./drawing.js')).render(cfg, {}); if (mine()) put(res, null); } catch (e) { fail(e); }
+    try { const res = await (await import('./drawing.js')).render(cfg, R); if (mine()) put(res, null); } catch (e) { fail(e); return; }
+    /* модель догрузится — перерисуем с эскизами карандашом (окно открыто — лист остаётся на месте) */
+    if (!mine()) return;
+    $('span', busy).textContent = 'Рисуем эскиз…'; busy.hidden = false;
+    const ok = await Promise.race([Promise.resolve(exactLoading).then(() => true, () => false), new Promise((r) => setTimeout(r, 60000, false))]);
+    if (!mine()) return;
+    if (ok && dlg.open && exact && exact.id === activeModel) openDrawing(); else busy.hidden = true;
     return;
   }
+  /* сразу — лист с векторными видами (доли секунды): окно не стоит пустым, пока снимаются эскизы карандашом; готовые эскизы
+     заменят его. Кнопки работают уже с ним. Съёмка эскизов ждёт его: она надолго занимает телефон, и лист иначе появлялся
+     только вместе с эскизами (на медленном телефоне — десятки секунд «Готовим чертёж…») */
+  let final = false;
+  const quick = import('./drawing.js').then((m) => m.render(cfg, R)).then((q) => {
+    if (!mine() || final || !dlg.open) return;
+    put(q, null); $('span', busy).textContent = 'Рисуем эскиз…'; busy.hidden = false;
+  }).catch((e) => console.warn('drawing quick', e));
   /* один расчёт за раз: повторное нажатие того же варианта ждёт уже начатый; новый ждёт, пока отменённый отпустит сцену */
   if (!drawingJob || drawingJob.key !== key || drawingJob.ac.signal.aborted) {
     const ac = new AbortController(), prev = drawingLast;
@@ -1043,14 +1061,16 @@ async function openDrawing() {
     if (drawingJob) drawingJob.ac.abort();
     job.p = (async () => {
       if (prev) await prev.catch(() => {});
+      await quick;
+      await new Promise((r) => { requestAnimationFrame(() => setTimeout(r, 0)); setTimeout(r, 250); });   // лист успел нарисоваться
       const mod = await import('./drawing.js');
-      if (ac.signal.aborted) return mod.render(cfg, {});
+      if (ac.signal.aborted) return mod.render(cfg, R);
       let res;
       try {
-        res = await mod.render(cfg, { stage, signal: ac.signal, budgetMs: 12000, onProgress: (i, n) => { if (drawingJob === job) wait.textContent = `Готовим чертёж · ${i + 1}/${n}`; } });
+        res = await mod.render(cfg, { ...R, stage, signal: ac.signal, budgetMs: 25000, onProgress: (i, n) => { if (drawingJob === job) { wait.textContent = `Готовим чертёж · ${i + 1}/${n}`; $('span', busy).textContent = `Рисуем эскиз · ${i + 1}/${n}`; } } });
       } catch (e) {
         console.warn('drawing 3d', e);
-        res = { ...(await mod.render(cfg, {})), complete: false };   // без 3D-эскизов (векторные виды) — за доли секунды; не запоминаем — в следующий раз попробуем снова
+        res = { ...(await mod.render(cfg, R)), complete: false };   // без 3D-эскизов (векторные виды) — за доли секунды; не запоминаем — в следующий раз попробуем снова
       }
       return res;
     })();
@@ -1060,18 +1080,66 @@ async function openDrawing() {
   /* закрыли окно — расчёт не нужен (если тут же открыли снова — dlg.open, пусть идёт) */
   dlg.addEventListener('close', () => { if (drawingJob === job && !dlg.open) { job.ac.abort(); drawingJob = null; } }, { once: true });
   try {
-    /* страховка: что бы ни случилось со сценой — через 20 с от нажатия лист без 3D-эскизов */
-    let res = await Promise.race([job.p, new Promise((r) => setTimeout(r, Math.max(4000, 20000 - (Date.now() - t0)), null))]);
+    /* страховка: что бы ни случилось со сценой — через 45 с от нажатия лист без 3D-эскизов. Раньше было 20 с: на медленном
+       телефоне эскизы не успевали, и у части моделей лист так и оставался без них, хотя был почти готов. Ждать не мешает —
+       лист с видами и размерами уже на экране и кнопки работают */
+    let res = await Promise.race([job.p, new Promise((r) => setTimeout(r, Math.max(4000, 45000 - (Date.now() - t0)), null))]);
     if (!mine()) return;
-    if (!res) { job.ac.abort(); res = await (await import('./drawing.js')).render(cfg, {}); if (!mine()) return; }
+    if (!res) { job.ac.abort(); res = await (await import('./drawing.js')).render(cfg, R); if (!mine()) return; }
     if (drawingJob === job) drawingJob = null;
+    final = true; busy.hidden = true;
+    const z = drawingZ;
     put(res, res.complete && !job.ac.signal.aborted ? key : null);
+    if (z > 1) requestAnimationFrame(() => drawingFit(z));   // клиент разглядывал крупно — не сбрасываем
   } catch (e) { fail(e); }
 }
 /* телефон в руке: лист во всю высоту окна шире экрана и листается в сторону — подсказка, только когда листать есть куда */
 function syncDrawingHint() {
   const pan = $('#dd-pan'), hint = $('#dd-hint'); if (!pan || !hint) return;
-  hint.hidden = $('#dd-img').hidden || $('#dd-sheet').classList.contains('is-zoom') || pan.scrollWidth <= pan.clientWidth + 8;
+  hint.hidden = $('#dd-img').hidden || $('#dlg-drawing').classList.contains('is-tall') || $('#dd-sheet').classList.contains('is-zoom') || pan.scrollWidth <= pan.clientWidth + 8;
+}
+const drawingShown = () => !$('#dd-img').hidden;
+/* лист «в столбик»: по ширине экрана (z = 1), крупнее — щипком, двойным касанием или «Крупно» (до ×4); двигается пальцем.
+   (cx, cy) — точка экрана, которая остаётся на месте. Прокрутка — родная (надёжно на iPhone), масштаб — ширина картинки */
+let drawingZ = 1;
+function drawingFit(z = 1, cx = null, cy = null) {
+  const sheet = $('#dd-sheet'), pan = $('#dd-pan'), img = $('#dd-img'), b = $('#dd-open');
+  z = Math.max(1, Math.min(4, z));
+  const pr = pan.getBoundingClientRect(), r0 = img.getBoundingClientRect();
+  if (cx == null) { cx = pr.left + pr.width / 2; cy = pr.top + Math.min(pr.height, Math.max(0, r0.bottom - pr.top)) / 2; }
+  const fx = r0.width ? (cx - r0.left) / r0.width : 0.5, fy = r0.height ? (cy - r0.top) / r0.height : 0;
+  drawingZ = z; sheet.style.setProperty('--dz', String(z));
+  if (!$('#dlg-drawing').classList.contains('is-tall')) return;
+  const r1 = img.getBoundingClientRect();
+  if (z === 1) pan.scrollLeft = 0; else pan.scrollLeft += r1.left + fx * r1.width - cx;
+  pan.scrollTop += r1.top + fy * r1.height - cy;
+  const on = z > 1.01;
+  b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Показать чертёж по ширине экрана' : 'Показать чертёж крупно');
+  $('span', b).textContent = on ? 'По ширине' : 'Крупно';
+  $('use', b).setAttribute('href', on ? `${ICONS}#i-minus` : '#i-plus');
+}
+/* щипок и двойное касание (только лист «в столбик»; браузерный масштаб страницы отключён css: touch-action) */
+function drawingGestures() {
+  const pan = $('#dd-pan'), tall = () => $('#dlg-drawing').classList.contains('is-tall') && drawingShown();
+  let pinch = null, tap = null;
+  const two = (e) => { const [a, b] = e.touches; return { d: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) || 1, x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 }; };
+  pan.addEventListener('touchstart', (e) => { if (!tall()) return; if (e.touches.length === 2) { const t = two(e); pinch = { d0: t.d, z0: drawingZ }; tap = null; } }, { passive: true });
+  pan.addEventListener('touchmove', (e) => {
+    if (!pinch || e.touches.length !== 2) return;
+    e.preventDefault();
+    const t = two(e); drawingFit(pinch.z0 * (t.d / pinch.d0), t.x, t.y);
+  }, { passive: false });
+  pan.addEventListener('touchend', (e) => {
+    if (pinch) { if (e.touches.length < 2) { pinch = null; if (drawingZ < 1.08) drawingFit(1); } return; }
+    if (!tall() || e.touches.length || e.changedTouches.length !== 1) return;
+    const c = e.changedTouches[0], now = performance.now();
+    if (tap && now - tap.t < 320 && Math.hypot(c.clientX - tap.x, c.clientY - tap.y) < 32) {
+      e.preventDefault(); tap = null;
+      drawingFit(drawingZ > 1.01 ? 1 : 2.5, c.clientX, c.clientY);
+    } else tap = { t: now, x: c.clientX, y: c.clientY };
+  }, { passive: false });
+  pan.addEventListener('gesturestart', (e) => { if (tall()) e.preventDefault(); });   // Safari: не масштабировать страницу
+  pan.addEventListener('dblclick', (e) => { if (tall()) drawingFit(drawingZ > 1.01 ? 1 : 2.5, e.clientX, e.clientY); });
 }
 /* «Крупно» на телефоне — увеличение внутри окна: во встроенном браузере Instagram новая вкладка не открывается, и клиент оставался
    с голой картинкой вне конструктора. Лист вчетверо шире окна (css: .is-zoom), двигается пальцем в обе стороны, щипком — ещё крупнее;
@@ -1094,7 +1162,8 @@ function zoomDrawing(on, at) {
     pan.scrollLeft += r1.left + fx * r1.width - px; pan.scrollTop += r1.top + fy * r1.height - py;
   } else { pan.scrollLeft = 0; pan.scrollTop = 0; syncDrawingHint(); }
 }
-async function drawingPng() { const b = await drawing.toPNG(3508); return b; }
+/* лист «в столбик» — 1600 px в ширину (≈ 1600 × 5000): в WhatsApp читается как на экране; широкий лист — A4 300 dpi */
+async function drawingPng() { const b = await drawing.toPNG(drawing.portrait ? 1600 : 3508); return b; }
 /* чертёж во весь экран: PNG в новой вкладке — можно увеличить пальцами */
 async function openDrawingFull() {
   if (!drawing) return;
@@ -1451,8 +1520,9 @@ function bind() {
   $('#ph-save').addEventListener('click', photoSave); $('#ph-wa').addEventListener('click', photoSend);
   $('#bar-next').addEventListener('click', () => { const n = +$('#bar-next').dataset.goto; if (n) openStep(n); });
   $('#ar-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(variantLink()); toast('Ссылка скопирована'); } catch (e) { toast('Скопируйте адрес из строки браузера'); } });
-  $('#dd-open').addEventListener('click', () => (mqPhone.matches ? zoomDrawing(!drawingZoomed()) : openDrawingFull()));
-  $('#dd-img').addEventListener('click', (e) => { if ($('#dd-open').hidden) return; if (mqPhone.matches) zoomDrawing(!drawingZoomed(), e); else openDrawingFull(); });
+  $('#dd-open').addEventListener('click', () => ($('#dlg-drawing').classList.contains('is-tall') ? drawingFit(drawingZ > 1.01 ? 1 : 2.5) : mqPhone.matches ? zoomDrawing(!drawingZoomed()) : openDrawingFull()));
+  $('#dd-img').addEventListener('click', (e) => { if ($('#dd-open').hidden || $('#dlg-drawing').classList.contains('is-tall')) return; if (mqPhone.matches) zoomDrawing(!drawingZoomed(), e); else openDrawingFull(); });
+  drawingGestures();
   $('#dd-img').addEventListener('load', syncDrawingHint); window.addEventListener('resize', syncDrawingHint);
   $('#dd-pan').addEventListener('scroll', () => { if ($('#dd-pan').scrollLeft > 24) $('#dd-hint').hidden = true; }, { passive: true });   // уже листают — подсказка не нужна
   $('#vp-fab').addEventListener('click', seatCloseUp);

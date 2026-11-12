@@ -556,7 +556,7 @@ export function woodMaterial(tone = 'oak') {
 }
 
 /* ---------- металл (шлифованный) ---------- */
-const METAL = { black: '#1E1E1E', gold: '#D2B07A', chrome: '#D9DCDF', bronze: '#8A6A4A', bordeaux: '#5A1E26' };   // chrome — кровати и диваны; bronze, bordeaux (крашеный) — диваны
+const METAL = { black: '#1E1E1E', gold: '#D2B07A', chrome: '#D9DCDF', bronze: '#8A6A4A', bordeaux: '#5A1E26', pink: '#D9A3A6' };   // pink — крашеный металл кресел и пуфов   // chrome — кровати и диваны; bronze, bordeaux (крашеный) — диваны
 const metalCache = new Map();
 /* у металла своя сила отражений: без собственной envMap three берёт scene.environmentIntensity (0,55) — stage.js передаёт студию сюда */
 let envTex = null;
@@ -581,7 +581,8 @@ export function metalMaterial(finish = 'black') {
     normalMap: t.normal, normalScale: new THREE.Vector2(0.15, 0.15), anisotropy: 0.6, anisotropyRotation: Math.PI / 2,
   });
   if (finish === 'black') { m.metalness = 0.85; }
-  if (finish === 'bordeaux') { m.metalness = 0.35; m.normalScale.set(0.05, 0.05); }   // крашеная труба: полуматовая эмаль
+  if (finish === 'bordeaux') { m.metalness = 0.35; m.normalScale.set(0.05, 0.05); }
+  if (finish === 'pink') { m.metalness = 0.3; m.normalScale.set(0.05, 0.05); }   // розовая порошковая эмаль   // крашеная труба: полуматовая эмаль
   m.envMapIntensity = finish === 'gold' ? 1.8 : 1.4;   // металл живёт отражениями студии
   if (envTex) m.envMap = envTex;
   m.name = 'metal-' + finish; m.userData = { kind: 'metal', finish };

@@ -4,7 +4,7 @@
    (автоисправление + короткая заметка) → «нестандартный размер» для значений вне диапазона интерфейса.
    Единицы: метры. Заметки — по-русски, в сантиметрах. */
 
-import { normalize, RANGES, DEFAULTS, rangeOf, dims as dimsOf, armDef, HIDDEN_LEG_H, LEGH_BY_KIND, sfClean } from './params.js';
+import { normalize, RANGES, DEFAULTS, rangeOf, dims as dimsOf, armDef, HIDDEN_LEG_H, LEGH_BY_KIND, sfClean, acClean } from './params.js';
 
 export const MSG_HARD = 'Такой размер не подходит для одного изделия — напишите нам, обсудим.';
 export const MSG_NONSTD = 'Нестандартный размер — уточним с мастером';
@@ -46,10 +46,10 @@ const ENUMS = {
   ushape: SOFA_ENUM,
   modular: { armStyle: ARM, backCushions: ['fixed', 'loose'], legs: LEGS4, chaise: ['none', 'left', 'right'] },
   bed: { hbStyle: ['plain', 'channels', 'capitone', 'wings', 'frame', 'pillows', 'straps'], base: ['legs', 'plinth', 'float', 'podium'] },
-  armchair: { form: ['classic', 'round'], armStyle: ARM, backCushions: ['fixed', 'loose'], legs: [...LEGS4, 'disc'] },
-  pouf: { form: ['round', 'square', 'bench'], top: ['smooth', 'capitone'], legs: LEGS4 },
+  armchair: { form: ['classic', 'round', 'drum', 'pebble'], armStyle: ARM, backCushions: ['fixed', 'loose'], legs: [...LEGS4, 'disc'] },
+  pouf: { form: ['round', 'square', 'bench', 'oval'], top: ['smooth', 'capitone', 'channels'], legs: LEGS4 },
 };
-const METAL = ['black', 'gold', 'chrome', 'bronze', 'bordeaux'], WOOD = ['oak', 'walnut', 'blackwood'];   // хром, бронза, бордо — отделки металла диванов (sf)
+const METAL = ['black', 'gold', 'chrome', 'bronze', 'bordeaux', 'pink'], WOOD = ['oak', 'walnut', 'blackwood'];   // хром, бронза, бордо — отделки металла диванов (sf)
 
 /* производные ключи (их пересчитывает normalize) */
 const DERIVED = { bed: ['w', 'd', 'h', 'hbT'], modular: ['w'], pouf: ['d'] };
@@ -124,6 +124,7 @@ export function validate(type, params = {}) {
   if (SOFA_FAMILY.has(type)) sfClean(type, p); else sfClean('', p);   // диваны: дополнительные формы (sf*) — только применимые
   if (type === 'bed') bedRules(p, raw, note, fail, set);
   if (type === 'pouf') poufRules(p, note, set);
+  acClean(type, p);   // кресло и пуф: дополнительные формы (q*) — только применимые
 
   /* производные — пересчитываем после исправлений */
   const pn = normalize(type, p);
@@ -162,7 +163,7 @@ function skipRange(type, k, p) {
   if (k === 'legH') return type !== 'bed' && p.legs === 'hidden';
   if (k === 'chaiseW') return p.form !== 'chaise';
   if (k === 'chaiseL') return p.chaise === 'none';
-  if (k === 'd') return type === 'pouf' && p.form !== 'bench';
+  if (k === 'd') return type === 'pouf' && p.form !== 'bench' && p.form !== 'oval';
   if (k === 'w') return type === 'modular';
   return false;
 }
@@ -281,7 +282,8 @@ function bedRules(p, raw, note, fail, set) {
 
 /* ---------- пуф / банкетка ---------- */
 function poufRules(p, note, set) {
-  if (p.form !== 'bench') p.d = p.w;
+  if (p.form !== 'bench' && p.form !== 'oval') p.d = p.w;
+  if (p.form === 'oval' && p.d > p.w + EPS) { set('d', p.w); note('d', `Глубина овального пуфа уменьшена до ${cmTxt(p.d)} — не больше ширины`); }
   if (p.form === 'bench' && p.d > p.w / 2 + EPS) { set('d', Math.floor((p.w / 2) * 1000) / 1000); note('d', `Глубина банкетки уменьшена до ${cmTxt(p.d)} — не больше половины длины`); }
   if (p.legs !== 'hidden' && p.legH > p.h - 0.15 + EPS) {
     if (p.h - 0.15 >= 0.04 - EPS) { set('legH', p.h - 0.15); note('legH', `Ножки уменьшены до ${cmTxt(p.legH)} — мягкая часть не тоньше 15 см`); }

@@ -181,14 +181,15 @@ function softBox(sx, sy, sz, o = {}) {
   /* плотность стяжки: не мельче q.tuft и не больше ~30 тыс. вершин на две большие грани */
   const tArea = tuft ? (o.tuftFace === 'y' ? sx * sz : sx * sy) : 0;
   const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 3500 : o.quality === 'mid' ? 6000 : 10000))) : q.sp;
+  const spT = tuft === 'grid' ? Math.max(spTuft, 0.03) : spTuft;   // клетки 20 см (диваны): хватает 3 см шага — сетка не раздувается
   const warp = o.warp || null;   // кровать: форма верхнего края, наклон, загнутые края изголовья (bedWarp)
   const deformed = crown || crownBack || bulge || tuft || o.sag || o.pillow || o.ripple || o.slump || (o.taper && o.taper !== 1) || warp || o.wedge;
   const sp = (deformed ? q.sp : q.flat) * (o.dense || 1);
   const tf = o.tuftFace || 'z';
-  const X = axisSamples(Hx, rx, rx, tuft && tuft !== 'hchannels' ? spTuft : warp ? Math.min(sp, q.sp * 0.8) : sp, q.nq);
+  const X = axisSamples(Hx, rx, rx, tuft && tuft !== 'hchannels' ? spT : warp ? Math.min(sp, q.sp * 0.8) : sp, q.nq);
   /* каналы меняются только по X — по высоте хватает обычного шага (горизонтальные — наоборот) */
-  const Y = axisSamples(Hy, rB, rT, (tuft === 'capitone' || tuft === 'hchannels' || tuft === 'grid') && tf === 'z' ? spTuft : sp, q.nq);
-  const Z = axisSamples(Hz, rz, rz + (cf === 'z' ? 0 : 0), tuft && tf === 'y' ? spTuft : sp, q.nq);
+  const Y = axisSamples(Hy, rB, rT, (tuft === 'capitone' || tuft === 'hchannels' || tuft === 'grid') && tf === 'z' ? spT : sp, q.nq);
+  const Z = axisSamples(Hz, rz, rz + (cf === 'z' ? 0 : 0), tuft && tf === 'y' ? spT : sp, q.nq);
   const positions = [], normals = [], uvs = [], index = [], seamA = [], occA = [];
   const P = new THREE.Vector3(), N = new THREE.Vector3(), U = new THREE.Vector3();
   const yOff = cf === 'y' ? (crownBottom - crown) / 2 : 0, zOff = cf === 'z' ? -(crown - crownBack) / 2 : 0;
@@ -328,6 +329,10 @@ function makeDisplacer(s) {
     const ga = Math.max(2, Math.round((2 * Hx) / 0.2)), gb = Math.max(2, Math.round((2 * (tf === 'y' ? Hz : Hy)) / 0.2)), Hb = tf === 'y' ? Hz : Hy;
     const g = (t, n) => Math.pow(Math.abs(Math.sin(Math.PI * n * (t * 0.5 + 0.5))), 0.5);
     tuftFn = (a, b) => 0.022 * (Math.min(g(a / Hx, ga), g(b / Hb, gb)) - 1);
+  } else if (tuft === 'pchannels') {
+    /* пуф и банкетка (params.js → poufExtra): вертикальные каналы ~17 см через верх, фронт и тыл */
+    const n = Math.max(3, Math.round(sx / 0.17));
+    tuftFn = (u) => 0.02 * (Math.pow(Math.abs(Math.sin(Math.PI * n * (u * 0.5 + 0.5))), 0.45) - 1);
   } else if (tuft === 'hchannels') {
     /* горизонтальная простёжка (изголовье кровати): валики ~20 см по высоте */
     const n = Math.max(2, Math.min(8, Math.round(sy / 0.2)));
@@ -428,6 +433,9 @@ function makeDisplacer(s) {
         const edge = (a, H) => 1 - smooth(H - 0.05, H - 0.005, Math.abs(a));
         if (tf === 'y' && N.y > 0.3) P.y += tuftFn(P.x, P.z) * smooth(0.3, 0.9, N.y) * edge(P.x, Hx) * edge(P.z, Hz);
         if (tf === 'z' && N.z > 0.3) P.z += tuftFn(P.x, P.y) * smooth(0.3, 0.9, N.z) * edge(P.x, Hx) * edge(P.y, Hy);
+      } else if (tuft === 'pchannels' && Math.abs(N.x) < 0.6) {
+        const u = P.x / Hx, w = (1 - smooth(0.9, 1.0, Math.abs(u))) * (1 - smooth(0.25, 0.6, Math.abs(N.x))), dd = tuftFn(u) * w;
+        P.y += N.y * dd; P.z += N.z * dd;
       } else if (tuft === 'hchannels' && tf === 'z' && N.z > 0.3) {
         const v = P.y / Hy; const w = smooth(0.3, 0.9, N.z) * (1 - smooth(0.9, 1.0, Math.abs(v))) * (1 - smooth(Hx - 0.05, Hx - 0.005, Math.abs(P.x)));
         P.z += tuftFn(0, v) * w;
@@ -588,7 +596,9 @@ function shellGeometry(it, quality) {
       rho = t / 2 + (rho - t / 2) * sc;
       if (top) y = cy + (y - cy) * sc + 0 * (1 - sc);
       else if (y > cy) y = cy + (y - cy) * sc;
-      const x = (A - rho) * sn + tx * ext, z = (B - rho) * cs + tz * ext;
+      let x = (A - rho) * sn + tx * ext; const z = (B - rho) * cs + tz * ext;
+      /* оболочка, раскрытая кверху (кресло, qShell: fan): внизу уже, у верхней кромки — полная ширина */
+      if (it.flare) x *= 1 - it.flare * Math.pow(Math.min(1, Math.max(0, 1 - (y - yb) / it.sy)), 1.5);
       if (j > 0) v += Math.hypot(x - px, y - py, z - pz);
       px = x; py = y; pz = z;
       positions.push(x, y, z);
@@ -737,6 +747,8 @@ function legGeometry(it, quality) {
   /* диваны (sf): труба рамы / полозьев — скруглённый брус круглого сечения */
   if (it.tube) { const m = Math.min(it.sx, it.sy, it.sz) / 2 * 0.98; return softBox(it.sx, it.sy, it.sz, { rx: m, rz: m, rTop: m, rBottom: m, quality }); }
   if (it.square) return softBox(it.sx, it.sy, it.sz, { rx: 0.004, rz: 0.004, rTop: 0.002, rBottom: 0.003, quality, taper: it.taper || 1 });
+  /* кресло и пуф (params.js → armchairLegs): ножки-шары и массивные «бочонки» — мягкий цилиндр с большими скруглениями */
+  if (it.softLeg) return softCyl(it.sx, it.sy, it.sz, { quality: quality === 'high' ? 'mid' : quality, rTop: it.softLeg, rBottom: it.softLeg, barrel: it.barrelK || 0 });
   const dia0 = it.dia || it.sx;   // наклонная ножка (sf): габарит sx шире на вынос, сам диаметр — dia
   const rTop = dia0 / 2, rBot = (dia0 / 2) * (it.taper || 1);
   let geo;
@@ -905,6 +917,8 @@ function itemGeometry(it, quality, type, dense = 1) {
     if (it.sz > 0.15) seams([['z', 1]]);
     o.occ = [['y', -1, 0, 0.05, 0.5]];   // низ цельной спинки у подушки сиденья
   }
+  /* кресло «капля» (params.js, qDisc): круглая подушка спинки — диск с мягкой кромкой */
+  if (it.qDisc) { const m = Math.min(it.sx, it.sy) / 2 * 0.985; o.rx = m; o.rTop = o.rBottom = m; o.rz = Math.min(it.sz * 0.45, 0.09); o.crown = 0.03; o.crownBack = 0.015; o.crownFace = 'z'; o.crownP = 2; o.bulge = 0; o.pillow = 0; o.slump = 0; o.occ = null; }
   if (it.backShape === 'rounded') { o.rx = Math.min(it.sx * 0.25, 0.12); o.rTop = o.rx; o.rz = Math.min(0.025, it.sz * 0.45); o.rBottom = 0.02; }
   /* диваны (params.js → sf*): валик спинки, отдельная овальная подушка, пухлые подушки, простёжка, клин дуги, декор */
   if (it.bolster) {
@@ -948,6 +962,7 @@ function itemGeometry(it, quality, type, dense = 1) {
   }
   if (it.role === 'mattress') { o.rx = o.rz = 0.045; o.rTop = 0.03; o.rBottom = 0.03; o.crown = it.crown || 0.01; o.crownP = 3; o.bulge = 0.006; }
   if (it.role === 'seat' && it.tufting) { o.tufting = it.tufting; o.tuftFace = 'y'; }
+  if (it.qPlan && it.rPlan) { o.rx = o.rz = Math.min(it.rPlan, it.sz / 2 * 0.98); }   // банкетка «стадион»: торцы — полукругом в плане
   if (it.role === 'top') { o.rx = o.rz = it.rPlan || 0.012; o.rTop = it.r; o.rBottom = it.r * 0.6; }
   if (it.role === 'decor') {
     if (it.decorKind === 'pillow') {
