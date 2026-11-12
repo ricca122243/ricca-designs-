@@ -422,6 +422,7 @@ function makeDisplacer(s) {
       const w = 1 - smooth(0.5, 0.9, Math.abs(N.y));
       P.x += Math.sign(N.x) * Math.abs(N.x) * (k - 1) * Hx * w; P.z += Math.sign(N.z) * Math.abs(N.z) * (k - 1) * Hz * w;
     }
+    const px0 = P.x, pz0 = P.z;   // положение до волны кромки: тонкое покрывало (drape.flat) свисает от ровного края, без «фестонов»
     /* покрывало: крупные мягкие складки поперёк кровати (ткань «брошена»), край в плане — волной, а не линейкой */
     if (ripple) {
       const x = P.x, z = P.z;
@@ -437,7 +438,8 @@ function makeDisplacer(s) {
     }
     /* покрывало свисает: за кромкой матраса (x — боковины, +z — изножье) ткань уходит вниз мягкой дугой */
     if (drape) {
-      const ex = drape.x ? Math.max(0, Math.abs(P.x) - (Hx - drape.x)) / drape.x : 0, ez = drape.z ? Math.max(0, P.z - (Hz - drape.z)) / drape.z : 0;
+      const qx = drape.flat ? px0 : P.x, qz = drape.flat ? pz0 : P.z;
+      const ex = drape.x ? Math.max(0, Math.abs(qx) - (Hx - drape.x)) / drape.x : 0, ez = drape.z ? Math.max(0, qz - (Hz - drape.z)) / drape.z : 0;
       const e = Math.min(1, Math.hypot(ex, ez));
       if (e > 0) P.y -= drape.drop * Math.pow(e, 1.8);
     }
@@ -988,22 +990,28 @@ export function partsFromSpec(spec) {
       if (s.sheet) one({ id: `${id}-mattress`, k: 'part', role: 'mattress', m: 'decor', p: [cx, mTop - mt / 2, z0 + ml / 2], s: [mw, mt, ml], r: 0.06, crown: 0.012 }, i, false);
       else one({ id: `${id}-mattress`, k: 'part', role: 'mattress', m: 'mattress', p: [cx, mTop - mt / 2, z0 + ml / 2], s: [mw, mt, ml], r: 0.05, crown: 0.008, piping: true, quilt: true }, i, false);
       if (s.duvet !== false) {
-        const cover = s.cover ?? 0.6, ov = s.ov ?? 0.16, ovz = s.ovz ?? 0.10, dz0 = mz1 - ml * cover;
-        one({ id: `${id}-duvet`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'duvet', whiteDuvet: !!s.duvetWhite, p: [cx, mTop + 0.037, (dz0 + mz1 + ovz) / 2], s: [mw + 2 * ov, 0.082, mz1 + ovz - dz0], r: 0.035, crown: 0.025, drape: { x: ov + 0.01, z: ovz + 0.01, drop: s.drop ?? 0.105 } }, i, false);
-        one({ id: `${id}-fold`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'duvet', whiteDuvet: !!s.duvetWhite, roll: true, p: [cx, mTop + 0.085, dz0 + 0.075], s: [mw + 0.06, 0.11, 0.19], r: 0.05, drape: { x: 0.14, z: 0, drop: 0.035 } }, i, false);
+        /* sheet: как на студийных фото ателье — тонкое белое покрывало ровно облегает матрас (dT 4 см, мелкие складки), отворот — плоская полоса;
+           иначе — толстый плед, брошенный на матрас */
+        const thin = !!s.sheet, dT = s.duvetT ?? (thin ? 0.04 : 0.082);
+        const cover = s.cover ?? (thin ? 0.86 : 0.6), ov = thin ? Math.max(s.ov ?? 0.02, 0.025) : (s.ov ?? 0.16), ovz = thin ? Math.max(s.ovz ?? 0.02, 0.025) : (s.ovz ?? 0.10), dz0 = mz1 - ml * cover;
+        const drop = thin ? Math.max(s.drop ?? 0, mt * 0.55) : (s.drop ?? 0.105);
+        one({ id: `${id}-duvet`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'duvet', whiteDuvet: !!s.duvetWhite, p: [cx, mTop + dT * 0.45, (dz0 + mz1 + ovz) / 2], s: [mw + 2 * ov, dT, mz1 + ovz - dz0], r: thin ? 0.02 : 0.035, crown: thin ? 0.008 : 0.025, drape: { x: ov + 0.01, z: ovz + 0.01, drop, flat: thin } }, i, false);
+        if (thin) one({ id: `${id}-fold`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'duvet', whiteDuvet: !!s.duvetWhite, p: [cx, mTop + dT + 0.012, dz0 + 0.14], s: [mw + 2 * ov + 0.01, 0.03, 0.28], r: 0.012, crown: 0.006, drape: { x: ov + 0.012, z: 0, drop, flat: true } }, i, false);
+        else one({ id: `${id}-fold`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'duvet', whiteDuvet: !!s.duvetWhite, roll: true, p: [cx, mTop + 0.085, dz0 + 0.075], s: [mw + 0.06, 0.11, 0.19], r: 0.05, drape: { x: 0.14, z: 0, drop: 0.035 } }, i, false);
       }
       const nP = s.pillows ?? 2;
       if (nP > 0) {
-        const pw = Math.min(0.7, mw / 2 - 0.04), ph = 0.50, pt = 0.17, lean = s.pillowLean ?? 20, rx = -(Math.PI / 2 + lean * D2R), c = Math.cos(rx), sn = Math.sin(rx);
+        const pw = Math.min(0.7, mw / 2 - 0.04), ph = 0.50, pt = s.sheet ? 0.22 : 0.17, lean = s.pillowLean ?? (s.sheet ? 40 : 20), rx = -(Math.PI / 2 + lean * D2R), c = Math.cos(rx), sn = Math.sin(rx);
         let yMin = Infinity, zMin = Infinity;
         for (const yy of [-pt / 2, pt / 2]) for (const zz of [-ph / 2, ph / 2]) { yMin = Math.min(yMin, yy * c - zz * sn); zMin = Math.min(zMin, yy * sn + zz * c); }
-        const xs = nP === 1 || mw < 1.2 ? [cx] : [cx - mw / 4, cx + mw / 4];
-        xs.forEach((x, n) => one({ id: `${id}-pillow${n + 1}`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [x, mTop - yMin - 0.012, z0 + (s.pillowZ ?? 0) + 0.006 - zMin], s: [pw, pt, ph], r: 0.03, rot: [-(90 + lean), 0, 0] }, i, false));
+        const off = s.sheet ? Math.min(mw / 4, pw / 2 - 0.02) : mw / 4;   // как на фото: большие подушки почти касаются друг друга
+        const xs = nP === 1 || mw < 1.2 ? [cx] : [cx - off, cx + off];
+        xs.forEach((x, n) => one({ id: `${id}-pillow${n + 1}`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [x, mTop - yMin - 0.012, z0 + (s.pillowZ ?? 0) + 0.006 - zMin], s: [pw, pt, ph], r: 0.03, rot: [-(90 + lean), s.sheet ? (n ? -4 : 4) : 0, 0] }, i, false));
       }
       /* extras: true — как на студийных фото кроватей ателье: ещё две подушки поменьше перед большими и валик у правого края */
       if (s.extras && mw >= 1.2) {
-        one({ id: `${id}-pf1`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [cx - 0.22 * mw, mTop + 0.18, z0 + 0.495], s: [0.62, 0.15, 0.40], r: 0.03, rot: [-118, 6, 0] }, i, false);
-        one({ id: `${id}-pf2`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [cx + 0.19 * mw, mTop + 0.18, z0 + 0.515], s: [0.62, 0.15, 0.40], r: 0.03, rot: [-118, -8, 0] }, i, false);
+        one({ id: `${id}-pf1`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [cx - 0.22 * mw, mTop + 0.19, z0 + 0.53], s: [0.62, 0.19, 0.40], r: 0.03, rot: [-124, 6, 0] }, i, false);
+        one({ id: `${id}-pf2`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [cx + 0.19 * mw, mTop + 0.19, z0 + 0.55], s: [0.62, 0.19, 0.40], r: 0.03, rot: [-124, -8, 0] }, i, false);
         one({ id: `${id}-bolster`, k: 'cyl', m: 'decor', decor: true, p: [cx + 0.42 * mw, mTop + 0.08, z0 + 0.415], s: [0.16, 0.42, 0.16], rot: [90, 0, 12], rTop: 0.03, rBottom: 0.03 }, i, false);
       }
       return;
