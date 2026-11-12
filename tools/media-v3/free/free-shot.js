@@ -13,7 +13,15 @@ global.window = {}; require('/home/user/ricca-designs-/ricca/js/catalog-data.js'
     try {
       const fid = process.env.SPEC || id; const file = `/home/user/ricca-designs-/ricca/models3d/free/${fid}.json`; const spec = JSON.parse(fs.readFileSync(file, 'utf8'));
       const fab = spec.fab || m.fab || '';
-      await p.goto(`${B}/configurator.html?t=${Date.now()}#cfg=v1~${m.cfg}${fab ? '&f=' + encodeURIComponent(fab) : ''}&m=${id}&free=models3d/free/${fid}.json`, { waitUntil: 'load' });
+      /* отделка ножек и рам из файла модели (legs: { kind: 'metal' | 'wood', finish: 'black' | 'gold' | 'chrome' | 'bronze' | 'bordeaux' | 'pink' | 'oak' | 'walnut' | 'blackwood' }) —
+         подставляется в рецепт так же, как потом будет записано в каталог */
+      let cfg = m.cfg;
+      if (spec.legs && spec.legs.finish) {
+        const t = cfg.split('~').filter((x) => !/^lf\./.test(x) && !(spec.legs.kind && /^lg\./.test(x) && !/^t\.bed/.test(cfg)));
+        if (spec.legs.kind && !/^t\.bed/.test(cfg)) t.push('lg.' + spec.legs.kind);
+        t.push('lf.' + spec.legs.finish); cfg = t.join('~');
+      }
+      await p.goto(`${B}/configurator.html?t=${Date.now()}#cfg=v1~${cfg}${fab ? '&f=' + encodeURIComponent(fab) : ''}&m=${id}&free=models3d/free/${fid}.json`, { waitUntil: 'load' });
       await p.waitForSelector('canvas', { timeout: 90000 });
       await p.waitForFunction(() => { const t = document.querySelector('[data-exact-off]'); return !!t; }, null, { timeout: 60000 }).catch(() => errs.push('точная модель не включилась (нет кнопки «Изменить форму»)'));
       await p.waitForTimeout(6000);
