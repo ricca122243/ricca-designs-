@@ -343,7 +343,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-18",
-    cfg: "t.sofa~ah.72~as.wide~aw.25~bc.fixed~h.74~lh.2~lg.hidden~p.1~n.2",
+    cfg: "t.sofa~ah.72~as.wide~aw.25~bc.fixed~d.109~h.76~lh.2~lg.hidden~p.1~sd.64~n.2~w.274",
     fab: "lucky:1",
     glb: "models3d/free/sofa-18.json",
     category: "sofas",

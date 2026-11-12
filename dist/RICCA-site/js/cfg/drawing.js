@@ -1280,10 +1280,28 @@ function picTag(x, y, w, h, par, url, mask, id) {
   return `<mask id="${id}" maskUnits="userSpaceOnUse" x="${x}" y="${y}" width="${w}" height="${h}">${img(mask)}</mask>${img(url, ` mask="url(#${id})"`)}`;
 }
 /* portrait: телефонный лист (узкий, виды один под другим) — см. portraitSheet */
+/* детали и размеры рецепта, растянутые по осям (fx, fy, fz): ручная модель по фото — со своими габаритами */
+function scaleParts(pr, fx, fy, fz) {
+  const f = { x: fx, y: fy, z: fz }, v3 = (q) => (Array.isArray(q) && q.length === 3 && q.every(Number.isFinite) ? [q[0] * fx, q[1] * fy, q[2] * fz] : q);
+  const items = pr.items.map((it) => ({ ...it, x: it.x * fx, y: it.y * fy, z: it.z * fz, sx: it.sx * fx, sy: it.sy * fy, sz: it.sz * fz }));
+  const dims = pr.dims.map((d) => {
+    const o = { ...d };
+    for (const k of Object.keys(o)) if (Array.isArray(o[k]) && o[k].length === 3) o[k] = v3(o[k]);
+    if (Number.isFinite(o.value) && f[o.axis]) o.value *= f[o.axis];
+    return o;
+  });
+  return { ...pr, items, dims, bbox: { w: pr.bbox.w * fx, d: pr.bbox.d * fz, h: pr.bbox.h * fy } };
+}
 export async function render(cfg, { stage = null, render3q = null, onProgress = null, signal = null, budgetMs = 0, portrait = false } = {}) {
   const type = cfg.type;
   const params = normalize(type, cfg.params || {});
-  const pr = partsOf(type, params);
+  let pr = partsOf(type, params);
+  /* ручная модель по фото (cfg.freeDims): габариты модели (cfg.dims, app.js → curDims) не равны рецепту — рамки видов и размеры
+     строим по модели, иначе её снимок растягивается в рамку рецепта, а подписи показывают высоту рецепта */
+  if (cfg.exact && Array.isArray(cfg.freeDims) && cfg.dims && pr.bbox.w > 0 && pr.bbox.h > 0 && pr.bbox.d > 0) {
+    const fx = cfg.dims.w / pr.bbox.w, fy = cfg.dims.h / pr.bbox.h, fz = cfg.dims.d / pr.bbox.d;
+    if ([fx, fy, fz].some((k) => Math.abs(k - 1) > 0.005)) pr = scaleParts(pr, fx, fy, fz);
+  }
   let render3qDataUrl = null, render3qMask = null, swatchDataUrl = null, sketch = null;
   /* телефон: снимки меньше (≈ вдвое меньше точек) и суперсэмплинг 1,5 вместо 2 (видеопамять кадра 74 МБ вместо 131) —
      на листе A4 разница не видна (проверено на 300 dpi); без суперсэмплинга вовсе — точки-«соринки» на эскизе */

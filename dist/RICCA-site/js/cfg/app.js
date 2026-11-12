@@ -234,7 +234,17 @@ function applyParams(type, params) {
   state.type = type; state.params = r.params; state.notes = r.notes; state.fieldNotes = r.fieldNotes; state.errors = r.errors;
   return r;
 }
-const curDims = () => { try { return P.dims(state.type, state.params); } catch (e) { return null; } };
+const recipeDims = () => { try { return P.dims(state.type, state.params); } catch (e) { return null; } };
+/* показываемые габариты: у ручной модели по фото (models3d/free) — её собственные размеры (пропорции сняты с фото; конструктор
+   не умеет, например, диван ниже ~69 см), пересчитанные на текущий размер; у остальных — размеры рецепта. Подпись под 3D,
+   чертёж и сообщение в WhatsApp берут их; подстройка модели под размер (rebuild) — recipeDims */
+const curDims = () => {
+  const d = recipeDims(); if (!d) return d;
+  const g = exact && exact.id === activeModel ? exact.group : null, b = g && g.userData.free && g.userData.base;
+  if (!b || !b.rw || !b.rd || !b.rh) return d;
+  const cm = (v) => Math.round(v * 100) / 100;   // до целого сантиметра: на чертеже не «215,8»
+  return { ...d, w: cm(b.w * d.w / b.rw), d: cm(b.d * d.d / b.rd), h: cm(b.h * d.h / b.rh) };
+};
 const shownFabric = () => (state.fabricLost ? null : state.fabric);
 const id = () => cfgId({ type: state.type, params: state.params, fabric: shownFabric() });
 const cfgState = () => ({ type: state.type, params: state.params, fabric: shownFabric(), qty: state.qty, note: state.note, model: exactName() });
@@ -424,7 +434,7 @@ async function loadFreeGroup(m) {
   wrap.userData.base = { w: size.x, d: size.z, h: size.y, rw: d.w, rd: d.d, rh: d.h };
   window.RICCA_FREE_DIMS = { id: m.id, w: size.x, d: size.z, h: size.y, rw: d.w, rd: d.d, rh: d.h };   // для проверки: габарит модели и рецепта
   wrap.userData.view = spec.view || null; wrap.userData.light = spec.light || null; wrap.userData.free = true;
-  wrap.userData.freeDims = freeDims(spec.measure, d);
+  wrap.userData.freeDims = freeDims(spec.measure, { w: size.x, d: size.z, h: size.y });   // размеры частей — в рамке самой модели (чертёж строится по её габаритам)
   g.position.set(-c.x, -box.min.y, -c.z); wrap.add(g);
   return wrap;
 }
@@ -462,7 +472,7 @@ async function loadExactGroup(m) {
   const box = new THREE.Box3().setFromObject(g), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
   /* базовые размеры — из рецепта модели (не из текущих параметров): текущие могут быть уже изменены клиентом */
   let d = null;
-  try { const rc = decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }); d = P.dims(rc.type, runValidate(rc.type, rc.params).params); } catch (e) { d = curDims(); }
+  try { const rc = decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }); d = P.dims(rc.type, runValidate(rc.type, rc.params).params); } catch (e) { d = recipeDims(); }
   d = d || { w: 2.2, d: 1, h: 0.8 };
   /* масштаб: наибольший горизонтальный размер модели = наибольший из рецепта (ширина или глубина, в метрах) —
      так и широкий диван, и глубокое узкое кресло получают реальные пропорции */
@@ -510,7 +520,7 @@ function useExact(m) {
   if (!m.glb) { exact = null; exactLoading = null; return; }   // прежняя модель ещё грузилась — чертёж её больше не ждёт
   const my = exactLoading = loadExactGroup(m).then((g) => {
     if (exactLoading !== my || activeModel !== m.id) return;
-    exact = { id: m.id, group: g }; rebuild(); renderForm(); if (photoApi && state.mode === 'photo') photoApi.refresh();   // renderForm: «Отделка ножек» — только когда ножки у модели есть
+    exact = { id: m.id, group: g }; rebuild(); renderForm(); renderHeads(); renderSummary(); renderViewportSize(); if (photoApi && state.mode === 'photo') photoApi.refresh();   // renderForm: «Отделка ножек» — только когда ножки у модели есть
     /* ручная модель открывается в ракурсе своего фото (view в файле модели) */
     const v = g.userData.view;
     if (stage && stage.setDir3) stage.setDir3(v ? v.az : null, v ? v.el : null, v ? v.fov : 0, v ? v.zoom : 1);
@@ -964,7 +974,7 @@ function rebuild(q = quality()) {
     if (ex) {
       F.setMaterials(ex, mats);
       /* размеры клиента: модель растягивается по осям относительно размеров рецепта (форма — как на фото) */
-      const b = ex.userData.base, cd = curDims();
+      const b = ex.userData.base, cd = recipeDims();
       if (b && cd) ex.scale.set(cd.w / (b.rw || cd.w) || 1, cd.h / (b.rh || cd.h) || 1, cd.d / (b.rd || cd.d) || 1);
     }
     const old = piece; piece = g;
