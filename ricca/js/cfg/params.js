@@ -573,6 +573,30 @@ function partsModular(p) {
   return { items, dims };
 }
 
+/* ножки кровати, кроме конусных: тонкие металлические, круглые опоры-шайбы, полозья (металл, П-образно по бокам) */
+function bedLegs(p, kind, fx0, fx1, hbT, L, W, add) {
+  const h = p.legH;
+  if (kind === 'metal') {
+    const dia = 0.022, ins = 0.07;
+    const pts = [[fx0 + ins, hbT + ins], [fx1 - ins, hbT + ins], [fx0 + ins, L - ins], [fx1 - ins, L - ins]];
+    if (p.mw >= 1.6) pts.push([W / 2, hbT + 0.25], [W / 2, L - 0.25]);
+    pts.forEach(([x, z], i) => add(cyl(`leg-${i + 1}`, 'leg', 'legs', x, z, dia, dia, 0, h, { taper: 1, legKind: 'metal' })));
+  } else if (kind === 'disc') {
+    const dia = 0.10, ins = 0.14;
+    const pts = [[fx0 + ins, hbT + ins], [fx1 - ins, hbT + ins], [fx0 + ins, L - ins], [fx1 - ins, L - ins]];
+    if (p.mw >= 1.6) pts.push([W / 2, (hbT + L) / 2]);
+    pts.forEach(([x, z], i) => add(cyl(`leg-${i + 1}`, 'leg', 'legs', x, z, dia, dia, 0, h, { taper: 0.94, legKind: 'disc' })));
+  } else if (kind === 'runner') {
+    /* полозья: по каждой стороне — брус по полу и две стойки к раме */
+    const t = 0.022, ins = 0.10, z0 = hbT + 0.12, z1 = L - 0.12;
+    [[1, fx0 + ins], [2, fx1 - ins]].forEach(([k, xx]) => {
+      add(box(`runner-${k}`, 'leg', 'legs', xx - t / 2, xx + t / 2, 0, t, z0, z1, { square: true, legKind: 'metal' }));
+      add(box(`runner-${k}a`, 'leg', 'legs', xx - t / 2, xx + t / 2, t - 0.002, h, z0, z0 + t, { square: true, legKind: 'metal' }));
+      add(box(`runner-${k}b`, 'leg', 'legs', xx - t / 2, xx + t / 2, t - 0.002, h, z1 - t, z1, { square: true, legKind: 'metal' }));
+    });
+  }
+}
+
 function partsBed(p) {
   const { items, add } = mk();
   const x = { ...BED_EXTRA, ...p };   // дополнительные формы (по умолчанию — прежний вид)
@@ -699,7 +723,6 @@ function partsBed(p) {
   dims.push(D('railH', 'Высота царги', 'front', 'y', [0, 0, L], [0, p.railH, L], 1, 'left'));
   dims.push(D('mTop', 'Верх матраса', 'front', 'y', [0, 0, L], [0, mTop, L], 0, 'left'));
   dims.push(D('legH', p.base === 'legs' ? 'Ножки' : podium ? 'Подиум' : 'Цоколь', 'front', 'y', [0, 0, L], [0, p.legH, L], 2, 'left'));
-  if (podium) dims.push(D('podium', 'Подиум', 'front', 'x', [fx0 - podOv, 0, L + podOv], [fx1 + podOv, 0, L + podOv], 0, 'bottom'));
   dims.push(D('l', 'Длина', 'side', 'z', [0, 0, -leanD], [0, 0, L + podOv], 0, 'bottom'));
   dims.push(D('hbT', 'Изголовье', 'side', 'z', [0, baseY, 0], [0, baseY, hbT], 1, 'bottom'));
   if (wings) dims.push(D('wingT', 'Ушки', 'side', 'z', [0, p.hbH, 0], [0, p.hbH, hbT + 0.04], 1, 'top'));

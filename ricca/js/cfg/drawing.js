@@ -632,7 +632,7 @@ function portraitSheet({ cfg, type, params, pr, title, id, date, lines, noteText
         const bump = {}; for (const p of V.placed) if (p.conflict) bump[p.e.d.id] = it + 1;
         const V2 = layoutView(view, pr, d, bump); if (!fits(V2)) break; V = V2;
       }
-      if (!V.conflicts) return V;
+      if (!V.conflicts) return fb && V.Wv < fb.Wv * 0.6 ? fb : V;   // без столкновений, но вдвое мельче — лучше крупный
       if (!fb) fb = V;
     }
     return fb || layoutView(view, pr, SCALES_P[SCALES_P.length - 1]);
