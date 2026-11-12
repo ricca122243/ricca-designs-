@@ -60,7 +60,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   if (!renderer.getContext()) throw new Error('webgl');
   /* чёткость: в покое — 2x (ткань и края чёткие), пока модель крутят — меньше (плавно, без лагов на телефоне) */
   /* компьютер: в покое всегда 2x, даже на экране 1x — кадр уменьшается браузером, края и мелкие швы без «лесенки» (жалоба 15 окт.) */
-  const dprFull = phone ? Math.min(window.devicePixelRatio || 1, 2) : 2, dprMove = Math.min(dprFull, phone ? 1 : 1.25);
+  /* телефон: в покое — до 3x (окно 3D маленькое, ~1,1 Мп: на экранах 3x кадр 2x выглядел мыльным — жалоба 12 ноября), в движении 1,5x */
+  const dprFull = phone ? Math.min(window.devicePixelRatio || 1, 3) : 2, dprMove = Math.min(dprFull, phone ? 1.5 : 1.25);
   renderer.setPixelRatio(dprFull);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
@@ -183,7 +184,20 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
 
   const radius = () => Math.max(0.3, size.length() / 2);
   /* угловые, П-образные и с шезлонгом (глубина > 1,4 м) — камера выше, чтобы читался план; длинные — плотнее в кадре */
-  const dir3q = () => dirAt(AZ, size.z > 1.4 ? EL_PLAN : EL);
+  /* свой ракурс модели («как на фото», app.js → setDir3): азимут от фронта и высота камеры, в градусах */
+  let dirOv = null, fovOv = 0, lightOv = null, zoomOv = 1;
+  /* свет модели: az — с какой стороны ключевой свет (градусы от фронта, плюс — справа), contrast 0…1 — насколько глубже тени
+     (меньше рассеянного света, сильнее ключевой), high — выше или ниже источник (1 — обычный) */
+  function setLight(o) {
+    lightOv = o && (o.az != null || o.contrast > 0 || o.exposure > 0) ? { az: o.az == null ? null : +o.az, contrast: Math.min(1, Math.max(0, +o.contrast || 0)), high: o.high > 0 ? +o.high : 1, exposure: o.exposure >= 0.5 && o.exposure <= 1.5 ? +o.exposure : 1 } : null;
+    renderer.toneMappingExposure = LIGHT.exposure * (lightOv ? lightOv.exposure : 1);
+    const c = lightOv ? lightOv.contrast : 0, mix = (a, b) => a + (b - a) * c;
+    scene.environmentIntensity = mix(LIGHT.env, 0.2); hemi.intensity = mix(LIGHT.hemi, 0.1); key.intensity = mix(LIGHT.key, 2.4); fill.intensity = mix(LIGHT.fill, 0.12); rim.intensity = mix(LIGHT.rim, 0.3);
+    fitLight(); shadowDirty = true; requestRender();
+  }
+  const fov3 = () => fovOv || FOV;   // угол обзора 3D-вида: у ручной модели — как у её фото (view.fov), иначе обычный
+  const dir3q = () => (dirOv ? dirAt(dirOv[0], dirOv[1]) : dirAt(AZ, size.z > 1.4 ? EL_PLAN : EL));
+  function setDir3(az, el, fov, zoom) { dirOv = az == null ? null : [THREE.MathUtils.degToRad(az), THREE.MathUtils.degToRad(el == null ? 12 : el)]; fovOv = az != null && fov >= 8 && fov <= 60 ? fov : 0; zoomOv = az != null && zoom >= 0.6 && zoom <= 1.6 ? zoom : 1; }
   const fillFor = () => (W < 600 ? 0.7 : size.x / Math.max(0.01, size.y) > 2.2 ? 0.84 : 0.74);   // телефон: снизу кнопки видов
   const aimOf = () => center.clone().add(new THREE.Vector3(0, size.y * 0.06, 0));
   /* расстояние, при котором габарит занимает fill кадра по ширине и высоте */
@@ -200,7 +214,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     }
     return dist;
   }
-  const framingDist = (dir) => fitDistance(dir || dir3q(), FOV, W / H, fillFor());
+  const framingDist = (dir) => fitDistance(dir || dir3q(), fov3(), W / H, Math.min(0.96, fillFor() * zoomOv));   // zoomOv — крупность ручной модели в кадре (view.zoom)
   /* полувысота кадра для оси вида */
   function orthoHalf(v, pad = padTop) {
     const ext = v === 'front' ? [size.x, size.y] : v === 'side' ? [size.z, size.y] : [size.x, size.z];
@@ -287,7 +301,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   function fitLight() {
     const r = Math.max(1, radius() * 1.4);
     /* ключевой свет: высоко, спереди-слева — короткая мягкая тень под изделием, без «плиты» сбоку */
-    key.position.set(center.x + r * LIGHT.kx, r * LIGHT.ky, center.z + r * LIGHT.kz);
+    /* свет ручной модели (setLight): ключевой — с заданной стороны, как на её фото; иначе обычный, слева спереди */
+    if (lightOv && lightOv.az != null) { const kr = Math.hypot(LIGHT.kx, LIGHT.kz), ka = THREE.MathUtils.degToRad(lightOv.az); key.position.set(center.x + r * kr * Math.sin(ka), r * LIGHT.ky * (lightOv.high || 1), center.z + r * kr * Math.cos(ka)); }
+    else key.position.set(center.x + r * LIGHT.kx, r * LIGHT.ky, center.z + r * LIGHT.kz);
     key.target.position.copy(center);
     fill.position.copy(center).add(dirAt(AZ + THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(25)).multiplyScalar(r * 3));
     fill.target.position.copy(center);
@@ -305,10 +321,10 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       if (!isFinite(dir.x) || dir.lengthSq() < 0.5) dir.copy(dir3q());
       const fd = framingDist(dir);
       const aim = aimOf();
-      const to = { pos: aim.clone().add(dir.multiplyScalar(fd)), target: aim, fov: FOV };
+      const to = { pos: aim.clone().add(dir.multiplyScalar(fd)), target: aim, fov: fov3() };
       const fromOk = [persp.position.x, persp.position.y, persp.position.z, controls.target.x].every(Number.isFinite);
-      if (animate && fromOk && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, to.pos, to.target, FOV, 500, null);
-      else { persp.position.copy(to.pos); controls.target.copy(to.target); persp.fov = FOV; persp.updateProjectionMatrix(); controls.update(); }
+      if (animate && fromOk && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, to.pos, to.target, fov3(), 500, null);
+      else { persp.position.copy(to.pos); controls.target.copy(to.target); persp.fov = fov3(); persp.updateProjectionMatrix(); controls.update(); }
       controls.minDistance = fd * 0.6; controls.maxDistance = fd * 2.5;
     } else {
       ortho.zoom = 1; fitOrtho();
@@ -350,11 +366,11 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       const endDir = dir3q(), dist = framingDist(endDir);
       const startDir = persp.position.clone().sub(controls.target).normalize();
       const startHalf = Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)) * persp.position.distanceTo(controls.target);
-      const endHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * dist;
+      const endHalf = Math.tan(THREE.MathUtils.degToRad(fov3() / 2)) * dist;
       const finish = () => { emit('view', v); requestRender(); };
       const aim = aimOf();
-      if (instant) { persp.fov = FOV; persp.updateProjectionMatrix(); persp.position.copy(aim).add(endDir.multiplyScalar(dist)); controls.target.copy(aim); controls.update(); finish(); return; }
-      anim = { start: performance.now(), dur: 650, kind: 'toPersp', startDir, endDir, startHalf, endHalf, t0: controls.target.clone(), t1: aim, f0: persp.fov, f1: FOV, done: finish, cancelable: false };
+      if (instant) { persp.fov = fov3(); persp.updateProjectionMatrix(); persp.position.copy(aim).add(endDir.multiplyScalar(dist)); controls.target.copy(aim); controls.update(); finish(); return; }
+      anim = { start: performance.now(), dur: 650, kind: 'toPersp', startDir, endDir, startHalf, endHalf, t0: controls.target.clone(), t1: aim, f0: persp.fov, f1: fov3(), done: finish, cancelable: false };
       requestRender();
     }
   }
@@ -532,8 +548,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     const RW = Math.round(width * ss), RH = Math.round(height * ss);
     let cam;
     if (sv === '3q' || sv === '3d') {
-      cam = new THREE.PerspectiveCamera(FOV, RW / RH, 0.05, 200);
-      const dist = fitDistance(dir3q(), FOV, RW / RH, 0.8);
+      cam = new THREE.PerspectiveCamera(fov3(), RW / RH, 0.05, 200);
+      const dist = fitDistance(dir3q(), fov3(), RW / RH, 0.8);
       cam.position.copy(center).add(dir3q().multiplyScalar(dist)); cam.lookAt(center);
     } else if (sv === 'current') {
       cam = camera.clone(); if (cam.isPerspectiveCamera) { cam.aspect = RW / RH; } else { const h = (camera.top - camera.bottom) / 2 / camera.zoom; cam.left = -h * RW / RH; cam.right = h * RW / RH; cam.top = h; cam.bottom = -h; cam.zoom = 1; }
@@ -605,7 +621,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     /* рамка только нужных сеток (например, кровать без одеяла и подушек — одеяло свисает шире рамы) */
     boxOf(keep) { const b = new THREE.Box3(); if (object) { object.updateMatrixWorld(true); object.traverse((o) => { if (o.isMesh && keep(o)) b.expandByObject(o); }); } return b; },
     supportsPhotoreal: false,
-    setObject, setView, frame, setDims, setStudio, snapshot, resize,
+    setObject, setView, frame, setDir3, setLight, setDims, setStudio, snapshot, resize,
     /* снаружи (комната двигает мебель): сцена могла измениться — тени пересчитать; markShadows=false — только перерисовать */
     requestRender: (markShadows = true) => { if (markShadows) shadowDirty = true; requestRender(); },
     cancelAnim() { anim = null; },
@@ -617,7 +633,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       if (!isFinite(dir.x) || dir.y < 0.15) dir = dir3q();
       const pos = t.clone().add(dir.multiplyScalar(dist));
       controls.minDistance = Math.min(controls.minDistance, dist * 0.6);
-      if (animate && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, pos, t, FOV, 700, null);
+      if (animate && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, pos, t, fov3(), 700, null);
       else { persp.position.copy(pos); controls.target.copy(t); controls.update(); applySeamLOD(persp, H); }
       requestRender();
     },

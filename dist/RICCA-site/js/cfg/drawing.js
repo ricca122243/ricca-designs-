@@ -772,7 +772,8 @@ export function layoutSheet(cfg, partsResult, opts = {}) {
   /* одеяло и подушки кровати (decor) и утопленные опоры (support) — не на чертеже */
   /* точная модель (как на фото): рисунок — настоящая форма, а цепочки размеров собраны по деталям конструктора и с ней не
      совпадают (секции, подлокотники) — оставляем только габариты: ширину, глубину, высоту */
-  const dimsSrc = cfg.exact ? src.dims.filter((d) => !(d.tier >= 1) && /^(Ширина|Ширина \(изголовье\)|Глубина|Высота|Длина|Длина шезлонга|Изголовье)$/.test(d.label)) : src.dims;
+  /* ручная модель: к габаритам добавляются размеры её частей из файла модели (cfg.freeDims; app.js → freeDims) */
+  const dimsSrc = cfg.exact ? src.dims.filter((d) => !(d.tier >= 1) && /^(Ширина|Ширина \(изголовье\)|Глубина|Высота|Длина|Длина шезлонга|Изголовье)$/.test(d.label)).concat(Array.isArray(cfg.freeDims) ? cfg.freeDims.map((d) => ({ ...d })) : []) : src.dims;
   /* деталь с неготовыми числами (новая форма в работе) — не на чертёж: иначе NaN в габарите портит весь лист */
   const okIt = (it) => ['x', 'y', 'z', 'sx', 'sy', 'sz'].every((k) => Number.isFinite(it[k]));
   const okD = (d) => [d.a, d.b].every((q) => Array.isArray(q) && q.every(Number.isFinite));

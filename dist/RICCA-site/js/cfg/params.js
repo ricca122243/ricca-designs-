@@ -952,8 +952,8 @@ function partsBed(p) {
   const wingW = wings ? clamp(p.hbOver + p.frameT, 0.10, 0.20) : 0;
   /* наклон (верх уходит назад на leanD), загнутые вперёд края (wrapD), форма верхнего края — одна «деформация» на все
      детали изголовья (furniture3d: bedWarp): в координатах изголовья целиком, поэтому рама, вставка и «ушки» гнутся вместе */
-  const leanD = Math.tan(BED_LEAN[x.hbLean] || 0) * (p.hbH - hb0);
-  const wrapD = x.hbWrap === 'shell' ? clamp(W * 0.11, 0.12, 0.24) : x.hbWrap === 'wings' ? 0.14 : 0;
+  const leanD = Math.round(Math.tan(BED_LEAN[x.hbLean] || 0) * (p.hbH - hb0) * 100) / 100;   // целые сантиметры — габарит в чертеже без дробей
+  const wrapD = x.hbWrap === 'shell' ? Math.round(clamp(W * 0.11, 0.12, 0.24) * 100) / 100 : x.hbWrap === 'wings' ? 0.14 : 0;
   /* «раковина» со стенками-клином (sail): задняя панель и две тонкие стенки, внутри — мягкая панель ниже кромки на 3,5 см.
      Стенка у верха выступает вперёд на sailD1, книзу сужается до sailD0 */
   const sail = x.hbWrap === 'sail', sailT = sail ? 0.055 : 0, sailB = sail ? 0.03 : 0;
