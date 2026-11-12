@@ -583,7 +583,7 @@ html[data-font="b"] .rp__h { font: 400 26px/1 var(--serif); letter-spacing: 0; }
   .bar .bar__next { gap: 8px; padding: 0 12px; font-size: 14px; white-space: nowrap; }
   .bar__n { font-weight: 400; font-size: 12px; opacity: .7; font-variant-numeric: tabular-nums; }
   .bar__next .ico { width: 14px; height: 14px; }
-  .cfg[data-mode="room"] ~ .bar { grid-template-columns: 1fr; }
+  .cfg[data-mode="room"] ~ .bar { grid-template-columns: auto minmax(0, 1fr); }   /* комната: «Чертёж» и «В WhatsApp» */
   .cfg[data-mode="room"] ~ .bar #bar-ar { display: none; }
   /* итог: пока видны его кнопки, плашка уезжает вниз — не две «В WhatsApp» и «У себя дома» на одном экране (app.js → syncBarAway) */
   .bar { transition: transform 300ms var(--ease), visibility 0s; }
@@ -796,7 +796,7 @@ html[data-font="b"] .dlg__hdr .caps { font: 400 26px/1 var(--serif); letter-spac
 .pp__ar .ico { width: 14px; height: 14px; }
 @media (max-width: 899px) {
   .cfg[data-mode="photo"] { --vp-h: clamp(260px, 58svh, 640px); }
-  .cfg[data-mode="photo"] ~ .bar { grid-template-columns: 1fr; }
+  .cfg[data-mode="photo"] ~ .bar { grid-template-columns: auto minmax(0, 1fr); }   /* фото: «Чертёж» и «В WhatsApp» */
   .cfg[data-mode="photo"] ~ .bar #bar-ar { display: none; }
   .modes { gap: 0; justify-content: space-between; }
   .modes__tab { font-size: 13px; white-space: nowrap; }

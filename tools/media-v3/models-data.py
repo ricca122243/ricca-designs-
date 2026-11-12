@@ -44,8 +44,8 @@ cat = js_to_json(block('RICCA_CATALOG')); names = js_to_json(block('RICCA_MODEL_
 CFG = {'sofas': 'sofa', 'beds': 'bed', 'armchairs': 'armchair'}
 out = []
 for it in cat:
-    if it['category'] not in CFG: continue
-    ph = sorted(it['photos'], key=lambda p: 0 if p.get('studio') else 1)
+    if it['category'] not in CFG or it.get('hidden'): continue   # hidden: true — модель снята с витрины (слабые фото или не в стиле)
+    ph = sorted(it['photos'], key=lambda p: 0 if (p.get('studio') or p.get('scene')) else 1)   # кадр-сцена остаётся на своём месте (обычно вторым), прочие непредметные — в конец
     photos = []
     for p in ph:
         f = os.path.join(ROOT, p['src']); f6 = os.path.join(ROOT, p.get('src600', p['src']))
@@ -63,6 +63,37 @@ for it in cat:
     name = names.get(it['id'], '')
     out.append({'id': 'm-' + it['id'], 'cat': it['category'], 'title': f"{it.get('type', '')} {name}".strip() if name else f"{it.get('type', '')} № {it['id'].split('-')[-1]}",
                 'sub': it.get('subtitle', ''), 'cfg': cfg, 'photos': photos, 'ig': '', 'model': True})
+
+# ── порядок на витрине и рекомендации — считаются сами (12 ноября: «премиальные вперёд, банальные вниз, всё автоматизировать»)
+import numpy as np
+def sharpness(path):
+    """резкость главного кадра: сколько мелких деталей теряется при уменьшении вдвое (изделие приведено к ширине 940 px, как на телефоне)"""
+    from studio_box import product_box
+    im = Image.open(path).convert('RGB'); bb, _ = product_box(np.asarray(im))
+    if bb is not None and bb[2] - bb[0] > 40 and bb[3] - bb[1] > 40: im = im.crop(tuple(int(v) for v in bb))
+    g = im.convert('L'); g = g.resize((940, max(8, round(940 * g.height / g.width))), Image.LANCZOS); a = np.asarray(g).astype(float)
+    d = g.resize((470, max(4, g.height // 2)), Image.LANCZOS).resize(g.size, Image.BICUBIC)
+    return float(np.abs(a - np.asarray(d).astype(float)).mean())
+UP = {'sofa-23', 'sofa-17', 'sofa-01', 'sofa-22', 'sofa-28', 'sofa-39', 'sofa-37', 'sofa-33', 'sofa-31', 'sofa-02', 'bed-27', 'bed-09', 'bed-35', 'armchair-23', 'armchair-07'}   # узнаваемые, «лицо» ателье
+DOWN = {'sofa-20'}                                                                                                                                                # простые формы — ниже
+PAIRS = {'sofa-23': ['armchair-23'], 'armchair-23': ['sofa-23'], 'sofa-47': ['armchair-22'], 'armchair-22': ['sofa-47'], 'sofa-48': ['bench-02'], 'bed-14': ['bench-03']}   # одна линия: диван и кресло
+def score(w):
+    ph = w['photos']; q = sharpness(os.path.join(ROOT, ph[0]['src'])); mid = w['id'][2:]
+    return (0 if q < 1.3 else 1 if q < 2.5 else 2) * 3 + min(len(ph), 8) * 0.6 + (2 if any(p.get('scene') for p in ph) else 0) + (4 if mid in UP else 0) - (3 if mid in DOWN else 0)
+for w in out: w['_s'] = round(score(w), 2)
+order = {c: i for i, c in enumerate(CFG)}
+out.sort(key=lambda w: (order[w['cat']], -w['_s']))            # сортировка устойчивая: при равном счёте — прежний порядок
+seats = [w for w in out if w['cat'] == 'armchairs']
+pick = {'sofa': [w['id'] for w in out if w['cat'] == 'sofas'], 'bed': [w['id'] for w in out if w['cat'] == 'beds'],
+        'armchair': [w['id'] for w in seats if w['title'].startswith('Кресло')], 'small': [w['id'] for w in seats if not w['title'].startswith('Кресло')]}
+PLAN = {'sofas': ('armchair', 'small', 'sofa'), 'beds': ('small', 'armchair', 'bed'), 'armchairs': ('sofa', 'small', 'armchair')}
+ids = {w['id'] for w in out}
+for i, w in enumerate(out):
+    rel = ['m-' + x for x in PAIRS.get(w['id'][2:], []) if 'm-' + x in ids]
+    for k, kind in enumerate(PLAN[w['cat']]):
+        pool = [x for x in pick[kind] if x != w['id'] and x not in rel][:8]     # из лучших восьми — по кругу, чтобы у соседних моделей советы различались
+        if pool and len(rel) < 3: rel.append(pool[(i + k * 3) % len(pool)])
+    w['rel'] = rel[:3]; del w['_s']
 with open(os.path.join(ROOT, 'js', 'models-data.js'), 'w', encoding='utf-8') as fh:
     fh.write('/* RICCA DESIGNS — модели каталога (фото на белом фоне) в формате работ. ФАЙЛ СОБИРАЕТСЯ СКРИПТОМ tools/media-v3/models-data.py\n   из js/catalog-data.js (там названия, подписи, фото) — руками не править. */\nwindow.RICCA_MODELS = [\n')
     fh.write(',\n'.join('  ' + json.dumps(w, ensure_ascii=False, separators=(', ', ': ')) for w in out)); fh.write('\n];\n')

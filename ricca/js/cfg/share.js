@@ -86,6 +86,10 @@ export function decodeCfg(str, { defaults = null } = {}) {
       res.params[key] = valIn(key, raw, defs ? defs[key] : undefined);
     } catch (e) { /* битый фрагмент — пропускаем */ }
   }
+  /* банкетка без размеров («t.pouf~f.bench» — рецепты каталога): размеры по умолчанию у пуфа (55 × 55) для неё — ошибка
+     («не подходит для одного изделия», чертёж и отправка закрыты). Берём размер банкетки, как при выборе формы в конструкторе.
+     Ссылки из конструктора длину банкетки пишут всегда (140 ≠ 55), так что их это не трогает */
+  if (res.type === 'pouf' && res.params.form === 'bench' && !('w' in res.params) && !('d' in res.params)) { res.params.w = 1.4; res.params.d = 0.45; }
   if (defs) res.params = { ...defs, ...res.params };
   return res;
 }

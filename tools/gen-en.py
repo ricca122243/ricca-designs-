@@ -177,6 +177,9 @@ TEXT = {
     'Приехать в&nbsp;шоурум': 'Visit the&nbsp;showroom',
     'Мягкая мебель на&nbsp;заказ&nbsp;— под&nbsp;ваш размер и&nbsp;ткань': 'Upholstered furniture made to&nbsp;order&nbsp;— your size, your fabric',
     'Матрасы': 'Mattresses', '3D-конструктор': '3D&nbsp;builder',
+    # 12 ноября: меню, окно модели, рекомендации
+    'Кресла и&nbsp;пуфы': 'Armchairs and&nbsp;poufs', 'Шоурум и&nbsp;контакты': 'Showroom &amp; contacts', '3D-модель': '3D model', 'Чертёж': 'Drawing',
+    'Рекомендуем к&nbsp;этой модели': 'You may also like',
     'Весь каталог': 'Full catalogue',
     'По&nbsp;две в&nbsp;ряд': 'Two per row',
     'Любой&nbsp;— под заказ': 'Any&nbsp;— made to order',
@@ -211,6 +214,8 @@ ATTR = {
  # телефон, 10 ноября
  'Быстрые действия': 'Quick actions', 'Популярные модели': 'Popular models', 'Модели в деталях': 'Models in detail', 'Станок с ЧПУ вырезает детали каркаса из листа фанеры': 'A CNC machine cuts frame parts from a plywood sheet', 'Разметка ткани мелом на раскройном столе': 'Marking fabric with chalk on the cutting table', 'Промышленная швейная машина: руки ведут ткань под иглой': 'An industrial sewing machine: hands guide the fabric under the needle', 'Мастер обтягивает подлокотник дивана тканью': 'A craftsman upholsters the armrest of a sofa', 'Об ателье подробно': 'About the atelier in detail', 'Ателье: диван в работе на подиуме, стол с инструментом и рулоны ткани': 'The atelier: a sofa in progress on a platform, a tool table and fabric rolls', 'Публикация RICCA HoReCa': 'RICCA HoReCa post', 'RICCA DESIGNS × HoReCa — мастерская ателье': 'RICCA DESIGNS × HoReCa — the atelier workshop', 'Комплектация объектов коммерческой недвижимости': 'Furnishing commercial property', 'Для кого: архитекторы, девелоперы, застройщики, управляющие компании, отели, рестораны': 'Who it is for: architects, developers, builders, management companies, hotels, restaurants', 'Сроки производства — от 25 до 45 рабочих дней': 'Production time — 25 to 45 working days', 'Наши проекты: частные дома, гостиницы, рестораны, апарт-комплексы': 'Our projects: private houses, hotels, restaurants, apartment complexes', 'Пошив: ткань под лапкой швейной машины': 'Sewing: fabric under the machine foot', 'Раскрой ткани ножницами': 'Cutting fabric with shears', 'Обивка: мастер крепит ткань': 'Upholstery: fixing the fabric', 'Работы по видам': 'Works by type', 'Каталог': 'Catalogue',
  'Позвонить: +7 (707) 955-08-08': 'Call: +7 (707) 955-08-08',
+ # 12 ноября: меню рядом с корзиной, 3D-модель и чертёж в окне модели
+ 'Модель в конструкторе': 'Model in the builder',
 }
 
 # --- фрагменты разметки, где в английском другой порядок слов: ↗ у ELUNA «приклеена» к последнему слову названия (.tile__nw),
