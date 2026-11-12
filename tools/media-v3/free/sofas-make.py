@@ -85,25 +85,24 @@ corner_chaise('sofa-30', 2.80, 0.98, 1.60, 0.80, 'pique:11', armW=0.22, armH=0.5
 corner_chaise('sofa-31', 3.00, 0.98, 1.65, 0.80, 'coco:9', armW=0.20, armH=0.60, seatH=0.46, baseY=0.13, chW=0.86, nBack=3, seatSplit=2, armSlope=[1,0.82], seatT=0.21, view=V(0,6,18,1.15), light=Lg(az=15,exposure=0.95,contrast=0.45),
   legs=dict(kind='wood',finish='blackwood'), legItems=[dict(id='legA',k='leg',p=[-1.40,0.065,1.55],s=[0.04,0.13,0.04],taper=0.55), dict(id='legB',k='leg',p=[-0.36,0.065,1.55],s=[0.04,0.13,0.04],taper=0.55), dict(id='legC',k='leg',p=[1.40,0.065,0.90],s=[0.04,0.13,0.04],taper=0.55), dict(id='legD',k='leg',p=[-1.40,0.065,0.08],s=[0.04,0.13,0.04],taper=0.55,mirror='x')])
 
-def tubs(id, x0, x1, z1, *, H=0.70, t=0.20, seatH=0.42, armL=False, armR=False, slopeR=None):
-    """секция-«ванна»: спинка сзади, при необходимости боковина слева/справа, внутри подушка сиденья"""
-    it = [dict(id=id+'Back', p=[(x0+x1)/2, H/2, t/2], s=[x1-x0, H, t], rx=0.07, rz=0.07, rTop=0.07, rBottom=0.03, noOcc=True)]
+def tubs(id, x0, x1, z1, *, H=0.70, t=0.24, seatH=0.42, armL=False, armR=False, slopeR=None):
+    """секция-«ванна»: спинка сзади, при необходимости боковина слева/справа, внутри подушка сиденья; мягкие толстые кромки"""
+    R = dict(rx=0.07, rz=0.08, rTop=0.085, rBottom=0.05, bulge=0.008, noOcc=True)
+    it = [dict(id=id+'Back', p=[(x0+x1)/2, H/2, t/2], s=[x1-x0, H, t], **R)]
     sx0, sx1 = x0 + (t if armL else 0), x1 - (t if armR else 0)
-    if armL: it.append(dict(id=id+'ArmL', p=[x0+t/2, H/2, z1/2], s=[t, H, z1], rx=0.07, rz=0.07, rTop=0.07, rBottom=0.03, noOcc=True))
+    if armL: it.append(dict(id=id+'ArmL', p=[x0+t/2, H/2, z1/2], s=[t, H, z1], **R))
     if armR:
-        a = dict(id=id+'ArmR', p=[x1-t/2, H/2, z1/2], s=[t, H, z1], rx=0.07, rz=0.07, rTop=0.07, rBottom=0.03, noOcc=True)
+        a = dict(id=id+'ArmR', p=[x1-t/2, H/2, z1/2], s=[t, H, z1], **R)
         if slopeR: a['warp'] = dict(topSlope=slopeR)
         it.append(a)
-    it.append(dict(id=id+'Base', p=[(sx0+sx1)/2, (seatH-0.16)/2, (t+z1)/2], s=[sx1-sx0, seatH-0.16, z1-t], rx=0.05, rz=0.06, rTop=0.02, rBottom=0.03))
-    it.append(dict(id=id+'Seat', p=[(sx0+sx1)/2, seatH-0.09, (t+z1)/2+0.005], s=[sx1-sx0-0.01, 0.19, z1-t], rx=0.07, rz=0.10, rzBack=0.03, rTop=0.08, rBottom=0.05, crown=0.018, bulge=0.008, noOcc=True))
+    it.append(dict(id=id+'Base', p=[(sx0+sx1)/2, (seatH-0.16)/2, (t+z1)/2], s=[sx1-sx0, seatH-0.16, z1-t], rx=0.05, rz=0.08, rTop=0.02, rBottom=0.05))
+    it.append(dict(id=id+'Seat', p=[(sx0+sx1)/2, seatH-0.09, (t+z1)/2+0.005], s=[sx1-sx0-0.01, 0.19, z1-t], rx=0.07, rz=0.12, rzBack=0.03, rTop=0.09, rBottom=0.06, crown=0.02, bulge=0.012, noOcc=True))
     return it
 
 # Kanva: оливковый твид с тёмным кантом, две секции-«ванны»: длинная слева и глубокая справа
 k = tubs('L', -1.50, 0.28, 1.00, armL=True) + tubs('R', 0.30, 1.50, 1.50, armR=True, slopeR=[1,0.86])
-k += [dict(id='pipeL',k='tube',m='matte',d=0.012,round=0.07,closed=False,pts=[[-1.30,0.705,0.98],[-1.30,0.705,0.20],[0.28,0.705,0.20]]),
-      dict(id='pipeR',k='tube',m='matte',d=0.012,round=0.07,closed=False,pts=[[0.30,0.705,0.20],[1.30,0.705,0.20],[1.30,0.62,1.48]]),
-      pillow('p1',-1.02,0.66,0.40,w=0.52,h=0.44,t=0.18,yaw=14,lean=-112,m='fabric2'), pillow('p2',-0.62,0.63,0.46,w=0.42,h=0.38,t=0.16,yaw=-10,lean=-114,m='decor'), pillow('p3',0.86,0.66,0.42,w=0.52,h=0.44,t=0.18,yaw=-16,lean=-112,m='fabric2')]
-save(dict(id='sofa-50',size=[3.00,1.50,0.70],view=V(0,7,18,1.15),light=Lg(az=15,exposure=0.76,contrast=0.5),fab='alba:16',fab2='molly:22',
+k += [pillow('p1',-1.02,0.66,0.40,w=0.52,h=0.44,t=0.18,yaw=14,lean=-112,m='fabric2'), pillow('p2',-0.62,0.63,0.46,w=0.42,h=0.38,t=0.16,yaw=-10,lean=-114,m='decor'), pillow('p3',0.86,0.66,0.42,w=0.52,h=0.44,t=0.18,yaw=-16,lean=-112,m='fabric2')]
+save(dict(id='sofa-50',size=[3.00,1.50,0.70],view=V(0,11,30,1.12),light=Lg(az=15,exposure=0.76,contrast=0.5),fab='alba:16',fab2='molly:22',
  measure=dict(seatH=0.42,armH=0.70,armW=0.20,seatD=0.80,legH=0.02,legLabel='Цоколь'),items=k))
 
 # Norva: тёмно-серый угловой на подиуме — длинное крыло-лежанка с открытым краем и короткое крыло с блоком-подлокотником
