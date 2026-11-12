@@ -13,6 +13,13 @@
  },
  "fab": "molly:9",
  "fab2": "molly:11",
+ "measure": {
+  "seatH": 0.37,
+  "armH": 0.58,
+  "armW": 0.09,
+  "armSide": "right",
+  "seatD": 0.85
+ },
  "items": [
   {
    "id": "plinth",

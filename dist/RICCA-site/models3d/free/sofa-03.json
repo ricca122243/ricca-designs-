@@ -12,6 +12,12 @@
   "zoom": 1.2
  },
  "fab": "exclusive:1",
+ "measure": {
+  "seatH": 0.4,
+  "armH": 0.73,
+  "armW": 0.31,
+  "seatD": 0.67
+ },
  "items": [
   {
    "id": "back",

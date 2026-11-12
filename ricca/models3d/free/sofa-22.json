@@ -16,6 +16,13 @@
   "kind": "metal",
   "finish": "black"
  },
+ "measure": {
+  "seatH": 0.32,
+  "armH": 0.6,
+  "armW": 0.24,
+  "seatD": 0.69,
+  "legH": 0.03
+ },
  "items": [
   {
    "id": "base",

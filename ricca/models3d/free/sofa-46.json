@@ -12,6 +12,12 @@
   "zoom": 1.2
  },
  "fab": "noble:18",
+ "measure": {
+  "seatH": 0.42,
+  "seatD": 0.62,
+  "legH": 0.02,
+  "legLabel": "Цоколь"
+ },
  "items": [
   {
    "id": "base",

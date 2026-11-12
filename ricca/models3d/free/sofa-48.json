@@ -13,6 +13,11 @@
  },
  "fab": "pique:2",
  "fab2": "pique:2",
+ "measure": {
+  "seatH": 0.44,
+  "seatD": 0.8,
+  "legH": 0.2
+ },
  "items": [
   {
    "id": "rail",

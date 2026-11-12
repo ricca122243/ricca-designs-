@@ -179,8 +179,11 @@ save(dict(id='sofa-43',size=[3.56,1.45,0.78],view=V(0,7,20,1.15),light=Lg(az=15,
  measure=dict(seatH=0.42,armH=0.66,armW=0.22,armSide='right',seatD=0.74,legH=0.08,legLabel='Цоколь'),items=s43))
 
 # Terva: низкий «галечный» угловой — две мягкие платформы и спинка из двух длинных валиков
-t45 = [puff('platMain',-0.50,1.50,0.10,1.15,0.02,0.40,r=0.20), puff('platChaise',-1.50,-0.44,0.10,2.00,0.02,0.40,r=0.22),
-       dict(id='rollLow',p=[0.05,0.50,0.22],s=[2.86,0.24,0.40],rx=0.12,rz=0.12,rTop=0.12,rBottom=0.11,noOcc=True),
-       dict(id='rollTop',p=[-0.35,0.65,0.13],s=[2.00,0.19,0.26],rx=0.095,rz=0.095,rTop=0.095,rBottom=0.09,noOcc=True)]
-save(dict(id='sofa-45',size=[3.00,2.00,0.67],view=V(-24,17,24,1.12),light=Lg(az=-25,exposure=1.05,contrast=0.45),fab='beauty:10',
+t45 = [puff('platMain',-0.62,1.50,0.10,1.15,0.02,0.40,r=0.20),
+       dict(id='rollLowR',p=[0.48,0.50,0.25],s=[2.04,0.24,0.42],rx=0.12,rz=0.12,rTop=0.12,rBottom=0.11,noOcc=True),
+       dict(id='rollTopR',p=[0.22,0.66,0.15],s=[1.50,0.19,0.27],rx=0.095,rz=0.095,rTop=0.095,rBottom=0.09,noOcc=True)]
+t45 += seg(-0.45, 0.22, 20, [dict(puff('platChaise',-1.10,0.02,-0.12,1.66,0.02,0.405,r=0.24)),
+       dict(id='rollLowL',p=[-0.50,0.50,0.03],s=[1.20,0.24,0.42],rx=0.12,rz=0.12,rTop=0.12,rBottom=0.11),
+       dict(id='rollTopL',p=[-0.42,0.66,-0.07],s=[0.95,0.19,0.27],rx=0.095,rz=0.095,rTop=0.095,rBottom=0.09)])
+save(dict(id='sofa-45',size=[3.00,2.00,0.67],view=V(-16,19,24,1.12),light=Lg(az=-25,exposure=1.05,contrast=0.45),fab='beauty:10',
  measure=dict(seatH=0.40,seatD=0.92,legH=0.02,legLabel='Цоколь'),items=t45))

@@ -12,6 +12,12 @@
   "zoom": 1.2
  },
  "fab": "molly:10",
+ "measure": {
+  "seatH": 0.36,
+  "armH": 0.61,
+  "armW": 0.29,
+  "seatD": 0.71
+ },
  "items": [
   {
    "id": "plinth",

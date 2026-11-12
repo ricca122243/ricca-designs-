@@ -16,6 +16,13 @@
   "kind": "metal",
   "finish": "black"
  },
+ "measure": {
+  "seatH": 0.44,
+  "armH": 0.54,
+  "armW": 0.25,
+  "seatD": 0.69,
+  "legH": 0.11
+ },
  "items": [
   {
    "id": "plat",

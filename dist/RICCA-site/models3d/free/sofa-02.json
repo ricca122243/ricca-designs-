@@ -17,6 +17,15 @@
   "kind": "wood",
   "finish": "walnut"
  },
+ "measure": {
+  "seatH": 0.47,
+  "armH": 0.63,
+  "armW": 0.23,
+  "armSide": "left",
+  "seatD": 0.8,
+  "legH": 0.04,
+  "legLabel": "Цоколь"
+ },
  "items": [
   {
    "id": "plinthMain",
