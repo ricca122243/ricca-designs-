@@ -212,6 +212,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-01",
     cfg: "t.modular~mo.2~mm.105~ch.none~as.wide~aw.26~ah.64~h.72~bc.fixed~lg.hidden",
+    fab: "ricca-velour:1",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -239,6 +240,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-02",
     cfg: "t.corner~f.chaise~s.left~w.300~l.165~as.thin~aw.10~ah.60~bc.loose~n.2~lg.plinth~lh.6~vc.wood~lf.walnut~vp.puff",
+    fab: "alba:3",
     category: "sofas",
     tags: ["corner", "straight"],
     type: "Диван",
@@ -261,6 +263,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-03",
     cfg: "t.sofa~w.230~as.round~aw.26~ah.74~h.74~bc.fixed~sc.single~p.1~lg.hidden~vs.oval",
+    fab: "molly:21",
     category: "sofas",
     tags: ["foldout", "straight"],
     type: "Диван",
@@ -285,6 +288,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-16",
     cfg: "t.corner~f.chaise~s.left~w.300~l.165~as.wide~aw.20~ah.58~bc.loose~n.2~lg.metal~lf.black~lh.10~vl.sled",
+    fab: "noble:4",
     category: "sofas",
     tags: ["foldout", "straight", "corner"],
     type: "Диван",
@@ -308,6 +312,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-17",
     cfg: "t.sofa~w.230~d.100~as.round~aw.22~ah.66~h.74~bc.loose~n.2~lg.hidden~vs.oval",
+    fab: "molly:9",
     category: "sofas",
     tags: ["foldout", "straight"],
     type: "Диван",
@@ -334,6 +339,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-18",
     cfg: "t.sofa~w.220~as.wide~aw.25~ah.72~h.74~bc.fixed~n.2~p.1~lg.hidden",
+    fab: "lucky:1",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -357,6 +363,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-19",
     cfg: "t.sofa~w.230~as.round~aw.30~ah.60~h.80~bc.loose~n.2~lg.hidden~vp.puff",
+    fab: "eclipse:2",
     category: "sofas",
     tags: ["straight", "corner"],
     type: "Диван",
@@ -379,6 +386,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-20",
     cfg: "t.sofa~w.240~as.thin~aw.16~ah.70~h.85~bc.loose~n.3~lg.metal~lf.black~lh.14~vl.cone",
+    fab: "noble:12",
     category: "sofas",
     tags: ["corner", "straight"],
     type: "Диван",
@@ -409,6 +417,7 @@ window.RICCA_CATALOG = [
     id: "sofa-21",
     hidden: true,
     cfg: "t.sofa~w.200~as.round~aw.18~ah.60~h.82~bc.loose~n.2~lg.wood~lf.blackwood~lh.8",
+    fab: "ricca-leather:7",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -428,6 +437,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-22",
     cfg: "t.sofa~w.250~as.round~aw.30~ah.70~h.70~bc.fixed~n.2~lg.hidden~vs.soft",
+    fab: "torrens:10",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -456,6 +466,7 @@ window.RICCA_CATALOG = [
     id: "sofa-23",
     glb: "models3d/sofa-23.glb",
     cfg: "t.sofa~w.220~as.round~aw.22~ah.62~h.90~bc.loose~n.2~lg.metal~lf.gold~lh.8~vl.sled~vp.puff",
+    fab: "noble:10",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -486,6 +497,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-01",
     cfg: "t.bed~hs.plain~hh.105~ho.5~ft.5~rh.30~b.float~lh.10~p.1~kc.dark~lt.1",
+    fab: "coco:15",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -510,6 +522,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-02",
     cfg: "t.bed~hs.plain~ks.round~hh.100~ho.3~ft.14~rh.40~b.plinth~lh.4~kr.soft~kd.20~lt.1",
+    fab: "eclipse:6",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -530,6 +543,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-03",
     cfg: "t.bed~hs.plain~kw.shell~hh.100~ho.4~ft.5~rh.28~b.legs~kg.metal~lf.black~lh.12",
+    fab: "lucky:16",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -553,6 +567,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-04",
     cfg: "t.bed~hs.plain~hh.105~ft.5~rh.30~b.legs~kg.metal~lf.chrome~lh.12~p.1",
+    fab: "noble:12",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -581,6 +596,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-05",
     cfg: "t.bed~hs.plain~ki.hchannels~kw.shell~hh.115~ho.2~ft.16~rh.32~kr.soft~b.legs~kg.disc~lf.black~lh.6",
+    fab: "molly:6",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -600,6 +616,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-09",
     cfg: "t.bed~hs.plain~ks.capsule~kb.roll~hh.100~ho.12~ft.8~rh.30~kr.soft~b.legs~kg.disc~lf.black~lh.6",
+    fab: "timeless:24",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -631,6 +648,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-10",
     cfg: "t.bed~hs.plain~ks.round~hh.100~ho.3~ft.5~rh.29~b.legs~kg.metal~lf.black~lh.14",
+    fab: "coco:13",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -658,6 +676,7 @@ window.RICCA_CATALOG = [
     id: "bed-11",
     hidden: true,
     cfg: "t.bed~hs.plain~hh.125~p.1~ft.6~rh.38~b.plinth~lh.4~lt.1",
+    fab: "eclipse:1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -680,6 +699,7 @@ window.RICCA_CATALOG = [
     id: "bed-12",
     hidden: true,
     cfg: "t.bed~hs.channels~hh.115~ft.10~rh.40~b.plinth~lh.4~lt.1",
+    fab: "molly:4",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -702,6 +722,7 @@ window.RICCA_CATALOG = [
     id: "bed-13",
     hidden: true,
     cfg: "t.bed~hs.plain~hh.100~ft.8~rh.38~b.plinth~lh.4~lt.1",
+    fab: "noble:1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -723,6 +744,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-14",
     cfg: "t.bed~hs.frame~ki.plain~hh.130~ho.3~ft.5~rh.30~b.legs~kg.metal~lf.chrome~lh.12",
+    fab: "alba:22",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -746,6 +768,7 @@ window.RICCA_CATALOG = [
     id: "bed-15",
     hidden: true,
     cfg: "t.bed~hs.plain~hh.105~ft.8~rh.38~b.plinth~lh.4~lt.1",
+    fab: "noble:1",
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -768,6 +791,7 @@ window.RICCA_CATALOG = [
     id: "bed-16",
     hidden: true,
     cfg: "t.bed~hs.channels~hh.100~ft.8~rh.33~b.plinth~lh.6~lt.1",
+    fab: "timeless:1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -788,6 +812,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-17",
     cfg: "t.bed~hs.straps~hh.130~ho.12~ft.8~rh.38~b.plinth~lh.4~lt.1",
+    fab: "alba:9",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -811,6 +836,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-18",
     cfg: "t.bed~hs.plain~ks.round~hh.80~ho.3~ft.10~rh.40~b.plinth~lh.4~kr.soft~kd.18~lt.1",
+    fab: "noble:11",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -836,6 +862,7 @@ window.RICCA_CATALOG = [
     id: "bed-19",
     hidden: true,
     cfg: "t.bed~hs.channels~hh.105~ft.8~rh.35~b.plinth~lh.4~lt.1",
+    fab: "pique:10",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -857,6 +884,7 @@ window.RICCA_CATALOG = [
     id: "bed-20",
     hidden: true,
     cfg: "t.bed~hs.wings~hh.115~ho.8~ft.6~rh.36~b.plinth~lh.4~lt.1",
+    fab: "torrens:1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -878,6 +906,7 @@ window.RICCA_CATALOG = [
     id: "bed-21",
     hidden: true,
     cfg: "t.bed~hs.wings~hh.105~ho.8~ft.6~rh.36~b.plinth~lh.4~lt.1",
+    fab: "timeless:1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -899,6 +928,7 @@ window.RICCA_CATALOG = [
     id: "bed-22",
     hidden: true,
     cfg: "t.bed~hs.plain~hh.120~p.1~ft.6~rh.38~b.plinth~lh.4~lt.1",
+    fab: "beauty:3",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -921,6 +951,7 @@ window.RICCA_CATALOG = [
     id: "bed-23",
     hidden: true,
     cfg: "t.bed~hs.plain~hh.120~ho.2~p.1~ft.6~rh.38~b.plinth~lh.4~lt.1",
+    fab: "torrens:1",
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -945,6 +976,7 @@ window.RICCA_CATALOG = [
     hidden: true,
     glb: "models3d/armchair-01.glb",
     cfg: "t.armchair~f.round~w.100~d.90~h.72~sh.40~sd.58~as.round~aw.22~ah.70~bc.fixed~lg.disc~lf.black~lh.8",
+    fab: "ricca-leather:11",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -964,6 +996,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-07",
     cfg: "t.armchair~f.classic~w.95~d.85~h.74~sh.44~sd.58~as.round~aw.18~ah.70~bc.fixed~lg.metal~lf.black~lh.18",
+    fab: "ricca:4",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -996,6 +1029,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-08",
     cfg: "t.armchair~f.classic~w.105~d.95~h.82~sh.42~sd.58~as.wide~aw.26~ah.68~bc.fixed~lg.plinth~lf.black~lh.4",
+    fab: "ricca-leather:8",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1017,6 +1051,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-09",
     cfg: "t.armchair~f.round~w.85~d.85~h.80~sh.42~sd.56~as.round~aw.16~ah.62~lg.plinth~lf.black~lh.4",
+    fab: "ricca:17",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1044,6 +1079,7 @@ window.RICCA_CATALOG = [
     id: "armchair-10",
     glb: "models3d/armchair-10.glb",
     cfg: "t.armchair~f.classic~w.90~d.85~h.74~sh.44~sd.56~as.round~aw.18~ah.66~bc.fixed~lg.hidden",
+    fab: "alba:22",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1069,6 +1105,7 @@ window.RICCA_CATALOG = [
     id: "armchair-11",
     glb: "models3d/armchair-11.glb",
     cfg: "t.armchair~f.classic~w.80~d.85~h.95~sh.42~sd.58~as.none~bc.fixed~lg.wood~lf.blackwood~lh.12",
+    fab: "ricca-leather:8",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1318,6 +1355,7 @@ window.RICCA_CATALOG = [
     id: "sofa-24",
     glb: "models3d/sofa-24.glb",
     cfg: "t.modular~mo.3~mm.95~ch.right~as.none~h.68~lg.hidden~vp.puff~vd.2",
+    fab: "torrens-plain:1",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1338,6 +1376,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-25",
     cfg: "t.corner~f.chaise~s.left~w.320~l.170~as.thin~aw.10~ah.58~bc.loose~n.2~lg.metal~lf.black~lh.14~va.left~vo.right~vd.1",
+    fab: "eclipse:8",
     glb: "models3d/sofa-25.glb",
     category: "sofas",
     tags: ["corner"],
@@ -1358,6 +1397,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-26",
     cfg: "t.modular~mo.3~mm.95~ch.left~as.round~aw.18~ah.58~h.72~lg.hidden~p.1~va.left~vo.right~vd.3",
+    fab: "coco:15",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1379,6 +1419,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-27",
     cfg: "t.modular~mo.3~mm.100~as.round~aw.22~ah.60~h.72~bc.loose~lg.plinth~lh.6~vm.arc",
+    fab: "coco:15",
     category: "sofas",
     tags: ["modular"],
     type: "Диван",
@@ -1398,6 +1439,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-28",
     cfg: "t.sofa~w.200~as.thin~aw.12~ah.75~h.95~bc.fixed~sc.single~lg.metal~lf.black~lh.20~vs.oval~vl.sled~vd.1",
+    fab: "ricca:11",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -1421,6 +1463,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-29",
     cfg: "t.sofa~w.240~as.wide~aw.18~ah.62~h.88~bc.loose~n.2~lg.metal~lf.black~lh.8",
+    fab: "eclipse:1",
     category: "sofas",
     tags: ["straight", "foldout"],
     type: "Диван",
@@ -1445,6 +1488,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-30",
     cfg: "t.corner~f.chaise~s.left~w.280~l.160~as.wide~aw.20~ah.62~bc.loose~n.2~lg.hidden~vd.2",
+    fab: "molly:15",
     category: "sofas",
     tags: ["corner", "foldout"],
     type: "Диван",
@@ -1469,6 +1513,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-12",
     cfg: "t.armchair~f.round~w.100~d.90~h.95~sh.44~sd.56~as.round~aw.16~ah.70~bc.loose~lg.metal~lf.black~lh.20",
+    fab: "timeless:3",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1488,6 +1533,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-13",
     cfg: "t.armchair~f.classic~w.85~d.90~h.80~sh.44~sd.58~as.thin~aw.8~ah.64~bc.loose~lg.metal~lf.black~lh.12",
+    fab: "molly:20",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1508,6 +1554,7 @@ window.RICCA_CATALOG = [
     id: "armchair-14",
     glb: "models3d/armchair-14.glb",
     cfg: "t.armchair~f.round~w.95~d.90~h.100~sh.44~sd.56~as.round~aw.16~ah.70~bc.loose~lg.metal~lf.black~lh.18",
+    fab: "torrens:9",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1528,6 +1575,7 @@ window.RICCA_CATALOG = [
     id: "bed-24",
     hidden: true,
     cfg: "t.bed~mw.180~hs.plain~hh.95~ft.12~rh.40~b.plinth~lh.4",
+    fab: "pique:7",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1549,6 +1597,7 @@ window.RICCA_CATALOG = [
     id: "armchair-15",
     hidden: true,
     cfg: "t.armchair~f.round~as.round~lg.disc~lf.black",
+    fab: "alba:1",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1568,6 +1617,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-31",
     cfg: "t.corner~f.chaise~s.left~w.300~l.165~as.thin~aw.12~ah.62~bc.loose~n.2~lg.wood~lf.blackwood~lh.14~vl.cone~vd.2",
+    fab: "noble:11",
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
@@ -1589,6 +1639,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-25",
     cfg: "t.bed~mw.180~hs.plain~ks.round~hh.100~ft.14~rh.40~b.plinth~lh.4~kr.split~kd.20~kl.lean",
+    fab: "alba:6",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1611,6 +1662,7 @@ window.RICCA_CATALOG = [
     id: "bed-26",
     glb: "models3d/bed-26.glb",
     cfg: "t.bed~hs.plain~ks.round~hh.110~ft.5~rh.32~b.legs~kg.metal~lf.black~lh.16~p.1",
+    fab: "molly:17",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1631,6 +1683,7 @@ window.RICCA_CATALOG = [
     id: "bed-27",
     glb: "models3d/bed-27.glb",
     cfg: "t.bed~hs.wings~ki.plain~kw.wings~hh.125~ho.12~ft.8~rh.38~b.plinth~lh.4",
+    fab: "torrens:2",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1656,6 +1709,7 @@ window.RICCA_CATALOG = [
     id: "bed-28",
     glb: "models3d/bed-28.glb",
     cfg: "t.bed~mw.180~hs.plain~ks.round~hh.100~ft.14~rh.40~b.plinth~lh.4~kr.split~kd.20",
+    fab: "molly:22",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1677,6 +1731,7 @@ window.RICCA_CATALOG = [
     id: "bed-29",
     glb: "models3d/bed-29.glb",
     cfg: "t.bed~mw.180~hs.plain~hh.105~ft.6~rh.38~b.legs~kg.metal~lf.black~lh.20",
+    fab: "lucky:1",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1697,6 +1752,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-30",
     cfg: "t.bed~mw.180~hs.frame~ki.plain~hh.100~ft.12~rh.40~b.plinth~lh.4~kr.split",
+    fab: "ricca-leather:8",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1717,6 +1773,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-31",
     cfg: "t.bed~mw.180~hs.pillows~ks.round~hh.105~ft.5~rh.30~b.legs~kg.metal~lf.chrome~lh.12",
+    fab: "torrens-plain:10",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1739,6 +1796,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-32",
     cfg: "t.bed~hs.plain~kw.shell~kl.lean~hh.110~ho.3~ft.5~rh.30~b.legs~kg.metal~lf.chrome~lh.12",
+    fab: "torrens-plain:6",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1761,6 +1819,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-33",
     cfg: "t.bed~mw.180~hs.plain~hh.75~ft.20~rh.42~b.plinth~lh.4~kd.25",
+    fab: "lucky:16",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1783,6 +1842,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-34",
     cfg: "t.bed~hs.wings~ki.plain~kl.lean~hh.125~ho.12~ft.6~rh.32~b.legs~kg.metal~lf.black~lh.14",
+    fab: "ricca:8",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1805,6 +1865,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-35",
     cfg: "t.bed~hs.plain~ks.wave~hh.140~ho.2~ft.8~rh.28~b.podium~lh.6",
+    fab: "timeless:1",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1828,6 +1889,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-32",
     cfg: "t.modular~mo.3~mm.100~as.wide~aw.20~ah.55~h.67~lg.hidden~vm.cornerL~vo.right~vd.4",
+    fab: "sambia:1",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1847,6 +1909,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-33",
     cfg: "t.modular~mo.3~mm.100~ch.left~as.wide~aw.18~ah.55~h.67~lg.hidden~p.1~va.left~vo.right~vd.4",
+    fab: "pique:13",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1868,6 +1931,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-34",
     cfg: "t.sofa~w.180~d.95~as.wide~aw.20~ah.60~h.70~bc.loose~sc.single~lg.hidden~va.right~vo.all",
+    fab: "sambia:1",
     category: "sofas",
     tags: ["modular"],
     type: "Диван",
@@ -1887,6 +1951,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-35",
     cfg: "t.modular~mo.2~mm.100~ch.right~as.round~aw.20~ah.60~h.70~bc.fixed~lg.hidden~va.right~vo.left~vp.puff~vd.1",
+    fab: "alba:2",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1907,6 +1972,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-36",
     cfg: "t.modular~mo.2~mm.95~as.wide~aw.22~ah.60~h.67~lg.hidden~vm.cornerL~vp.puff",
+    fab: "noble:9",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1927,6 +1993,7 @@ window.RICCA_CATALOG = [
     id: "sofa-37",
     glb: "models3d/sofa-37.glb",
     cfg: "t.corner~f.chaise~s.left~w.300~l.160~as.round~aw.18~ah.60~bc.loose~lg.metal~lf.black~lh.14~vd.3",
+    fab: "eclipse:8",
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
@@ -1947,6 +2014,7 @@ window.RICCA_CATALOG = [
     id: "sofa-38",
     glb: "models3d/sofa-38.glb",
     cfg: "t.corner~f.L~s.left~w.320~l.200~as.thin~aw.12~ah.58~bc.loose~lg.metal~lf.gold~lh.12~va.left~vo.right~vd.3",
+    fab: "beauty:2",
     category: "sofas",
     tags: ["corner", "modular"],
     type: "Диван",
@@ -1967,6 +2035,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-16",
     cfg: "t.armchair~f.classic~w.105~d.90~h.76~sh.44~sd.58~as.wide~aw.20~ah.64~bc.loose~lg.metal~lf.black~lh.12",
+    fab: "sambia:8",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1987,6 +2056,7 @@ window.RICCA_CATALOG = [
     id: "sofa-39",
     glb: "models3d/sofa-39.glb",
     cfg: "t.modular~mo.3~mm.95~as.none~bc.fixed~h.80~lg.hidden~vm.arc~vb.roll2",
+    fab: "eclipse:1",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -2015,6 +2085,7 @@ window.RICCA_CATALOG = [
     id: "sofa-40",
     glb: "models3d/sofa-40.glb",
     cfg: "t.sofa~w.210~as.thin~aw.14~ah.62~h.85~bc.loose~n.2~lg.metal~lf.black~lh.14~vd.2",
+    fab: "pique:13",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2034,6 +2105,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-17",
     cfg: "t.armchair~f.classic~w.85~d.88~h.74~sh.44~sd.58~as.thin~aw.10~ah.62~bc.loose~p.1~lg.metal~lf.black~lh.16",
+    fab: "torrens-plain:7",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2053,6 +2125,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-18",
     cfg: "t.armchair~f.classic~w.70~d.80~h.76~sh.42~sd.58~as.none~bc.loose~lg.wood~lf.blackwood~lh.8",
+    fab: "molly:22",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2073,6 +2146,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-19",
     cfg: "t.armchair~f.round~w.100~d.90~h.72~sh.40~sd.58~as.round~aw.22~ah.70~lg.hidden",
+    fab: "timeless:24",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2095,6 +2169,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-20",
     cfg: "t.armchair~f.round~w.95~d.88~h.72~sh.42~sd.60~as.round~aw.22~ah.64~lg.hidden",
+    fab: "exclusive:2",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2115,6 +2190,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-21",
     cfg: "t.armchair~f.classic~w.75~d.85~h.100~sh.42~sd.56~as.none~bc.fixed~lg.wood~lf.walnut~lh.20",
+    fab: "timeless:5",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2136,6 +2212,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-22",
     cfg: "t.armchair~f.round~w.90~d.82~h.74~sh.44~sd.56~as.round~aw.14~ah.70~lg.metal~lf.black~lh.20",
+    fab: "ricca:7",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2155,6 +2232,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-23",
     cfg: "t.armchair~f.classic~w.110~d.90~h.70~sh.42~sd.58~as.round~aw.22~ah.62~bc.loose~lg.metal~lf.gold~lh.10",
+    fab: "coco:14",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2177,6 +2255,7 @@ window.RICCA_CATALOG = [
   {
     id: "pouf-01",
     cfg: "t.pouf~f.square~w.90~h.38~tp.smooth~lg.metal~lf.black~lh.8~p.0",
+    fab: "sambia:9",
     category: "poufs",
     tags: [],
     type: "Пуф",
@@ -2197,6 +2276,7 @@ window.RICCA_CATALOG = [
   {
     id: "pouf-02",
     cfg: "t.pouf~f.round~w.70~h.42~lg.hidden~p.1",
+    fab: "noble:10",
     category: "poufs",
     tags: [],
     type: "Пуф",
@@ -2217,6 +2297,7 @@ window.RICCA_CATALOG = [
   {
     id: "pouf-03",
     cfg: "t.pouf~f.round~w.50~h.40~lg.hidden~p.0",
+    fab: "coco:9",
     category: "poufs",
     tags: [],
     type: "Пуф",
@@ -2237,6 +2318,7 @@ window.RICCA_CATALOG = [
   {
     id: "bench-01",
     cfg: "t.pouf~f.bench~w.150~d.50~h.42~lg.plinth~lf.black~lh.6~p.0",
+    fab: "pique:5",
     category: "poufs",
     tags: [],
     type: "Банкетка",
@@ -2257,6 +2339,7 @@ window.RICCA_CATALOG = [
   {
     id: "bench-02",
     cfg: "t.pouf~f.bench~w.150~d.55~h.42~lg.wood~lf.blackwood~lh.6~p.0",
+    fab: "sambia:8",
     category: "poufs",
     tags: [],
     type: "Банкетка",
@@ -2278,6 +2361,7 @@ window.RICCA_CATALOG = [
   {
     id: "bench-03",
     cfg: "t.pouf~f.bench~w.120~d.50~h.45~lg.metal~lf.black~lh.16~p.0",
+    fab: "alba:8",
     category: "poufs",
     tags: [],
     type: "Банкетка",
@@ -2298,6 +2382,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-41",
     cfg: "t.sofa~w.230~as.thin~aw.10~ah.62~h.80~bc.loose~n.3~lg.plinth~lh.6~vc.wood~lf.oak",
+    fab: "sambia:9",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2318,6 +2403,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-42",
     cfg: "t.corner~f.L~s.right~w.320~l.220~as.wide~aw.20~ah.60~h.78~bc.loose~lg.plinth~lh.8~vc.podium~lf.blackwood~va.right~vo.left~vd.3",
+    fab: "ricca:18",
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
@@ -2340,6 +2426,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-43",
     cfg: "t.modular~mo.3~mm.100~as.thin~aw.15~ah.60~h.78~bc.loose~lg.plinth~lh.6~vm.arc~vc.podium~lf.blackwood~va.right~vo.left",
+    fab: "ricca:5",
     category: "sofas",
     tags: ["modular"],
     type: "Диван",
@@ -2359,6 +2446,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-44",
     cfg: "t.sofa~w.160~as.thin~aw.10~ah.105~h.110~bc.fixed~sc.single~lg.hidden~vt.channels",
+    fab: "molly:9",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2379,6 +2467,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-45",
     cfg: "t.modular~mo.2~mm.100~as.none~bc.fixed~h.67~lg.hidden~vm.cornerL~vb.roll~vp.puff",
+    fab: "lucky:9",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -2400,6 +2489,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-46",
     cfg: "t.sofa~w.180~as.none~h.85~bc.loose~n.2~lg.hidden~vb.pebble~vp.puff",
+    fab: "torrens-plain:6",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2421,6 +2511,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-47",
     cfg: "t.sofa~w.170~d.85~as.round~aw.25~ah.72~h.74~bc.fixed~sc.single~lg.metal~lf.bordeaux~lh.20~vl.frame~vs.soft",
+    fab: "ricca-leather:5",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2442,6 +2533,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-48",
     cfg: "t.sofa~w.200~d.80~as.none~bc.fixed~sc.single~lg.wood~lf.oak~lh.16~vo.all~vd.1~vk.roll",
+    fab: "timeless:3",
     category: "sofas",
     tags: [],
     type: "Кушетка",
@@ -2462,6 +2554,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-49",
     cfg: "t.sofa~w.280~d.105~sd.60~as.wide~aw.28~ah.55~h.72~bc.fixed~n.2~lg.hidden~vp.puff",
+    fab: "noble:7",
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2481,6 +2574,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-50",
     cfg: "t.corner~f.L~s.right~w.300~l.200~as.wide~aw.22~ah.66~h.70~bc.fixed~lg.hidden~p.1~vd.3",
+    fab: "torrens-plain:7",
     category: "sofas",
     tags: ["corner", "modular"],
     type: "Диван",
@@ -2500,6 +2594,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-51",
     cfg: "t.modular~mo.3~mm.100~as.none~bc.fixed~h.67~lg.hidden~vt.grid~vo.left",
+    fab: "torrens-plain:12",
     category: "sofas",
     tags: ["modular"],
     type: "Диван",

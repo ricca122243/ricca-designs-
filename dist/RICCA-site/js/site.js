@@ -1367,7 +1367,7 @@
       wa.setAttribute('aria-label', tr`Хочу ${want(w)}: ${label(w)} — написать в WhatsApp`);
       // «3D-модель» — конструктор с рецептом модели; «Чертёж» — тот же адрес + &draw=1 (конструктор сразу откроет чертёж).
       // &from — конструктор покажет «‹ Кровать Bukel» и вернёт в это окно
-      const cfgHref = `${CFG_PAGE}#cfg=v1~${/~|^t\./.test(w.cfg || '') ? w.cfg : 't.' + encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}&from=work-${encodeURIComponent(w.id)}`;
+      const cfgHref = `${CFG_PAGE}#cfg=v1~${/~|^t\./.test(w.cfg || '') ? w.cfg : 't.' + encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}${w.fab ? `&f=${encodeURIComponent(w.fab)}` : ''}&from=work-${encodeURIComponent(w.id)}`;   // w.fab — ткань цвета с фото (tools/media-v3/model-fabric.py)
       t3s.forEach((a) => { a.href = cfgHref; a.setAttribute('aria-label', tr`3D-модель: ${w.title}`); });
       draws.forEach((a) => { a.href = `${cfgHref}&draw=1`; a.setAttribute('aria-label', tr`Чертёж: ${w.title}`); });
       igs.forEach((a) => { a.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; a.hidden = !!w.model; });   // у моделей каталога поста нет

@@ -501,6 +501,8 @@ function applyModel(mid) {
   memo[state.type] = state.params;
   state.inputErr = {};
   applyParams(d.type, d.params);
+  /* ткань модели — ближайшая по цвету к фото (поле fab в js/catalog-data.js): 3D сразу «как на фото», дальше клиент меняет сам */
+  if (m.fab) { const mf = findFabricShort(m.fab, lib); if (mf) { state.fabric = mf; state.fabricLost = false; } }
   activeModel = mid; exact = null; useExact(m);
   syncTypes(); setState({}, { structural: true }); renderForm(); renderHeads();
   if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced }));
