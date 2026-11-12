@@ -6,15 +6,15 @@
   0.67
  ],
  "view": {
-  "az": 28,
+  "az": -27,
   "el": 13,
   "fov": 22,
   "zoom": 1.15
  },
  "light": {
-  "az": 35,
-  "contrast": 0.5,
-  "exposure": 1.1
+  "az": -20,
+  "contrast": 0.55,
+  "exposure": 0.85
  },
  "fab": "beauty:13",
  "measure": {
@@ -28,14 +28,14 @@
    "id": "plinthL",
    "m": "matte",
    "p": [
-    -0.75,
+    -0.8,
     0.015,
-    0.64
+    0.6
    ],
    "s": [
-    1.36,
+    1.26,
     0.03,
-    0.58
+    0.66
    ],
    "r": 0.004
   },
@@ -43,47 +43,47 @@
    "id": "plinthR",
    "m": "matte",
    "p": [
-    0.75,
+    0.7,
     0.015,
-    0.64
+    0.6
    ],
    "s": [
-    1.36,
+    1.46,
     0.03,
-    0.58
+    0.62
    ],
    "r": 0.004
   },
   {
    "id": "platL",
    "p": [
-    -0.752,
+    -0.802,
     0.215,
-    0.64
+    0.59
    ],
    "s": [
-    1.495,
+    1.395,
     0.37,
-    0.72
+    0.82
    ],
    "rx": 0.07,
    "rz": 0.07,
    "rTop": 0.07,
    "rBottom": 0.05,
-   "crown": 0.01,
-   "tufting": "capitone",
+   "crown": 0.012,
+   "tufting": "grid",
    "tuftFace": "y",
    "noOcc": true
   },
   {
    "id": "platR",
    "p": [
-    0.752,
+    0.7,
     0.215,
     0.64
    ],
    "s": [
-    1.495,
+    1.6,
     0.37,
     0.72
    ],
@@ -91,20 +91,20 @@
    "rz": 0.07,
    "rTop": 0.07,
    "rBottom": 0.05,
-   "crown": 0.01,
-   "tufting": "capitone",
+   "crown": 0.012,
+   "tufting": "grid",
    "tuftFace": "y",
    "noOcc": true
   },
   {
    "id": "back",
    "p": [
-    -0.55,
+    0.3,
     0.35,
     0.15
    ],
    "s": [
-    1.9,
+    1.55,
     0.64,
     0.3
    ],
@@ -114,7 +114,7 @@
    "rBottom": 0.05,
    "crown": 0.01,
    "crownFace": "z",
-   "tufting": "capitone",
+   "tufting": "grid",
    "tuftFace": "z"
   }
  ]
