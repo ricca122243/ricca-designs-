@@ -315,3 +315,19 @@ body { counter-reset: sec 2; }
 .cats > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
 @media (min-width: 768px) { .cats > li:last-child:nth-child(odd) { grid-column: auto; } .cats > li:last-child:nth-child(3n + 1) { grid-column: 2; } }
 @media (min-width: 1100px) { .cats { grid-template-columns: repeat(7, minmax(0, 1fr)); } .cats > li:last-child:nth-child(3n + 1) { grid-column: auto; } }
+
+/* «Нам доверяют» — клиенты ателье в блоке «Для бизнеса» (владелец, 12 ноября). Восемь знаков одним светлым тоном на тёмном:
+   без цвета, рамок и подписей; телефон — по два в ряд, с 768 px — по четыре. Высота ячейки одна, знак вписан целиком */
+.biz__trust { grid-column: 1 / -1; display: grid; gap: 32px; margin-top: 24px; padding-top: 40px; border-top: 1px solid rgba(255, 255, 255, .2); }
+.biz__trust-t { color: var(--on-noir-2); }
+.biz__logos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 24px; margin: 0; padding: 0; list-style: none; }
+.biz__logos { --lh: 58px; }   /* опорная высота знака; --k у ячейки подравнивает зрительный вес: плотный «abr» меньше, знаки с мелкой подписью — больше */
+.biz__logos li { display: grid; place-items: center; height: 72px; }
+.biz__logos img { width: auto; height: auto; max-width: min(152px, 84%); max-height: calc(var(--lh) * var(--k, 1)); object-fit: contain; opacity: .9; }
+@media (min-width: 768px) {
+  .biz__trust { gap: 44px; margin-top: 40px; padding-top: 56px; }
+  .biz__logos { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 64px 40px; }
+  .biz__logos { --lh: 70px; }
+  .biz__logos li { height: 88px; }
+  .biz__logos img { max-width: min(180px, 78%); }
+}

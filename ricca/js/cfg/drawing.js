@@ -405,7 +405,7 @@ function layoutView(view, pr, den, bump = {}) {
   const grow = (bx) => { x0 = Math.min(x0, bx.x0); y0 = Math.min(y0, bx.y0); x1 = Math.max(x1, bx.x1); y1 = Math.max(y1, bx.y1); };
   for (const p of placed) { grow(p.box); for (const s of p.segs) grow({ x0: Math.min(s[0], s[2]), x1: Math.max(s[0], s[2]), y0: Math.min(s[1], s[3]), y1: Math.max(s[1], s[3]) }); }
   for (const h of hidden) { /* внутри контура */ }
-  return { view, Wv, Hv, shapes, hidden, placed, ext: { l: -x0, t: -y0, r: x1 - Wv, b: y1 - Hv }, conflicts: placed.filter((p) => p.conflict).length };
+  return { view, den, Wv, Hv, shapes, hidden, placed, ext: { l: -x0, t: -y0, r: x1 - Wv, b: y1 - Hv }, conflicts: placed.filter((p) => p.conflict).length };
 }
 
 /* ---------- таблица и штамп ---------- */
@@ -426,6 +426,149 @@ function clampLines(lines, max, width, size, weight) {
   while (textWidth(last, size, weight) > width && last.length > 2) last = last.slice(0, -2) + '…';
   out[max - 1] = last;
   return out;
+}
+
+/* начало SVG листа: стили, фильтры карандаша, бумага */
+function sheetHead(W, sw, sh, id, title, opts) {
+  W(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${n2(sw)} ${n2(sh)}" width="${n2(sw)}mm" height="${n2(sh)}mm">`);
+  W(`<title>${esc(`Чертёж ${id} — ${title}`)}</title>`);
+  W(`<style>${opts.fontCss || ''}
+text{font-family:${FONT};fill:${INK}}
+.o{fill:${PAPER};stroke:${INK};stroke-width:.32;stroke-linejoin:round;stroke-linecap:round}
+.o2{fill:none;stroke:${INK};stroke-width:.16;stroke-opacity:.45;stroke-linejoin:round;stroke-linecap:round}
+.cl{fill:none;stroke:#8E8E8E;stroke-width:.1;stroke-linecap:round}
+.hd{fill:none;stroke:${INK};stroke-width:.18;stroke-dasharray:1.5 1}
+.dl{fill:none;stroke:#3A3A3A;stroke-width:.15;stroke-linecap:butt;shape-rendering:geometricPrecision}
+.tk{fill:none;stroke:${INK};stroke-width:.3;stroke-linecap:round}
+.fl{fill:none;stroke:${INK};stroke-width:.22;stroke-linecap:round}
+.hand{font-family:${HAND};font-weight:500;fill:#333}
+.dt{fill:none;stroke:${INK};stroke-width:.13}
+.fr{fill:none;stroke:${INK};stroke-width:.5}
+.th{fill:none;stroke:${INK};stroke-width:.25}
+.tl{fill:none;stroke:#BDBDBD;stroke-width:.12}
+.dim{font-family:${HAND};font-size:${n2(FS * HAND_K)}px;font-weight:500;fill:#333}
+.cap{font-size:2.05px;font-weight:600;letter-spacing:.32px;fill:#555}
+</style>`);
+  /* карандаш: лёгкое дрожание линий (шум) и второй, бледный проход со своим шумом; штриховки — фон эскиза и тень на полу */
+  W(`<defs>
+<filter id="pn" x="-5%" y="-5%" width="110%" height="110%" filterUnits="objectBoundingBox"><feTurbulence type="fractalNoise" baseFrequency=".32" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale=".42" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="pn2" x="-5%" y="-5%" width="110%" height="110%" filterUnits="objectBoundingBox"><feTurbulence type="fractalNoise" baseFrequency=".22" numOctaves="2" seed="11"/><feDisplacementMap in="SourceGraphic" scale=".7" xChannelSelector="G" yChannelSelector="R"/></filter>
+<pattern id="hx" width="1.5" height="1.5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V1.5" stroke="#9A9A9A" stroke-width=".1"/></pattern>
+<pattern id="hxx" width="1.7" height="1.7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V1.7M0 0H1.7" stroke="#B4B4B4" stroke-width=".09"/></pattern>
+<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<mask id="fadeM" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#fade)"/></mask>
+</defs>`);
+  W(`<rect x="0" y="0" width="${n2(sw)}" height="${n2(sh)}" fill="${PAPER}"/>`);
+}
+
+/* один вид на листе: контур (карандашом из 3D или векторный), невидимые ножки, матрас, размеры; X, Y — левый верхний угол
+   контура вида на листе. labels — подписи для проверки пересечений */
+const VIEW_TITLE = { front: 'Вид спереди', side: 'Вид слева', top: 'Вид сверху' };
+function viewSideNote(type, params) {
+  return type === 'corner' ? (params.form === 'chaise' ? `шезлонг ${params.side === 'right' ? 'справа' : 'слева'}` : (params.side === 'right' ? 'угол справа' : 'угол слева'))
+    : type === 'modular' && params.chaise !== 'none' ? `шезлонг ${params.chaise === 'right' ? 'справа' : 'слева'}` : '';
+}
+function drawView(W, labels, V, X, Y, { cfg, pr, type, params, opts, withTitle = true }) {
+  const sideNote = viewSideNote(type, params);
+  W(`<g transform="translate(${n2(X)} ${n2(Y)})">`);
+  /* подпись вида */
+  if (withTitle) {
+    const vt = (VIEW_TITLE[V.view] + (V.view === 'top' && sideNote ? ` · ${sideNote}` : '')).toUpperCase();
+    const vtY = -V.ext.t - 2.2;
+    W(`<text class="cap" x="0" y="${n2(vtY)}">${esc(vt)}</text>`);
+    labels.push({ view: V.view, id: '_title', text: vt, box: { x0: X, x1: X + textWidth(vt, 2.05, 600, 0.32), y0: Y + vtY - 1.6, y1: Y + vtY + 0.4 } });
+  }
+  /* построение: лёгкие линии габарита с выходом за контур, как в эскизе от руки */
+  const CO = 4;
+  W(`<path class="cl" d="M${n2(-CO)} 0H${n2(V.Wv + CO)}M${n2(-CO)} ${n2(V.Hv)}H${n2(V.Wv + CO)}M0 ${n2(-CO)}V${n2(V.Hv + CO)}M${n2(V.Wv)} ${n2(-CO)}V${n2(V.Hv + CO)}"/>`);
+  /* вид карандашом из 3D (render → viewPics): штрихованный фон за верхней частью (спереди и слева, как в эскизе), сам рисунок —
+     точно в контур вида; без него — векторные контуры деталей, как раньше */
+  const vp = opts.viewPics && opts.viewPics[V.view];
+  if (vp) {
+    if (V.view !== 'top') W(`<rect x="${n2(-V.Wv * 0.05)}" y="${n2(-V.Hv * 0.1)}" width="${n2(V.Wv * 1.09)}" height="${n2(V.Hv * 0.62)}" fill="url(#hxx)"/>`);
+    const kx = V.Wv / (vp.rect[2] - vp.rect[0]), ky = V.Hv / (vp.rect[3] - vp.rect[1]);
+    if (cfg.exact && Math.abs(kx / ky - 1) > 0.03) {
+      /* точная модель: пропорции из файла модели не тянем под рецепт — рисунок без искажений, по центру, на полу (план — по центру) */
+      const k = Math.min(kx, ky), rw = (vp.rect[2] - vp.rect[0]) * k, rh = (vp.rect[3] - vp.rect[1]) * k;
+      const x0 = (V.Wv - rw) / 2 - vp.rect[0] * k, y0 = (V.view === 'top' ? (V.Hv - rh) / 2 : V.Hv - rh) - vp.rect[1] * k;
+      W(picTag(n2(x0), n2(y0), n2(vp.w * k), n2(vp.h * k), 'none', vp.url, vp.mask, `pm-${V.view}`));
+    } else W(picTag(n2(-vp.rect[0] * kx), n2(-vp.rect[1] * ky), n2(vp.w * kx), n2(vp.h * ky), 'none', vp.url, vp.mask, `pm-${V.view}`));
+    if (V.view !== 'top') W(`<line class="fl" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
+  }
+  /* пол и тень штриховкой под изделием */
+  if (V.view !== 'top' && !vp) {
+    W(`<rect x="${n2(-1.5)}" y="${n2(V.Hv)}" width="${n2(V.Wv + 3)}" height="2.6" fill="url(#hx)" mask="url(#fadeM)"/>`);
+    W(`<line class="fl" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
+  }
+  W(`<g filter="url(#pn)">`);
+  /* детали: дальние → ближние; простёжка изголовья — сразу после него (ближние детали её закрывают) */
+  for (const s of vp ? [] : V.shapes) {
+    W(`<path class="o" d="${s.d}"/>`);
+    W(`<path class="o2" filter="url(#pn2)" d="${s.d}"/>`);
+    const it = s.it;
+    /* каретная стяжка на сиденье пуфа / банкетки — пуговицы на виде сверху */
+    if (V.view === 'top' && it.tufting === 'capitone' && it.role === 'seat') {
+      const P = projector('top', pr._bounds), kk = 1000 / V.den;
+      const a = P([it.x - it.sx / 2, 0, it.z - it.sz / 2]), b = P([it.x + it.sx / 2, 0, it.z + it.sz / 2]);
+      const u0 = a[0] * kk, v0 = a[1] * kk, u1 = b[0] * kk, v1 = b[1] * kk, round = it.shape === 'cyl';
+      const sx = 0.14 * kk, sy = 0.12 * kk, cu = (u0 + u1) / 2, cv = (v0 + v1) / 2, ru = (u1 - u0) / 2 - sx * 0.45, rv = (v1 - v0) / 2 - sy * 0.45;
+      const nu = Math.max(1, Math.floor((u1 - u0) / sx)), nv = Math.max(1, Math.floor((v1 - v0) / sy));
+      for (let j = 0; j < nv; j++) for (let i = 0; i < nu - (j % 2); i++) {
+        const u = cu + (i - (nu - 1 - (j % 2)) / 2) * sx, v = cv + (j - (nv - 1) / 2) * sy;
+        if (round ? ((u - cu) / ru) ** 2 + ((v - cv) / rv) ** 2 > 1 : Math.abs(u - cu) > ru || Math.abs(v - cv) > rv) continue;
+        /* не ставим пуговицу на отметку ножки */
+        if (V.hidden.some((h) => { const c = P([h.it.x, 0, h.it.z]); return Math.hypot(c[0] * kk - u, c[1] * kk - v) < (h.it.sx / 2) * kk + 1.2; })) continue;
+        W(`<circle cx="${n2(u)}" cy="${n2(v)}" r=".3" fill="${INK}"/>`);
+      }
+    }
+    if (V.view !== 'front' || !it.tufting || it.role !== 'headboard') continue;
+    const P = projector('front', pr._bounds), kk = 1000 / V.den;
+    const a = P([it.x - it.sx / 2, it.y + it.sy / 2, 0]), b = P([it.x + it.sx / 2, it.y - it.sy / 2, 0]);
+    const u0 = a[0] * kk, v0 = a[1] * kk, u1 = b[0] * kk, v1 = b[1] * kk;
+    if (it.tufting === 'channels') {
+      const n = Math.max(5, Math.min(9, Math.round(it.sx / 0.2)));
+      for (let i = 1; i < n; i++) { const u = u0 + ((u1 - u0) * i) / n; W(`<line class="dt" x1="${n2(u)}" y1="${n2(v0 + 1.2)}" x2="${n2(u)}" y2="${n2(v1 - 1.2)}"/>`); }
+    } else if (it.tufting === 'capitone') {
+      const sx = 0.14 * kk, sy = 0.12 * kk; let row = 0;
+      for (let v = v0 + sy * 0.8; v < v1 - sy * 0.5; v += sy, row++) for (let u = u0 + sx * (row % 2 ? 1 : 0.5); u < u1 - sx * 0.4; u += sx) W(`<circle cx="${n2(u)}" cy="${n2(v)}" r=".3" fill="${INK}"/>`);
+    }
+  }
+  W('</g>');
+  /* невидимые (под корпусом) — штрихом: ножки и опоры на виде сверху */
+  for (const h of V.hidden) {
+    const bb = h.it._bb, sz = Math.min(bb.max[0] - bb.min[0], bb.max[2] - bb.min[2]) * 1000 / V.den;
+    if (sz >= 2) { W(`<path class="hd" d="${h.d}"${sz < 7 ? ' style="stroke-dasharray:.7 .45"' : ''}/>`); continue; }
+    /* тонкая ножка под корпусом — отметка положения (крест) */
+    const P = projector('top', pr._bounds), kk = 1000 / V.den, c = P([h.it.x, 0, h.it.z]), cu = c[0] * kk, cv = c[1] * kk;
+    W(`<path class="dt" d="M${n2(cu - 0.9)} ${n2(cv)}H${n2(cu + 0.9)}M${n2(cu)} ${n2(cv - 0.9)}V${n2(cv + 0.9)}"/>`);
+  }
+  /* матрас на виде сверху — подпись внутри */
+  if (V.view === 'top' && type === 'bed') {
+    const m = pr.items.find((i) => i.id === 'mattress');
+    if (m) {
+      const P = projector('top', pr._bounds), kk = 1000 / V.den, c = P([m.x, 0, m.z]);
+      const t1 = `матрас ${fmtLen(params.mw)} × ${fmtLen(params.ml)}`;
+      const w = textWidth(t1, 2.3, 400);
+      if (w < m.sx * kk - 4) {
+        W(`<text x="${n2(c[0] * kk)}" y="${n2(c[1] * kk)}" text-anchor="middle" style="font-size:2.3px;font-weight:400;font-style:italic">${esc(t1)}</text>`);
+        labels.push({ view: 'top', id: '_mattress', text: t1, box: { x0: X + c[0] * kk - w / 2, x1: X + c[0] * kk + w / 2, y0: Y + c[1] * kk - 1.8, y1: Y + c[1] * kk + 0.4 }, inside: true });
+      }
+    }
+  }
+  /* размеры */
+  for (const p of V.placed) {
+    W(`<path class="dl" d="M${n2(p.dl[0])} ${n2(p.dl[1])}L${n2(p.dl[2])} ${n2(p.dl[3])}${p.ext.map((s) => `M${n2(s[0])} ${n2(s[1])}L${n2(s[2])} ${n2(s[3])}`).join('')}"/>`);
+    const ticks = p.e.orient === 'h' ? [[p.e.c1, p.line], [p.e.c2, p.line]] : [[p.line, p.e.c1], [p.line, p.e.c2]];
+    /* засечки 45°; на очень коротких размерах (< 2,4 мм) — точки, чтобы засечки не слипались */
+    if (p.e.c2 - p.e.c1 < 2.4) W(ticks.map(([x, y]) => `<circle cx="${n2(x)}" cy="${n2(y)}" r=".32" fill="${INK}"/>`).join(''));
+    else W(`<path class="tk" d="${ticks.map(([x, y]) => `M${n2(x - TICK)} ${n2(y + TICK)}L${n2(x + TICK)} ${n2(y - TICK)}`).join('')}"/>`);
+    if (p.rot) W(`<text class="dim" text-anchor="middle" transform="translate(${n2(p.tx)} ${n2(p.ty)}) rotate(-90)">${esc(p.e.text)}</text>`);
+    else W(`<text class="dim" text-anchor="middle" x="${n2(p.tx)}" y="${n2(p.ty)}">${esc(p.e.text)}</text>`);
+    labels.push({ view: V.view, id: p.e.d.id, text: p.e.text, value: p.e.d.value, label: p.e.d.label, tier: p.e.d.tier, side: p.e.side, row: p.row, conflict: !!p.conflict,
+      box: { x0: X + p.box.x0, x1: X + p.box.x1, y0: Y + p.box.y0, y1: Y + p.box.y1 },
+      segs: p.segs.map((s) => [X + s[0], Y + s[1], X + s[2], Y + s[3]]) });
+  }
+  W('</g>');
 }
 
 /* ---------- лист ---------- */
@@ -450,6 +593,7 @@ export function layoutSheet(cfg, partsResult, opts = {}) {
   /* примечания под видами */
   const noteList = [...(cfg.notes || []), ...(pr.notes || []).filter((n) => !/^угол /.test(n))].map((s) => String(s).replace(/^./, (c) => c.toUpperCase()));
   const noteText = noteList.length ? 'Примечания: ' + noteList.map((n, i) => `${i + 1}) ${n.replace(/[.;]\s*$/, '')}`).join('; ') + '.' : '';
+  if (opts.portrait) return portraitSheet({ cfg, type, params, pr, title, id, date, lines, noteText, opts });
   const NOTE_FS = 2.1;
   const noteLines = noteText ? clampLines(wrap(noteText, FIELD.x1 - FIELD.x0, NOTE_FS, 400), 3, FIELD.x1 - FIELD.x0, NOTE_FS, 400) : [];
   const fieldY1 = FIELD.y1 - (noteLines.length ? noteLines.length * 3 + 2 : 0);
@@ -497,140 +641,10 @@ export function layoutSheet(cfg, partsResult, opts = {}) {
   const out = [];
   const labels = [];
   const W = (s) => out.push(s);
-  W(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${SHEET.w} ${SHEET.h}" width="${SHEET.w}mm" height="${SHEET.h}mm">`);
-  W(`<title>${esc(`Чертёж ${id} — ${title}`)}</title>`);
-  W(`<style>${opts.fontCss || ''}
-text{font-family:${FONT};fill:${INK}}
-.o{fill:${PAPER};stroke:${INK};stroke-width:.32;stroke-linejoin:round;stroke-linecap:round}
-.o2{fill:none;stroke:${INK};stroke-width:.16;stroke-opacity:.45;stroke-linejoin:round;stroke-linecap:round}
-.cl{fill:none;stroke:#8E8E8E;stroke-width:.1;stroke-linecap:round}
-.hd{fill:none;stroke:${INK};stroke-width:.18;stroke-dasharray:1.5 1}
-.dl{fill:none;stroke:#3A3A3A;stroke-width:.15;stroke-linecap:butt;shape-rendering:geometricPrecision}
-.tk{fill:none;stroke:${INK};stroke-width:.3;stroke-linecap:round}
-.fl{fill:none;stroke:${INK};stroke-width:.22;stroke-linecap:round}
-.hand{font-family:${HAND};font-weight:500;fill:#333}
-.dt{fill:none;stroke:${INK};stroke-width:.13}
-.fr{fill:none;stroke:${INK};stroke-width:.5}
-.th{fill:none;stroke:${INK};stroke-width:.25}
-.tl{fill:none;stroke:#BDBDBD;stroke-width:.12}
-.dim{font-family:${HAND};font-size:${n2(FS * HAND_K)}px;font-weight:500;fill:#333}
-.cap{font-size:2.05px;font-weight:600;letter-spacing:.32px;fill:#555}
-</style>`);
-  /* карандаш: лёгкое дрожание линий (шум) и второй, бледный проход со своим шумом; штриховки — фон эскиза и тень на полу */
-  W(`<defs>
-<filter id="pn" x="-5%" y="-5%" width="110%" height="110%" filterUnits="objectBoundingBox"><feTurbulence type="fractalNoise" baseFrequency=".32" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale=".42" xChannelSelector="R" yChannelSelector="G"/></filter>
-<filter id="pn2" x="-5%" y="-5%" width="110%" height="110%" filterUnits="objectBoundingBox"><feTurbulence type="fractalNoise" baseFrequency=".22" numOctaves="2" seed="11"/><feDisplacementMap in="SourceGraphic" scale=".7" xChannelSelector="G" yChannelSelector="R"/></filter>
-<pattern id="hx" width="1.5" height="1.5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V1.5" stroke="#9A9A9A" stroke-width=".1"/></pattern>
-<pattern id="hxx" width="1.7" height="1.7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V1.7M0 0H1.7" stroke="#B4B4B4" stroke-width=".09"/></pattern>
-<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
-<mask id="fadeM" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#fade)"/></mask>
-</defs>`);
-  W(`<rect x="0" y="0" width="${SHEET.w}" height="${SHEET.h}" fill="${PAPER}"/>`);
+  sheetHead(W, SHEET.w, SHEET.h, id, title, opts);
   W(`<rect class="fr" x="${FRAME.x0}" y="${FRAME.y0}" width="${FRAME.x1 - FRAME.x0}" height="${FRAME.y1 - FRAME.y0}"/>`);
 
-  const VIEW_TITLE = { front: 'Вид спереди', side: 'Вид слева', top: 'Вид сверху' };
-  const sideNote = type === 'corner' ? (params.form === 'chaise' ? `шезлонг ${params.side === 'right' ? 'справа' : 'слева'}` : (params.side === 'right' ? 'угол справа' : 'угол слева'))
-    : type === 'modular' && params.chaise !== 'none' ? `шезлонг ${params.chaise === 'right' ? 'справа' : 'слева'}` : '';
-  for (const V of [F, S, T]) {
-    const [X, Y] = pos[V.view];
-    W(`<g transform="translate(${n2(X)} ${n2(Y)})">`);
-    /* подпись вида */
-    const vt = (VIEW_TITLE[V.view] + (V.view === 'top' && sideNote ? ` · ${sideNote}` : '')).toUpperCase();
-    const vtY = -V.ext.t - 2.2;
-    W(`<text class="cap" x="0" y="${n2(vtY)}">${esc(vt)}</text>`);
-    labels.push({ view: V.view, id: '_title', text: vt, box: { x0: X, x1: X + textWidth(vt, 2.05, 600, 0.32), y0: Y + vtY - 1.6, y1: Y + vtY + 0.4 } });
-    /* построение: лёгкие линии габарита с выходом за контур, как в эскизе от руки */
-    const CO = 4;
-    W(`<path class="cl" d="M${n2(-CO)} 0H${n2(V.Wv + CO)}M${n2(-CO)} ${n2(V.Hv)}H${n2(V.Wv + CO)}M0 ${n2(-CO)}V${n2(V.Hv + CO)}M${n2(V.Wv)} ${n2(-CO)}V${n2(V.Hv + CO)}"/>`);
-    /* вид карандашом из 3D (render → viewPics): штрихованный фон за верхней частью (спереди и слева, как в эскизе), сам рисунок —
-       точно в контур вида; без него — векторные контуры деталей, как раньше */
-    const vp = opts.viewPics && opts.viewPics[V.view];
-    if (vp) {
-      if (V.view !== 'top') W(`<rect x="${n2(-V.Wv * 0.05)}" y="${n2(-V.Hv * 0.1)}" width="${n2(V.Wv * 1.09)}" height="${n2(V.Hv * 0.62)}" fill="url(#hxx)"/>`);
-      const kx = V.Wv / (vp.rect[2] - vp.rect[0]), ky = V.Hv / (vp.rect[3] - vp.rect[1]);
-      if (cfg.exact && Math.abs(kx / ky - 1) > 0.03) {
-        /* точная модель: пропорции из файла модели не тянем под рецепт — рисунок без искажений, по центру, на полу (план — по центру) */
-        const k = Math.min(kx, ky), rw = (vp.rect[2] - vp.rect[0]) * k, rh = (vp.rect[3] - vp.rect[1]) * k;
-        const x0 = (V.Wv - rw) / 2 - vp.rect[0] * k, y0 = (V.view === 'top' ? (V.Hv - rh) / 2 : V.Hv - rh) - vp.rect[1] * k;
-        W(picTag(n2(x0), n2(y0), n2(vp.w * k), n2(vp.h * k), 'none', vp.url, vp.mask, `pm-${V.view}`));
-      } else W(picTag(n2(-vp.rect[0] * kx), n2(-vp.rect[1] * ky), n2(vp.w * kx), n2(vp.h * ky), 'none', vp.url, vp.mask, `pm-${V.view}`));
-      if (V.view !== 'top') W(`<line class="fl" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
-    }
-    /* пол и тень штриховкой под изделием */
-    if (V.view !== 'top' && !vp) {
-      W(`<rect x="${n2(-1.5)}" y="${n2(V.Hv)}" width="${n2(V.Wv + 3)}" height="2.6" fill="url(#hx)" mask="url(#fadeM)"/>`);
-      W(`<line class="fl" x1="${n2(-3)}" y1="${n2(V.Hv)}" x2="${n2(V.Wv + 3)}" y2="${n2(V.Hv)}"/>`);
-    }
-    W(`<g filter="url(#pn)">`);
-    /* детали: дальние → ближние; простёжка изголовья — сразу после него (ближние детали её закрывают) */
-    for (const s of vp ? [] : V.shapes) {
-      W(`<path class="o" d="${s.d}"/>`);
-      W(`<path class="o2" filter="url(#pn2)" d="${s.d}"/>`);
-      const it = s.it;
-      /* каретная стяжка на сиденье пуфа / банкетки — пуговицы на виде сверху */
-      if (V.view === 'top' && it.tufting === 'capitone' && it.role === 'seat') {
-        const P = projector('top', pr._bounds), kk = 1000 / den;
-        const a = P([it.x - it.sx / 2, 0, it.z - it.sz / 2]), b = P([it.x + it.sx / 2, 0, it.z + it.sz / 2]);
-        const u0 = a[0] * kk, v0 = a[1] * kk, u1 = b[0] * kk, v1 = b[1] * kk, round = it.shape === 'cyl';
-        const sx = 0.14 * kk, sy = 0.12 * kk, cu = (u0 + u1) / 2, cv = (v0 + v1) / 2, ru = (u1 - u0) / 2 - sx * 0.45, rv = (v1 - v0) / 2 - sy * 0.45;
-        const nu = Math.max(1, Math.floor((u1 - u0) / sx)), nv = Math.max(1, Math.floor((v1 - v0) / sy));
-        for (let j = 0; j < nv; j++) for (let i = 0; i < nu - (j % 2); i++) {
-          const u = cu + (i - (nu - 1 - (j % 2)) / 2) * sx, v = cv + (j - (nv - 1) / 2) * sy;
-          if (round ? ((u - cu) / ru) ** 2 + ((v - cv) / rv) ** 2 > 1 : Math.abs(u - cu) > ru || Math.abs(v - cv) > rv) continue;
-          /* не ставим пуговицу на отметку ножки */
-          if (V.hidden.some((h) => { const c = P([h.it.x, 0, h.it.z]); return Math.hypot(c[0] * kk - u, c[1] * kk - v) < (h.it.sx / 2) * kk + 1.2; })) continue;
-          W(`<circle cx="${n2(u)}" cy="${n2(v)}" r=".3" fill="${INK}"/>`);
-        }
-      }
-      if (V.view !== 'front' || !it.tufting || it.role !== 'headboard') continue;
-      const P = projector('front', pr._bounds), kk = 1000 / den;
-      const a = P([it.x - it.sx / 2, it.y + it.sy / 2, 0]), b = P([it.x + it.sx / 2, it.y - it.sy / 2, 0]);
-      const u0 = a[0] * kk, v0 = a[1] * kk, u1 = b[0] * kk, v1 = b[1] * kk;
-      if (it.tufting === 'channels') {
-        const n = Math.max(5, Math.min(9, Math.round(it.sx / 0.2)));
-        for (let i = 1; i < n; i++) { const u = u0 + ((u1 - u0) * i) / n; W(`<line class="dt" x1="${n2(u)}" y1="${n2(v0 + 1.2)}" x2="${n2(u)}" y2="${n2(v1 - 1.2)}"/>`); }
-      } else if (it.tufting === 'capitone') {
-        const sx = 0.14 * kk, sy = 0.12 * kk; let row = 0;
-        for (let v = v0 + sy * 0.8; v < v1 - sy * 0.5; v += sy, row++) for (let u = u0 + sx * (row % 2 ? 1 : 0.5); u < u1 - sx * 0.4; u += sx) W(`<circle cx="${n2(u)}" cy="${n2(v)}" r=".3" fill="${INK}"/>`);
-      }
-    }
-    W('</g>');
-    /* невидимые (под корпусом) — штрихом: ножки и опоры на виде сверху */
-    for (const h of V.hidden) {
-      const bb = h.it._bb, sz = Math.min(bb.max[0] - bb.min[0], bb.max[2] - bb.min[2]) * 1000 / den;
-      if (sz >= 2) { W(`<path class="hd" d="${h.d}"${sz < 7 ? ' style="stroke-dasharray:.7 .45"' : ''}/>`); continue; }
-      /* тонкая ножка под корпусом — отметка положения (крест) */
-      const P = projector('top', pr._bounds), kk = 1000 / den, c = P([h.it.x, 0, h.it.z]), cu = c[0] * kk, cv = c[1] * kk;
-      W(`<path class="dt" d="M${n2(cu - 0.9)} ${n2(cv)}H${n2(cu + 0.9)}M${n2(cu)} ${n2(cv - 0.9)}V${n2(cv + 0.9)}"/>`);
-    }
-    /* матрас на виде сверху — подпись внутри */
-    if (V.view === 'top' && type === 'bed') {
-      const m = pr.items.find((i) => i.id === 'mattress');
-      if (m) {
-        const P = projector('top', pr._bounds), kk = 1000 / den, c = P([m.x, 0, m.z]);
-        const t1 = `матрас ${fmtLen(params.mw)} × ${fmtLen(params.ml)}`;
-        const w = textWidth(t1, 2.3, 400);
-        if (w < m.sx * kk - 4) {
-          W(`<text x="${n2(c[0] * kk)}" y="${n2(c[1] * kk)}" text-anchor="middle" style="font-size:2.3px;font-weight:400;font-style:italic">${esc(t1)}</text>`);
-          labels.push({ view: 'top', id: '_mattress', text: t1, box: { x0: X + c[0] * kk - w / 2, x1: X + c[0] * kk + w / 2, y0: Y + c[1] * kk - 1.8, y1: Y + c[1] * kk + 0.4 }, inside: true });
-        }
-      }
-    }
-    /* размеры */
-    for (const p of V.placed) {
-      W(`<path class="dl" d="M${n2(p.dl[0])} ${n2(p.dl[1])}L${n2(p.dl[2])} ${n2(p.dl[3])}${p.ext.map((s) => `M${n2(s[0])} ${n2(s[1])}L${n2(s[2])} ${n2(s[3])}`).join('')}"/>`);
-      const ticks = p.e.orient === 'h' ? [[p.e.c1, p.line], [p.e.c2, p.line]] : [[p.line, p.e.c1], [p.line, p.e.c2]];
-      /* засечки 45°; на очень коротких размерах (< 2,4 мм) — точки, чтобы засечки не слипались */
-      if (p.e.c2 - p.e.c1 < 2.4) W(ticks.map(([x, y]) => `<circle cx="${n2(x)}" cy="${n2(y)}" r=".32" fill="${INK}"/>`).join(''));
-      else W(`<path class="tk" d="${ticks.map(([x, y]) => `M${n2(x - TICK)} ${n2(y + TICK)}L${n2(x + TICK)} ${n2(y - TICK)}`).join('')}"/>`);
-      if (p.rot) W(`<text class="dim" text-anchor="middle" transform="translate(${n2(p.tx)} ${n2(p.ty)}) rotate(-90)">${esc(p.e.text)}</text>`);
-      else W(`<text class="dim" text-anchor="middle" x="${n2(p.tx)}" y="${n2(p.ty)}">${esc(p.e.text)}</text>`);
-      labels.push({ view: V.view, id: p.e.d.id, text: p.e.text, value: p.e.d.value, label: p.e.d.label, tier: p.e.d.tier, side: p.e.side, row: p.row, conflict: !!p.conflict,
-        box: { x0: X + p.box.x0, x1: X + p.box.x1, y0: Y + p.box.y0, y1: Y + p.box.y1 },
-        segs: p.segs.map((s) => [X + s[0], Y + s[1], X + s[2], Y + s[3]]) });
-    }
-    W('</g>');
-  }
+  for (const V of [F, S, T]) drawView(W, labels, V, pos[V.view][0], pos[V.view][1], { cfg, pr, type, params, opts });
   /* масштаб под видами */
   const scaleTxt = `М 1:${den}`;
 
@@ -672,36 +686,7 @@ text{font-family:${FONT};fill:${INK}}
     /* эскиз 3/4: штрихованный фон-прямоугольник за изделием (как в эскизе от руки), сам эскиз — карандашом (render() → pencilSketch),
        размеры в перспективе, подпись от руки со стрелкой */
     const pad = 2, ax = cx0 + pad, ay = FRAME.y0 + pad, aw = cw - 2 * pad, ah = renderH - 2 * pad - 3;
-    const sk = opts.sketch;
-    const k = sk ? Math.min(aw / sk.w, ah / sk.h) : 1, ox = sk ? ax + (aw - sk.w * k) / 2 : ax, oy = sk ? ay + (ah - sk.h * k) / 2 : ay;
-    const M = (q) => [ox + q[0] * k, oy + q[1] * k];
-    let bx0 = cx0 + 7, bx1 = cx1 - 9, by0 = ay + ah * 0.12, by1 = ay + ah * 0.66;
-    if (sk) {
-      const [o0, o1] = [M([sk.obj[0], sk.obj[1]]), M([sk.obj[2], sk.obj[3]])], ow = o1[0] - o0[0], oh = o1[1] - o0[1];
-      bx0 = Math.max(cx0 + 3, o0[0] - ow * 0.05); bx1 = Math.min(cx1 - 3, o1[0] + ow * 0.03); by0 = Math.max(ay + 1, o0[1] - oh * 0.12); by1 = o0[1] + oh * 0.55;
-    }
-    W(`<rect x="${n2(bx0)}" y="${n2(by0)}" width="${n2(bx1 - bx0)}" height="${n2(by1 - by0)}" fill="url(#hxx)"/>`);
-    W(`<path class="cl" d="M${n2(bx0 - 3)} ${n2(by0)}H${n2(bx1 + 2)}M${n2(bx0)} ${n2(by0 - 2.5)}V${n2(by1 + 3)}M${n2(bx1)} ${n2(by0 - 3)}V${n2(by1 + 2)}M${n2(bx0 - 2)} ${n2(by1)}H${n2(bx1 + 3)}"/>`);
-    /* линии построения: рёбра габаритного «ящика» в перспективе с выходом за углы — как в эскизе от руки (за рисунком) */
-    if (sk && sk.box8) {
-      const P8 = sk.box8.map(M), E = [[0, 1], [1, 3], [3, 2], [2, 0], [0, 4], [1, 5], [2, 6], [3, 7], [4, 5], [5, 7], [7, 6], [6, 4]];
-      const ext = (p, q, f) => [p[0] + (p[0] - q[0]) * f, p[1] + (p[1] - q[1]) * f];
-      W(`<clipPath id="rc"><rect x="${n2(cx0 + 1)}" y="${n2(FRAME.y0 + 1)}" width="${n2(cw - 2)}" height="${n2(renderH - 2)}"/></clipPath>`);
-      W(`<path class="cl" clip-path="url(#rc)" style="stroke:#A3A3A3;stroke-width:.09" d="${E.map(([i, j]) => { const a = ext(P8[i], P8[j], 0.14), b = ext(P8[j], P8[i], 0.14); return `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`; }).join('')}"/>`);
-    }
-    W(picTag(n2(ax), n2(ay), n2(aw), n2(ah), 'xMidYMid meet', opts.render3qDataUrl, opts.render3qMask, 'pm-3q'));
-    if (sk) for (const d of sk.dims) {
-      const a = M(d.a), b = M(d.b), ea = M(d.ea), eb = M(d.eb), n = d.n, o = 1.1;
-      const ang = Math.atan2(eb[1] - ea[1], eb[0] - ea[0]), ux = Math.cos(ang), uy = Math.sin(ang);
-      const tick = (q) => `M${n2(q[0] - (ux - uy) * 0.7)} ${n2(q[1] - (uy + ux) * 0.7)}L${n2(q[0] + (ux - uy) * 0.7)} ${n2(q[1] + (uy + ux) * 0.7)}`;
-      /* выносные — с зазором от изделия (как в черчении): от 40 % выноса до чуть дальше размерной */
-      const ga = [a[0] + (ea[0] - a[0]) * 0.4, a[1] + (ea[1] - a[1]) * 0.4], gb = [b[0] + (eb[0] - b[0]) * 0.4, b[1] + (eb[1] - b[1]) * 0.4];
-      W(`<path class="dl" d="M${n2(ga[0])} ${n2(ga[1])}L${n2(ea[0] + n[0] * o)} ${n2(ea[1] + n[1] * o)}M${n2(gb[0])} ${n2(gb[1])}L${n2(eb[0] + n[0] * o)} ${n2(eb[1] + n[1] * o)}M${n2(ea[0] - ux * 1.2)} ${n2(ea[1] - uy * 1.2)}L${n2(eb[0] + ux * 1.2)} ${n2(eb[1] + uy * 1.2)}"/>`);
-      W(`<path class="tk" d="${tick(ea)}${tick(eb)}"/>`);
-      let deg = (ang * 180) / Math.PI; if (deg > 60) deg -= 180; if (deg <= -120) deg += 180;   // вертикаль — снизу вверх, как в черчении
-      const t = [(ea[0] + eb[0]) / 2 + n[0] * 1.9, (ea[1] + eb[1]) / 2 + n[1] * 1.9];
-      W(`<text class="hand" text-anchor="middle" dominant-baseline="middle" transform="translate(${n2(t[0])} ${n2(t[1])}) rotate(${n2(deg)})" style="font-size:3px">${esc(d.text)}</text>`);
-    }
+    drawSketch(W, opts, { ax, ay, aw, ah, lim: [cx0 + 3, cx1 - 3], box0: [cx0 + 7, cx1 - 9], clip: [cx0 + 1, FRAME.y0 + 1, cw - 2, renderH - 2] });
     /* подпись от руки: название и стрелка к изделию — слева вверху */
     const hn = title, hfs = 3.1, hx = cx0 + 4, hy = ay + 5;
     W(`<text class="hand" x="${n2(hx)}" y="${n2(hy)}" style="font-size:${hfs}px">${esc(hn)}</text>`);

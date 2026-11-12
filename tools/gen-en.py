@@ -14,7 +14,7 @@ TEXT = {
  'Мягкая мебель на&nbsp;заказ': 'Custom upholstered furniture',
  'Диваны, кровати и&nbsp;кресла — по&nbsp;вашему фото, эскизу или проекту. Своё ателье.': 'Sofas, beds and&nbsp;armchairs — from&nbsp;your photo, sketch or project. Our own atelier.',
  'Диван Rasma · букле': 'Rasma sofa · bouclé', 'в&nbsp;любом размере и&nbsp;ткани': 'in&nbsp;any size and&nbsp;fabric', 'Диваны': 'Sofas',
- 'Кровати': 'Beds', 'Кресла': 'Armchairs', 'Пуфы и&nbsp;банкетки': 'Poufs and&nbsp;benches', 'Любой размер': 'Any size', 'Любая ткань': 'Any fabric',
+ 'Кровати': 'Beds', 'Нам доверяют': 'Trusted by', 'Кресла': 'Armchairs', 'Пуфы и&nbsp;банкетки': 'Poufs and&nbsp;benches', 'Любой размер': 'Any size', 'Любая ткань': 'Any fabric',
  'Своё ателье в&nbsp;Алматы': 'Our own atelier in&nbsp;Almaty', 'Матрасы ELUNA': 'ELUNA mattresses',
  '— сайт ELUNA, откроется в&nbsp;новой вкладке': '— ELUNA website, opens in&nbsp;a new tab',
  'Прямые, угловые, модульные, раскладные': 'Straight, corner, modular, sofa beds',
@@ -186,6 +186,7 @@ TEXT = {
     'Выбрать': 'Choose',
 }
 ATTR = {
+ 'Восемь озёр': 'Vosem Ozer (Eight Lakes) resort', 'Макао': 'Macao', 'Клиенты ателье': 'Clients of the atelier',
     'Модульный диван Денвер в рогожке цвета мокко — работа ателье': 'Denver modular sofa in mocha hopsack — the atelier\'s work',
  # атрибуты (aria-label, alt, title, placeholder, content)
  'Язык сайта': 'Site language', '© 2026 RICCA DESIGNS. Все права защищены.': '© 2026 RICCA DESIGNS. All rights reserved.',
