@@ -424,8 +424,34 @@ async function loadFreeGroup(m) {
   wrap.userData.base = { w: size.x, d: size.z, h: size.y, rw: d.w, rd: d.d, rh: d.h };
   window.RICCA_FREE_DIMS = { id: m.id, w: size.x, d: size.z, h: size.y, rw: d.w, rd: d.d, rh: d.h };   // для проверки: габарит модели и рецепта
   wrap.userData.view = spec.view || null; wrap.userData.free = true;
+  wrap.userData.freeDims = freeDims(spec.measure, d);
   g.position.set(-c.x, -box.min.y, -c.z); wrap.add(g);
   return wrap;
+}
+/* размеры частей ручной модели для чертежа (measure в файле модели, метры): высота сиденья, подлокотника, ножек, ширина подлокотника,
+   глубина сиденья; у кровати — высота царги и верх матраса. Линии стоят там же, где у изделия из деталей (params.js → dims) */
+function freeDims(ms, d) {
+  if (!ms || !d) return null;
+  /* оси — как у деталей после parts(): x и z от середины изделия, y от пола; фронт — z = +глубина / 2 */
+  const X0 = -d.w / 2, X1 = d.w / 2, Z0 = -d.d / 2, Z1 = d.d / 2, out = [], ok = (v, max) => Number.isFinite(v) && v > 0.01 && v < max - 0.005;
+  const K = { x: 0, y: 1, z: 2 };
+  const D = (id, label, view, axis, a, b, tier, place) => out.push({ id, label, value: Math.abs(b[K[axis]] - a[K[axis]]), view, axis, a, b, tier, place });
+  const lg = ok(ms.legH, d.h) ? ms.legH : 0;
+  if (ok(ms.seatH, d.h)) D('seatH', 'Высота сиденья', 'front', 'y', [X0, 0, Z1], [X0, ms.seatH, Z1], 1, 'left');
+  if (ok(ms.armH, d.h)) D('armH', 'Высота подлокотника', 'front', 'y', [X0, 0, Z1], [X0, ms.armH, Z1], 0, 'left');
+  if (ok(ms.railH, d.h)) D('railH', 'Высота царги', 'front', 'y', [X0, 0, Z1], [X0, ms.railH, Z1], 1, 'left');
+  if (ok(ms.mTop, d.h)) D('mTop', 'Верх матраса', 'front', 'y', [X0, 0, Z1], [X0, ms.mTop, Z1], 0, 'left');
+  if (lg) D('legH', ms.legLabel || 'Ножки', 'front', 'y', [X0, 0, Z1], [X0, lg, Z1], 2, 'left');
+  if (ok(ms.armW, d.w / 2)) {
+    if (ms.armSide !== 'right') D('armW-l', 'Подлокотник', 'front', 'x', [X0, lg, Z1], [X0 + ms.armW, lg, Z1], 2, 'bottom');
+    if (ms.armSide !== 'left') D('armW-r', 'Подлокотник', 'front', 'x', [X1 - ms.armW, lg, Z1], [X1, lg, Z1], 2, 'bottom');
+  }
+  if (ok(ms.seatD, d.d)) {
+    const y = ok(ms.seatH, d.h) ? ms.seatH : lg;
+    D('backT', 'Спинка', 'side', 'z', [X0, y, Z0], [X0, y, Z1 - ms.seatD], 1, 'bottom');
+    D('seatD', 'Глубина сиденья', 'side', 'z', [X0, y, Z1 - ms.seatD], [X0, y, Z1], 1, 'bottom');
+  }
+  return out.length ? out : null;
 }
 async function loadExactGroup(m) {
   if (/\.json(\?|$)/.test(m.glb)) return loadFreeGroup(m);
@@ -1131,7 +1157,7 @@ function drawingCfg(stalled = false) {
   const d = new Date();
   return {
     ...cfgState(), id: id(), title: titleOf(state.type, state.params), lines: summaryLines(cfgState(), { dims: curDims() }),
-    notes: state.notes.slice(), dims: curDims(), exact: !!(exact && exact.id === activeModel) || (stalled && isExact()), date: `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`,
+    notes: state.notes.slice(), dims: curDims(), exact: !!(exact && exact.id === activeModel) || (stalled && isExact()), freeDims: (exact && exact.id === activeModel && exact.group.userData.freeDims) || null, date: `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`,
   };
 }
 let drawingJob = null, drawingLast = null, drawingSeq = 0;
