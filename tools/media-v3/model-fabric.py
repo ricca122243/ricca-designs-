@@ -41,6 +41,9 @@ def dominant(path, bed):
     return cen[cnt.argmax()]
 # ткань задана вручную по фото (двухцветные и велюр — автоподбор берёт слишком тёмный тон)
 MANUAL = {'bed-03': 'torrens-plain:13'}
+# ткани ручных 3D-моделей (tools/media-v3/free/free-apply.mjs) — подобраны по фото вручную
+_fm = os.path.join('tools', 'media-v3', 'free', 'fab-manual.json')
+if os.path.exists(_fm): MANUAL.update(json.load(open(_fm, encoding='utf-8')))
 p = 'ricca/js/catalog-data.js'; s = open(p, encoding='utf-8').read(); n = 0; rep = []
 for m in d['c']:
     if m.get('category') not in ('sofas', 'beds', 'armchairs', 'poufs') or not m.get('cfg'): continue

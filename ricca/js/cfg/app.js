@@ -408,7 +408,10 @@ async function loadFreeGroup(m) {
   let spec = exactCache.get(m.glb);
   if (!spec) { const r = await fetch(m.glb, { cache: 'no-cache' }); if (!r.ok) throw new Error(`free ${r.status}`); spec = await r.json(); exactCache.set(m.glb, spec); }
   const rc = decodeCfg(`v1~${m.cfg}`, { defaults: P.DEFAULTS }), rp = runValidate(rc.type, rc.params).params, q = quality();
-  const g = F.build(rc.type, rp, M.materialSet({ type: rc.type, params: rp, fabric: state.fabric, quality: q }), { quality: q, parts: F.partsFromSpec(spec) });
+  const mats0 = M.materialSet({ type: rc.type, params: rp, fabric: state.fabric, quality: q });
+  /* вторая ткань модели (боковины, валики, кант в другом цвете): fab2 в файле, детали с m: "fabric2"; клиент меняет только основную */
+  if (spec.fab2) { const f2 = findFabricShort(spec.fab2, lib); if (f2) mats0.fabric2 = M.fabricMaterial({ hex: f2.hex, kind: f2.kind, src450: f2.src450, src900: f2.src900, collectionId: f2.collectionId, finish: f2.finish, quality: q }); }
+  const g = F.build(rc.type, rp, mats0, { quality: q, parts: F.partsFromSpec(spec) });
   /* габарит — по изделию без декора (подушки-декор и плед в размер не входят) */
   const box = new THREE.Box3(), bb = new THREE.Box3();
   g.updateMatrixWorld(true);

@@ -1164,6 +1164,7 @@ export function build(type, params, materials = {}, opts = {}) {
     fabric: materials.fabric || neutral('fabric'), legs: materials.legs || neutral('legs'),
     top: materials.top || neutral('top'), mattress: materials.mattress || neutral('mattress'),
     decor: materials.decor || neutral('decor'), throw: neutral('throw'), tape: materials.tape || neutral('tape'), support: neutral('support'),
+    fabric2: materials.fabric2 || materials.fabric || neutral('fabric'),   // ручная модель: вторая ткань (fab2 в файле модели)
   };
   const seamM = seamMaterial(M.fabric) || M.fabric;
   const pipeM = pipingMaterial(M.fabric) || M.fabric;
@@ -1194,7 +1195,7 @@ export function build(type, params, materials = {}, opts = {}) {
     if (it.tiltX) fitTilted(geo, it);
     /* покрывало — серо-бежевый лён (не белое на белом матрасе: кровать читается объёмом, как на фото работ) */
     const mk = it.decorKind === 'duvet' ? 'throw' : it.mat;
-    addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support'].includes(mk) ? mk : it.tone === 'light' || mk === 'fabricL' ? 'fabricL' : 'fabric', it, it.decor ? { decor: true } : null);
+    addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support', 'fabric2'].includes(mk) ? mk : it.tone === 'light' || mk === 'fabricL' ? 'fabricL' : 'fabric', it, it.decor ? { decor: true } : null);
     /* кант и швы (у матраса — тёмная лента по верхней кромке; нижняя скрыта в раме) */
     const pipeMat = it.mat === 'mattress' || it.pipeTone === 'dark' ? 'tape' : 'fabric';
     /* кровать: валик по краю изголовья (толстый кант в цвет ткани) */
