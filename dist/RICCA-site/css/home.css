@@ -331,3 +331,6 @@ body { counter-reset: sec 2; }
   .biz__logos li { height: 88px; }
   .biz__logos img { max-width: min(180px, 78%); }
 }
+
+/* «Популярные модели» — четыре кадра одного вида (изделие у бетонной стены): на широком экране в один ряд */
+@media (min-width: 1200px) { .wk.pm { grid-template-columns: repeat(4, minmax(0, 1fr)); } .wk.pm .pm__da { aspect-ratio: 4 / 5; } }

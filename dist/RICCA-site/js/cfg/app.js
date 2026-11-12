@@ -325,7 +325,7 @@ async function loadExactGroup(m) {
     const legs = /legs/.test(o.name) || (o.parent && /legs/.test(o.parent.name));
     /* кровати: матрас, одеяло и подушки — отдельная сетка «bedding» (tools/media-v3/model3d-bedding.py): белые, не цвета ткани */
     const bedding = /bedding/.test(o.name) || (o.parent && /bedding/.test(o.parent.name));
-    o.userData.matKey = legs ? 'legs' : bedding ? 'mattress' : 'fabric'; o.castShadow = true; o.receiveShadow = !legs;
+    o.userData.matKey = legs ? 'legs' : bedding ? 'mattress' : 'fabric'; o.castShadow = true; o.receiveShadow = false;   // 12 ноября: обивка точной модели не принимает тени (на телефонах — серые пятна от подушек); тень на полу остаётся
     o.geometry = o.geometry.clone(); prepExactGeo(THREE, o.geometry, k);
   });
   return wrap;
