@@ -6,9 +6,9 @@
   1.0
  ],
  "view": {
-  "az": -36,
-  "el": 14,
-  "fov": 34,
+  "az": -42,
+  "el": 12,
+  "fov": 26,
   "zoom": 1.15
  },
  "light": {
@@ -42,26 +42,29 @@
    "bulge": 0.01,
    "warp": {
     "lean": 0.08
-   }
+   },
+   "tufting": "ruche"
   },
   {
    "id": "baseHalf",
    "p": [
     -0.522,
-    0.22,
+    0.21,
     1.36
    ],
    "s": [
     1.036,
-    0.36,
+    0.38,
     2.24
    ],
-   "rx": 0.17,
+   "rx": 0.06,
    "rz": 0.17,
    "rTop": 0.15,
-   "rBottom": 0.14,
+   "rBottom": 0.07,
    "bulge": 0.012,
-   "mirror": "x"
+   "mirror": "x",
+   "rxBack": 0.17,
+   "tufting": "ruche"
   },
   {
    "id": "bed",
