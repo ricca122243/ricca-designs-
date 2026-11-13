@@ -422,6 +422,10 @@ async function loadFreeGroup(m) {
   /* вторая ткань модели (боковины, валики, кант в другом цвете): fab2 в файле, детали с m: "fabric2"; клиент меняет только основную */
   if (spec.fab2) { const f2 = findFabricShort(spec.fab2, lib); if (f2) mats0.fabric2 = M.fabricMaterial({ hex: f2.hex, kind: f2.kind, src450: f2.src450, src900: f2.src900, collectionId: f2.collectionId, finish: f2.finish, quality: q }); }
   const g = F.build(rc.type, rp, mats0, { quality: q, parts: F.partsFromSpec(spec) });
+  /* 13 ноября (Morva на iPhone: «смотри что творится»): обивка ручной модели не принимает тени от карты теней — боковина клала
+     на подушку и сиденье резкий косой треугольник, которого на фото нет. Мягкое затемнение углов и стыков даёт встроенное
+     затенение (occ), тень на полу остаётся — как у точных моделей с 12 ноября */
+  g.traverse((o) => { if (o.isMesh) o.receiveShadow = false; });
   /* габарит — по изделию без декора (подушки-декор и плед в размер не входят) */
   const box = new THREE.Box3(), bb = new THREE.Box3();
   g.updateMatrixWorld(true);

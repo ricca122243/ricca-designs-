@@ -535,6 +535,25 @@ export function lightMaterial(fabric) {
   return s;
 }
 
+/* «в тени» (fabricD): та же ткань темнее — внутренние грани глубокой оболочки, куда на фото почти не попадает свет
+   (подушки спинки Morva внутри экрана). Ручные модели не принимают резких теней от карты теней (13 ноября), поэтому
+   глубину внутри оболочки задаём тоном ткани */
+const shadeCache = new WeakMap();
+export function shadeMaterial(fabric, k = 0.6) {
+  if (!fabric) return null;
+  if (shadeCache.has(fabric)) return shadeCache.get(fabric);
+  const s = fabric.clone(), tone = (c) => c.clone().multiplyScalar(k);
+  s.color = tone(fabric.color); s.name = fabric.name + '-shade';
+  if (s.sheenColor) s.sheenColor = s.sheenColor.clone().multiplyScalar(0.8);
+  shadeCache.set(fabric, s);
+  if (fabric.userData && fabric.userData.ready) fabric.userData.ready.then(() => {
+    s.map = fabric.map; s.color = tone(fabric.color);
+    if (fabric.normalMap) { s.normalMap = fabric.normalMap; s.roughnessMap = fabric.roughnessMap; if (s.normalScale && fabric.normalScale) s.normalScale.copy(fabric.normalScale); }
+    s.needsUpdate = true;
+  });
+  return s;
+}
+
 /* ---------- дерево ---------- */
 const WOOD = { oak: '#C9AE87', walnut: '#5E4330', blackwood: '#2A2622', smoked: '#6A6058' };   // smoked — копчёный (серо-коричневый) дуб: рамы кресел вроде Savro
 const woodCache = new Map();

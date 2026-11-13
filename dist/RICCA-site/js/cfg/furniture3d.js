@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { parts, normalize, dims as dimsOf, itemBounds } from './params.js';
-import { seamMaterial, pipingMaterial, decorMaterial, lightMaterial } from './materials.js';
+import { seamMaterial, pipingMaterial, decorMaterial, lightMaterial, shadeMaterial } from './materials.js';
 
 export { TYPES, OPTIONS, RANGES, DEFAULTS, PRESETS, normalize, parts, dims, labelOf, rangeOf, itemBounds } from './params.js';
 
@@ -1073,7 +1073,7 @@ function freeAutoOcc(items) {
   const bb = items.map((it) => itemBounds(it)), AX = ['x', 'y', 'z'];
   items.forEach((A, i) => {
     const f = A.free;
-    if (!f || f.k !== 'box' || f.occ || f.noOcc || !['fabric', 'fabricL', 'fabric2'].includes(A.mat)) return;
+    if (!f || f.k !== 'box' || f.occ || f.noOcc || !['fabric', 'fabricL', 'fabricD', 'fabric2'].includes(A.mat)) return;
     if (A.rotX || A.rotZ || Math.abs(Math.sin(A.rotY || 0)) > 1e-3) return;
     const a = bb[i], bands = [];
     for (let k = 0; k < 3; k++) for (const side of [-1, 1]) {
@@ -1287,10 +1287,11 @@ export function build(type, params, materials = {}, opts = {}) {
   const seamM = seamMaterial(M.fabric) || M.fabric;
   const pipeM = pipingMaterial(M.fabric) || M.fabric;
   const lightM = lightMaterial(M.fabric) || M.fabric;   // кровать: вставка изголовья светлее (it.tone === 'light')
+  const shadeM = shadeMaterial(M.fabric) || M.fabric;   // ручная модель: грани внутри глубокой оболочки — «в тени» (m: "fabricD")
   const meshes = [];
   const addMesh = (geo, matKey, it, extra) => {
     ensureSeamAttr(geo);
-    const mat = matKey === 'seam' ? seamM : matKey === 'piping' ? pipeM : matKey === 'fabricL' ? lightM : M[matKey] || M.fabric;
+    const mat = matKey === 'seam' ? seamM : matKey === 'piping' ? pipeM : matKey === 'fabricL' ? lightM : matKey === 'fabricD' ? shadeM : M[matKey] || M.fabric;
     const mesh = new THREE.Mesh(geo, mat);
     mesh.castShadow = true; mesh.receiveShadow = true;
     mesh.userData = { partId: it.id, role: it.role, matKey, ...(extra || {}) };
@@ -1313,7 +1314,7 @@ export function build(type, params, materials = {}, opts = {}) {
     if (it.tiltX) fitTilted(geo, it);
     /* покрывало — серо-бежевый лён (не белое на белом матрасе: кровать читается объёмом, как на фото работ) */
     const mk = it.decorKind === 'duvet' && !it.whiteDuvet ? 'throw' : it.mat;
-    addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support', 'fabric2', 'matte'].includes(mk) ? mk : it.tone === 'light' || mk === 'fabricL' ? 'fabricL' : 'fabric', it, it.decor ? { decor: true } : null);
+    addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support', 'fabric2', 'matte'].includes(mk) ? mk : it.tone === 'light' || mk === 'fabricL' ? 'fabricL' : mk === 'fabricD' ? 'fabricD' : 'fabric', it, it.decor ? { decor: true } : null);
     /* кант и швы (у матраса — тёмная лента по верхней кромке; нижняя скрыта в раме) */
     const pipeMat = it.mat === 'mattress' || it.pipeTone === 'dark' ? 'tape' : 'fabric';
     /* кровать: валик по краю изголовья (толстый кант в цвет ткани) */
@@ -1374,7 +1375,7 @@ export function build(type, params, materials = {}, opts = {}) {
       e.geos.forEach((g) => { ensureSeamAttr(g); for (const n of Object.keys(g.attributes)) if (!attrs.includes(n)) g.deleteAttribute(n); if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]); });
       const merged = mergeGeometries(e.geos, false);
       e.geos.forEach((g) => g.dispose());
-      const mesh = new THREE.Mesh(merged, k === 'seam' ? seamM : k === 'piping' ? pipeM : k === 'fabricL' ? lightM : M[k] || M.fabric);
+      const mesh = new THREE.Mesh(merged, k === 'seam' ? seamM : k === 'piping' ? pipeM : k === 'fabricL' ? lightM : k === 'fabricD' ? shadeM : M[k] || M.fabric);
       mesh.castShadow = mesh.receiveShadow = true;
       mesh.userData = { partId: 'merged-' + kk, partIds: [...new Set(e.ids)], matKey: k, merged: true, ...(det ? { detail: det } : {}) };
       group.add(mesh);
@@ -1390,12 +1391,14 @@ export function setMaterials(group, materials = {}) {
   const seamM = materials.fabric ? seamMaterial(materials.fabric) : null;
   const pipeM = materials.fabric ? pipingMaterial(materials.fabric) : null;
   const lightM = materials.fabric ? lightMaterial(materials.fabric) : null;
+  const shadeM = materials.fabric ? shadeMaterial(materials.fabric) : null;
   group.traverse((o) => {
     if (!o.isMesh) return;
     const k = o.userData.matKey;
     if (k === 'seam' && seamM) o.material = seamM;
     else if (k === 'piping' && pipeM) o.material = pipeM;
     else if (k === 'fabricL') { if (lightM) o.material = lightM; }
+    else if (k === 'fabricD') { if (shadeM) o.material = shadeM; }
     else if (materials[k]) o.material = materials[k];
   });
 }
