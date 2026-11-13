@@ -6,98 +6,90 @@
   1.15
  ],
  "view": {
-  "az": 40,
+  "az": 46,
   "el": 3,
-  "fov": 36,
+  "fov": 18,
   "zoom": 1.2
  },
  "light": {
   "az": 50,
   "contrast": 0.45,
-  "exposure": 1.15
+  "exposure": 1.1,
+  "top": 3,
+  "high": 2.5
  },
  "fab": "molly:6",
  "measure": {
-  "railH": 0.2,
-  "mTop": 0.39,
+  "railH": 0.225,
+  "mTop": 0.415,
   "legH": 0.06
  },
  "items": [
   {
-   "id": "hb",
+   "id": "hbShell",
+   "k": "ushell",
    "p": [
     0,
-    0.65,
-    0.11
+    0,
+    0
    ],
-   "s": [
-    1.74,
-    1.0,
-    0.22
-   ],
-   "rx": 0.07,
-   "rz": 0.07,
+   "W": 1.94,
+   "D": 0.6,
+   "h": 1.15,
+   "armH": 0.18,
+   "tS": 0.17,
+   "tB": 0.22,
+   "r": 0.36,
+   "y0": 0.08,
    "rTop": 0.07,
-   "rBottom": 0.1,
-   "bulge": 0.006,
-   "warp": {
-    "topProfile": [
-     1,
-     0.975,
-     0.965,
-     0.96,
-     0.96,
-     0.96,
-     0.965,
-     0.975,
-     1
-    ],
-    "lean": 0.05
-   }
+   "rBottom": 0.06,
+   "bulge": 0.008,
+   "capL": 0.03,
+   "capP": 0.6
   },
   {
-   "id": "seam",
-   "k": "tube",
-   "m": "support",
-   "d": 0.008,
-   "round": 0.02,
-   "closed": false,
-   "pts": [
-    [
-     -0.82,
-     0.82,
-     0.19
-    ],
-    [
-     0.82,
-     0.82,
-     0.19
-    ]
-   ]
+   "id": "hbCap",
+   "p": [
+    0,
+    0.985,
+    0.232
+   ],
+   "s": [
+    1.6,
+    0.33,
+    0.05
+   ],
+   "rx": 0.12,
+   "rz": 0.03,
+   "rTop": 0.05,
+   "rBottom": 0.035,
+   "crown": 0.02,
+   "crownFace": "z",
+   "noOcc": true
   },
   {
    "id": "base",
    "p": [
     0,
-    0.13,
+    0.1425,
     1.18
    ],
    "s": [
     1.96,
-    0.14,
+    0.165,
     2.12
    ],
    "rx": 0.3,
    "rz": 0.3,
-   "rTop": 0.07,
-   "rBottom": 0.07
+   "rTop": 0.08,
+   "rBottom": 0.08
   },
   {
    "id": "bed",
    "k": "bedset",
    "p": [
     0,
-    0.39,
+    0.415,
     0.24
    ],
    "s": [
@@ -106,18 +98,19 @@
     1.96
    ],
    "sheet": true,
-   "duvetWhite": true,
+   "duvetWhite": false,
    "extras": false,
    "ov": 0.02,
    "ovz": 0.02,
-   "drop": 0.03,
+   "drop": 0.17,
    "cover": 0.74,
-   "pillowLean": 72
+   "pillowLean": 76,
+   "pillowT": 0.2
   },
   {
    "id": "footF",
    "k": "cyl",
-   "m": "matte",
+   "m": "legs",
    "p": [
     -0.7,
     0.03,
@@ -134,7 +127,7 @@
   {
    "id": "footB",
    "k": "cyl",
-   "m": "matte",
+   "m": "legs",
    "p": [
     -0.7,
     0.03,
@@ -148,5 +141,9 @@
    "r": 0.005,
    "mirror": "x"
   }
- ]
+ ],
+ "legs": {
+  "kind": "metal",
+  "finish": "black"
+ }
 }

@@ -587,7 +587,7 @@ window.RICCA_CATALOG = [
   {
     id: "bed-09",
     cfg: "t.bed~b.legs~ft.8~hh.100~ho.12~kb.roll~ks.capsule~hs.plain~lf.black~lh.6~kg.disc~rh.30~kr.soft",
-    fab: "sambia:1",
+    fab: "timeless:12",
     glb: "models3d/free/bed-09.json",
     category: "beds",
     tags: ["lift", "nolift"],
@@ -2234,7 +2234,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "pouf-02",
-    cfg: "t.pouf~d.60~f.oval~h.42~w.80",
+    cfg: "t.pouf~d.60~f.oval~h.47~w.80",
     fab: "noble:10",
     glb: "models3d/free/pouf-02.json",
     category: "poufs",
@@ -2256,7 +2256,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "pouf-03",
-    cfg: "t.pouf~d.50~h.42~p.0~zs.two~w.50",
+    cfg: "t.pouf~d.40~h.42~p.0~zs.two~w.40",
     fab: "coco:9",
     glb: "models3d/free/pouf-03.json",
     category: "poufs",
@@ -2279,7 +2279,7 @@ window.RICCA_CATALOG = [
   {
     id: "bench-01",
     cfg: "t.pouf~d.50~f.bench~h.42~lf.black~lh.6~lg.plinth~p.0~qp.dark~tp.channels~w.150",
-    fab: "torrens-plain:12",
+    fab: "torrens-plain:11",
     glb: "models3d/free/bench-01.json",
     category: "poufs",
     tags: [],
@@ -2300,8 +2300,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bench-02",
-    cfg: "t.pouf~f.bench~h.42~lf.blackwood~lh.6~lg.wood~p.0~ql.ball~zp.stadium~w.150",
-    fab: "pique:4",
+    cfg: "t.pouf~f.bench~h.49~lf.blackwood~lh.6~lg.wood~p.0~ql.ball~zp.stadium~w.150",
+    fab: "ricca:16",
     glb: "models3d/free/bench-02.json",
     category: "poufs",
     tags: [],
