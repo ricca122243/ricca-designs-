@@ -716,7 +716,9 @@ function sfShellFull(sh, quality) {
       rho = T / 2 + (rho - T / 2) * sc;
       if (top || y > cy) y = cy + (y - cy) * sc;
       else if (sh.rb && y < cyb) y = cyb - (cyb - y) * sc;
-      const x = pt.O[0] + ux * rho + tx * ext, z = pt.O[1] + uz * rho + tz * ext;
+      let x = pt.O[0] + ux * rho + tx * ext, z = pt.O[1] + uz * rho + tz * ext;
+      if (sh.taper && y > armH) { let t = Math.min(1, (y - armH) / Math.max(0.01, sh.taperH || h - armH)); t = t * t * (3 - 2 * t); x = W / 2 + (x - W / 2) * (1 - sh.taper * t); }
+      if (sh.lean && y > sh.leanY) { let w = Math.min(1, Math.max(0, (sh.leanZ - z) / Math.max(0.01, sh.leanZ - rcz))); w = w * w * (3 - 2 * w); z -= Math.tan(sh.lean * Math.PI / 180) * (y - sh.leanY) * w; }
       if (j > 0) v += Math.hypot(x - px, y - py, z - pz);
       px = x; py = y; pz = z;
       positions.push(x, y, z);
@@ -973,6 +975,9 @@ export function partsFromSpec(spec) {
       const rcx = cl(s.rx ?? s.r ?? 0.3, tS + 0.06, W / 2 - 0.05), rcz = cl(s.rz ?? s.r ?? 0.3, tB + 0.06, Dd - tS / 2 - 0.06);
       const sh = { W, D: Dd, tS, tB, rcx, rcz, h, armH, y0 };
       if (s.rTop != null) sh.rt = s.rTop; if (s.rBottom != null) sh.rb = s.rBottom; if (s.bulge) sh.bulge = s.bulge; if (s.capL != null) sh.capL = s.capL; if (s.capP != null) sh.capP = s.capP;
+      /* наклон спинки назад (lean, градусы; от высоты leanY, у боковин сходит на нет к leanZ) и сужение спинки кверху (taper — доля ширины у верха, от высоты боковин на высоте taperH, выше — прямо) */
+      if (s.lean) { sh.lean = s.lean; sh.leanY = s.leanY ?? y0; sh.leanZ = s.leanZ ?? rcz + 0.25; }
+      if (s.taper) { sh.taper = s.taper; if (s.taperH) sh.taperH = s.taperH; }
       const ox = (p[0] || 0) - W / 2, oz = p[2] || 0;
       const put = (piece, role, x0, x1, ya, yb, z0, z1, extra) => items.push({ id: `${id}-${piece}`, role, mat: s.m || 'fabric', shape: 'sshell', sh, piece, x: (x0 + x1) / 2 + ox, y: (ya + yb) / 2, z: (z0 + z1) / 2 + oz, sx: x1 - x0, sy: yb - ya, sz: z1 - z0, rotY: 0, piping: !!s.piping, ...extra });
       put('b', 'back', 0, W, y0, h, 0, rcz, { r: 0.08 });

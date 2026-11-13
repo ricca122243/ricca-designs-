@@ -2250,7 +2250,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-21",
-    cfg: "t.armchair~as.none~aw.0~bc.fixed~d.89~h.100~lf.walnut~lh.18~ql.splay~w.77",
+    cfg: "t.armchair~as.none~aw.0~bc.fixed~d.91~h.100~lf.walnut~lh.18~ql.splay~w.79",
     fab: "pique:6",
     glb: "models3d/free/armchair-21.json",
     category: "armchairs",
