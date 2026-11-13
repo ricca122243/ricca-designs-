@@ -13,9 +13,9 @@
  },
  "light": {
   "az": 0,
-  "contrast": 0.8,
+  "contrast": 0.45,
   "high": 2.2,
-  "exposure": 1.5
+  "exposure": 1.25
  },
  "fab": "alba:4",
  "legs": {
@@ -189,7 +189,7 @@
    "crownP": 2,
    "crownBack": 0.02,
    "pillow": 0.4,
-   "piping": true,
+   "piping": false,
    "edgeAxis": "z",
    "edgeSign": 1,
    "bulge": 0.012,
