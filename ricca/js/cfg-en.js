@@ -168,7 +168,7 @@
     'цветов': 'colours', 'цвета': 'colours', 'цвет': 'colour',
     'Модули': 'Modules', 'Посадка': 'Seat', 'есть': 'yes', 'нет': 'no', 'обсудим': 'let’s discuss', 'подберём вместе': 'we’ll choose together',
     'Ткань подберём вместе': 'We’ll choose the fabric together', 'ткань подберём вместе': 'fabric to be chosen together',
-    'точная 3D-модель, как на фото': 'exact 3D model, as in the photo', 'округлая оболочка': 'rounded shell', 'толщина': 'thickness',
+    'точная 3D-модель, как на фото': 'exact 3D model, as in the photo', 'Двумя пальцами — крупнее': 'Pinch to zoom in', 'точная 3D-модель,': 'exact 3D model,', 'как на фото)': 'as in the photo)', '(точная': '(exact', 'точная': 'exact', '3D-модель': '3D model', 'как на фото': 'as in the photo', 'округлая оболочка': 'rounded shell', 'толщина': 'thickness',
     'высота спереди': 'front height', 'высота изголовья': 'headboard height', 'высота': 'height', 'ширина': 'width', 'глубина': 'depth', 'длина': 'length',
     'выступ': 'overhang', 'боковина': 'side rail', 'отделка': 'finish', 'винтаж': 'vintage',
     'по секциям: ': 'in sections: ', ' + угол + ': ' + corner + ',

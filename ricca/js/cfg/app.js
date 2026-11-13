@@ -1174,8 +1174,10 @@ function drawingCfg(stalled = false) {
 }
 let drawingJob = null, drawingLast = null, drawingSeq = 0;
 const drawingKey = (c) => { const { id: _i, date: _d, ...rest } = c; return JSON.stringify(rest); };
-/* узкое окно (телефон в руке): лист «в столбик» — виды один под другим во всю ширину (drawing.js → portraitSheet) */
-const drawingTall = () => window.innerWidth < 700;
+/* телефон и узкое окно: тот же лист A4, что на компьютере и в PDF (владелец, 13 ноября: «чертёж у нас был А4, можно было приблизить
+   и смотреть»), во весь доступный размер окна; крупнее — щипком, двойным касанием или «Крупно» (до ×5), лист двигается пальцем.
+   Лист «в столбик» (drawing.js → portraitSheet) больше не показываем */
+const drawingTall = () => window.innerWidth < 900;
 async function openDrawing() {
   if (hasErrors()) return;
   /* только последнее открытие трогает лист: старый расчёт (закрыли и открыли другой вариант) молча уходит */
@@ -1186,7 +1188,7 @@ async function openDrawing() {
   const ph = mqPhone.matches, send = $('#dd-send'), png = $('#dd-png');
   send.classList.toggle('btn--fill', ph); send.classList.toggle('btn--line', !ph); png.classList.toggle('btn--fill', !ph); png.classList.toggle('btn--line', ph);
   if (ph) send.parentNode.insertBefore(send, png); else png.parentNode.insertBefore(png, send);
-  const tall = drawingTall(), R = { portrait: tall }, busy = $('#dd-busy');
+  const tall = drawingTall(), R = { portrait: false }, busy = $('#dd-busy');
   dlg.classList.toggle('is-tall', tall); busy.hidden = true; drawingFit();
   /* точная модель ещё грузится (1,8 МБ на мобильной сети) — дождаться, иначе эскизы снимутся с «собранной» кровати,
      а модель подменится посреди съёмки. Но не дольше 8 с: сеть «повисла» — лист без 3D-эскизов, а не вечное ожидание */
@@ -1271,15 +1273,18 @@ async function openDrawing() {
 /* телефон в руке: лист во всю высоту окна шире экрана и листается в сторону — подсказка, только когда листать есть куда */
 function syncDrawingHint() {
   const pan = $('#dd-pan'), hint = $('#dd-hint'); if (!pan || !hint) return;
-  hint.hidden = $('#dd-img').hidden || $('#dlg-drawing').classList.contains('is-tall') || $('#dd-sheet').classList.contains('is-zoom') || pan.scrollWidth <= pan.clientWidth + 8;
+  /* телефон (лист A4 целиком): подсказка про два пальца, пока лист не увеличен */
+  if ($('#dlg-drawing').classList.contains('is-tall')) { hint.firstChild.textContent = 'Двумя пальцами — крупнее'; hint.hidden = $('#dd-img').hidden || drawingZ > 1.01; return; }
+  hint.firstChild.textContent = 'Листайте чертёж в\u00a0сторону';
+  hint.hidden = $('#dd-img').hidden || $('#dd-sheet').classList.contains('is-zoom') || pan.scrollWidth <= pan.clientWidth + 8;
 }
 const drawingShown = () => !$('#dd-img').hidden;
-/* лист «в столбик»: по ширине экрана (z = 1), крупнее — щипком, двойным касанием или «Крупно» (до ×4); двигается пальцем.
+/* лист на телефоне: целиком в окне (z = 1), крупнее — щипком, двойным касанием или «Крупно» (до ×5); двигается пальцем.
    (cx, cy) — точка экрана, которая остаётся на месте. Прокрутка — родная (надёжно на iPhone), масштаб — ширина картинки */
 let drawingZ = 1;
 function drawingFit(z = 1, cx = null, cy = null) {
   const sheet = $('#dd-sheet'), pan = $('#dd-pan'), img = $('#dd-img'), b = $('#dd-open');
-  z = Math.max(1, Math.min(4, z));
+  z = Math.max(1, Math.min(5, z));
   const pr = pan.getBoundingClientRect(), r0 = img.getBoundingClientRect();
   if (cx == null) { cx = pr.left + pr.width / 2; cy = pr.top + Math.min(pr.height, Math.max(0, r0.bottom - pr.top)) / 2; }
   const fx = r0.width ? (cx - r0.left) / r0.width : 0.5, fy = r0.height ? (cy - r0.top) / r0.height : 0;
@@ -1289,9 +1294,10 @@ function drawingFit(z = 1, cx = null, cy = null) {
   if (z === 1) pan.scrollLeft = 0; else pan.scrollLeft += r1.left + fx * r1.width - cx;
   pan.scrollTop += r1.top + fy * r1.height - cy;
   const on = z > 1.01;
-  b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Показать чертёж по ширине экрана' : 'Показать чертёж крупно');
-  $('span', b).textContent = on ? 'По ширине' : 'Крупно';
+  b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Показать весь лист' : 'Показать чертёж крупно');
+  $('span', b).textContent = on ? 'Весь лист' : 'Крупно';
   $('use', b).setAttribute('href', on ? `${ICONS}#i-minus` : '#i-plus');
+  syncDrawingHint();
 }
 /* щипок и двойное касание (только лист «в столбик»; браузерный масштаб страницы отключён css: touch-action) */
 function drawingGestures() {
@@ -1310,11 +1316,11 @@ function drawingGestures() {
     const c = e.changedTouches[0], now = performance.now();
     if (tap && now - tap.t < 320 && Math.hypot(c.clientX - tap.x, c.clientY - tap.y) < 32) {
       e.preventDefault(); tap = null;
-      drawingFit(drawingZ > 1.01 ? 1 : 2.5, c.clientX, c.clientY);
+      drawingFit(drawingZ > 1.01 ? 1 : 3, c.clientX, c.clientY);
     } else tap = { t: now, x: c.clientX, y: c.clientY };
   }, { passive: false });
   pan.addEventListener('gesturestart', (e) => { if (tall()) e.preventDefault(); });   // Safari: не масштабировать страницу
-  pan.addEventListener('dblclick', (e) => { if (tall()) drawingFit(drawingZ > 1.01 ? 1 : 2.5, e.clientX, e.clientY); });
+  pan.addEventListener('dblclick', (e) => { if (tall()) drawingFit(drawingZ > 1.01 ? 1 : 3, e.clientX, e.clientY); });
 }
 /* «Крупно» на телефоне — увеличение внутри окна: во встроенном браузере Instagram новая вкладка не открывается, и клиент оставался
    с голой картинкой вне конструктора. Лист вчетверо шире окна (css: .is-zoom), двигается пальцем в обе стороны, щипком — ещё крупнее;
@@ -1695,7 +1701,7 @@ function bind() {
   $('#ph-save').addEventListener('click', photoSave); $('#ph-wa').addEventListener('click', photoSend);
   $('#bar-next').addEventListener('click', () => { const n = +$('#bar-next').dataset.goto; if (n) openStep(n); });
   $('#ar-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(variantLink()); toast('Ссылка скопирована'); } catch (e) { toast('Скопируйте адрес из строки браузера'); } });
-  $('#dd-open').addEventListener('click', () => ($('#dlg-drawing').classList.contains('is-tall') ? drawingFit(drawingZ > 1.01 ? 1 : 2.5) : mqPhone.matches ? zoomDrawing(!drawingZoomed()) : openDrawingFull()));
+  $('#dd-open').addEventListener('click', () => ($('#dlg-drawing').classList.contains('is-tall') ? drawingFit(drawingZ > 1.01 ? 1 : 3) : mqPhone.matches ? zoomDrawing(!drawingZoomed()) : openDrawingFull()));
   $('#dd-img').addEventListener('click', (e) => { if ($('#dd-open').hidden || $('#dlg-drawing').classList.contains('is-tall')) return; if (mqPhone.matches) zoomDrawing(!drawingZoomed(), e); else openDrawingFull(); });
   drawingGestures();
   $('#dd-img').addEventListener('load', syncDrawingHint); window.addEventListener('resize', syncDrawingHint);
