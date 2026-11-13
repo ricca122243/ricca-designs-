@@ -349,8 +349,8 @@ function makeDisplacer(s) {
     /* «плетёнка» (Stegva): клетки ~14 см по всем граням, каждая клетка пухлая, внутри — шов посередине: в соседних клетках
        то вдоль, то поперёк (как корзинное плетение). Глубина шва по краю клетки 3,4 см, внутреннего — около половины */
     const c = 0.14, depth = 0.034;
-    tuftFn = (u, v) => {
-      const a = u / c + 100, b = v / c + 100, iu = Math.floor(a), iv = Math.floor(b), fu = a - iu, fv = b - iv;
+    tuftFn = (u, v, side) => {
+      const a = u / c + 100, b = v / (side ? c * 1.35 : c) + 100, iu = Math.floor(a), iv = Math.floor(b), fu = a - iu, fv = b - iv;
       let g = Math.pow(Math.min(Math.sin(Math.PI * fu), Math.sin(Math.PI * fv)), 0.42);
       const alt = (iu + iv) & 1 ? Math.abs(Math.sin(2 * Math.PI * fv)) : Math.abs(Math.sin(2 * Math.PI * fu));
       g = Math.min(g, 0.38 + 0.62 * Math.pow(alt, 0.5));
@@ -464,7 +464,8 @@ function makeDisplacer(s) {
         if (tf === 'z' && N.z > 0.3) P.z += tuftFn(P.x, P.y) * smooth(0.3, 0.9, N.z) * edge(P.x, Hx) * edge(P.y, Hy);
       } else if (tuft === 'weave') {
         const ax = Math.abs(N.x), ay = Math.abs(N.y), az = Math.abs(N.z);
-        const d = ay >= ax && ay >= az ? tuftFn(P.x, P.z) : az >= ax ? tuftFn(P.x, P.y) : tuftFn(P.z, P.y);
+        if (N.y < -0.35) return;   // дно не стёгано: блок стоит на цоколе ровным низом (на фото — тонкая тёмная полоса, без «гребёнки»)
+        const d = ay >= ax && ay >= az ? tuftFn(P.x, P.z) : az >= ax ? tuftFn(P.x, P.y, true) : tuftFn(P.z, P.y, true);
         P.x += N.x * d; P.y += N.y * d; P.z += N.z * d;
       } else if (tuft === 'pchannels' && Math.abs(N.x) < 0.6) {
         const u = P.x / Hx, w = (1 - smooth(0.9, 1.0, Math.abs(u))) * (1 - smooth(0.25, 0.6, Math.abs(N.x))), dd = tuftFn(u) * w;

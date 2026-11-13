@@ -189,6 +189,10 @@ const PHOTO_RELIEF = {
    с копией, сдвинутой на полплитки (без зеркал и швов). Размер плитки на изделии — PHOTO_TILE (м) по виду ткани. */
 /* по фото: у букле в кадре ~65 петель по 3–4 мм → плитка ~22 см; меньше — петли мельче настоящих и видна «сетка» повторов */
 const PHOTO_TILE = { boucle: 0.22, chenille: 0.2, matting: 0.18, corduroy: 0.18, velour: 0.25, suede: 0.25, leather: 0.22 };
+/* ткани с крупным рисунком: плитка крупнее, чтобы пятна и узор были в размер, как на фото изделия (Dalma: пятна 3–4 см,
+   а при плитке букле 0,22 м выходили около 1 см и диван читался серым). Ключ — начало пути к фото образца */
+const PHOTO_TILE_BY_SRC = [['img/fabrics/ricca/15-', 0.38], ['img/fabrics/ricca/18-', 0.38], ['img/fabrics/ricca/16-', 0.5], ['img/fabrics/ricca/07-', 0.45]];
+const photoTile = (photo, kind) => { const hit = photo && PHOTO_TILE_BY_SRC.find(([k]) => photo.includes(k)); return hit ? hit[1] : PHOTO_TILE[kind] || 0.16; };
 /* радиус «выравнивания света» (доля плитки): у гладких тканей (велюр, замша, кожа) на фото — складки, их убираем сильнее;
    у букле, шенилла, рогожки крупные петли и плетение — часть ткани, их оставляем */
 /* фактурные — окно 1/16 плитки (~1,4 см): остаточный градиент света крупнее этого давал «клетку» на диване (стык копий плитки) */
@@ -462,7 +466,7 @@ export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null
   /* ткань на модели — настоящее фото образца (цвет, плетение, рисунок), а не заливка цветом: заказчик «ткань в 3D не видна».
      Рельеф тоже из фото (+ процедурный ворс) — петли и плетение совпадают с рисунком цвета */
   if (photo) {
-    const rel = PHOTO_RELIEF[kind] || PHOTO_RELIEF.velour, ptile = PHOTO_TILE[kind] || 0.16;
+    const rel = PHOTO_RELIEF[kind] || PHOTO_RELIEF.velour, ptile = photoTile(photo, kind);
     const relief = { ...rel, procH: maps.H, M: maps.N, rep: Math.max(1, Math.round(ptile / k.tile)), key: `${kind}${fin}|${N}` };
     if (kind === 'leather') { relief.roughBase = k.rough; relief.strength *= k.nScale / 0.6; }
     m.userData.ready = swatchAlbedo(photo, ptile, PN, PHOTO_FLAT[kind] || 1 / 10, relief).then((sw) => {
@@ -625,10 +629,10 @@ export function metalMaterial(finish = 'black') {
     normalMap: t.normal, normalScale: new THREE.Vector2(0.15, 0.15), anisotropy: 0.6, anisotropyRotation: Math.PI / 2,
   });
   if (finish === 'black') { m.metalness = 0.85; }
-  if (finish === 'bordeaux') { m.metalness = 0.35; m.normalScale.set(0.05, 0.05); }
+  if (finish === 'bordeaux') { m.metalness = 0.25; m.normalScale.set(0.05, 0.05); }   // 13 ноября: меньше блеска — на фото Ronva рама тёмный матовый бордо, а не розовая
   if (finish === 'pink') { m.metalness = 0.3; m.normalScale.set(0.05, 0.05); }
   if (finish === 'taupe') { m.metalness = 0.2; m.normalScale.set(0.04, 0.04); }   // матовая эмаль: почти без блеска   // розовая порошковая эмаль   // крашеная труба: полуматовая эмаль
-  m.envMapIntensity = finish === 'gold' ? 1.8 : finish === 'taupe' ? 0.8 : 1.4;   // металл живёт отражениями студии; матовая эмаль «тауп» — слабее
+  m.envMapIntensity = finish === 'gold' ? 1.8 : finish === 'taupe' || finish === 'bordeaux' ? 0.8 : 1.4;   // металл живёт отражениями студии; матовая эмаль «тауп» — слабее
   if (envTex) m.envMap = envTex;
   m.name = 'metal-' + finish; m.userData = { kind: 'metal', finish };
   metalCache.set(finish, m);

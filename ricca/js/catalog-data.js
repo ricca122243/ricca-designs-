@@ -1341,7 +1341,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-26",
     cfg: "t.modular~as.round~aw.18~ch.left~mm.95~p.1~n.auto~va.left~vd.3~vo.right",
-    fab: "ricca:8",
+    fab: "sambia:8",
     glb: "models3d/free/sofa-26.json",
     category: "sofas",
     tags: ["modular", "corner"],
@@ -1903,7 +1903,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-35",
     cfg: "t.modular~ah.60~as.round~aw.20~bc.fixed~ch.right~h.70~mm.100~mo.2~n.auto~va.right~vd.1~vo.left~vp.puff",
-    fab: "torrens:3",
+    fab: "torrens-plain:2",
     glb: "models3d/free/sofa-35.json",
     category: "sofas",
     tags: ["modular", "corner"],
@@ -2012,9 +2012,9 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-39",
     glb: "models3d/sofa-39.glb",
-    view: { az: 25, el: 12, fov: 22, zoom: 1.1 },
+    view: { az: -8, el: 15, fov: 32, zoom: 1.2 },
     cfg: "t.modular~mo.3~mm.95~as.none~bc.fixed~h.80~lg.hidden~vm.arc~vb.roll2",
-    fab: "eclipse:1",
+    fab: "ricca:15",
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -2433,7 +2433,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-45",
     cfg: "t.modular~as.none~aw.0~bc.fixed~h.67~mm.100~mo.2~n.auto~vb.roll~vm.cornerL~vp.puff",
-    fab: "beauty:10",
+    fab: "lucky:9",
     glb: "models3d/free/sofa-45.json",
     category: "sofas",
     tags: ["modular", "corner"],
