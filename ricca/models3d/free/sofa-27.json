@@ -13,8 +13,8 @@
  },
  "light": {
   "az": 5,
-  "contrast": 0.22,
-  "exposure": 1.0
+  "contrast": 0.12,
+  "exposure": 1.05
  },
  "fab": "ricca-leather:7",
  "measure": {
@@ -603,105 +603,137 @@
   },
   {
    "id": "pEs",
-   "k": "part",
-   "role": "decor",
-   "decorKind": "pillow",
+   "k": "box",
    "m": "fabric",
+   "decor": true,
    "p": [
     -0.91,
-    0.51,
-    0.27
+    0.49,
+    0.25
    ],
    "s": [
-    0.4,
-    0.22,
-    0.33
+    0.42,
+    0.31,
+    0.17
    ],
    "rot": [
-    -100,
+    -11,
     -8,
     0
    ],
-   "seamLine": true,
-   "edgeAxis": "y",
-   "edgeSign": 1,
+   "rx": 0.09,
+   "rz": 0.07500000000000001,
+   "rTop": 0.09,
+   "rBottom": 0.09,
+   "pillow": 0.28,
+   "crown": 0.03,
+   "crownFace": "z",
+   "crownBack": 0.03,
+   "crownP": 2.2,
+   "bulge": 0.01,
+   "piping": true,
+   "edgeAxis": "z",
    "mirror": "x"
   },
   {
    "id": "pEb",
-   "k": "part",
-   "role": "decor",
-   "decorKind": "pillow",
+   "k": "box",
    "m": "fabric",
+   "decor": true,
    "p": [
     -1.4,
-    0.54,
-    0.43
+    0.535,
+    0.41
    ],
    "s": [
-    0.6,
-    0.24,
-    0.4
+    0.58,
+    0.4,
+    0.19
    ],
    "rot": [
-    -100,
+    -11,
     12,
     0
    ],
-   "seamLine": true,
-   "edgeAxis": "y",
-   "edgeSign": 1,
+   "rx": 0.09,
+   "rz": 0.085,
+   "rTop": 0.09,
+   "rBottom": 0.09,
+   "pillow": 0.28,
+   "crown": 0.03,
+   "crownFace": "z",
+   "crownBack": 0.03,
+   "crownP": 2.2,
+   "bulge": 0.01,
+   "piping": true,
+   "edgeAxis": "z",
    "mirror": "x"
   },
   {
    "id": "pMs",
-   "k": "part",
-   "role": "decor",
-   "decorKind": "pillow",
+   "k": "box",
    "m": "fabric",
+   "decor": true,
    "p": [
     0.3,
-    0.51,
-    0.27
+    0.49,
+    0.25
    ],
    "s": [
-    0.4,
-    0.22,
-    0.33
+    0.42,
+    0.31,
+    0.17
    ],
    "rot": [
-    -100,
+    -11,
     -6,
     0
    ],
-   "seamLine": true,
-   "edgeAxis": "y",
-   "edgeSign": 1
+   "rx": 0.09,
+   "rz": 0.07500000000000001,
+   "rTop": 0.09,
+   "rBottom": 0.09,
+   "pillow": 0.28,
+   "crown": 0.03,
+   "crownFace": "z",
+   "crownBack": 0.03,
+   "crownP": 2.2,
+   "bulge": 0.01,
+   "piping": true,
+   "edgeAxis": "z"
   },
   {
    "id": "pMb",
-   "k": "part",
-   "role": "decor",
-   "decorKind": "pillow",
+   "k": "box",
    "m": "fabric",
+   "decor": true,
    "p": [
     -0.1,
-    0.54,
-    0.41
+    0.535,
+    0.38999999999999996
    ],
    "s": [
-    0.6,
-    0.24,
-    0.4
+    0.58,
+    0.4,
+    0.19
    ],
    "rot": [
-    -100,
+    -11,
     3,
     0
    ],
-   "seamLine": true,
-   "edgeAxis": "y",
-   "edgeSign": 1
+   "rx": 0.09,
+   "rz": 0.085,
+   "rTop": 0.09,
+   "rBottom": 0.09,
+   "pillow": 0.28,
+   "crown": 0.03,
+   "crownFace": "z",
+   "crownBack": 0.03,
+   "crownP": 2.2,
+   "bulge": 0.01,
+   "piping": true,
+   "edgeAxis": "z"
   }
  ]
 }

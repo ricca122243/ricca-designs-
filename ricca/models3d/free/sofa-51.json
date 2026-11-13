@@ -13,14 +13,14 @@
  },
  "light": {
   "az": -20,
-  "contrast": 0.55,
-  "exposure": 0.85
+  "contrast": 0.4,
+  "exposure": 0.95
  },
- "fab": "beauty:13",
+ "fab": "torrens:11",
  "measure": {
   "seatH": 0.4,
   "seatD": 0.72,
-  "legH": 0.03,
+  "legH": 0.02,
   "legLabel": "Цоколь"
  },
  "items": [
@@ -29,13 +29,13 @@
    "m": "matte",
    "p": [
     -0.8,
-    0.015,
+    0.01,
     0.6
    ],
    "s": [
-    1.26,
-    0.03,
-    0.66
+    1.18,
+    0.02,
+    0.58
    ],
    "r": 0.004
   },
@@ -44,13 +44,13 @@
    "m": "matte",
    "p": [
     0.7,
-    0.015,
-    0.6
+    0.01,
+    0.64
    ],
    "s": [
-    1.46,
-    0.03,
-    0.62
+    1.38,
+    0.02,
+    0.56
    ],
    "r": 0.004
   },
@@ -58,7 +58,7 @@
    "id": "platL",
    "p": [
     -0.802,
-    0.215,
+    0.205,
     0.59
    ],
    "s": [
@@ -66,20 +66,20 @@
     0.37,
     0.82
    ],
-   "rx": 0.07,
-   "rz": 0.07,
-   "rTop": 0.07,
-   "rBottom": 0.05,
-   "crown": 0.012,
-   "tufting": "grid",
-   "tuftFace": "y",
-   "noOcc": true
+   "rx": 0.09,
+   "rz": 0.09,
+   "rTop": 0.09,
+   "rBottom": 0.06,
+   "crown": 0.015,
+   "tufting": "weave",
+   "noOcc": true,
+   "bulge": 0.008
   },
   {
    "id": "platR",
    "p": [
     0.7,
-    0.215,
+    0.205,
     0.64
    ],
    "s": [
@@ -87,14 +87,14 @@
     0.37,
     0.72
    ],
-   "rx": 0.07,
-   "rz": 0.07,
-   "rTop": 0.07,
-   "rBottom": 0.05,
-   "crown": 0.012,
-   "tufting": "grid",
-   "tuftFace": "y",
-   "noOcc": true
+   "rx": 0.09,
+   "rz": 0.09,
+   "rTop": 0.09,
+   "rBottom": 0.06,
+   "crown": 0.015,
+   "tufting": "weave",
+   "noOcc": true,
+   "bulge": 0.008
   },
   {
    "id": "back",
@@ -108,14 +108,14 @@
     0.64,
     0.3
    ],
-   "rx": 0.08,
-   "rz": 0.08,
-   "rTop": 0.09,
-   "rBottom": 0.05,
-   "crown": 0.01,
+   "rx": 0.09,
+   "rz": 0.11,
+   "rTop": 0.11,
+   "rBottom": 0.06,
+   "crown": 0.015,
    "crownFace": "z",
-   "tufting": "grid",
-   "tuftFace": "z"
+   "tufting": "weave",
+   "bulge": 0.008
   }
  ]
 }

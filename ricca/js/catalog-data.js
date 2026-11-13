@@ -2144,7 +2144,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-21",
-    cfg: "t.armchair~as.none~aw.0~bc.fixed~d.91~h.100~lf.walnut~lh.18~ql.splay~w.79",
+    cfg: "t.armchair~as.none~aw.0~bc.fixed~d.91~h.100~lf.smoked~lh.18~ql.splay~w.79",
     fab: "pique:6",
     glb: "models3d/free/armchair-21.json",
     category: "armchairs",
@@ -2323,7 +2323,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bench-03",
-    cfg: "t.pouf~d.50~f.bench~h.45~lf.black~lh.16~lg.metal~p.0~ql.ends~w.120",
+    cfg: "t.pouf~d.50~f.bench~h.45~lf.taupe~lh.16~lg.metal~p.0~ql.ends~w.120",
     fab: "alba:8",
     glb: "models3d/free/bench-03.json",
     category: "poufs",
@@ -2566,7 +2566,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-51",
     cfg: "t.modular~as.none~aw.0~bc.fixed~h.67~mm.100~n.auto~vo.left~vt.grid",
-    fab: "beauty:13",
+    fab: "torrens:11",
     glb: "models3d/free/sofa-51.json",
     category: "sofas",
     tags: ["modular"],

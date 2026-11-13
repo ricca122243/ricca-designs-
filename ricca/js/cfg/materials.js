@@ -418,6 +418,10 @@ function upholstery(m, { lite = false, dark = 0.36, width = 0.0022 } = {}) {
 }
 
 const lighten = (c, k) => c.clone().lerp(new THREE.Color(1, 1, 1), k);
+/* блик ворса бархата (велюр, вельвет) — того же цвета, что ткань, только светлее и чуть насыщеннее: у настоящего бархата
+   на гранях к свету сияет сам цвет (красный — алым), а не белёсый налёт. Прежний блик с подмесом белого делал
+   верх красного бархата серо-розовым (владелец, 13 ноября, Morva: «вообще не похожа») */
+const pileSheen = (c, k) => { const o = c.clone(), h = {}; o.getHSL(h); o.setHSL(h.h, Math.min(1, h.s * 1.15), Math.min(0.8, h.l + k * 0.9)); return o; };
 const matCache = new Map();
 let defaultQuality = 'high';
 export function setTextureQuality(q) { defaultQuality = q; }
@@ -444,7 +448,7 @@ export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null
     color: base.clone().multiplyScalar(1 / maps.albedoMean),
     roughness: k.rough,
     metalness: 0,
-    sheen: k.sheen, sheenRoughness: k.sheenRough, sheenColor: lighten(base, k.sheenLift),
+    sheen: k.sheen, sheenRoughness: k.sheenRough, sheenColor: kind === 'velour' || kind === 'corduroy' ? pileSheen(base, k.sheenLift) : lighten(base, k.sheenLift),
     normalMap: maps.normal, normalScale: new THREE.Vector2(k.nScale, k.nScale),
     roughnessMap: maps.rough, map: maps.albedo,
   });
