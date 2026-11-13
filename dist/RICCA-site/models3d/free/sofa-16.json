@@ -250,7 +250,7 @@
    "crown": 0.03,
    "crownFace": "z",
    "pillow": 0.08,
-   "piping": true,
+   "piping": false,
    "edgeAxis": "z"
   },
   {
@@ -277,7 +277,7 @@
    "crown": 0.03,
    "crownFace": "z",
    "pillow": 0.08,
-   "piping": true,
+   "piping": false,
    "edgeAxis": "z"
   },
   {
@@ -304,7 +304,7 @@
    "crown": 0.03,
    "crownFace": "z",
    "pillow": 0.08,
-   "piping": true,
+   "piping": false,
    "edgeAxis": "z"
   },
   {

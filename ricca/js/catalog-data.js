@@ -1656,7 +1656,7 @@ window.RICCA_CATALOG = [
     glb: "models3d/bed-28.glb",
     view: { az: -38, el: 12, fov: 34, zoom: 1.15 },
     cfg: "t.bed~mw.180~hs.plain~ks.round~hh.100~ft.14~rh.40~b.plinth~lh.4~kr.split~kd.20",
-    fab: "molly:22",
+    fab: "torrens:11",
     category: "beds",
     tags: [],
     type: "Кровать",

@@ -1408,8 +1408,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-29",
-    cfg: "t.sofa~as.wide~aw.18~h.88~lf.blackwood~lh.8~lg.wood~n.2~w.240",
-    fab: "beauty:1",
+    cfg: "t.sofa~as.wide~aw.18~h.88~lh.8~n.2~w.240",
+    fab: "molly:17",
     glb: "models3d/free/sofa-29.json",
     category: "sofas",
     tags: ["straight", "foldout"],
@@ -1656,7 +1656,7 @@ window.RICCA_CATALOG = [
     glb: "models3d/bed-28.glb",
     view: { az: -38, el: 12, fov: 34, zoom: 1.15 },
     cfg: "t.bed~mw.180~hs.plain~ks.round~hh.100~ft.14~rh.40~b.plinth~lh.4~kr.split~kd.20",
-    fab: "molly:22",
+    fab: "torrens:11",
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -2502,7 +2502,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-48",
-    cfg: "t.sofa~as.none~aw.0~bc.fixed~d.80~h.69~lf.oak~lh.16~lg.wood~sc.single~vd.1~vk.roll~vo.all~w.200",
+    cfg: "t.sofa~as.none~aw.0~bc.fixed~d.80~h.69~lf.cherry~lh.16~lg.wood~sc.single~vd.1~vk.roll~vo.all~w.200",
     fab: "pique:2",
     glb: "models3d/free/sofa-48.json",
     category: "sofas",
