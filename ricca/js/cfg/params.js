@@ -23,7 +23,7 @@ export const OPTIONS = {
   backCushions: { fixed: 'цельная спинка', loose: 'съёмные подушки' },
   seatCushions: { single: 'одна подушка', sections: 'по секциям' },
   legs: { hidden: 'скрытые', metal: 'металл', wood: 'дерево', plinth: 'цоколь', disc: 'диск-опора' },
-  legFinish: { black: 'чёрный', gold: 'золотистый', oak: 'светлое дерево', walnut: 'орех', blackwood: 'тёмное дерево', smoked: 'копчёный дуб', taupe: 'тауп' },
+  legFinish: { black: 'чёрный', gold: 'золотистый', oak: 'светлое дерево', walnut: 'орех', blackwood: 'тёмное дерево', smoked: 'копчёный дуб', cherry: 'вишня', taupe: 'тауп' },
   piping: { true: 'с кантом', false: 'без канта' },
   side: { left: 'угол слева', right: 'угол справа' },
   form: { L: 'Г-образный', chaise: 'с шезлонгом', classic: 'классическое', round: 'округлое', square: 'квадратный', bench: 'банкетка', drum: 'барабан с валиками', pebble: '«капля»', oval: 'овальный' },
@@ -34,7 +34,7 @@ export const OPTIONS = {
   top: { smooth: 'гладкий', capitone: 'каретная стяжка', channels: 'вертикальные каналы' },
 };
 export const METAL_FINISHES = ['black', 'gold'];
-export const WOOD_FINISHES = ['oak', 'walnut', 'blackwood', 'smoked'];
+export const WOOD_FINISHES = ['oak', 'walnut', 'blackwood', 'smoked', 'cherry'];
 
 /* подлокотник: ширина по стилю (у кресла округлые — свои, уже: сиденье не уже 50 см) */
 export const ARMW_BY_STYLE = { none: R(0, 0, 0), thin: R(0.08, 0.16, 0.12), wide: R(0.18, 0.35, 0.24), round: R(0.16, 0.32, 0.22) };

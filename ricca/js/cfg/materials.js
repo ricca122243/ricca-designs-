@@ -559,7 +559,7 @@ export function shadeMaterial(fabric, k = 0.6) {
 }
 
 /* ---------- дерево ---------- */
-const WOOD = { oak: '#C9AE87', walnut: '#5E4330', blackwood: '#2A2622', smoked: '#6A6058' };   // smoked — копчёный (серо-коричневый) дуб: рамы кресел вроде Savro
+const WOOD = { oak: '#C9AE87', walnut: '#5E4330', blackwood: '#2A2622', smoked: '#6A6058', cherry: '#B5826C' };   // smoked — копчёный (серо-коричневый) дуб: рамы кресел вроде Savro
 const woodCache = new Map();
 function woodTextures(N) {
   const key = 'wood' + N;
