@@ -353,7 +353,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-19",
     cfg: "t.sofa~ah.60~as.round~aw.30~lh.2~lg.hidden~n.2~vp.puff~w.230",
-    fab: "noble:4",
+    fab: "noble:3",
     glb: "models3d/free/sofa-19.json",
     category: "sofas",
     tags: ["straight", "corner"],
@@ -1022,7 +1022,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-10",
     glb: "models3d/armchair-10.glb",
-    view: { az: -15, el: 8, fov: 20, zoom: 1.05 },
+    view: { az: 22, el: 20, fov: 20, zoom: 1.05 },
     cfg: "t.armchair~f.drum~w.90~d.85~h.74~sh.44~sd.56~as.round~aw.18~ah.64~lg.hidden",
     fab: "alba:22",
     category: "armchairs",
@@ -1297,7 +1297,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-24",
     glb: "models3d/sofa-24.glb",
-    view: { az: -18, el: 10, fov: 20, zoom: 1.1 },
+    view: { az: 0, el: 5, fov: 18, zoom: 1.1 },
     cfg: "t.modular~mo.3~mm.95~ch.right~as.none~h.68~lg.hidden~vp.puff~vd.2",
     fab: "torrens-plain:1",
     category: "sofas",
@@ -1969,8 +1969,8 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-38",
     glb: "models3d/sofa-38.glb",
-    view: { az: -25, el: 10, fov: 20, zoom: 1.1 },
-    cfg: "t.corner~f.L~s.left~w.320~l.200~as.thin~aw.12~ah.58~bc.loose~lg.metal~lf.gold~lh.12~va.left~vo.right~vd.3",
+    view: { az: -18, el: 5, fov: 20, zoom: 1.1 },
+    cfg: "t.corner~f.L~s.left~w.320~l.200~as.thin~aw.12~ah.58~bc.loose~lg.metal~lf.bronze~lh.12~va.left~vo.right~vd.3",
     fab: "beauty:2",
     category: "sofas",
     tags: ["corner", "modular"],
@@ -2013,7 +2013,7 @@ window.RICCA_CATALOG = [
   {
     id: "sofa-39",
     glb: "models3d/sofa-39.glb",
-    view: { az: -8, el: 15, fov: 32, zoom: 1.2 },
+    view: { az: -12, el: 9, fov: 30, zoom: 1.45 },
     cfg: "t.modular~mo.3~mm.95~as.none~bc.fixed~h.80~lg.hidden~vm.arc~vb.roll2",
     fab: "ricca:15",
     category: "sofas",
@@ -2102,7 +2102,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-19",
     cfg: "t.armchair~ah.68~aw.25~d.90~f.round~h.68~lh.2~lg.hidden~qb.none~sd.52~sh.40~w.102",
-    fab: "ricca:11",
+    fab: "timeless:24",
     glb: "models3d/free/armchair-19.json",
     category: "armchairs",
     tags: [],
@@ -2169,7 +2169,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-22",
     cfg: "t.armchair~ah.70~aw.14~d.82~f.round~h.74~lf.bordeaux~lh.18~lg.metal~ql.frame~sh.44~w.90",
-    fab: "ricca:17",
+    fab: "ricca:13",
     glb: "models3d/free/armchair-22.json",
     category: "armchairs",
     tags: [],
