@@ -6,10 +6,10 @@
   1.05
  ],
  "view": {
-  "az": 42,
-  "el": 1.5,
-  "fov": 36,
-  "zoom": 1.2
+  "az": 58,
+  "el": 4,
+  "fov": 20,
+  "zoom": 1.15
  },
  "light": {
   "az": 50,
@@ -17,7 +17,7 @@
   "exposure": 1.45
  },
  "fab": "noble:12",
- "fab2": "alba:20",
+ "fab2": "alba:18",
  "legs": {
   "kind": "metal",
   "finish": "chrome"
@@ -171,7 +171,8 @@
    "ov": 0.02,
    "ovz": 0.02,
    "drop": 0.03,
-   "cover": 0.74
+   "cover": 0.74,
+   "pillowLean": 74
   },
   {
    "id": "legF",

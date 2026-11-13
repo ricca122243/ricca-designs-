@@ -181,15 +181,15 @@ function softBox(sx, sy, sz, o = {}) {
   /* плотность стяжки: не мельче q.tuft и не больше ~30 тыс. вершин на две большие грани */
   const tArea = tuft ? (o.tuftFace === 'y' ? sx * sz : sx * sy) : 0;
   const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 3500 : o.quality === 'mid' ? 6000 : 10000))) : q.sp;
-  const spT = tuft === 'grid' ? Math.max(spTuft, 0.03) : tuft === 'weave' ? Math.max(q.tuft * 0.8, 0.02) : spTuft;   // клетки 20 см (диваны): хватает 3 см шага — сетка не раздувается; плетёнка (клетки 14 см на всех гранях) — 2 см
+  const spT = tuft === 'grid' ? Math.max(spTuft, 0.03) : tuft === 'weave' || tuft === 'ruche' ? Math.max(q.tuft * 0.8, 0.02) : spTuft;   // клетки 20 см (диваны): хватает 3 см шага — сетка не раздувается; плетёнка (клетки 14 см на всех гранях) — 2 см
   const warp = o.warp || null;   // кровать: форма верхнего края, наклон, загнутые края изголовья (bedWarp)
   const deformed = crown || crownBack || bulge || tuft || o.sag || o.pillow || o.ripple || o.slump || (o.taper && o.taper !== 1) || warp || o.wedge;
   const sp = (deformed ? q.sp : q.flat) * (o.dense || 1);
   const tf = o.tuftFace || 'z';
   const X = axisSamples(Hx, rx, rx, tuft && tuft !== 'hchannels' ? spT : warp ? Math.min(sp, q.sp * 0.8) : sp, q.nq);
   /* каналы меняются только по X — по высоте хватает обычного шага (горизонтальные — наоборот) */
-  const Y = axisSamples(Hy, rB, rT, ((tuft === 'capitone' || tuft === 'hchannels' || tuft === 'grid') && tf === 'z') || tuft === 'weave' ? spT : sp, q.nq);
-  const Z = axisSamples(Hz, rz, rz + (cf === 'z' ? 0 : 0), (tuft && tf === 'y') || tuft === 'weave' ? spT : sp, q.nq);
+  const Y = axisSamples(Hy, rB, rT, ((tuft === 'capitone' || tuft === 'hchannels' || tuft === 'grid') && tf === 'z') || tuft === 'weave' || tuft === 'ruche' ? spT : sp, q.nq);
+  const Z = axisSamples(Hz, rz, rz + (cf === 'z' ? 0 : 0), (tuft && tf === 'y') || tuft === 'weave' || tuft === 'ruche' ? spT : sp, q.nq);
   const positions = [], normals = [], uvs = [], index = [], seamA = [], occA = [];
   const P = new THREE.Vector3(), N = new THREE.Vector3(), U = new THREE.Vector3();
   const yOff = cf === 'y' ? (crownBottom - crown) / 2 : 0, zOff = cf === 'z' ? -(crown - crownBack) / 2 : 0;
@@ -356,6 +356,17 @@ function makeDisplacer(s) {
       g = Math.min(g, 0.38 + 0.62 * Math.pow(alt, 0.5));
       return depth * (g - 1);
     };
+  } else if (tuft === 'ruche') {
+    /* «мятый» бархат (Dorel): мягкие складки ~10–16 см по всем граням вразнобой, гребни круглые, ложбинки узкие.
+       Две системы складок под углом, изогнутые медленной волной, и сила складок плавает по поверхности — без регулярной «сетки» */
+    const depth = 0.02;
+    tuftFn = (u, v) => {
+      const a = u * 0.8 + v * 0.6 + 0.12 * Math.sin(v * 5.1 + u * 2.3) + 0.08 * Math.sin(u * 7.3 - v * 3.7);
+      const b = -u * 0.45 + v * 0.9 + 0.1 * Math.sin(u * 4.7 + 1.1) + 0.07 * Math.sin(v * 8.3 + u * 2.9);
+      const amp = 0.55 + 0.45 * Math.sin(u * 2.9 + v * 1.7 + 0.5) * Math.sin(v * 2.3 - u * 1.1 + 1.3);
+      const f = 0.6 * Math.pow(Math.abs(Math.sin(a * 36)), 0.55) + 0.4 * Math.pow(Math.abs(Math.sin(b * 52)), 0.55);
+      return depth * amp * (f - 1);
+    };
   } else if (tuft === 'pchannels') {
     /* пуф и банкетка (params.js → poufExtra): вертикальные каналы ~17 см через верх, фронт и тыл */
     const n = Math.max(3, Math.round(sx / 0.17));
@@ -466,6 +477,11 @@ function makeDisplacer(s) {
         const ax = Math.abs(N.x), ay = Math.abs(N.y), az = Math.abs(N.z);
         if (N.y < -0.35) return;   // дно не стёгано: блок стоит на цоколе ровным низом (на фото — тонкая тёмная полоса, без «гребёнки»)
         const d = ay >= ax && ay >= az ? tuftFn(P.x, P.z) : az >= ax ? tuftFn(P.x, P.y, true) : tuftFn(P.z, P.y, true);
+        P.x += N.x * d; P.y += N.y * d; P.z += N.z * d;
+      } else if (tuft === 'ruche') {
+        /* смесь трёх проекций по квадратам нормали — складки непрерывно переходят через скругления, без швов на рёбрах */
+        const wx = N.x * N.x, wy = N.y * N.y, wz = N.z * N.z;
+        const d = (wx * tuftFn(P.z, P.y) + wy * tuftFn(P.x, P.z + 3.1) + wz * tuftFn(P.x + 1.7, P.y)) / (wx + wy + wz) * smooth(-0.6, -0.2, N.y);
         P.x += N.x * d; P.y += N.y * d; P.z += N.z * d;
       } else if (tuft === 'pchannels' && Math.abs(N.x) < 0.6) {
         const u = P.x / Hx, w = (1 - smooth(0.9, 1.0, Math.abs(u))) * (1 - smooth(0.25, 0.6, Math.abs(N.x))), dd = tuftFn(u) * w;
@@ -897,6 +913,9 @@ const NEUTRAL = {};
 function neutral(key) {
   if (NEUTRAL[key]) return NEUTRAL[key];
   if (key === 'throw' || key === 'decor') { NEUTRAL[key] = decorMaterial(key); return NEUTRAL[key]; }   // лён / хлопок с плетением и складками
+  /* strap — ремни-крепления подушек изголовья (тёмно-коричневая гладкая кожа), buckle — пряжка (матовый никель) */
+  if (key === 'strap') { NEUTRAL[key] = new THREE.MeshPhysicalMaterial({ color: '#3E271C', roughness: 0.48, metalness: 0, clearcoat: 0.3, clearcoatRoughness: 0.4 }); return NEUTRAL[key]; }
+  if (key === 'buckle') { NEUTRAL[key] = new THREE.MeshPhysicalMaterial({ color: '#C9C9C6', roughness: 0.28, metalness: 0.9, envMapIntensity: 1.3 }); return NEUTRAL[key]; }
   const c = { fabric: '#E6E1D8', legs: '#2B2B2B', top: '#C8A57A', mattress: '#F2F1EC', decor: '#EDEBE6', throw: '#C7C3BC', tape: '#4A4A4C', support: '#1A1A1A', matte: '#131313' }[key] || '#cccccc';
   NEUTRAL[key] = new THREE.MeshPhysicalMaterial({ color: c, roughness: key === 'legs' ? 0.4 : key === 'support' ? 0.6 : key === 'matte' ? 0.92 : key === 'decor' || key === 'throw' ? 0.95 : 0.85, metalness: key === 'legs' ? 0.8 : 0 });
   if (key === 'throw') { NEUTRAL[key].sheen = 0.6; NEUTRAL[key].sheenRoughness = 0.7; NEUTRAL[key].sheenColor = new THREE.Color('#E8E6E2'); }
@@ -1031,10 +1050,11 @@ export function partsFromSpec(spec) {
         const xs = nP === 1 || mw < 1.2 ? [cx] : [cx - off, cx + off];
         xs.forEach((x, n) => one({ id: `${id}-pillow${n + 1}`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [x, mTop - yMin - 0.012, z0 + (s.pillowZ ?? 0) + 0.006 - zMin], s: [pw, pt, ph], r: 0.03, rot: [-(90 + lean), s.sheet ? (n ? -4 : 4) : 0, 0] }, i, false));
       }
-      /* extras: true — как на студийных фото кроватей ателье: ещё две подушки поменьше перед большими и валик у правого края */
+      /* extras: true — как на студийных фото кроватей ателье: ещё две подушки поменьше перед большими и валик у правого края.
+         14 ноября: передние подушки ниже и с наклоном назад (на фото они лежат на больших, а не стоят «досками») */
       if (s.extras && mw >= 1.2) {
-        one({ id: `${id}-pf1`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [cx - 0.22 * mw, mTop + 0.19, z0 + 0.53], s: [0.62, 0.19, 0.40], r: 0.03, rot: [-124, 6, 0] }, i, false);
-        one({ id: `${id}-pf2`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [cx + 0.19 * mw, mTop + 0.19, z0 + 0.55], s: [0.62, 0.19, 0.40], r: 0.03, rot: [-124, -8, 0] }, i, false);
+        one({ id: `${id}-pf1`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [cx - 0.21 * mw, mTop + 0.15, z0 + 0.55], s: [0.56, 0.17, 0.38], r: 0.03, rot: [-136, 6, 0] }, i, false);
+        one({ id: `${id}-pf2`, k: 'part', role: 'decor', m: 'decor', decor: true, decorKind: 'pillow', p: [cx + 0.19 * mw, mTop + 0.15, z0 + 0.57], s: [0.56, 0.17, 0.38], r: 0.03, rot: [-136, -8, 0] }, i, false);
         one({ id: `${id}-bolster`, k: 'cyl', m: 'decor', decor: true, p: [cx + 0.42 * mw, mTop + 0.08, z0 + 0.415], s: [0.16, 0.42, 0.16], rot: [90, 0, 12], rTop: 0.03, rBottom: 0.03 }, i, false);
       }
       return;
@@ -1287,6 +1307,7 @@ export function build(type, params, materials = {}, opts = {}) {
     decor: materials.decor || neutral('decor'), throw: neutral('throw'), tape: materials.tape || neutral('tape'), support: neutral('support'),
     fabric2: materials.fabric2 || materials.fabric || neutral('fabric'),   // ручная модель: вторая ткань (fab2 в файле модели)
     matte: neutral('matte'),   // ручная модель: матовый чёрный (цоколь, подпятники) — не блестит, как металл legs
+    strap: neutral('strap'), buckle: neutral('buckle'),   // ручная модель: кожаные ремни и металлические пряжки (Anvel)
   };
   const seamM = seamMaterial(M.fabric) || M.fabric;
   const pipeM = pipingMaterial(M.fabric) || M.fabric;
@@ -1318,7 +1339,7 @@ export function build(type, params, materials = {}, opts = {}) {
     if (it.tiltX) fitTilted(geo, it);
     /* покрывало — серо-бежевый лён (не белое на белом матрасе: кровать читается объёмом, как на фото работ) */
     const mk = it.decorKind === 'duvet' && !it.whiteDuvet ? 'throw' : it.mat;
-    addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support', 'fabric2', 'matte'].includes(mk) ? mk : it.tone === 'light' || mk === 'fabricL' ? 'fabricL' : mk === 'fabricD' ? 'fabricD' : 'fabric', it, it.decor ? { decor: true } : null);
+    addMesh(geo, ['legs', 'top', 'mattress', 'decor', 'throw', 'support', 'fabric2', 'matte', 'strap', 'buckle'].includes(mk) ? mk : it.tone === 'light' || mk === 'fabricL' ? 'fabricL' : mk === 'fabricD' ? 'fabricD' : 'fabric', it, it.decor ? { decor: true } : null);
     /* кант и швы (у матраса — тёмная лента по верхней кромке; нижняя скрыта в раме) */
     const pipeMat = it.mat === 'mattress' || it.pipeTone === 'dark' ? 'tape' : 'fabric';
     /* кровать: валик по краю изголовья (толстый кант в цвет ткани) */

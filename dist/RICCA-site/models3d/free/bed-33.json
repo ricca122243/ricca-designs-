@@ -6,9 +6,9 @@
   0.75
  ],
  "view": {
-  "az": 38,
-  "el": 9,
-  "fov": 34,
+  "az": 48,
+  "el": 7,
+  "fov": 24,
   "zoom": 1.15
  },
  "light": {
@@ -90,12 +90,12 @@
    ],
    "sheet": true,
    "duvetWhite": true,
-   "extras": false,
+   "extras": true,
    "ov": 0.02,
    "ovz": 0.02,
    "drop": 0.03,
    "cover": 0.74,
-   "pillowLean": 60
+   "pillowLean": 40
   }
  ]
 }
