@@ -181,15 +181,15 @@ function softBox(sx, sy, sz, o = {}) {
   /* плотность стяжки: не мельче q.tuft и не больше ~30 тыс. вершин на две большие грани */
   const tArea = tuft ? (o.tuftFace === 'y' ? sx * sz : sx * sy) : 0;
   const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 3500 : o.quality === 'mid' ? 6000 : 10000))) : q.sp;
-  const spT = tuft === 'grid' ? Math.max(spTuft, 0.03) : spTuft;   // клетки 20 см (диваны): хватает 3 см шага — сетка не раздувается
+  const spT = tuft === 'grid' ? Math.max(spTuft, 0.03) : tuft === 'weave' ? Math.max(q.tuft * 0.8, 0.02) : spTuft;   // клетки 20 см (диваны): хватает 3 см шага — сетка не раздувается; плетёнка (клетки 14 см на всех гранях) — 2 см
   const warp = o.warp || null;   // кровать: форма верхнего края, наклон, загнутые края изголовья (bedWarp)
   const deformed = crown || crownBack || bulge || tuft || o.sag || o.pillow || o.ripple || o.slump || (o.taper && o.taper !== 1) || warp || o.wedge;
   const sp = (deformed ? q.sp : q.flat) * (o.dense || 1);
   const tf = o.tuftFace || 'z';
   const X = axisSamples(Hx, rx, rx, tuft && tuft !== 'hchannels' ? spT : warp ? Math.min(sp, q.sp * 0.8) : sp, q.nq);
   /* каналы меняются только по X — по высоте хватает обычного шага (горизонтальные — наоборот) */
-  const Y = axisSamples(Hy, rB, rT, (tuft === 'capitone' || tuft === 'hchannels' || tuft === 'grid') && tf === 'z' ? spT : sp, q.nq);
-  const Z = axisSamples(Hz, rz, rz + (cf === 'z' ? 0 : 0), tuft && tf === 'y' ? spT : sp, q.nq);
+  const Y = axisSamples(Hy, rB, rT, ((tuft === 'capitone' || tuft === 'hchannels' || tuft === 'grid') && tf === 'z') || tuft === 'weave' ? spT : sp, q.nq);
+  const Z = axisSamples(Hz, rz, rz + (cf === 'z' ? 0 : 0), (tuft && tf === 'y') || tuft === 'weave' ? spT : sp, q.nq);
   const positions = [], normals = [], uvs = [], index = [], seamA = [], occA = [];
   const P = new THREE.Vector3(), N = new THREE.Vector3(), U = new THREE.Vector3();
   const yOff = cf === 'y' ? (crownBottom - crown) / 2 : 0, zOff = cf === 'z' ? -(crown - crownBack) / 2 : 0;
@@ -345,6 +345,17 @@ function makeDisplacer(s) {
     const ga = Math.max(2, Math.round((2 * Hx) / 0.2)), gb = Math.max(2, Math.round((2 * (tf === 'y' ? Hz : Hy)) / 0.2)), Hb = tf === 'y' ? Hz : Hy;
     const g = (t, n) => Math.pow(Math.abs(Math.sin(Math.PI * n * (t * 0.5 + 0.5))), 0.5);
     tuftFn = (a, b) => 0.022 * (Math.min(g(a / Hx, ga), g(b / Hb, gb)) - 1);
+  } else if (tuft === 'weave') {
+    /* «плетёнка» (Stegva): клетки ~14 см по всем граням, каждая клетка пухлая, внутри — шов посередине: в соседних клетках
+       то вдоль, то поперёк (как корзинное плетение). Глубина шва по краю клетки 3,4 см, внутреннего — около половины */
+    const c = 0.14, depth = 0.034;
+    tuftFn = (u, v) => {
+      const a = u / c + 100, b = v / c + 100, iu = Math.floor(a), iv = Math.floor(b), fu = a - iu, fv = b - iv;
+      let g = Math.pow(Math.min(Math.sin(Math.PI * fu), Math.sin(Math.PI * fv)), 0.42);
+      const alt = (iu + iv) & 1 ? Math.abs(Math.sin(2 * Math.PI * fv)) : Math.abs(Math.sin(2 * Math.PI * fu));
+      g = Math.min(g, 0.38 + 0.62 * Math.pow(alt, 0.5));
+      return depth * (g - 1);
+    };
   } else if (tuft === 'pchannels') {
     /* пуф и банкетка (params.js → poufExtra): вертикальные каналы ~17 см через верх, фронт и тыл */
     const n = Math.max(3, Math.round(sx / 0.17));
@@ -451,6 +462,10 @@ function makeDisplacer(s) {
         const edge = (a, H) => 1 - smooth(H - 0.05, H - 0.005, Math.abs(a));
         if (tf === 'y' && N.y > 0.3) P.y += tuftFn(P.x, P.z) * smooth(0.3, 0.9, N.y) * edge(P.x, Hx) * edge(P.z, Hz);
         if (tf === 'z' && N.z > 0.3) P.z += tuftFn(P.x, P.y) * smooth(0.3, 0.9, N.z) * edge(P.x, Hx) * edge(P.y, Hy);
+      } else if (tuft === 'weave') {
+        const ax = Math.abs(N.x), ay = Math.abs(N.y), az = Math.abs(N.z);
+        const d = ay >= ax && ay >= az ? tuftFn(P.x, P.z) : az >= ax ? tuftFn(P.x, P.y) : tuftFn(P.z, P.y);
+        P.x += N.x * d; P.y += N.y * d; P.z += N.z * d;
       } else if (tuft === 'pchannels' && Math.abs(N.x) < 0.6) {
         const u = P.x / Hx, w = (1 - smooth(0.9, 1.0, Math.abs(u))) * (1 - smooth(0.25, 0.6, Math.abs(N.x))), dd = tuftFn(u) * w;
         P.y += N.y * dd; P.z += N.z * dd;

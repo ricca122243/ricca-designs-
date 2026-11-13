@@ -49,7 +49,7 @@ const ENUMS = {
   armchair: { form: ['classic', 'round', 'drum', 'pebble'], armStyle: ARM, backCushions: ['fixed', 'loose'], legs: [...LEGS4, 'disc'] },
   pouf: { form: ['round', 'square', 'bench', 'oval'], top: ['smooth', 'capitone', 'channels'], legs: LEGS4 },
 };
-const METAL = ['black', 'gold', 'chrome', 'bronze', 'bordeaux', 'pink'], WOOD = ['oak', 'walnut', 'blackwood'];   // хром, бронза, бордо — отделки металла диванов (sf)
+const METAL = ['black', 'gold', 'chrome', 'bronze', 'bordeaux', 'pink', 'taupe'], WOOD = ['oak', 'walnut', 'blackwood', 'smoked'];   // хром, бронза, бордо — отделки металла диванов (sf)
 
 /* производные ключи (их пересчитывает normalize) */
 const DERIVED = { bed: ['w', 'd', 'h', 'hbT'], modular: ['w'], pouf: ['d'] };

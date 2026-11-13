@@ -581,7 +581,7 @@ export function woodMaterial(tone = 'oak') {
 }
 
 /* ---------- металл (шлифованный) ---------- */
-const METAL = { black: '#1E1E1E', gold: '#D2B07A', chrome: '#D9DCDF', bronze: '#8A6A4A', bordeaux: '#5A1E26', pink: '#D9A3A6', taupe: '#45403C' };   // taupe — матовая порошковая краска «тауп» (рамы банкеток вроде Ramo)   // pink — крашеный металл кресел и пуфов   // chrome — кровати и диваны; bronze, bordeaux (крашеный) — диваны
+const METAL = { black: '#1E1E1E', gold: '#D2B07A', chrome: '#D9DCDF', bronze: '#8A6A4A', bordeaux: '#5A1E26', pink: '#D9A3A6', taupe: '#3B3530' };   // taupe — матовая порошковая краска «тауп» (рамы банкеток вроде Ramo)   // pink — крашеный металл кресел и пуфов   // chrome — кровати и диваны; bronze, bordeaux (крашеный) — диваны
 const metalCache = new Map();
 /* у металла своя сила отражений: без собственной envMap three берёт scene.environmentIntensity (0,55) — stage.js передаёт студию сюда */
 let envTex = null;
@@ -608,8 +608,8 @@ export function metalMaterial(finish = 'black') {
   if (finish === 'black') { m.metalness = 0.85; }
   if (finish === 'bordeaux') { m.metalness = 0.35; m.normalScale.set(0.05, 0.05); }
   if (finish === 'pink') { m.metalness = 0.3; m.normalScale.set(0.05, 0.05); }
-  if (finish === 'taupe') { m.metalness = 0.3; m.normalScale.set(0.04, 0.04); }   // матовая эмаль: почти без блеска   // розовая порошковая эмаль   // крашеная труба: полуматовая эмаль
-  m.envMapIntensity = finish === 'gold' ? 1.8 : 1.4;   // металл живёт отражениями студии
+  if (finish === 'taupe') { m.metalness = 0.2; m.normalScale.set(0.04, 0.04); }   // матовая эмаль: почти без блеска   // розовая порошковая эмаль   // крашеная труба: полуматовая эмаль
+  m.envMapIntensity = finish === 'gold' ? 1.8 : finish === 'taupe' ? 0.8 : 1.4;   // металл живёт отражениями студии; матовая эмаль «тауп» — слабее
   if (envTex) m.envMap = envTex;
   m.name = 'metal-' + finish; m.userData = { kind: 'metal', finish };
   metalCache.set(finish, m);

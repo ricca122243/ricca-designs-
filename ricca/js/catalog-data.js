@@ -2324,7 +2324,7 @@ window.RICCA_CATALOG = [
   {
     id: "bench-03",
     cfg: "t.pouf~d.50~f.bench~h.45~lf.taupe~lh.16~lg.metal~p.0~ql.ends~w.120",
-    fab: "alba:8",
+    fab: "lucky:8",
     glb: "models3d/free/bench-03.json",
     category: "poufs",
     tags: [],

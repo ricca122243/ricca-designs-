@@ -162,19 +162,27 @@ html:not([data-hero="0"]) .intro__title { position: absolute; width: 1px; height
   .sec.atelier .atelier__grid .atelier__film { aspect-ratio: 4 / 5; }
 }
 
-/* «Для бизнеса»: публикация ricca.horeca — пять слайдов 3 : 4 лентой (листается вбок, следующий выглядывает); кнопки WhatsApp и Instagram в ряд */
-.biz__post { grid-column: 8 / -1; display: flex; gap: 10px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-.biz__post::-webkit-scrollbar { display: none; }
-.biz__post > li { flex: 0 0 78%; scroll-snap-align: start; }
-.biz__post a { display: block; aspect-ratio: 941 / 1254; overflow: hidden; background: #1A1A1A; }
-.biz__post img { width: 100%; height: 100%; object-fit: cover; }
+/* «Для бизнеса»: RICCA HoReCa — три кадра ателье 5 : 4 лентой (листается вбок, следующий выглядывает), под кадром подпись шрифтом сайта:
+   номер ярлыком, заголовок, одна строка (13 ноября — вместо слайдов публикации со своим шрифтом и «таблетками») */
+.biz__cards { grid-column: 8 / -1; display: flex; gap: 12px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.biz__cards::-webkit-scrollbar { display: none; }
+.biz__cards > li { flex: 0 0 82%; scroll-snap-align: start; }
+.biz__cards a { display: block; color: inherit; text-decoration: none; }
+.biz__cards figure { display: grid; gap: 16px; margin: 0; }
+.biz__cards img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 4; object-fit: cover; border-radius: var(--r-photo); background: #1A1A1A; }
+.biz__cards figcaption { display: grid; gap: 6px; }
+.biz__cards .label { color: var(--on-noir-2); }
+.biz__cards b { font: 300 20px/1.2 var(--sans); letter-spacing: -.01em; color: var(--on-noir); }
+.biz__cards figcaption > span:last-child { font: 400 14px/1.45 var(--sans); color: var(--on-noir-2); }
+@media (hover: hover) { .biz__cards img { transition: opacity .3s var(--ease); } .biz__cards a:hover img { opacity: .88; } }
+.biz__cards a:active img { opacity: .8; }
 .biz__btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
 .biz .btn--line { color: var(--on-noir); border-color: rgba(255, 255, 255, .5); background: transparent; }
 @media (hover: hover) { .biz .btn--line:hover { background: var(--on-noir); border-color: var(--on-noir); color: var(--ink); } }
 .biz .btn--line:active { background: rgba(255, 255, 255, .1); }   /* нажатие на чёрном — светлее, не серая заливка */
 @media (max-width: 899px) {
-  .biz__post { grid-column: 1 / -1; order: -1; margin: 0 calc(var(--pad) * -1); padding: 0 var(--pad); scroll-padding-left: var(--pad); }
-  .biz__post > li { flex-basis: 74vw; max-width: 360px; }
+  .biz__cards { grid-column: 1 / -1; order: -1; margin: 0 calc(var(--pad) * -1); padding: 0 var(--pad); scroll-padding-left: var(--pad); }
+  .biz__cards > li { flex-basis: 76vw; max-width: 380px; }
 }
 @media (max-width: 599.98px) { .biz__btns { width: 100%; flex-direction: column; gap: 8px; } .biz__text .biz__btns .btn { flex: none; width: 100%; margin-top: 0; } }   /* 12 ноября: подписи капителью шире — кнопки одна под другой, во всю ширину */
 .biz__text > * { grid-column: 1 / -1; }   /* заголовок задаёт сетке колонки (site.css) — строка и кнопки идут каждая своим рядом, а не бок о бок */
@@ -302,7 +310,7 @@ body { counter-reset: sec 2; }
    Отменяет для фото прежнее «углы 0» (13 октября — отклонены были арки и капсулы; небольшое скругление — новое решение) */
 :root { --r-photo: 10px; }
 @media (min-width: 900px) { :root { --r-photo: 12px; } }
-.wk__img, .tile__img, .model__img, .pm__da, .dt__ph, .atelier__ph, .atl__pic, .cfg__pic, .biz__post a, .faq__pic, .how__pic, .biz__pic,
+.wk__img, .tile__img, .model__img, .pm__da, .dt__ph, .atelier__ph, .atl__pic, .cfg__pic, .faq__pic, .how__pic, .biz__pic,
 .fab__photos figure, .fab__sw img, .fc__frame, .pd__frame, .lb__frame { border-radius: var(--r-photo); }
 .atl__pic, .atelier__ph { overflow: hidden; }
 .pd__thumb, .sl__img { border-radius: 6px; }
@@ -316,20 +324,18 @@ body { counter-reset: sec 2; }
 @media (min-width: 768px) { .cats > li:last-child:nth-child(odd) { grid-column: auto; } .cats > li:last-child:nth-child(3n + 1) { grid-column: 2; } }
 @media (min-width: 1100px) { .cats { grid-template-columns: repeat(7, minmax(0, 1fr)); } .cats > li:last-child:nth-child(3n + 1) { grid-column: auto; } }
 
-/* «Нам доверяют» — клиенты ателье в блоке «Для бизнеса» (владелец, 12 ноября). Восемь знаков одним светлым тоном на тёмном:
-   без цвета, рамок и подписей; телефон — по два в ряд, с 768 px — по четыре. Высота ячейки одна, знак вписан целиком */
-.biz__trust { grid-column: 1 / -1; display: grid; gap: 32px; margin-top: 24px; padding-top: 40px; border-top: 1px solid rgba(255, 255, 255, .2); }
-.biz__trust-t { color: var(--on-noir-2); }
-.biz__logos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 24px; margin: 0; padding: 0; list-style: none; }
-.biz__logos { --lh: 58px; }   /* опорная высота знака; --k у ячейки подравнивает зрительный вес: плотный «abr» меньше, знаки с мелкой подписью — больше */
-.biz__logos li { display: grid; place-items: center; height: 72px; }
-.biz__logos img { width: auto; height: auto; max-width: min(152px, 84%); max-height: calc(var(--lh) * var(--k, 1)); object-fit: contain; opacity: .9; }
+/* «Нам доверяют» — отдельный светлый раздел после «Для бизнеса» (владелец, 13 ноября: «улучши качество, добавь фирменные цвета»).
+   Знаки в своих цветах на белом, сетка тонкими линиями только между ячейками — как на присланном листе. Телефон — по два в ряд, с 768 px — по четыре.
+   --lh — опорная высота знака, --k у ячейки подравнивает зрительный вес (высокие знаки с подписью — больше) */
+.trust__t { margin: 0 0 clamp(24px, 3vw, 40px); }
+.trust__box { overflow: hidden; }
+.trust__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0 -1px -1px 0; padding: 0; list-style: none; --lh: 54px; }
+.trust__grid li { display: grid; place-items: center; height: 136px; padding: 0 10px; border-right: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); }
+.trust__grid img { display: block; width: auto; height: auto; max-width: min(150px, 88%); max-height: calc(var(--lh) * var(--k, 1)); object-fit: contain; }
 @media (min-width: 768px) {
-  .biz__trust { gap: 44px; margin-top: 40px; padding-top: 56px; }
-  .biz__logos { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 64px 40px; }
-  .biz__logos { --lh: 70px; }
-  .biz__logos li { height: 88px; }
-  .biz__logos img { max-width: min(180px, 78%); }
+  .trust__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); --lh: 86px; }
+  .trust__grid li { height: 210px; padding: 0 20px; }
+  .trust__grid img { max-width: min(230px, 80%); }
 }
 
 /* «Популярные модели» — четыре кадра одного вида (изделие у бетонной стены): на широком экране в один ряд */
