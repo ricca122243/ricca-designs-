@@ -189,10 +189,11 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   /* свет модели: az — с какой стороны ключевой свет (градусы от фронта, плюс — справа), contrast 0…1 — насколько глубже тени
      (меньше рассеянного света, сильнее ключевой), high — выше или ниже источник (1 — обычный) */
   function setLight(o) {
-    lightOv = o && (o.az != null || o.contrast > 0 || o.exposure > 0) ? { az: o.az == null ? null : +o.az, contrast: Math.min(1, Math.max(0, +o.contrast || 0)), high: o.high > 0 ? +o.high : 1, exposure: o.exposure >= 0.5 && o.exposure <= 1.5 ? +o.exposure : 1 } : null;
+    lightOv = o && (o.az != null || o.contrast > 0 || o.exposure > 0 || o.top > 0) ? { az: o.az == null ? null : +o.az, contrast: Math.min(1, Math.max(0, +o.contrast || 0)), high: o.high > 0 ? +o.high : 1, top: o.top > 0 ? Math.min(4, +o.top) : 1, exposure: o.exposure >= 0.5 && o.exposure <= 1.5 ? +o.exposure : 1 } : null;
     renderer.toneMappingExposure = LIGHT.exposure * (lightOv ? lightOv.exposure : 1);
     const c = lightOv ? lightOv.contrast : 0, mix = (a, b) => a + (b - a) * c;
-    scene.environmentIntensity = mix(LIGHT.env, 0.2); hemi.intensity = mix(LIGHT.hemi, 0.1); key.intensity = mix(LIGHT.key, 2.4); fill.intensity = mix(LIGHT.fill, 0.12); rim.intensity = mix(LIGHT.rim, 0.3);
+    /* top — «свет сверху» (как софтбокс над изделием на студийном фото): верхние грани сиденья и подлокотников светлее фронтов */
+    scene.environmentIntensity = mix(LIGHT.env, 0.2); hemi.intensity = mix(LIGHT.hemi, 0.1) * (lightOv ? lightOv.top : 1); key.intensity = mix(LIGHT.key, 2.4); fill.intensity = mix(LIGHT.fill, 0.12); rim.intensity = mix(LIGHT.rim, 0.3);
     fitLight(); shadowDirty = true; requestRender();
   }
   const fov3 = () => fovOv || FOV;   // угол обзора 3D-вида: у ручной модели — как у её фото (view.fov), иначе обычный

@@ -490,7 +490,7 @@ async function loadExactGroup(m) {
     const legs = /legs/.test(o.name) || (o.parent && /legs/.test(o.parent.name));
     /* кровати: матрас, одеяло и подушки — отдельная сетка «bedding» (tools/media-v3/model3d-bedding.py): белые, не цвета ткани */
     const bedding = /bedding/.test(o.name) || (o.parent && /bedding/.test(o.parent.name));
-    o.userData.matKey = legs ? 'legs' : bedding ? 'mattress' : 'fabric'; o.castShadow = true; o.receiveShadow = false;   // 12 ноября: обивка точной модели не принимает тени (на телефонах — серые пятна от подушек); тень на полу остаётся
+    o.userData.matKey = legs ? 'legs' : bedding ? 'bedding' : 'fabric'; o.castShadow = true; o.receiveShadow = false;   // 12 ноября: обивка точной модели не принимает тени (на телефонах — серые пятна от подушек); тень на полу остаётся
     o.geometry = o.geometry.clone(); prepExactGeo(THREE, o.geometry, k);
   });
   return wrap;
@@ -976,7 +976,8 @@ function rebuild(q = quality()) {
     /* ручная модель ещё грузится (доли секунды): сборку из деталей не показываем — иначе на миг мелькает другая форма */
     if (!ex && exactLoading && isFreeModel()) g.visible = false;
     if (ex) {
-      F.setMaterials(ex, mats);
+      /* постель точной кровати — гладкий белый лён, как на студийных фото (раньше — стёганый материал матраса) */
+      F.setMaterials(ex, { ...mats, bedding: M.decorMaterial('decor') });
       /* размеры клиента: модель растягивается по осям относительно размеров рецепта (форма — как на фото) */
       const b = ex.userData.base, cd = recipeDims();
       if (b && cd) ex.scale.set(cd.w / (b.rw || cd.w) || 1, cd.h / (b.rh || cd.h) || 1, cd.d / (b.rd || cd.d) || 1);

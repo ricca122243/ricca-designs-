@@ -906,7 +906,7 @@ function neutral(key) {
 /* ═════════ «ручная» модель по фото (models3d/free/<id>.json) ═════════
    Модель — свободный список мягких форм: у каждой свои место, размер, скругления, поворот и деформация.
    Формат описан в tools/media-v3/FREE-MODELS.md. partsFromSpec переводит файл в детали движка, freeGeometry строит форму. */
-const FREE_BOX_KEYS = ['rx', 'rz', 'rTop', 'rBottom', 'rxBack', 'rzBack', 'crown', 'crownFace', 'crownBack', 'crownBottom', 'crownP', 'bulge', 'sag', 'slump', 'pillow', 'ripple', 'tufting', 'tuftFace', 'taper', 'seams', 'occ'];
+const FREE_BOX_KEYS = ['rx', 'rz', 'rTop', 'rBottom', 'rxBack', 'rzBack', 'crown', 'crownFace', 'crownBack', 'crownBottom', 'crownP', 'bulge', 'sag', 'slump', 'pillow', 'ripple', 'tufting', 'tuftFace', 'taper', 'seams', 'occ', 'wedge'];
 const D2R = Math.PI / 180;
 /* плавная кривая по отсчётам (Catmull–Rom), t ∈ [0, 1] */
 function freeCurve(a, t) {
@@ -1021,7 +1021,9 @@ export function partsFromSpec(spec) {
       }
       const nP = s.pillows ?? 2;
       if (nP > 0) {
-        const pw = Math.min(0.7, mw / 2 - 0.04), ph = 0.50, pt = s.sheet ? 0.22 : 0.17, lean = s.pillowLean ?? (s.sheet ? 40 : 20), rx = -(Math.PI / 2 + lean * D2R), c = Math.cos(rx), sn = Math.sin(rx);
+        /* 13 ноября (проверка кроватей): подушки поднимались над матрасом на 0,45–0,5 м и читались «досками»; на фото ателье — ~0,25 м,
+           подушки лежат почти плашмя у изголовья и пухлые. pillowH — длина подушки, pillowT — толщина */
+        const pw = Math.min(0.7, mw / 2 - 0.04), ph = s.pillowH ?? 0.46, pt = s.pillowT ?? (s.sheet ? 0.24 : 0.2), lean = s.pillowLean ?? (s.sheet ? 60 : 45), rx = -(Math.PI / 2 + lean * D2R), c = Math.cos(rx), sn = Math.sin(rx);
         let yMin = Infinity, zMin = Infinity;
         for (const yy of [-pt / 2, pt / 2]) for (const zz of [-ph / 2, ph / 2]) { yMin = Math.min(yMin, yy * c - zz * sn); zMin = Math.min(zMin, yy * sn + zz * c); }
         const off = s.sheet ? Math.min(mw / 4, pw / 2 - 0.02) : mw / 4;   // как на фото: большие подушки почти касаются друг друга
@@ -1210,8 +1212,9 @@ function itemGeometry(it, quality, type, dense = 1) {
     if (it.decorKind === 'pillow') {
       /* подушка-«линза»: тонкий шов по кромке, набитая середина с обеих сторон, углы-«ушки» тонкие; прислонена к изголовью
          (rotX в params.js) — к верху тоньше, наполнитель внизу */
-      const cr = it.sy * 0.465;
-      o.crown = cr; o.crownBottom = cr; o.crownP = 1.3; o.rx = o.rz = Math.min(0.06, it.sx * 0.12); o.rTop = o.rBottom = Math.min(0.01, (it.sy - 2 * cr) * 0.45); o.bulge = 0; o.slump = 0; o.pillow = 0.3;
+      /* 13 ноября: край толще (раньше 7 % толщины — сбоку подушка читалась тонкой «карточкой»), кромка круглее; it.corner — скругление углов («ушки» острее при 0,02) */
+      const cr = it.sy * 0.38;
+      o.crown = cr; o.crownBottom = cr; o.crownP = 1.4; o.rx = o.rz = it.corner ?? Math.min(0.06, it.sx * 0.12); o.rTop = o.rBottom = Math.min(0.03, (it.sy - 2 * cr) * 0.45); o.bulge = 0.01; o.slump = 0; o.pillow = 0.3;
       o.occ = [['z', -1, 0, 0.08, 0.5]];   // нижняя кромка (−Z до поворота) лежит на матрасе
     } else if (it.roll) {
       /* отворот покрывала: мягкий валик вдоль кромки, к боковинам чуть провисает */
