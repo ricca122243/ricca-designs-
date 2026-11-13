@@ -1015,7 +1015,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-07",
-    cfg: "t.armchair~ah.70~aw.22~bc.fixed~d.85~h.74~lf.black~lh.18~lg.metal~qa.right~ql.splay~sd.58~sh.44~w.95",
+    cfg: "t.armchair~ah.70~aw.22~bc.fixed~d.85~h.74~lf.black~lh.18~lg.metal~qa.right~ql.splay~sd.58~sh.44~w.97",
     fab: "ricca:4",
     glb: "models3d/free/armchair-07.json",
     category: "armchairs",
@@ -1565,8 +1565,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-13",
-    cfg: "t.armchair~ah.64~as.thin~aw.8~d.90~h.83~lf.black~lh.12~lg.metal~sd.58~sh.44~w.85",
-    fab: "eclipse:11",
+    cfg: "t.armchair~ah.64~as.thin~aw.8~d.91~lf.black~lh.12~lg.metal~sd.58~sh.44~w.85",
+    fab: "alba:4",
     glb: "models3d/free/armchair-13.json",
     category: "armchairs",
     tags: [],
@@ -2161,7 +2161,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-17",
-    cfg: "t.armchair~ah.62~as.thin~aw.10~d.88~h.96~lf.black~lh.16~lg.metal~p.1~sd.58~sh.44~w.85",
+    cfg: "t.armchair~ah.62~as.thin~aw.10~d.88~h.71~lf.black~lh.16~lg.metal~p.1~sd.58~sh.44~w.85",
     fab: "torrens:7",
     glb: "models3d/free/armchair-17.json",
     category: "armchairs",
@@ -2204,7 +2204,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-19",
-    cfg: "t.armchair~ah.72~aw.25~d.90~f.round~h.72~lh.2~lg.hidden~qb.none~sd.52~sh.40~w.100",
+    cfg: "t.armchair~ah.68~aw.25~d.90~f.round~h.68~lh.2~lg.hidden~qb.none~sd.52~sh.40~w.102",
     fab: "ricca:11",
     glb: "models3d/free/armchair-19.json",
     category: "armchairs",
@@ -2250,7 +2250,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-21",
-    cfg: "t.armchair~as.none~aw.0~bc.fixed~d.85~h.100~lf.walnut~lh.18~ql.splay~w.75",
+    cfg: "t.armchair~as.none~aw.0~bc.fixed~d.89~h.100~lf.walnut~lh.18~ql.splay~w.77",
     fab: "pique:6",
     glb: "models3d/free/armchair-21.json",
     category: "armchairs",
