@@ -2236,7 +2236,7 @@ window.RICCA_CATALOG = [
   {
     id: "pouf-02",
     cfg: "t.pouf~d.60~f.oval~h.47~w.80",
-    fab: "noble:10",
+    fab: "molly:11",
     glb: "models3d/free/pouf-02.json",
     category: "poufs",
     tags: [],

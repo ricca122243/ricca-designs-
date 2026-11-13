@@ -1234,8 +1234,9 @@ function itemGeometry(it, quality, type, dense = 1) {
       /* подушка-«линза»: тонкий шов по кромке, набитая середина с обеих сторон, углы-«ушки» тонкие; прислонена к изголовью
          (rotX в params.js) — к верху тоньше, наполнитель внизу */
       /* 13 ноября: край толще (раньше 7 % толщины — сбоку подушка читалась тонкой «карточкой»), кромка круглее; it.corner — скругление углов («ушки» острее при 0,02) */
-      const cr = it.sy * 0.38;
-      o.crown = cr; o.crownBottom = cr; o.crownP = 1.4; o.rx = o.rz = it.corner ?? Math.min(0.06, it.sx * 0.12); o.rTop = o.rBottom = Math.min(0.03, (it.sy - 2 * cr) * 0.45); o.bulge = 0.01; o.slump = 0; o.pillow = 0.3;
+      /* 14 ноября (снимки владельца сбоку): подушка набита до края — купол полнее (crownP 2.2 вместо 1,4), иначе сбоку она «доска» */
+      const cr = it.sy * 0.4;
+      o.crown = cr; o.crownBottom = cr; o.crownP = 2.2; o.rx = o.rz = it.corner ?? Math.min(0.06, it.sx * 0.12); o.rTop = o.rBottom = Math.min(0.03, (it.sy - 2 * cr) * 0.45); o.bulge = 0.01; o.slump = 0; o.pillow = 0.3;
       o.occ = [['z', -1, 0, 0.08, 0.5]];   // нижняя кромка (−Z до поворота) лежит на матрасе
     } else if (it.roll) {
       /* отворот покрывала: мягкий валик вдоль кромки, к боковинам чуть провисает */

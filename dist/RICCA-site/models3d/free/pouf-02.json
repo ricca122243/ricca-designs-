@@ -13,11 +13,12 @@
  },
  "light": {
   "az": 20,
-  "contrast": 0.4,
+  "contrast": 0.35,
   "high": 1.4,
-  "exposure": 0.95
+  "exposure": 0.92,
+  "top": 2.2
  },
- "fab": "noble:10",
+ "fab": "molly:11",
  "measure": {
   "seatH": 0.47
  },
@@ -43,7 +44,7 @@
   {
    "id": "pipeT",
    "k": "tube",
-   "m": "fabricD",
+   "m": "fabric",
    "d": 0.012,
    "round": 0.22,
    "closed": true,
