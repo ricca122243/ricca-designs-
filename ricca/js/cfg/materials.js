@@ -665,6 +665,8 @@ export function decorMaterial(kind = 'decor') {
     normalMap: t.normal, normalScale: new THREE.Vector2(throwK ? 0.75 : 0.55, throwK ? 0.75 : 0.55),
     sheen: throwK ? 0.5 : 0.35, sheenRoughness: 0.75, sheenColor: new THREE.Color(throwK ? '#E9E6E0' : '#FFFFFF'), specularIntensity: 0.2,
   });
+  /* 14 ноября: белое бельё в студии не уходит в серое — тыльная сторона подушек и покрывала сбоку была тёмно-серой «доской» */
+  if (!throwK) { m.emissive = new THREE.Color('#EEECE7'); m.emissiveIntensity = 0.2; }
   m.name = 'decor-' + kind; m.userData = { kind };
   decorCache.set(kind, m);
   return m;
