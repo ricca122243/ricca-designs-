@@ -101,7 +101,7 @@
     'без подлокотников': 'no armrests', 'Без подлокотников': 'No armrests', 'Полукресло': 'Slim arms',
     'тонкие': 'slim', 'широкие': 'wide', 'округлые': 'rounded', 'цельная спинка': 'one-piece back', 'съёмные подушки': 'loose cushions',
     'одна подушка': 'one cushion', 'по секциям': 'in sections', 'скрытые': 'hidden', 'металл': 'metal', 'дерево': 'wood', 'цоколь': 'plinth',
-    'диск-опора': 'disc base', 'чёрный': 'black', 'золотистый': 'gold', 'светлое дерево': 'light wood', 'орех': 'walnut', 'тёмное дерево': 'dark wood',
+    'диск-опора': 'disc base', 'чёрный': 'black', 'золотистый': 'gold', 'светлое дерево': 'light wood', 'орех': 'walnut', 'тёмное дерево': 'dark wood', 'копчёный дуб': 'smoked oak', 'тауп': 'taupe',
     'с кантом': 'with piping', 'без канта': 'no piping', 'угол слева': 'corner on the left', 'угол справа': 'corner on the right', 'Г-образный': 'L-shaped',
     'с шезлонгом': 'with a chaise', 'классическое': 'classic', 'округлое': 'rounded', 'квадратный': 'square', 'круглый': 'round', 'банкетка': 'bench',
     'без шезлонга': 'no chaise', 'шезлонг слева': 'chaise on the left', 'шезлонг справа': 'chaise on the right', 'гладкое': 'plain',

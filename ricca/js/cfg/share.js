@@ -118,7 +118,7 @@ const COMMON = {
   backCushions: { fixed: 'цельная спинка', loose: 'съёмные подушки' },
   seatCushions: { single: 'одна подушка', sections: 'по секциям' },
   legs: { hidden: 'скрытые', metal: 'металл', wood: 'дерево', plinth: 'цоколь', disc: 'диск-опора' },
-  legFinish: { black: 'чёрный', gold: 'золотистый', oak: 'светлое дерево', walnut: 'орех', blackwood: 'тёмное дерево', chrome: 'хром', bronze: 'бронза', bordeaux: 'бордо', pink: 'розовый' },
+  legFinish: { black: 'чёрный', gold: 'золотистый', oak: 'светлое дерево', walnut: 'орех', blackwood: 'тёмное дерево', smoked: 'копчёный дуб', chrome: 'хром', bronze: 'бронза', bordeaux: 'бордо', pink: 'розовый', taupe: 'тауп' },
   piping: { true: 'с кантом', false: 'без канта' },
   side: { left: 'угол слева', right: 'угол справа' },
   /* диваны: дополнительные формы */

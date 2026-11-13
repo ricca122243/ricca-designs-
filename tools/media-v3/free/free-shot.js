@@ -13,7 +13,7 @@ global.window = {}; require('/home/user/ricca-designs-/ricca/js/catalog-data.js'
     try {
       const fid = process.env.SPEC || id; const file = `/home/user/ricca-designs-/ricca/models3d/free/${fid}.json`; const spec = JSON.parse(fs.readFileSync(file, 'utf8'));
       const fab = spec.fab || m.fab || '';
-      /* отделка ножек и рам из файла модели (legs: { kind: 'metal' | 'wood', finish: 'black' | 'gold' | 'chrome' | 'bronze' | 'bordeaux' | 'pink' | 'oak' | 'walnut' | 'blackwood' }) —
+      /* отделка ножек и рам из файла модели (legs: { kind: 'metal' | 'wood', finish: 'black' | 'gold' | 'chrome' | 'bronze' | 'bordeaux' | 'pink' | 'taupe' | 'oak' | 'walnut' | 'blackwood' | 'smoked' }) —
          подставляется в рецепт так же, как потом будет записано в каталог */
       let cfg = m.cfg;
       if (spec.legs && spec.legs.finish) {

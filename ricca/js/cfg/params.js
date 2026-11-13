@@ -23,7 +23,7 @@ export const OPTIONS = {
   backCushions: { fixed: 'цельная спинка', loose: 'съёмные подушки' },
   seatCushions: { single: 'одна подушка', sections: 'по секциям' },
   legs: { hidden: 'скрытые', metal: 'металл', wood: 'дерево', plinth: 'цоколь', disc: 'диск-опора' },
-  legFinish: { black: 'чёрный', gold: 'золотистый', oak: 'светлое дерево', walnut: 'орех', blackwood: 'тёмное дерево' },
+  legFinish: { black: 'чёрный', gold: 'золотистый', oak: 'светлое дерево', walnut: 'орех', blackwood: 'тёмное дерево', smoked: 'копчёный дуб', taupe: 'тауп' },
   piping: { true: 'с кантом', false: 'без канта' },
   side: { left: 'угол слева', right: 'угол справа' },
   form: { L: 'Г-образный', chaise: 'с шезлонгом', classic: 'классическое', round: 'округлое', square: 'квадратный', bench: 'банкетка', drum: 'барабан с валиками', pebble: '«капля»', oval: 'овальный' },
@@ -34,7 +34,7 @@ export const OPTIONS = {
   top: { smooth: 'гладкий', capitone: 'каретная стяжка', channels: 'вертикальные каналы' },
 };
 export const METAL_FINISHES = ['black', 'gold'];
-export const WOOD_FINISHES = ['oak', 'walnut', 'blackwood'];
+export const WOOD_FINISHES = ['oak', 'walnut', 'blackwood', 'smoked'];
 
 /* подлокотник: ширина по стилю (у кресла округлые — свои, уже: сиденье не уже 50 см) */
 export const ARMW_BY_STYLE = { none: R(0, 0, 0), thin: R(0.08, 0.16, 0.12), wide: R(0.18, 0.35, 0.24), round: R(0.16, 0.32, 0.22) };
@@ -378,7 +378,7 @@ export const SF_TYPES = {
   sfDecorKind: ['sofa', 'corner', 'ushape', 'modular'], sfLegShape: ['sofa', 'corner', 'ushape', 'modular'], sfPlinth: ['sofa', 'corner', 'ushape', 'modular'],
   sfLayout: ['modular'],
 };
-export const SF_METAL_EXTRA = ['chrome', 'bronze', 'bordeaux'];
+export const SF_METAL_EXTRA = ['chrome', 'bronze', 'bordeaux', 'taupe'];
 /* значение ключа (неизвестное / пустое → по умолчанию) */
 export function sfVal(p, k) {
   const v = p ? p[k] : undefined;
@@ -1111,7 +1111,7 @@ export const AC_OPTS = {
   qDecor: ['none', 'ball', 'roll'], qStack: ['one', 'two', 'three'], qPlan: ['rect', 'stadium'],
 };
 export const AC_DEF = { qLeg: 'straight', qPlinth: 'fabric', qShell: 'std', qSeat: 'cushion', qBack: 'std', qArmSide: 'both', qDecor: 'none', qStack: 'one', qPlan: 'rect' };
-export const AC_METAL_EXTRA = ['chrome', 'bronze', 'bordeaux', 'pink'];
+export const AC_METAL_EXTRA = ['chrome', 'bronze', 'bordeaux', 'pink', 'taupe'];
 export function acVal(p, k) { const v = p ? p[k] : undefined; return AC_OPTS[k] && AC_OPTS[k].includes(v) ? v : AC_DEF[k]; }
 /* формы опор, доступные при выбранных ножках */
 export function acLegShapes(type, p) {
