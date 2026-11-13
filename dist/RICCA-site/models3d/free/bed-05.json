@@ -15,8 +15,8 @@
   "az": 50,
   "contrast": 0.45,
   "exposure": 1.1,
-  "top": 3,
-  "high": 2.5
+  "top": 2,
+  "high": 1.8
  },
  "fab": "molly:6",
  "measure": {
@@ -100,12 +100,13 @@
    "sheet": true,
    "duvetWhite": false,
    "extras": false,
-   "ov": 0.02,
-   "ovz": 0.02,
+   "ov": 0.045,
+   "ovz": 0.04,
    "drop": 0.17,
-   "cover": 0.74,
-   "pillowLean": 76,
-   "pillowT": 0.2
+   "cover": 0.8,
+   "pillowLean": 80,
+   "pillowT": 0.22,
+   "pillowH": 0.44
   },
   {
    "id": "footF",
