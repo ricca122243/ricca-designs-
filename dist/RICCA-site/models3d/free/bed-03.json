@@ -29,7 +29,6 @@
  "items": [
   {
    "id": "hb",
-   "m": "fabricL",
    "p": [
     0,
     0.56,
@@ -46,7 +45,8 @@
    "rBottom": 0.02,
    "warp": {
     "lean": 0.13
-   }
+   },
+   "m": "fabricL"
   },
   {
    "id": "wing",

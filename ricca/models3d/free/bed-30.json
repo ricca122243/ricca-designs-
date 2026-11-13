@@ -129,7 +129,7 @@
    ],
    "sheet": true,
    "duvetWhite": true,
-   "extras": false,
+   "extras": true,
    "ov": 0.02,
    "ovz": 0.02,
    "drop": 0.03,

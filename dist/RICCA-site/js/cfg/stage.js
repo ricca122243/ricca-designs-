@@ -93,6 +93,23 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   /* мягкий заполняющий свет со стороны камеры (без тени): бок, повёрнутый к зрителю, не проваливается в плоскую тень */
   const fill = new THREE.DirectionalLight(LIGHT.fillColor, LIGHT.fill);
   scene.add(fill); scene.add(fill.target);
+  /* 14 ноября: заполняющий свет идёт за камерой. Владелец крутит модель пальцем — сзади и сбоку, куда не достаёт ключевой
+     свет, обивка была почти чёрной. Чем дальше камера от стороны ключевого света, тем сильнее заполняющий: тыл модели
+     читается так же, как фронт на фото (тень на полу остаётся от неподвижного ключевого) */
+  let fillBase = LIGHT.fill;
+  const _fd = new THREE.Vector3(), _kd = new THREE.Vector3();
+  function followLight() {
+    if (camera !== persp) return;
+    _fd.copy(persp.position).sub(controls.target); _fd.y = 0;
+    if (_fd.lengthSq() < 1e-8) return;
+    _fd.normalize();
+    _kd.copy(key.position).sub(key.target.position); _kd.y = 0; if (_kd.lengthSq() > 1e-8) _kd.normalize();
+    const away = Math.min(1, Math.max(0, (-_fd.dot(_kd) + 0.2) / 1.2));   // 0 — камера со стороны ключевого света, 1 — строго напротив
+    const r = Math.max(1, radius() * 1.4);
+    fill.position.copy(center).addScaledVector(_fd, r * 3); fill.position.y = center.y + r * 1.4;
+    fill.target.position.copy(center);
+    fill.intensity = fillBase + key.intensity * 0.62 * away * away * (3 - 2 * away);
+  }
   /* контровой: сзади-справа, чуть сверху — светлая кромка на спинке и подлокотнике, без тени */
   const rim = new THREE.DirectionalLight(LIGHT.rimColor, LIGHT.rim);
   scene.add(rim); scene.add(rim.target);
@@ -193,7 +210,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     renderer.toneMappingExposure = LIGHT.exposure * (lightOv ? lightOv.exposure : 1);
     const c = lightOv ? lightOv.contrast : 0, mix = (a, b) => a + (b - a) * c;
     /* top — «свет сверху» (как софтбокс над изделием на студийном фото): верхние грани сиденья и подлокотников светлее фронтов */
-    scene.environmentIntensity = mix(LIGHT.env, 0.2); hemi.intensity = mix(LIGHT.hemi, 0.1) * (lightOv ? lightOv.top : 1); key.intensity = mix(LIGHT.key, 2.4); fill.intensity = mix(LIGHT.fill, 0.12); rim.intensity = mix(LIGHT.rim, 0.3);
+    scene.environmentIntensity = mix(LIGHT.env, 0.2); hemi.intensity = mix(LIGHT.hemi, 0.1) * (lightOv ? lightOv.top : 1); key.intensity = mix(LIGHT.key, 2.4); fillBase = mix(LIGHT.fill, 0.12); fill.intensity = fillBase; rim.intensity = mix(LIGHT.rim, 0.3);
     fitLight(); shadowDirty = true; requestRender();
   }
   const fov3 = () => fovOv || FOV;   // угол обзора 3D-вида: у ручной модели — как у её фото (view.fov), иначе обычный
@@ -261,6 +278,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   }
   function renderFrame(moving) {
     emit('beforeRender');
+    followLight();
     applySeamLOD(camera, H);
     if (studioOn && contact.dirty) contact.update(scene, root);
     const still = !moving && !interacting;

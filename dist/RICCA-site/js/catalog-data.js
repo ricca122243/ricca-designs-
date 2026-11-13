@@ -1970,7 +1970,7 @@ window.RICCA_CATALOG = [
     id: "sofa-38",
     glb: "models3d/sofa-38.glb",
     view: { az: -18, el: 5, fov: 20, zoom: 1.1 },
-    cfg: "t.corner~f.L~s.left~w.320~l.200~as.thin~aw.12~ah.58~bc.loose~lg.metal~lf.bronze~lh.12~va.left~vo.right~vd.3",
+    cfg: "t.corner~f.L~s.left~w.320~l.200~as.thin~aw.12~ah.58~bc.loose~lg.metal~lf.black~lh.12~va.left~vo.right~vd.3",
     fab: "beauty:2",
     category: "sofas",
     tags: ["corner", "modular"],
