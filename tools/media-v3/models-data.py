@@ -62,7 +62,7 @@ for it in cat:
     cfg = it.get('cfg') or ('corner' if 'corner' in it.get('tags', []) and it['category'] == 'sofas' else CFG[it['category']])   # cfg модели — готовый рецепт для 3D
     name = names.get(it['id'], '')
     out.append({'id': 'm-' + it['id'], 'cat': it['category'], 'title': f"{it.get('type', '')} {name}".strip() if name else f"{it.get('type', '')} № {it['id'].split('-')[-1]}",
-                'sub': it.get('subtitle', ''), 'cfg': cfg, 'photos': photos, 'ig': '', 'model': True, **({'fab': it['fab']} if it.get('fab') else {})})   # fab — ткань цвета с фото для 3D
+                'sub': it.get('subtitle', ''), 'cfg': cfg, 'photos': photos, 'ig': '', 'model': True, **({'fab': it['fab']} if it.get('fab') else {}), **({'no3d': True} if it.get('no3d') else {})})   # fab — ткань цвета с фото для 3D
 
 # ── порядок на витрине и рекомендации — считаются сами (12 ноября: «премиальные вперёд, банальные вниз, всё автоматизировать»)
 import numpy as np

@@ -1372,6 +1372,8 @@
       const cfgHref = `${CFG_PAGE}#cfg=v1~${/~|^t\./.test(w.cfg || '') ? w.cfg : 't.' + encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}${w.fab ? `&f=${encodeURIComponent(w.fab)}` : ''}&from=work-${encodeURIComponent(w.id)}`;   // w.fab — ткань цвета с фото (tools/media-v3/model-fabric.py)
       t3s.forEach((a) => { a.href = cfgHref; a.setAttribute('aria-label', tr`3D-модель: ${w.title}`); });
       draws.forEach((a) => { a.href = `${cfgHref}&draw=1`; a.setAttribute('aria-label', tr`Чертёж: ${w.title}`); });
+      // no3d (каталог): 3D этой модели снято с сайта (владелец, 14 ноября) — кнопок «3D-модель» и «Чертёж» нет
+      const tools = $('.lb__tools', dlg); if (tools) tools.hidden = !!w.no3d;
       igs.forEach((a) => { a.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; a.hidden = !!w.model; });   // у моделей каталога поста нет
       // строки под названием (телефон): у модели — «Размер — любой», «Ткань — выбрать», «3D»; у работы — «3D» и Instagram
       [['size', !w.model], ['fabric', !w.model], ['ig', !!w.model]].forEach(([k, off]) => { const li = rowOf(k); if (li) li.hidden = off; });

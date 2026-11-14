@@ -956,6 +956,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.70~aw.22~bc.fixed~d.85~h.74~lf.black~lh.18~lg.metal~qa.right~ql.splay~sd.58~sh.44~w.97",
     fab: "ricca:4",
     glb: "models3d/free/armchair-07.json",
+    no3d: true,   // 14 ноября, владелец: 3D Runvo не похоже — на сайте без «3D-модели» и «Чертежа», в конструкторе его нет; файл модели остаётся (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",

@@ -382,7 +382,7 @@ function renderTypes() {
 }
 /* модели каталога (js/catalog-data.js, window.RICCA_CATALOG) с рецептом для 3D (поле cfg: «t.corner~f.chaise~…») — полоса фото под типами:
    щелчок собирает похожую модель. Новая модель в каталоге с полем cfg появляется здесь сама. */
-const catalogModels = () => (Array.isArray(window.RICCA_CATALOG) ? window.RICCA_CATALOG : []).filter((m) => m && m.cfg && m.photos && m.photos.length && !/^(chairs|tables)$/.test(m.category));
+const catalogModels = () => (Array.isArray(window.RICCA_CATALOG) ? window.RICCA_CATALOG : []).filter((m) => m && m.cfg && !m.no3d && m.photos && m.photos.length && !/^(chairs|tables)$/.test(m.category));   // no3d — 3D модели снято с сайта
 const modelName = (m) => { const nm = (window.RICCA_MODEL_NAMES || {})[m.id]; return nm ? `${m.type || ''} ${nm}`.trim() : `${m.type || ''} № ${m.id.split('-').pop()}`; };
 /* плашка в окне 3D после выбора модели: «Novel · точная модель» */
 const modelTag = (m) => `${(window.RICCA_MODEL_NAMES || {})[m.id] || modelName(m)} · ${m.glb ? (/\.json$/.test(m.glb) ? 'собрано вручную по фото' : 'точная модель') : 'собрано по фото'}`;
