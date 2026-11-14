@@ -1334,14 +1334,18 @@ export function build(type, params, materials = {}, opts = {}) {
   const pr = opts.parts || parts(type, p);   // opts.parts — «ручная» модель (partsFromSpec)
   const group = new THREE.Group();
   group.name = 'ricca-piece';
-  const M = {
-    fabric: materials.fabric || neutral('fabric'), legs: materials.legs || neutral('legs'),
-    top: materials.top || neutral('top'), mattress: materials.mattress || neutral('mattress'),
-    decor: materials.decor || neutral('decor'), throw: neutral('throw'), tape: materials.tape || neutral('tape'), support: neutral('support'),
-    fabric2: materials.fabric2 || materials.fabric || neutral('fabric'),   // ручная модель: вторая ткань (fab2 в файле модели)
-    matte: neutral('matte'),   // ручная модель: матовый чёрный (цоколь, подпятники) — не блестит, как металл legs
-    strap: neutral('strap'), buckle: neutral('buckle'),   // ручная модель: кожаные ремни и металлические пряжки (Anvel)
+  /* 14 ноября (владелец: «лаги 3D убрать»): материалы создаются, только когда деталь их просит. Раньше лён и плед (текстура 512² из
+     шума) готовились для каждого изделия — у дивана без подушек и пледа это ~0,6 с на телефоне до первого кадра */
+  const MAKE = {
+    fabric: () => materials.fabric || neutral('fabric'), legs: () => materials.legs || neutral('legs'),
+    top: () => materials.top || neutral('top'), mattress: () => materials.mattress || neutral('mattress'),
+    decor: () => materials.decor || neutral('decor'), throw: () => neutral('throw'), tape: () => materials.tape || neutral('tape'), support: () => neutral('support'),
+    fabric2: () => materials.fabric2 || materials.fabric || neutral('fabric'),   // ручная модель: вторая ткань (fab2 в файле модели)
+    matte: () => neutral('matte'),   // ручная модель: матовый чёрный (цоколь, подпятники) — не блестит, как металл legs
+    strap: () => neutral('strap'), buckle: () => neutral('buckle'),   // ручная модель: кожаные ремни и металлические пряжки (Anvel)
   };
+  const M = {};
+  for (const k of Object.keys(MAKE)) Object.defineProperty(M, k, { configurable: true, enumerable: true, get() { const v = MAKE[k](); Object.defineProperty(M, k, { value: v, enumerable: true }); return v; } });
   const seamM = seamMaterial(M.fabric) || M.fabric;
   const pipeM = pipingMaterial(M.fabric) || M.fabric;
   const lightM = lightMaterial(M.fabric) || M.fabric;   // кровать: вставка изголовья светлее (it.tone === 'light')

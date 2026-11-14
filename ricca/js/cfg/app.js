@@ -959,6 +959,7 @@ function scheduleRebuild(drag) {
   if (!stage) return;
   clearTimeout(rbT);
   if (drag) {
+    if (stage.hold) stage.hold();   // тени и тень под изделием — после того, как палец отпустил ползунок
     const now = performance.now();
     if (now - rbLast > 100) { rbLast = now; rebuild('mid'); }
     rbT = setTimeout(() => { rbT = 0; rebuild(quality()); }, 180);

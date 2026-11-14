@@ -280,8 +280,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     emit('beforeRender');
     followLight();
     applySeamLOD(camera, H);
-    if (studioOn && contact.dirty) contact.update(scene, root);
     const still = !moving && !interacting;
+    /* 14 ноября (владелец: «лаги 3D убрать»): тень под изделием и мягкие тени считаем только в покое — пока тянут ползунок размера (hold), кадр лёгкий */
+    if (studioOn && contact.dirty && still) contact.update(scene, root);
     const useAO = aoMode === 'always' || (aoMode === 'idle' && still);
     if (still && shadowDirty) { renderer.shadowMap.needsUpdate = true; shadowDirty = false; }
     const pr = still || useAO ? dprFull : dprMove;
@@ -644,6 +645,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     /* снаружи (комната двигает мебель): сцена могла измениться — тени пересчитать; markShadows=false — только перерисовать */
     requestRender: (markShadows = true) => { if (markShadows) shadowDirty = true; requestRender(); },
     cancelAnim() { anim = null; },
+    /* перестройка во время перетаскивания ползунка: кадр «в движении» — без пересчёта теней и с меньшим разрешением; через 220 мс тишины — полный кадр */
+    hold() { interacting = true; clearTimeout(idleT); idleT = setTimeout(() => { interacting = false; requestRender(); }, 220); },
     /* крупный план точки (например, подушки сиденья — видна фактура ткани) с того же направления */
     closeUp(target, dist = 0.9, { animate = true } = {}) {
       if (view !== '3d') setView('3d', { animate: false });
