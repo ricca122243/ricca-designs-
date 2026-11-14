@@ -467,11 +467,13 @@
       es.filter((e) => e.isIntersecting).forEach((e, i) => { io.unobserve(e.target); show(e.target, i * 90); });
     }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
     // .rv ставит разметка; остальным прямым детям разделов (кроме тех, где .rv уже внутри, и скрытых блоков) — добавляем сами
-    $$(':is(.sec, .biz):not([hidden]) > .wrap > :not(.rv, [hidden], script, template)').forEach((el) => { if (!el.querySelector('.rv')) el.classList.add('rv'); });
+    $$(':is(.sec, .biz):not([hidden]) > .wrap > :not(.rv, [hidden], script, template, .geo__map)').forEach((el) => { if (!el.querySelector('.rv')) el.classList.add('rv'); });
     $$('.rv').forEach((el) => { if (el.getBoundingClientRect().top > vh) { pre(el); io.observe(el); } });
   }
 
-  /* ---------- «Работаем по всему миру»: дуги из Алматы рисуются, когда карта входит в экран (CSS: .geo__map.is-pre —
+  /* 15 ноября: карта не берёт общий класс появления (.rv, выше) — два запуска мешали друг другу: фигура проявлялась,
+     пока дуги уже дорисовывались. У карты один запуск — свой.
+     ---------- «Работаем по всему миру»: дуги из Алматы рисуются, когда карта входит в экран (CSS: .geo__map.is-pre —
      stroke-dashoffset по pathLength="1", 1,6–2,4 с с шагом; точки проявляются в конце своей дуги). Без IO и при
      reduced motion класс не ставится — карта статична, всё видно сразу ---------- */
   (() => {

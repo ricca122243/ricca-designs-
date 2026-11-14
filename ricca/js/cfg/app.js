@@ -346,7 +346,7 @@ function writeHash() {
   hashT = setTimeout(() => {
     if (state.mode !== 'model') return;
     lastHash = hashOf() + (cameFrom ? `&from=${cameFrom}` : '');   // «откуда пришли» остаётся в адресе (не в ссылке варианта): после обновления страницы «‹ Кровать Bukel» на месте
-    try { history.replaceState(null, '', lastHash); } catch (e) { /* file:// и т. п. */ }
+    try { history.replaceState(history.state, '', lastHash); } catch (e) { /* file:// и т. п. */ }   // запись открытого окна (cfgDlg) не теряем
   }, 300);
 }
 
@@ -570,6 +570,16 @@ function initBack(src) {
   } else if (from || cameInside) t.textContent = 'Назад';
   if (from) a.setAttribute('href', `index.html#${from}`);
   a.addEventListener('click', (e) => { if (cameInside && history.length > 1) { e.preventDefault(); history.back(); } });
+  initExit(a);
+}
+/* «‹» в окне 3D на телефоне: та же ссылка, что «‹ Каталог» в шапке; виден, пока шапка за краем экрана */
+function initExit(a) {
+  const x = $('#t-exit'), vp = $('#vp'), hdr = $('#hdr');
+  if (!x || !vp || !hdr || typeof IntersectionObserver === 'undefined') return;
+  x.href = a.href; x.setAttribute('aria-label', a.getAttribute('aria-label') || `Назад: ${a.textContent.trim()}`);
+  x.addEventListener('click', (e) => { e.preventDefault(); a.click(); });
+  x.hidden = false; x.tabIndex = -1;
+  new IntersectionObserver(([en]) => { const away = !en.isIntersecting; vp.classList.toggle('is-away', away); x.tabIndex = away ? 0 : -1; x.setAttribute('aria-hidden', String(!away)); }).observe(hdr);
 }
 function applyModel(mid) {
   const m = catalogModels().find((x) => x.id === mid); if (!m) return;
@@ -1432,15 +1442,30 @@ function closeAR() {
 
 /* ═════════ окна ═════════ */
 let lastFocus = null;
+/* 15 ноября (владелец: «быстрые кнопки Назад»): у окна (чертёж, ткань, AR) своя запись в истории — кнопка «Назад» телефона
+   и жест «назад» закрывают окно, а не уводят из конструктора. ✕, Esc и касание фона закрывают окно и убирают эту запись */
 function openDialog(dlg) {
   lastFocus = document.activeElement;
+  const was = dlg.open;
   if (typeof dlg.showModal === 'function') { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute('open', '');
   document.documentElement.classList.add('is-locked');
+  if (!was) { try { history.pushState({ cfgDlg: dlg.id }, '', location.href); } catch (e) { /* file:// */ } }
 }
 function closeDialog(dlg) {
   if (dlg.open) { if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open'); }
 }
+let backFromDlg = false;
+window.addEventListener('popstate', () => {
+  const open = document.querySelectorAll('dialog.dlg[open]');
+  if (!open.length && !backFromDlg) return;
+  backFromDlg = false;
+  open.forEach((d) => { d._byBack = true; closeDialog(d); });
+  /* в окне могли сменить ткань или размер — адрес текущего варианта остаётся, прежний из истории не возвращаем */
+  if (lastHash && location.hash !== lastHash) { try { history.replaceState(history.state, '', lastHash); } catch (e) { /* */ } }
+});
 function onDialogClosed(dlg) {
+  if (!dlg._byBack && history.state && history.state.cfgDlg === dlg.id) { backFromDlg = true; try { history.back(); } catch (e) { backFromDlg = false; } }
+  dlg._byBack = false;
   document.documentElement.classList.remove('is-locked');
   if (dlg.id === 'dlg-ar') closeAR();
   if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });

@@ -193,7 +193,7 @@ html[data-bg="white"] .vp__stage canvas { filter: brightness(1.06); }
 .vp__views button[aria-checked="true"] { background: var(--noir); color: var(--on-noir); }
 @media (hover: hover) { .vp__views button[aria-checked="false"]:hover { color: var(--ink); } }
 
-.vp__view { display: none; }   /* телефон: одна кнопка вместо полосы видов (правила — в блоке «Телефон») */
+.vp__view, .vp__exit { display: none; }   /* телефон: одна кнопка вместо полосы видов (правила — в блоке «Телефон») */
 .vp__tools { position: absolute; z-index: 3; top: 16px; right: 16px; display: flex; background: rgba(255, 255, 255, .92); border: 1px solid var(--line); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .vp__tool { display: grid; place-items: center; width: 44px; height: 44px; color: var(--ink); transition: background var(--t) var(--ease), color var(--t) var(--ease); }
 .vp__tool + .vp__tool { border-left: 1px solid var(--line); }
@@ -484,6 +484,14 @@ html[data-font="b"] .rp__h { font: 400 26px/1 var(--serif); letter-spacing: 0; }
   .vp__view .ico { width: 12px; height: 12px; color: var(--ink-2); }
   .vp__view:active, .vp__tool:not([aria-pressed="true"]):active { background: var(--paper-2); }
   .vp.no-3d .vp__view { display: none; }
+  /* 15 ноября (владелец: «выход из конструктора всегда под рукой»): шапка ушла вверх — слева квадрат «‹», вид сдвигается вправо */
+  .vp__exit { position: absolute; z-index: 3; top: 10px; left: 10px; display: grid; place-items: center; width: 46px; height: 46px; background: rgba(255, 255, 255, .92); border: 1px solid var(--line); color: var(--ink);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); opacity: 0; transform: translateX(-8px); transition: opacity var(--t) var(--ease), transform var(--t) var(--ease); }
+  .vp__exit .ico { width: 14px; height: 14px; }
+  .vp__exit:active { background: var(--paper-2); }
+  .vp.is-away .vp__exit { opacity: 1; transform: none; }
+  .vp .vp__view { transition: transform var(--t) var(--ease); }
+  .vp.is-away .vp__view { transform: translateX(52px); }
   .vp__stage { --stage-pad-top: 58px; }   /* кнопки окна сверху: виды «Спереди / Сбоку / Сверху» кадрируются ниже них (stage.js) */
   .vp__tools { top: 10px; right: 10px; }
   #t-drawing { display: none; }           /* «Чертёж» на телефоне — в нижней плашке на каждом шаге и в итоге; в окне 3D остаются «Размеры», фото и сброс вида */
