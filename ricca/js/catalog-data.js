@@ -1883,6 +1883,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-34",
+    hidden: true,   // 14 ноября, владелец: «убери вообще этот диван» — снят с сайта целиком; данные и файлы остаются (вернуть — убрать строку)
     cfg: "t.sofa~ah.60~as.wide~aw.20~h.69~lh.2~lg.hidden~sc.single~va.right~vo.all~w.180",
     fab: "eclipse:10",
     glb: "models3d/free/sofa-34.json",
