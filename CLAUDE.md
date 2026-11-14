@@ -25,6 +25,16 @@
 | Исследование рынка, конкурентов, референсов | `deep-research`, `agent-reach` |
 | Интервью с клиентами, опросы, выводы из отзывов | `user-research`, `research-synthesis` |
 | Файлы Word, Excel, PDF | `docx`, `xlsx`, `pdf` |
+| SEO сайта: аудит, мета-теги, schema, sitemap, скорость, видимость в ИИ-поиске | `seo`, `seo-audit`, `seo-technical`, `seo-schema`, `seo-geo`, `seo-local` |
+| Текст звучит «как нейросеть», сделать живее | `humanizer` |
+| HTML-презентация с анимацией | `frontend-slides` |
+| Разобрать чужой ролик или рилс, как он снят, повторить | `rea-video`, `reverse-any-video`, `video-understand` |
+| Сделать ролик кодом, анимация, титры, субтитры | `hyperframes`, `remotion-best-practices`, `media-use` |
+| Скачать видео, нарезать, сжать, сконвертировать | `video-download`, `video-edit`, `ffmpeg` |
+| Схема или карта проекта, как устроен код | `floorplan` |
+| Выжимка идей из текста, сценария, расшифровки | `fabric-extract-wisdom` |
+| Проверить договор или оферту | `fabric-check-agreement` |
+| Нет подходящего скилла под задачу | `find-skills` |
 
 ## Работа над сайтом
 
