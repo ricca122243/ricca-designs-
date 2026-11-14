@@ -222,6 +222,13 @@ ATTR = {
 #     а последнее слово в EN другое («ELUNA mattresses»). Заменяем до перевода узлов — иначе «Матрасы» останется непереведённым
 FRAG = [
  ('<span class="tile__name">Матрасы <span class="tile__nw">ELUNA<svg', '<span class="tile__name">ELUNA <span class="tile__nw">mattresses<svg'),
+    # 15 ноября: курсив в заголовках (<em>) — фраза целиком, курсив на том же смысловом слове
+    ('Мягкая мебель <em>на&nbsp;заказ</em>&nbsp;— под&nbsp;ваш размер и&nbsp;ткань</h1>', 'Upholstered furniture <em>made to&nbsp;order</em>&nbsp;— your size, your fabric</h1>'),
+    ('id="picks-title">Популярные <em>модели</em></h2>', 'id="picks-title">Popular <em>models</em></h2>'),
+    ('id="works-title">Наши <em>работы</em></h2>', 'id="works-title">Our <em>works</em></h2>'),
+    ('id="trust-title">Нам <em>доверяют</em></h2>', 'id="trust-title"><em>Trusted</em> by</h2>'),
+    ('id="geo-title">Работаем по&nbsp;всему <em>миру</em></h2>', 'id="geo-title">We work <em>worldwide</em></h2>'),
+    ('id="show-title">Приходите <em>в&nbsp;шоурум</em></h2>', 'id="show-title">Visit <em>the showroom</em></h2>'),
 ]
 for a, b in FRAG:
     assert s.count(a) == 1, f'нет в index.html: {a[:70]}'

@@ -48,7 +48,7 @@
   // по #адресам ?bg остаётся в адресе сам (меняется только хэш)
   if (/[?&]bg=white(?:&|$)/.test(location.search)) root.dataset.bg = 'white';
   // шрифты на выбор заказчика (css/site.css, html[data-font]): ?font=a — только Montserrat (по умолчанию), ?font=b — заголовки антиквой
-  root.dataset.font = (/[?&]font=(a|b)(?:&|$)/.exec(location.search) || [0, 'a'])[1];
+  root.dataset.font = (/[?&]font=(a|b|i)(?:&|$)/.exec(location.search) || [0, 'i'])[1];   // 15 ноября: по умолчанию «i» — курсив в заголовках
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

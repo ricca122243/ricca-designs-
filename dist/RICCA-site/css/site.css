@@ -156,6 +156,11 @@ textarea.fld { min-height: 64px; resize: vertical; }
 @media (hover: hover) { .hdr__nav a:hover::after { transform: scaleX(1); } }
 /* WhatsApp в меню — со значком (контур из спрайта #i-whatsapp маской: в ::before <use> не вставить) */
 .hdr__nav a[data-wa]::before { content: ''; flex: none; width: 16px; height: 16px; background: currentColor; -webkit-mask: var(--i-wa) center / contain no-repeat; mask: var(--i-wa) center / contain no-repeat; }
+/* ---------- Курсив в заголовках (владелец, 15 ноября: «шрифт как у boca.su — курсив в паре с нынешним»): одно-два слова
+   заголовка — Cormorant Italic (уже загружен, без лишних файлов) рядом с Montserrat Light; курсив крупнее на 12 %, чтобы
+   строчные сравнялись по высоте. ?font=a — без курсива, ?font=b — заголовки целиком антиквой ---------- */
+:is(.title, .intro__title) em { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.12em; letter-spacing: -.005em; line-height: 0; }
+html[data-font="a"] :is(.title, .intro__title) em { font: inherit; letter-spacing: inherit; }
 /* ---------- Время года (владелец, 15 ноября: «снег — светло-синий»): js/season.js ставит html[data-season] по дате в Алматы.
    Меняются только фон страницы, волосяные линии, подложка схем и второстепенный текст — холодные оттенки, без тёплых.
    Подиум под фото изделий (--product-bg) не трогаем: цвет ткани на фото остаётся честным. Лето — базовая палитра. ---------- */
