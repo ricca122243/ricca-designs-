@@ -1,0 +1,59 @@
+---
+title: Applications
+description: Understand, deploy, configure, and operate applications with Coolify.
+---
+
+import { BranchUp, Box2, Settings } from 'reicon-react';
+
+# Applications
+
+Coolify deploys applications as Docker containers on a connected server. Create an Application from a Git repository, a Dockerfile entered without Git, or an existing Docker image. A Git-based Application can also use a Docker Compose definition from its repository.
+
+Start with **Understand Applications** if you are new to self-hosting or are moving from a managed deployment platform. The section explains which infrastructure Coolify manages, what remains your responsibility, and how to choose a deployment method.
+
+<Callout type="info" title="Looking for a one-click application?">
+
+Use [Services](/services) for software distributed as a ready-made Coolify service template. Use Applications when you control the source code, Docker configuration, or image reference.
+
+</Callout>
+
+## Find the right section
+
+| If you want to | Start here |
+| :--- | :--- |
+| Learn what an application is and where it runs | [What is an application](/applications/what-is-an-application) |
+| Choose between Git source, a Dockerfile without Git, Git-based Docker Compose, and an existing image | [Choose a deployment method](/applications/choose-deployment-method) |
+| Connect GitHub, GitLab, Bitbucket, Gitea, or another Git provider | [Source code](/applications/sources/overview) |
+| Configure how Coolify builds source code | [Builds](/applications/builds/overview) |
+| Manage domains, ports, variables, health checks, and advanced settings | [Configuration](/applications/configuration/overview) |
+| Inspect deployments, previews, rolling updates, and rollbacks | [Deployments](/applications/deployments/overview) |
+| Use logs, the terminal, backups, or resource operations | [Operations](/applications/operations/overview) |
+
+## Start with your first application
+
+If you have not deployed an application before, follow [Deploy your first app](/deploy-your-first-app). The guide uses `nginx:alpine` so you can verify the server, Docker, proxy, and generated domain before connecting source code.
+
+After the first deployment, choose the path that matches the application you want to run.
+
+<CoolNextSteps
+  cards={[
+    {
+      title: 'Understand applications',
+      href: '/applications/what-is-an-application',
+      description: 'Learn where an application runs and which responsibilities move from a managed platform to you.',
+      icon: Box2,
+    },
+    {
+      title: 'Choose a deployment method',
+      href: '/applications/choose-deployment-method',
+      description: 'Select Git source, a Dockerfile without Git, Git-based Docker Compose, or an existing image.',
+      icon: BranchUp,
+    },
+    {
+      title: 'Configure an application',
+      href: '/applications/configuration/overview',
+      description: 'Find the settings for builds, domains, variables, storage, health checks, and operations.',
+      icon: Settings,
+    },
+  ]}
+/>

@@ -27,6 +27,7 @@
 | Тексты кнопок, заголовков, форм, ошибок | `ux-copy` | `humanizer` — текст звучит как нейросеть |
 | Схема проекта, как устроен код | `floorplan` | — |
 | Сайт на React или Next.js | `vercel-react-best-practices` | `vercel-composition-patterns` — рефакторинг компонентов |
+| Анимация на GSAP, скролл-эффекты | `gsap-core` | `gsap-scrolltrigger` — анимация по прокрутке; `gsap-timeline` — последовательности; `gsap-plugins`, `gsap-utils`, `gsap-performance` — по названию задачи; `gsap-react`, `gsap-frameworks` — проект на React, Vue или Svelte |
 
 Скиллы `threejs-fundamentals`, `threejs-geometry`, `threejs-materials`, `threejs-lighting`, `threejs-textures`, `threejs-loaders`, `threejs-animation`, `threejs-interaction`, `threejs-shaders`, `threejs-postprocessing` включай по одному, под конкретную 3D-задачу.
 
@@ -62,6 +63,7 @@
 | Страница не ранжируется, хотя оптимизирована | `seo-sxo` | — |
 
 `seo-flow` и `seo-dataforseo` включай, только когда пользователь называет FLOW или DataForSEO.
+Расширения под внешние сервисы включай, только когда пользователь называет сервис и у него есть к нему доступ: `seo-ahrefs`, `seo-bing`, `seo-firecrawl`, `seo-matomo`, `seo-profound`, `seo-seranking`, `seo-unlighthouse`.
 
 ## 4. Сайт: хостинг, домен, сервисы
 
@@ -114,9 +116,20 @@
 | Запись экрана или демо сайта | `playwright-recording` | — |
 | Обучающее видео в стиле 3Blue1Brown | `manim-composer` | `manimce-best-practices` или `manimgl-best-practices` — по версии Manim |
 | Аватар, говорящая голова | `avatar-video` | `create-video` — ролик по одному промпту; `faceswap`, `video-translate` — по названию задачи |
+| Ролик целиком по конвейеру: бриф, сценарий, материалы, монтаж | `openmontage` | — |
+| Анимационный рилс без съёмки: объяснялка, наука, «что если» | `stick-figure` | `zach-d-films` — 3D-мультяшный стиль; `breakdown` — разбор предмета по слоям; `map-route` — маршрут на карте; `graph` — график с числом; `minimalistic-graphics` — чёрно-белая линейная графика |
+| Короткая моушн-графика: титр, цифра, логотип | `motion-graphics` | — |
+| Ролик под музыкальный трек, по битам | `music-to-video` | — |
+| Ролик из сайта: тур или демо страницы | `website-to-video` | `synthetic-screen-recording` — имитация записи терминала |
+| Видео-релиз со списком изменений | `changelog-video` | — |
+| Анимация 2D-персонажа | `character-rigging` | `pose-library-design`, `svg-character-animation`, `canvas-procedural-animation`, `character-animation-qa` — по этапу работы |
+| 3D-мир или 3D-модель для ролика | `threejs-world-generation` | `3d-asset-generation` — нужна отдельная модель |
 
 Скиллы `remotion`, `remotion-captions`, `remotion-create`, `remotion-docs`, `remotion-interactivity`, `remotion-license`, `remotion-maps`, `remotion-markup`, `remotion-multimedia`, `remotion-render`, `remotion-saas`, `remotion-studio`, `remotion-upgrade` включай только внутри проекта на Remotion.
 Скиллы `video_toolkit`, `heygen`, `ltx2` включай, только когда пользователь называет этот инструмент.
+Внутри проекта HyperFrames первым включай `motion-doctrine`, дальше по задаче: `hyperframes-core`, `hyperframes-animation`, `hyperframes-creative`, `hyperframes-media`, `cut-the-curve`, `seam-craft`, `oversized-cursor`, `captions-overlay`.
+Готовые блоки HyperFrames включай, когда нужен именно такой титр или сцена: `hf-block-canopy-part-title`, `hf-block-code-slice-hero`, `hf-block-cuboid-carousel`, `hf-block-frost-sequence-camera-orbit`, `hf-block-glass-shard-title`, `hf-block-orbit-card`, `hf-block-wireframe-portal-title`.
+Скиллы под конкретные генераторы включай, только когда пользователь называет модель или сервис и у него есть ключ: `seedance-2-0`, `seedance-2-5`, `kling-official`, `minimax-h3`, `pika-h3-flex`, `gemini-omni`, `grok-media`, `atlas-cloud`, `comfyui`, `dashscope`, `provider-model-refresh`, `provider-refresh-oct23`, `video-toolkit`.
 
 ## 8. Звук
 
@@ -129,6 +142,7 @@
 | Нет ключа ElevenLabs | `setup-api-key` | — |
 
 `agents` включай, только когда строят голосового агента ElevenLabs.
+Озвучку и музыку других сервисов включай по названию сервиса: `fish-audio-tts`, `doubao-tts`, `lyria`.
 
 ## 9. Соцсети
 
@@ -158,7 +172,8 @@
 | Интервью, опросы | `user-research` | — |
 | Выводы из отзывов и интервью | `research-synthesis` | — |
 | Выжимка идей из текста или расшифровки | `fabric-extract-wisdom` | — |
-| Разбор дня, недели, года; паттерн Fabric по имени | `fabric` | — |
+| Разбор недели или года; паттерн Fabric по имени | `fabric` | — |
+| Разбор дня, итоги вечера | `fabric-day-review` | — |
 | Убрать «нейросетевой» тон | `humanizer` | — |
 | Объясни, научи | `learn` | `ai-agents-for-beginners`, `llm-course`, `llms-from-scratch`, `build-your-own-x` — тема совпадает с курсом |
 | Финансовый расчёт | `financial-calculator` | — |
