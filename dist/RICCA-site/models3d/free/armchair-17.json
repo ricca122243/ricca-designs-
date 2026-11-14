@@ -6,8 +6,8 @@
   0.71
  ],
  "view": {
-  "az": -57,
-  "el": 22,
+  "az": -62,
+  "el": 32.0,
   "fov": 14,
   "zoom": 1.35
  },
@@ -274,41 +274,32 @@
    "id": "backCushion",
    "decor": true,
    "p": [
-    -0.003,
-    0.705,
-    0.27
+    0,
+    0.7,
+    0.25
    ],
    "s": [
-    0.62,
-    0.57,
-    0.21
+    0.66,
+    0.26,
+    0.62
    ],
    "rot": [
-    -40,
-    -17.4,
+    -135,
+    0,
     0
    ],
-   "pre": [
-    0,
-    -2.2,
-    20
-   ],
-   "rx": 0.08,
-   "rTop": 0.08,
-   "rBottom": 0.07,
-   "rz": 0.025,
-   "crown": 0.08,
-   "crownFace": "z",
-   "crownBack": 0.05,
-   "crownP": 1.6,
-   "pillow": 0.2,
-   "bulge": 0.02,
-   "seams": [
-    [
-     "z",
-     1
-    ]
-   ]
+   "crownFace": "y",
+   "crown": 0.1,
+   "crownBottom": 0.1,
+   "crownP": 1.9,
+   "rx": 0.03,
+   "rz": 0.03,
+   "rTop": 0.0288,
+   "rBottom": 0.0288,
+   "bulge": 0.01,
+   "pillow": 0.3,
+   "noOcc": true,
+   "pinch": 0.07
   },
   {
    "id": "legF",

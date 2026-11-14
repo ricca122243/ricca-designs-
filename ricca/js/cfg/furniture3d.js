@@ -45,6 +45,24 @@ function makeProjector(Hx, Hy, Hz, R) {
   };
 }
 
+/* то же для rPlan: в плане — прямоугольник со скруглёнными углами (радиус Rp), сечение кромки — четверти эллипса (rh по горизонтали, rB / rT по высоте) */
+function makeTorusProjector(Hx, Hy, Hz, Rp, rh, rB, rT) {
+  const ax = Hx - Rp, az = Hz - Rp, s0 = Rp - rh, y0 = -Hy + rB, y1 = Hy - rT;
+  return (gx, gy, gz, out, nout) => {
+    const qx = Math.min(ax, Math.max(-ax, gx)), qz = Math.min(az, Math.max(-az, gz));
+    const vx = gx - qx, vz = gz - qz, d = Math.hypot(vx, vz);
+    const hx = d > 1e-9 ? vx / d : 0, hz = d > 1e-9 ? vz / d : 0;
+    const cr = Math.min(d, s0), cy = Math.min(y1, Math.max(y0, gy));
+    const dr = d - cr, dy = gy - cy, ry = dy >= 0 ? rT : rB;
+    const er = rh > 1e-6 ? dr / rh : 0, ey = ry > 1e-6 ? dy / ry : 0, l = Math.hypot(er, ey);
+    if (l < 1e-9) { out.set(gx, gy, gz); nout.set(0, 1, 0); return; }
+    const ur = er / l, uy = ey / l, rr = cr + rh * ur;
+    out.set(qx + hx * rr, cy + ry * uy, qz + hz * rr);
+    const nr = rh > 1e-6 ? ur / rh : ur * 1e6, ny = ry > 1e-6 ? uy / ry : uy * 1e6;
+    nout.set(hx * nr, ny, hz * nr).normalize();
+  };
+}
+
 /* гладкие нормали по совпадающим позициям (сетки граней дублируют вершины на рёбрах) */
 function smoothNormalsByPosition(geo) {
   const pos = geo.attributes.position, idx = geo.index;
@@ -172,18 +190,21 @@ function softBox(sx, sy, sz, o = {}) {
   const bx = sxw - 2 * (bulge + slumpX), by = sy - (cf === 'y' ? crown + crownBottom : 0), bz = sz - 2 * (bulge + slumpZ) - (cf === 'z' ? crown + crownBack : 0);
   const Hx = bx / 2, Hy = by / 2, Hz = bz / 2;
   const lim = (r, h) => Math.max(0.0005, Math.min(r, h * 0.999));
-  const rx = lim(o.rx ?? 0.02, Hx), rz = lim(o.rz ?? o.rx ?? 0.02, Hz);
+  /* rPlan: углы в плане радиусом rPlan, а по всему контуру — круглый «валик» радиусом rx (как у пуфа-«гальки»): без rPlan угол —
+     один эллипсоид (rx × rTop × rz), и при крупном угле в плане кромка выходит «линзой» */
+  const tor = o.rPlan ? lim(o.rPlan, Math.min(Hx, Hz)) : 0, rh = tor ? Math.min(tor, lim(o.rx ?? 0.02, Math.min(Hx, Hz))) : 0;
+  const rx = tor || lim(o.rx ?? 0.02, Hx), rz = tor || lim(o.rz ?? o.rx ?? 0.02, Hz);
   let rT = lim(o.rTop ?? 0.02, Hy), rB = lim(o.rBottom ?? 0.015, Hy);
   if (rT + rB > by * 0.999) { const k = (by * 0.999) / (rT + rB); rT *= k; rB *= k; }
-  const R = { x: [o.rxBack != null ? lim(o.rxBack, Hx) : rx, rx], y: [rB, rT], z: [o.rzBack != null ? lim(o.rzBack, Hz) : rz, rz] };
-  const proj = makeProjector(Hx, Hy, Hz, R);
+  const R = tor ? { x: [tor, tor], y: [rB, rT], z: [tor, tor] } : { x: [o.rxBack != null ? lim(o.rxBack, Hx) : rx, rx], y: [rB, rT], z: [o.rzBack != null ? lim(o.rzBack, Hz) : rz, rz] };
+  const proj = tor ? makeTorusProjector(Hx, Hy, Hz, tor, rh, rB, rT) : makeProjector(Hx, Hy, Hz, R);
   const tuft = o.tufting;
   /* плотность стяжки: не мельче q.tuft и не больше ~30 тыс. вершин на две большие грани */
   const tArea = tuft ? (o.tuftFace === 'y' ? sx * sz : sx * sy) : 0;
   const spTuft = tuft ? Math.max(q.tuft, Math.sqrt((2 * tArea) / (o.quality === 'low' ? 3500 : o.quality === 'mid' ? 6000 : 10000))) : q.sp;
   const spT = tuft === 'grid' ? Math.max(spTuft, 0.03) : tuft === 'weave' || tuft === 'ruche' ? Math.max(q.tuft * 0.8, 0.02) : spTuft;   // клетки 20 см (диваны): хватает 3 см шага — сетка не раздувается; плетёнка (клетки 14 см на всех гранях) — 2 см
   const warp = o.warp || null;   // кровать: форма верхнего края, наклон, загнутые края изголовья (bedWarp)
-  const deformed = crown || crownBack || bulge || tuft || o.sag || o.pillow || o.ripple || o.slump || (o.taper && o.taper !== 1) || warp || o.wedge;
+  const deformed = crown || crownBack || bulge || tuft || o.sag || o.pillow || o.pinch || o.ripple || o.slump || (o.taper && o.taper !== 1) || warp || o.wedge;
   const sp = (deformed ? q.sp : q.flat) * (o.dense || 1);
   const tf = o.tuftFace || 'z';
   const X = axisSamples(Hx, rx, rx, tuft && tuft !== 'hchannels' ? spT : warp ? Math.min(sp, q.sp * 0.8) : sp, q.nq);
@@ -193,8 +214,8 @@ function softBox(sx, sy, sz, o = {}) {
   const positions = [], normals = [], uvs = [], index = [], seamA = [], occA = [];
   const P = new THREE.Vector3(), N = new THREE.Vector3(), U = new THREE.Vector3();
   const yOff = cf === 'y' ? (crownBottom - crown) / 2 : 0, zOff = cf === 'z' ? -(crown - crownBack) / 2 : 0;
-  const disp = makeDisplacer({ Hx, Hy, Hz, crown, crownBack, crownBottom, crownP: o.crownP || 2, cf, bulge, sag: o.sag || 0, tuft, tf, sx, sy, sz, taper: o.taper || 1, wedge: o.wedge || 0, rT, pillow: o.pillow || 0, ripple: o.ripple || 0, slump: o.slump || 0, drape: o.drape || null });
-  const seamer = o.seams && o.seams.length && o.quality !== 'low' ? makeSeamer(Hx, Hy, Hz, R, o.seams) : null;
+  const disp = makeDisplacer({ Hx, Hy, Hz, crown, crownBack, crownBottom, crownP: o.crownP || 2, cf, bulge, sag: o.sag || 0, tuft, tf, sx, sy, sz, taper: o.taper || 1, wedge: o.wedge || 0, rT, pillow: o.pillow || 0, ripple: o.ripple || 0, slump: o.slump || 0, drape: o.drape || null, pinch: o.pinch || 0 });
+  const seamer = o.seams && o.seams.length && !tor && o.quality !== 'low' ? makeSeamer(Hx, Hy, Hz, R, o.seams) : null;
   const sOut = [0, 0, 0];
   const HH = [Hx, Hy, Hz], occB = o.occ && o.occ.length ? o.occ : null;
   /* UV «развёрткой»: в зоне скругления — длина дуги (r·atan(d/r)), а не проекция: фактура на скруглённых рёбрах и углах
@@ -400,7 +421,10 @@ function makeDisplacer(s) {
     };
     for (let S = -ns; S <= ns; S++) for (let T = -nt; T <= nt; T++) if (((S + T) % 2 + 2) % 2 === 0) buttons.push([S * a / 2, T * b]);
   }
+  const pinch = s.pinch || 0;
   const fn = (P, N) => {
+    /* набитая подушка (линза, толщина по Y): края между углами-«ушками» втянуты внутрь — ткань тянет наполнитель, середина кромки ближе к центру */
+    if (pinch && cf === 'y') { const u = Math.min(1, Math.abs(P.x) / Hx), v = Math.min(1, Math.abs(P.z) / Hz); P.x *= 1 - pinch * (1 - v * v); P.z *= 1 - pinch * (1 - u * u); }
     /* сужение (ножки): горизонтальный масштаб от низа (taper) к верху (1) */
     if (taper !== 1) { const t = (P.y + Hy) / (2 * Hy); const k = taper + (1 - taper) * t; P.x *= k; P.z *= k; }
     /* подушка спинки: к верху тоньше (наполнитель оседает вниз), толщина у низа — полная */
@@ -696,11 +720,21 @@ function sfShellFull(sh, quality) {
       path.push({ O: [cx + sgn * rcx * c, rcz - rcz * s], I: [cx + sgn * rix * c, rcz - riz * s], top: armH + (h - armH) * s * s, seg });
     }
   };
-  side(0, tS, zEnd, rcz, 'l');
-  arc(-1, 0, Math.PI / 2, 'b');
-  { const n = Math.max(2, Math.ceil((W - 2 * rcx) / step)); for (let i = 1; i < n; i++) { const x = rcx + ((W - 2 * rcx) * i) / n; path.push({ O: [x, 0], I: [x, tB], top: h, seg: 'b' }); } }
-  arc(1, Math.PI / 2, 0, 'b');
-  side(W, W - tS, rcz, zEnd, 'r');
+  /* sh.arms: 'r' — только правая боковина (кресло «Г»: спинка переходит в один подлокотник), 'l' — только левая; конец спинки без боковины — круглый торец */
+  const noL = sh.arms === 'r', noR = sh.arms === 'l';
+  const xB0 = noL ? tB / 2 : rcx, xB1 = noR ? W - tB / 2 : W - rcx;
+  if (!noL) { side(0, tS, zEnd, rcz, 'l'); arc(-1, 0, Math.PI / 2, 'b'); }
+  /* sh.endR — радиус скругления верхнего угла свободного конца спинки (вид спереди): верх плавно опускается к торцу */
+  const eR = sh.endR || 0, capL0 = sh.capL ?? tB / 2;
+  const endTop = (x) => { const X = capL0 + Math.min(noL ? x - xB0 : 9, noR ? xB1 - x : 9); if (!eR || X >= eR) return h; return h - eR + Math.sqrt(Math.max(0, eR * eR - (eR - X) * (eR - X))); };
+  {
+    const xs = [], n = Math.max(2, Math.ceil((xB1 - xB0) / step));
+    for (let i = noL ? 0 : 1; i < (noR ? n + 1 : n); i++) xs.push(xB0 + ((xB1 - xB0) * i) / n);
+    /* у скруглённого конца — чаще: профиль верха плавный */
+    if (eR) { const e = Math.max(0, eR - capL0), m = 8; for (let k = 1; k < m; k++) { const d = (e * k) / m; if (noL) xs.push(xB0 + d); if (noR) xs.push(xB1 - d); } xs.sort((a, b) => a - b); }
+    for (const x of xs.filter((v, k) => !k || v - xs[k - 1] > 0.004)) path.push({ O: [x, 0], I: [x, tB], top: endTop(x), seg: 'b' });
+  }
+  if (!noR) { arc(1, Math.PI / 2, 0, 'b'); side(W, W - tS, rcz, zEnd, 'r'); }
   /* сечение: точки [ρ (0 снаружи … T внутри), y, верх?]; число точек одинаково на всех кольцах */
   /* ручные модели (ushell): sh.rt / sh.rb — радиус верха и низа сечения, sh.bulge — выпуклость наружной стенки («подушка»), sh.capL / sh.capP — длина и полнота торца боковины */
   const yb = y0, nBc = q.nq * (sh.rb ? 2 : 1), nW = Math.max(4, Math.ceil(h / q.sp)), nT = q.nq * 2, nF = 3;
@@ -720,9 +754,9 @@ function sfShellFull(sh, quality) {
   /* кольца: торец слева (полукругом) — направляющая — торец справа */
   const nCap = Math.max(3, q.nq + 1);
   const rings = [];
-  for (let k = nCap; k >= 1; k--) rings.push({ i: 0, cap: k / nCap, dir: -1, seg: 'l' });
+  for (let k = nCap; k >= 1; k--) rings.push({ i: 0, cap: k / nCap, dir: -1, seg: noL ? 'b' : 'l' });
   path.forEach((pt, i) => rings.push({ i, cap: 0, dir: 0, seg: pt.seg }));
-  for (let k = 1; k <= nCap; k++) rings.push({ i: path.length - 1, cap: k / nCap, dir: 1, seg: 'r' });
+  for (let k = 1; k <= nCap; k++) rings.push({ i: path.length - 1, cap: k / nCap, dir: 1, seg: noR ? 'b' : 'r' });
   const positions = [], uvs = [];
   let L = 0, uAcc = 0, prevM = null;
   rings.forEach((rg) => {
@@ -926,7 +960,7 @@ function neutral(key) {
 /* ═════════ «ручная» модель по фото (models3d/free/<id>.json) ═════════
    Модель — свободный список мягких форм: у каждой свои место, размер, скругления, поворот и деформация.
    Формат описан в tools/media-v3/FREE-MODELS.md. partsFromSpec переводит файл в детали движка, freeGeometry строит форму. */
-const FREE_BOX_KEYS = ['rx', 'rz', 'rTop', 'rBottom', 'rxBack', 'rzBack', 'crown', 'crownFace', 'crownBack', 'crownBottom', 'crownP', 'bulge', 'sag', 'slump', 'pillow', 'ripple', 'tufting', 'tuftFace', 'taper', 'seams', 'occ', 'wedge'];
+const FREE_BOX_KEYS = ['rPlan', 'pinch', 'rx', 'rz', 'rTop', 'rBottom', 'rxBack', 'rzBack', 'crown', 'crownFace', 'crownBack', 'crownBottom', 'crownP', 'bulge', 'sag', 'slump', 'pillow', 'ripple', 'tufting', 'tuftFace', 'taper', 'seams', 'occ', 'wedge'];
 const D2R = Math.PI / 180;
 /* плавная кривая по отсчётам (Catmull–Rom), t ∈ [0, 1] */
 function freeCurve(a, t) {
@@ -1013,11 +1047,13 @@ export function partsFromSpec(spec) {
       /* наклон спинки назад (lean, градусы; от высоты leanY, у боковин сходит на нет к leanZ) и сужение спинки кверху (taper — доля ширины у верха, от высоты боковин на высоте taperH, выше — прямо) */
       if (s.lean) { sh.lean = s.lean; sh.leanY = s.leanY ?? y0; sh.leanZ = s.leanZ ?? rcz + 0.25; }
       if (s.taper) { sh.taper = s.taper; if (s.taperH) sh.taperH = s.taperH; }
+      if (s.arms === 'r' || s.arms === 'l') sh.arms = s.arms;   // одна боковина: 'r' — справа, 'l' — слева
+      if (s.endR) sh.endR = s.endR;   // скругление верхнего угла свободного конца спинки
       const ox = (p[0] || 0) - W / 2, oz = p[2] || 0;
       const put = (piece, role, x0, x1, ya, yb, z0, z1, extra) => items.push({ id: `${id}-${piece}`, role, mat: s.m || 'fabric', shape: 'sshell', sh, piece, x: (x0 + x1) / 2 + ox, y: (ya + yb) / 2, z: (z0 + z1) / 2 + oz, sx: x1 - x0, sy: yb - ya, sz: z1 - z0, rotY: 0, piping: !!s.piping, ...extra });
       put('b', 'back', 0, W, y0, h, 0, rcz, { r: 0.08 });
-      put('l', 'arm', 0, tS, y0, armH, rcz, Dd, { r: Math.min(tS / 2, 0.12), armStyle: 'round' });
-      put('r', 'arm', W - tS, W, y0, armH, rcz, Dd, { r: Math.min(tS / 2, 0.12), armStyle: 'round' });
+      if (sh.arms !== 'r') put('l', 'arm', 0, tS, y0, armH, rcz, Dd, { r: Math.min(tS / 2, 0.12), armStyle: 'round' });
+      if (sh.arms !== 'l') put('r', 'arm', W - tS, W, y0, armH, rcz, Dd, { r: Math.min(tS / 2, 0.12), armStyle: 'round' });
       return;
     }
     if (k === 'bedset') {
