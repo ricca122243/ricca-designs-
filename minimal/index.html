@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ELUNA — матрасы ручной сборки, Алматы</title>
+  <meta name="description" content="Матрасы ELUNA: четыре модели, натуральный кокос и латекс, армированные пружины. Собираем вручную в Алматы, доставляем по всему Казахстану.">
+  <meta name="theme-color" content="#f5f5f2">
+  <meta name="author" content="RICCA DESIGNS">
+  <link rel="preload" as="font" type="font/woff2" href="../fonts/Unbounded-300-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="../fonts/Inter-300-600-normal-cyrillic.woff2" crossorigin>
+  <link rel="stylesheet" href="../css/fonts.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="../img/mark.png">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#models">К моделям</a>
+
+  <header class="nav">
+    <a class="logo" href="#top" aria-label="ELUNA, в начало">ELUNA</a>
+    <nav class="nav__links" aria-label="Разделы">
+      <a href="#models">Модели</a>
+      <a href="#layers">Слои</a>
+      <a href="#price">Размер и цена</a>
+      <a href="#delivery">Доставка</a>
+    </nav>
+    <a class="nav__cta" href="#price">Рассчитать цену</a>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="heroTitle">
+      <figure class="plate hero__plate">
+        <img src="../img/hero.webp" width="1920" height="1072" alt="Матрас ELUNA Prime со стёганым хлопковым чехлом" fetchpriority="high">
+      </figure>
+      <div class="hero__text">
+        <h1 id="heroTitle">Матрас, собранный вручную. Слой за слоем.</h1>
+        <div class="hero__side">
+          <p>Армированные пружины, натуральный кокос и латекс. Делаем в Алматы под ваш размер и привозим до спальни по всему Казахстану.</p>
+          <a class="button" href="#models">Выбрать модель</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="models" aria-labelledby="modelsTitle">
+      <div class="section__head">
+        <h2 id="modelsTitle">Четыре модели</h2>
+        <p>Разрезы нарисованы в одном масштабе: видно, чем модели отличаются по высоте и составу. Цены за размер 1600 × 2000 мм.</p>
+      </div>
+      <ul class="models">
+        <li class="model" data-model="air">
+          <div class="model__cut" data-cut="air" role="img" aria-label="Разрез Eluna Air: трикотаж, ортопена, термовойлок, пружины, кокос"></div>
+          <h3>Air</h3>
+          <p class="model__meta">220 мм · мягкая / средняя</p>
+          <p class="model__for">Для гостевой, детской или съёмной квартиры.</p>
+          <ul class="model__list"><li>Армированные пружины</li><li>Натуральный кокос 10 мм</li><li>Ортопена 20 мм с обеих сторон</li></ul>
+          <p class="model__price" data-price="air">125 000 ₸</p>
+          <a class="link" href="#price" data-pick="air">Выбрать Air</a>
+        </li>
+        <li class="model" data-model="balance">
+          <div class="model__cut" data-cut="balance" role="img" aria-label="Разрез Eluna Balance: трикотаж, ортопена, два слоя кокоса, пружины с усиленным каркасом"></div>
+          <h3>Balance</h3>
+          <p class="model__meta">230–250 мм · средняя</p>
+          <p class="model__for">Для тех, кто спит на матрасе каждую ночь.</p>
+          <ul class="model__list"><li>Усиленный боковой каркас</li><li>Два слоя кокоса: 10 и 20 мм</li><li>Армированные пружины</li></ul>
+          <p class="model__price" data-price="balance">220 000 ₸</p>
+          <a class="link" href="#price" data-pick="balance">Выбрать Balance</a>
+        </li>
+        <li class="model model--pick" data-model="prime">
+          <div class="model__cut" data-cut="prime" role="img" aria-label="Разрез Eluna Prime: хлопковый чехол, латекс, кокос, пружины, кокос, латекс"></div>
+          <h3>Prime <span class="model__flag">выбор Eluna</span></h3>
+          <p class="model__meta">280–300 мм · средняя / выше средней</p>
+          <p class="model__for">Самый натуральный матрас линейки. Берут один раз и надолго.</p>
+          <ul class="model__list"><li>Чехол из 100 % хлопка ручной работы</li><li>Натуральный латекс 20 мм</li><li>Натуральный кокос 20 мм</li></ul>
+          <p class="model__price" data-price="prime"><s>350 000 ₸</s> 280 000 ₸</p>
+          <a class="link" href="#price" data-pick="prime">Выбрать Prime</a>
+        </li>
+        <li class="model" data-model="royal">
+          <div class="model__cut" data-cut="royal" role="img" aria-label="Eluna Royal: состав и толщина слоёв подбираются под вас"></div>
+          <h3>Royal</h3>
+          <p class="model__meta">под ваш размер · жёсткость на выбор</p>
+          <p class="model__for">Флагман. Собираем под ваш проект за 21 день.</p>
+          <ul class="model__list"><li>Нестандартный размер и начинка</li><li>Разная жёсткость половин</li><li>Хлопок, латекс, кокос</li></ul>
+          <p class="model__price" data-price="royal">1 250 000 ₸</p>
+          <a class="link" href="#price" data-pick="royal">Обсудить Royal</a>
+        </li>
+      </ul>
+      <p class="note">Во всех моделях: еврокаркас по периметру плотностью 22, две стороны «зима» и «лето», гарантия 5 лет, срок службы от 15 лет.</p>
+    </section>
+
+    <section class="section split" id="layers" aria-labelledby="layersTitle">
+      <figure class="plate split__plate">
+        <img src="../img/seq/f24.webp" width="1920" height="1080" loading="lazy" alt="Матрас ELUNA Prime, разобранный на слои: латекс, гелевая пена, кокос, пружинный блок">
+      </figure>
+      <div class="split__text">
+        <h2 id="layersTitle">Что внутри Prime</h2>
+        <p class="lead">Девять слоёв, 272 мм без учёта стёжки. Сверху и снизу состав зеркальный, поэтому матрас можно переворачивать.</p>
+        <ol class="layers" id="layerList"></ol>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="matTitle">
+      <div class="section__head">
+        <h2 id="matTitle">Материалы вблизи</h2>
+        <p>Каждый слой отвечает за одно: чехол дышит, латекс снимает давление, кокос держит спину.</p>
+      </div>
+      <ul class="tiles">
+        <li><figure class="plate"><img src="../img/cotton.webp" width="480" height="596" loading="lazy" alt="Стёганый хлопковый чехол крупным планом"></figure><h3>Хлопок</h3><p>Чехол ручной работы. Не электризуется, впитывает и отдаёт влагу.</p></li>
+        <li><figure class="plate"><img src="../img/latex.webp" width="480" height="596" loading="lazy" alt="Перфорированный натуральный латекс"></figure><h3>Латекс</h3><p>Сок гевеи, 20 мм. Перфорация пропускает воздух и даёт лёгкий массажный эффект.</p></li>
+        <li><figure class="plate"><img src="../img/gel.webp" width="480" height="596" loading="lazy" alt="Пена с памятью формы и гелевыми микрокапсулами"></figure><h3>Пена с гелем</h3><p>Повторяет контур тела за 4–6 секунд и не копит тепло.</p></li>
+        <li><figure class="plate"><img src="../img/coir.webp" width="420" height="521" loading="lazy" alt="Волокно кокосовой койры"></figure><h3>Кокос</h3><p>Волокно, пропитанное латексом. Отвечает за жёсткость и опору спины.</p></li>
+      </ul>
+    </section>
+
+    <section class="section calc" id="price" aria-labelledby="priceTitle">
+      <div class="section__head">
+        <h2 id="priceTitle">Размер и цена</h2>
+        <p>В цену входят доставка, подъём и вынос старого матраса.</p>
+      </div>
+      <form class="calc__form" id="calc" novalidate>
+        <fieldset>
+          <legend>Модель</legend>
+          <div class="seg">
+            <label><input type="radio" name="model" value="air"><span>Air</span></label>
+            <label><input type="radio" name="model" value="balance"><span>Balance</span></label>
+            <label><input type="radio" name="model" value="prime" checked><span>Prime</span></label>
+            <label><input type="radio" name="model" value="royal"><span>Royal</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Размер, мм</legend>
+          <div class="seg">
+            <label><input type="radio" name="size" value="1600x2000" checked><span>1600 × 2000</span></label>
+            <label><input type="radio" name="size" value="1800x2000"><span>1800 × 2000</span></label>
+            <label><input type="radio" name="size" value="custom"><span>Свой размер</span></label>
+          </div>
+          <div class="custom" id="custom" hidden>
+            <label for="cw">Ширина, мм<input id="cw" type="number" inputmode="numeric" min="1400" max="2200" step="10" value="1600"></label>
+            <label for="ch">Длина, мм<input id="ch" type="number" inputmode="numeric" min="1900" max="2200" step="10" value="2000"></label>
+            <p class="hint" id="customHint">Ширина от 1400 до 2200, длина от 1900 до 2200. Свой размер собираем 21 день.</p>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend><label for="city">Город доставки</label></legend>
+          <select id="city" name="city">
+            <option>Алматы</option><option>Астана</option><option>Шымкент</option><option>Караганда</option><option>Актобе</option><option>Тараз</option><option>Павлодар</option><option>Усть-Каменогорск</option><option>Семей</option><option>Атырау</option><option>Костанай</option><option>Кызылорда</option><option>Уральск</option><option>Петропавловск</option><option>Актау</option><option>Талдыкорган</option><option>Кокшетау</option><option>Туркестан</option>
+          </select>
+        </fieldset>
+      </form>
+      <aside class="calc__sum" aria-live="polite">
+        <p class="calc__name" id="sumName">Eluna Prime · 1600 × 2000 мм</p>
+        <p class="calc__price"><s id="sumOld">350 000 ₸</s><span id="sumPrice">280 000 ₸</span></p>
+        <p class="calc__month" id="sumMonth">Рассрочка 0 % на 12 месяцев: 23 333 ₸ в месяц.</p>
+        <p class="calc__city" id="sumCity">Алматы: привезём и установим сами.</p>
+        <a class="button button--wide" id="wa" href="https://wa.me/77079550808" target="_blank" rel="noopener">Отправить заказ в WhatsApp</a>
+        <p class="hint">Откроется чат с мастером, ваш выбор уже будет в сообщении. Нажимая кнопку, вы соглашаетесь с <a href="../privacy.html">политикой конфиденциальности</a>.</p>
+      </aside>
+    </section>
+
+    <section class="section" id="delivery" aria-labelledby="delTitle">
+      <div class="section__head">
+        <h2 id="delTitle">Доставка и гарантии</h2>
+        <p>Мы в Алматы. По городу привозим и устанавливаем сами, в остальные города Казахстана доставляем до двери.</p>
+      </div>
+      <dl class="facts">
+        <div><dt>100 ночей</dt><dd>Пробный сон. Не подошёл — заберём и вернём деньги.</dd></div>
+        <div><dt>5 лет</dt><dd>Гарантия на каждый матрас. Служит от 15 лет.</dd></div>
+        <div><dt>От 7 дней</dt><dd>До двери в любом городе. Подъём до спальни включён.</dd></div>
+        <div><dt>Один мастер</dt><dd>Собирает матрас целиком и ставит подпись на этикетке.</dd></div>
+      </dl>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="logo">ELUNA</p>
+    <p>RICCA DESIGNS, Алматы. Студия-производитель.</p>
+    <nav aria-label="Служебные ссылки"><a href="https://wa.me/77079550808" target="_blank" rel="noopener">WhatsApp</a><a href="../privacy.html">Политика конфиденциальности</a><a href="../legal.html">Авторские права</a></nav>
+    <p class="footer__copy">© 2026 ELUNA · RICCA DESIGNS. Все права защищены.</p>
+  </footer>
+</body>
+</html>
