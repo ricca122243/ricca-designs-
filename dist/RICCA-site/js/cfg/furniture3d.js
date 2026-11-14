@@ -207,10 +207,11 @@ function softBox(sx, sy, sz, o = {}) {
   const deformed = crown || crownBack || bulge || tuft || o.sag || o.pillow || o.pinch || o.ripple || o.slump || (o.taper && o.taper !== 1) || warp || o.wedge;
   const sp = (deformed ? q.sp : q.flat) * (o.dense || 1);
   const tf = o.tuftFace || 'z';
-  const X = axisSamples(Hx, rx, rx, tuft && tuft !== 'hchannels' ? spT : warp ? Math.min(sp, q.sp * 0.8) : sp, q.nq);
+  const nqP = tor ? q.nq * 3 : q.nq;   // rPlan: углы в плане крупные — на дугу нужно больше точек, иначе контур ломаный
+  const X = axisSamples(Hx, rx, rx, tuft && tuft !== 'hchannels' ? spT : warp ? Math.min(sp, q.sp * 0.8) : sp, nqP);
   /* каналы меняются только по X — по высоте хватает обычного шага (горизонтальные — наоборот) */
   const Y = axisSamples(Hy, rB, rT, ((tuft === 'capitone' || tuft === 'hchannels' || tuft === 'grid') && tf === 'z') || tuft === 'weave' || tuft === 'ruche' ? spT : sp, q.nq);
-  const Z = axisSamples(Hz, rz, rz + (cf === 'z' ? 0 : 0), (tuft && tf === 'y') || tuft === 'weave' || tuft === 'ruche' ? spT : sp, q.nq);
+  const Z = axisSamples(Hz, rz, rz + (cf === 'z' ? 0 : 0), (tuft && tf === 'y') || tuft === 'weave' || tuft === 'ruche' ? spT : sp, nqP);
   const positions = [], normals = [], uvs = [], index = [], seamA = [], occA = [];
   const P = new THREE.Vector3(), N = new THREE.Vector3(), U = new THREE.Vector3();
   const yOff = cf === 'y' ? (crownBottom - crown) / 2 : 0, zOff = cf === 'z' ? -(crown - crownBack) / 2 : 0;
@@ -724,16 +725,7 @@ function sfShellFull(sh, quality) {
   const noL = sh.arms === 'r', noR = sh.arms === 'l';
   const xB0 = noL ? tB / 2 : rcx, xB1 = noR ? W - tB / 2 : W - rcx;
   if (!noL) { side(0, tS, zEnd, rcz, 'l'); arc(-1, 0, Math.PI / 2, 'b'); }
-  /* sh.endR — радиус скругления верхнего угла свободного конца спинки (вид спереди): верх плавно опускается к торцу */
-  const eR = sh.endR || 0, capL0 = sh.capL ?? tB / 2;
-  const endTop = (x) => { const X = capL0 + Math.min(noL ? x - xB0 : 9, noR ? xB1 - x : 9); if (!eR || X >= eR) return h; return h - eR + Math.sqrt(Math.max(0, eR * eR - (eR - X) * (eR - X))); };
-  {
-    const xs = [], n = Math.max(2, Math.ceil((xB1 - xB0) / step));
-    for (let i = noL ? 0 : 1; i < (noR ? n + 1 : n); i++) xs.push(xB0 + ((xB1 - xB0) * i) / n);
-    /* у скруглённого конца — чаще: профиль верха плавный */
-    if (eR) { const e = Math.max(0, eR - capL0), m = 8; for (let k = 1; k < m; k++) { const d = (e * k) / m; if (noL) xs.push(xB0 + d); if (noR) xs.push(xB1 - d); } xs.sort((a, b) => a - b); }
-    for (const x of xs.filter((v, k) => !k || v - xs[k - 1] > 0.004)) path.push({ O: [x, 0], I: [x, tB], top: endTop(x), seg: 'b' });
-  }
+  { const n = Math.max(2, Math.ceil((xB1 - xB0) / step)); for (let i = noL ? 0 : 1; i < (noR ? n + 1 : n); i++) { const x = xB0 + ((xB1 - xB0) * i) / n; path.push({ O: [x, 0], I: [x, tB], top: h, seg: 'b' }); } }
   if (!noR) { arc(1, Math.PI / 2, 0, 'b'); side(W, W - tS, rcz, zEnd, 'r'); }
   /* сечение: точки [ρ (0 снаружи … T внутри), y, верх?]; число точек одинаково на всех кольцах */
   /* ручные модели (ushell): sh.rt / sh.rb — радиус верха и низа сечения, sh.bulge — выпуклость наружной стенки («подушка»), sh.capL / sh.capP — длина и полнота торца боковины */
@@ -767,12 +759,14 @@ function sfShellFull(sh, quality) {
     let tx = (b.O[0] + b.I[0] - a.O[0] - a.I[0]) / 2, tz = (b.O[1] + b.I[1] - a.O[1] - a.I[1]) / 2; const tl = Math.hypot(tx, tz) || 1; tx /= tl; tz /= tl;
     const { pts, rt, rb: rb1 } = loop(pt.top, T);
     L = pts.length;
-    const capL = sh.capL ?? T / 2, capP = sh.capP ?? 1;
+    /* свободный конец спинки (одна боковина): торец длиной sh.endL, верхний угол на виде спереди — радиусом sh.endR (крупный круглый угол, без ступеньки) */
+    const freeEnd = (rg.dir < 0 && noL) || (rg.dir > 0 && noR);
+    const capL = freeEnd && sh.endL ? sh.endL : sh.capL ?? T / 2, capP = freeEnd ? 1 : sh.capP ?? 1;
     const phi = rg.cap * Math.PI / 2, sc = Math.pow(Math.cos(phi), capP), ext = capL * Math.sin(phi) * rg.dir;
     /* развёртка торца — по настоящей длине поверхности (вынос + сужение сечения), иначе рисунок ткани на торце сжимается в полосы */
     let uCap = 0;
     if (rg.cap) { const nK = Math.round(rg.cap * nCap); let e0 = 0, c0 = T / 2; for (let k = 1; k <= nK; k++) { const f = (k / nCap) * Math.PI / 2, e1 = capL * Math.sin(f), c1 = (T / 2) * Math.pow(Math.cos(f), capP); uCap += Math.hypot(e1 - e0, c1 - c0); e0 = e1; c0 = c1; } }
-    const cy = pt.top - rt, cyb = yb + rb1;
+    const cy = pt.top - (freeEnd && sh.endR ? Math.max(rt, Math.min(sh.endR, pt.top - yb - rb1 - 0.02)) : rt), cyb = yb + rb1;
     const mx = (pt.O[0] + pt.I[0]) / 2, mz = (pt.O[1] + pt.I[1]) / 2;
     if (prevM && !rg.cap) uAcc += Math.hypot(mx - prevM[0], mz - prevM[1]);
     if (!rg.cap) prevM = [mx, mz];
@@ -1041,14 +1035,15 @@ export function partsFromSpec(spec) {
          W, D — габарит в плане, h — высота спинки, armH — высота боковин, tS / tB — толщина боковин и спинки, r (rx, rz) — радиус углов, y0 — низ */
       const cl = (v, a, b) => Math.min(b, Math.max(a, v));
       const W = s.W, Dd = s.D, tS = s.tS ?? 0.16, tB = s.tB ?? tS, h = s.h, armH = Math.min(s.armH ?? h, h), y0 = s.y0 ?? 0;
-      const rcx = cl(s.rx ?? s.r ?? 0.3, tS + 0.06, W / 2 - 0.05), rcz = cl(s.rz ?? s.r ?? 0.3, tB + 0.06, Dd - tS / 2 - 0.06);
+      const one = s.arms === 'r' || s.arms === 'l';   // одна боковина: угол в плане может занять почти всю спинку
+      const rcx = cl(s.rx ?? s.r ?? 0.3, tS + 0.06, one ? W - tB - 0.05 : W / 2 - 0.05), rcz = cl(s.rz ?? s.r ?? 0.3, tB + 0.06, Dd - tS / 2 - 0.06);
       const sh = { W, D: Dd, tS, tB, rcx, rcz, h, armH, y0 };
       if (s.rTop != null) sh.rt = s.rTop; if (s.rBottom != null) sh.rb = s.rBottom; if (s.bulge) sh.bulge = s.bulge; if (s.capL != null) sh.capL = s.capL; if (s.capP != null) sh.capP = s.capP;
       /* наклон спинки назад (lean, градусы; от высоты leanY, у боковин сходит на нет к leanZ) и сужение спинки кверху (taper — доля ширины у верха, от высоты боковин на высоте taperH, выше — прямо) */
       if (s.lean) { sh.lean = s.lean; sh.leanY = s.leanY ?? y0; sh.leanZ = s.leanZ ?? rcz + 0.25; }
       if (s.taper) { sh.taper = s.taper; if (s.taperH) sh.taperH = s.taperH; }
       if (s.arms === 'r' || s.arms === 'l') sh.arms = s.arms;   // одна боковина: 'r' — справа, 'l' — слева
-      if (s.endR) sh.endR = s.endR;   // скругление верхнего угла свободного конца спинки
+      if (s.endR) sh.endR = s.endR; if (s.endL) sh.endL = s.endL;   // свободный конец спинки: радиус верхнего угла и длина торца
       const ox = (p[0] || 0) - W / 2, oz = p[2] || 0;
       const put = (piece, role, x0, x1, ya, yb, z0, z1, extra) => items.push({ id: `${id}-${piece}`, role, mat: s.m || 'fabric', shape: 'sshell', sh, piece, x: (x0 + x1) / 2 + ox, y: (ya + yb) / 2, z: (z0 + z1) / 2 + oz, sx: x1 - x0, sy: yb - ya, sz: z1 - z0, rotY: 0, piping: !!s.piping, ...extra });
       put('b', 'back', 0, W, y0, h, 0, rcz, { r: 0.08 });
