@@ -159,10 +159,14 @@
      работы с фильтром по категории), окно работы (#work-<id>).
      Скорость (заказчик: «фото долго загружаются»): всё ниже первого экрана — loading="lazy"; телефон (< 768 px) всегда берёт
      файл 800 px — на экране 3x браузер иначе выбрал бы 1600; компьютер — srcset 800 / 1600; width/height — без сдвига вёрстки ---------- */
+  const WORKS_SHOWN = ['DGy-8O2Ilbr', 'DKkV-ORIobz'];   // «Модульный диван ARCO», «Округлое кресло»
   const WORKS = (Array.isArray(window.RICCA_WORKS) ? window.RICCA_WORKS : [])
     .filter((w) => w && w.id && w.title && KINDS[w.cat] && Array.isArray(w.photos))
     .map((w) => Object.assign({}, w, { photos: w.photos.filter((p) => p && p.src && p.src800 && p.w && p.h) }))
-    .filter((w) => w.photos.length);
+    .filter((w) => w.photos.length)
+    /* 14 ноября, владелец (заметки «По сайту · Работы»): «ARCO modular sofa оставить, Rounded armchair оставить, остальное убрать,
+       переделать» — на сайте только эти две работы; остальные остаются в js/works-data.js (вернуть — дописать id в список) */
+    .filter((w) => WORKS_SHOWN.includes(w.id));
   // модели каталога на белом фоне (js/models-data.js) — те же карточки и то же окно, что у работ
   const MODELS = (Array.isArray(window.RICCA_MODELS) ? window.RICCA_MODELS : []).filter((w) => w && w.id && KINDS[w.cat] && Array.isArray(w.photos) && w.photos.length);
   const WORK = new Map([...WORKS, ...MODELS].map((w) => [w.id, w]));
@@ -279,7 +283,7 @@
       const cnt = (c) => (c === 'all' ? WORKS : WORKS.filter((w) => w.cat === c)).length;
       const cs = ['all', 'sofas', 'beds', 'armchairs', 'poufs'].filter((c) => cnt(c));
       chips.innerHTML = cs.map((c) => `<a href="#catalog/works${c === 'all' ? '' : `/${c}`}">${c === 'all' ? tr('Все') : typo(catLabel(c))}<span class="chips__n" aria-hidden="true">${cnt(c)}</span><span class="sr-only">: ${cnt(c)}</span></a>`).join('');
-      chips.hidden = cs.length < 3;
+      chips.hidden = cs.length < 3 || WORKS.length < 4;   // две-три работы — фильтр не нужен
     }
     sec.hidden = false;
     $$('[data-works-link]').forEach((a) => { a.hidden = false; });

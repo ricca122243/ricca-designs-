@@ -307,6 +307,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-17",
+    hidden: true,   // 14 ноября, владелец («срочные проблемы»): диван снят с сайта целиком; данные и фото остаются (вернуть — убрать строку)
     cfg: "t.sofa~ah.66~as.round~aw.22~d.100~h.74~lh.2~lg.hidden~n.2~vs.oval~w.230",
     fab: "molly:9",
     glb: "models3d/free/sofa-17.json",
@@ -1591,6 +1592,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-31",
+    hidden: true,   // 14 ноября, владелец («срочные проблемы»): диван снят с сайта целиком; данные и фото остаются (вернуть — убрать строку)
     cfg: "t.corner~f.chaise~l.165~lf.blackwood~lh.14~lg.wood~n.2~vd.2~vl.cone~w.300",
     fab: "coco:9",
     glb: "models3d/free/sofa-31.json",
@@ -2468,6 +2470,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-44",
+    hidden: true,   // 14 ноября, владелец («срочные проблемы»): диван снят с сайта целиком; данные и фото остаются (вернуть — убрать строку)
     cfg: "t.sofa~ah.105~aw.10~bc.fixed~h.116~lh.2~lg.hidden~sc.single~vt.channels~w.160",
     fab: "alba:19",
     glb: "models3d/free/sofa-44.json",
@@ -2539,6 +2542,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-47",
+    hidden: true,   // 14 ноября, владелец («срочные проблемы»): диван снят с сайта целиком; данные и фото остаются (вернуть — убрать строку)
     cfg: "t.sofa~ah.72~as.round~aw.25~bc.fixed~d.85~h.74~lf.bordeaux~lh.18~sc.single~vl.frame~vs.soft~w.170",
     fab: "molly:9",
     glb: "models3d/free/sofa-47.json",
@@ -2586,6 +2590,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "sofa-49",
+    hidden: true,   // 14 ноября, владелец («срочные проблемы»): диван снят с сайта целиком; данные и фото остаются (вернуть — убрать строку)
     cfg: "t.sofa~ah.55~as.wide~aw.28~bc.fixed~d.107~h.72~lh.2~lg.hidden~sd.62~n.2~vp.puff~w.280",
     fab: "molly:11",
     glb: "models3d/free/sofa-49.json",

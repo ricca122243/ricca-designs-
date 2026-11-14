@@ -249,7 +249,7 @@ page = re.sub(r'<!--.*?-->\n?', '', page, flags=re.S)
 
 # --- шапка документа
 reps = [
- ('<html lang="ru" class="no-js">', '<html lang="en" class="no-js">'),
+ ('<html lang="ru" class="no-js" translate="no">', '<html lang="en" class="no-js" translate="no">'),
  ('<title>Мягкая мебель на заказ в Алматы — диваны, кровати, кресла · RICCA DESIGNS</title>', '<title>Custom upholstered furniture in Almaty — sofas, beds, armchairs · RICCA DESIGNS</title>'),
  ('<link rel="canonical" href="https://ricca.design/">', '<link rel="canonical" href="https://ricca.design/en">'),
  ('<meta property="og:locale" content="ru_RU">', '<meta property="og:locale" content="en_US">\n<meta property="og:locale:alternate" content="ru_RU">'),
