@@ -250,9 +250,11 @@ function swatchPixels(d, N, flat, o) {
   const wP = o.wPhoto / rmsP, wQ = o.wProc / rmsQ;
   const Hc = new Float32Array(N * N);
   for (let y = 0; y < N; y++) { const py = Math.floor((y * rep * Mq) / N) % Mq; for (let x = 0; x < N; x++) { const px = Math.floor((x * rep * Mq) / N) % Mq; Hc[y * N + x] = wP * H[y * N + x] + wQ * (P[py * Mq + px] - pm); } }
-  /* нормали из градиента высоты (размах ≈ 4 СКО), шероховатость: вершины петель чуть глаже, впадины матовее */
+  /* нормали из градиента высоты (размах ≈ 4 СКО), шероховатость: вершины петель чуть глаже, впадины матовее.
+     Градиент берётся по соседним пикселям плитки — сила × N/512, чтобы рельеф не зависел от разрешения плитки (15 ноября: на
+     плитке 1024 плетение выходило вдвое площе, ткань «гладкой») */
   const at = (x, y) => Hc[((y + N) % N) * N + ((x + N) % N)];
-  const nrm = new Uint8Array(N * N * 4), rgh = new Uint8Array(N * N * 4), st = o.strength || 1, rb = o.roughBase ?? 0.9, rv = o.roughVar || 0;
+  const nrm = new Uint8Array(N * N * 4), rgh = new Uint8Array(N * N * 4), st = (o.strength || 1) * (N / 512), rb = o.roughBase ?? 0.9, rv = o.roughVar || 0;
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const dx = (at(x + 1, y) - at(x - 1, y)) / 4, dy = (at(x, y + 1) - at(x, y - 1)) / 4;
     let nx = -dx * st, ny = dy * st, nz = 1; const l = Math.hypot(nx, ny, nz); nx /= l; ny /= l; nz /= l;
@@ -439,12 +441,15 @@ const LEATHER_FINISH = {
 export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null, src900 = null, quality, collectionId = '', finish = '' } = {}) {
   if (!KINDS.includes(kind)) kind = 'velour';
   const q = quality || defaultQuality;
-  const N = q === 'high' ? 256 : 128;   // процедурный рельеф: подробность даёт фото ткани; 512 строился ~0,6 с и «замораживал» страницу
+  /* 15 ноября (владелец: «3D реалистичнее, текстурнее», смотрит с iPhone): телефон (mid) получает ту же ткань, что компьютер, —
+     фото 1400 px в плитку 1024, рельеф 256 и полный шейдер обивки (складки у швов, неровность натяжения). Упрощённая ткань
+     осталась только «Моей комнате» на телефоне (low). Память держит gpuBudget: давно выбранные ткани выгружаются из видеопамяти */
+  const N = q === 'low' ? 128 : 256;   // процедурный рельеф: подробность даёт фото ткани; 512 строился ~0,6 с и «замораживал» страницу
   const fin = kind === 'leather' ? (LEATHER_FINISH[String(finish).toLowerCase()] ? String(finish).toLowerCase() : (collectionId === 'vintazh' ? 'винтаж' : '')) : '';
   /* фото ткани: компьютер — 1400 px (src900) в плитку 1024, телефон — 700 px (src450) в 512, «Моя комната» на телефоне — 256 */
-  const photo = q === 'high' ? src900 || src450 : src450 || src900, PN = q === 'high' ? 1024 : q === 'mid' ? 512 : 256;
+  const photo = q === 'low' ? src450 || src900 : src900 || src450, PN = q === 'low' ? 256 : 1024;
   const key = `${hex}|${kind}|${photo || ''}|${N}|${fin}`;
-  if (matCache.has(key)) return matCache.get(key);
+  if (matCache.has(key)) { const hit = matCache.get(key); gpuTouch(hit); return hit; }
   const k = fin ? { ...KIND[kind], ...LEATHER_FINISH[fin] } : KIND[kind];
   const maps = fabricMaps(kind, N);
   const base = new THREE.Color(hex);
@@ -460,7 +465,7 @@ export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null
   else m.specularIntensity = kind === 'velour' || kind === 'suede' ? 0.2 : kind === 'boucle' ? 0.2 : 0.3;   // ткань не бликует как пластик: свет даёт ворс (sheen)
   /* одинаковый масштаб фактуры: UV в метрах → повтор = 1 / размер плитки */
   for (const t of [maps.normal, maps.rough, maps.albedo]) t.repeat.set(1 / k.tile, 1 / k.tile);
-  upholstery(m, { lite: q !== 'high', dark: kind === 'leather' ? 0.42 : kind === 'boucle' ? 0.22 : 0.3 });
+  upholstery(m, { lite: q === 'low', dark: kind === 'leather' ? 0.42 : kind === 'boucle' ? 0.22 : 0.3 });
   m.name = `fabric-${kind}-${hex}`;
   m.userData = { kind, hex, src450, finish: fin, baseColor: base.clone(), ready: Promise.resolve(m) };
   /* ткань на модели — настоящее фото образца (цвет, плетение, рисунок), а не заливка цветом: заказчик «ткань в 3D не видна».
@@ -479,7 +484,19 @@ export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null
     });
   }
   matCache.set(key, m);
+  gpuTouch(m);
   return m;
+}
+/* видеопамять: карта 1024² с мипами ≈ 5,6 МБ, у ткани их три (цвет, рельеф, шероховатость). Держим 6 последних тканей,
+   у более старых освобождаем текстуры на видеокарте — данные остаются в памяти, и при возврате ткань загрузится заново сама */
+const GPU_KEEP = 6, gpuOrder = [];
+function gpuTouch(m) {
+  const i = gpuOrder.indexOf(m); if (i >= 0) gpuOrder.splice(i, 1);
+  gpuOrder.push(m);
+  while (gpuOrder.length > GPU_KEEP) {
+    const old = gpuOrder.shift();
+    for (const t of [old.map, old.normalMap, old.roughnessMap]) if (t && t.isDataTexture && t.image && t.image.width >= 512) t.dispose();
+  }
 }
 
 /* шов/строчка: тот же материал, цвет ×0,9, шероховатость +0,05 (рисуется только вблизи — stage.js) */

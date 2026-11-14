@@ -47,6 +47,24 @@ function preToneMapped(hex, exposure) {
   for (let i = 0; i < 60; i++) { const f = neutralTM(c, exposure); c = c.map((v, k) => Math.max(0, v + (target[k] - f[k]) * 1.5)); }
   return new THREE.Color(c[0], c[1], c[2]); // уже линейный: присваиваем компонентами
 }
+/* студия для отражений (PMREM): серая комната, светлый пол, софтбоксы — большой над изделием, ключевой слева-спереди
+   (там же, где ключевой свет сцены), узкие полосы справа и сзади-справа (контур). Яркости — линейные */
+let ENV_K = 1;
+const STUDIO_ENV_K = 4.6;
+function studioEnvironment() {
+  const env = new THREE.Scene();
+  const basic = (v, side = THREE.FrontSide) => new THREE.MeshBasicMaterial({ color: new THREE.Color(v, v, v * 1.03), side });
+  const room = new THREE.Mesh(new THREE.BoxGeometry(14, 9, 14), basic(0.16, THREE.BackSide));
+  room.position.y = 4; env.add(room);   // камера PMREM — в начале координат: пол чуть ниже неё
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(14, 14).rotateX(-Math.PI / 2), basic(0.2));
+  floor.position.y = -0.45; env.add(floor);
+  const box = (w, h, v, p) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), basic(v, THREE.DoubleSide)); m.position.set(p[0], p[1], p[2]); m.lookAt(0, 0.8, 0); env.add(m); };
+  box(6, 6, 10, [0, 8.9, 0.6]);        // над изделием
+  box(3, 4, 5, [-5.6, 4.6, 4.2]);      // ключевой
+  box(1.4, 5, 3, [6.2, 2.8, 2.4]);     // заполняющая полоса
+  box(1.4, 5, 4.5, [3.6, 3.2, -6.2]);  // контур
+  return env;
+}
 const reduced = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isPhone = () => typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 900;
 
@@ -76,10 +94,17 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(BG);
+  const bgDirect = new THREE.Color(BG);
+  let bgComposite = preToneMapped(BG, renderer.toneMappingExposure);
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
+  /* 15 ноября (владелец: «3D реалистичнее, стильнее»): окружение — фотостудия с софтбоксами вместо «комнаты» three.js.
+     Ворс и блик ткани отражают большие мягкие источники: на круглых подушках — плавный переход света в тень, как на
+     студийном фото, а не ровная заливка. Старое окружение для сравнения — ?env=room */
+  const roomEnv = typeof location !== 'undefined' && /[?&]env=room\b/.test(location.search);
+  ENV_K = roomEnv ? 1 : STUDIO_ENV_K;
+  const envRT = pmrem.fromScene(roomEnv ? new RoomEnvironment() : studioEnvironment(), 0.04);
   scene.environment = envRT.texture;
-  scene.environmentIntensity = LIGHT.env;
+  scene.environmentIntensity = LIGHT.env * ENV_K;
   pmrem.dispose();
   setEnvMap(envRT.texture);                 // металлу — своя сила отражений (materials.js)
 
@@ -138,13 +163,18 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   /* пост: RenderPass → GTAO → Output */
   /* AO (GTAO + шумоподавление) на телефоне — самое тяжёлое: один кадр после каждого поворота «подвисал»; там его нет —
      объём дают контактная тень и мягкий свет. Компьютер — AO в покое: при вращении кадр лёгкий, после — полный */
-  const aoMode = ao === false || phone ? 'off' : 'idle';
+  /* 15 ноября (владелец: «3D реалистичнее»): на телефоне AO вернулось, но «поздним» кадром — через 0,45 с полной тишины
+     (late): пока модель крутят и между касаниями кадр лёгкий, когда палец убран — мягкие тени в стыках подушек и складках.
+     Компилируем заранее, в простое после загрузки (prewarm), — первый «тихий» кадр не ждёт сборки шейдеров */
+  const aoMode = ao === false ? 'off' : phone ? 'late' : 'idle';
+  const AO_S = phone ? 10 : 24, AO_LATE_MS = 450;
+  let aoReady = false, aoT = 0;
   let composer = null, gtao = null, renderPass = null;
   function ensureComposer() {
     if (composer || aoMode === 'off') return composer;
     const size = renderer.getSize(new THREE.Vector2()), pr = renderer.getPixelRatio();
     /* свой буфер с MSAA ×4: у EffectComposer по умолчанию сглаживания нет — края модели после AO шли «лесенкой» */
-    const rt = new THREE.WebGLRenderTarget(size.x * pr, size.y * pr, { type: THREE.HalfFloatType, samples: 4 });
+    const rt = new THREE.WebGLRenderTarget(size.x * pr, size.y * pr, { type: THREE.HalfFloatType, samples: phone ? 2 : 4 });   // телефон: при 3x хватает ×2, буфер вдвое легче
     composer = new EffectComposer(renderer, rt);
     renderPass = new RenderPass(scene, camera);
     composer.addPass(renderPass);
@@ -152,8 +182,8 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     gtao.output = GTAOPass.OUTPUT.Default;
     /* мягкое AO: малый радиус и сильнее шумоподавление — без «дымки» под ножками и шума в щели спинка/сиденье */
     gtao.blendIntensity = 0.9;
-    gtao.updateGtaoMaterial({ radius: 0.18, distanceExponent: 2, thickness: 0.7, scale: 1.0, samples: phone ? 12 : 24, distanceFallOff: 0.6 });
-    gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 10, rings: 4, samples: phone ? 12 : 24 });
+    gtao.updateGtaoMaterial({ radius: 0.18, distanceExponent: 2, thickness: 0.7, scale: 1.0, samples: AO_S, distanceFallOff: 0.6 });
+    gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 10, rings: 4, samples: AO_S });
     composer.addPass(gtao);
     composer.addPass(new OutputPass());
     return composer;
@@ -208,9 +238,10 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   function setLight(o) {
     lightOv = o && (o.az != null || o.contrast > 0 || o.exposure > 0 || o.top > 0) ? { az: o.az == null ? null : +o.az, contrast: Math.min(1, Math.max(0, +o.contrast || 0)), high: o.high > 0 ? +o.high : 1, top: o.top > 0 ? Math.min(4, +o.top) : 1, exposure: o.exposure >= 0.5 && o.exposure <= 1.5 ? +o.exposure : 1 } : null;
     renderer.toneMappingExposure = LIGHT.exposure * (lightOv ? lightOv.exposure : 1);
+    bgComposite = preToneMapped(BG, renderer.toneMappingExposure);   // фон кадра с AO — под новую экспозицию (иначе у моделей со своей экспозицией фон окна темнее страницы)
     const c = lightOv ? lightOv.contrast : 0, mix = (a, b) => a + (b - a) * c;
     /* top — «свет сверху» (как софтбокс над изделием на студийном фото): верхние грани сиденья и подлокотников светлее фронтов */
-    scene.environmentIntensity = mix(LIGHT.env, 0.2); hemi.intensity = mix(LIGHT.hemi, 0.1) * (lightOv ? lightOv.top : 1); key.intensity = mix(LIGHT.key, 2.4); fillBase = mix(LIGHT.fill, 0.12); fill.intensity = fillBase; rim.intensity = mix(LIGHT.rim, 0.3);
+    scene.environmentIntensity = mix(LIGHT.env, 0.2) * ENV_K; hemi.intensity = mix(LIGHT.hemi, 0.1) * (lightOv ? lightOv.top : 1); key.intensity = mix(LIGHT.key, 2.4); fillBase = mix(LIGHT.fill, 0.12); fill.intensity = fillBase; rim.intensity = mix(LIGHT.rim, 0.3);
     fitLight(); shadowDirty = true; requestRender();
   }
   const fov3 = () => fovOv || FOV;   // угол обзора 3D-вида: у ручной модели — как у её фото (view.fov), иначе обычный
@@ -283,7 +314,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     const still = !moving && !interacting;
     /* 14 ноября (владелец: «лаги 3D убрать»): тень под изделием и мягкие тени считаем только в покое — пока тянут ползунок размера (hold), кадр лёгкий */
     if (studioOn && contact.dirty && still) contact.update(scene, root);
-    const useAO = aoMode === 'always' || (aoMode === 'idle' && still);
+    if (!still || aoMode !== 'late') { aoReady = false; clearTimeout(aoT); aoT = 0; }
+    else if (!aoReady && !aoT) aoT = setTimeout(() => { aoT = 0; if (!interacting && !anim) { aoReady = true; requestRender(); } }, AO_LATE_MS);
+    const useAO = aoMode === 'always' || (aoMode === 'idle' && still) || (aoMode === 'late' && still && aoReady);
     if (still && shadowDirty) { renderer.shadowMap.needsUpdate = true; shadowDirty = false; }
     const pr = still || useAO ? dprFull : dprMove;
     if (renderer.getPixelRatio() !== pr) renderer.setPixelRatio(pr);
@@ -583,7 +616,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     }
     const prevBg = scene.background;
     applySeamLOD(cam, RH, sv === '3q' || sv === '3d' ? center : null);
-    const useComp = aoMode !== 'off';
+    const useComp = aoMode !== 'off' && !phone;   // снимок на телефоне — без AO: буферы 4800×3200 с AO не влезут в память iPhone
     scene.background = useComp ? preToneMapped(background, renderer.toneMappingExposure) : new THREE.Color(background);
     const prevMap = key.shadow.mapSize.clone(), prevCast = key.castShadow;
     if (sketch) key.castShadow = false;
@@ -596,7 +629,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     try {
       if (sketch && ortho) { g.fillStyle = background; g.fillRect(0, 0, width, height); }
       else {
-        if (aoMode !== 'off' && ensureComposer()) {
+        if (useComp && ensureComposer()) {
           composer.setPixelRatio(1); composer.setSize(RW, RH);
           gtao.updateGtaoMaterial({ samples: 32 });
           setPassCamera(cam); composer.render();
@@ -611,7 +644,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       key.castShadow = prevCast;
       if (!sketch) { key.shadow.mapSize.copy(prevMap); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; } renderer.shadowMap.needsUpdate = true; }
       renderer.setPixelRatio(prevPR); renderer.setSize(prevSize.x, prevSize.y, false);
-      if (composer) { composer.setPixelRatio(dprFull); composer.setSize(prevSize.x, prevSize.y); gtao.updateGtaoMaterial({ samples: phone ? 12 : 24 }); setPassCamera(camera); }
+      if (composer) { composer.setPixelRatio(dprFull); composer.setSize(prevSize.x, prevSize.y); gtao.updateGtaoMaterial({ samples: AO_S }); setPassCamera(camera); }
       applySeamLOD(camera, H);
       requestRender();
     }
@@ -630,8 +663,6 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   }
 
   const offMat = onMaterialUpdate(() => requestRender());
-  const bgDirect = new THREE.Color(BG);
-  let bgComposite = preToneMapped(BG, renderer.toneMappingExposure);
 
   const stage = {
     renderer, scene, controls, canvas, root, studio, overlay,
@@ -667,7 +698,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     off(e, fn) { listeners[e] = (listeners[e] || []).filter((f) => f !== fn); return stage; },
     renderNow() { renderFrame(false); },
     dispose() {
-      disposed = true; cancelAnimationFrame(raf); clearTimeout(idleT); offMat();
+      disposed = true; cancelAnimationFrame(raf); clearTimeout(idleT); clearTimeout(aoT); offMat();
       if (ro) ro.disconnect(); else window.removeEventListener('resize', resize);
       controls.dispose(); contact.dispose(); envRT.dispose();
       if (composer) composer.dispose();
