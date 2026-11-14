@@ -156,6 +156,15 @@ textarea.fld { min-height: 64px; resize: vertical; }
 @media (hover: hover) { .hdr__nav a:hover::after { transform: scaleX(1); } }
 /* WhatsApp в меню — со значком (контур из спрайта #i-whatsapp маской: в ::before <use> не вставить) */
 .hdr__nav a[data-wa]::before { content: ''; flex: none; width: 16px; height: 16px; background: currentColor; -webkit-mask: var(--i-wa) center / contain no-repeat; mask: var(--i-wa) center / contain no-repeat; }
+/* ---------- Время года (владелец, 15 ноября: «снег — светло-синий»): js/season.js ставит html[data-season] по дате в Алматы.
+   Меняются только фон страницы, волосяные линии, подложка схем и второстепенный текст — холодные оттенки, без тёплых.
+   Подиум под фото изделий (--product-bg) не трогаем: цвет ткани на фото остаётся честным. Лето — базовая палитра. ---------- */
+html[data-season="winter"] { --paper: #EDF3FA; --line: #D3DFEC; --line-2: #B7C9DD; --studio: #E1EAF5; --ink-2: #566579; --season: #4F86C6; }
+html[data-season="spring"] { --paper: #EFF7F3; --line: #D4E5DC; --line-2: #B9D1C4; --studio: #E2F0E9; --ink-2: #5A6A63; --season: #4E9A7E; }
+html[data-season="autumn"] { --paper: #F1F3F6; --line: #DADEE5; --line-2: #C1C7D1; --studio: #E7EAEF; --ink-2: #60666F; --season: #66758A; }
+/* сезонный цвет — только линии и точки карты мира: кнопки, текст и знаки остаются чёрно-белыми */
+html[data-season] .geo__arcs path, html[data-season] .geo__ring { stroke: var(--season, var(--ink)); }
+html[data-season] .geo__pins circle { fill: var(--season, var(--ink)); }
 :root { --i-wa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3Z'/%3E%3Cpath d='M9.3 8.6c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4l.7 1.7c.1.2 0 .4-.1.5l-.5.6c-.1.1-.2.3 0 .5a6 6 0 0 0 2.8 2.6c.2.1.4.1.5 0l.7-.8c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3 0 .3 0 .9-.3 1.3-.3.4-1.1.9-1.6.9-.6 0-1.6-.1-3.5-1.3a9 9 0 0 1-3.2-3.6c-.6-1-.6-1.8-.6-2.1 0-.5.3-1 .5-1.3Z'/%3E%3C/svg%3E"); }
 /* переключатель языка RU / EN — в шапке последним пунктом, в меню телефона — строкой */
 .hdr__lang { padding-left: clamp(16px, 2vw, 28px); border-left: 1px solid var(--line); }
