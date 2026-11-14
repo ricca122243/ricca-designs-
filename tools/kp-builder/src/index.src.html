@@ -110,7 +110,7 @@ select.in { appearance: auto; }
 .fonts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
 .fpb { border: 1px solid var(--line); border-radius: var(--r); background: var(--paper); padding: 10px 12px; text-align: left; min-height: 64px; display: grid; gap: 2px; }
 .fpb[aria-pressed="true"] { border: 2px solid var(--sel); padding: 9px 11px; }
-.fpb b { font-weight: 400; font-size: 24px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fpb b { font-weight: 400; font-size: 18px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fpb span { font-size: 12.5px; color: var(--muted); }
 .ranges { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
 .ranges input[type="range"] { width: 100%; accent-color: var(--sel); min-height: 32px; }
@@ -257,6 +257,10 @@ select.in { appearance: auto; }
 .slide.th-winter { --sp: #EDF3FA; --sline: #D3DFEC; --sdark: #1C3452; --skick: #4F86C6; --sacc: #2F6DB5; --sink2: #455468; --spanel: #E1EAF5; }
 .slide.th-spring { --sp: #EFF7F3; --sline: #D4E5DC; --sdark: #1D3A30; --skick: #4E9A7E; --sacc: #2F7D62; --sink2: #4A5952; --spanel: #E2F0E9; }
 .slide.th-autumn { --sp: #F1F3F6; --sline: #DADEE5; --sdark: #262C35; --skick: #66758A; --sacc: #4B5A70; --sink2: #4B525C; --spanel: #E7EAEF; }
+.slide.fp-site { --f-head: 'Montserrat', Arial, sans-serif; --w-head: 300; --kh: .86; }
+.slide em.ac { font: inherit; letter-spacing: inherit; }
+.slide.fp-site em.ac { font-family: 'Cormorant', Georgia, serif; font-style: italic; font-weight: 400; font-size: 1.12em; letter-spacing: -.005em; }
+.slide.fp-site .s-sub { font-family: 'Cormorant', Georgia, serif; font-style: italic; font-size: calc(30px * var(--fh)); }
 .slide.fp-modern { --f-head: 'Montserrat', Arial, sans-serif; --w-head: 300; --i-sub: normal; --kh: .82; }
 .slide.fp-journal { --f-head: 'Playfair Display', Georgia, serif; --w-head: 400; --f-name: 'Playfair Display', Georgia, serif; --w-name: 400; --f-text: 'Inter', Arial, sans-serif; --kh: .86; --kn: .92; }
 .slide.fp-elegant { --f-head: 'Prata', Georgia, serif; --w-head: 400; --f-name: 'Prata', Georgia, serif; --w-name: 400; --f-text: 'Raleway', Arial, sans-serif; --i-sub: normal; --kh: .82; --kn: .9; }
@@ -500,6 +504,7 @@ const TERMS = {
 };
 /* Пары шрифтов (все с кириллицей, Google Fonts): [ключ, название, заголовки, текст, что подгрузить перед PDF]. */
 const FONT_PAIRS = [
+  ['site', 'Как на сайте', "'Montserrat', Arial, sans-serif", "'Montserrat', Arial, sans-serif", ['300 20px Montserrat', '400 20px Montserrat', '500 20px Montserrat', '600 20px Montserrat', 'italic 400 20px Cormorant']],
   ['classic', 'Классика RICCA', "'Cormorant', Georgia, serif", "'Montserrat', Arial, sans-serif", ['400 20px Cormorant', 'italic 400 20px Cormorant', '300 20px Montserrat', '400 20px Montserrat', '500 20px Montserrat', '600 20px Montserrat']],
   ['modern', 'Строгая', "'Montserrat', Arial, sans-serif", "'Montserrat', Arial, sans-serif", ['300 20px Montserrat', '400 20px Montserrat', '500 20px Montserrat', '600 20px Montserrat']],
   ['journal', 'Журнал', "'Playfair Display', Georgia, serif", "'Inter', Arial, sans-serif", ['400 20px "Playfair Display"', 'italic 400 20px "Playfair Display"', '300 20px Inter', '400 20px Inter', '500 20px Inter', '600 20px Inter']],
@@ -547,7 +552,7 @@ const idb = (() => {
 const LOGO_DEFAULT = (window.KP_LOGOS || []).map((l) => ({ key: l.f, f: l.f, name: l.name, k: l.k || 1, on: true }));
 const state = {
   cat: 'beds',
-  settings: { client: '', date: '', manager: '', phone: '', lead: '25–45 рабочих дней', sub: '', theme: 'auto', font: 'classic', fh: 1, ft: 1, layout: {}, parts: { cover: true, total: true, terms: true, trust: true, cta: true, contacts: true }, terms: {} },
+  settings: { client: '', date: '', manager: '', phone: '', lead: '25–45 рабочих дней', sub: '', theme: 'auto', font: 'site', fh: 1, ft: 1, layout: {}, parts: { cover: true, total: true, terms: true, trust: true, cta: true, contacts: true }, terms: {} },
   models: {},   // id → { on, price, from, note, pick, uploads: [{ id, kind }] }
   custom: {},   // id → { cat, name, subtitle, description, options, photos: [{ id, kind }], deleted }
   project: { title: '', items: [] }, // items: [{ id, price, from, qty, note }]
@@ -587,6 +592,7 @@ function lsLoad() {
     const j = JSON.parse(localStorage.getItem(LS) || 'null');
     if (j) {
       Object.assign(state.settings, j.settings || {}); state.settings.parts = { ...{ cover: true, total: true, terms: true, trust: true, cta: true, contacts: true }, ...(j.settings && j.settings.parts) };
+      if (!state.settings.fontChosen && state.settings.font === 'classic') state.settings.font = 'site'; // до 15 ноября по умолчанию была «Классика»
       Object.assign(state.models, j.models || {}); Object.assign(state.custom, j.custom || {});
       if (j.project) state.project = { title: '', items: [], ...j.project };
       if (j.clients) state.clients = j.clients;
@@ -800,8 +806,8 @@ function fillGeneral(fromRemote) {
   renderSum();
   const cur = state.settings.theme || 'auto';
   $('#themes').innerHTML = THEMES.map(([k, t]) => `<button type="button" class="th" data-theme="${k}" aria-pressed="${cur === k}"><i style="background:${k === 'auto' ? THEME_DOT[seasonByDate()] : THEME_DOT[k]}"></i>${t}${k === 'auto' ? ` (${THEME_NAME[seasonByDate()]})` : ''}</button>`).join('');
-  const fpCur = state.settings.font || 'classic';
-  $('#fonts').innerHTML = FONT_PAIRS.map(([k, t, h, x]) => `<button type="button" class="fpb" data-font="${k}" aria-pressed="${fpCur === k}"><b style="font-family:${h}">${esc(tab().id === 'project' ? 'Подборка' : tab().title)}</b><span style="font-family:${x}">${t}</span></button>`).join('');
+  const fpCur = state.settings.font || 'site';
+  $('#fonts').innerHTML = FONT_PAIRS.map(([k, t, h, x]) => `<button type="button" class="fpb" data-font="${k}" aria-pressed="${fpCur === k}"><b style="font-family:${h};font-weight:${k === 'site' || k === 'modern' || k === 'graphic' ? 300 : 400}">${k === 'site' ? 'Наш <em style="font-family:Cormorant,Georgia,serif;font-style:italic;font-size:1.12em">шоурум</em>' : 'Наш шоурум'}</b><span style="font-family:${x}">${t}</span></button>`).join('');
   const fhv = Math.round((+state.settings.fh || 1) * 100), ftv = Math.round((+state.settings.ft || 1) * 100);
   $('#fh').value = fhv; $('#fh-v').textContent = fhv + '%'; $('#ft').value = ftv; $('#ft-v').textContent = ftv + '%';
   $('#g-parts').innerHTML = PARTS.map(([k, t]) => `<label class="tg"><input type="checkbox" id="part-${k}" data-part="${k}" ${state.settings.parts[k] !== false ? 'checked' : ''}>${t}</label>`).join('');
@@ -814,7 +820,7 @@ function fillGeneral(fromRemote) {
 $('#general').addEventListener('toggle', () => { if ($('#general').open) $$('#terms textarea').forEach(autoSize); });
 for (const [k, sel] of Object.entries(G)) $(sel).addEventListener('input', (e) => { state.settings[k] = e.target.value; touchSettings(); renderSum(); renderSlidesSoon(); });
 $('#g-parts').addEventListener('change', (e) => { const k = e.target.dataset.part; if (!k) return; state.settings.parts = { ...state.settings.parts, [k]: e.target.checked }; touchSettings(); renderSlides(); });
-$('#fonts').addEventListener('click', (e) => { const b = e.target.closest('[data-font]'); if (!b) return; state.settings.font = b.dataset.font; touchSettings(); fillGeneral(); renderSlides(); });
+$('#fonts').addEventListener('click', (e) => { const b = e.target.closest('[data-font]'); if (!b) return; state.settings.font = b.dataset.font; state.settings.fontChosen = true; touchSettings(); fillGeneral(); renderSlides(); });
 for (const id of ['fh', 'ft']) $('#' + id).addEventListener('input', (e) => { state.settings[id] = +e.target.value / 100; $('#' + id + '-v').textContent = e.target.value + '%'; touchSettings(); renderSlidesSoon(); });
 document.addEventListener('click', (e) => { if (e.target.closest('[data-move]')) { setMoving(!moving); if (moving && window.matchMedia('(max-width: 999px)').matches && $('#app').dataset.view !== 'look') $('#v-look').click(); } });
 $('#lay-reset').addEventListener('click', () => {
@@ -1262,7 +1268,7 @@ function zoomStyle(p, W, H, fillW = 0.8, fillH = 0.74) {
 }
 function buildSlides() {
   const st = state.settings; const parts = st.parts || {}; const th = 'th-' + theme(); const isProject = state.cat === 'project';
-  const fp = FONT_PAIRS.some((f) => f[0] === st.font) ? st.font : 'classic';
+  const fp = FONT_PAIRS.some((f) => f[0] === st.font) ? st.font : 'site';
   const fh = +st.fh || 1; const ft = +st.ft || 1; const lay = st.layout || {};
   const S = (kind) => `<div class="slide s-${kind} ${th} fp-${fp}" style="--fh:${fh};--ft:${ft}">`;
   const D = (key, cls, xs) => { const o = lay[key]; const sty = [xs, o ? `transform:translate(${o[0]}px,${o[1]}px)` : ''].filter(Boolean).join(';'); return ` class="${cls || ''}" data-drag="${key}"${sty ? ` style="${sty}"` : ''}`; };
@@ -1281,7 +1287,7 @@ function buildSlides() {
         <div${D('cover.mark', 's-mark')}>${mono}<span>RICCA DESIGNS</span></div>
         <div${D('cover.text', 's-cover__txt')}>
           <div class="s-cover__kicker">Коммерческое предложение</div>
-          <div class="s-cover__title${title.length > 14 ? ' long' : ''}">${esc(title)}</div>
+          <div class="s-cover__title${title.length > 14 ? ' long' : ''}"><em class="ac">${esc(title)}</em></div>
           <div class="s-cover__sub">${esc(st.sub || subDefault())}</div>
           <div class="s-cover__meta">${st.client ? `<span>Для: <b>${esc(st.client)}</b></span>` : ''}<span>${esc(st.date || today())}</span>${mgr ? `<span>Менеджер: <b>${mgr}</b></span>` : ''}</div>
         </div>
@@ -1333,7 +1339,7 @@ function buildSlides() {
     for (let c = 0; c < entries.length; c += per) {
       const chunk = entries.slice(c, c + per); const last = c + per >= entries.length;
       out.push({ kind: 'total', html: (n) => `${S('total')}
-        <div${D('total.head')}><div class="s-kicker">Расчёт</div><div class="s-h" style="margin-top:14px">Итого${entries.length > per ? ` <span style="font-size:40px">${Math.floor(c / per) + 1}</span>` : ''}</div></div>
+        <div${D('total.head')}><div class="s-kicker">Расчёт</div><div class="s-h" style="margin-top:14px"><em class="ac">Итого</em>${entries.length > per ? ` <span style="font-size:40px">${Math.floor(c / per) + 1}</span>` : ''}</div></div>
         <div${D('total.table', 's-ttab')}><div class="s-th"><span>№</span><span>Модель</span><span>Кол-во</span><span>Цена</span><span>Сумма</span></div>
           ${chunk.map((e, i) => { const pr = +cleanPrice(e.price) || 0; return `<div><span>${c + i + 1}</span><span>${esc(e.m.type)} ${esc(e.m.name)}${e.note ? ` <i>· ${esc(e.note)}</i>` : ''}</span><span>${e.qty} шт.</span><span>${pr ? (e.from ? 'от ' : '') + fmt(pr) + ' ₸' : 'по запросу'}</span><span>${pr ? fmt(pr * e.qty) + ' ₸' : '—'}</span></div>`; }).join('')}
           ${last ? `<div class="s-tsum"><span></span><span>Итого${tot.priced < entries.length ? ' (без позиций по запросу)' : ''}</span><span></span><span></span><span>${tot.from ? 'от ' : ''}${fmt(tot.sum)}&nbsp;₸</span></div>` : ''}
@@ -1346,7 +1352,7 @@ function buildSlides() {
     const rows = termsOf(state.cat).filter((r) => (r.k || '').trim() || (r.v || '').trim());
     const all = [...rows, ...(st.lead ? [{ k: 'Срок изготовления', v: st.lead }] : [])];
     out.push({ kind: 'terms', html: (n) => `${S('terms')}
-      <div${D('terms.head')}><div class="s-kicker">Для всех моделей</div><div class="s-h" style="margin-top:18px">Условия</div>
+      <div${D('terms.head')}><div class="s-kicker">Для всех моделей</div><div class="s-h" style="margin-top:18px"><em class="ac">Условия</em></div>
       <div class="s-lead">Каждое изделие делаем под заказ в своём ателье в Алматы. Размер, ткань и посадку согласуем до начала работы.</div></div>
       <dl${D('terms.table', 's-table')}>${all.map((r) => `<div><dt>${esc(r.k)}</dt><dd>${esc(r.v)}</dd></div>`).join('')}</dl>
       ${foot(n, label)}
@@ -1356,14 +1362,14 @@ function buildSlides() {
   if (parts.trust !== false && trust.length) {
     const nl = trust.length; const cols = nl <= 4 ? nl : nl <= 8 ? 4 : nl <= 10 ? 5 : 6; const rows = Math.ceil(nl / cols); const cellH = rows === 1 ? 300 : 230;
     out.push({ kind: 'trust', html: (n) => `${S('trust')}
-      <div${D('trust.head')}><div class="s-kicker">Клиенты ателье</div><div class="s-h" style="margin-top:18px">Нам доверяют</div></div>
+      <div${D('trust.head')}><div class="s-kicker">Клиенты ателье</div><div class="s-h" style="margin-top:18px">Нам <em class="ac">доверяют</em></div></div>
       <ul${D('trust.logos', 's-logos', `grid-template-columns:repeat(${cols},1fr)`)}>${trust.map((l) => { const h = Math.round(Math.min(cellH * 0.62, 92 * (l.k || 1))); return `<li style="height:${cellH}px"><div class="s-logo" style="${bg(l.f)};height:${h}px;margin-top:-${Math.round(h / 2)}px"></div></li>`; }).join('')}</ul>
       ${foot(n, label)}
     </div>` });
   }
   if (parts.cta !== false) {
     out.push({ kind: 'cta', html: (n) => `${S('cta')}
-      <div${D('cta.head')}><div class="s-kicker">Если нужной модели нет</div><div class="s-h" style="margin-top:18px">Пришлите фото — сделаем по&nbsp;вашим размерам</div>
+      <div${D('cta.head')}><div class="s-kicker">Если нужной модели нет</div><div class="s-h" style="margin-top:18px">Пришлите фото — <em class="ac">сделаем</em> по&nbsp;вашим размерам</div>
       <div class="s-lead">Подойдёт фото из Pinterest или Instagram, эскиз дизайнера или проект интерьера.</div></div>
       <div${D('cta.steps', 's-steps')}>
         <div><span>1</span><div><b>Фото и размеры</b><p>Пришлите в WhatsApp картинку и размеры места: ${esc(st.phone || CONTACT.phone)}</p></div></div>
@@ -1375,7 +1381,7 @@ function buildSlides() {
   }
   if (parts.contacts !== false) {
     out.push({ kind: 'contacts', html: (n) => `${S('contacts')}${winter ? snow(1440, 810, 120, 11) : ''}
-      <div${D('contacts.head')}><div class="s-mark">${mono}<span>RICCA DESIGNS</span></div><div class="s-h" style="margin-top:56px">Приезжайте в&nbsp;шоурум</div>
+      <div${D('contacts.head')}><div class="s-mark">${mono}<span>RICCA DESIGNS</span></div><div class="s-h" style="margin-top:56px">Приезжайте в&nbsp;<em class="ac">шоурум</em></div>
       <div class="s-lead">Образцы тканей можно потрогать и сравнить рядом, а готовые модели — посидеть и полежать.</div></div>
       <dl${D('contacts.list', 's-clist')}>
         <div><dt>Адрес</dt><dd>${esc(CONTACT.addr)}</dd></div>
