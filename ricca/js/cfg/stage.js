@@ -79,7 +79,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   /* чёткость: в покое — 2x (ткань и края чёткие), пока модель крутят — меньше (плавно, без лагов на телефоне) */
   /* компьютер: в покое всегда 2x, даже на экране 1x — кадр уменьшается браузером, края и мелкие швы без «лесенки» (жалоба 15 окт.) */
   /* телефон: в покое — до 3x (окно 3D маленькое, ~1,1 Мп: на экранах 3x кадр 2x выглядел мыльным — жалоба 12 ноября), в движении 1,5x */
-  const dprFull = phone ? Math.min(window.devicePixelRatio || 1, 3) : 2, dprMove = Math.min(dprFull, phone ? 1.5 : 1.25);
+  /* 15 ноября (владелец: «лаг до нуля»): на телефоне чёткость постоянная — 2,5x. Смена 3x ↔ 1,5x при каждом касании и отпускании
+     пересоздавала буфер кадра — это и был рывок в начале и в конце движения. 2,5x почти не отличить от 3x на маленьком окне 3D */
+  const dprFull = phone ? Math.min(window.devicePixelRatio || 1, 2.5) : 2, dprMove = phone ? dprFull : Math.min(dprFull, 1.25);
   renderer.setPixelRatio(dprFull);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
@@ -112,8 +114,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   scene.add(hemi);
   const key = new THREE.DirectionalLight(LIGHT.keyColor, LIGHT.key);
   key.castShadow = true;
-  key.shadow.mapSize.set(2048, 2048);
-  key.shadow.radius = 12; key.shadow.blurSamples = 24; key.shadow.bias = -0.0005; key.shadow.normalBias = 0.01;
+  /* телефон (15 ноября, «лаг до нуля»): карта теней 1024 и размытие по 12 выборок — тень та же мягкая, расчёт в 4–8 раз легче */
+  key.shadow.mapSize.set(phone ? 1024 : 2048, phone ? 1024 : 2048);
+  key.shadow.radius = phone ? 6 : 12; key.shadow.blurSamples = phone ? 12 : 24; key.shadow.bias = -0.0005; key.shadow.normalBias = 0.01;
   scene.add(key); scene.add(key.target);
   /* мягкий заполняющий свет со стороны камеры (без тени): бок, повёрнутый к зрителю, не проваливается в плоскую тень */
   const fill = new THREE.DirectionalLight(LIGHT.fillColor, LIGHT.fill);
@@ -335,7 +338,28 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   controls.addEventListener('end', () => { requestRender(); });
 
   /* ---------- объект ---------- */
-  function setObject(group, { reframe = true } = {}) {
+  /* 15 ноября (владелец: «лаг до нуля»): у новой модели или ткани шейдеры собираются заранее и параллельно (compileAsync,
+     KHR_parallel_shader_compile), прежняя модель стоит, пока новая не готова, — кадр не замирает на сборке. Если все материалы
+     уже собраны (перестройка при смене размера), модель ставится сразу, как раньше */
+  let pendingObj = null;
+  function needsCompile(group) {
+    let need = false;
+    group.traverse((o) => {
+      if (need || !o.isMesh) return;
+      for (const m of Array.isArray(o.material) ? o.material : [o.material]) if (m && !renderer.properties.get(m).currentProgram) { need = true; break; }
+    });
+    return need;
+  }
+  function setObject(group, opts = {}) {
+    if (group && renderer.compileAsync && needsCompile(group)) {
+      pendingObj = group;
+      renderer.compileAsync(group, camera, scene).catch(() => {}).then(() => { if (pendingObj === group && !disposed) { pendingObj = null; setObjectNow(group, opts); } });
+      return;
+    }
+    pendingObj = null;
+    setObjectNow(group, opts);
+  }
+  function setObjectNow(group, { reframe = true } = {}) {
     if (object) root.remove(object);
     object = group;
     if (group) root.add(group);

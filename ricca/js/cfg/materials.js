@@ -578,10 +578,8 @@ export function shadeMaterial(fabric, k = 0.6) {
 /* ---------- дерево ---------- */
 const WOOD = { oak: '#C9AE87', walnut: '#5E4330', blackwood: '#2A2622', smoked: '#6A6058', cherry: '#B5826C' };   // smoked — копчёный (серо-коричневый) дуб: рамы кресел вроде Savro
 const woodCache = new Map();
-function woodTextures(N) {
-  const key = 'wood' + N;
-  if (texCache.has(key)) return texCache.get(key);
-  /* волокна вдоль U: кольца (полосы) с изгибами + мелкие поры */
+/* дерево: пиксели — чистая функция (выполняется и в фоновом потоке, bgPixels); волокна вдоль U: кольца с изгибами + мелкие поры */
+function woodPixels(N) {
   const col = new Uint8Array(N * N * 4), rgh = new Uint8Array(N * N * 4), H = new Float32Array(N * N);
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const u = x / N, v = y / N;
@@ -600,22 +598,77 @@ function woodTextures(N) {
   const { nrm } = heightToTextures(H, N, 0.9, 0.55, 0.1);
   for (let i = 0; i < N * N; i++) { rgh[i * 4] = 255; rgh[i * 4 + 1] = Math.round((0.5 + 0.12 * (1 - col[i * 4] / 255)) * 255); rgh[i * 4 + 2] = 255; rgh[i * 4 + 3] = 255; }
   let mean = 0; for (let i = 0; i < N * N; i++) mean += col[i * 4] / 255; mean /= N * N;
-  const out = { map: dataTex(col, N), rough: dataTex(rgh, N), normal: dataTex(nrm, N), mean };
+  return { col, rgh, nrm, mean };
+}
+function woodWrap(px, N) {
+  const out = { map: dataTex(px.col, N), rough: dataTex(px.rgh, N), normal: dataTex(px.nrm, N), mean: px.mean };
   for (const t of [out.map, out.rough, out.normal]) t.repeat.set(1 / 0.9, 1 / 0.25); // плитка 90 × 25 см — крупный рисунок не теряется в мипах
-  texCache.set(key, out);
   return out;
 }
+function woodTextures(N) {
+  const key = 'wood' + N;
+  if (!texCache.has(key)) texCache.set(key, woodWrap(woodPixels(N), N));
+  return texCache.get(key);
+}
+/* ткань подушек и пледа: высота — нить ~1,2 мм (250 на плитку 30 см) + складки 5–30 см; чистая функция, как woodPixels */
+function decorPixels(N) {
+  const H = new Float32Array(N * N);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const u = x / N, v = y / N;
+    const thread = Math.pow(Math.max(Math.abs(Math.sin(Math.PI * u * 250)), Math.abs(Math.sin(Math.PI * v * 250))), 0.7);
+    H[y * N + x] = 0.16 * thread + 1.0 * fbm(u * 3, v * 3, 3, 91, 5) + 0.3 * fbm(u * 9, v * 9, 9, 97, 3);
+  }
+  /* сила 9: градиент по пикселю у складок масштаба 10 см мал — иначе рельефа не видно */
+  return heightToTextures(H, N, 9, 0.92, 0.05);
+}
+function decorWrap(px, N) {
+  const t = { normal: dataTex(px.nrm, N), rough: dataTex(px.rgh, N) };
+  for (const tx of [t.normal, t.rough]) tx.repeat.set(1 / 0.3, 1 / 0.3);
+  return t;
+}
+
+/* ---------- тяжёлые процедурные карты — в фоновом потоке (15 ноября, владелец: «лаг убрать до нуля»). Дерево 1024² считалось
+   ~0,5 с прямо при загрузке модели — на телефоне страница стояла до секунды. Теперь материал сразу получает лёгкую карту 128²
+   (≈ 10 мс), подробная приходит из фонового потока и подменяет её без паузы ---------- */
+const COARSE = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
+let texWorker = null, texSeq = 0;
+const texJobs = new Map(), bgCache = new Map();
+function bgPixels(fn, N) {
+  const ck = fn + N;
+  if (bgCache.has(ck)) return bgCache.get(ck);
+  const local = () => new Promise((res) => setTimeout(() => res(fn === 'woodPixels' ? woodPixels(N) : decorPixels(N)), 30));
+  if (texWorker === null && typeof Worker !== 'undefined' && typeof Blob !== 'undefined' && typeof URL !== 'undefined') {
+    try {
+      const code = [hash2, tnoise, fbm, heightToTextures, woodPixels, decorPixels].map(String).join('\n') +
+        '\nconst FN = { woodPixels, decorPixels };\nonmessage = (e) => { const { id, fn, N } = e.data; const out = FN[fn](N); postMessage({ id, out }, Object.values(out).filter((v) => v && v.buffer).map((v) => v.buffer)); };';
+      texWorker = new Worker(URL.createObjectURL(new Blob([code], { type: 'text/javascript' })));
+      texWorker.onmessage = (e) => { const j = texJobs.get(e.data.id); texJobs.delete(e.data.id); if (j) j(e.data.out); };
+      texWorker.onerror = () => { texWorker = false; texJobs.forEach((j) => j(null)); texJobs.clear(); };
+    } catch (e) { texWorker = false; }
+  }
+  const p = (texWorker ? new Promise((res) => { const id = ++texSeq; texJobs.set(id, res); texWorker.postMessage({ id, fn, N }); }) : local())
+    .then((out) => out || local());
+  bgCache.set(ck, p);
+  return p;
+}
+
 export function woodMaterial(tone = 'oak') {
   if (!WOOD[tone]) tone = 'oak';
-  const N = defaultQuality === 'high' ? 1024 : 512;
+  const N = COARSE ? 512 : 1024;   // телефон: ножки мелкие — 512 хватает
   const key = tone + N;
   if (woodCache.has(key)) return woodCache.get(key);
-  const t = woodTextures(N);
+  const ready = texCache.get('wood' + N), t = ready || woodTextures(128);
   const m = new THREE.MeshPhysicalMaterial({
     color: new THREE.Color(WOOD[tone]).multiplyScalar(1 / t.mean), map: t.map, roughnessMap: t.rough, roughness: 1,
     normalMap: t.normal, normalScale: new THREE.Vector2(0.4, 0.4), clearcoat: 0.25, clearcoatRoughness: 0.35, metalness: 0,
   });
   m.name = 'wood-' + tone; m.userData = { kind: 'wood', tone };
+  if (!ready) bgPixels('woodPixels', N).then((px) => {
+    if (!texCache.has('wood' + N)) texCache.set('wood' + N, woodWrap(px, N));
+    const w = texCache.get('wood' + N);
+    m.map = w.map; m.roughnessMap = w.rough; m.normalMap = w.normal; m.color.set(WOOD[tone]).multiplyScalar(1 / w.mean);
+    m.needsUpdate = true; notify();
+  });
   woodCache.set(key, m);
   return m;
 }
@@ -660,22 +713,10 @@ export function metalMaterial(finish = 'black') {
 const decorCache = new Map();
 export function decorMaterial(kind = 'decor') {
   if (decorCache.has(kind)) return decorCache.get(kind);
-  const N = defaultQuality === 'high' ? 512 : 256, key = 'decorTex' + N;
-  let t = texCache.get(key);
-  if (!t) {
-    /* плитка 30 см: нить ~1,2 мм (250 на плитку) + складки 5–30 см (fbm, 5 октав) */
-    const H = new Float32Array(N * N);
-    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-      const u = x / N, v = y / N;
-      const thread = Math.pow(Math.max(Math.abs(Math.sin(Math.PI * u * 250)), Math.abs(Math.sin(Math.PI * v * 250))), 0.7);
-      H[y * N + x] = 0.16 * thread + 1.0 * fbm(u * 3, v * 3, 3, 91, 5) + 0.3 * fbm(u * 9, v * 9, 9, 97, 3);
-    }
-    /* сила 9: градиент по пикселю у складок масштаба 10 см мал — иначе рельефа не видно */
-    const { nrm, rgh } = heightToTextures(H, N, 9, 0.92, 0.05);
-    t = { normal: dataTex(nrm, N), rough: dataTex(rgh, N) };
-    for (const tx of [t.normal, t.rough]) tx.repeat.set(1 / 0.3, 1 / 0.3);
-    texCache.set(key, t);
-  }
+  const N = COARSE ? 256 : 512, key = 'decorTex' + N;
+  const ready = texCache.get(key);
+  if (!texCache.has('decorTex128')) texCache.set('decorTex128', decorWrap(decorPixels(128), 128));
+  const t = ready || texCache.get('decorTex128');
   const throwK = kind === 'throw';
   const m = new THREE.MeshPhysicalMaterial({
     color: new THREE.Color(throwK ? '#C9C4BB' : '#EEECE7'), roughness: 1, metalness: 0, roughnessMap: t.rough,
@@ -685,6 +726,10 @@ export function decorMaterial(kind = 'decor') {
   /* 14 ноября: белое бельё в студии не уходит в серое — тыльная сторона подушек и покрывала сбоку была тёмно-серой «доской» */
   if (!throwK) { m.emissive = new THREE.Color('#EEECE7'); m.emissiveIntensity = 0.2; }
   m.name = 'decor-' + kind; m.userData = { kind };
+  if (!ready) bgPixels('decorPixels', N).then((px) => {
+    if (!texCache.has(key)) texCache.set(key, decorWrap(px, N));
+    const d = texCache.get(key); m.normalMap = d.normal; m.roughnessMap = d.rough; m.needsUpdate = true; notify();
+  });
   decorCache.set(kind, m);
   return m;
 }
