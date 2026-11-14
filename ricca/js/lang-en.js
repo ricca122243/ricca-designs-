@@ -43,7 +43,7 @@
     'Включить': 'Play', 'Остановить': 'Stop',
     'Шьём: {}': 'We make: {0}', 'Каталог': 'Catalogue', 'Модели: {}': 'Models: {0}', 'На&nbsp;заказ': 'Made to&nbsp;order',
     '{} на заказ — любой формы и размера, по вашему фото, эскизу или дизайн-проекту.': '{0} to order — any shape and size, from your photo, sketch or design project.',
-    'Что шьём': 'What we make', 'Собрать в&nbsp;3D': 'Build in&nbsp;3D', 'деталь': 'detail',
+    'Что шьём': 'What we make', 'Собрать в&nbsp;3D': 'Build in&nbsp;3D', 'деталь': 'detail', 'Крупно': 'Close-up',
     'Здравствуйте! Хочу заказать {} по фото.': "Hello! I'd like to order {0} from a photo.",
     'Отправить фото в&nbsp;WhatsApp': 'Send a photo via&nbsp;WhatsApp', 'В&nbsp;корзину&nbsp;— заявка': 'Add to&nbsp;cart&nbsp;— request',
     'Цену рассчитаем и&nbsp;ответим в&nbsp;WhatsApp.': "We'll quote the price and&nbsp;reply on&nbsp;WhatsApp.",

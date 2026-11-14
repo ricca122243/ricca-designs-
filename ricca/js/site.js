@@ -1355,7 +1355,7 @@
       pre.src = src;
       if (pre.complete && pre.naturalWidth) put(src);
       count.innerHTML = n > 1 ? `<span aria-hidden="true">${pad2(idx + 1)} / ${pad2(n)}</span><span class="sr-only">${tr`Фото ${idx + 1} из ${n}`}</span>` : '';
-      if (pill) { pill.hidden = n < 2; pill.textContent = `${idx + 1} / ${n}`; }
+      if (pill) { pill.hidden = n < 2; pill.textContent = `${p.detail ? `${tr('Крупно')} · ` : ''}${idx + 1} / ${n}`; }   // крупный план подписан (владелец, 15 ноября: «три вида и два приближенно»)
       if (dotsBox) Array.from(dotsBox.children).forEach((d, j) => d.classList.toggle('is-on', j === idx));
       // миниатюры — одна остановка Tab (roving tabindex), текущая — в середине ленты
       thumbs.forEach((b, j) => { b.setAttribute('aria-current', String(j === idx)); b.tabIndex = j === idx ? 0 : -1; });

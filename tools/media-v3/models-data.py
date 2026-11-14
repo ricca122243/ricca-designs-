@@ -57,7 +57,13 @@ for it in cat:
             bb = bbox_of(f)
             if bb: ph_['bbox'] = bb   # границы изделия — окно изделия кадрирует по ним (js/site.js layout())
         if p.get('scene'): ph_['scene'] = True   # кадр-сцена (изделие в интерьере ателье) — для карточек «Популярные модели»
+        # крупный план: подпись «деталь», вырезка zoom-crops.py или изделие упирается в два края кадра
+        bb_ = ph_.get('bbox')
+        if 'деталь' in p.get('alt', '') or p.get('zoom') or (bb_ and (bb_[0] <= 0.01) + (bb_[2] >= 0.99) + (bb_[1] <= 0.01) + (bb_[3] >= 0.99) >= 2):
+            ph_['detail'] = True
         photos.append(ph_)
+    # 15 ноября, владелец: «две фото приближенно, три фото других разных видов» — в окне модели до трёх видов, затем два крупных плана
+    photos = [q for q in photos if not q.get('detail')][:3] + [q for q in photos if q.get('detail')][:2]
     if not photos: continue
     cfg = it.get('cfg') or ('corner' if 'corner' in it.get('tags', []) and it['category'] == 'sofas' else CFG[it['category']])   # cfg модели — готовый рецепт для 3D
     name = names.get(it['id'], '')
