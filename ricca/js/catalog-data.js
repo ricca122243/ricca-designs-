@@ -214,6 +214,7 @@ window.RICCA_CATALOG = [
     cfg: "t.modular~ah.64~aw.26~bc.fixed~mm.105~mo.2~n.auto",
     fab: "molly:10",
     glb: "models3d/free/sofa-01.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -239,6 +240,7 @@ window.RICCA_CATALOG = [
     cfg: "t.corner~ah.60~aw.10~f.chaise~l.165~lf.walnut~lh.6~lg.wood~n.2~vp.puff~w.300",
     fab: "pique:1",
     glb: "models3d/free/sofa-02.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["corner", "straight"],
     type: "Диван",
@@ -262,6 +264,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~ah.74~as.round~aw.26~bc.fixed~h.74~lh.2~lg.hidden~p.1~sc.single~vs.oval~w.230",
     fab: "exclusive:1",
     glb: "models3d/free/sofa-03.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["foldout", "straight"],
     type: "Диван",
@@ -284,6 +287,7 @@ window.RICCA_CATALOG = [
     cfg: "t.corner~ah.58~as.wide~aw.20~f.chaise~l.165~lh.10~n.2~vl.sled~w.300",
     fab: "alba:16",
     glb: "models3d/free/sofa-16.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["foldout", "straight", "corner"],
     type: "Диван",
@@ -306,6 +310,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~ah.66~as.round~aw.22~d.100~h.74~lh.2~lg.hidden~n.2~vs.oval~w.230",
     fab: "molly:9",
     glb: "models3d/free/sofa-17.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["foldout", "straight"],
     type: "Диван",
@@ -331,6 +336,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~ah.72~as.wide~aw.25~bc.fixed~d.109~h.76~lh.2~lg.hidden~p.1~sd.64~n.2~w.274",
     fab: "lucky:1",
     glb: "models3d/free/sofa-18.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -355,6 +361,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~ah.60~as.round~aw.30~lh.2~lg.hidden~n.2~vp.puff~w.230",
     fab: "noble:3",
     glb: "models3d/free/sofa-19.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["straight", "corner"],
     type: "Диван",
@@ -377,6 +384,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~ah.70~aw.16~h.77~lh.14~n.3~vl.cone~w.240",
     fab: "torrens-plain:7",
     glb: "models3d/free/sofa-20.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["corner", "straight"],
     type: "Диван",
@@ -421,6 +429,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~ah.70~as.round~aw.30~bc.fixed~h.70~n.2~vs.soft~w.250",
     fab: "coco:14",
     glb: "models3d/free/sofa-22.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -474,6 +483,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~b.float~ft.5~hh.105~ho.5~hs.plain~lt.1~kc.dark~p.1~rh.30",
     fab: "coco:15",
     glb: "models3d/free/bed-01.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -497,6 +507,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~ft.14~kd.20~hh.100~ho.3~ks.round~hs.plain~lh.4~lt.1~rh.40~kr.soft",
     fab: "alba:17",
     glb: "models3d/free/bed-02.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -519,6 +530,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~b.legs~ft.7~kd.12~hh.90~kl.lean~ho.6~hs.plain~kt.light~kw.sail~lf.black~lh.14~kg.blade~mw.180~rh.25~kr.deck",
     fab: "torrens-plain:13",
     glb: "models3d/free/bed-03.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -543,6 +555,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~b.legs~ft.5~hh.105~hs.plain~lf.chrome~lh.12~kg.metal~p.1~rh.30",
     fab: "noble:12",
     glb: "models3d/free/bed-04.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -569,6 +582,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~b.legs~ft.16~hh.115~ki.hchannels~ho.2~hs.plain~kw.shell~lf.black~lh.6~kg.disc~rh.32~kr.soft",
     fab: "molly:6",
     glb: "models3d/free/bed-05.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -590,6 +604,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~b.legs~ft.8~hh.100~ho.12~kb.roll~ks.capsule~hs.plain~lf.black~lh.6~kg.disc~rh.30~kr.soft",
     fab: "timeless:12",
     glb: "models3d/free/bed-09.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -613,6 +628,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~b.legs~ft.5~hh.100~ho.3~ks.round~hs.plain~lf.black~lh.14~kg.metal~rh.29",
     fab: "beauty:8",
     glb: "models3d/free/bed-10.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -706,6 +722,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~b.legs~ft.5~hh.130~ki.plain~ho.3~hs.frame~lf.chrome~lh.12~kg.metal~rh.30",
     fab: "ricca-leather:4",
     glb: "models3d/free/bed-14.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: ["lift", "nolift"],
     type: "Кровать",
@@ -775,6 +792,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~ft.8~hh.130~ho.12~hs.straps~lh.4~lt.1~rh.38",
     fab: "noble:11",
     glb: "models3d/free/bed-17.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -799,6 +817,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~ft.10~kd.18~hh.80~ho.3~ks.round~hs.plain~lh.4~lt.1~rh.40~kr.soft",
     fab: "noble:11",
     glb: "models3d/free/bed-18.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: ["lift"],
     type: "Кровать",
@@ -979,6 +998,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.66~as.wide~aw.27~bc.fixed~d.95~h.72~lf.black~lh.4~lg.plinth~qp.dark~sd.58~w.105",
     fab: "noble:8",
     glb: "models3d/free/armchair-08.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1002,6 +1022,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.62~aw.17~d.85~f.round~lf.black~lh.4~lg.plinth~qb.none~qp.dark~w.85",
     fab: "alba:16",
     glb: "models3d/free/armchair-09.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1345,6 +1366,7 @@ window.RICCA_CATALOG = [
     cfg: "t.modular~as.round~aw.18~ch.left~mm.95~p.1~n.auto~va.left~vd.3~vo.right",
     fab: "sambia:8",
     glb: "models3d/free/sofa-26.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1367,6 +1389,7 @@ window.RICCA_CATALOG = [
     cfg: "t.modular~ah.60~as.round~aw.22~lh.6~lg.plinth~mm.100~n.auto~vm.arc",
     fab: "ricca-leather:7",
     glb: "models3d/free/sofa-27.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["modular"],
     type: "Диван",
@@ -1388,6 +1411,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~ah.75~bc.fixed~h.95~lh.18~sc.single~vd.1~vl.sled~vs.oval~w.200",
     fab: "molly:7",
     glb: "models3d/free/sofa-28.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -1412,6 +1436,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~as.wide~aw.18~h.88~lh.8~n.2~w.240",
     fab: "molly:17",
     glb: "models3d/free/sofa-29.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["straight", "foldout"],
     type: "Диван",
@@ -1436,6 +1461,7 @@ window.RICCA_CATALOG = [
     cfg: "t.corner~as.wide~aw.20~f.chaise~l.160~n.2~vd.2",
     fab: "pique:11",
     glb: "models3d/free/sofa-30.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["corner", "foldout"],
     type: "Диван",
@@ -1460,6 +1486,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.86~aw.16~d.90~f.round~h.88~lf.black~lh.18~lg.metal~qb.lumbar~ql.cross~qs.wide~sh.44~w.110",
     fab: "noble:3",
     glb: "models3d/free/armchair-12.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1481,6 +1508,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.64~as.thin~aw.8~d.91~lf.black~lh.12~lg.metal~sd.58~sh.44~w.85",
     fab: "alba:4",
     glb: "models3d/free/armchair-13.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1567,6 +1595,7 @@ window.RICCA_CATALOG = [
     cfg: "t.corner~f.chaise~l.165~lf.blackwood~lh.14~lg.wood~n.2~vd.2~vl.cone~w.300",
     fab: "coco:9",
     glb: "models3d/free/sofa-31.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
@@ -1590,6 +1619,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~ft.14~kd.20~hh.100~kl.lean~ks.round~hs.plain~lh.4~mw.180~rh.40~kr.split",
     fab: "alba:6",
     glb: "models3d/free/bed-25.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1702,6 +1732,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~ft.12~hh.100~ki.plain~hs.frame~lh.4~mw.180~rh.40~kr.split",
     fab: "noble:3",
     glb: "models3d/free/bed-30.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1724,6 +1755,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~b.legs~ft.5~hh.105~ks.round~hs.pillows~lf.chrome~lh.12~kg.metal~mw.180~rh.30",
     fab: "torrens-plain:8",
     glb: "models3d/free/bed-31.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1748,6 +1780,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~b.legs~ft.5~hh.110~kl.lean~ho.3~hs.plain~kw.shell~lf.chrome~lh.12~kg.metal~rh.30",
     fab: "ricca-leather:4",
     glb: "models3d/free/bed-32.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1772,6 +1805,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~ft.20~kd.25~hh.75~hs.plain~lh.4~mw.180~rh.42",
     fab: "lucky:16",
     glb: "models3d/free/bed-33.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1796,6 +1830,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~b.legs~hh.125~ki.plain~kl.lean~ho.12~hs.wings~lf.black~lh.14~kg.metal~rh.32",
     fab: "molly:21",
     glb: "models3d/free/bed-34.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1820,6 +1855,7 @@ window.RICCA_CATALOG = [
     cfg: "t.bed~ft.5~kd.12~hh.135~ho.10~ks.cloud~hs.plain~lh.4~mw.180~rh.25~kr.deck",
     fab: "timeless:1",
     glb: "models3d/free/bed-35.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "beds",
     tags: [],
     type: "Кровать",
@@ -1844,6 +1880,7 @@ window.RICCA_CATALOG = [
     cfg: "t.modular~ah.55~aw.20~h.67~mm.100~n.auto~vd.4~vm.cornerL~vo.right",
     fab: "molly:17",
     glb: "models3d/free/sofa-32.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1865,6 +1902,7 @@ window.RICCA_CATALOG = [
     cfg: "t.modular~ah.55~aw.18~ch.left~h.67~mm.100~p.1~n.auto~va.left~vd.4~vo.right",
     fab: "pique:13",
     glb: "models3d/free/sofa-33.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1908,6 +1946,7 @@ window.RICCA_CATALOG = [
     cfg: "t.modular~ah.60~as.round~aw.20~bc.fixed~ch.right~h.70~mm.100~mo.2~n.auto~va.right~vd.1~vo.left~vp.puff",
     fab: "torrens-plain:2",
     glb: "models3d/free/sofa-35.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1930,6 +1969,7 @@ window.RICCA_CATALOG = [
     cfg: "t.modular~ah.60~aw.22~h.67~mm.95~mo.2~n.auto~vm.cornerL~vp.puff",
     fab: "noble:9",
     glb: "models3d/free/sofa-36.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -1996,6 +2036,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.64~as.wide~aw.20~d.90~h.76~lf.black~lh.12~lg.metal~sd.58~sh.44~w.105",
     fab: "ricca:2",
     glb: "models3d/free/armchair-16.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2063,6 +2104,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.62~as.thin~aw.10~d.88~h.71~lf.black~lh.16~lg.metal~p.1~sd.58~sh.44~w.85",
     fab: "torrens:7",
     glb: "models3d/free/armchair-17.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2084,6 +2126,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~as.none~aw.0~d.80~f.pebble~h.76~lf.blackwood~lh.8~sd.58~w.70",
     fab: "ricca:16",
     glb: "models3d/free/armchair-18.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2106,6 +2149,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.68~aw.25~d.90~f.round~h.68~lh.2~lg.hidden~qb.none~sd.52~sh.40~w.102",
     fab: "timeless:24",
     glb: "models3d/free/armchair-19.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2128,6 +2172,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.62~aw.22~d.88~f.round~h.72~lh.2~lg.hidden~qb.none~qe.block~sd.60~w.95",
     fab: "ricca:5",
     glb: "models3d/free/armchair-20.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2150,6 +2195,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~as.none~aw.0~bc.fixed~d.91~h.100~lf.smoked~lh.18~ql.splay~w.79",
     fab: "pique:6",
     glb: "models3d/free/armchair-21.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2173,6 +2219,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.70~aw.14~d.82~f.round~h.74~lf.bordeaux~lh.18~lg.metal~ql.frame~sh.44~w.90",
     fab: "ricca:13",
     glb: "models3d/free/armchair-22.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2194,6 +2241,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.62~aw.22~d.90~h.70~lf.pink~lh.10~lg.metal~qd.ball~sd.58~w.110",
     fab: "coco:14",
     glb: "models3d/free/armchair-23.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2218,6 +2266,7 @@ window.RICCA_CATALOG = [
     cfg: "t.pouf~d.90~f.square~h.38~lf.black~lh.8~lg.metal~p.0~ql.sled~w.90",
     fab: "sambia:9",
     glb: "models3d/free/pouf-01.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "poufs",
     tags: [],
     type: "Пуф",
@@ -2240,6 +2289,7 @@ window.RICCA_CATALOG = [
     cfg: "t.pouf~d.60~f.oval~h.47~w.80",
     fab: "molly:11",
     glb: "models3d/free/pouf-02.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "poufs",
     tags: [],
     type: "Пуф",
@@ -2284,6 +2334,7 @@ window.RICCA_CATALOG = [
     cfg: "t.pouf~d.50~f.bench~h.42~lf.black~lh.6~lg.plinth~p.0~qp.dark~tp.channels~w.150",
     fab: "torrens-plain:11",
     glb: "models3d/free/bench-01.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "poufs",
     tags: [],
     type: "Банкетка",
@@ -2306,6 +2357,7 @@ window.RICCA_CATALOG = [
     cfg: "t.pouf~f.bench~h.49~lf.blackwood~lh.6~lg.wood~p.0~ql.ball~zp.stadium~w.150",
     fab: "ricca:16",
     glb: "models3d/free/bench-02.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "poufs",
     tags: [],
     type: "Банкетка",
@@ -2329,6 +2381,7 @@ window.RICCA_CATALOG = [
     cfg: "t.pouf~d.50~f.bench~h.45~lf.taupe~lh.16~lg.metal~p.0~ql.ends~w.120",
     fab: "lucky:8",
     glb: "models3d/free/bench-03.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "poufs",
     tags: [],
     type: "Банкетка",
@@ -2351,6 +2404,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~aw.10~lf.oak~lh.6~lg.plinth~n.3~vc.wood~w.230",
     fab: "sambia:9",
     glb: "models3d/free/sofa-41.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2372,6 +2426,7 @@ window.RICCA_CATALOG = [
     cfg: "t.corner~ah.60~as.wide~aw.20~h.78~l.220~lf.blackwood~lh.8~lg.plinth~va.right~vd.3~vo.left~vc.podium~s.right~w.320",
     fab: "pique:13",
     glb: "models3d/free/sofa-42.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["corner"],
     type: "Диван",
@@ -2395,6 +2450,7 @@ window.RICCA_CATALOG = [
     cfg: "t.modular~ah.60~as.thin~aw.15~h.78~lf.blackwood~lh.6~lg.plinth~mm.100~n.auto~va.right~vm.arc~vo.left~vc.podium",
     fab: "pique:11",
     glb: "models3d/free/sofa-43.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["modular"],
     type: "Диван",
@@ -2416,6 +2472,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~ah.105~aw.10~bc.fixed~h.116~lh.2~lg.hidden~sc.single~vt.channels~w.160",
     fab: "alba:19",
     glb: "models3d/free/sofa-44.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2438,6 +2495,7 @@ window.RICCA_CATALOG = [
     cfg: "t.modular~as.none~aw.0~bc.fixed~h.67~mm.100~mo.2~n.auto~vb.roll~vm.cornerL~vp.puff",
     fab: "lucky:9",
     glb: "models3d/free/sofa-45.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["modular", "corner"],
     type: "Диван",
@@ -2461,6 +2519,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~as.none~aw.0~h.85~lh.2~lg.hidden~n.2~vb.pebble~vp.puff~w.180",
     fab: "noble:18",
     glb: "models3d/free/sofa-46.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2484,6 +2543,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~ah.72~as.round~aw.25~bc.fixed~d.85~h.74~lf.bordeaux~lh.18~sc.single~vl.frame~vs.soft~w.170",
     fab: "molly:9",
     glb: "models3d/free/sofa-47.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2507,6 +2567,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~as.none~aw.0~bc.fixed~d.80~h.69~lf.cherry~lh.16~lg.wood~sc.single~vd.1~vk.roll~vo.all~w.200",
     fab: "pique:2",
     glb: "models3d/free/sofa-48.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: [],
     type: "Кушетка",
@@ -2529,6 +2590,7 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~ah.55~as.wide~aw.28~bc.fixed~d.107~h.72~lh.2~lg.hidden~sd.62~n.2~vp.puff~w.280",
     fab: "molly:11",
     glb: "models3d/free/sofa-49.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
@@ -2550,6 +2612,7 @@ window.RICCA_CATALOG = [
     cfg: "t.corner~ah.66~as.wide~aw.22~bc.fixed~h.70~lh.2~lg.hidden~p.1~vd.3~s.right~w.300",
     fab: "alba:16",
     glb: "models3d/free/sofa-50.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["corner", "modular"],
     type: "Диван",
@@ -2571,6 +2634,7 @@ window.RICCA_CATALOG = [
     cfg: "t.modular~as.none~aw.0~bc.fixed~h.67~mm.100~n.auto~vo.left~vt.grid",
     fab: "torrens:11",
     glb: "models3d/free/sofa-51.json",
+    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["modular"],
     type: "Диван",
