@@ -2,51 +2,189 @@
 
 Сайт статический: `index.html`, `css/`, `js/`, `img/`, `fonts/`, `art/`. Сборка для хостинга — `tools/build-dist.sh`.
 
-## Скиллы включаются сами
+## Как выбирать скиллы
 
-Скиллы лежат в `.claude/skills/`. Не жди, пока пользователь назовёт скилл по имени.
-Как только запрос попадает под строку таблицы, сразу вызывай скилл через инструмент Skill, до первой правки кода.
-Если подходит несколько, вызывай все подходящие. В ответе одной строкой назови, какие скиллы включил.
+Скиллы лежат в `.claude/skills/` и разбиты ниже на 12 разделов по задачам.
 
-| Запрос пользователя | Скиллы |
+1. Определи, к какому разделу относится запрос. Не жди, пока пользователь назовёт скилл.
+2. Включи через инструмент Skill скиллы из колонки «Включать сразу» для подходящей строки. Делай это до первой правки.
+3. Скиллы из колонки «Только если» включай только при названном там условии.
+4. Не бери скиллы из других разделов. Один запрос — один раздел. Второй раздел подключай, только если задача явно составная, например «сделай секцию и проверь её SEO».
+5. За один запрос включай не больше четырёх скиллов. Если подходит больше, бери первые в строке.
+6. В ответе одной строкой назови, какие скиллы включил.
+7. Если ни одна строка не подходит, работай без скиллов. `find-skills` включай, только когда пользователь сам просит найти скилл.
+
+Проект — сайт дизайн-студии. По умолчанию запрос относится к разделу 1. Разделы 9–12 включай только по прямой просьбе.
+
+## 1. Сайт: дизайн и вёрстка
+
+| Запрос | Включать сразу | Только если |
+|---|---|---|
+| Украсить, сделать красивее, премиальнее, редизайн страницы или секции | `frontend-design`, `ui-ux-pro-max` | `ui-styling` — нужны готовые компоненты или тёмная тема |
+| Новая секция, лендинг, прайс, карточки товаров | `frontend-design`, `ui-ux-pro-max` | `design` — нужны ещё логотип, иконки или баннер |
+| Цвета, шрифты, отступы, CSS-переменные, единый стиль | `design-system` | `theme-factory` — просят готовую тему; `tailwind-design-system` — проект на Tailwind; `visual-style` — стиль снимают с чужого сайта или брендбука |
+| Анимация на странице | `frontend-design` | `framer-motion` — проект на React; `lottie-bodymovin` — анимация из After Effects; `threejs-*` — просят 3D |
+| Тексты кнопок, заголовков, форм, ошибок | `ux-copy` | `humanizer` — текст звучит как нейросеть |
+| Схема проекта, как устроен код | `floorplan` | — |
+| Сайт на React или Next.js | `vercel-react-best-practices` | `vercel-composition-patterns` — рефакторинг компонентов |
+
+Скиллы `threejs-fundamentals`, `threejs-geometry`, `threejs-materials`, `threejs-lighting`, `threejs-textures`, `threejs-loaders`, `threejs-animation`, `threejs-interaction`, `threejs-shaders`, `threejs-postprocessing` включай по одному, под конкретную 3D-задачу.
+
+## 2. Сайт: проверка качества
+
+| Запрос | Включать сразу | Только если |
+|---|---|---|
+| Оцени дизайн, что не так, разбор скриншота | `design-critique` | `web-design-guidelines` — разбирают код интерфейса, а не картинку |
+| Контраст, читаемость, клавиатура, доступность | `accessibility-review` | — |
+| Разнобой в стилях, захардкоженные значения | `design-system-audit` | — |
+| Передать макет разработчику | `design-handoff` | — |
+| Безопасность сайта или кода, уязвимости | `security-audit` | — |
+
+## 3. Сайт: SEO
+
+| Запрос | Включать сразу | Только если |
+|---|---|---|
+| SEO в целом, не ясно что именно | `seo` | — |
+| Полный аудит сайта | `seo-audit` | — |
+| Одна страница | `seo-page` | — |
+| Скорость, индексация, robots, Core Web Vitals | `seo-technical` | `seo-google` — есть доступ к Search Console или PageSpeed API |
+| Разметка schema.org | `seo-schema` | — |
+| Карта сайта | `seo-sitemap` | — |
+| Картинки: alt, вес, формат | `seo-images` | `seo-image-gen` — нужно создать OG-картинку |
+| Качество текстов страницы | `seo-content` | `seo-content-brief` — нужно ТЗ на новый текст |
+| Видимость в ChatGPT, Perplexity, AI Overviews | `seo-geo` | `seo-agentic` — спрашивают про llms.txt и ИИ-агентов |
+| Локальный бизнес, карты, Google Business Profile | `seo-local` | `seo-maps` — нужен замер позиций по карте |
+| Интернет-магазин, карточки товаров | `seo-ecommerce` | — |
+| Стратегия, семантика, план контента | `seo-plan` | `seo-cluster` — кластеризация ключей; `seo-programmatic` — страницы по шаблону; `seo-competitor-pages` — страницы сравнения |
+| Ссылки и доноры | `seo-backlinks` | — |
+| Несколько языков | `seo-hreflang` | — |
+| Что сломалось после выкладки | `seo-drift` | — |
+| Страница не ранжируется, хотя оптимизирована | `seo-sxo` | — |
+
+`seo-flow` и `seo-dataforseo` включай, только когда пользователь называет FLOW или DataForSEO.
+
+## 4. Сайт: хостинг, домен, сервисы
+
+| Запрос | Включать сразу | Только если |
+|---|---|---|
+| Бесплатный хостинг или сервис | `free-for-dev` | — |
+| Бесплатный домен | `free-domain` | — |
+| Мониторинг, сайт упал, статус-страница | `upptime` | `uptime-kuma` — у пользователя есть свой сервер |
+| Разместить сайт на своём сервере | `coolify` | — |
+| Замена платной подписки своим софтом | `awesome-selfhosted` | — |
+| Нужен API или источник данных | `public-apis` | — |
+
+## 5. Графика и бренд
+
+| Запрос | Включать сразу | Только если |
+|---|---|---|
+| Баннер, обложка, картинка для соцсетей или рекламы | `banner-design` | `canvas-design` — нужен постер или печатный макет |
+| Логотип, айдентика, фирменный стиль, тон бренда | `brand`, `design` | `brand-guidelines` — оформляют в стиле Anthropic |
+| Иллюстрация кодом | `paint` | `algorithmic-art` — генеративное искусство |
+| Генерация картинок моделью FLUX | `flux-best-practices` | `bfl-api` — пишут код вызова API |
+| Диаграмма, график | `beautiful-mermaid` | `d3-viz` — нужна интерактивная визуализация |
+| GIF для Slack | `slack-gif-creator` | — |
+
+## 6. Презентации и документы
+
+| Запрос | Включать сразу | Только если |
+|---|---|---|
+| Презентация без названного формата | `slides` | `frontend-slides` — просят HTML с анимацией; `slideshow` — показ в HyperFrames |
+| Файл PowerPoint | `pptx` | — |
+| Документ, отчёт, предложение | `docs` | `doc-coauthoring` — пишут вместе по шагам |
+| Файл Word, Excel, PDF | `docx`, `xlsx` или `pdf` по формату | `pdf-reading`, `file-reading` — файл нужно только прочитать |
+| Google Docs, Sheets, Slides | `google-workspace` | — |
+| Внутренняя рассылка, статус-отчёт | `internal-comms` | — |
+| Проверить договор или оферту | `fabric-check-agreement` | — |
+| Писать в стиле пользователя | `setup-writing-style` | — |
+
+## 7. Видео
+
+| Запрос | Включать сразу | Только если |
+|---|---|---|
+| Смонтировать отснятое: нарезка, цвет, субтитры | `video-use` | `video-edit`, `ffmpeg` — простая обрезка, сжатие или конвертация |
+| Смонтировать рилс из отснятого | `reels-editor` | — |
+| Сгенерировать короткий ролик с озвучкой | `reelsmith` | `ai-video-gen` — нужны ИИ-клипы от конкретного провайдера |
+| Разобрать чужой ролик, как он снят | `rea-video` | `video-understand` — нужна только расшифровка и кадры |
+| Повторить чужой ролик | `reverse-any-video` | `style-sampling` — новый ролик в готовом стиле |
+| Ролик кодом в HyperFrames | `hyperframes` | `hyperframes-cli` — команды; `hyperframes-registry` — готовые блоки; `media-use` — музыка и медиа; `figma` — дизайн из Figma; `remotion-to-hyperframes` — перенос из Remotion |
+| Ролик кодом в Remotion | `remotion-best-practices` | остальные `remotion-*` — он сам направит на нужный |
+| Новое видео, движок не выбран | `video-making` | — |
+| Скачать видео по ссылке | `video-download` | — |
+| Запись экрана или демо сайта | `playwright-recording` | — |
+| Обучающее видео в стиле 3Blue1Brown | `manim-composer` | `manimce-best-practices` или `manimgl-best-practices` — по версии Manim |
+| Аватар, говорящая голова | `avatar-video` | `create-video` — ролик по одному промпту; `faceswap`, `video-translate` — по названию задачи |
+
+Скиллы `remotion`, `remotion-captions`, `remotion-create`, `remotion-docs`, `remotion-interactivity`, `remotion-license`, `remotion-maps`, `remotion-markup`, `remotion-multimedia`, `remotion-render`, `remotion-saas`, `remotion-studio`, `remotion-upgrade` включай только внутри проекта на Remotion.
+Скиллы `video_toolkit`, `heygen`, `ltx2` включай, только когда пользователь называет этот инструмент.
+
+## 8. Звук
+
+| Запрос | Включать сразу | Только если |
+|---|---|---|
+| Озвучка текста | `elevenlabs` | `text-to-speech` — через HeyGen; `azure-text-to-speech` — через Azure |
+| Расшифровка речи | `speech-to-text` | `azure-speech-to-text` — через Azure |
+| Музыка | `music` | `acestep` — локальная генерация ACE-Step |
+| Звуковые эффекты | `sound-effects` | — |
+| Нет ключа ElevenLabs | `setup-api-key` | — |
+
+`agents` включай, только когда строят голосового агента ElevenLabs.
+
+## 9. Соцсети
+
+Включай только по прямой просьбе про Instagram или YouTube.
+
+| Запрос | Включать сразу | Только если |
+|---|---|---|
+| Сценарий рилса | `ig-reel` | `ig-viral` — сначала ищут, что залетает в нише |
+| Карусель | `ig-carousel` | — |
+| Сторис | `ig-story` | — |
+| Подпись и хэштеги | `ig-caption` | `ig-human` — убрать следы нейросети |
+| Контент-план Instagram | `ig-plan` | `ig-repurpose` — есть длинное видео или текст на нарезку |
+| Профиль и аналитика Instagram | `ig-profile` или `ig-audit` | — |
+| Комментарии и директ | `ig-reply`, `ig-comment` или `ig-dm` по задаче | — |
+| Сценарий YouTube | `yt-script` | `yt-viral` — сначала ищут, что работает |
+| Название и обложка | `yt-package` | — |
+| Описание, теги, главы | `yt-seo` | `yt-chapters` — нужны таймкоды |
+| Шортсы из длинного видео | `yt-shorts` | `yt-edit` — нужен лист монтажа |
+| План и аналитика канала | `yt-plan` или `yt-audit` | `yt-retention` — есть график удержания |
+| Комментарии YouTube | `yt-comment` | — |
+
+## 10. Исследования и тексты
+
+| Запрос | Включать сразу | Только если |
+|---|---|---|
+| Исследование рынка, конкурентов, референсов | `deep-research` | `agent-reach` — нужны соцсети, YouTube или китайские платформы |
+| Интервью, опросы | `user-research` | — |
+| Выводы из отзывов и интервью | `research-synthesis` | — |
+| Выжимка идей из текста или расшифровки | `fabric-extract-wisdom` | — |
+| Разбор дня, недели, года; паттерн Fabric по имени | `fabric` | — |
+| Убрать «нейросетевой» тон | `humanizer` | — |
+| Объясни, научи | `learn` | `ai-agents-for-beginners`, `llm-course`, `llms-from-scratch`, `build-your-own-x` — тема совпадает с курсом |
+| Финансовый расчёт | `financial-calculator` | — |
+
+## 11. Инструменты Claude
+
+Включай только по прямой просьбе.
+
+| Запрос | Включать сразу |
 |---|---|
-| «Украсить», «сделать красивее», «премиальнее», редизайн страницы или секции | `frontend-design`, `ui-ux-pro-max`, `ui-styling` |
-| Новая секция, лендинг, прайс, карточки товаров, продающий блок | `frontend-design`, `ui-ux-pro-max`, `design` |
-| Цвета, шрифты, отступы, токены, CSS-переменные, единый стиль | `design-system`, `theme-factory` |
-| Фирменный стиль, тон, логотип, айдентика | `brand`, `design` |
-| Баннер, обложка, картинка для соцсетей или рекламы | `banner-design`, `canvas-design` |
-| «Оцени дизайн», «что не так», скриншот на разбор | `design-critique`, `accessibility-review` |
-| Тексты кнопок, заголовков, ошибок, форм, пустых состояний | `ux-copy` |
-| Контраст, читаемость, клавиатура, мобильная доступность | `accessibility-review` |
-| Аудит стилей, захардкоженные значения, разнобой в компонентах | `design-system-audit` |
-| Передать макет разработчику, спецификация | `design-handoff` |
-| Презентация, слайды | `slides`, `pptx` |
-| Монтаж или обработка видео | `video-use`, `video-making` |
-| Исследование рынка, конкурентов, референсов | `deep-research`, `agent-reach` |
-| Интервью с клиентами, опросы, выводы из отзывов | `user-research`, `research-synthesis` |
-| Файлы Word, Excel, PDF | `docx`, `xlsx`, `pdf` |
-| SEO сайта: аудит, мета-теги, schema, sitemap, скорость, видимость в ИИ-поиске | `seo`, `seo-audit`, `seo-technical`, `seo-schema`, `seo-geo`, `seo-local` |
-| Текст звучит «как нейросеть», сделать живее | `humanizer` |
-| HTML-презентация с анимацией | `frontend-slides` |
-| Разобрать чужой ролик или рилс, как он снят, повторить | `rea-video`, `reverse-any-video`, `video-understand` |
-| Сделать ролик кодом, анимация, титры, субтитры | `hyperframes`, `remotion-best-practices`, `media-use` |
-| Скачать видео, нарезать, сжать, сконвертировать | `video-download`, `video-edit`, `ffmpeg` |
-| Схема или карта проекта, как устроен код | `floorplan` |
-| Выжимка идей из текста, сценария, расшифровки | `fabric-extract-wisdom` |
-| Проверить договор или оферту | `fabric-check-agreement` |
-| Инстаграм: рилс, карусель, сторис, подпись, контент-план, аудит профиля | `ig-reel`, `ig-carousel`, `ig-story`, `ig-caption`, `ig-plan`, `ig-audit`, `ig-viral` |
-| Ютуб: сценарий, шортс, упаковка, SEO ролика, главы, удержание | `yt-script`, `yt-shorts`, `yt-package`, `yt-seo`, `yt-chapters`, `yt-retention` |
-| Проверка безопасности сайта или кода, поиск уязвимостей | `security-audit` |
-| Смонтировать рилс из отснятого, сгенерировать короткий ролик с озвучкой | `reels-editor`, `reelsmith` |
-| Разбор дня, недели, года, структурный разбор любого текста | `fabric` |
-| Нужен API или источник данных для сайта | `public-apis` |
-| Подключить Claude к внешнему сервису | `awesome-mcp-servers` |
-| Бесплатный хостинг, домен, сервис, замена платной подписки | `free-for-dev`, `free-domain`, `awesome-selfhosted` |
-| Мониторинг сайта, статус-страница | `uptime-kuma`, `upptime` |
-| Разместить сайт на своём сервере | `coolify` |
-| Правила для Cursor под конкретный стек | `awesome-cursorrules` |
-| Учёба: ИИ-агенты, профессия LLM, собрать своё с нуля | `ai-agents-for-beginners`, `llm-course`, `llms-from-scratch`, `build-your-own-x` |
-| Нет подходящего скилла под задачу | `find-skills` |
+| Создать или улучшить скилл | `skill-creator` |
+| Найти скилл под задачу | `find-skills` |
+| Подключить Claude к сервису | `awesome-mcp-servers` |
+| Написать свой MCP-сервер | `mcp-builder` |
+| Правила для Cursor | `awesome-cursorrules` |
+| Сложный артефакт на React | `web-artifacts-builder` |
+| Посмотреть артефакт глазами пользователя | `artifact-emulator` |
+| Факты о продуктах Anthropic | `product-self-knowledge` |
+| Перенести память из другого ИИ | `import-memory` |
+| Утренний брифинг | `morning` |
+| Работа в браузере или на компьютере пользователя | `built-in-browser`, `chrome-browser` или `computer-use` — по тому, какие инструменты доступны |
+
+## 12. Бытовые задачи
+
+К сайту не относятся. Включай только по прямой просьбе и только при доступе к браузеру или телефону пользователя:
+`call-to-book`, `cancel-unsubscribe`, `return-refund`, `prescription-refill`, `grocery-shopping`, `meal-delivery`, `hire-help`, `event-planning`, `file-form`, `file-expenses`, `benepass-reimbursement`.
 
 ## Работа над сайтом
 
