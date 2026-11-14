@@ -37,6 +37,15 @@
 | Инстаграм: рилс, карусель, сторис, подпись, контент-план, аудит профиля | `ig-reel`, `ig-carousel`, `ig-story`, `ig-caption`, `ig-plan`, `ig-audit`, `ig-viral` |
 | Ютуб: сценарий, шортс, упаковка, SEO ролика, главы, удержание | `yt-script`, `yt-shorts`, `yt-package`, `yt-seo`, `yt-chapters`, `yt-retention` |
 | Проверка безопасности сайта или кода, поиск уязвимостей | `security-audit` |
+| Смонтировать рилс из отснятого, сгенерировать короткий ролик с озвучкой | `reels-editor`, `reelsmith` |
+| Разбор дня, недели, года, структурный разбор любого текста | `fabric` |
+| Нужен API или источник данных для сайта | `public-apis` |
+| Подключить Claude к внешнему сервису | `awesome-mcp-servers` |
+| Бесплатный хостинг, домен, сервис, замена платной подписки | `free-for-dev`, `free-domain`, `awesome-selfhosted` |
+| Мониторинг сайта, статус-страница | `uptime-kuma`, `upptime` |
+| Разместить сайт на своём сервере | `coolify` |
+| Правила для Cursor под конкретный стек | `awesome-cursorrules` |
+| Учёба: ИИ-агенты, профессия LLM, собрать своё с нуля | `ai-agents-for-beginners`, `llm-course`, `llms-from-scratch`, `build-your-own-x` |
 | Нет подходящего скилла под задачу | `find-skills` |
 
 ## Работа над сайтом
