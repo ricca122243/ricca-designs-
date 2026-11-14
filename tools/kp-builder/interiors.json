@@ -1,0 +1,180 @@
+{
+ "bed-02": [
+  {
+   "file": "bed-02-71.jpg",
+   "w": 1224,
+   "h": 1632,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/4c/43/93/4c4393c4db473f620de90092a233ea93.jpg"
+  },
+  {
+   "file": "bed-02-53.jpg",
+   "w": 1080,
+   "h": 1350,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/f7/65/87/f765877c5b515c3b29a283f2db2779f9.jpg"
+  }
+ ],
+ "bed-03": [
+  {
+   "file": "bed-03-67.jpg",
+   "w": 2092,
+   "h": 1568,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/18/c3/79/18c3794464f54d4f27c2cc9e9f53b6f1.jpg"
+  },
+  {
+   "file": "bed-03-30.jpg",
+   "w": 1086,
+   "h": 761,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/0d/99/c3/0d99c35e6ca4d3b80e4c22dd8052fa83.png"
+  },
+  {
+   "file": "bed-03-158.jpg",
+   "w": 1019,
+   "h": 720,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/97/6f/37/976f3794bf037fb7c0ad6c433644bc26.jpg"
+  }
+ ],
+ "bed-04": [
+  {
+   "file": "bed-04-54.jpg",
+   "w": 1000,
+   "h": 1000,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/00/2e/8f/002e8fa094bf400566dd9c44cb6d20f0.jpg"
+  },
+  {
+   "file": "bed-04-89.jpg",
+   "w": 800,
+   "h": 800,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/c7/84/5d/c7845dec2979ec28c5c8fcea55ef0690.png"
+  }
+ ],
+ "bed-09": [
+  {
+   "file": "bed-09-182.jpg",
+   "w": 1000,
+   "h": 1000,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/68/6e/1b/686e1b1a7ac49b1965bbaa115f67aa4d.jpg"
+  }
+ ],
+ "bed-10": [
+  {
+   "file": "bed-10-154.jpg",
+   "w": 500,
+   "h": 500,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/22/9f/31/229f3182d538b7f56c06dcfe0a83728f.jpg"
+  }
+ ],
+ "bed-17": [
+  {
+   "file": "bed-17-30.jpg",
+   "w": 800,
+   "h": 975,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/30/28/9e/30289edeb5cf0f60f003a69c45c2b80c.jpg"
+  }
+ ],
+ "bed-25": [
+  {
+   "file": "bed-25-9.jpg",
+   "w": 1920,
+   "h": 1080,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/0d/52/72/0d5272731c56c1ea35ae484183d2f9b7.jpg"
+  },
+  {
+   "file": "bed-25-24.jpg",
+   "w": 2000,
+   "h": 2000,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/1d/a4/04/1da404518a7235d1ec4d0391674cc85e.jpg"
+  }
+ ],
+ "bed-27": [
+  {
+   "file": "bed-27-116.jpg",
+   "w": 1920,
+   "h": 2400,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/8a/9b/6b/8a9b6b0b427f5c7d14518e9098109634.jpg"
+  }
+ ],
+ "bed-28": [
+  {
+   "file": "bed-28-47.jpg",
+   "w": 1600,
+   "h": 2400,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/34/ae/90/34ae9022167bd773daa4fdd52eaf8ce3.jpg"
+  }
+ ],
+ "bed-31": [
+  {
+   "file": "bed-31-138.jpg",
+   "w": 1000,
+   "h": 562,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/2a/73/34/2a7334846fe4cb57105a4fcbfee96cad.png"
+  }
+ ],
+ "bed-32": [
+  {
+   "file": "bed-32-44.jpg",
+   "w": 576,
+   "h": 768,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/9b/ab/b2/9babb2755b75d8543a8b78c051fd75a9.jpg"
+  },
+  {
+   "file": "bed-32-61.jpg",
+   "w": 507,
+   "h": 760,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/ee/ec/31/eeec314d70393531f268b174bc8d20a2.png"
+  },
+  {
+   "file": "bed-32-49.jpg",
+   "w": 768,
+   "h": 768,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/19/75/66/19756646775ca863a0f98700079093a6.jpg"
+  },
+  {
+   "file": "bed-32-45.jpg",
+   "w": 576,
+   "h": 768,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/f2/23/fa/f223faed74acbaaa132496a134811470.jpg"
+  }
+ ],
+ "bed-33": [
+  {
+   "file": "bed-33-100.jpg",
+   "w": 1800,
+   "h": 2400,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/d9/54/d4/d954d4c66152b20485138df87adafc53.jpg"
+  },
+  {
+   "file": "bed-33-122.jpg",
+   "w": 828,
+   "h": 1015,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/48/32/24/483224e7080a0c76a9342d7bc2c050d5.jpg"
+  },
+  {
+   "file": "bed-33-110.jpg",
+   "w": 1215,
+   "h": 2160,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/57/c4/f0/57c4f0e6a421d6d29d95050a007b777b.jpg"
+  }
+ ]
+}

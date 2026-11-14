@@ -1,0 +1,1408 @@
+<title>Конструктор КП RICCA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap">
+<style>
+/* Раскладка: слева — настройка КП (общее, список моделей или «Своё КП»), справа — живой просмотр слайдов 16:9;
+   на телефоне — нижняя панель «Настройка / Просмотр» и «Скачать PDF». Окна поверх: новая модель и выбор из каталога. */
+:root {
+  --paper: #FFFFFF;
+  --field: #F4F5F7;
+  --ink: #0B0C0E;
+  --muted: #5F656E;
+  --line: #E1E4E8;
+  --accent: #1F2A37;
+  --accent-ink: #FFFFFF;
+  --sel: #1F2A37;
+  --sel-ink: #FFFFFF;
+  --tab-on: #FFFFFF;
+  --track: #D5D9DF;
+  --knob: #FFFFFF;
+  --warn: #8A4E0C;
+  --warn-bg: #FBF1E4;
+  --ok: #2E6B4B;
+  --shade: rgba(11, 12, 14, .45);
+  --sans: 'Montserrat', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --serif: 'Cormorant', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --r: 4px;
+  --dock: 0px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0F1114; --field: #181B20; --ink: #EEF0F3; --muted: #A2A9B3; --line: #2C3138;
+    --accent: #E8ECF1; --accent-ink: #0F1114; --sel: #7AA7FF; --sel-ink: #0B1220; --tab-on: #343B45;
+    --track: #4A525D; --knob: #F2F4F7; --warn: #E7B470; --warn-bg: #2B2216; --ok: #7CC4A0; --shade: rgba(0, 0, 0, .6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0F1114; --field: #181B20; --ink: #EEF0F3; --muted: #A2A9B3; --line: #2C3138;
+  --accent: #E8ECF1; --accent-ink: #0F1114; --sel: #7AA7FF; --sel-ink: #0B1220; --tab-on: #343B45;
+  --track: #4A525D; --knob: #F2F4F7; --warn: #E7B470; --warn-bg: #2B2216; --ok: #7CC4A0; --shade: rgba(0, 0, 0, .6);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 400 14px/1.45 var(--sans); }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--sel); outline-offset: 2px; }
+
+/* ── шапка ── */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--paper); }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--paper); border-bottom: 1px solid var(--line);
+  padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top__row { display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap; max-width: 1600px; margin: 0 auto; }
+.brand { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.brand b { font-weight: 600; letter-spacing: .18em; font-size: 13px; }
+.brand span { color: var(--muted); font-size: 13px; }
+.seg { display: flex; gap: 4px; background: var(--field); padding: 3px; border-radius: 999px; border: 1px solid var(--line); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.seg button { flex: none; border: 0; background: none; min-height: 40px; padding: 0 14px; border-radius: 999px; font-weight: 500; font-size: 13.5px; color: var(--muted); white-space: nowrap; }
+.seg button[aria-selected="true"] { background: var(--tab-on); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.seg small { font-weight: 400; color: var(--muted); margin-left: 4px; font-variant-numeric: tabular-nums; }
+.save { margin-left: auto; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.save::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex: none; }
+.save[data-s="ok"]::before { background: var(--ok); }
+.save[data-s="busy"]::before, .save[data-s="local"]::before { background: var(--warn); }
+
+.wrap { max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 28px;
+  padding-block: 20px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.editor { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.preview { min-width: 0; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 72px); align-self: start; max-height: calc(100vh - 92px); overflow-y: auto;
+  display: flex; flex-direction: column; gap: 14px; padding-bottom: 20px; }
+.preview__head { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: 12.5px; position: sticky; top: 0; background: var(--paper); z-index: 3; padding-bottom: 8px; }
+
+/* ── карточки настроек ── */
+.card { border: 1px solid var(--line); border-radius: var(--r); background: var(--paper); }
+.card--plain { padding: 14px 16px; display: grid; gap: 10px; }
+details.card > summary { list-style: none; cursor: pointer; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 52px; }
+details.card > summary::-webkit-details-marker { display: none; }
+details.card > summary::after { content: "+"; font-weight: 300; font-size: 22px; line-height: 1; color: var(--muted); }
+details.card[open] > summary::after { content: "–"; }
+.sum { display: grid; gap: 2px; min-width: 0; }
+.sum b { font-weight: 500; }
+.sum span { color: var(--muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card__body { padding: 4px 16px 16px; display: grid; gap: 18px; }
+.hint { color: var(--muted); font-size: 12.5px; max-width: 62ch; margin: 0; }
+.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+label.f { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+.in { width: 100%; border: 1px solid var(--line); border-radius: var(--r); background: var(--paper); padding: 9px 10px; font-size: 14px; color: var(--ink); min-width: 0; min-height: 40px; }
+.in:focus { border-color: var(--sel); outline: none; }
+textarea.in { resize: none; overflow: hidden; line-height: 1.4; display: block; }
+select.in { appearance: auto; }
+.sub-h { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+.terms { display: grid; gap: 12px; }
+.term { display: grid; grid-template-columns: minmax(0, 1fr) 40px; gap: 4px 6px; padding: 8px; border: 1px solid var(--line); border-radius: var(--r); background: var(--field); }
+.term .in { background: var(--paper); }
+.term .t-k { font-size: 12.5px; font-weight: 500; min-height: 34px; padding: 6px 8px; color: var(--muted); }
+.term .x { grid-row: 1 / 3; grid-column: 2; }
+.x { border: 1px solid var(--line); background: var(--paper); border-radius: var(--r); color: var(--muted); font-size: 18px; line-height: 1; min-height: 40px; min-width: 40px; }
+.x:hover { color: var(--ink); border-color: var(--ink); }
+.links { display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: center; }
+.link { border: 0; background: none; padding: 10px 0; min-height: 40px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; font-size: 13px; }
+.toggles { display: flex; flex-wrap: wrap; gap: 6px; }
+.tg { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 0 14px; min-height: 40px; font-size: 13px; cursor: pointer; user-select: none; }
+.tg input { accent-color: var(--sel); margin: 0; width: 16px; height: 16px; }
+.themes { display: flex; flex-wrap: wrap; gap: 6px; }
+.th { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 0 14px 0 6px; min-height: 40px; font-size: 13px; background: var(--paper); }
+.th[aria-pressed="true"] { border: 2px solid var(--sel); padding: 0 13px 0 5px; }
+.th i { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); display: block; flex: none; }
+.logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+.lg { position: relative; display: flex; }
+.lg__b { width: 100%; height: 70px; border: 1px solid var(--line); border-radius: var(--r); background: #fff center/70% 60% no-repeat; padding: 0; }
+.lg__b[aria-pressed="false"] { opacity: .35; filter: grayscale(1); }
+.lg__b[aria-pressed="true"] { border: 2px solid var(--sel); }
+.lg .ph__del { top: 4px; right: 4px; width: 28px; height: 28px; font-size: 15px; }
+.lg--add { height: 70px; border: 1px dashed var(--line); border-radius: var(--r); background: var(--paper); color: var(--muted); font-size: 12.5px; }
+
+/* ── вход по коду ── */
+.codebar { border: 1px solid var(--line); border-left: 3px solid var(--sel); border-radius: var(--r); padding: 12px 14px; display: grid; gap: 8px; background: var(--field); }
+.codebar b { font-weight: 600; }
+.codebar__row { display: flex; gap: 8px; }
+.codebar__row .in { flex: 1; letter-spacing: .12em; }
+
+/* ── панель действий ── */
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; padding-top: 6px; border-top: 1px solid var(--line); }
+.bar__count { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar__count b { color: var(--ink); font-weight: 600; }
+.bar .links { margin-left: auto; }
+.bar .link { color: var(--muted); }
+.btn { border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); border-radius: var(--r); min-height: 44px; padding: 0 18px; font-weight: 500; letter-spacing: .02em; white-space: nowrap; }
+.btn:disabled { opacity: .6; cursor: progress; }
+.btn--ghost { background: var(--paper); color: var(--ink); border-color: var(--line); }
+.btn--danger { background: var(--paper); color: #B42318; border-color: currentColor; }
+.adds { display: flex; flex-wrap: wrap; gap: 8px; }
+.legend { font-size: 12.5px; color: var(--muted); margin: 0; }
+.legend b { color: var(--ink); font-weight: 600; }
+.empty { border: 1px dashed var(--line); border-radius: var(--r); padding: 22px 16px; text-align: center; color: var(--muted); display: grid; gap: 12px; justify-items: center; }
+
+/* ── модели ── */
+.models { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.m { border: 1px solid var(--line); border-radius: var(--r); padding: 8px 12px 12px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; background: var(--paper); }
+.m > *, .m__more > * { min-width: 0; }
+.m[data-on="false"] { background: var(--field); padding-bottom: 8px; }
+.m[data-on="false"] .m__more { display: none; }
+.m__more { display: grid; gap: 10px; }
+.m__head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; min-height: 48px; }
+.sw { position: relative; width: 52px; height: 44px; flex: none; display: grid; place-items: center; cursor: pointer; }
+.sw input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.sw span { position: relative; width: 44px; height: 26px; border-radius: 999px; background: var(--track); transition: background .2s; pointer-events: none; }
+.sw span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--knob); box-shadow: 0 1px 2px rgba(0,0,0,.3); transition: transform .2s; }
+.sw input:checked + span { background: var(--sel); }
+.sw input:checked + span::after { transform: translateX(18px); background: var(--sel-ink); }
+.sw input:focus-visible + span { outline: 2px solid var(--sel); outline-offset: 3px; }
+.m__name { min-width: 0; cursor: pointer; padding: 4px 0; display: block; }
+.m__name b { font-weight: 600; font-size: 15px; letter-spacing: .02em; }
+.m__name span { display: block; color: var(--muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m__name .tag { display: inline-block; margin-left: 6px; font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--sel); vertical-align: 2px; }
+.m__side { display: flex; align-items: center; gap: 6px; }
+.m__thumb { width: 64px; height: 48px; border-radius: 3px; background: #FAFBF8 center/contain no-repeat; border: 1px solid var(--line); display: none; }
+.need { display: none; font-size: 11px; font-weight: 600; letter-spacing: .02em; color: var(--warn); background: var(--warn-bg); padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
+.m[data-on="false"] .m__thumb { display: block; }
+.m[data-on="true"][data-priced="false"] .need { display: inline-block; }
+.edit { border: 1px solid var(--line); background: var(--paper); border-radius: var(--r); min-height: 40px; padding: 0 12px; font-size: 12.5px; color: var(--muted); }
+.m__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.price { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px; align-items: center; }
+.price .in { font-variant-numeric: tabular-nums; font-weight: 500; }
+.from { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); cursor: pointer; user-select: none; min-height: 40px; padding: 0 6px 0 2px; white-space: nowrap; }
+.from input { accent-color: var(--sel); margin: 0; width: 18px; height: 18px; }
+.cur { color: var(--muted); font-size: 14px; }
+.qty { display: inline-grid; grid-template-columns: 40px 48px 40px; align-items: center; border: 1px solid var(--line); border-radius: var(--r); }
+.qty button { border: 0; background: none; min-height: 40px; font-size: 18px; color: var(--muted); }
+.qty input { border: 0; text-align: center; min-height: 40px; width: 48px; background: none; font-variant-numeric: tabular-nums; }
+.qty-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
+.strip { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: thin; }
+.phw { position: relative; flex: none; display: flex; }
+.ph { position: relative; flex: none; width: 96px; height: 72px; border: 1px solid var(--line); border-radius: 3px; background: #FAFBF8 center/contain no-repeat; padding: 0; }
+.ph[data-kind="interior"] { background-size: cover; }
+.ph[aria-pressed="true"] { border: 3px solid var(--sel); }
+.ph i { position: absolute; top: 4px; left: 4px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--sel); color: var(--sel-ink); font: 600 11.5px/22px var(--sans); font-style: normal; box-shadow: 0 0 0 2px #fff; }
+.ph em { position: absolute; bottom: 3px; left: 3px; right: 3px; font: 600 9.5px/1.7 var(--sans); font-style: normal; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: rgba(15,17,20,.66); border-radius: 2px; text-align: center; }
+.ph--add { display: grid; place-items: center; color: var(--muted); font-size: 11.5px; line-height: 1.25; background: var(--paper); border-style: dashed; text-align: center; padding: 4px; }
+.ph--add:hover { color: var(--ink); border-color: var(--ink); }
+.ph__del { position: absolute; top: 4px; right: 4px; width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgba(15,17,20,.72); color: #fff; font-size: 17px; line-height: 1; display: grid; place-items: center; }
+
+/* ── окна поверх: новая модель, выбор из каталога ── */
+.sheet { position: fixed; inset: 0; z-index: 50; background: var(--shade); display: grid; place-items: center;
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.sheet__box { width: min(640px, 100%); max-height: 100%; overflow-y: auto; background: var(--paper); border-radius: 8px; display: grid; gap: 16px; padding: 18px 18px 0; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.sheet__head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.sheet__head h2 { margin: 0; font-size: 17px; font-weight: 600; }
+.sheet__foot { position: sticky; bottom: 0; background: var(--paper); border-top: 1px solid var(--line); padding: 12px 0 16px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.sheet__foot .btn--danger { margin-right: auto; }
+.err { color: #B42318; font-size: 13px; margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pick-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pick-row { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 12px; align-items: center; border: 1px solid var(--line); border-radius: var(--r); padding: 6px 8px; }
+.pick-row .m__thumb { display: block; width: 72px; height: 54px; }
+.pick-row b { display: block; font-weight: 600; }
+.pick-row span { color: var(--muted); font-size: 12.5px; }
+
+/* ── сообщение ── */
+.toast { position: fixed; z-index: 60; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px) + var(--dock)); max-width: min(460px, calc(100vw - 32px));
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 6px; background: var(--ink); color: var(--paper); font-size: 13.5px; line-height: 1.4; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+.toast[data-k="warn"] { background: var(--warn-bg); color: var(--warn); border: 1px solid currentColor; }
+.toast a { color: inherit; font-weight: 600; }
+.toast button { border: 0; background: none; color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; min-height: 36px; padding: 0 4px; white-space: nowrap; }
+
+/* ── просмотр ── */
+.thumbs { display: grid; gap: 12px; }
+.sl { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; overflow: hidden; border: 1px solid var(--line); background: #fff; }
+.sl > .slide { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+
+/* ── нижняя панель на телефоне ── */
+.dock { display: none; }
+@media (max-width: 999px) {
+  :root { --dock: 64px; }
+  .wrap { grid-template-columns: minmax(0, 1fr); padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); }
+  .top { position: static; }
+  .preview { position: static; max-height: none; overflow: visible; }
+  .preview__head { position: static; }
+  .app[data-view="edit"] .preview { display: none; }
+  .app[data-view="look"] .editor { display: none; }
+  .dock { display: flex; align-items: center; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--paper); border-top: 1px solid var(--line);
+    padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
+  .dock .seg { flex: 1; min-width: 0; }
+  .dock .seg button { flex: 1; padding: 0 8px; }
+  .bar > .btn, .preview__head .btn { display: none; }
+  .save { margin-left: 0; width: 100%; order: 3; }
+  .in, .qty input { font-size: 16px; }
+  .toast { left: max(12px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); max-width: none; }
+  .sheet { place-items: end stretch; padding: 0; padding-top: max(24px, env(safe-area-inset-top, 0px)); }
+  .sheet__box { width: 100%; border-radius: 12px 12px 0 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .sheet__foot { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (max-width: 520px) {
+  .fields { grid-template-columns: minmax(0, 1fr); }
+  .m__row { grid-template-columns: minmax(0, 1fr); }
+  .brand span { display: none; }
+  .bar .links { margin-left: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ════════ СЛАЙД 1440 × 810: один вид для просмотра и для PDF; цвета — от времени года (как на сайте) ════════ */
+.slide { --sp: #FFFFFF; --sline: #E3E6EA; --sdark: #111214; --skick: #8A9099; --sacc: #0B0C0E; --sink2: #3C424B; --spanel: #F4F5F7;
+  width: 1440px; height: 810px; position: relative; overflow: hidden; background: var(--sp); color: #0B0C0E; font-family: 'Montserrat', Arial, sans-serif; font-weight: 400; }
+.slide.th-winter { --sp: #EDF3FA; --sline: #D3DFEC; --sdark: #1C3452; --skick: #4F86C6; --sacc: #2F6DB5; --sink2: #455468; --spanel: #E1EAF5; }
+.slide.th-spring { --sp: #EFF7F3; --sline: #D4E5DC; --sdark: #1D3A30; --skick: #4E9A7E; --sacc: #2F7D62; --sink2: #4A5952; --spanel: #E2F0E9; }
+.slide.th-autumn { --sp: #F1F3F6; --sline: #DADEE5; --sdark: #262C35; --skick: #66758A; --sacc: #4B5A70; --sink2: #4B525C; --spanel: #E7EAEF; }
+.slide * { box-sizing: border-box; }
+.s-foot { position: absolute; left: 72px; right: 72px; bottom: 34px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--skick); }
+.s-foot b { color: #0B0C0E; font-weight: 600; letter-spacing: .22em; }
+.s-pic { background-repeat: no-repeat; background-position: center; background-size: contain; background-color: #FAFBF8; }
+.s-snow { position: absolute; inset: 0; pointer-events: none; }
+
+/* обложка */
+.s-cover { display: grid; grid-template-columns: 560px 880px; }
+.s-cover__l { position: relative; background: var(--sdark); color: #F2F4F7; padding: 72px 64px 64px 72px; display: flex; flex-direction: column; }
+.s-cover__l > * { position: relative; }
+.s-cover__l > .s-snow, .s-contacts > .s-snow { position: absolute; left: 0; top: 0; }
+.s-mark { display: flex; align-items: center; gap: 18px; }
+.s-mark svg { width: 70px; height: 35px; }
+.s-mark span { font-size: 15px; font-weight: 600; letter-spacing: .32em; }
+.s-cover__kicker { margin-top: auto; font-size: 15px; letter-spacing: .24em; text-transform: uppercase; color: #A9B1BC; }
+.s-cover__title { margin-top: 18px; font-family: 'Cormorant', Georgia, serif; font-weight: 400; font-size: 112px; line-height: .95; letter-spacing: -.01em; }
+.s-cover__title.long { font-size: 76px; line-height: 1; }
+.s-cover__sub { margin-top: 26px; font-size: 20px; font-weight: 300; line-height: 1.5; color: #C9CED6; max-width: 410px; }
+.s-cover__meta { margin-top: 48px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.18); display: grid; gap: 6px; font-size: 16px; color: #C9CED6; }
+.s-cover__meta b { color: #F2F4F7; font-weight: 500; }
+.s-cover__r { position: relative; }
+.s-cover__r .s-pic { position: absolute; inset: 0; }
+.s-cover__tag { position: absolute; left: 40px; bottom: 34px; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: #6E747D; }
+
+/* модель */
+.s-model { display: grid; grid-template-columns: 500px 940px; }
+.s-model__l { position: relative; }
+.s-text { position: absolute; left: 72px; right: 40px; top: 64px; bottom: 200px; overflow: hidden; }
+.s-kicker { font-size: 14px; letter-spacing: .24em; text-transform: uppercase; color: var(--skick); }
+.s-name { margin-top: 14px; font-weight: 300; font-size: 84px; line-height: 1; letter-spacing: .01em; }
+.s-name.long { font-size: 60px; }
+.s-sub { margin-top: 14px; font-family: 'Cormorant', Georgia, serif; font-style: italic; font-size: 30px; line-height: 1.2; color: var(--sink2); }
+.s-desc { margin-top: 20px; font-size: 18px; line-height: 1.55; color: var(--sink2); font-weight: 300; }
+.s-desc.long { font-size: 16px; }
+.s-specs { margin-top: 22px; display: grid; border-top: 1px solid var(--sline); }
+.s-specs div { display: grid; grid-template-columns: 130px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--sline); font-size: 16px; line-height: 1.4; }
+.s-specs dt { color: var(--skick); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; padding-top: 2px; }
+.s-specs dd { margin: 0; }
+.s-price { position: absolute; left: 72px; right: 24px; bottom: 92px; }
+.s-price small { display: block; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--skick); }
+.s-price b { display: block; margin-top: 6px; font-weight: 500; font-size: 46px; letter-spacing: .01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.s-price b em { font-style: normal; font-weight: 300; font-size: 30px; margin-right: 10px; color: var(--sacc); }
+.s-price b.s-ask { font-size: 30px; font-weight: 400; }
+.s-model__r { position: relative; background: #FAFBF8; }
+.s-model__r .s-big { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.s-model__r .s-big.cover { background-size: cover; }
+.s-model__r.has-small .s-big { bottom: 280px; }
+.s-smalls { position: absolute; left: 0; right: 0; bottom: 0; height: 272px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--sp); }
+.s-smalls .s-pic { background-size: cover; }
+.s-smalls.one { grid-template-columns: 1fr; }
+.s-model .s-foot { right: auto; width: 356px; }
+
+/* интерьер */
+.s-interior .s-pic { position: absolute; inset: 0; background-size: cover; background-color: #E9ECEF; }
+.s-interior__cap { position: absolute; left: 0; bottom: 0; background: var(--sp); padding: 26px 40px 26px 72px; display: flex; align-items: baseline; gap: 28px; }
+.s-interior__cap b { font-weight: 300; font-size: 44px; line-height: 1; }
+.s-interior__cap span { font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--skick); }
+.s-interior__cap i { font-style: normal; font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.s-split { display: grid; grid-template-columns: 560px 880px; }
+.s-split .s-split__l { position: relative; }
+.s-split .s-split__r { position: relative; }
+.s-split .s-split__r .s-pic { position: absolute; inset: 0; background-size: cover; background-color: #E9ECEF; }
+.s-split .s-foot { right: auto; width: 416px; }
+.s-split .s-note { margin-top: 26px; font-size: 18px; line-height: 1.55; color: var(--sink2); font-weight: 300; }
+
+/* итого */
+.s-total { padding: 72px 72px 96px; }
+.s-total .s-h { margin-top: 18px; }
+.s-ttab { margin-top: 34px; border-top: 1px solid #0B0C0E; }
+.s-ttab div { display: grid; grid-template-columns: 56px 1fr 120px 220px 240px; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--sline); font-size: 18px; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.s-ttab div span:nth-child(n+3) { text-align: right; }
+.s-ttab .s-th { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--skick); }
+.s-ttab .s-tsum { border-bottom: 0; font-weight: 600; font-size: 24px; padding-top: 20px; }
+.s-ttab i { font-style: normal; color: var(--skick); }
+
+/* условия */
+.s-terms { padding: 72px 72px 96px; display: grid; grid-template-columns: 420px 1fr; gap: 72px; }
+.s-h { font-family: 'Cormorant', Georgia, serif; font-weight: 400; font-size: 76px; line-height: 1; letter-spacing: -.005em; }
+.s-lead { margin-top: 24px; font-size: 19px; line-height: 1.55; font-weight: 300; color: var(--sink2); }
+.s-table { align-self: start; border-top: 1px solid #0B0C0E; }
+.s-table div { display: grid; grid-template-columns: 280px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--sline); font-size: 18px; line-height: 1.4; }
+.s-table dt { color: var(--sink2); }
+.s-table dd { margin: 0; font-weight: 500; }
+
+/* нам доверяют */
+.s-trust { padding: 72px 72px 96px; }
+.s-logos { list-style: none; margin: 40px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--sline); border-left: 1px solid var(--sline); }
+.s-logos li { height: 170px; border-right: 1px solid var(--sline); border-bottom: 1px solid var(--sline); background: #FFFFFF; position: relative; }
+.s-logos .s-logo { position: absolute; left: 12%; right: 12%; top: 50%; background-repeat: no-repeat; background-position: center; background-size: contain; }
+
+/* пришлите фото */
+.s-cta { padding: 72px 72px 96px; display: grid; grid-template-columns: 1fr 1fr; gap: 72px; background: var(--spanel); }
+.s-steps { align-self: end; display: grid; border-top: 1px solid #0B0C0E; }
+.s-steps > div { display: grid; grid-template-columns: 64px 1fr; gap: 12px; padding: 22px 0; border-bottom: 1px solid var(--sline); }
+.s-steps span { font-size: 15px; color: var(--skick); font-variant-numeric: tabular-nums; padding-top: 5px; }
+.s-steps b { display: block; font-weight: 500; font-size: 22px; }
+.s-steps p { margin: 6px 0 0; font-size: 17px; line-height: 1.5; color: var(--sink2); font-weight: 300; }
+
+/* контакты */
+.s-contacts { background: var(--sdark); color: #F2F4F7; padding: 72px 72px 96px; display: grid; grid-template-columns: 1fr 1fr; gap: 72px; }
+.s-contacts > div, .s-contacts > dl { position: relative; }
+.s-contacts .s-h { font-size: 92px; }
+.s-contacts .s-lead { color: #C9CED6; }
+.s-clist { align-self: end; display: grid; border-top: 1px solid rgba(255,255,255,.25); margin: 0; }
+.s-clist div { display: grid; grid-template-columns: 170px 1fr; gap: 20px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,.14); font-size: 19px; line-height: 1.4; }
+.s-clist dt { font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #9AA3AF; padding-top: 4px; }
+.s-clist dd { margin: 0; }
+.s-contacts .s-foot { color: #8A929D; }
+.s-contacts .s-foot b { color: #F2F4F7; }
+
+#stage { position: fixed; left: -20000px; top: 0; width: 1440px; pointer-events: none; }
+</style>
+
+<div class="app" data-view="edit" id="app">
+  <header class="top">
+    <div class="top__row">
+      <div class="brand"><b>RICCA</b><span>Конструктор КП</span></div>
+      <div class="seg" role="tablist" aria-label="Каталог" id="tabs"></div>
+      <div class="save" id="save" data-s="busy" title="Цены, модели и фото видят только те, у кого есть код. Клиент видит только PDF.">Подключаю сохранение…</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="editor" aria-label="Настройка КП">
+      <div class="codebar" id="codebar" hidden>
+        <div><b>Код доступа</b></div>
+        <p class="hint">С кодом цены, новые модели и фото общие на всех телефонах и компьютерах. Без кода всё сохраняется только на этом устройстве.</p>
+        <form class="codebar__row" id="code-form"><input class="in" id="code-in" inputmode="numeric" autocomplete="off" maxlength="40" placeholder="Код" aria-label="Код доступа"><button class="btn" type="submit">Войти</button></form>
+      </div>
+
+      <details class="card" id="general">
+        <summary><div class="sum"><b>Клиент, оформление и условия</b><span id="g-sum"></span></div></summary>
+        <div class="card__body">
+          <div class="fields">
+            <label class="f">Для кого (необязательно)<input class="in" id="g-client" maxlength="80" placeholder="Например: дизайнер Айгерим"></label>
+            <label class="f">Дата<input class="in" id="g-date" maxlength="40"></label>
+            <label class="f">Менеджер<input class="in" id="g-manager" maxlength="60" placeholder="Имя"></label>
+            <label class="f">Телефон менеджера<input class="in" id="g-phone" maxlength="40" inputmode="tel" placeholder="Например: +7 701 123 45 67"></label>
+            <label class="f">Срок изготовления<input class="in" id="g-lead" maxlength="60"></label>
+            <label class="f">Подпись на обложке<input class="in" id="g-sub" maxlength="120"></label>
+          </div>
+          <div class="links"><button class="link" id="g-new" type="button">Новый клиент: очистить «Для кого» и дату</button></div>
+          <div>
+            <p class="sub-h">Оформление: цвета как на сайте в это время года</p>
+            <div class="themes" id="themes"></div>
+          </div>
+          <div>
+            <p class="sub-h">Слайды в КП</p>
+            <div class="toggles" id="g-parts"></div>
+          </div>
+          <div>
+            <p class="sub-h">Нам доверяют: нажмите на логотип, чтобы убрать его из КП или вернуть</p>
+            <div class="logos" id="logos"></div>
+          </div>
+          <div>
+            <p class="sub-h" id="terms-h">Условия</p>
+            <div class="terms" id="terms"></div>
+            <div class="links"><button class="link" id="term-add" type="button">+ строка в условия</button><button class="link" id="term-reset" type="button">Вернуть стандартные условия</button></div>
+          </div>
+          <p class="hint">Условия свои для каждой вкладки. Клиент, дата, менеджер, срок, оформление и логотипы общие для всех КП.</p>
+        </div>
+      </details>
+
+      <div id="tab-body"></div>
+    </section>
+
+    <aside class="preview" aria-label="Просмотр КП">
+      <div class="preview__head"><span id="pv-title">Просмотр</span><span id="pv-count"></span><button class="btn" id="dl3" type="button">Скачать PDF</button></div>
+      <div class="thumbs" id="thumbs"></div>
+    </aside>
+  </main>
+
+  <div class="dock">
+    <div class="seg" role="tablist" aria-label="Экран">
+      <button role="tab" id="v-edit" aria-selected="true" data-v="edit">Настройка</button>
+      <button role="tab" id="v-look" aria-selected="false" data-v="look">Просмотр</button>
+    </div>
+    <button class="btn" id="dl2" type="button">Скачать PDF</button>
+  </div>
+  <div class="sheet" id="sheet" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</div>
+<div id="stage" aria-hidden="true"></div>
+<input type="file" id="file" accept="image/*" multiple hidden>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="rd-mono" viewBox="0 0 521.1 256.9"><path d="/*MONO*/"/></symbol></svg>
+
+<script>window.KP_MODELS = /*CATALOG*/;</script>
+<script>window.KP_INTERIORS = /*INTERIORS*/;</script>
+<script>window.KP_LOGOS = /*LOGOS*/;</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const CATS = [
+  { id: 'sofas', title: 'Диваны', one: 'Диван', size: 'Размер, например 280×100 см' },
+  { id: 'beds', title: 'Кровати', one: 'Кровать', size: 'Размер, например 160×200' },
+  { id: 'poufs', title: 'Пуфы', one: 'Пуф', size: 'Размер, например 60×60, высота 45' },
+];
+const TABS = [...CATS, { id: 'project', title: 'Своё КП' }];
+const catInfo = (id) => CATS.find((c) => c.id === id);
+const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+const today = () => { const d = new Date(); return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`; };
+const pad = (n) => String(n).padStart(2, '0');
+const plural = (n, f) => { const a = n % 100, b = n % 10; return f[a > 10 && a < 20 ? 2 : b === 1 ? 0 : b >= 2 && b <= 4 ? 1 : 2]; };
+const rid = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const MAX_STUDIO = 3;
+
+/* Условия по умолчанию: факты с сайта и из прежнего КП владельца. */
+const TERMS = {
+  beds: [['Каркас', 'Берёзовая фанера ФК, болтовые соединения'], ['Наполнение', 'ППУ, синтепон, периотек'], ['Основание', 'Ортопедическая решётка с ламелями'], ['Подъёмный механизм', 'По желанию'], ['Матрас', 'Не входит в стоимость'], ['Обивка', 'Ткани и кожа из палитры шоурума'], ['Сборка', 'Включена по Алматы'], ['Доставка', 'По Казахстану и за рубеж'], ['Гарантия', '5 лет']],
+  sofas: [['Размер', 'Под вашу комнату: длину, глубину и высоту согласуем на проекте'], ['Наполнение', 'Подбираем под желаемую посадку: мягче или плотнее'], ['Обивка', 'Ткани и кожа из палитры шоурума'], ['Доставка', 'По Казахстану и за рубеж'], ['Гарантия', '5 лет']],
+  poufs: [['Размер', 'Ширину и высоту согласуем на проекте'], ['Наполнение', 'Подбираем под желаемую посадку: мягче или плотнее'], ['Обивка', 'Ткани и кожа из палитры шоурума'], ['Доставка', 'По Казахстану и за рубеж'], ['Гарантия', '5 лет']],
+  project: [['Размеры', 'Под ваш проект: согласуем по каждой позиции'], ['Наполнение', 'Подбираем под желаемую посадку: мягче или плотнее'], ['Обивка', 'Ткани и кожа из палитры шоурума'], ['Доставка', 'По Казахстану и за рубеж'], ['Гарантия', '5 лет']],
+};
+const PARTS = [['cover', 'Обложка'], ['total', 'Итого (в «Своём КП»)'], ['terms', 'Условия'], ['trust', 'Нам доверяют'], ['cta', 'Пришлите фото'], ['contacts', 'Контакты']];
+const THEMES = [['auto', 'По дате', ''], ['winter', 'Зима', '#EDF3FA'], ['spring', 'Весна', '#EFF7F3'], ['summer', 'Лето', '#FFFFFF'], ['autumn', 'Осень', '#F1F3F6']];
+const THEME_DOT = { winter: 'linear-gradient(135deg,#EDF3FA 50%,#1C3452 50%)', spring: 'linear-gradient(135deg,#EFF7F3 50%,#1D3A30 50%)', summer: 'linear-gradient(135deg,#FFFFFF 50%,#111214 50%)', autumn: 'linear-gradient(135deg,#F1F3F6 50%,#262C35 50%)' };
+const CONTACT = { addr: 'Алматы, ул. Алишера Навои, 208/2 (ЖК «Шахристан»)', hours: 'Пн–Вс, 10:00–20:00', phone: '+7 707 955 08 08', ig: 'instagram.com/ricca.designs', site: 'ricca.design' };
+const STANDALONE_URL = 'ricca-kp.netlify.app';
+const seasonByDate = () => { let m; try { m = +new Intl.DateTimeFormat('en', { timeZone: 'Asia/Almaty', month: 'numeric' }).format(new Date()); } catch (e) { m = new Date().getMonth() + 1; } return m === 12 || m <= 2 ? 'winter' : m <= 5 ? 'spring' : m <= 8 ? 'summer' : 'autumn'; };
+
+/* ── каталог: модели сайта + новые модели владельца (custom) ── */
+const STATIC = (window.KP_MODELS || []).map((m) => ({ ...m, photos: m.photos.map((p) => ({ ...p, kind: 'studio' })) }));
+for (const [id, list] of Object.entries(window.KP_INTERIORS || {})) {
+  const m = STATIC.find((x) => x.id === id);
+  if (m) for (const p of list) m.photos.push({ ...p, kind: 'interior' });
+}
+let MODELS = STATIC.slice(); let byId = {};
+const IN_VIEWER = !!(window.claude && typeof window.claude.use === 'function');
+let mode = 'local'; // local | server (Netlify) | viewer (claude.ai)
+
+/* Свои фото: ключ «up:<id>». Сервер — /api/photo/<id>, claude.ai — /_blob/<id>, без сервера — память браузера. */
+const blobUrls = {};
+const src = (f) => {
+  if (!f) return '';
+  if (f.startsWith('up:')) { const id = f.slice(3); return mode === 'server' ? '/api/photo/' + id : mode === 'viewer' ? '/_blob/' + id : (blobUrls[f] || ''); }
+  return f;
+};
+const dims = {};
+const idb = (() => {
+  let p;
+  const open = () => p || (p = new Promise((res, rej) => { const r = indexedDB.open('ricca-kp', 1); r.onupgradeneeded = () => r.result.createObjectStore('photos'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const tx = async (m, fn) => { const d = await open(); return new Promise((res, rej) => { const t = d.transaction('photos', m); fn(t.objectStore('photos')); t.oncomplete = () => res(); t.onerror = () => rej(t.error); }); };
+  return {
+    put: (k, v) => tx('readwrite', (st) => st.put(v, k)),
+    del: (k) => tx('readwrite', (st) => st.delete(k)),
+    all: async () => { const d = await open(); return new Promise((res, rej) => { const out = {}; const c = d.transaction('photos').objectStore('photos').openCursor(); c.onsuccess = () => { const cur = c.result; if (cur) { out[cur.key] = cur.value; cur.continue(); } else res(out); }; c.onerror = () => rej(c.error); }); },
+  };
+})();
+
+/* ── состояние ── */
+const LOGO_DEFAULT = (window.KP_LOGOS || []).map((l) => ({ key: l.f, f: l.f, name: l.name, k: l.k || 1, on: true }));
+const state = {
+  cat: 'beds',
+  settings: { client: '', date: '', manager: '', phone: '', lead: '25–45 рабочих дней', sub: '', theme: 'auto', parts: { cover: true, total: true, terms: true, trust: true, cta: true, contacts: true }, terms: {} },
+  models: {},   // id → { on, price, from, note, pick, uploads: [{ id, kind }] }
+  custom: {},   // id → { cat, name, subtitle, description, options, photos: [{ id, kind }], deleted }
+  project: { title: '', items: [] }, // items: [{ id, price, from, qty, note }]
+  clients: null, // { list: [{ key, f, name, k, on }] }
+};
+const logos = () => (state.clients && Array.isArray(state.clients.list) ? state.clients.list : LOGO_DEFAULT);
+function customToModel(id, c) {
+  const info = catInfo(c.cat) || CATS[0];
+  return { id, cat: c.cat, custom: true, name: c.name || 'Без названия', type: info.one, subtitle: c.subtitle || '', description: c.description || '',
+    options: (c.options || []).filter(Boolean), photos: (c.photos || []).filter((p) => p && p.id).map((p) => ({ f: 'up:' + p.id, kind: p.kind === 'interior' ? 'interior' : 'studio', own: true })) };
+}
+function rebuildModels() {
+  MODELS = [...STATIC, ...Object.entries(state.custom).filter(([, c]) => c && !c.deleted && catInfo(c.cat)).map(([id, c]) => customToModel(id, c))];
+  byId = Object.fromEntries(MODELS.map((m) => [m.id, m]));
+}
+const defaultModel = (m) => ({
+  on: true, price: '', from: true, note: '',
+  pick: [...m.photos.filter((p) => p.kind === 'studio').slice(0, MAX_STUDIO).map((p) => p.f), ...m.photos.filter((p) => p.kind === 'interior' && (p.pre || p.own)).map((p) => p.f)],
+  uploads: [],
+});
+const mstate = (id) => state.models[id] || (state.models[id] = defaultModel(byId[id]));
+const termsOf = (t) => state.settings.terms[t] || TERMS[t].map(([k, v]) => ({ k, v }));
+const tab = () => TABS.find((c) => c.id === state.cat);
+const catModels = () => MODELS.filter((m) => m.cat === state.cat);
+const subDefault = () => 'Мягкая мебель на заказ в Алматы: любой размер, любая ткань, своё ателье';
+const theme = () => (state.settings.theme && state.settings.theme !== 'auto' ? state.settings.theme : seasonByDate());
+
+/* ── сохранение ──
+   Каждое изменение помечает документ «грязным»: данные из хранилища его не перезаписывают, пока запись не подтверждена. */
+let db = null, assets = null, readOnly = false, code = '';
+const LS = 'ricca-kp-v1';
+const dirty = new Set(); const gen = new Map(); const timers = new Map(); const writing = new Set(); const backoff = new Map();
+const saveEl = $('#save');
+const setSave = (s, t) => { saveEl.dataset.s = s; saveEl.textContent = t; };
+function lsLoad() {
+  try {
+    const j = JSON.parse(localStorage.getItem(LS) || 'null');
+    if (j) {
+      Object.assign(state.settings, j.settings || {}); state.settings.parts = { ...{ cover: true, total: true, terms: true, trust: true, cta: true, contacts: true }, ...(j.settings && j.settings.parts) };
+      Object.assign(state.models, j.models || {}); Object.assign(state.custom, j.custom || {});
+      if (j.project) state.project = { title: '', items: [], ...j.project };
+      if (j.clients) state.clients = j.clients;
+      for (const p of j.dirty || []) dirty.add(p);
+    }
+    code = localStorage.getItem(LS + '-code') || '';
+  } catch (e) {}
+}
+function lsSave() { try { localStorage.setItem(LS, JSON.stringify({ settings: state.settings, models: state.models, custom: state.custom, project: state.project, clients: state.clients, dirty: [...dirty] })); } catch (e) {} }
+lsLoad(); rebuildModels();
+function dataOf(path) {
+  const [col, id] = path.split('/');
+  if (col === 'kp') return id === 'settings' ? state.settings : id === 'project' ? state.project : state.clients;
+  if (col === 'models') return state.models[id];
+  if (col === 'custom') return state.custom[id];
+  return null;
+}
+function applyRemote(path, data) {
+  const [col, id] = path.split('/');
+  const d = JSON.parse(JSON.stringify(data));
+  if (col === 'kp' && id === 'settings') { state.settings = { ...state.settings, ...d, parts: { ...state.settings.parts, ...(d.parts || {}) } }; return 'settings'; }
+  if (col === 'kp' && id === 'project') { state.project = { title: '', items: [], ...d }; return 'project'; }
+  if (col === 'kp' && id === 'clients') { state.clients = d; return 'clients'; }
+  if (col === 'models') { if (JSON.stringify(state.models[id]) === JSON.stringify(d)) return null; state.models[id] = d; return 'models'; }
+  if (col === 'custom') { if (JSON.stringify(state.custom[id]) === JSON.stringify(d)) return null; state.custom[id] = d; return 'custom'; }
+  return null;
+}
+function idle() { return !timers.size && !writing.size; }
+function refreshSave() {
+  if (mode === 'local') { setSave('local', 'Сохранено на этом устройстве'); return; }
+  if (readOnly) { setSave('local', 'Только просмотр: изменения видны на этом устройстве'); return; }
+  if (!idle()) { setSave('busy', 'Сохраняю…'); return; }
+  if (dirty.size) { setSave('local', 'Нет связи: сохранено на этом устройстве, отправлю позже'); return; }
+  setSave('ok', 'Сохранено');
+}
+function touch(path) {
+  dirty.add(path); gen.set(path, (gen.get(path) || 0) + 1); lsSave();
+  if (mode !== 'local' && !readOnly) schedule(path, 600);
+  refreshSave();
+}
+function schedule(path, ms) { clearTimeout(timers.get(path)); timers.set(path, setTimeout(() => flush(path), ms)); }
+async function api(path, opts = {}) {
+  const r = await fetch('/api/' + path, { ...opts, headers: { 'x-kp-code': code, ...(opts.headers || {}) } });
+  if (!r.ok) { r.text().catch(() => {}); const e = new Error('http'); e.code = r.status === 401 ? 'code' : r.status === 413 ? 'too_large' : 'http'; throw e; }
+  return r.json();
+}
+async function putDoc(path, body) {
+  if (mode === 'viewer') return db.doc(path).set(body);
+  return api('doc/' + path, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+}
+async function flush(path) {
+  timers.delete(path);
+  if (mode === 'local' || readOnly) { refreshSave(); return; }
+  if (writing.has(path)) { schedule(path, 400); return; }
+  const g = gen.get(path) || 0;
+  const body = JSON.parse(JSON.stringify(dataOf(path) || {}));
+  writing.add(path); refreshSave();
+  try {
+    await putDoc(path, body);
+    if ((gen.get(path) || 0) === g) dirty.delete(path);
+    backoff.delete(path); lsSave();
+  } catch (e) {
+    if (e && (e.code === 'invalid_argument' || e.code === 'code')) { readOnly = e.code === 'invalid_argument'; if (e.code === 'code') { showCodebar(); mode = 'local'; } }
+    else { const b = Math.min((backoff.get(path) || 2000) * 2, 60000); backoff.set(path, b); schedule(path, b); }
+  } finally { writing.delete(path); refreshSave(); }
+}
+let lastEdited = null;
+const touchModel = (id) => { lastEdited = id; touch('models/' + id); };
+const touchSettings = () => touch('kp/settings');
+const touchProject = () => touch('kp/project');
+const touchClients = () => touch('kp/clients');
+const touchCustom = (id) => { lastEdited = id; touch('custom/' + id); };
+const busyPath = (p) => dirty.has(p) || timers.has(p) || writing.has(p);
+
+/* Применить пришедшие документы (кроме тех, что сейчас правятся здесь) и перерисовать затронутое. */
+function applyMany(entries) {
+  const kinds = new Set();
+  for (const [path, data] of entries) { if (busyPath(path) || !data) continue; const k = applyRemote(path, data); if (k) kinds.add(k); }
+  if (!kinds.size) return;
+  if (kinds.has('custom')) rebuildModels();
+  lsSave();
+  if (kinds.has('settings') || kinds.has('clients')) fillGeneral(true);
+  if (kinds.has('custom') || kinds.has('models') || kinds.has('project')) renderBody(true);
+  renderSlidesSoon();
+}
+
+async function uploadPhoto(blob) {
+  if (mode === 'server') {
+    const r = await fetch('/api/photo', { method: 'POST', headers: { 'x-kp-code': code, 'content-type': blob.type || 'image/jpeg' }, body: blob });
+    if (!r.ok) { r.text().catch(() => {}); const e = new Error('upload'); e.code = r.status === 413 ? 'too_large' : r.status === 401 ? 'code' : 'http'; throw e; }
+    return (await r.json()).id;
+  }
+  if (mode === 'viewer') { if (!assets) throw new Error('no assets'); return (await assets.upload(blob)).id; }
+  const id = rid('p'); await idb.put(id, blob); blobUrls['up:' + id] = URL.createObjectURL(blob); return id;
+}
+function deletePhoto(id) {
+  if (mode === 'server') fetch('/api/photo/' + id, { method: 'DELETE', headers: { 'x-kp-code': code } }).catch(() => {});
+  else if (mode === 'viewer') { if (assets) assets.delete(id).catch(() => {}); }
+  else idb.del(id).catch(() => {});
+}
+/* Фото уменьшаем на телефоне до 2000 px (логотипы — до 800 px, с прозрачностью): быстрее загрузка и легче PDF. */
+async function prepImage(file, logo) {
+  let bmp = null; try { bmp = await createImageBitmap(file); } catch (e) { return file; }
+  const max = logo ? 800 : 2000; const s = Math.min(1, max / Math.max(bmp.width, bmp.height));
+  if (s === 1 && file.size < 1.8e6 && /jpeg|png|webp/.test(file.type)) return file;
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s);
+  const x = c.getContext('2d'); const type = logo ? 'image/png' : 'image/jpeg';
+  if (!logo) { x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); }
+  x.drawImage(bmp, 0, 0, c.width, c.height);
+  return new Promise((res) => c.toBlob((b) => res(b || file), type, 0.86));
+}
+
+let pollT = 0;
+async function pull() {
+  if (mode !== 'server') return;
+  try { const { docs } = await api('state'); applyMany(Object.entries(docs)); refreshSave(); }
+  catch (e) { if (e.code === 'code') { mode = 'local'; showCodebar(); refreshSave(); } }
+}
+function startPolling() {
+  clearInterval(pollT);
+  pollT = setInterval(() => { if (document.visibilityState === 'visible' && idle()) pull(); }, 20000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && mode === 'server') pull(); });
+}
+function showCodebar() { $('#codebar').hidden = false; }
+$('#code-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const v = $('#code-in').value.trim(); if (!v) return;
+  code = v;
+  try {
+    await api('check');
+    try { localStorage.setItem(LS + '-code', code); } catch (e2) {}
+    $('#codebar').hidden = true; mode = 'server'; await goServer(); toast('Код принят: цены, модели и фото теперь общие.');
+  } catch (err) { toast(err.code === 'code' ? 'Код не подошёл. Проверьте и введите ещё раз.' : 'Нет связи с сервером. Попробуйте позже.', { kind: 'warn' }); }
+});
+async function goServer() {
+  // сначала отправить то, что сделано без связи, потом забрать общее
+  for (const p of dirty) schedule(p, 50);
+  await pull(); startPolling(); renderBody(); renderSlides(); refreshSave();
+}
+
+async function connect() {
+  if (IN_VIEWER) {
+    mode = 'viewer';
+    const cl = window.claude;
+    cl.use('assets').then((a) => { assets = a; renderBody(); }).catch(() => {});
+    try { db = await cl.use('db'); } catch (e) { db = null; }
+    if (!db) { mode = 'local'; refreshSave(); return; }
+    for (const p of dirty) schedule(p, 50);
+    refreshSave(); renderBody(); renderSlides();
+    const sub = (col) => db.collection(col).onSnapshot((snap) => { applyMany(snap.docs.map((d) => [col + '/' + d.id, d.data()])); refreshSave(); }, () => refreshSave());
+    sub('kp'); sub('models'); sub('custom');
+    return;
+  }
+  // свой адрес: есть ли сервер и подходит ли сохранённый код
+  let st = 0;
+  try { const r = await fetch('/api/check', { headers: { 'x-kp-code': code } }); st = r.status; r.text().catch(() => {}); } catch (e) { st = 0; }
+  if (st === 200) { mode = 'server'; await goServer(); return; }
+  try { const all = await idb.all(); for (const [k, v] of Object.entries(all)) blobUrls['up:' + k] = URL.createObjectURL(v); } catch (e) {}
+  mode = 'local';
+  if (st === 401) showCodebar();
+  refreshSave(); renderBody(); renderSlides();
+}
+
+/* ── сообщения ── */
+const toastEl = $('#toast'); let toastT = 0;
+function toast(text, opts = {}) {
+  clearTimeout(toastT);
+  toastEl.dataset.k = opts.kind || 'ok';
+  toastEl.innerHTML = `<span>${opts.html ? text : esc(text)}</span>${opts.action ? `<button type="button" id="toast-act">${esc(opts.action)}</button>` : ''}`;
+  toastEl.hidden = false;
+  if (opts.action) $('#toast-act').addEventListener('click', () => { hideToast(); opts.onAction(); }, { once: true });
+  if (!opts.sticky) toastT = setTimeout(() => { hideToast(); if (opts.onExpire) opts.onExpire(); }, opts.ms || (opts.kind === 'warn' ? 9000 : 5000));
+}
+function hideToast() { clearTimeout(toastT); toastEl.hidden = true; }
+
+/* ── вкладки и экраны ── */
+function renderTabs() {
+  $('#tabs').innerHTML = TABS.map((c) => `<button role="tab" id="tab-${c.id}" data-cat="${c.id}" aria-selected="${c.id === state.cat}">${c.title}<small>${c.id === 'project' ? (state.project.items.length || '') : MODELS.filter((m) => m.cat === c.id).length}</small></button>`).join('');
+}
+$('#tabs').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-cat]'); if (!b || b.dataset.cat === state.cat) return;
+  state.cat = b.dataset.cat; try { localStorage.setItem(LS + '-cat', state.cat); } catch (e2) {}
+  lastEdited = null; renderTabs(); fillGeneral(); renderBody(); renderSlides(); window.scrollTo(0, 0);
+});
+try { const c = localStorage.getItem(LS + '-cat'); if (TABS.some((x) => x.id === c)) state.cat = c; } catch (e) {}
+const scrollOf = { edit: 0, look: 0 };
+$('.dock .seg').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-v]'); if (!b) return;
+  const app = $('#app'); const from = app.dataset.view; const to = b.dataset.v; if (from === to) return;
+  scrollOf[from] = window.scrollY; app.dataset.view = to;
+  for (const x of $$('.dock .seg button')) x.setAttribute('aria-selected', String(x === b));
+  if (to === 'look') { renderSlides(); const t = lastEdited && $(`.sl[data-id="${lastEdited}"]`); if (t) t.scrollIntoView({ block: 'center' }); else window.scrollTo(0, 0); }
+  else window.scrollTo(0, scrollOf.edit);
+});
+
+/* ── клиент, оформление, логотипы, условия ── */
+const G = { client: '#g-client', date: '#g-date', manager: '#g-manager', phone: '#g-phone', lead: '#g-lead', sub: '#g-sub' };
+const THEME_NAME = { winter: 'зима', spring: 'весна', summer: 'лето', autumn: 'осень' };
+function renderSum() {
+  const st = state.settings;
+  $('#g-sum').textContent = `Для: ${st.client || 'не указано'} · ${st.date || today()} · ${THEME_NAME[theme()]}${st.manager ? ' · ' + st.manager : ''}`;
+}
+function autoSize(t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 2 + 'px'; }
+function renderLogos() {
+  $('#logos').innerHTML = logos().map((l, i) => `<div class="lg"><button type="button" class="lg__b" data-li="${i}" aria-pressed="${l.on !== false}" aria-label="${esc(l.name || 'Логотип')}${l.on !== false ? ', в КП' : ', убран'}" style="background-image:url('${esc(src(l.f))}')"></button>${String(l.key).startsWith('up:') ? `<button type="button" class="ph__del" data-ldel="${i}" aria-label="Удалить логотип">×</button>` : ''}</div>`).join('')
+    + '<button type="button" class="lg--add" id="logo-add">+ логотип</button>';
+}
+function fillGeneral(fromRemote) {
+  for (const [k, sel] of Object.entries(G)) { const el = $(sel); if (fromRemote && document.activeElement === el) continue; el.value = state.settings[k] || ''; }
+  $('#g-date').placeholder = today(); $('#g-sub').placeholder = subDefault();
+  renderSum();
+  const cur = state.settings.theme || 'auto';
+  $('#themes').innerHTML = THEMES.map(([k, t]) => `<button type="button" class="th" data-theme="${k}" aria-pressed="${cur === k}"><i style="background:${k === 'auto' ? THEME_DOT[seasonByDate()] : THEME_DOT[k]}"></i>${t}${k === 'auto' ? ` (${THEME_NAME[seasonByDate()]})` : ''}</button>`).join('');
+  $('#g-parts').innerHTML = PARTS.map(([k, t]) => `<label class="tg"><input type="checkbox" id="part-${k}" data-part="${k}" ${state.settings.parts[k] !== false ? 'checked' : ''}>${t}</label>`).join('');
+  renderLogos();
+  $('#terms-h').textContent = `Условия для вкладки «${tab().title}»`;
+  if (fromRemote && $('#terms').contains(document.activeElement)) return;
+  $('#terms').innerHTML = termsOf(state.cat).map((r, i) => `<div class="term"><input class="in t-k" id="t-k-${i}" data-i="${i}" data-f="k" value="${esc(r.k)}" maxlength="40" aria-label="Название строки ${i + 1}"><textarea class="in" rows="1" id="t-v-${i}" data-i="${i}" data-f="v" maxlength="160" aria-label="Значение строки ${i + 1}">${esc(r.v)}</textarea><button class="x" type="button" data-del="${i}" aria-label="Удалить строку ${i + 1}">×</button></div>`).join('');
+  requestAnimationFrame(() => $$('#terms textarea').forEach(autoSize));
+}
+$('#general').addEventListener('toggle', () => { if ($('#general').open) $$('#terms textarea').forEach(autoSize); });
+for (const [k, sel] of Object.entries(G)) $(sel).addEventListener('input', (e) => { state.settings[k] = e.target.value; touchSettings(); renderSum(); renderSlidesSoon(); });
+$('#g-parts').addEventListener('change', (e) => { const k = e.target.dataset.part; if (!k) return; state.settings.parts = { ...state.settings.parts, [k]: e.target.checked }; touchSettings(); renderSlides(); });
+$('#themes').addEventListener('click', (e) => { const b = e.target.closest('[data-theme]'); if (!b) return; state.settings.theme = b.dataset.theme; touchSettings(); fillGeneral(); renderSlides(); });
+$('#logos').addEventListener('click', (e) => {
+  const del = e.target.closest('[data-ldel]');
+  if (del) {
+    const i = +del.dataset.ldel; const list = logos().slice(); const [rem] = list.splice(i, 1);
+    state.clients = { list }; touchClients(); renderLogos(); renderSlidesSoon();
+    toast('Логотип удалён.', { action: 'Вернуть', onAction: () => { const l = logos().slice(); l.splice(i, 0, rem); state.clients = { list: l }; touchClients(); renderLogos(); renderSlidesSoon(); }, onExpire: () => deletePhoto(String(rem.key).slice(3)) });
+    return;
+  }
+  if (e.target.closest('#logo-add')) { filePurpose = { kind: 'logo' }; $('#file').click(); return; }
+  const b = e.target.closest('[data-li]'); if (!b) return;
+  const list = logos().map((l) => ({ ...l })); const l = list[+b.dataset.li]; l.on = l.on === false;
+  state.clients = { list }; touchClients(); renderLogos(); renderSlidesSoon();
+});
+$('#g-new').addEventListener('click', () => {
+  const prev = { client: state.settings.client, date: state.settings.date };
+  state.settings.client = ''; state.settings.date = ''; touchSettings(); fillGeneral(); renderSlides();
+  toast('«Для кого» и дата очищены, дата — сегодняшняя.', { action: 'Вернуть', onAction: () => { Object.assign(state.settings, prev); touchSettings(); fillGeneral(); renderSlides(); } });
+});
+function editTerms(fn) { const t = termsOf(state.cat).map((r) => ({ ...r })); fn(t); state.settings.terms = { ...state.settings.terms, [state.cat]: t }; touchSettings(); }
+$('#terms').addEventListener('input', (e) => { const i = +e.target.dataset.i; const f = e.target.dataset.f; if (!f) return; if (e.target.tagName === 'TEXTAREA') autoSize(e.target); editTerms((t) => { t[i][f] = e.target.value; }); renderSlidesSoon(); });
+$('#terms').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-del]'); if (!b) return;
+  const i = +b.dataset.del; const removed = termsOf(state.cat)[i];
+  editTerms((t) => t.splice(i, 1)); fillGeneral(); renderSlides();
+  toast(`Строка «${removed.k || 'без названия'}» удалена.`, { action: 'Вернуть', onAction: () => { editTerms((t) => t.splice(i, 0, removed)); fillGeneral(); renderSlides(); } });
+});
+$('#term-add').addEventListener('click', () => { editTerms((t) => t.push({ k: '', v: '' })); fillGeneral(); const ins = $$('#terms .term'); const last = ins[ins.length - 1]; if (last) last.querySelector('input').focus(); });
+$('#term-reset').addEventListener('click', () => {
+  const prev = termsOf(state.cat).map((r) => ({ ...r }));
+  const t = { ...state.settings.terms }; delete t[state.cat]; state.settings.terms = t; touchSettings(); fillGeneral(); renderSlides();
+  toast('Вернул стандартные условия.', { action: 'Отменить', onAction: () => { state.settings.terms = { ...state.settings.terms, [state.cat]: prev }; touchSettings(); fillGeneral(); renderSlides(); } });
+});
+
+/* ── модели ── */
+const fmt = (v) => { const d = String(v || '').replace(/\D/g, ''); return d ? d.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : ''; };
+const cleanPrice = (v) => String(v || '').replace(/\D/g, '').replace(/^0+/, '').slice(0, 12);
+const photosOf = (m) => {
+  const s = mstate(m.id);
+  const ups = (s.uploads || []).filter((u) => u && u.id).map((u) => ({ f: 'up:' + u.id, kind: u.kind === 'studio' ? 'studio' : 'interior', up: u.id }));
+  return [...m.photos, ...ups];
+};
+function stripHTML(m) {
+  const s = mstate(m.id); const pics = photosOf(m);
+  const studioPicked = s.pick.filter((f) => pics.some((p) => p.f === f && p.kind === 'studio'));
+  const canAdd = mode !== 'viewer' || assets;
+  return pics.map((p) => {
+    const on = s.pick.includes(p.f);
+    const n = p.kind === 'studio' ? studioPicked.indexOf(p.f) + 1 : 0;
+    const badge = on ? (p.kind === 'studio' ? `<i>${n}</i>` : '<i>слайд</i>') : '';
+    const label = `${p.kind === 'interior' ? 'Фото в интерьере' : 'Фото на белом'}${on ? (p.kind === 'studio' ? ', номер ' + n : ', идёт отдельным слайдом') : ''}`;
+    const tile = `<button type="button" class="ph" data-kind="${p.kind}" data-f="${esc(p.f)}" aria-pressed="${on}" aria-label="${label}" style="background-image:url('${esc(src(p.f))}')">${badge}${p.kind === 'interior' ? '<em>интерьер</em>' : ''}</button>`;
+    return p.up ? `<span class="phw">${tile}<button type="button" class="ph__del" data-up="${esc(p.up)}" aria-label="Убрать своё фото">×</button></span>` : tile;
+  }).join('') + (canAdd ? `<button type="button" class="ph ph--add" data-add="studio" data-mid="${m.id}">+ фото<br>на белом</button><button type="button" class="ph ph--add" data-add="interior" data-mid="${m.id}">+ фото<br>в интерьере</button>` : '');
+}
+function headHTML(m, s, extra) {
+  const first = picksOf(m).big;
+  return `<div class="m__head">
+      <label class="sw"><input type="checkbox" id="on-${m.id}" data-on-id="${m.id}" ${s.on ? 'checked' : ''} aria-label="${esc(m.type + ' ' + m.name)} в КП"><span></span></label>
+      <label class="m__name" for="on-${m.id}"><b>${esc(m.name)}</b>${m.custom ? '<span class="tag">новая</span>' : ''}<span>${esc(m.subtitle || m.type)}</span></label>
+      <span class="m__side"><span class="need">цена: по запросу</span><span class="m__thumb" style="background-image:url('${esc(first ? src(first.f) : '')}')"></span>${extra || ''}</span>
+    </div>`;
+}
+function modelHTML(m) {
+  const s = mstate(m.id);
+  return `<li class="m" data-id="${m.id}" data-on="${!!s.on}" data-priced="${!!fmt(s.price)}">
+    ${headHTML(m, s, m.custom ? `<button type="button" class="edit" data-edit="${m.id}">Изменить</button>` : '')}
+    <div class="m__more">
+      <div class="m__row">
+        <div class="price">
+          <label class="from"><input type="checkbox" id="from-${m.id}" data-from="${m.id}" ${s.from ? 'checked' : ''}>цена от</label>
+          <input class="in" id="price-${m.id}" data-price="${m.id}" inputmode="numeric" autocomplete="off" maxlength="15" placeholder="Цена" value="${esc(fmt(s.price))}" aria-label="Цена ${esc(m.name)}">
+          <span class="cur">₸</span>
+        </div>
+        <input class="in" id="note-${m.id}" data-note="${m.id}" maxlength="60" placeholder="${esc(catInfo(m.cat).size)}" value="${esc(s.note)}" aria-label="Размер ${esc(m.name)}">
+      </div>
+      <div class="strip">${stripHTML(m)}</div>
+    </div>
+  </li>`;
+}
+/* «Своё КП»: позиция — модель из любого каталога со своей ценой, количеством и размером. */
+const projItems = () => state.project.items.filter((it) => byId[it.id]);
+function itemHTML(it, i) {
+  const m = byId[it.id]; const s = mstate(m.id); const priced = !!fmt(it.price);
+  return `<li class="m" data-id="${m.id}" data-pi="${i}" data-on="true" data-priced="${priced}">
+    <div class="m__head" style="grid-template-columns:minmax(0,1fr) auto">
+      <div class="m__name"><b>${esc(m.name)}</b>${m.custom ? '<span class="tag">новая</span>' : ''}<span>${esc(m.type)}${m.subtitle ? ' · ' + esc(m.subtitle) : ''}</span></div>
+      <span class="m__side"><span class="need">цена: по запросу</span><button type="button" class="x" data-prem="${i}" aria-label="Убрать ${esc(m.name)} из КП">×</button></span>
+    </div>
+    <div class="m__more">
+      <div class="m__row">
+        <div class="price">
+          <label class="from"><input type="checkbox" data-pfrom="${i}" ${it.from ? 'checked' : ''}>цена от</label>
+          <input class="in" id="pprice-${i}" data-pprice="${i}" inputmode="numeric" autocomplete="off" maxlength="15" placeholder="Цена за 1 шт." value="${esc(fmt(it.price))}" aria-label="Цена ${esc(m.name)}">
+          <span class="cur">₸</span>
+        </div>
+        <input class="in" id="pnote-${i}" data-pnote="${i}" maxlength="60" placeholder="${esc(catInfo(m.cat).size)}" value="${esc(it.note || '')}" aria-label="Размер ${esc(m.name)}">
+      </div>
+      <div class="qty-row">Количество <span class="qty"><button type="button" data-qminus="${i}" aria-label="Меньше">−</button><input id="pqty-${i}" data-pqty="${i}" inputmode="numeric" maxlength="3" value="${it.qty || 1}" aria-label="Количество ${esc(m.name)}"><button type="button" data-qplus="${i}" aria-label="Больше">+</button></span></div>
+      <div class="strip">${stripHTML(m)}</div>
+    </div>
+  </li>`;
+}
+function renderBody() {
+  renderTabs();
+  if (state.cat === 'project') return renderProject();
+  $('#tab-body').innerHTML = `
+    <div class="bar"><span class="bar__count" id="count"></span>
+      <div class="links"><button class="link" id="all-on" type="button">Включить все</button><button class="link" id="all-off" type="button">Снять все</button></div>
+      <button class="btn" id="dl" type="button">Скачать PDF</button></div>
+    <div class="adds"><button class="btn btn--ghost" type="button" data-newmodel="${state.cat}">+ Новая модель: ${esc(catInfo(state.cat).one.toLowerCase())}</button></div>
+    <p class="legend">Нажимайте на фото на белом по порядку: <b>1</b> — большое, <b>2</b> и <b>3</b> — маленькие. Фото «в интерьере» идёт отдельным слайдом на весь экран.</p>
+    <ol class="models" id="models">${catModels().map(modelHTML).join('')}</ol>`;
+  bindBar(); renderCount();
+}
+function renderProject() {
+  const items = projItems();
+  const total = sumOf(items);
+  $('#tab-body').innerHTML = `
+    <div class="card card--plain">
+      <label class="f">Название КП (на обложке)<input class="in" id="p-title" maxlength="80" placeholder="Например: мебель для квартиры в Esentai City" value="${esc(state.project.title || '')}"></label>
+      <p class="hint">Соберите КП из любых диванов, кроватей и пуфов или добавьте свою модель. Цена здесь своя для этого КП.</p>
+    </div>
+    <div class="bar"><span class="bar__count" id="count">${items.length ? `Позиций <b>${items.length}</b>${total.sum ? ` · итого ${total.from ? 'от ' : ''}<b>${fmt(total.sum)}&nbsp;₸</b>` : ''}` : 'Пока пусто'}</span>
+      <div class="links">${items.length ? '<button class="link" id="p-clear" type="button">Очистить КП</button>' : ''}</div>
+      <button class="btn" id="dl" type="button">Скачать PDF</button></div>
+    <div class="adds"><button class="btn" type="button" id="p-add">+ Из каталога</button><button class="btn btn--ghost" type="button" data-newmodel="sofas">+ Новая модель</button></div>
+    ${items.length ? `<ol class="models" id="models">${state.project.items.map((it, i) => (byId[it.id] ? itemHTML(it, i) : '')).join('')}</ol>`
+      : '<div class="empty"><span>Добавьте модели из каталога или создайте новую — появятся здесь со своей ценой и количеством.</span><button class="btn" type="button" id="p-add2">+ Из каталога</button></div>'}`;
+  bindBar();
+  const t = $('#p-title'); t.addEventListener('input', () => { state.project.title = t.value; touchProject(); renderSlidesSoon(); });
+}
+function bindBar() {
+  const dl = $('#dl'); if (dl) dl.addEventListener('click', download);
+  const on = $('#all-on'); if (on) on.addEventListener('click', () => setAll(true));
+  const off = $('#all-off'); if (off) off.addEventListener('click', () => setAll(false));
+  for (const id of ['#p-add', '#p-add2']) { const b = $(id); if (b) b.addEventListener('click', openPicker); }
+  const cl = $('#p-clear'); if (cl) cl.addEventListener('click', () => {
+    const prev = state.project.items.slice(); state.project.items = []; touchProject(); renderBody(); renderSlides();
+    toast('КП очищено.', { action: 'Вернуть', onAction: () => { state.project.items = prev; touchProject(); renderBody(); renderSlides(); } });
+  });
+}
+function syncCard(id) {
+  for (const li of $$(`.m[data-id="${id}"]`)) {
+    const m = byId[id]; if (!m) { li.remove(); continue; }
+    const s = mstate(id); const pi = li.dataset.pi;
+    if (pi === undefined) { li.dataset.on = String(!!s.on); li.dataset.priced = String(!!fmt(s.price)); }
+    const on = $(`#on-${id}`, li); if (on) on.checked = !!s.on;
+    const fr = $(`#from-${id}`, li); if (fr) fr.checked = !!s.from;
+    const pr = $(`#price-${id}`, li); if (pr && document.activeElement !== pr) pr.value = fmt(s.price);
+    const nt = $(`#note-${id}`, li); if (nt && document.activeElement !== nt) nt.value = s.note || '';
+    const first = picksOf(m).big; const th = li.querySelector('.m__thumb'); if (th) th.style.backgroundImage = `url('${src(first ? first.f : '')}')`;
+    const strip = li.querySelector('.strip');
+    if (strip) {
+      const act = document.activeElement; const focusF = act && strip.contains(act) ? (act.dataset.f || (act.dataset.add ? 'add-' + act.dataset.add : null)) : null;
+      const sl = strip.scrollLeft; strip.innerHTML = stripHTML(m); strip.scrollLeft = sl;
+      if (focusF) { const el = focusF.startsWith('add-') ? strip.querySelector(`[data-add="${focusF.slice(4)}"]`) : strip.querySelector(`.ph[data-f="${CSS.escape(focusF)}"]`); if (el) el.focus(); }
+    }
+  }
+}
+function renderCount() {
+  if (state.cat === 'project') return;
+  const c = $('#count'); if (!c) return;
+  const ms = catModels(); const on = ms.filter((m) => mstate(m.id).on); const noPrice = on.filter((m) => !fmt(mstate(m.id).price)).length;
+  c.innerHTML = `В КП <b>${on.length}</b> из ${ms.length}${noPrice ? ` · по запросу ${noPrice}` : ''}`;
+}
+const body = $('#tab-body');
+body.addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.dataset.onId) { const id = t.dataset.onId; mstate(id).on = t.checked; touchModel(id); syncCard(id); renderCount(); renderSlidesSoon(); }
+  if (t.dataset.from) { const id = t.dataset.from; mstate(id).from = t.checked; touchModel(id); renderSlidesSoon(); }
+  if (t.dataset.pfrom !== undefined) { const it = state.project.items[+t.dataset.pfrom]; if (it) { it.from = t.checked; touchProject(); refreshProjectCount(); renderSlidesSoon(); } }
+});
+function caretPrice(t, setter) {
+  const pos = t.selectionStart ?? t.value.length; const digitsBefore = t.value.slice(0, pos).replace(/\D/g, '').length;
+  const v = cleanPrice(t.value); setter(v); t.value = fmt(v);
+  let p = 0, seen = 0; while (p < t.value.length && seen < digitsBefore) { if (/\d/.test(t.value[p])) seen++; p++; }
+  try { t.setSelectionRange(p, p); } catch (e2) {}
+  t.closest('.m').dataset.priced = String(!!v);
+}
+function refreshProjectCount() {
+  const c = $('#count'); if (!c || state.cat !== 'project') return;
+  const items = projItems(); const total = sumOf(items);
+  c.innerHTML = items.length ? `Позиций <b>${items.length}</b>${total.sum ? ` · итого ${total.from ? 'от ' : ''}<b>${fmt(total.sum)}&nbsp;₸</b>` : ''}` : 'Пока пусто';
+}
+body.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.price) { const id = t.dataset.price; caretPrice(t, (v) => { mstate(id).price = v; }); touchModel(id); renderCount(); renderSlidesSoon(); }
+  if (t.dataset.note) { const id = t.dataset.note; mstate(id).note = t.value; touchModel(id); renderSlidesSoon(); }
+  if (t.dataset.pprice !== undefined) { const it = state.project.items[+t.dataset.pprice]; if (it) { caretPrice(t, (v) => { it.price = v; }); lastEdited = it.id; touchProject(); refreshProjectCount(); renderSlidesSoon(); } }
+  if (t.dataset.pnote !== undefined) { const it = state.project.items[+t.dataset.pnote]; if (it) { it.note = t.value; lastEdited = it.id; touchProject(); renderSlidesSoon(); } }
+  if (t.dataset.pqty !== undefined) { const it = state.project.items[+t.dataset.pqty]; if (it) { const q = Math.min(999, parseInt(t.value.replace(/\D/g, ''), 10) || 0); if (t.value !== '') t.value = String(q || ''); it.qty = Math.max(1, q || 1); touchProject(); refreshProjectCount(); renderSlidesSoon(); } }
+});
+body.addEventListener('focusout', (e) => { const t = e.target; if (t.dataset.pqty !== undefined) { const it = state.project.items[+t.dataset.pqty]; if (it) t.value = String(it.qty || 1); } });
+/* Backspace сразу после пробела-разделителя и Delete перед ним удаляют цифру, а не пробел. */
+body.addEventListener('keydown', (e) => {
+  const t = e.target; if (!(t.dataset.price || t.dataset.pprice !== undefined) || t.selectionStart !== t.selectionEnd) return;
+  const pos = t.selectionStart;
+  if (e.key === 'Backspace' && pos > 0 && /\s/.test(t.value[pos - 1])) t.setSelectionRange(pos - 1, pos - 1);
+  if (e.key === 'Delete' && /\s/.test(t.value[pos] || '')) t.setSelectionRange(pos + 1, pos + 1);
+});
+body.addEventListener('click', (e) => {
+  const nm = e.target.closest('[data-newmodel]'); if (nm) { openModelForm(null, state.cat === 'project' ? 'sofas' : nm.dataset.newmodel); return; }
+  const ed = e.target.closest('[data-edit]'); if (ed) { openModelForm(ed.dataset.edit); return; }
+  const rem = e.target.closest('[data-prem]');
+  if (rem) {
+    const i = +rem.dataset.prem; const [it] = state.project.items.splice(i, 1); touchProject(); renderBody(); renderSlides();
+    toast(`${byId[it.id] ? byId[it.id].name : 'Позиция'} убрана из КП.`, { action: 'Вернуть', onAction: () => { state.project.items.splice(i, 0, it); touchProject(); renderBody(); renderSlides(); } });
+    return;
+  }
+  const qm = e.target.closest('[data-qminus], [data-qplus]');
+  if (qm) {
+    const i = +(qm.dataset.qminus ?? qm.dataset.qplus); const it = state.project.items[i]; if (!it) return;
+    it.qty = Math.max(1, Math.min(999, (it.qty || 1) + (qm.dataset.qplus !== undefined ? 1 : -1)));
+    const inp = $(`#pqty-${i}`); if (inp) inp.value = String(it.qty);
+    touchProject(); refreshProjectCount(); renderSlidesSoon(); return;
+  }
+  const del = e.target.closest('.ph__del');
+  if (del) { removeUpload(del.closest('.m').dataset.id, del.dataset.up); return; }
+  const add = e.target.closest('[data-add]');
+  if (add) { filePurpose = { kind: add.dataset.add, model: add.dataset.mid }; $('#file').click(); return; }
+  const ph = e.target.closest('.ph[data-f]'); if (!ph) return;
+  const id = ph.closest('.m').dataset.id; const s = mstate(id); const f = ph.dataset.f; const kind = ph.dataset.kind;
+  if (s.pick.includes(f)) s.pick = s.pick.filter((x) => x !== f);
+  else {
+    const pics = photosOf(byId[id]);
+    const studioCount = s.pick.filter((x) => pics.some((p) => p.f === x && p.kind === 'studio')).length;
+    if (kind === 'studio' && studioCount >= MAX_STUDIO) { toast('На слайд помещается 3 фото на белом. Снимите одно, чтобы выбрать другое.', { kind: 'warn' }); return; }
+    s.pick = [...s.pick, f];
+  }
+  touchModel(id); syncCard(id); renderSlidesSoon();
+});
+function setAll(v) {
+  const prev = Object.fromEntries(catModels().map((m) => [m.id, !!mstate(m.id).on]));
+  for (const m of catModels()) { const s = mstate(m.id); if (s.on !== v) { s.on = v; touchModel(m.id); } }
+  lastEdited = null; renderBody(); renderSlides();
+  toast(v ? 'Все модели включены.' : 'Все модели сняты.', { action: 'Отменить', onAction: () => { for (const [id, on] of Object.entries(prev)) { const s = mstate(id); if (s.on !== on) { s.on = on; touchModel(id); } } renderBody(); renderSlides(); } });
+}
+
+/* ── загрузка фото: к модели (на белом / в интерьере), в форму новой модели, логотип ── */
+let filePurpose = null;
+$('#file').addEventListener('change', async (e) => {
+  const files = [...e.target.files]; e.target.value = ''; const pur = filePurpose; if (!files.length || !pur) return;
+  const failed = []; let added = 0, tooLarge = false;
+  toast(files.length > 1 ? `Загружаю ${files.length} фото…` : 'Загружаю фото…', { sticky: true });
+  for (const file of files) {
+    try {
+      const blob = await prepImage(file, pur.kind === 'logo');
+      const id = await uploadPhoto(blob);
+      if (pur.kind === 'logo') {
+        const list = logos().map((l) => ({ ...l })); list.push({ key: 'up:' + id, f: 'up:' + id, name: file.name.replace(/\.[a-z]+$/i, ''), k: 1, on: true });
+        state.clients = { list }; touchClients(); renderLogos();
+      } else if (pur.form) {
+        formState.photos.push({ id, kind: pur.kind }); renderFormPhotos();
+      } else {
+        const s = mstate(pur.model); // после ожидания состояние могло обновиться — берём свежее
+        s.uploads = [...(s.uploads || []), { id, kind: pur.kind }];
+        const pics = photosOf(byId[pur.model]);
+        const studioCount = s.pick.filter((x) => pics.some((p) => p.f === x && p.kind === 'studio')).length;
+        if (pur.kind === 'interior' || studioCount < MAX_STUDIO) s.pick = [...s.pick, 'up:' + id];
+        touchModel(pur.model); syncCard(pur.model);
+      }
+      added++; measure('up:' + id); renderSlidesSoon();
+    } catch (err) { failed.push(file.name); if (err && err.code === 'too_large') tooLarge = true; }
+  }
+  if (failed.length) toast(`${added ? `Добавлено фото: ${added}. ` : ''}Не загрузились: ${failed.join(', ')}. ${tooLarge ? 'Файл слишком большой.' : 'Попробуйте ещё раз или выберите другой файл.'}`, { kind: 'warn' });
+  else if (pur.kind === 'logo') toast('Логотип добавлен.');
+  else if (pur.form) hideToast();
+  else toast(added === 1 ? (pur.kind === 'interior' ? 'Фото добавлено: пойдёт отдельным слайдом.' : 'Фото добавлено на слайд модели.') : `Добавлено фото: ${added}.`);
+});
+function removeUpload(id, upId) {
+  const s = mstate(id); const key = 'up:' + upId; const wasPicked = s.pick.includes(key); const rec = (s.uploads || []).find((x) => x.id === upId);
+  s.uploads = (s.uploads || []).filter((x) => x.id !== upId); s.pick = s.pick.filter((f) => f !== key);
+  touchModel(id); syncCard(id); renderSlidesSoon();
+  toast('Фото убрано.', {
+    action: 'Вернуть',
+    onAction: () => { const t = mstate(id); t.uploads = [...(t.uploads || []), rec]; if (wasPicked) t.pick = [...t.pick, key]; touchModel(id); syncCard(id); renderSlidesSoon(); },
+    onExpire: () => deletePhoto(upId),
+  });
+}
+function measure(f) {
+  if (dims[f]) return; const u = src(f); if (!u) return;
+  const im = new Image(); im.onload = () => { dims[f] = [im.naturalWidth, im.naturalHeight]; renderSlidesSoon(); }; im.src = u;
+}
+
+/* ── окно: новая модель / изменить ── */
+const sheet = $('#sheet');
+let formState = null;
+function closeSheet() { sheet.hidden = true; sheet.innerHTML = ''; document.body.style.overflow = ''; }
+function openSheet(html) { sheet.innerHTML = `<div class="sheet__box" role="dialog" aria-modal="true" aria-labelledby="sheet-t">${html}</div>`; sheet.hidden = false; document.body.style.overflow = 'hidden'; }
+sheet.addEventListener('click', (e) => { if (e.target === sheet) cancelForm(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden) cancelForm(); });
+function openModelForm(id, cat) {
+  const c = id ? state.custom[id] : null;
+  formState = { id, isNew: !id, cat: c ? c.cat : cat, photos: c ? (c.photos || []).map((p) => ({ ...p })) : [], uploadedNow: [] };
+  const s = id ? mstate(id) : { price: '', from: true, note: '' };
+  openSheet(`
+    <div class="sheet__head"><h2 id="sheet-t">${id ? 'Изменить модель' : 'Новая модель'}</h2><button type="button" class="x" data-close aria-label="Закрыть">×</button></div>
+    <div class="fields">
+      <label class="f">Каталог<select class="in" id="nm-cat">${CATS.map((k) => `<option value="${k.id}" ${k.id === formState.cat ? 'selected' : ''}>${k.title}</option>`).join('')}</select></label>
+      <label class="f">Название *<input class="in" id="nm-name" maxlength="40" placeholder="Например: Velra" value="${esc(c ? c.name : '')}"></label>
+    </div>
+    <label class="f">Коротко (под названием)<input class="in" id="nm-sub" maxlength="70" placeholder="Например: угловой · на тонких ножках" value="${esc(c ? c.subtitle : '')}"></label>
+    <label class="f">Описание<textarea class="in" id="nm-desc" rows="3" maxlength="300" placeholder="Пара фраз о модели: форма, посадка, ткань на фото">${esc(c ? c.description : '')}</textarea></label>
+    <label class="f">Варианты через запятую<input class="in" id="nm-opt" maxlength="120" placeholder="Например: прямой или угловой, ткань или кожа" value="${esc(c ? (c.options || []).join(', ') : '')}"></label>
+    <div>
+      <p class="sub-h">Фото: первое на белом станет большим на слайде, фото в интерьере — отдельным слайдом</p>
+      <div class="strip" id="nm-photos"></div>
+    </div>
+    <div class="m__row">
+      <div class="price">
+        <label class="from"><input type="checkbox" id="nm-from" ${s.from ? 'checked' : ''}>цена от</label>
+        <input class="in" id="nm-price" inputmode="numeric" autocomplete="off" maxlength="15" placeholder="Цена" value="${esc(fmt(s.price))}">
+        <span class="cur">₸</span>
+      </div>
+      <input class="in" id="nm-note" maxlength="60" placeholder="Размер" value="${esc(s.note || '')}">
+    </div>
+    <p class="err" id="nm-err" hidden></p>
+    <div class="sheet__foot">${id ? '<button type="button" class="btn btn--danger" data-delmodel>Удалить модель</button>' : ''}<button type="button" class="btn btn--ghost" data-close>Отмена</button><button type="button" class="btn" data-savemodel>Сохранить</button></div>`);
+  renderFormPhotos();
+  $('#nm-price').addEventListener('input', (e) => { const t = e.target; const v = cleanPrice(t.value); t.value = fmt(v); });
+  $('#nm-name').focus();
+}
+function renderFormPhotos() {
+  const box = $('#nm-photos'); if (!box) return;
+  box.innerHTML = formState.photos.map((p, i) => `<span class="phw"><span class="ph" data-kind="${p.kind}" style="background-image:url('${esc(src('up:' + p.id))}')"><em>${p.kind === 'interior' ? 'интерьер' : 'на белом'}</em></span><button type="button" class="ph__del" data-fdel="${i}" aria-label="Убрать фото">×</button></span>`).join('')
+    + '<button type="button" class="ph ph--add" data-fadd="studio">+ фото<br>на белом</button><button type="button" class="ph ph--add" data-fadd="interior">+ фото<br>в интерьере</button>';
+}
+function cancelForm() {
+  if (formState && formState.isNew) for (const p of formState.photos) deletePhoto(p.id);
+  formState = null; closeSheet();
+}
+sheet.addEventListener('click', (e) => {
+  if (e.target.closest('[data-close]')) { if (formState) cancelForm(); else closeSheet(); return; }
+  const fa = e.target.closest('[data-fadd]'); if (fa) { filePurpose = { kind: fa.dataset.fadd, form: true }; $('#file').click(); return; }
+  const fd = e.target.closest('[data-fdel]'); if (fd) { formState.photos.splice(+fd.dataset.fdel, 1); renderFormPhotos(); return; }
+  if (e.target.closest('[data-savemodel]')) { saveModelForm(); return; }
+  if (e.target.closest('[data-delmodel]')) { deleteModel(formState.id); return; }
+  const pa = e.target.closest('[data-padd]'); if (pa) { togglePick(pa.dataset.padd); return; }
+  const pc = e.target.closest('[data-pcat]'); if (pc) { pickerCat = pc.dataset.pcat; renderPickerList(); return; }
+});
+function saveModelForm() {
+  const name = $('#nm-name').value.trim(); const err = $('#nm-err');
+  if (!name) { err.textContent = 'Впишите название модели.'; err.hidden = false; $('#nm-name').focus(); return; }
+  if (!formState.photos.length) { err.textContent = 'Добавьте хотя бы одно фото.'; err.hidden = false; return; }
+  const id = formState.id || rid('c');
+  const prev = state.custom[id];
+  state.custom[id] = { cat: $('#nm-cat').value, name, subtitle: $('#nm-sub').value.trim(), description: $('#nm-desc').value.trim(),
+    options: $('#nm-opt').value.split(',').map((x) => x.trim()).filter(Boolean), photos: formState.photos, deleted: false, created: prev ? prev.created : Date.now() };
+  rebuildModels();
+  const m = byId[id];
+  const s = state.models[id] || defaultModel(m);
+  s.price = cleanPrice($('#nm-price').value); s.from = $('#nm-from').checked; s.note = $('#nm-note').value.trim();
+  // новые фото — сразу в выбор слайда
+  const keys = m.photos.map((p) => p.f); s.pick = s.pick.filter((f) => keys.includes(f) || f.startsWith('up:') && (s.uploads || []).some((u) => 'up:' + u.id === f));
+  for (const p of m.photos) { if (s.pick.includes(p.f)) continue; const studioN = s.pick.filter((f) => m.photos.some((q) => q.f === f && q.kind === 'studio')).length; if (p.kind === 'interior' || studioN < MAX_STUDIO) s.pick.push(p.f); }
+  state.models[id] = s;
+  touchCustom(id); touchModel(id);
+  const wasNew = formState.isNew; const inProject = state.cat === 'project';
+  if (wasNew && inProject) { state.project.items.push({ id, price: s.price, from: s.from, qty: 1, note: s.note }); touchProject(); }
+  formState = null; closeSheet();
+  if (!inProject && state.cat !== m.cat) { state.cat = m.cat; try { localStorage.setItem(LS + '-cat', state.cat); } catch (e) {} fillGeneral(); }
+  renderBody(); renderSlides();
+  for (const p of m.photos) measure(p.f);
+  toast(wasNew ? `Модель ${name} добавлена в «${catInfo(m.cat).title}»${inProject ? ' и в это КП' : ''}.` : `Модель ${name} сохранена.`);
+  const li = $(`.m[data-id="${id}"]`); if (li) li.scrollIntoView({ block: 'center' });
+}
+function deleteModel(id) {
+  const c = state.custom[id]; if (!c) return;
+  state.custom[id] = { ...c, deleted: true }; touchCustom(id); rebuildModels();
+  const removedItems = state.project.items.filter((it) => it.id === id);
+  if (removedItems.length) { state.project.items = state.project.items.filter((it) => it.id !== id); touchProject(); }
+  formState = null; closeSheet(); renderBody(); renderSlides();
+  toast(`Модель ${c.name} удалена.`, { action: 'Вернуть', onAction: () => { state.custom[id] = { ...c, deleted: false }; touchCustom(id); if (removedItems.length) { state.project.items.push(...removedItems); touchProject(); } rebuildModels(); renderBody(); renderSlides(); } });
+}
+
+/* ── окно: выбор из каталога для «Своего КП» ── */
+let pickerCat = 'all', pickerQ = '';
+function openPicker() {
+  formState = null; pickerQ = '';
+  openSheet(`
+    <div class="sheet__head"><h2 id="sheet-t">Добавить из каталога</h2><button type="button" class="x" data-close aria-label="Закрыть">×</button></div>
+    <input class="in" id="pk-q" placeholder="Поиск по названию" autocomplete="off">
+    <div class="chips" id="pk-cats"></div>
+    <ul class="pick-list" id="pk-list"></ul>
+    <div class="sheet__foot"><button type="button" class="btn" data-close>Готово</button></div>`);
+  $('#pk-q').addEventListener('input', (e) => { pickerQ = e.target.value.trim().toLowerCase(); renderPickerList(); });
+  renderPickerList();
+}
+function renderPickerList() {
+  const cats = [['all', 'Все'], ...CATS.map((c) => [c.id, c.title])];
+  $('#pk-cats').innerHTML = cats.map(([k, t]) => `<button type="button" class="tg" data-pcat="${k}" aria-pressed="${pickerCat === k}" style="${pickerCat === k ? 'border:2px solid var(--sel)' : ''}">${t}</button>`).join('');
+  const inKp = new Set(state.project.items.map((it) => it.id));
+  const list = MODELS.filter((m) => (pickerCat === 'all' || m.cat === pickerCat) && (!pickerQ || m.name.toLowerCase().includes(pickerQ) || (m.subtitle || '').toLowerCase().includes(pickerQ)));
+  $('#pk-list').innerHTML = list.map((m) => { const p = picksOf(m).big; const on = inKp.has(m.id); return `<li class="pick-row"><span class="m__thumb" style="background-image:url('${esc(p ? src(p.f) : '')}')"></span><div><b>${esc(m.name)}</b><span>${esc(m.type)}${m.subtitle ? ' · ' + esc(m.subtitle) : ''}</span></div><button type="button" class="${on ? 'btn' : 'btn btn--ghost'}" data-padd="${m.id}" aria-pressed="${on}">${on ? 'В КП ✓' : 'Добавить'}</button></li>`; }).join('') || '<li class="hint">Ничего не нашлось.</li>';
+}
+function togglePick(id) {
+  const i = state.project.items.findIndex((it) => it.id === id);
+  if (i >= 0) state.project.items.splice(i, 1);
+  else { const s = mstate(id); state.project.items.push({ id, price: s.price || '', from: s.from !== false, qty: 1, note: s.note || '' }); lastEdited = id; }
+  touchProject(); renderPickerList(); renderBody(); renderSlidesSoon();
+}
+
+/* ── слайды ── */
+const MONO_D = ($('#rd-mono path') || { getAttribute: () => '' }).getAttribute('d');
+const mono = `<svg viewBox="0 0 521.1 256.9" width="70" height="35" aria-hidden="true"><path fill="#F2F4F7" d="${MONO_D}"/></svg>`;
+function snow(w, h, n, seed) {
+  let x = seed; const rnd = () => { x = (x * 9301 + 49297) % 233280; return x / 233280; };
+  let c = ''; for (let i = 0; i < n; i++) { const r = 1.2 + rnd() * 3.2; c += `<circle cx="${(rnd() * w).toFixed(1)}" cy="${(rnd() * h).toFixed(1)}" r="${r.toFixed(1)}" fill="#FFFFFF" fill-opacity="${(0.12 + rnd() * 0.45).toFixed(2)}"/>`; }
+  return `<svg class="s-snow" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">${c}</svg>`;
+}
+const foot = (n, label) => `<div class="s-foot"><span><b>RICCA DESIGNS</b>&nbsp;&nbsp;·&nbsp;&nbsp;${esc(label)}</span><span>${n}</span></div>`;
+const priceText = (p) => (fmt(p.price) ? `${p.from ? 'от ' : ''}${fmt(p.price)} ₸` : '');
+const priceHTML = (p) => (fmt(p.price) ? `<b>${p.from ? '<em>от</em>' : ''}${fmt(p.price)}&nbsp;₸</b>` : '<b class="s-ask">по запросу</b>');
+const bg = (f) => `background-image:url('${esc(src(f))}')`;
+const trim = (t, n) => { t = String(t || ''); if (t.length <= n) return t; const cut = t.slice(0, n); return cut.slice(0, cut.lastIndexOf(' ')).replace(/[,.;:—–-]+$/, '') + '…'; };
+const sizeOf = (p) => (p.w && p.h ? [p.w, p.h] : dims[p.f]);
+function picksOf(m) {
+  const s = mstate(m.id); const all = photosOf(m); const map = Object.fromEntries(all.map((p) => [p.f, p]));
+  const chosen = s.pick.map((f) => map[f]).filter(Boolean);
+  let studio = chosen.filter((p) => p.kind === 'studio').slice(0, MAX_STUDIO);
+  let interiors = chosen.filter((p) => p.kind === 'interior');
+  if (!studio.length) studio = all.filter((p) => p.kind === 'studio').slice(0, 1);
+  if (!studio.length) { const any = interiors[0] || all[0]; if (any) { interiors = interiors.filter((p) => p !== any); return { big: any, bigCover: any.kind === 'interior', small: [], interiors }; } }
+  return { big: studio[0], small: studio.slice(1), interiors };
+}
+function sumOf(items) {
+  let sum = 0, from = false, priced = 0;
+  for (const it of items) { const p = +cleanPrice(it.price) || 0; if (p) { sum += p * (it.qty || 1); priced++; if (it.from) from = true; } }
+  return { sum, from: from || (priced && priced < items.length), priced };
+}
+function buildSlides() {
+  const st = state.settings; const parts = st.parts || {}; const th = 'th-' + theme(); const isProject = state.cat === 'project';
+  const label = isProject ? (state.project.title ? 'Коммерческое предложение' : 'Подборка') : tab().title;
+  const entries = isProject
+    ? projItems().map((it) => ({ m: byId[it.id], price: it.price, from: it.from, note: it.note, qty: it.qty || 1 }))
+    : catModels().filter((m) => mstate(m.id).on).map((m) => { const s = mstate(m.id); return { m, price: s.price, from: s.from, note: s.note }; });
+  const out = [];
+  const mgr = st.manager || st.phone ? `${st.manager ? esc(st.manager) : ''}${st.manager && st.phone ? ', ' : ''}${st.phone ? esc(st.phone) : ''}` : '';
+  const winter = theme() === 'winter';
+  if (parts.cover !== false) {
+    const coverPic = entries.length ? picksOf(entries[0].m).big : null;
+    const title = isProject ? (state.project.title || 'Подборка мебели') : tab().title;
+    out.push({ kind: 'cover', html: () => `<div class="slide s-cover ${th}">
+      <div class="s-cover__l">${winter ? snow(560, 810, 70, 7) : ''}
+        <div class="s-mark">${mono}<span>RICCA DESIGNS</span></div>
+        <div class="s-cover__kicker">Коммерческое предложение</div>
+        <div class="s-cover__title${title.length > 14 ? ' long' : ''}">${esc(title)}</div>
+        <div class="s-cover__sub">${esc(st.sub || subDefault())}</div>
+        <div class="s-cover__meta">${st.client ? `<span>Для: <b>${esc(st.client)}</b></span>` : ''}<span>${esc(st.date || today())}</span>${mgr ? `<span>Менеджер: <b>${mgr}</b></span>` : ''}</div>
+      </div>
+      <div class="s-cover__r">${coverPic ? `<div class="s-pic" style="${bg(coverPic.f)};${coverPic.kind === 'interior' ? 'background-size:cover' : ''}"></div>` : ''}<div class="s-cover__tag">${entries.length} ${plural(entries.length, isProject ? ['позиция', 'позиции', 'позиций'] : ['модель', 'модели', 'моделей'])}</div></div>
+    </div>` });
+  }
+  for (const e of entries) {
+    const m = e.m; const p = picksOf(m);
+    const specs = [];
+    if (e.note) specs.push(['Размер', e.note]);
+    if (isProject && e.qty > 1) specs.push(['Количество', `${e.qty} шт.`]);
+    if (m.options && m.options.length) specs.push(['Варианты', m.options.join(' · ')]);
+    const desc = trim(m.description, 230);
+    out.push({ kind: 'model', id: m.id, html: (n) => `<div class="slide s-model ${th}">
+      <div class="s-model__l">
+        <div class="s-text">
+          <div class="s-kicker">${esc(m.type)}</div>
+          <div class="s-name${m.name.length > 9 ? ' long' : ''}">${esc(m.name)}</div>
+          ${m.subtitle ? `<div class="s-sub">${esc(m.subtitle)}</div>` : ''}
+          ${desc ? `<div class="s-desc${desc.length > 150 ? ' long' : ''}">${esc(desc)}</div>` : ''}
+          ${specs.length ? `<dl class="s-specs">${specs.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>` : ''}
+        </div>
+        <div class="s-price"><small>${isProject && e.qty > 1 ? 'Цена за 1 шт.' : 'Цена'}</small>${priceHTML(e)}</div>
+      </div>
+      <div class="s-model__r${p.small.length ? ' has-small' : ''}">
+        <div class="s-pic s-big${p.bigCover ? ' cover' : ''}" style="${bg(p.big ? p.big.f : '')}"></div>
+        ${p.small.length ? `<div class="s-smalls${p.small.length === 1 ? ' one' : ''}">${p.small.map((x) => `<div class="s-pic" style="${bg(x.f)}"></div>`).join('')}</div>` : ''}
+      </div>
+      ${foot(n, label)}
+    </div>` });
+    for (const ip of p.interiors) {
+      const sz = sizeOf(ip); const wide = !sz || sz[0] / sz[1] >= 1.25;
+      out.push({ kind: 'interior', id: m.id, html: (n) => wide ? `<div class="slide s-interior ${th}">
+        <div class="s-pic" style="${bg(ip.f)}"></div>
+        <div class="s-interior__cap"><span>${esc(m.type)}</span><b>${esc(m.name)}</b>${priceText(e) ? `<i>${priceText(e)}</i>` : ''}</div>
+      </div>` : `<div class="slide s-split ${th}">
+        <div class="s-split__l"><div class="s-text"><div class="s-kicker">${esc(m.type)} в интерьере</div><div class="s-name${m.name.length > 9 ? ' long' : ''}">${esc(m.name)}</div>${m.subtitle ? `<div class="s-sub">${esc(m.subtitle)}</div>` : ''}
+          <div class="s-note">Сделаем в выбранной ткани и под ваш размер.</div></div>
+          <div class="s-price"><small>Цена</small>${priceHTML(e)}</div></div>
+        <div class="s-split__r"><div class="s-pic" style="${bg(ip.f)}"></div></div>
+        ${foot(n, label)}
+      </div>` });
+    }
+  }
+  if (isProject && parts.total !== false && entries.some((e) => +cleanPrice(e.price))) {
+    const tot = sumOf(entries); const per = 9;
+    for (let c = 0; c < entries.length; c += per) {
+      const chunk = entries.slice(c, c + per); const last = c + per >= entries.length;
+      out.push({ kind: 'total', html: (n) => `<div class="slide s-total ${th}">
+        <div class="s-kicker">Расчёт</div><div class="s-h">Итого${entries.length > per ? ` <span style="font-size:40px">${Math.floor(c / per) + 1}</span>` : ''}</div>
+        <div class="s-ttab"><div class="s-th"><span>№</span><span>Модель</span><span>Кол-во</span><span>Цена</span><span>Сумма</span></div>
+          ${chunk.map((e, i) => { const p = +cleanPrice(e.price) || 0; return `<div><span>${c + i + 1}</span><span>${esc(e.m.type)} ${esc(e.m.name)}${e.note ? ` <i>· ${esc(e.note)}</i>` : ''}</span><span>${e.qty} шт.</span><span>${p ? (e.from ? 'от ' : '') + fmt(p) + ' ₸' : 'по запросу'}</span><span>${p ? fmt(p * e.qty) + ' ₸' : '—'}</span></div>`; }).join('')}
+          ${last ? `<div class="s-tsum"><span></span><span>Итого${tot.priced < entries.length ? ' (без позиций по запросу)' : ''}</span><span></span><span></span><span>${tot.from ? 'от ' : ''}${fmt(tot.sum)}&nbsp;₸</span></div>` : ''}
+        </div>
+        ${foot(n, label)}
+      </div>` });
+    }
+  }
+  if (parts.terms !== false) {
+    const rows = termsOf(state.cat).filter((r) => (r.k || '').trim() || (r.v || '').trim());
+    const all = [...rows, ...(st.lead ? [{ k: 'Срок изготовления', v: st.lead }] : [])];
+    out.push({ kind: 'terms', html: (n) => `<div class="slide s-terms ${th}">
+      <div><div class="s-kicker">Для всех моделей</div><div class="s-h" style="margin-top:18px">Условия</div>
+      <div class="s-lead">Каждое изделие делаем под заказ в своём ателье в Алматы. Размер, ткань и посадку согласуем до начала работы.</div></div>
+      <dl class="s-table">${all.map((r) => `<div><dt>${esc(r.k)}</dt><dd>${esc(r.v)}</dd></div>`).join('')}</dl>
+      ${foot(n, label)}
+    </div>` });
+  }
+  const trust = logos().filter((l) => l.on !== false).slice(0, 12);
+  if (parts.trust !== false && trust.length) {
+    const rows = Math.ceil(trust.length / 4); const cellH = rows > 2 ? 150 : 190;
+    out.push({ kind: 'trust', html: (n) => `<div class="slide s-trust ${th}">
+      <div class="s-kicker">Клиенты ателье</div><div class="s-h" style="margin-top:18px">Нам доверяют</div>
+      <ul class="s-logos">${trust.map((l) => { const h = Math.min(cellH - 40, Math.round(56 * (l.k || 1))); return `<li style="height:${cellH}px"><div class="s-logo" style="${bg(l.f)};height:${h}px;margin-top:-${Math.round(h / 2)}px"></div></li>`; }).join('')}${`<li style="height:${cellH}px"></li>`.repeat((4 - (trust.length % 4)) % 4)}</ul>
+      ${foot(n, label)}
+    </div>` });
+  }
+  if (parts.cta !== false) {
+    out.push({ kind: 'cta', html: (n) => `<div class="slide s-cta ${th}">
+      <div><div class="s-kicker">Если нужной модели нет</div><div class="s-h" style="margin-top:18px">Пришлите фото — сделаем по&nbsp;вашим размерам</div>
+      <div class="s-lead">Подойдёт фото из Pinterest или Instagram, эскиз дизайнера или проект интерьера.</div></div>
+      <div class="s-steps">
+        <div><span>1</span><div><b>Фото и размеры</b><p>Пришлите в WhatsApp картинку и размеры места: ${esc(st.phone || CONTACT.phone)}</p></div></div>
+        <div><span>2</span><div><b>Ткань и детали</b><p>Подберём ткань в шоуруме, согласуем посадку, каркас и цену.</p></div></div>
+        <div><span>3</span><div><b>Изготовление</b><p>${st.lead ? esc(st.lead) + ' в своём ателье, ' : 'В своём ателье, '}затем доставка и сборка.</p></div></div>
+      </div>
+      ${foot(n, label)}
+    </div>` });
+  }
+  if (parts.contacts !== false) {
+    out.push({ kind: 'contacts', html: (n) => `<div class="slide s-contacts ${th}">${winter ? snow(1440, 810, 120, 11) : ''}
+      <div><div class="s-mark">${mono}<span>RICCA DESIGNS</span></div><div class="s-h" style="margin-top:56px">Приезжайте в&nbsp;шоурум</div>
+      <div class="s-lead">Образцы тканей можно потрогать и сравнить рядом, а готовые модели — посидеть и полежать.</div></div>
+      <dl class="s-clist">
+        <div><dt>Адрес</dt><dd>${esc(CONTACT.addr)}</dd></div>
+        <div><dt>Часы</dt><dd>${esc(CONTACT.hours)}</dd></div>
+        <div><dt>Телефон</dt><dd>${esc(CONTACT.phone)}, WhatsApp</dd></div>
+        ${mgr ? `<div><dt>Менеджер</dt><dd>${mgr}</dd></div>` : ''}
+        <div><dt>Instagram</dt><dd>${esc(CONTACT.ig)}</dd></div>
+        <div><dt>Сайт</dt><dd>${esc(CONTACT.site)}</dd></div>
+      </dl>
+      ${foot(n, label)}
+    </div>` });
+  }
+  return out;
+}
+
+let rsT = 0;
+function renderSlidesSoon() { clearTimeout(rsT); rsT = setTimeout(renderSlides, 250); }
+function renderSlides() {
+  clearTimeout(rsT);
+  const slides = buildSlides();
+  $('#thumbs').innerHTML = slides.map((s, i) => `<div class="sl" data-kind="${s.kind}"${s.id ? ` data-id="${s.id}"` : ''}>${s.html(pad(i + 1))}</div>`).join('')
+    || '<p class="hint">Пока нечего показать: включите модели или добавьте позиции.</p>';
+  fitSlides();
+  $('#pv-title').textContent = state.cat === 'project' ? 'Своё КП' : `КП «${tab().title}»`;
+  $('#pv-count').textContent = `${slides.length} ${plural(slides.length, ['слайд', 'слайда', 'слайдов'])}`;
+}
+function fitSlides() { for (const sl of $$('.sl')) { const w = sl.clientWidth; const el = sl.firstElementChild; if (el && w) el.style.transform = `scale(${w / 1440})`; } }
+new ResizeObserver(() => fitSlides()).observe($('#thumbs'));
+
+/* ── PDF ── */
+const loadImg = (u) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = () => res(); im.src = u; });
+async function makePDF(onProgress) {
+  const slides = buildSlides();
+  if (!window.html2canvas || !window.jspdf) throw new Error('lib');
+  await document.fonts.ready;
+  const stage = $('#stage');
+  const pdf = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: [1440, 810], compress: true });
+  for (let i = 0; i < slides.length; i++) {
+    onProgress(i + 1, slides.length);
+    stage.innerHTML = slides[i].html(pad(i + 1));
+    const urls = $$('[style*="background-image"]', stage).map((el) => (el.style.backgroundImage.match(/url\(["']?(.*?)["']?\)/) || [])[1]).filter(Boolean);
+    await Promise.all(urls.map(loadImg));
+    const canvas = await window.html2canvas(stage.firstElementChild, { scale: 1.5, useCORS: true, backgroundColor: '#FFFFFF', logging: false, width: 1440, height: 810, windowWidth: 1440 });
+    if (i > 0) pdf.addPage([1440, 810], 'landscape');
+    pdf.addImage(canvas.toDataURL('image/jpeg', 0.86), 'JPEG', 0, 0, 1440, 810, undefined, 'FAST');
+    canvas.width = canvas.height = 0;
+  }
+  stage.innerHTML = '';
+  return pdf.output('blob');
+}
+window.__kpMakePDF = makePDF; // для проверки
+const TR = { а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'sch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya', ә: 'a', ғ: 'g', қ: 'k', ң: 'n', ө: 'o', ұ: 'u', ү: 'u', һ: 'h', і: 'i' };
+const translit = (t) => String(t).split('').map((ch) => { const lo = ch.toLowerCase(); const r = TR[lo]; if (r === undefined) return ch; return ch === lo ? r : r.charAt(0).toUpperCase() + r.slice(1); }).join('').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
+let lastUrl = null; let building = false;
+function saveLocal(blob, name) {
+  if (lastUrl) URL.revokeObjectURL(lastUrl);
+  lastUrl = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = lastUrl; a.download = name; a.rel = 'noopener'; a.style.display = 'none'; document.body.appendChild(a); a.click(); setTimeout(() => a.remove(), 4000);
+  toast(`PDF готов: ${esc(name)}. Если файл не скачался сам, <a href="${lastUrl}" download="${esc(name)}">нажмите здесь</a>.`, { html: true, ms: 12000 });
+}
+const UNAVAILABLE = `Скачивание файлов в этом окне недоступно. Откройте конструктор на ${STANDALONE_URL} — там PDF скачивается сразу.`;
+async function download() {
+  if (building) return;
+  const slides = buildSlides();
+  if (!slides.some((s) => s.kind === 'model')) { toast(state.cat === 'project' ? 'Добавьте в КП хотя бы одну модель: «+ Из каталога».' : 'Включите хотя бы одну модель: переключатель слева от названия.', { kind: 'warn' }); return; }
+  const btns = $$('#dl, #dl2, #dl3'); building = true; btns.forEach((b) => { b.disabled = true; });
+  const d = new Date(); const stamp = `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
+  const what = state.cat === 'project' ? (state.project.title || 'Podborka') : tab().title;
+  const name = ['RICCA', 'KP', translit(what).slice(0, 40), translit(state.settings.client || '').slice(0, 40), stamp].filter(Boolean).join('-').replace(/-+/g, '-') + '.pdf';
+  const reset = () => { building = false; $$('#dl, #dl2, #dl3').forEach((b) => { b.disabled = false; b.textContent = 'Скачать PDF'; }); };
+  let blob;
+  try { blob = await makePDF((i, n) => { $$('#dl, #dl2, #dl3').forEach((b) => { b.textContent = `Собираю ${i} из ${n}…`; }); }); }
+  catch (e) { toast(e && e.message === 'lib' ? 'Не загрузился модуль для PDF. Проверьте интернет и обновите страницу.' : 'PDF не собрался. Обновите страницу и попробуйте ещё раз.', { kind: 'warn' }); reset(); return; }
+  try {
+    if (!IN_VIEWER) { saveLocal(blob, name); return; }
+    const dl = await window.claude.use('downloads').catch(() => null);
+    if (!dl) { toast(UNAVAILABLE, { kind: 'warn' }); return; }
+    await dl.save({ filename: name, data: blob });
+    toast('PDF сохранён: ' + name);
+  } catch (e) {
+    const c = e && e.code;
+    if (c === 'declined') hideToast();
+    else if (c === 'rate_limited') toast('Окно сохранения уже открыто. Закройте его и нажмите ещё раз.', { kind: 'warn' });
+    else if (['unavailable', 'not_granted', 'capability_disabled', 'capability_removed', 'extension_not_enabled'].includes(c)) toast(UNAVAILABLE, { kind: 'warn' });
+    else toast('PDF собран, но не сохранился. Нажмите «Скачать PDF» ещё раз.', { kind: 'warn' });
+  } finally { reset(); }
+}
+for (const id of ['#dl2', '#dl3']) $(id).addEventListener('click', download);
+
+/* ── старт ── */
+renderTabs(); fillGeneral(); renderBody(); renderSlides();
+for (const id of Object.keys(state.models)) for (const u of (state.models[id].uploads || [])) if (u && u.id) measure('up:' + u.id);
+if (document.fonts) document.fonts.ready.then(fitSlides);
+refreshSave();
+connect();
+})();
+</script>

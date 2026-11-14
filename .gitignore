@@ -4,3 +4,7 @@ dist/
 ricca/content/fabrics/_official/
 ricca/content/instagram/
 __pycache__/
+
+# конструктор КП: сборка и кэш интерьеров (фото с Pinterest в публичный репозиторий не кладём)
+tools/kp-builder/_site/
+tools/kp-builder/.cache/
