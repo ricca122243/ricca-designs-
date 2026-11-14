@@ -1,0 +1,60 @@
+{
+  "id": "/en",
+  "name": "RICCA DESIGNS — custom upholstered furniture",
+  "short_name": "RICCA",
+  "description": "Custom sofas, beds and armchairs from Almaty: catalogue, fabrics and a 3D configurator.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/en?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
+  "categories": [
+    "shopping",
+    "lifestyle"
+  ],
+  "icons": [
+    {
+      "src": "/img/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/pwa/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Catalogue",
+      "url": "/en?source=app#catalog",
+      "icons": [
+        {
+          "src": "/img/pwa/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Build in 3D",
+      "url": "/en/configurator?source=app",
+      "icons": [
+        {
+          "src": "/img/pwa/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

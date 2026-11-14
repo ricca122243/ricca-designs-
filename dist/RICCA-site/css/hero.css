@@ -1,0 +1,114 @@
+/* ==========================================================================
+   RICCA DESIGNS — первый экран (DESIGN.md 4.4, 10 ноября). Подключается после css/site.css, разметка — index.html (#top),
+   смена кадров и ролик — js/hero.js. Адрес решает, что в кадре: по умолчанию (html[data-hero="2"]) — ролик во весь экран, постер первым
+   (без JS — только постер); ?hero=1 — прежняя смена реальных работ (6 с кадр, 1,2 с переход; при наведении — пауза;
+   prefers-reduced-motion — только первый кадр). Владелец: первый экран с фото работ «не очень» — поэтому по умолчанию ролик.
+   Общее: кадр во весь экран, текст слева внизу — не больше 40 % кадра: подпись-капитель и точки с паузой в одной строке, заголовок
+   двумя строками из-под маски, две равные кнопки по 50 px. Градиент — только нижние 45 % кадра. Высота — min(100svh, 900px),
+   на телефоне 78svh: следующий раздел выглядывает снизу. Высота задана заранее, фото лежат абсолютно — при загрузке ничего не
+   сдвигается (CLS 0). Первый кадр — постер <img fetchpriority="high"> + preload в <head> (LCP). Цвета только из палитры: белый текст
+   на тёмном градиенте от --ink, кнопки — белая заливка и белый контур.
+   Телефон (≤ 599 px): «текст не закрывает изделие». В роликах и фото изделие стоит в нижней половине кадра — одной точкой привязки
+   его выше текста не поднять. Поэтому кадр на телефоне короче первого экрана на --base и прижат низом (object-position … 100 %):
+   изделие уходит вверх, под кадром — та же тушь --ink, градиент сходится в неё; текст стоит на тёмном, а не на мебели.
+   ========================================================================== */
+.hero { --base: 0px; position: relative; display: block; min-height: 0; height: 100vh; height: min(100svh, 900px); margin: 0; padding: 0; overflow: hidden; background: var(--product-bg); color: #FFFFFF; }
+@media (max-width: 899px) { .hero { height: 78vh; height: 78svh; } }
+
+/* кадр: постер, поверх него ролик; в варианте ?hero=1 — кадры работ друг над другом, виден .is-on; при смене новый проявляется поверх
+   прежнего (.is-prev остаётся под ним без прозрачности — без «провала» в серый посередине перехода) */
+.hero__media { position: absolute; inset: 0; overflow: hidden; background: var(--product-bg); }
+.hero__poster, .hero__slides { position: absolute; inset: 0 0 var(--base); display: block; margin: 0; padding: 0; list-style: none; }
+.hero__slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1200ms var(--ease-io); }
+.hero__slide.is-prev { opacity: 1; z-index: 1; transition: none; }
+.hero__slide.is-on { opacity: 1; z-index: 2; }
+.hero__slide img, .hero__poster img, .hero__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); }
+.hero__media .hero__video { height: calc(100% - var(--base)); opacity: 0; transition: opacity 400ms var(--ease); }   /* ролик поверх постера проявляется, когда пошёл; .hero__media — перебить высоту 100 % из site.css */
+.hero__video.is-playing { opacity: 1; }
+html[data-hero="1"] .hero__poster, html[data-hero="1"] .hero__video { display: none; }
+/* градиент под текстом — только нижние 45 % кадра; верх свободен: шапка на светлом кадре читается как есть */
+.hero__base { display: none; }
+.hero__shade { position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: linear-gradient(to top, rgba(10, 10, 10, .6), rgba(10, 10, 10, .3) 22%, rgba(10, 10, 10, 0) 45%); }
+
+/* текст слева внизу: подпись и точки в одной строке → заголовок → кнопки */
+.hero__front { position: absolute; display: block; inset: auto 0 0; z-index: 4; padding-bottom: clamp(28px, 4.4vw, 64px); }
+.hero__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.hero__eye { display: block; margin: 0; font: 500 12px/1.5 var(--sans); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; color: rgba(255, 255, 255, .86); }
+.hero__title { max-width: 720px; margin: 0; font: var(--w-display) var(--h1)/var(--lh-h1) var(--f-display); letter-spacing: var(--ls-h1); color: #FFFFFF; text-wrap: initial; }
+.hero__ln { display: block; overflow: hidden; padding: 0 0 .08em; margin: 0 0 -.08em; white-space: normal; }   /* длинная строка переносится внутри маски, а не режется */
+.hero__ln > span { display: block; }
+html[lang="en"] .hero__title { font-size: min(var(--h1), 8.4vw); }   /* «Upholstered furniture» длиннее русской строки */
+.hero__cta { display: flex; flex-wrap: nowrap; gap: 12px; margin-top: 20px; }
+.hero__cta .btn { min-width: 180px; }
+.hero .btn--fill { background: #FFFFFF; color: #0A0A0A; border-color: #FFFFFF; }
+.hero .btn--line { background: transparent; color: #FFFFFF; border-color: rgba(255, 255, 255, .72); }
+.hero .btn:focus-visible { outline-color: #FFFFFF; }
+.hero .btn--fill:active { background: var(--line); border-color: var(--line); }   /* нажатие — единственный отклик на телефоне */
+.hero .btn--line:active { background: rgba(255, 255, 255, .16); }
+@media (hover: hover) {
+  .hero .btn--fill:hover { background: #E6E8EB; border-color: #E6E8EB; color: #0A0A0A; }
+  .hero .btn--line:hover { background: #FFFFFF; color: #0A0A0A; border-color: #FFFFFF; }
+}
+/* точки (короткие штрихи, прямые углы), счётчик 01 / 04 и пауза (WCAG 2.2.2) — разметку ставит js/hero.js; без него ряд пуст.
+   Зона нажатия 44 px, в раскладке ряд занимает 18 px */
+.hero__nav { display: flex; align-items: center; justify-content: flex-end; gap: 4px 12px; min-height: 44px; margin-block: -13px; color: #FFFFFF; }
+.hero__count { font: 500 12px/1 var(--sans); letter-spacing: .08em; font-variant-numeric: lining-nums tabular-nums; color: rgba(255, 255, 255, .72); white-space: nowrap; }
+.hero__count b { font-weight: 500; color: #FFFFFF; }
+.hero__dots { display: flex; }
+.hero__dot { position: relative; width: 28px; height: 44px; }
+.hero__dot::before { content: ''; position: absolute; left: 4px; right: 4px; top: 50%; height: 2px; margin-top: -1px; background: rgba(255, 255, 255, .42); transition: background 250ms var(--ease); }
+.hero__dot[aria-current="true"]::before { background: #FFFFFF; }
+@media (hover: hover) { .hero__dot:hover::before { background: rgba(255, 255, 255, .8); } }
+.hero__dot:focus-visible, .hero__pp:focus-visible { outline: 1px solid #FFFFFF; outline-offset: -4px; }
+.hero__pp { color: #FFFFFF; margin-right: -13px; }   /* значок паузы — по правому полю: зона 44 px выходит за него */
+.hero__pp .ico { width: 18px; height: 18px; stroke-width: 1.5; }
+
+@media (max-width: 899px) {
+  .hero__front { padding-bottom: 28px; }
+  .hero__cta .btn { flex: 1 1 0; min-width: 0; padding-inline: 16px; }
+  .hero__count { display: none; }   /* телефон: точки и так показывают, какой кадр */
+  .hero__dots { gap: 8px; }
+  .hero__dot { width: 44px; }   /* зона нажатия 44 × 44, штрих 24 px */
+  .hero__dot::before { left: 10px; right: 10px; }
+}
+/* телефон: ролик 9 : 16 — нижняя часть кадра (изделие выше), верх с окном срезается */
+@media (max-width: 767px) { .hero__poster img, .hero__video { object-position: 50% 100%; } }
+@media (max-width: 599px) {
+  .hero { --base: 108px; background: var(--ink); }
+  .hero__media { background: var(--ink); }
+  .hero__slide img { object-position: var(--pos-m, var(--pos, 50% 100%)); }
+  /* градиент — нижние 47 %: под подписью уже ≈ .45 (белая капитель 12 px читается и на светлом ковре, ≥ 4,5 : 1), к основанию сходится в --ink.
+     Сверху — лёгкая белая дымка 96 px: при обрезке под телефон верх кадра не всегда светлый (сцена гостиной), а текст шапки тёмный */
+  .hero__shade { background: linear-gradient(to top, rgb(10, 10, 10) var(--base), rgba(10, 10, 10, .62) calc(var(--base) + 8%), rgba(10, 10, 10, .45) 38%, rgba(10, 10, 10, 0) 47%),
+    linear-gradient(to bottom, rgba(255, 255, 255, .62), rgba(255, 255, 255, 0) 96px); }
+  .hero__front { padding-bottom: 24px; }
+  .hero__base { position: absolute; inset: auto 0 0; display: block; height: var(--base); pointer-events: none; }   /* тёмное основание кадра: над ним шапка тоже тёмная (js/site.js, [data-hdr="dark"]) */
+  .hero__title { font-size: min(var(--h1), 10.6vw); }   /* 320–375: «Мягкая мебель» — в одну строку, заголовок — в две */
+}
+/* 320: подписи нет; точки и пауза — справа на уровне второй строки заголовка, своей строки не занимают (блок текста ≤ 40 % кадра) */
+@media (max-width: 359px) {
+  .hero__eye { display: none; }
+  .hero__front > .wrap { position: relative; }
+  .hero__top { position: absolute; right: 0; bottom: 79px; margin: 0; z-index: 1; }   /* z-index: строка заголовка (слой анимации) не перекрывает паузу и точки */
+}
+
+/* вход: кадр виден сразу (LCP не ждёт анимации). Строки заголовка поднимаются из маски: 700 мс, вторая на 90 мс позже; подпись с точками
+   и кнопки — подъём 10 px и проявление за 500 мс, задержки 120 и 220 мс. Скрытое состояние — только при работающем скрипте (.js).
+   --hd — задержка входа из site.css: 120 мс, с занавесом первого визита (html.intro) — 1100 мс. reduced-motion: без движения и смены кадров */
+.js .hero__media, .js .hero__slide img { animation: none; }
+.js .hero__title, .js .hero__top .hero__eye, .js .hero__top .hero__nav { animation: none; }   /* поднимаются строки и ряд целиком, а не их части */
+.js .hero__ln > span { animation: ln 700ms var(--ease) both; animation-delay: var(--hd, 120ms); }
+.js .hero__ln + .hero__ln > span { animation-delay: calc(var(--hd, 120ms) + 90ms); }
+.js .hero__top { animation: up 500ms var(--ease) both; animation-delay: calc(var(--hd, 120ms) + 120ms); }
+.js .hero__cta { animation: up 500ms var(--ease) both; animation-delay: calc(var(--hd, 120ms) + 220ms); }
+@media (prefers-reduced-motion: reduce) {
+  .hero__slide, .hero__video, .hero__dot::before { transition: none; }
+  .js .hero__ln > span, .js .hero__top, .js .hero__cta { animation: none; }
+}
+
+/* телефон (11 ноября): «Каталог» уже есть в нижнем меню прямо под кадром — на первом экране одна кнопка, без повтора */
+@media (max-width: 899px) {
+  .hero__cta .btn--fill { display: none; }
+  .hero__cta .btn--line { flex: 0 0 auto; min-width: 180px; }
+}

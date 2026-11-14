@@ -1,0 +1,1 @@
+qrcode-generator 2.0.4 (dist/qrcode.mjs) from npm, minified with esbuild 0.25.10. MIT (LICENSE).

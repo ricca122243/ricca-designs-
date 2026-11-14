@@ -1,0 +1,342 @@
+/* ==========================================================================
+   RICCA DESIGNS — главная «фото вместо текста» (День 3, 9 ноября). Подключается после css/site.css и css/hero.css. Токены и базовые
+   классы (.sec, .wrap, .title, .shead, .label, .btn, .caps-link, .rv) — из site.css; здесь только разделы новой главной:
+   каталог (плотнее на телефоне) → работы (кнопка под сеткой .wk, саму сетку строит js/site.js) → конструктор с эскизом (img/sketch)
+   → «Как заказать» с фото → ателье (телефон: ролик рядом с текстом) → «Для бизнеса» с фото → география → вопросы <details> с фото
+   → подвал с шоурумом. Фото — только реальные работы ателье (js/works-data.js). Раздел на телефоне ≤ 1,2 экрана (кроме сетки работ).
+   Точки: 599.98 (телефон), 899.98 (планшет), 1199.98 — как в site.css.
+   ========================================================================== */
+
+/* ---------- общее для фото разделов: кадр в рамке целиком (cover), серая подложка до загрузки ---------- */
+.how__pic, .biz__pic, .faq__pic, .foot__pic { position: relative; display: block; overflow: hidden; background: var(--product-bg); border-radius: var(--radius); }
+.how__pic img, .biz__pic img, .faq__pic img, .foot__pic img { width: 100%; height: 100%; object-fit: cover; }
+.cfg__in, .how__in, .faq__in { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 40px var(--gap); }
+.how__cta, .cfg__text .btn, .biz__text .btn { margin-top: 4px; }
+@media (max-width: 599.98px) { .how__cta .btn, .cfg__text .btn, .biz__text .btn, .works__foot .btn, .foot__show .btn, .foot__contacts .btn { width: 100%; } }
+
+/* ---------- каталог: телефон — плитки сразу под первым экраном: заголовок «Каталог» остаётся только для чтения с экрана (слово уже есть
+   в нижнем меню и в меню), верхний отступ 16 px — на первом экране 390 × 700 под кадром видны верхи трёх плиток категорий;
+   после «Каталог» из нижнего меню все пять плиток — на одном экране ---------- */
+@media (max-width: 599.98px) {
+  .cat { padding-top: 16px; }
+  .cat .shead { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .cat .tiles { row-gap: 24px; }
+}
+
+/* ---------- популярные модели: четыре модели каталога той же сеткой .wk (js/site.js); телефон — большая, пара, большая (.wk--rhythm) ----------
+   наши работы: заголовок и фишки-фильтры (.shead, .chips), сетка .wk из js/site.js; под сетками — кнопка */
+.works__foot { display: flex; margin-top: clamp(40px, 4.4vw, 64px); }
+@media (max-width: 599.98px) { .works__foot { margin-top: 28px; } }
+
+/* ---------- конструктор: эскиз на сером подиуме слева (7 колонок), текст справа по центру высоты; телефон — столбиком ---------- */
+.cfg__in { align-items: center; }
+.cfg__pic { grid-column: 1 / span 7; display: block; padding: clamp(28px, 4.4vw, 64px) clamp(28px, 5vw, 80px); background: var(--product-bg); border-radius: var(--radius); }
+.cfg__pic img { width: 100%; height: auto; }
+.cfg__text { grid-column: 9 / -1; display: grid; gap: 20px; justify-items: start; }
+@media (max-width: 899.98px) {
+  .cfg__in { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .cfg__pic, .cfg__text { grid-column: 1 / -1; }
+  .cfg__pic { padding: 24px 20px; }
+  .cfg__text { gap: 16px; }
+}
+
+/* ---------- как заказать: фото 4 : 5 слева (5 колонок), справа заголовок, три шага в ряд под линиями и WhatsApp; телефон — фото 3 : 2 сверху ---------- */
+.how__in { align-items: center; }
+.how__pic { grid-column: 1 / span 5; aspect-ratio: 4 / 5; }
+.how__text { grid-column: 1 / -1; display: grid; gap: clamp(32px, 3.3vw, 48px); justify-items: start; }
+.how__steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gap); width: 100%; }
+.how__steps li { display: grid; align-content: start; gap: 14px; padding-top: 18px; border-top: 1px solid var(--line); font: 500 15px/1.5 var(--sans); letter-spacing: 0; text-wrap: balance; }
+.how__n { font: 400 13px/1 var(--sans); letter-spacing: .04em; color: var(--ink-2); font-variant-numeric: lining-nums tabular-nums; }
+@media (max-width: 899.98px) {
+  .how__in { grid-template-columns: minmax(0, 1fr); gap: 28px; }   /* после базовых правил: иначе grid-column: span 5 создавал бы лишние колонки */
+  .how__pic, .how__text { grid-column: 1 / -1; }
+  .how__pic { aspect-ratio: 3 / 2; }
+  .how__text { gap: 28px; }
+  .how__steps { column-gap: 14px; }
+  .how__steps li { gap: 10px; padding-top: 14px; font-size: 14px; }
+}
+
+/* ---------- ателье: две строки (site.css: .atelier__lead, .atelier__p); телефон — ролик рядом с текстом, а не под ним (экономит экран) ---------- */
+@media (max-width: 767px) {
+  .atelier__in { grid-template-columns: minmax(0, 1fr) 42%; gap: 20px; align-items: start; }
+  .atelier__text { grid-column: 1; gap: 14px; }
+  .atelier__text .title { margin-bottom: 0; }
+  .atelier__lead { font-size: 19px; }
+  .atelier__film { grid-column: 2; width: 100%; justify-self: end; }
+}
+
+/* ---------- для бизнеса: чёрная полоса — слева подпись, строка-заголовок, строка и WhatsApp (6 колонок), справа фото 4 : 5 (5 колонок);
+   телефон — фото 16 : 9 сверху, полоса ниже (64 px вместо 96) ---------- */
+.biz { padding: clamp(64px, 6.5vw, 96px) 0; }   /* site.css: 96–160 px — с фото полоса и так высокая */
+.biz__in--photo { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: center; }
+.biz__text { grid-column: 1 / span 6; display: grid; gap: 24px; justify-items: start; }
+.biz__text .biz__head { max-width: 15em; }
+.biz__line { font: 300 16px/1.6 var(--sans); color: var(--on-noir-2); max-width: 36ch; text-wrap: pretty; }
+.biz__pic { grid-column: 8 / -1; aspect-ratio: 4 / 5; background: #1A1A1A; }
+@media (max-width: 899.98px) {
+  .biz { padding: 64px 0 72px; }
+  .biz__in--photo { grid-template-columns: minmax(0, 1fr); row-gap: 32px; }
+  .biz__pic { grid-column: 1 / -1; order: -1; aspect-ratio: 16 / 9; }
+  .biz__text { grid-column: 1 / -1; gap: 18px; }
+}
+
+/* ---------- география: одна строка справа от заголовка (site.css .geo__head); телефон — карта ближе ---------- */
+@media (max-width: 599.98px) { .geo__map { margin-top: 32px; } }
+
+/* ---------- вопросы: фото 4 : 5 слева (5 колонок), справа четыре закрытых <details> под линиями; «+» поворачивается в «×»; телефон — фото 2 : 1 сверху ---------- */
+.faq__in { align-items: start; }
+.faq__pic { grid-column: 1 / span 5; aspect-ratio: 5 / 4; }   /* вопросы закрыты и невысоки — кадр 5 : 4, а не 4 : 5 */
+.faq__text { grid-column: 7 / -1; display: grid; gap: clamp(28px, 3vw, 40px); }
+.faq__list { border-bottom: 1px solid var(--line); }
+details.qa { padding: 0; border-top: 1px solid var(--line); }
+.qa__q { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; padding: 14px 0; cursor: pointer; list-style: none; font: 500 16px/1.4 var(--sans); letter-spacing: 0; color: var(--ink); -webkit-tap-highlight-color: transparent; transition: color 200ms; }
+.qa__q::-webkit-details-marker { display: none; }
+.qa__q .ico { width: 16px; height: 16px; stroke-width: 1.5; transition: transform 300ms var(--ease); }
+.qa[open] .qa__q .ico { transform: rotate(45deg); }
+.qa__q:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+details.qa .qa__a { margin: 0; padding: 0 44px 20px 0; font-size: 15px; }
+@media (hover: hover) { .qa__q:hover { color: var(--ink-2); } }
+@media (max-width: 899.98px) {
+  .faq__in { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .faq__pic, .faq__text { grid-column: 1 / -1; }
+  .faq__pic { aspect-ratio: 2 / 1; }
+  .qa__q { font-size: 15px; min-height: 56px; }
+}
+
+
+/* ателье: ролик вертикальный (478 × 850) — на компьютере крупнее, по центру правой половины */
+@media (min-width: 768px) { .atelier__film { max-width: 420px; justify-self: center; } .atelier__film video { width: 100%; height: auto; } }
+
+/* «В деталях» (под плитками каталога): модель крупно и два кадра деталей. Телефон — три группы столбиком, планшет — по две, компьютер — четыре в ряд */
+.dt { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(32px, 3vw, 48px) 16px; margin: 0; padding: 0; list-style: none; }
+.wk.dt__big { display: block; margin: 0; }
+.dt__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.dt__ph { display: block; aspect-ratio: 1; overflow: hidden; background: var(--product-bg); }
+.dt__ph img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: darken; transition: transform 600ms var(--ease); }
+.dt__ph:active { opacity: .8; }
+@media (hover: hover) { .dt__ph:hover img { transform: scale(1.04); } }
+@media (max-width: 1199px) { .dt { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 599px) { .dt { grid-template-columns: 1fr; gap: 32px; } .dt__g:nth-child(n+4) { display: none; } }
+/* телефон: у «Вопросов» фото нет — список сразу под заголовком */
+@media (max-width: 899px) { .faq__pic { display: none; } }
+
+/* лента «Популярные модели»: один ряд, листается вбок с доводкой; телефон — карточка 72vw, следующая выглядывает */
+.wk.strip { display: flex; gap: 12px; margin: 0 calc(var(--pad) * -1); padding: 0 var(--pad); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: var(--pad); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.wk.strip::-webkit-scrollbar { display: none; }
+.wk.strip > li { flex: 0 0 72vw; max-width: 340px; scroll-snap-align: start; }
+@media (min-width: 900px) { .wk.strip { gap: 16px; } .wk.strip > li { flex-basis: 23%; } }
+
+/* ───── первый экран «как у ориентира» (владелец, 11 ноября): без кадра — заголовок по центру и категории линейными рисунками ───── */
+html[data-hero="0"] .hero { display: none; }
+html[data-hero="0"] .cat { padding-top: calc(var(--hdr) + clamp(36px, 6vw, 80px)); }
+html:not([data-hero="0"]) .intro__title { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.cat .shead, .cat .tiles { display: none; }   /* прежние фото-плитки: разметка остаётся для js/site.js */
+.intro { text-align: center; }
+.intro__title { max-width: 18ch; margin: 0 auto clamp(44px, 6vw, 88px); font: 300 clamp(30px, 8.4vw, 60px)/1.14 var(--f-display, var(--sans)); letter-spacing: -.02em; color: var(--ink); text-wrap: balance; }
+.cats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px 12px; margin: 0; padding: 0; list-style: none; }
+.cats__a { display: grid; justify-items: center; gap: 18px; padding: 6px 0; color: var(--ink); -webkit-tap-highlight-color: transparent; }
+.cats__i { width: min(148px, 80%); height: auto; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.cats__i * { vector-effect: non-scaling-stroke; }
+.cats__t { font: 500 13px/1.2 var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+.cats__a:active { opacity: .6; }
+@media (hover: hover) { .cats__i { transition: transform 400ms var(--ease); } .cats__a:hover .cats__i { transform: translateY(-4px); } }
+@media (min-width: 768px) { .cats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 64px 24px; } }
+@media (min-width: 1100px) { .cats { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+/* ателье «как у ориентира»: под текстом — кадры своего производства (ролик ателье и три кадра из него), одной высоты */
+.sec.atelier .atelier__in { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+.sec.atelier .atelier__text { grid-column: 1 / -1; }
+.atelier__grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.sec.atelier .atelier__grid .atelier__film { grid-column: auto; width: 100%; max-width: none; justify-self: stretch; }
+.atelier__ph { margin: 0; aspect-ratio: 478 / 850; overflow: hidden; background: var(--paper-2); }
+.atelier__ph img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(.85) contrast(1.06) brightness(1.03); }
+@media (min-width: 900px) { .atelier__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; } }
+
+/* ателье, телефон — «в таком же размере, как у ориентира» (владелец, 11 ноября): кадры во всю ширину, по одному в ряд: горизонтальный, ролик, горизонтальный.
+   Компьютер — прежний ряд из четырёх вертикальных. Цвет — естественный, чуть спокойнее (без серого фильтра) */
+.atelier__ph--land { display: none; aspect-ratio: 478 / 299; }
+.sec.atelier .atelier__film video, .atelier__ph img { filter: saturate(.78) contrast(1.04); }
+@media (max-width: 767px) {
+  .atelier__grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .atelier__ph--land { display: block; }
+  .atelier__ph--port { display: none; }
+  .sec.atelier .atelier__grid .atelier__film { aspect-ratio: 4 / 5; }
+}
+
+/* «Для бизнеса»: RICCA HoReCa — три кадра ателье 5 : 4 лентой (листается вбок, следующий выглядывает), под кадром подпись шрифтом сайта:
+   номер ярлыком, заголовок, одна строка (13 ноября — вместо слайдов публикации со своим шрифтом и «таблетками») */
+.biz__cards { grid-column: 8 / -1; display: flex; gap: 12px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.biz__cards::-webkit-scrollbar { display: none; }
+.biz__cards > li { flex: 0 0 82%; scroll-snap-align: start; }
+.biz__cards a { display: block; color: inherit; text-decoration: none; }
+.biz__cards figure { display: grid; gap: 16px; margin: 0; }
+.biz__cards img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 4; object-fit: cover; border-radius: var(--r-photo); background: #1A1A1A; }
+.biz__cards figcaption { display: grid; gap: 6px; }
+.biz__cards .label { color: var(--on-noir-2); }
+.biz__cards b { font: 300 20px/1.2 var(--sans); letter-spacing: -.01em; color: var(--on-noir); }
+.biz__cards figcaption > span:last-child { font: 400 14px/1.45 var(--sans); color: var(--on-noir-2); }
+@media (hover: hover) { .biz__cards img { transition: opacity .3s var(--ease); } .biz__cards a:hover img { opacity: .88; } }
+.biz__cards a:active img { opacity: .8; }
+.biz__btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
+.biz .btn--line { color: var(--on-noir); border-color: rgba(255, 255, 255, .5); background: transparent; }
+@media (hover: hover) { .biz .btn--line:hover { background: var(--on-noir); border-color: var(--on-noir); color: var(--ink); } }
+.biz .btn--line:active { background: rgba(255, 255, 255, .1); }   /* нажатие на чёрном — светлее, не серая заливка */
+@media (max-width: 899px) {
+  .biz__cards { grid-column: 1 / -1; order: -1; margin: 0 calc(var(--pad) * -1); padding: 0 var(--pad); scroll-padding-left: var(--pad); }
+  .biz__cards > li { flex-basis: 76vw; max-width: 380px; }
+}
+@media (max-width: 599.98px) { .biz__btns { width: 100%; flex-direction: column; gap: 8px; } .biz__text .biz__btns .btn { flex: none; width: 100%; margin-top: 0; } }   /* 12 ноября: подписи капителью шире — кнопки одна под другой, во всю ширину */
+.biz__text > * { grid-column: 1 / -1; }   /* заголовок задаёт сетке колонки (site.css) — строка и кнопки идут каждая своим рядом, а не бок о бок */
+
+/* ───── 11 ноября, вечер: «всё это эстетично увеличить, между ярлыками добавить место, сделать аккуратно» ─────
+   Категории первого экрана: рисунок крупнее и плотнее линией, между рядами и до подписи — больше воздуха */
+.intro__title { margin-bottom: clamp(52px, 7vw, 96px); }
+.cats { gap: 60px 16px; }
+.cats__a { gap: 24px; }
+.cats__i { width: min(172px, 92%); stroke-width: 1.5; }
+.cats__t { font-size: 14px; letter-spacing: .14em; }
+@media (min-width: 768px) { .cats { gap: 72px 32px; } }
+@media (max-width: 359px) { .cats { gap: 48px 12px; } .cats__t { font-size: 13px; letter-spacing: .1em; } }
+/* лента «Популярные модели»: карточка крупнее */
+@media (max-width: 899px) { .wk.strip { gap: 14px; } .wk.strip > li { flex-basis: 80vw; max-width: 380px; } }
+/* «Наши работы» на телефоне: вместо мелкой сетки 2 × 2 — крупные кадры лентой (листается вбок, следующий выглядывает) */
+@media (max-width: 767px) {
+  .works [data-works-row] { display: flex; gap: 12px; margin: 0 calc(var(--pad) * -1); padding: 0 var(--pad); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: var(--pad); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .works [data-works-row]::-webkit-scrollbar { display: none; }
+  .works [data-works-row] > li { display: block !important; flex: 0 0 74vw; max-width: 360px; scroll-snap-align: start; }
+}
+/* «Как заказать» на телефоне: три шага строками, а не тремя тесными колонками */
+@media (max-width: 599.98px) {
+  .how__steps { grid-template-columns: minmax(0, 1fr); }
+  .how__steps li { grid-template-columns: 44px minmax(0, 1fr); align-items: baseline; gap: 0; padding: 18px 0; font-size: 17px; line-height: 1.4; text-wrap: pretty; }
+  .how__steps li:last-child { border-bottom: 1px solid var(--line); }
+  .how__n { font-size: 13px; }
+}
+/* ателье без ролика: телефон — горизонтальный, высокий, горизонтальный; компьютер — три вертикальных в ряд */
+.atelier__ph--tall { display: none; aspect-ratio: 4 / 5; }
+.atelier__ph--tall img { object-position: 50% 30%; }
+@media (max-width: 767px) { .atelier__ph--tall { display: block; } .atelier__grid { gap: 14px; } }
+@media (min-width: 900px) { .atelier__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 768px) and (max-width: 899px) { .atelier__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* номера разделов: заголовок «Каталог» скрыт (первый экран — категории) и номер не занимает — счёт начинаем с 2, чтобы у «Шоурума» остался «№ 09» */
+body { counter-reset: sec 2; }
+@media (min-width: 768px) { .atelier__ph--port { aspect-ratio: 4 / 5; } }   /* компьютер: три кадра в ряд, не выше экрана */
+
+/* ───── СВОЙ СТИЛЬ RICCA (владелец, 11 ноября: «текст не приближён и не далеко — в нормальном положении; фото так же; нужен свой стиль») ─────
+   1. Текст раздела: заголовок 28 px лёгким начертанием, под ним ОДИН абзац 15 px обычным начертанием и основным цветом — не крупный и не серый мелкий.
+   2. Знак RICCA — маленький чёрный квадрат перед ссылкой прописными («■ ВЕСЬ КАТАЛОГ»): углы у нас прямые. Так оформлены второстепенные переходы;
+      кнопка — только у главного действия раздела.
+   3. Фото: изделие занимает ≈ 78 % ширины рамки (js/site.js MODEL_FILL) — не «в упор» и не мелко; кадры разделов — во всю ширину колонки, без обрезки сюжета. */
+.txt, .shead__line, .geo__line, .biz__line { font: 400 15px/1.6 var(--sans); letter-spacing: 0; color: var(--ink); max-width: 36em; text-wrap: pretty; }
+.biz__line { color: var(--on-noir); }
+@media (min-width: 900px) { .txt, .shead__line, .geo__line, .biz__line { font-size: 16px; } }
+.more { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; font: 500 12.5px/1.2 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); -webkit-tap-highlight-color: transparent; }
+.more::before { content: ''; flex: none; width: var(--mark, 7px); height: var(--mark, 7px); background: currentColor; transform-origin: left center; transition: transform 300ms var(--ease); }
+.more:active { opacity: .6; }
+@media (hover: hover) { .more:hover::before { transform: scaleX(2.6); } }   /* знак вытягивается в черту — как у кнопок (site.css, система кнопок) */
+.works__foot { margin-top: 20px; }
+@media (max-width: 599.98px) { .works__foot { margin-top: 16px; } .how__steps li { font-size: 16px; } }
+.intro__title { font-size: clamp(28px, 7.6vw, 56px); }
+
+/* ───── воздух и карточки «как у ориентира» (владелец, 11 ноября, по шести снимкам: «у них остаётся место, свободно и минималистично») ─────
+   Между разделами — 84 px на телефоне (было 48), между карточками — 32 px. «Популярные модели»: карточка во всю ширину, по одной в ряд;
+   изделие на светлом поле, название в левом верхнем углу карточки; через одну — кадр детали во всю карточку. Углы прямые — это наше */
+:root { --sec: clamp(84px, 9vw, 128px); }
+@media (max-width: 767px) { .shead { margin-bottom: 32px; } .atelier__grid { gap: 28px; } }
+.wk.pm { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; margin: 0; padding: 0; overflow: visible; }
+.wk.pm > li { max-width: none; }
+.pm .wk__a { position: relative; display: block; }
+.pm .wk__cap { position: absolute; top: 14px; left: 16px; right: 16px; display: flex; gap: .35em; margin: 0; pointer-events: none; }
+.pm .wk__k, .pm .wk__t { display: inline; margin: 0; font: 400 14px/1.3 var(--sans); letter-spacing: .01em; text-transform: none; color: var(--ink); text-decoration: none; }
+.pm__da { aspect-ratio: 4 / 5; overflow: hidden; background: var(--product-bg); }
+.pm__da img { width: 100%; height: 100%; object-fit: cover; }
+.pm__da.is-light .wk__t { color: #fff; }
+@media (min-width: 768px) { .wk.pm { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; } .pm__da { aspect-ratio: 4 / 3; } }
+@media (min-width: 1200px) { .wk.pm { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* подпись на кадре детали — белая бирка в углу (на пёстрой и тёмной ткани строка без подложки не читается) */
+.pm__da .wk__cap { top: 0; left: 0; right: auto; padding: 9px 14px; background: var(--paper); }
+.pm__da.is-light .wk__t { color: var(--ink); }
+
+/* ателье: кадры одного стиля — светлый лофт, дуб, чёрный металл (владелец утвердил 11 ноября). Кадр во всю ширину колонки, в своих пропорциях, без фильтра */
+.atelier__grid--one { grid-template-columns: minmax(0, 1fr) !important; }
+.atelier__ph--hero { aspect-ratio: 2400 / 1792; }
+.atelier__ph--hero img { filter: none; }
+@media (min-width: 900px) { .atelier__grid--one { max-width: 1040px; } }   /* компьютер: кадр не выше экрана */
+
+/* меню на низком экране (320 × 568): нижний блок с WhatsApp не прилипает — иначе закрывает последние строки списка */
+@media (max-height: 620px) { .menu__foot { position: static; margin-top: 0; } }
+/* ателье: набор кадров одного стиля с подписями (общий вид — во всю ширину, остальные — по два в ряд на компьютере, по одному на телефоне) */
+.atelier__grid--set { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 28px 24px; max-width: none; }
+.atelier__grid--set > .atelier__ph--hero { grid-column: 1 / -1; }
+.atelier__grid--set .atelier__ph { aspect-ratio: auto; background: none; overflow: visible; }
+.atelier__grid--set .atelier__ph img { aspect-ratio: 4 / 3; height: auto; filter: none; background: var(--paper-2); }
+.atelier__cap { display: flex; align-items: center; gap: 10px; padding-top: 12px; font: 500 12px/1.3 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
+.atelier__cap::before { content: ''; flex: none; width: 6px; height: 6px; background: currentColor; }
+@media (max-width: 767px) { .atelier__grid--set { grid-template-columns: minmax(0, 1fr) !important; } }
+
+/* ───── окно «Ателье подробно»: одна колонка до 880 px, текст 15 px, кадры в своих пропорциях ───── */
+.atl { position: fixed; inset: 0; width: 100%; height: 100%; height: 100dvh; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; opacity: 0; transition: opacity 300ms var(--ease); }
+.atl.is-in { opacity: 1; }
+.atl::backdrop { background: var(--paper); }
+.atl__body { max-width: 880px; padding-top: clamp(32px, 5vw, 64px); padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+.atl__title { margin: 0 0 16px; font: var(--w-display) clamp(28px, 4vw, 44px)/1.12 var(--f-display); letter-spacing: -.02em; color: var(--ink); text-wrap: balance; }
+.atl__pic { margin: 28px 0 0; background: var(--paper-2); }
+.atl__pic img { display: block; width: 100%; height: auto; }
+.atl__facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 36px 0 0; padding: 24px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); list-style: none; }
+.atl__facts b { display: block; font: 300 clamp(22px, 6vw, 34px)/1.1 var(--f-display); letter-spacing: -.02em; font-variant-numeric: lining-nums; }
+.atl__facts span { display: block; margin-top: 8px; font: 400 13px/1.4 var(--sans); color: var(--ink-2); text-wrap: pretty; }
+.atl__sec { margin-top: clamp(56px, 8vw, 96px); }
+.atl__n { display: flex; align-items: center; gap: 10px; margin: 0; font: 500 12px/1.2 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: lining-nums tabular-nums; }
+.atl__n::before { content: ''; flex: none; width: 6px; height: 6px; background: var(--ink); }
+.atl__h { margin: 14px 0 12px; font: var(--w-display) clamp(21px, 2.6vw, 28px)/1.2 var(--f-display); letter-spacing: -.01em; color: var(--ink); text-wrap: balance; }
+.atl__list { margin: 18px 0 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
+.atl__list li { padding: 13px 0; border-top: 1px solid var(--line); font: 400 15px/1.5 var(--sans); color: var(--ink); text-wrap: pretty; }
+.atl__cta { display: flex; flex-wrap: wrap; gap: 12px; margin: clamp(48px, 6vw, 72px) 0 0; }
+@media (max-width: 599.98px) { .atl__cta .btn { flex: 1 1 100%; } }
+
+/* окно «Ателье подробно», вторая редакция (владелец прислал образец страницы производства): связный текст абзацами, крупная фраза по центру, кадры между абзацами */
+.atl .txt + .txt { margin-top: 12px; }
+.atl .atl__pic + .txt { margin-top: 28px; }
+.atl__quote { max-width: 17em; margin: clamp(56px, 8vw, 96px) auto 0; text-align: center; font: var(--w-display) clamp(23px, 6.2vw, 38px)/1.2 var(--f-display); letter-spacing: -.02em; color: var(--ink); text-wrap: balance; }
+.atl__sec .atl__facts { margin-top: 20px; border-bottom: 0; padding-bottom: 20px; }
+.atl__sec .atl__facts + .atl__list { margin-top: 0; }
+
+/* обложка блока «Конструктор» — настоящий снимок окна конструктора (3D-модель, размеры, ткань) вместо линейного эскиза; тонкая рамка, без полей */
+.cfg__pic--cover { padding: 0 !important; border: 1px solid var(--line); background: var(--product-bg); overflow: hidden; }
+.cfg__pic--cover img { display: block; width: 100%; height: auto; }
+@media (min-width: 900px) { .cfg__pic--cover { grid-column: 1 / span 6; } .cfg__in { align-items: center; } }
+
+/* ───── 11 ноября, владелец: «все фотографии без прямых углов, без краёв — чтобы аккуратно» ─────
+   У всех фото и карточек с фото — мягкое скругление (10 px, на компьютере 12 px) и никаких рамок-линий. Кнопки, поля и значки остаются прямыми.
+   Отменяет для фото прежнее «углы 0» (13 октября — отклонены были арки и капсулы; небольшое скругление — новое решение) */
+:root { --r-photo: 10px; }
+@media (min-width: 900px) { :root { --r-photo: 12px; } }
+.wk__img, .tile__img, .model__img, .pm__da, .dt__ph, .atelier__ph, .atl__pic, .cfg__pic, .faq__pic, .how__pic, .biz__pic,
+.fab__photos figure, .fab__sw img, .fc__frame, .pd__frame, .lb__frame { border-radius: var(--r-photo); }
+.atl__pic, .atelier__ph { overflow: hidden; }
+.pd__thumb, .sl__img { border-radius: 6px; }
+.cfg__pic--cover { border: 0; }
+/* бирка на кадре детали: небольшая белая плашка внутри кадра (была полоса во всю ширину) */
+.pm__da .wk__cap { top: 12px; left: 12px; right: auto; width: auto; max-width: calc(100% - 24px); padding: 7px 12px; border-radius: 6px; background: var(--paper); }
+@media (max-width: 359px) { .how__cta .btn, .kind__acts .btn { font-size: 11px; letter-spacing: .06em; } }   /* 320: «Отправить фото в WhatsApp» — в одну строку (подписи кнопок с 12 ноября — капителью) */
+
+/* 12 ноября: на первом экране семь входов (добавлены «Пуфы и банкетки»). Нечётный последний — по центру своей строки, чтобы сетка не «хромала» */
+.cats > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (min-width: 768px) { .cats > li:last-child:nth-child(odd) { grid-column: auto; } .cats > li:last-child:nth-child(3n + 1) { grid-column: 2; } }
+@media (min-width: 1100px) { .cats { grid-template-columns: repeat(7, minmax(0, 1fr)); } .cats > li:last-child:nth-child(3n + 1) { grid-column: auto; } }
+
+/* «Нам доверяют» — отдельный светлый раздел после «Для бизнеса» (владелец, 13 ноября: «улучши качество, добавь фирменные цвета»).
+   Знаки в своих цветах на белом, сетка тонкими линиями только между ячейками — как на присланном листе. Телефон — по два в ряд, с 768 px — по четыре.
+   --lh — опорная высота знака, --k у ячейки подравнивает зрительный вес (высокие знаки с подписью — больше) */
+.trust__t { margin: 0 0 clamp(24px, 3vw, 40px); }
+.trust__box { overflow: hidden; }
+.trust__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0 -1px -1px 0; padding: 0; list-style: none; --lh: 54px; }
+.trust__grid li { display: grid; place-items: center; height: 136px; padding: 0 10px; border-right: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); }
+.trust__grid img { display: block; width: auto; height: auto; max-width: min(150px, 88%); max-height: calc(var(--lh) * var(--k, 1)); object-fit: contain; }
+@media (min-width: 768px) {
+  .trust__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); --lh: 86px; }
+  .trust__grid li { height: 210px; padding: 0 20px; }
+  .trust__grid img { max-width: min(230px, 80%); }
+}
+
+/* «Популярные модели» — четыре кадра одного вида (изделие у бетонной стены): на широком экране в один ряд */
+@media (min-width: 1200px) { .wk.pm { grid-template-columns: repeat(3, minmax(0, 1fr)); } .wk.pm .pm__da { aspect-ratio: 4 / 5; } }   /* шесть карточек: три в ряд, два ряда */

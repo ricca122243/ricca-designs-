@@ -1,0 +1,248 @@
+ref	type	typeTitle	collection	name	hex
+exclusive:1	exclusive	Эксклюзивные	RICCA EXCLUSIVE	Графит с молочным	#696662
+exclusive:2	exclusive	Эксклюзивные	RICCA EXCLUSIVE	Кремовый	#9d8f81
+exclusive:3	exclusive	Эксклюзивные	RICCA EXCLUSIVE	Терракотовый	#cf502e
+ricca-velour:1	velur	Велюр	RICCA VELOUR	Пыльная роза	#996160
+ricca-velour:2	velur	Велюр	RICCA VELOUR	Морская волна	#597781
+ricca-velour:3	velur	Велюр	RICCA VELOUR	Чёрный	#212322
+alba:1	velur	Велюр	ALBA	№ 01	#b9b2a6
+alba:2	velur	Велюр	ALBA	№ 02	#ada291
+alba:3	velur	Велюр	ALBA	№ 03	#a9a49c
+alba:4	velur	Велюр	ALBA	№ 04	#868687
+alba:5	velur	Велюр	ALBA	№ 05	#6b6c6e
+alba:6	velur	Велюр	ALBA	№ 06	#3f3f3f
+alba:7	velur	Велюр	ALBA	№ 07	#493c33
+alba:8	velur	Велюр	ALBA	№ 08	#413a36
+alba:9	velur	Велюр	ALBA	№ 09	#9b792e
+alba:10	velur	Велюр	ALBA	№ 10	#284949
+alba:11	velur	Велюр	ALBA	№ 11	#27454b
+alba:12	velur	Велюр	ALBA	№ 12	#dad4c7
+alba:13	velur	Велюр	ALBA	№ 13	#d0c8b6
+alba:14	velur	Велюр	ALBA	№ 14	#d4bfa5
+alba:15	velur	Велюр	ALBA	№ 15	#c0af98
+alba:16	velur	Велюр	ALBA	№ 16	#8b8671
+alba:17	velur	Велюр	ALBA	№ 17	#474c3d
+alba:18	velur	Велюр	ALBA	№ 18	#855237
+alba:19	velur	Велюр	ALBA	№ 19	#693831
+alba:20	velur	Велюр	ALBA	№ 20	#76282d
+alba:21	velur	Велюр	ALBA	№ 21	#a27572
+alba:22	velur	Велюр	ALBA	№ 22	#6f5c53
+torrens-plain:1	velur	Велюр	TORRENS PLAIN	№ 01	#dfdbd1
+torrens-plain:2	velur	Велюр	TORRENS PLAIN	№ 02	#bfb9af
+torrens-plain:3	velur	Велюр	TORRENS PLAIN	№ 03	#b7afa2
+torrens-plain:4	velur	Велюр	TORRENS PLAIN	№ 04	#93887c
+torrens-plain:5	velur	Велюр	TORRENS PLAIN	№ 05	#7b6e60
+torrens-plain:6	velur	Велюр	TORRENS PLAIN	№ 06	#654743
+torrens-plain:7	velur	Велюр	TORRENS PLAIN	№ 07	#5a5948
+torrens-plain:8	velur	Велюр	TORRENS PLAIN	№ 08	#868888
+torrens-plain:9	velur	Велюр	TORRENS PLAIN	№ 09	#afaba4
+torrens-plain:10	velur	Велюр	TORRENS PLAIN	№ 10	#aea7a1
+torrens-plain:11	velur	Велюр	TORRENS PLAIN	№ 11	#656360
+torrens-plain:12	velur	Велюр	TORRENS PLAIN	№ 12	#625b58
+torrens-plain:13	velur	Велюр	TORRENS PLAIN	№ 13	#474b50
+torrens-plain:14	velur	Велюр	TORRENS PLAIN	№ 14	#7b8f9d
+torrens:1	velur	Велюр	TORRENS	№ 01	#e0ddd6
+torrens:2	velur	Велюр	TORRENS	№ 02	#c6c0b5
+torrens:3	velur	Велюр	TORRENS	№ 03	#ada598
+torrens:4	velur	Велюр	TORRENS	№ 04	#8e8377
+torrens:5	velur	Велюр	TORRENS	№ 05	#847668
+torrens:6	velur	Велюр	TORRENS	№ 06	#6d4e4b
+torrens:7	velur	Велюр	TORRENS	№ 07	#5b5c4d
+torrens:8	velur	Велюр	TORRENS	№ 08	#8a8e90
+torrens:9	velur	Велюр	TORRENS	№ 09	#b3aea7
+torrens:10	velur	Велюр	TORRENS	№ 10	#b1aaa2
+torrens:11	velur	Велюр	TORRENS	№ 11	#696865
+torrens:12	velur	Велюр	TORRENS	№ 12	#67615e
+torrens:13	velur	Велюр	TORRENS	№ 13	#41474c
+torrens:14	velur	Велюр	TORRENS	№ 14	#798e9c
+eclipse:1	velur	Велюр	ECLIPSE	№ 100	#dddbd6
+eclipse:2	velur	Велюр	ECLIPSE	№ 150	#d1c1a9
+eclipse:3	velur	Велюр	ECLIPSE	№ 290	#9d8f83
+eclipse:4	velur	Велюр	ECLIPSE	№ 520	#cc964a
+eclipse:5	velur	Велюр	ECLIPSE	№ 690	#bacdc5
+eclipse:6	velur	Велюр	ECLIPSE	№ 694	#697b63
+eclipse:7	velur	Велюр	ECLIPSE	№ 795	#426179
+eclipse:8	velur	Велюр	ECLIPSE	№ 924	#a1988d
+eclipse:9	velur	Велюр	ECLIPSE	№ 986	#696869
+eclipse:10	velur	Велюр	ECLIPSE	№ 990	#c0bfc0
+eclipse:11	velur	Велюр	ECLIPSE	№ 993	#939390
+beauty:1	velur	Велюр	BEAUTY	№ 012	#a1a09f
+beauty:2	velur	Велюр	BEAUTY	№ 007	#c5bfb5
+beauty:3	velur	Велюр	BEAUTY	№ 003	#ccbfae
+beauty:4	velur	Велюр	BEAUTY	№ 013	#a09287
+beauty:5	velur	Велюр	BEAUTY	№ 014	#736051
+beauty:6	velur	Велюр	BEAUTY	№ 006	#a39787
+beauty:7	velur	Велюр	BEAUTY	№ 016	#60321b
+beauty:8	velur	Велюр	BEAUTY	№ 015	#273852
+beauty:9	velur	Велюр	BEAUTY	№ 004	#a0a0a2
+beauty:10	velur	Велюр	BEAUTY	№ 008	#888883
+beauty:11	velur	Велюр	BEAUTY	№ 017	#6a6e62
+beauty:12	velur	Велюр	BEAUTY	№ 002	#223b35
+beauty:13	velur	Велюр	BEAUTY	№ 009	#726f6a
+beauty:14	velur	Велюр	BEAUTY	№ 005	#625c5a
+beauty:15	velur	Велюр	BEAUTY	№ 010	#2a2c30
+beauty:16	velur	Велюр	BEAUTY	№ 018	#1a1d20
+ricca:1	bukle	Букле	RICCA	Серый меланж	#8d8b84
+ricca:2	bukle	Букле	RICCA	Графит	#212121
+ricca:3	bukle	Букле	RICCA	Тёмно-зелёный	#36382b
+ricca:4	bukle	Букле	RICCA	Молочный	#d8d3c8
+ricca:5	bukle	Букле	RICCA	Серо-бежевый	#8e8a85
+ricca:6	bukle	Букле	RICCA	Медный меланж	#473529
+ricca:7	bukle	Букле	RICCA	Чёрно-бежевая полоса	#6b6054
+ricca:8	bukle	Букле	RICCA	Светло-серый меланж	#a7a39f
+ricca:9	bukle	Букле	RICCA	Тёмно-синий	#1d222a
+ricca:10	bukle	Букле	RICCA	Серо-голубой меланж	#7a7c81
+ricca:11	bukle	Букле	RICCA	Льняной	#aaaeac
+ricca:12	bukle	Букле	RICCA	Дымчатый с розовой нитью	#7c7c7e
+ricca:13	bukle	Букле	RICCA	Песочный с белой нитью	#918c82
+ricca:14	bukle	Букле	RICCA	Серый твид	#797a7e
+ricca:15	bukle	Букле	RICCA	Белый с чёрными пятнами	#a1a2a1
+ricca:16	bukle	Букле	RICCA	Чёрно-белый узор	#61625f
+ricca:17	bukle	Букле	RICCA	Оливковый с розовым	#88816f
+ricca:18	bukle	Букле	RICCA	Чёрный с белыми пятнами	#555453
+coco:1	bukle	Букле	COCO	№ 000	#f5f1ea
+coco:2	bukle	Букле	COCO	№ 110	#efe6d4
+coco:3	bukle	Букле	COCO	№ 238	#6a5959
+coco:4	bukle	Букле	COCO	№ 260	#baa188
+coco:5	bukle	Букле	COCO	№ 380	#773341
+coco:6	bukle	Букле	COCO	№ 422	#d5793f
+coco:7	bukle	Букле	COCO	№ 523	#b37833
+coco:8	bukle	Букле	COCO	№ 540	#dfaa56
+coco:9	bukle	Букле	COCO	№ 610	#d3c17c
+coco:10	bukle	Букле	COCO	№ 694	#96ada2
+coco:11	bukle	Букле	COCO	№ 698	#45544c
+coco:12	bukle	Букле	COCO	№ 761	#416a7a
+coco:13	bukle	Букле	COCO	№ 785	#3e506d
+coco:14	bukle	Букле	COCO	№ 904	#a59e9c
+coco:15	bukle	Букле	COCO	№ 992	#c4bfbb
+coco:16	bukle	Букле	COCO	№ 999	#717275
+noble:1	bukle	Букле	NOBLE	№ 000	#d9d5ca
+noble:2	bukle	Букле	NOBLE	№ 010	#d6d1c4
+noble:3	bukle	Букле	NOBLE	№ 110	#c6b59e
+noble:4	bukle	Букле	NOBLE	№ 161	#a8987f
+noble:5	bukle	Букле	NOBLE	№ 229	#303535
+noble:6	bukle	Букле	NOBLE	№ 230	#7e7370
+noble:7	bukle	Букле	NOBLE	№ 250	#7f4f26
+noble:8	bukle	Букле	NOBLE	№ 260	#a79382
+noble:9	bukle	Букле	NOBLE	№ 420	#b0937c
+noble:10	bukle	Букле	NOBLE	№ 551	#a67f32
+noble:11	bukle	Букле	NOBLE	№ 610	#a59a63
+noble:12	bukle	Букле	NOBLE	№ 624	#5d6540
+noble:13	bukle	Букле	NOBLE	№ 669	#213627
+noble:14	bukle	Букле	NOBLE	№ 754	#435e63
+noble:15	bukle	Букле	NOBLE	№ 758	#203949
+noble:16	bukle	Букле	NOBLE	№ 786	#233151
+noble:17	bukle	Букле	NOBLE	№ 793	#708281
+noble:18	bukle	Букле	NOBLE	№ 870	#78616f
+noble:19	bukle	Букле	NOBLE	№ 981	#635f65
+noble:20	bukle	Букле	NOBLE	№ 996	#6c7171
+pique:1	bukle	Букле	PIQUE	№ 001	#adaca3
+pique:2	bukle	Букле	PIQUE	№ 002	#a4a094
+pique:3	bukle	Букле	PIQUE	№ 003	#9e9283
+pique:4	bukle	Букле	PIQUE	№ 004	#8e8c83
+pique:5	bukle	Букле	PIQUE	№ 005	#5c584f
+pique:6	bukle	Букле	PIQUE	№ 006	#75695d
+pique:7	bukle	Букле	PIQUE	№ 007	#7b796a
+pique:8	bukle	Букле	PIQUE	№ 008	#43554f
+pique:9	bukle	Букле	PIQUE	№ 009	#364957
+pique:10	bukle	Букле	PIQUE	№ 010	#9e9c91
+pique:11	bukle	Букле	PIQUE	№ 011	#979594
+pique:12	bukle	Букле	PIQUE	№ 012	#6e6d69
+pique:13	bukle	Букле	PIQUE	№ 013	#5c5e5e
+pique:14	bukle	Букле	PIQUE	№ 014	#474b4b
+lucky:1	shenill	Шенилл	LUCKY	№ 002	#cec8c0
+lucky:2	shenill	Шенилл	LUCKY	№ 003	#988f89
+lucky:3	shenill	Шенилл	LUCKY	№ 021	#a79588
+lucky:4	shenill	Шенилл	LUCKY	№ 023	#a89181
+lucky:5	shenill	Шенилл	LUCKY	№ 022	#8a7667
+lucky:6	shenill	Шенилл	LUCKY	№ 004	#928780
+lucky:7	shenill	Шенилл	LUCKY	№ 005	#453a34
+lucky:8	shenill	Шенилл	LUCKY	№ 006	#363232
+lucky:9	shenill	Шенилл	LUCKY	№ 007	#92958a
+lucky:10	shenill	Шенилл	LUCKY	№ 009	#252b25
+lucky:11	shenill	Шенилл	LUCKY	№ 008	#3b382c
+lucky:12	shenill	Шенилл	LUCKY	№ 010	#8b5830
+lucky:13	shenill	Шенилл	LUCKY	№ 011	#64393b
+lucky:14	shenill	Шенилл	LUCKY	№ 012	#184a56
+lucky:15	shenill	Шенилл	LUCKY	№ 013	#3f4145
+lucky:16	shenill	Шенилл	LUCKY	№ 014	#484a4d
+lucky:17	shenill	Шенилл	LUCKY	№ 015	#394753
+lucky:18	shenill	Шенилл	LUCKY	№ 020	#ae918e
+lucky:19	shenill	Шенилл	LUCKY	№ 016	#7a7e84
+lucky:20	shenill	Шенилл	LUCKY	№ 017	#575c5f
+lucky:21	shenill	Шенилл	LUCKY	№ 018	#303132
+lucky:22	shenill	Шенилл	LUCKY	№ 019	#2a2e30
+molly:1	shenill	Шенилл	MOLLY	№ FL 100	#9b887a
+molly:2	shenill	Шенилл	MOLLY	№ 006	#aeaaa3
+molly:3	shenill	Шенилл	MOLLY	№ 004	#a89d92
+molly:4	shenill	Шенилл	MOLLY	№ 003	#bbaea4
+molly:5	shenill	Шенилл	MOLLY	№ 002	#766151
+molly:6	shenill	Шенилл	MOLLY	№ 001	#594b43
+molly:7	shenill	Шенилл	MOLLY	№ 013	#4f2a1a
+molly:8	shenill	Шенилл	MOLLY	№ FL 200	#8d837f
+molly:9	shenill	Шенилл	MOLLY	№ 012	#813223
+molly:10	shenill	Шенилл	MOLLY	№ 010	#926560
+molly:11	shenill	Шенилл	MOLLY	№ 015	#b07c32
+molly:12	shenill	Шенилл	MOLLY	№ 018	#242e3b
+molly:13	shenill	Шенилл	MOLLY	№ 016	#393328
+molly:14	shenill	Шенилл	MOLLY	№ 017	#273732
+molly:15	shenill	Шенилл	MOLLY	№ FL 300	#7e7e79
+molly:16	shenill	Шенилл	MOLLY	№ 023	#a7a39e
+molly:17	shenill	Шенилл	MOLLY	№ 027	#9b9a99
+molly:18	shenill	Шенилл	MOLLY	№ 024	#938985
+molly:19	shenill	Шенилл	MOLLY	№ 028	#8f8681
+molly:20	shenill	Шенилл	MOLLY	№ 022	#75706e
+molly:21	shenill	Шенилл	MOLLY	№ 021	#56514d
+molly:22	shenill	Шенилл	MOLLY	№ 030	#4f4a48
+molly:23	shenill	Шенилл	MOLLY	№ FL 400	#827a76
+sambia:1	shenill	Шенилл	САМБИЯ	№ 01	#d9dfdf
+sambia:2	shenill	Шенилл	САМБИЯ	№ 02	#a3a9ae
+sambia:3	shenill	Шенилл	САМБИЯ	№ 03	#7a848a
+sambia:4	shenill	Шенилл	САМБИЯ	№ 04	#666c6d
+sambia:5	shenill	Шенилл	САМБИЯ	№ 05	#393e3f
+sambia:6	shenill	Шенилл	САМБИЯ	№ 06	#444442
+sambia:7	shenill	Шенилл	САМБИЯ	№ 07	#dbdfd9
+sambia:8	shenill	Шенилл	САМБИЯ	№ 08	#c5c5c0
+sambia:9	shenill	Шенилл	САМБИЯ	№ 09	#84817d
+sambia:10	shenill	Шенилл	САМБИЯ	№ 10	#915939
+sambia:11	shenill	Шенилл	САМБИЯ	№ 11	#512d24
+sambia:12	shenill	Шенилл	САМБИЯ	№ 12	#323c2c
+timeless:1	zamsha	Замша	TIMELESS	№ 01	#ecefec
+timeless:2	zamsha	Замша	TIMELESS	№ 04	#a4a197
+timeless:3	zamsha	Замша	TIMELESS	№ 05	#a89a88
+timeless:4	zamsha	Замша	TIMELESS	№ 06	#cca982
+timeless:5	zamsha	Замша	TIMELESS	№ 08	#67564b
+timeless:6	zamsha	Замша	TIMELESS	№ 09	#938779
+timeless:7	zamsha	Замша	TIMELESS	№ 101	#6c828e
+timeless:8	zamsha	Замша	TIMELESS	№ 20	#d79d7c
+timeless:9	zamsha	Замша	TIMELESS	№ 21	#b6958d
+timeless:10	zamsha	Замша	TIMELESS	№ 221	#553f37
+timeless:11	zamsha	Замша	TIMELESS	№ 27	#1f4f94
+timeless:12	zamsha	Замша	TIMELESS	№ 28	#b6c3cc
+timeless:13	zamsha	Замша	TIMELESS	№ 30	#394550
+timeless:14	zamsha	Замша	TIMELESS	№ 32	#e2d2cb
+timeless:15	zamsha	Замша	TIMELESS	№ 33	#cbdbd0
+timeless:16	zamsha	Замша	TIMELESS	№ 34	#a5e1e6
+timeless:17	zamsha	Замша	TIMELESS	№ 35	#db5249
+timeless:18	zamsha	Замша	TIMELESS	№ 37	#d2bda2
+timeless:19	zamsha	Замша	TIMELESS	№ 38	#dcd7ca
+timeless:20	zamsha	Замша	TIMELESS	№ 39	#e0d8c4
+timeless:21	zamsha	Замша	TIMELESS	№ 40	#84b1be
+timeless:22	zamsha	Замша	TIMELESS	№ 517	#657480
+timeless:23	zamsha	Замша	TIMELESS	№ 518	#64737c
+timeless:24	zamsha	Замша	TIMELESS	№ 522	#bdc0c5
+timeless:25	zamsha	Замша	TIMELESS	№ 523	#c8cbcc
+timeless:26	zamsha	Замша	TIMELESS	№ 524	#abb1b4
+timeless:27	zamsha	Замша	TIMELESS	№ 608	#b29caf
+timeless:28	zamsha	Замша	TIMELESS	№ 633	#ac8d94
+ricca-leather:1	ekokozha	Экокожа	RICCA LEATHER	Красная	#c24439
+ricca-leather:2	ekokozha	Экокожа	RICCA LEATHER	Сливочная	#c8b692
+ricca-leather:3	ekokozha	Экокожа	RICCA LEATHER	Мокко	#7e624f
+ricca-leather:4	ekokozha	Экокожа	RICCA LEATHER	Бордо	#a2847c
+ricca-leather:5	ekokozha	Экокожа	RICCA LEATHER	Коралловая	#c06b64
+ricca-leather:6	ekokozha	Экокожа	RICCA LEATHER	Оранжевая	#bb4628
+ricca-leather:7	ekokozha	Экокожа	RICCA LEATHER	Белая	#d0d1c9
+ricca-leather:8	ekokozha	Экокожа	RICCA LEATHER	Бежевая, гладкая	#b3a796
+ricca-leather:9	ekokozha	Экокожа	RICCA LEATHER	Слоновая кость, гладкая	#ccc7b8
+ricca-leather:10	ekokozha	Экокожа	RICCA LEATHER	Графит, винтаж	#988b83
+ricca-leather:11	ekokozha	Экокожа	RICCA LEATHER	Крем, винтаж	#d0ccbf

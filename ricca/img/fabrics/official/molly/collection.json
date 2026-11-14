@@ -1,0 +1,212 @@
+{
+ "id": "molly",
+ "colours": [
+  {
+   "code": "FL100",
+   "name": "MOLLY FL 100",
+   "hex": "#9b887a",
+   "src1200": "img/fabrics/official/molly/FL100-1200.webp",
+   "src600": "img/fabrics/official/molly/FL100-600.webp",
+   "thumb": "img/fabrics/official/molly/FL100-160.webp"
+  },
+  {
+   "code": "006",
+   "name": "MOLLY 006",
+   "hex": "#aeaaa3",
+   "src1200": "img/fabrics/official/molly/006-1200.webp",
+   "src600": "img/fabrics/official/molly/006-600.webp",
+   "thumb": "img/fabrics/official/molly/006-160.webp"
+  },
+  {
+   "code": "004",
+   "name": "MOLLY 004",
+   "hex": "#a89d92",
+   "src1200": "img/fabrics/official/molly/004-1200.webp",
+   "src600": "img/fabrics/official/molly/004-600.webp",
+   "thumb": "img/fabrics/official/molly/004-160.webp"
+  },
+  {
+   "code": "003",
+   "name": "MOLLY 003",
+   "hex": "#bbaea4",
+   "src1200": "img/fabrics/official/molly/003-1200.webp",
+   "src600": "img/fabrics/official/molly/003-600.webp",
+   "thumb": "img/fabrics/official/molly/003-160.webp"
+  },
+  {
+   "code": "002",
+   "name": "MOLLY 002",
+   "hex": "#766151",
+   "src1200": "img/fabrics/official/molly/002-1200.webp",
+   "src600": "img/fabrics/official/molly/002-600.webp",
+   "thumb": "img/fabrics/official/molly/002-160.webp"
+  },
+  {
+   "code": "001",
+   "name": "MOLLY 001",
+   "hex": "#594b43",
+   "src1200": "img/fabrics/official/molly/001-1200.webp",
+   "src600": "img/fabrics/official/molly/001-600.webp",
+   "thumb": "img/fabrics/official/molly/001-160.webp"
+  },
+  {
+   "code": "013",
+   "name": "MOLLY 013",
+   "hex": "#4f2a1a",
+   "src1200": "img/fabrics/official/molly/013-1200.webp",
+   "src600": "img/fabrics/official/molly/013-600.webp",
+   "thumb": "img/fabrics/official/molly/013-160.webp"
+  },
+  {
+   "code": "FL200",
+   "name": "MOLLY FL 200",
+   "hex": "#8d837f",
+   "src1200": "img/fabrics/official/molly/FL200-1200.webp",
+   "src600": "img/fabrics/official/molly/FL200-600.webp",
+   "thumb": "img/fabrics/official/molly/FL200-160.webp"
+  },
+  {
+   "code": "012",
+   "name": "MOLLY 012",
+   "hex": "#813223",
+   "src1200": "img/fabrics/official/molly/012-1200.webp",
+   "src600": "img/fabrics/official/molly/012-600.webp",
+   "thumb": "img/fabrics/official/molly/012-160.webp"
+  },
+  {
+   "code": "010",
+   "name": "MOLLY 010",
+   "hex": "#926560",
+   "src1200": "img/fabrics/official/molly/010-1200.webp",
+   "src600": "img/fabrics/official/molly/010-600.webp",
+   "thumb": "img/fabrics/official/molly/010-160.webp"
+  },
+  {
+   "code": "015",
+   "name": "MOLLY 015",
+   "hex": "#b07c32",
+   "src1200": "img/fabrics/official/molly/015-1200.webp",
+   "src600": "img/fabrics/official/molly/015-600.webp",
+   "thumb": "img/fabrics/official/molly/015-160.webp"
+  },
+  {
+   "code": "018",
+   "name": "MOLLY 018",
+   "hex": "#242e3b",
+   "src1200": "img/fabrics/official/molly/018-1200.webp",
+   "src600": "img/fabrics/official/molly/018-600.webp",
+   "thumb": "img/fabrics/official/molly/018-160.webp"
+  },
+  {
+   "code": "016",
+   "name": "MOLLY 016",
+   "hex": "#393328",
+   "src1200": "img/fabrics/official/molly/016-1200.webp",
+   "src600": "img/fabrics/official/molly/016-600.webp",
+   "thumb": "img/fabrics/official/molly/016-160.webp"
+  },
+  {
+   "code": "017",
+   "name": "MOLLY 017",
+   "hex": "#273732",
+   "src1200": "img/fabrics/official/molly/017-1200.webp",
+   "src600": "img/fabrics/official/molly/017-600.webp",
+   "thumb": "img/fabrics/official/molly/017-160.webp"
+  },
+  {
+   "code": "FL300",
+   "name": "MOLLY FL 300",
+   "hex": "#7e7e79",
+   "src1200": "img/fabrics/official/molly/FL300-1200.webp",
+   "src600": "img/fabrics/official/molly/FL300-600.webp",
+   "thumb": "img/fabrics/official/molly/FL300-160.webp"
+  },
+  {
+   "code": "023",
+   "name": "MOLLY 023",
+   "hex": "#a7a39e",
+   "src1200": "img/fabrics/official/molly/023-1200.webp",
+   "src600": "img/fabrics/official/molly/023-600.webp",
+   "thumb": "img/fabrics/official/molly/023-160.webp"
+  },
+  {
+   "code": "027",
+   "name": "MOLLY 027",
+   "hex": "#9b9a99",
+   "src1200": "img/fabrics/official/molly/027-1200.webp",
+   "src600": "img/fabrics/official/molly/027-600.webp",
+   "thumb": "img/fabrics/official/molly/027-160.webp"
+  },
+  {
+   "code": "024",
+   "name": "MOLLY 024",
+   "hex": "#938985",
+   "src1200": "img/fabrics/official/molly/024-1200.webp",
+   "src600": "img/fabrics/official/molly/024-600.webp",
+   "thumb": "img/fabrics/official/molly/024-160.webp"
+  },
+  {
+   "code": "028",
+   "name": "MOLLY 028",
+   "hex": "#8f8681",
+   "src1200": "img/fabrics/official/molly/028-1200.webp",
+   "src600": "img/fabrics/official/molly/028-600.webp",
+   "thumb": "img/fabrics/official/molly/028-160.webp"
+  },
+  {
+   "code": "022",
+   "name": "MOLLY 022",
+   "hex": "#75706e",
+   "src1200": "img/fabrics/official/molly/022-1200.webp",
+   "src600": "img/fabrics/official/molly/022-600.webp",
+   "thumb": "img/fabrics/official/molly/022-160.webp"
+  },
+  {
+   "code": "021",
+   "name": "MOLLY 021",
+   "hex": "#56514d",
+   "src1200": "img/fabrics/official/molly/021-1200.webp",
+   "src600": "img/fabrics/official/molly/021-600.webp",
+   "thumb": "img/fabrics/official/molly/021-160.webp"
+  },
+  {
+   "code": "030",
+   "name": "MOLLY 030",
+   "hex": "#4f4a48",
+   "src1200": "img/fabrics/official/molly/030-1200.webp",
+   "src600": "img/fabrics/official/molly/030-600.webp",
+   "thumb": "img/fabrics/official/molly/030-160.webp"
+  },
+  {
+   "code": "FL400",
+   "name": "MOLLY FL 400",
+   "hex": "#827a76",
+   "src1200": "img/fabrics/official/molly/FL400-1200.webp",
+   "src600": "img/fabrics/official/molly/FL400-600.webp",
+   "thumb": "img/fabrics/official/molly/FL400-160.webp"
+  }
+ ],
+ "heroes": [
+  {
+   "src": "img/fabrics/official/molly/hero-1-1600.webp",
+   "w": 2000,
+   "h": 1334
+  },
+  {
+   "src": "img/fabrics/official/molly/hero-2-1600.webp",
+   "w": 2000,
+   "h": 1334
+  },
+  {
+   "src": "img/fabrics/official/molly/hero-3-1600.webp",
+   "w": 2000,
+   "h": 1334
+  },
+  {
+   "src": "img/fabrics/official/molly/hero-4-1600.webp",
+   "w": 2000,
+   "h": 1334
+  }
+ ],
+ "inuse": []
+}
