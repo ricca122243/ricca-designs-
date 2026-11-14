@@ -170,43 +170,6 @@
   // модели каталога на белом фоне (js/models-data.js) — те же карточки и то же окно, что у работ
   const MODELS = (Array.isArray(window.RICCA_MODELS) ? window.RICCA_MODELS : []).filter((w) => w && w.id && KINDS[w.cat] && Array.isArray(w.photos) && w.photos.length);
   const WORK = new Map([...WORKS, ...MODELS].map((w) => [w.id, w]));
-  /* ---------- Админка (ricca.design/admin, Decap CMS; владелец, 15 ноября: «сам добавлять фото и логотипы»):
-     data/clients.json — «Нам доверяют», data/models-extra.json — фото к моделям каталога и новые модели. Фото с телефона
-     уменьшает Netlify (/.netlify/images — webp 800 и 1600 px); локально — как есть. Нет данных или сети — остаётся разметка ---------- */
-  const cdnImg = (src, w) => (/(\.netlify\.app|ricca\.design)$/.test(location.hostname) && /^\/img\/uploads\//.test(src) ? `/.netlify/images?url=${encodeURIComponent(src)}&w=${w}&fm=webp&q=82` : src);
-  const getJSON = (u) => (typeof fetch === 'function' ? fetch(u, { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null));
-  getJSON('data/clients.json').then((d) => {
-    const ul = $('.trust__grid'), list = d && Array.isArray(d.clients) ? d.clients.filter((c) => c && c.logo && c.name) : [];
-    if (!ul || !list.length) return;
-    ul.innerHTML = list.map((c) => `<li${+c.size > 0 && +c.size !== 1 ? ` style="--k:${(+c.size).toFixed(2)}"` : ''}><img src="${esc(cdnImg(c.logo, 480))}"${c.w && c.h ? ` width="${+c.w}" height="${+c.h}"` : ''} alt="${esc(c.name)}" loading="lazy" decoding="async"></li>`).join('');
-  });
-  const imgSize = (src) => new Promise((res) => { const i = new Image(); i.onload = () => res([i.naturalWidth, i.naturalHeight]); i.onerror = () => res(null); i.src = src; });
-  getJSON('data/models-extra.json').then(async (d) => {
-    const rows = d && Array.isArray(d.models) ? d.models.filter((m) => m && m.on !== false && Array.isArray(m.photos)) : [];
-    for (const m of rows) {
-      const ph = (await Promise.all(m.photos.filter((p) => p && p.src).map(async (p) => {
-        const s800 = cdnImg(p.src, 800), wh = await imgSize(s800);
-        if (!wh) return null;
-        const big = s800 === p.src ? [wh[0], wh[1]] : [1600, Math.round(1600 * wh[1] / wh[0])];
-        return { src: cdnImg(p.src, 1600), src800: s800, w: big[0], h: big[1], w800: wh[0], h800: wh[1], studio: false, detail: !!p.detail };
-      }))).filter(Boolean);
-      if (!ph.length) continue;
-      const views = ph.filter((p) => !p.detail), dets = ph.filter((p) => p.detail);
-      const w = m.target && m.target !== 'new' ? WORK.get(m.target) : null;
-      if (w) {   // к модели каталога: свои виды — после главного кадра, крупные планы — первыми среди деталей; формат «3 вида + 2 крупно»
-        const v0 = w.photos.filter((p) => !p.detail), d0 = w.photos.filter((p) => p.detail);
-        w.photos = [...v0.slice(0, 1), ...views, ...v0.slice(1)].slice(0, 3).concat([...dets, ...d0].slice(0, 2));
-      } else if (m.target === 'new' && KINDS[m.cat] && m.title) {
-        const TL = { а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'c', ч: 'ch', ш: 'sh', щ: 'sch', ы: 'y', э: 'e', ю: 'yu', я: 'ya' };
-        const id = `x-${String(m.title).toLowerCase().replace(/[а-яё]/g, (c) => TL[c] || '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;   // адрес #work-x-divan-velta — латиницей
-        if (WORK.has(id)) continue;
-        const nw = { id, cat: m.cat, title: String(m.title), sub: String(m.sub || ''), cfg: KINDS[m.cat].cfg, photos: [...views.slice(0, 3), ...dets.slice(0, 2)], ig: '', model: true, no3d: true };
-        MODELS.push(nw); WORK.set(id, nw);
-      }
-    }
-    if (rows.length) document.dispatchEvent(new CustomEvent('ricca:models'));
-    if (rows.length && /^#work-/.test(location.hash)) { try { R.apply(false); } catch (e) { /* адрес откроется при следующем переходе */ } }
-  });
   // главная (#works): 8 лучших кадров реальных изделий — порядок подобран владельцем (светлые, чистые, без людей и надписей — проверено 9 ноября)
   const BEST_WORKS = ['C_tjlDdgnmn', 'DdAJz7PiC61', 'DGy-8O2Ilbr', 'C9h3Txai1KF', 'DaSUDdwDKly', 'C7E_JvdoXM-', 'C0EZbsnoxni', 'DKkV-ORIobz', 'C1Ur3ZXIE3f'];   // владелец, 9 ноября: NUBO, Modena и «округлое изголовье» убраны
   const BEST = BEST_WORKS.map((id) => WORKS.find((w) => w.id === id)).filter(Boolean);
@@ -1059,8 +1022,6 @@
       store.set(COLS_KEY, bigMode(spec.cat) ? 'two' : 'big');
       renderCat(spec.cat);
     });
-    // модели из админки (data/models-extra.json) догрузились — открытая категория перестраивается на месте
-    document.addEventListener('ricca:models', () => { if (dlg.open && spec && spec.type === 'cat') { renderCat(spec.cat); setSub(spec.sub || 'all'); } });
     const api = {
       isOpen: () => dlg.open,
       hash: () => (!spec ? '#catalog' : spec.type === 'fabrics' ? '#catalog/fabrics' : `#catalog/${spec.type === 'works' ? 'works' : spec.cat}${spec.sub && spec.sub !== 'all' ? `/${spec.sub}` : ''}`),

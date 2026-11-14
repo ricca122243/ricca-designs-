@@ -3,5 +3,4 @@
 # сайта выкладывается само, скачивать и перетаскивать папку не нужно.
 [build]
   publish = "dist/RICCA-site"
-  # правки из админки (ricca/admin, Decap CMS) — ricca/data и ricca/img/uploads — переносятся в готовую папку
-  command = "sh tools/cms-sync.sh"
+  command = "echo 'сборка не нужна — папка готова'"
