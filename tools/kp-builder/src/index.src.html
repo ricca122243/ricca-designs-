@@ -2,7 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;1,400;1,500&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=Prata&family=Raleway:wght@300;400;500;600&family=Unbounded:wght@300;400&family=Manrope:wght@300;400;500;600&family=Tenor+Sans&family=Jost:wght@300;400;500;600&display=swap">
 <style>
 /* Раскладка: слева — настройка КП (общее, список моделей или «Своё КП»), справа — живой просмотр слайдов 16:9;
    на телефоне — нижняя панель «Настройка / Просмотр» и «Скачать PDF». Окна поверх: новая модель и выбор из каталога. */
@@ -107,6 +107,13 @@ select.in { appearance: auto; }
 .th { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 0 14px 0 6px; min-height: 40px; font-size: 13px; background: var(--paper); }
 .th[aria-pressed="true"] { border: 2px solid var(--sel); padding: 0 13px 0 5px; }
 .th i { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); display: block; flex: none; }
+.fonts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.fpb { border: 1px solid var(--line); border-radius: var(--r); background: var(--paper); padding: 10px 12px; text-align: left; min-height: 64px; display: grid; gap: 2px; }
+.fpb[aria-pressed="true"] { border: 2px solid var(--sel); padding: 9px 11px; }
+.fpb b { font-weight: 400; font-size: 24px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fpb span { font-size: 12.5px; color: var(--muted); }
+.ranges { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+.ranges input[type="range"] { width: 100%; accent-color: var(--sel); min-height: 32px; }
 .logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
 .lg { position: relative; display: flex; }
 .lg__b { width: 100%; height: 70px; border: 1px solid var(--line); border-radius: var(--r); background: #fff center/70% 60% no-repeat; padding: 0; }
@@ -225,7 +232,7 @@ select.in { appearance: auto; }
     padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
   .dock .seg { flex: 1; min-width: 0; }
   .dock .seg button { flex: 1; padding: 0 8px; }
-  .bar > .btn, .preview__head .btn { display: none; }
+  .bar > .btn, .preview__head .btn:not([data-move]) { display: none; }
   .save { margin-left: 0; width: 100%; order: 3; }
   .in, .qty input { font-size: 16px; }
   .toast { left: max(12px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); max-width: none; }
@@ -241,17 +248,28 @@ select.in { appearance: auto; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
-/* ════════ СЛАЙД 1440 × 810: один вид для просмотра и для PDF; цвета — от времени года (как на сайте) ════════ */
+/* ════════ СЛАЙД 1440 × 810: один вид для просмотра и для PDF; цвета — от времени года (как на сайте), шрифты — пара на выбор,
+   --fh / --ft — крупность заголовков и текста, --kh — поправка пары (широкие шрифты мельче), сдвиги блоков — transform из настроек ════════ */
 .slide { --sp: #FFFFFF; --sline: #E3E6EA; --sdark: #111214; --skick: #8A9099; --sacc: #0B0C0E; --sink2: #3C424B; --spanel: #F4F5F7;
-  width: 1440px; height: 810px; position: relative; overflow: hidden; background: var(--sp); color: #0B0C0E; font-family: 'Montserrat', Arial, sans-serif; font-weight: 400; }
+  --f-head: 'Cormorant', Georgia, serif; --w-head: 400; --f-name: 'Montserrat', Arial, sans-serif; --w-name: 300; --f-text: 'Montserrat', Arial, sans-serif; --i-sub: italic; --kh: 1; --kn: 1;
+  --fh: 1; --ft: 1;
+  width: 1440px; height: 810px; position: relative; overflow: hidden; background: var(--sp); color: #0B0C0E; font-family: var(--f-text); font-weight: 400; }
 .slide.th-winter { --sp: #EDF3FA; --sline: #D3DFEC; --sdark: #1C3452; --skick: #4F86C6; --sacc: #2F6DB5; --sink2: #455468; --spanel: #E1EAF5; }
 .slide.th-spring { --sp: #EFF7F3; --sline: #D4E5DC; --sdark: #1D3A30; --skick: #4E9A7E; --sacc: #2F7D62; --sink2: #4A5952; --spanel: #E2F0E9; }
 .slide.th-autumn { --sp: #F1F3F6; --sline: #DADEE5; --sdark: #262C35; --skick: #66758A; --sacc: #4B5A70; --sink2: #4B525C; --spanel: #E7EAEF; }
+.slide.fp-modern { --f-head: 'Montserrat', Arial, sans-serif; --w-head: 300; --i-sub: normal; --kh: .82; }
+.slide.fp-journal { --f-head: 'Playfair Display', Georgia, serif; --w-head: 400; --f-name: 'Playfair Display', Georgia, serif; --w-name: 400; --f-text: 'Inter', Arial, sans-serif; --kh: .86; --kn: .92; }
+.slide.fp-elegant { --f-head: 'Prata', Georgia, serif; --w-head: 400; --f-name: 'Prata', Georgia, serif; --w-name: 400; --f-text: 'Raleway', Arial, sans-serif; --i-sub: normal; --kh: .82; --kn: .9; }
+.slide.fp-graphic { --f-head: 'Unbounded', Arial, sans-serif; --w-head: 300; --f-name: 'Unbounded', Arial, sans-serif; --w-name: 300; --f-text: 'Manrope', Arial, sans-serif; --i-sub: normal; --kh: .62; --kn: .7; }
+.slide.fp-airy { --f-head: 'Tenor Sans', Arial, sans-serif; --w-head: 400; --f-name: 'Tenor Sans', Arial, sans-serif; --w-name: 400; --f-text: 'Jost', Arial, sans-serif; --i-sub: normal; --kh: .8; --kn: .86; }
 .slide * { box-sizing: border-box; }
 .s-foot { position: absolute; left: 72px; right: 72px; bottom: 34px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--skick); }
 .s-foot b { color: #0B0C0E; font-weight: 600; letter-spacing: .22em; }
 .s-pic { background-repeat: no-repeat; background-position: center; background-size: contain; background-color: #FAFBF8; }
 .s-snow { position: absolute; inset: 0; pointer-events: none; }
+.s-kicker { font-size: calc(14px * var(--ft)); letter-spacing: .24em; text-transform: uppercase; color: var(--skick); }
+.s-h { font-family: var(--f-head); font-weight: var(--w-head); font-size: calc(76px * var(--kh) * var(--fh)); line-height: 1.02; letter-spacing: -.005em; }
+.s-lead { margin-top: 24px; font-size: calc(19px * var(--ft)); line-height: 1.55; font-weight: 300; color: var(--sink2); }
 
 /* обложка */
 .s-cover { display: grid; grid-template-columns: 560px 880px; }
@@ -261,11 +279,12 @@ select.in { appearance: auto; }
 .s-mark { display: flex; align-items: center; gap: 18px; }
 .s-mark svg { width: 70px; height: 35px; }
 .s-mark span { font-size: 15px; font-weight: 600; letter-spacing: .32em; }
-.s-cover__kicker { margin-top: auto; font-size: 15px; letter-spacing: .24em; text-transform: uppercase; color: #A9B1BC; }
-.s-cover__title { margin-top: 18px; font-family: 'Cormorant', Georgia, serif; font-weight: 400; font-size: 112px; line-height: .95; letter-spacing: -.01em; }
-.s-cover__title.long { font-size: 76px; line-height: 1; }
-.s-cover__sub { margin-top: 26px; font-size: 20px; font-weight: 300; line-height: 1.5; color: #C9CED6; max-width: 410px; }
-.s-cover__meta { margin-top: 48px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.18); display: grid; gap: 6px; font-size: 16px; color: #C9CED6; }
+.s-cover__txt { margin-top: auto; }
+.s-cover__kicker { font-size: calc(15px * var(--ft)); letter-spacing: .24em; text-transform: uppercase; color: #A9B1BC; }
+.s-cover__title { margin-top: 18px; font-family: var(--f-head); font-weight: var(--w-head); font-size: calc(112px * var(--kh) * var(--fh)); line-height: .98; letter-spacing: -.01em; }
+.s-cover__title.long { font-size: calc(76px * var(--kh) * var(--fh)); line-height: 1.04; }
+.s-cover__sub { margin-top: 26px; font-size: calc(20px * var(--ft)); font-weight: 300; line-height: 1.5; color: #C9CED6; max-width: 410px; }
+.s-cover__meta { margin-top: 48px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.18); display: grid; gap: 6px; font-size: calc(16px * var(--ft)); color: #C9CED6; }
 .s-cover__meta b { color: #F2F4F7; font-weight: 500; }
 .s-cover__r { position: relative; }
 .s-cover__r .s-pic { position: absolute; inset: 0; }
@@ -275,22 +294,22 @@ select.in { appearance: auto; }
 .s-model { display: grid; grid-template-columns: 500px 940px; }
 .s-model__l { position: relative; }
 .s-text { position: absolute; left: 72px; right: 40px; top: 64px; bottom: 200px; overflow: hidden; }
-.s-kicker { font-size: 14px; letter-spacing: .24em; text-transform: uppercase; color: var(--skick); }
-.s-name { margin-top: 14px; font-weight: 300; font-size: 84px; line-height: 1; letter-spacing: .01em; }
-.s-name.long { font-size: 60px; }
-.s-sub { margin-top: 14px; font-family: 'Cormorant', Georgia, serif; font-style: italic; font-size: 30px; line-height: 1.2; color: var(--sink2); }
-.s-desc { margin-top: 20px; font-size: 18px; line-height: 1.55; color: var(--sink2); font-weight: 300; }
-.s-desc.long { font-size: 16px; }
+.s-name { margin-top: 14px; font-family: var(--f-name); font-weight: var(--w-name); font-size: calc(84px * var(--kn) * var(--fh)); line-height: 1.02; letter-spacing: .01em; }
+.s-name.long { font-size: calc(60px * var(--kn) * var(--fh)); }
+.s-sub { margin-top: 14px; font-family: var(--f-head); font-style: var(--i-sub); font-size: calc(30px * var(--kh) * var(--fh)); line-height: 1.22; color: var(--sink2); }
+.slide.fp-modern .s-sub, .slide.fp-graphic .s-sub, .slide.fp-airy .s-sub, .slide.fp-elegant .s-sub { font-family: var(--f-text); font-size: calc(21px * var(--ft)); font-weight: 400; }
+.s-desc { margin-top: 20px; font-size: calc(18px * var(--ft)); line-height: 1.55; color: var(--sink2); font-weight: 300; }
+.s-desc.long { font-size: calc(16px * var(--ft)); }
 .s-specs { margin-top: 22px; display: grid; border-top: 1px solid var(--sline); }
-.s-specs div { display: grid; grid-template-columns: 130px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--sline); font-size: 16px; line-height: 1.4; }
-.s-specs dt { color: var(--skick); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; padding-top: 2px; }
+.s-specs div { display: grid; grid-template-columns: 130px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--sline); font-size: calc(16px * var(--ft)); line-height: 1.4; }
+.s-specs dt { color: var(--skick); font-size: calc(13px * var(--ft)); letter-spacing: .12em; text-transform: uppercase; padding-top: 2px; }
 .s-specs dd { margin: 0; }
 .s-price { position: absolute; left: 72px; right: 24px; bottom: 92px; }
-.s-price small { display: block; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--skick); }
-.s-price b { display: block; margin-top: 6px; font-weight: 500; font-size: 46px; letter-spacing: .01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.s-price b em { font-style: normal; font-weight: 300; font-size: 30px; margin-right: 10px; color: var(--sacc); }
-.s-price b.s-ask { font-size: 30px; font-weight: 400; }
-.s-model__r { position: relative; background: #FAFBF8; }
+.s-price small { display: block; font-size: calc(13px * var(--ft)); letter-spacing: .2em; text-transform: uppercase; color: var(--skick); }
+.s-price b { display: block; margin-top: 6px; font-weight: 500; font-size: calc(46px * var(--fh)); letter-spacing: .01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.s-price b em { font-style: normal; font-weight: 300; font-size: calc(30px * var(--fh)); margin-right: 10px; color: var(--sacc); }
+.s-price b.s-ask { font-size: calc(30px * var(--fh)); font-weight: 400; }
+.s-model__r { position: relative; background: #FAFBF8; overflow: hidden; }
 .s-model__r .s-big { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .s-model__r .s-big.cover { background-size: cover; }
 .s-model__r.has-small .s-big { bottom: 280px; }
@@ -302,60 +321,61 @@ select.in { appearance: auto; }
 /* интерьер */
 .s-interior .s-pic { position: absolute; inset: 0; background-size: cover; background-color: #E9ECEF; }
 .s-interior__cap { position: absolute; left: 0; bottom: 0; background: var(--sp); padding: 26px 40px 26px 72px; display: flex; align-items: baseline; gap: 28px; }
-.s-interior__cap b { font-weight: 300; font-size: 44px; line-height: 1; }
-.s-interior__cap span { font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--skick); }
-.s-interior__cap i { font-style: normal; font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.s-interior__cap b { font-family: var(--f-name); font-weight: var(--w-name); font-size: calc(44px * var(--kn) * var(--fh)); line-height: 1; }
+.s-interior__cap span { font-size: calc(14px * var(--ft)); letter-spacing: .2em; text-transform: uppercase; color: var(--skick); }
+.s-interior__cap i { font-style: normal; font-size: calc(24px * var(--ft)); font-weight: 500; font-variant-numeric: tabular-nums; }
 .s-split { display: grid; grid-template-columns: 560px 880px; }
 .s-split .s-split__l { position: relative; }
 .s-split .s-split__r { position: relative; }
 .s-split .s-split__r .s-pic { position: absolute; inset: 0; background-size: cover; background-color: #E9ECEF; }
 .s-split .s-foot { right: auto; width: 416px; }
-.s-split .s-note { margin-top: 26px; font-size: 18px; line-height: 1.55; color: var(--sink2); font-weight: 300; }
+.s-split .s-note { margin-top: 26px; font-size: calc(18px * var(--ft)); line-height: 1.55; color: var(--sink2); font-weight: 300; }
 
 /* итого */
 .s-total { padding: 72px 72px 96px; }
-.s-total .s-h { margin-top: 18px; }
 .s-ttab { margin-top: 34px; border-top: 1px solid #0B0C0E; }
-.s-ttab div { display: grid; grid-template-columns: 56px 1fr 120px 220px 240px; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--sline); font-size: 18px; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.s-ttab div { display: grid; grid-template-columns: 56px 1fr 120px 220px 240px; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--sline); font-size: calc(18px * var(--ft)); line-height: 1.35; font-variant-numeric: tabular-nums; }
 .s-ttab div span:nth-child(n+3) { text-align: right; }
-.s-ttab .s-th { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--skick); }
-.s-ttab .s-tsum { border-bottom: 0; font-weight: 600; font-size: 24px; padding-top: 20px; }
+.s-ttab .s-th { font-size: calc(13px * var(--ft)); letter-spacing: .14em; text-transform: uppercase; color: var(--skick); }
+.s-ttab .s-tsum { border-bottom: 0; font-weight: 600; font-size: calc(24px * var(--ft)); padding-top: 20px; }
 .s-ttab i { font-style: normal; color: var(--skick); }
 
 /* условия */
-.s-terms { padding: 72px 72px 96px; display: grid; grid-template-columns: 420px 1fr; gap: 72px; }
-.s-h { font-family: 'Cormorant', Georgia, serif; font-weight: 400; font-size: 76px; line-height: 1; letter-spacing: -.005em; }
-.s-lead { margin-top: 24px; font-size: 19px; line-height: 1.55; font-weight: 300; color: var(--sink2); }
-.s-table { align-self: start; border-top: 1px solid #0B0C0E; }
-.s-table div { display: grid; grid-template-columns: 280px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--sline); font-size: 18px; line-height: 1.4; }
+.s-terms { padding: 72px 72px 96px; display: grid; grid-template-columns: 420px 1fr; gap: 72px; align-items: start; }
+.s-table { border-top: 1px solid #0B0C0E; margin: 0; }
+.s-table div { display: grid; grid-template-columns: 280px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--sline); font-size: calc(18px * var(--ft)); line-height: 1.4; }
 .s-table dt { color: var(--sink2); }
 .s-table dd { margin: 0; font-weight: 500; }
 
-/* нам доверяют */
+/* нам доверяют: знаки прямо на фоне слайда, крупно, без плашек — фон один */
 .s-trust { padding: 72px 72px 96px; }
-.s-logos { list-style: none; margin: 40px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--sline); border-left: 1px solid var(--sline); }
-.s-logos li { height: 170px; border-right: 1px solid var(--sline); border-bottom: 1px solid var(--sline); background: #FFFFFF; position: relative; }
-.s-logos .s-logo { position: absolute; left: 12%; right: 12%; top: 50%; background-repeat: no-repeat; background-position: center; background-size: contain; }
+.s-logos { list-style: none; margin: 30px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 24px; }
+.s-logos li { position: relative; }
+.s-logos .s-logo { position: absolute; left: 6%; right: 6%; top: 50%; background-repeat: no-repeat; background-position: center; background-size: contain; }
 
 /* пришлите фото */
 .s-cta { padding: 72px 72px 96px; display: grid; grid-template-columns: 1fr 1fr; gap: 72px; background: var(--spanel); }
 .s-steps { align-self: end; display: grid; border-top: 1px solid #0B0C0E; }
 .s-steps > div { display: grid; grid-template-columns: 64px 1fr; gap: 12px; padding: 22px 0; border-bottom: 1px solid var(--sline); }
-.s-steps span { font-size: 15px; color: var(--skick); font-variant-numeric: tabular-nums; padding-top: 5px; }
-.s-steps b { display: block; font-weight: 500; font-size: 22px; }
-.s-steps p { margin: 6px 0 0; font-size: 17px; line-height: 1.5; color: var(--sink2); font-weight: 300; }
+.s-steps span { font-size: calc(15px * var(--ft)); color: var(--skick); font-variant-numeric: tabular-nums; padding-top: 5px; }
+.s-steps b { display: block; font-weight: 500; font-size: calc(22px * var(--ft)); }
+.s-steps p { margin: 6px 0 0; font-size: calc(17px * var(--ft)); line-height: 1.5; color: var(--sink2); font-weight: 300; }
 
 /* контакты */
 .s-contacts { background: var(--sdark); color: #F2F4F7; padding: 72px 72px 96px; display: grid; grid-template-columns: 1fr 1fr; gap: 72px; }
 .s-contacts > div, .s-contacts > dl { position: relative; }
-.s-contacts .s-h { font-size: 92px; }
+.s-contacts .s-h { font-size: calc(92px * var(--kh) * var(--fh)); }
 .s-contacts .s-lead { color: #C9CED6; }
 .s-clist { align-self: end; display: grid; border-top: 1px solid rgba(255,255,255,.25); margin: 0; }
-.s-clist div { display: grid; grid-template-columns: 170px 1fr; gap: 20px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,.14); font-size: 19px; line-height: 1.4; }
-.s-clist dt { font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #9AA3AF; padding-top: 4px; }
+.s-clist div { display: grid; grid-template-columns: 170px 1fr; gap: 20px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,.14); font-size: calc(19px * var(--ft)); line-height: 1.4; }
+.s-clist dt { font-size: calc(13px * var(--ft)); letter-spacing: .18em; text-transform: uppercase; color: #9AA3AF; padding-top: 4px; }
 .s-clist dd { margin: 0; }
 .s-contacts .s-foot { color: #8A929D; }
 .s-contacts .s-foot b { color: #F2F4F7; }
+
+/* режим «Двигать текст» в просмотре: рамка вокруг блоков, перетаскивание пальцем или мышью */
+.thumbs.moving [data-drag] { outline: 6px dashed var(--sel); outline-offset: 10px; cursor: move; touch-action: none; }
+.thumbs.moving [data-drag].dragging { outline-style: solid; }
 
 #stage { position: fixed; left: -20000px; top: 0; width: 1440px; pointer-events: none; }
 </style>
@@ -394,6 +414,18 @@ select.in { appearance: auto; }
             <div class="themes" id="themes"></div>
           </div>
           <div>
+            <p class="sub-h">Шрифты</p>
+            <div class="fonts" id="fonts"></div>
+          </div>
+          <div class="ranges">
+            <label class="f"><span>Заголовки: <b id="fh-v">100%</b></span><input type="range" id="fh" min="80" max="130" step="5" value="100"></label>
+            <label class="f"><span>Текст: <b id="ft-v">100%</b></span><input type="range" id="ft" min="85" max="125" step="5" value="100"></label>
+          </div>
+          <div>
+            <p class="sub-h">Расположение текста: в просмотре нажмите «Двигать текст» и перетащите блоки. Сдвиг применится ко всем слайдам этого вида.</p>
+            <div class="links"><button class="link" type="button" data-move>Двигать текст</button><button class="link" id="lay-reset" type="button">Вернуть расположение</button></div>
+          </div>
+          <div>
             <p class="sub-h">Слайды в КП</p>
             <div class="toggles" id="g-parts"></div>
           </div>
@@ -414,7 +446,7 @@ select.in { appearance: auto; }
     </section>
 
     <aside class="preview" aria-label="Просмотр КП">
-      <div class="preview__head"><span id="pv-title">Просмотр</span><span id="pv-count"></span><button class="btn" id="dl3" type="button">Скачать PDF</button></div>
+      <div class="preview__head"><span id="pv-title">Просмотр</span><span id="pv-count"></span><button class="btn btn--ghost" type="button" data-move aria-pressed="false">Двигать текст</button><button class="btn" id="dl3" type="button">Скачать PDF</button></div>
       <div class="thumbs" id="thumbs"></div>
     </aside>
   </main>
@@ -466,6 +498,15 @@ const TERMS = {
   poufs: [['Размер', 'Ширину и высоту согласуем на проекте'], ['Наполнение', 'Подбираем под желаемую посадку: мягче или плотнее'], ['Обивка', 'Ткани и кожа из палитры шоурума'], ['Доставка', 'По Казахстану и за рубеж'], ['Гарантия', '5 лет']],
   project: [['Размеры', 'Под ваш проект: согласуем по каждой позиции'], ['Наполнение', 'Подбираем под желаемую посадку: мягче или плотнее'], ['Обивка', 'Ткани и кожа из палитры шоурума'], ['Доставка', 'По Казахстану и за рубеж'], ['Гарантия', '5 лет']],
 };
+/* Пары шрифтов (все с кириллицей, Google Fonts): [ключ, название, заголовки, текст, что подгрузить перед PDF]. */
+const FONT_PAIRS = [
+  ['classic', 'Классика RICCA', "'Cormorant', Georgia, serif", "'Montserrat', Arial, sans-serif", ['400 20px Cormorant', 'italic 400 20px Cormorant', '300 20px Montserrat', '400 20px Montserrat', '500 20px Montserrat', '600 20px Montserrat']],
+  ['modern', 'Строгая', "'Montserrat', Arial, sans-serif", "'Montserrat', Arial, sans-serif", ['300 20px Montserrat', '400 20px Montserrat', '500 20px Montserrat', '600 20px Montserrat']],
+  ['journal', 'Журнал', "'Playfair Display', Georgia, serif", "'Inter', Arial, sans-serif", ['400 20px "Playfair Display"', 'italic 400 20px "Playfair Display"', '300 20px Inter', '400 20px Inter', '500 20px Inter', '600 20px Inter']],
+  ['elegant', 'Элегант', "'Prata', Georgia, serif", "'Raleway', Arial, sans-serif", ['400 20px Prata', '300 20px Raleway', '400 20px Raleway', '500 20px Raleway', '600 20px Raleway']],
+  ['graphic', 'Графика', "'Unbounded', Arial, sans-serif", "'Manrope', Arial, sans-serif", ['300 20px Unbounded', '300 20px Manrope', '400 20px Manrope', '500 20px Manrope', '600 20px Manrope']],
+  ['airy', 'Воздух', "'Tenor Sans', Arial, sans-serif", "'Jost', Arial, sans-serif", ['400 20px "Tenor Sans"', '300 20px Jost', '400 20px Jost', '500 20px Jost', '600 20px Jost']],
+];
 const PARTS = [['cover', 'Обложка'], ['total', 'Итого (в «Своём КП»)'], ['terms', 'Условия'], ['trust', 'Нам доверяют'], ['cta', 'Пришлите фото'], ['contacts', 'Контакты']];
 const THEMES = [['auto', 'По дате', ''], ['winter', 'Зима', '#EDF3FA'], ['spring', 'Весна', '#EFF7F3'], ['summer', 'Лето', '#FFFFFF'], ['autumn', 'Осень', '#F1F3F6']];
 const THEME_DOT = { winter: 'linear-gradient(135deg,#EDF3FA 50%,#1C3452 50%)', spring: 'linear-gradient(135deg,#EFF7F3 50%,#1D3A30 50%)', summer: 'linear-gradient(135deg,#FFFFFF 50%,#111214 50%)', autumn: 'linear-gradient(135deg,#F1F3F6 50%,#262C35 50%)' };
@@ -506,7 +547,7 @@ const idb = (() => {
 const LOGO_DEFAULT = (window.KP_LOGOS || []).map((l) => ({ key: l.f, f: l.f, name: l.name, k: l.k || 1, on: true }));
 const state = {
   cat: 'beds',
-  settings: { client: '', date: '', manager: '', phone: '', lead: '25–45 рабочих дней', sub: '', theme: 'auto', parts: { cover: true, total: true, terms: true, trust: true, cta: true, contacts: true }, terms: {} },
+  settings: { client: '', date: '', manager: '', phone: '', lead: '25–45 рабочих дней', sub: '', theme: 'auto', font: 'classic', fh: 1, ft: 1, layout: {}, parts: { cover: true, total: true, terms: true, trust: true, cta: true, contacts: true }, terms: {} },
   models: {},   // id → { on, price, from, note, pick, uploads: [{ id, kind }] }
   custom: {},   // id → { cat, name, subtitle, description, options, photos: [{ id, kind }], deleted }
   project: { title: '', items: [] }, // items: [{ id, price, from, qty, note }]
@@ -759,6 +800,10 @@ function fillGeneral(fromRemote) {
   renderSum();
   const cur = state.settings.theme || 'auto';
   $('#themes').innerHTML = THEMES.map(([k, t]) => `<button type="button" class="th" data-theme="${k}" aria-pressed="${cur === k}"><i style="background:${k === 'auto' ? THEME_DOT[seasonByDate()] : THEME_DOT[k]}"></i>${t}${k === 'auto' ? ` (${THEME_NAME[seasonByDate()]})` : ''}</button>`).join('');
+  const fpCur = state.settings.font || 'classic';
+  $('#fonts').innerHTML = FONT_PAIRS.map(([k, t, h, x]) => `<button type="button" class="fpb" data-font="${k}" aria-pressed="${fpCur === k}"><b style="font-family:${h}">${esc(tab().id === 'project' ? 'Подборка' : tab().title)}</b><span style="font-family:${x}">${t}</span></button>`).join('');
+  const fhv = Math.round((+state.settings.fh || 1) * 100), ftv = Math.round((+state.settings.ft || 1) * 100);
+  $('#fh').value = fhv; $('#fh-v').textContent = fhv + '%'; $('#ft').value = ftv; $('#ft-v').textContent = ftv + '%';
   $('#g-parts').innerHTML = PARTS.map(([k, t]) => `<label class="tg"><input type="checkbox" id="part-${k}" data-part="${k}" ${state.settings.parts[k] !== false ? 'checked' : ''}>${t}</label>`).join('');
   renderLogos();
   $('#terms-h').textContent = `Условия для вкладки «${tab().title}»`;
@@ -769,6 +814,13 @@ function fillGeneral(fromRemote) {
 $('#general').addEventListener('toggle', () => { if ($('#general').open) $$('#terms textarea').forEach(autoSize); });
 for (const [k, sel] of Object.entries(G)) $(sel).addEventListener('input', (e) => { state.settings[k] = e.target.value; touchSettings(); renderSum(); renderSlidesSoon(); });
 $('#g-parts').addEventListener('change', (e) => { const k = e.target.dataset.part; if (!k) return; state.settings.parts = { ...state.settings.parts, [k]: e.target.checked }; touchSettings(); renderSlides(); });
+$('#fonts').addEventListener('click', (e) => { const b = e.target.closest('[data-font]'); if (!b) return; state.settings.font = b.dataset.font; touchSettings(); fillGeneral(); renderSlides(); });
+for (const id of ['fh', 'ft']) $('#' + id).addEventListener('input', (e) => { state.settings[id] = +e.target.value / 100; $('#' + id + '-v').textContent = e.target.value + '%'; touchSettings(); renderSlidesSoon(); });
+document.addEventListener('click', (e) => { if (e.target.closest('[data-move]')) { setMoving(!moving); if (moving && window.matchMedia('(max-width: 999px)').matches && $('#app').dataset.view !== 'look') $('#v-look').click(); } });
+$('#lay-reset').addEventListener('click', () => {
+  const prev = state.settings.layout || {}; state.settings.layout = {}; touchSettings(); renderSlides();
+  toast('Расположение текста вернул как было.', { action: 'Отменить', onAction: () => { state.settings.layout = prev; touchSettings(); renderSlides(); } });
+});
 $('#themes').addEventListener('click', (e) => { const b = e.target.closest('[data-theme]'); if (!b) return; state.settings.theme = b.dataset.theme; touchSettings(); fillGeneral(); renderSlides(); });
 $('#logos').addEventListener('click', (e) => {
   const del = e.target.closest('[data-ldel]');
@@ -1200,8 +1252,20 @@ function sumOf(items) {
   for (const it of items) { const p = +cleanPrice(it.price) || 0; if (p) { sum += p * (it.qty || 1); priced++; if (it.from) from = true; } }
   return { sum, from: from || (priced && priced < items.length), priced };
 }
+/* Изделие на студийном фото — крупнее: по доле предмета в кадре (box с сайта) подбираем масштаб, чтобы оно заняло ~80 % рамки. */
+function zoomStyle(p, W, H, fillW = 0.8, fillH = 0.74) {
+  const base = bg(p.f);
+  if (!p || p.kind !== 'studio' || !Array.isArray(p.box) || !p.w || !p.h) return base;
+  const ar = p.w / p.h; const cw = ar > W / H ? W : H * ar; const ch = cw / ar;
+  const z = Math.max(1, Math.min(fillW * W / (p.box[0] * cw), fillH * H / (p.box[1] * ch), 2.2));
+  return `${base};background-size:${Math.round(cw * z)}px ${Math.round(ch * z)}px`;
+}
 function buildSlides() {
   const st = state.settings; const parts = st.parts || {}; const th = 'th-' + theme(); const isProject = state.cat === 'project';
+  const fp = FONT_PAIRS.some((f) => f[0] === st.font) ? st.font : 'classic';
+  const fh = +st.fh || 1; const ft = +st.ft || 1; const lay = st.layout || {};
+  const S = (kind) => `<div class="slide s-${kind} ${th} fp-${fp}" style="--fh:${fh};--ft:${ft}">`;
+  const D = (key, cls, xs) => { const o = lay[key]; const sty = [xs, o ? `transform:translate(${o[0]}px,${o[1]}px)` : ''].filter(Boolean).join(';'); return ` class="${cls || ''}" data-drag="${key}"${sty ? ` style="${sty}"` : ''}`; };
   const label = isProject ? (state.project.title ? 'Коммерческое предложение' : 'Подборка') : tab().title;
   const entries = isProject
     ? projItems().map((it) => ({ m: byId[it.id], price: it.price, from: it.from, note: it.note, qty: it.qty || 1 }))
@@ -1212,15 +1276,17 @@ function buildSlides() {
   if (parts.cover !== false) {
     const coverPic = entries.length ? picksOf(entries[0].m).big : null;
     const title = isProject ? (state.project.title || 'Подборка мебели') : tab().title;
-    out.push({ kind: 'cover', html: () => `<div class="slide s-cover ${th}">
+    out.push({ kind: 'cover', html: () => `${S('cover')}
       <div class="s-cover__l">${winter ? snow(560, 810, 70, 7) : ''}
-        <div class="s-mark">${mono}<span>RICCA DESIGNS</span></div>
-        <div class="s-cover__kicker">Коммерческое предложение</div>
-        <div class="s-cover__title${title.length > 14 ? ' long' : ''}">${esc(title)}</div>
-        <div class="s-cover__sub">${esc(st.sub || subDefault())}</div>
-        <div class="s-cover__meta">${st.client ? `<span>Для: <b>${esc(st.client)}</b></span>` : ''}<span>${esc(st.date || today())}</span>${mgr ? `<span>Менеджер: <b>${mgr}</b></span>` : ''}</div>
+        <div${D('cover.mark', 's-mark')}>${mono}<span>RICCA DESIGNS</span></div>
+        <div${D('cover.text', 's-cover__txt')}>
+          <div class="s-cover__kicker">Коммерческое предложение</div>
+          <div class="s-cover__title${title.length > 14 ? ' long' : ''}">${esc(title)}</div>
+          <div class="s-cover__sub">${esc(st.sub || subDefault())}</div>
+          <div class="s-cover__meta">${st.client ? `<span>Для: <b>${esc(st.client)}</b></span>` : ''}<span>${esc(st.date || today())}</span>${mgr ? `<span>Менеджер: <b>${mgr}</b></span>` : ''}</div>
+        </div>
       </div>
-      <div class="s-cover__r">${coverPic ? `<div class="s-pic" style="${bg(coverPic.f)};${coverPic.kind === 'interior' ? 'background-size:cover' : ''}"></div>` : ''}<div class="s-cover__tag">${entries.length} ${plural(entries.length, isProject ? ['позиция', 'позиции', 'позиций'] : ['модель', 'модели', 'моделей'])}</div></div>
+      <div class="s-cover__r">${coverPic ? `<div class="s-pic" style="${coverPic.kind === 'interior' ? bg(coverPic.f) + ';background-size:cover' : zoomStyle(coverPic, 880, 810, 0.78, 0.6)}"></div>` : ''}<div class="s-cover__tag">${entries.length} ${plural(entries.length, isProject ? ['позиция', 'позиции', 'позиций'] : ['модель', 'модели', 'моделей'])}</div></div>
     </div>` });
   }
   for (const e of entries) {
@@ -1230,32 +1296,33 @@ function buildSlides() {
     if (isProject && e.qty > 1) specs.push(['Количество', `${e.qty} шт.`]);
     if (m.options && m.options.length) specs.push(['Варианты', m.options.join(' · ')]);
     const desc = trim(m.description, 230);
-    out.push({ kind: 'model', id: m.id, html: (n) => `<div class="slide s-model ${th}">
+    const bigH = p.small.length ? 530 : 810;
+    out.push({ kind: 'model', id: m.id, html: (n) => `${S('model')}
       <div class="s-model__l">
-        <div class="s-text">
+        <div${D('model.text', 's-text')}>
           <div class="s-kicker">${esc(m.type)}</div>
           <div class="s-name${m.name.length > 9 ? ' long' : ''}">${esc(m.name)}</div>
           ${m.subtitle ? `<div class="s-sub">${esc(m.subtitle)}</div>` : ''}
           ${desc ? `<div class="s-desc${desc.length > 150 ? ' long' : ''}">${esc(desc)}</div>` : ''}
           ${specs.length ? `<dl class="s-specs">${specs.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>` : ''}
         </div>
-        <div class="s-price"><small>${isProject && e.qty > 1 ? 'Цена за 1 шт.' : 'Цена'}</small>${priceHTML(e)}</div>
+        <div${D('model.price', 's-price')}><small>${isProject && e.qty > 1 ? 'Цена за 1 шт.' : 'Цена'}</small>${priceHTML(e)}</div>
       </div>
       <div class="s-model__r${p.small.length ? ' has-small' : ''}">
-        <div class="s-pic s-big${p.bigCover ? ' cover' : ''}" style="${bg(p.big ? p.big.f : '')}"></div>
+        <div class="s-pic s-big${p.bigCover ? ' cover' : ''}" style="${p.big ? (p.bigCover ? bg(p.big.f) : zoomStyle(p.big, 940, bigH)) : ''}"></div>
         ${p.small.length ? `<div class="s-smalls${p.small.length === 1 ? ' one' : ''}">${p.small.map((x) => `<div class="s-pic" style="${bg(x.f)}"></div>`).join('')}</div>` : ''}
       </div>
       ${foot(n, label)}
     </div>` });
     for (const ip of p.interiors) {
       const sz = sizeOf(ip); const wide = !sz || sz[0] / sz[1] >= 1.25;
-      out.push({ kind: 'interior', id: m.id, html: (n) => wide ? `<div class="slide s-interior ${th}">
+      out.push({ kind: 'interior', id: m.id, html: (n) => wide ? `${S('interior')}
         <div class="s-pic" style="${bg(ip.f)}"></div>
-        <div class="s-interior__cap"><span>${esc(m.type)}</span><b>${esc(m.name)}</b>${priceText(e) ? `<i>${priceText(e)}</i>` : ''}</div>
-      </div>` : `<div class="slide s-split ${th}">
-        <div class="s-split__l"><div class="s-text"><div class="s-kicker">${esc(m.type)} в интерьере</div><div class="s-name${m.name.length > 9 ? ' long' : ''}">${esc(m.name)}</div>${m.subtitle ? `<div class="s-sub">${esc(m.subtitle)}</div>` : ''}
+        <div${D('interior.cap', 's-interior__cap')}><span>${esc(m.type)}</span><b>${esc(m.name)}</b>${priceText(e) ? `<i>${priceText(e)}</i>` : ''}</div>
+      </div>` : `${S('split')}
+        <div class="s-split__l"><div${D('split.text', 's-text')}><div class="s-kicker">${esc(m.type)} в интерьере</div><div class="s-name${m.name.length > 9 ? ' long' : ''}">${esc(m.name)}</div>${m.subtitle ? `<div class="s-sub">${esc(m.subtitle)}</div>` : ''}
           <div class="s-note">Сделаем в выбранной ткани и под ваш размер.</div></div>
-          <div class="s-price"><small>Цена</small>${priceHTML(e)}</div></div>
+          <div${D('split.price', 's-price')}><small>Цена</small>${priceHTML(e)}</div></div>
         <div class="s-split__r"><div class="s-pic" style="${bg(ip.f)}"></div></div>
         ${foot(n, label)}
       </div>` });
@@ -1265,10 +1332,10 @@ function buildSlides() {
     const tot = sumOf(entries); const per = 9;
     for (let c = 0; c < entries.length; c += per) {
       const chunk = entries.slice(c, c + per); const last = c + per >= entries.length;
-      out.push({ kind: 'total', html: (n) => `<div class="slide s-total ${th}">
-        <div class="s-kicker">Расчёт</div><div class="s-h">Итого${entries.length > per ? ` <span style="font-size:40px">${Math.floor(c / per) + 1}</span>` : ''}</div>
-        <div class="s-ttab"><div class="s-th"><span>№</span><span>Модель</span><span>Кол-во</span><span>Цена</span><span>Сумма</span></div>
-          ${chunk.map((e, i) => { const p = +cleanPrice(e.price) || 0; return `<div><span>${c + i + 1}</span><span>${esc(e.m.type)} ${esc(e.m.name)}${e.note ? ` <i>· ${esc(e.note)}</i>` : ''}</span><span>${e.qty} шт.</span><span>${p ? (e.from ? 'от ' : '') + fmt(p) + ' ₸' : 'по запросу'}</span><span>${p ? fmt(p * e.qty) + ' ₸' : '—'}</span></div>`; }).join('')}
+      out.push({ kind: 'total', html: (n) => `${S('total')}
+        <div${D('total.head')}><div class="s-kicker">Расчёт</div><div class="s-h" style="margin-top:14px">Итого${entries.length > per ? ` <span style="font-size:40px">${Math.floor(c / per) + 1}</span>` : ''}</div></div>
+        <div${D('total.table', 's-ttab')}><div class="s-th"><span>№</span><span>Модель</span><span>Кол-во</span><span>Цена</span><span>Сумма</span></div>
+          ${chunk.map((e, i) => { const pr = +cleanPrice(e.price) || 0; return `<div><span>${c + i + 1}</span><span>${esc(e.m.type)} ${esc(e.m.name)}${e.note ? ` <i>· ${esc(e.note)}</i>` : ''}</span><span>${e.qty} шт.</span><span>${pr ? (e.from ? 'от ' : '') + fmt(pr) + ' ₸' : 'по запросу'}</span><span>${pr ? fmt(pr * e.qty) + ' ₸' : '—'}</span></div>`; }).join('')}
           ${last ? `<div class="s-tsum"><span></span><span>Итого${tot.priced < entries.length ? ' (без позиций по запросу)' : ''}</span><span></span><span></span><span>${tot.from ? 'от ' : ''}${fmt(tot.sum)}&nbsp;₸</span></div>` : ''}
         </div>
         ${foot(n, label)}
@@ -1278,27 +1345,27 @@ function buildSlides() {
   if (parts.terms !== false) {
     const rows = termsOf(state.cat).filter((r) => (r.k || '').trim() || (r.v || '').trim());
     const all = [...rows, ...(st.lead ? [{ k: 'Срок изготовления', v: st.lead }] : [])];
-    out.push({ kind: 'terms', html: (n) => `<div class="slide s-terms ${th}">
-      <div><div class="s-kicker">Для всех моделей</div><div class="s-h" style="margin-top:18px">Условия</div>
+    out.push({ kind: 'terms', html: (n) => `${S('terms')}
+      <div${D('terms.head')}><div class="s-kicker">Для всех моделей</div><div class="s-h" style="margin-top:18px">Условия</div>
       <div class="s-lead">Каждое изделие делаем под заказ в своём ателье в Алматы. Размер, ткань и посадку согласуем до начала работы.</div></div>
-      <dl class="s-table">${all.map((r) => `<div><dt>${esc(r.k)}</dt><dd>${esc(r.v)}</dd></div>`).join('')}</dl>
+      <dl${D('terms.table', 's-table')}>${all.map((r) => `<div><dt>${esc(r.k)}</dt><dd>${esc(r.v)}</dd></div>`).join('')}</dl>
       ${foot(n, label)}
     </div>` });
   }
   const trust = logos().filter((l) => l.on !== false).slice(0, 12);
   if (parts.trust !== false && trust.length) {
-    const rows = Math.ceil(trust.length / 4); const cellH = rows > 2 ? 150 : 190;
-    out.push({ kind: 'trust', html: (n) => `<div class="slide s-trust ${th}">
-      <div class="s-kicker">Клиенты ателье</div><div class="s-h" style="margin-top:18px">Нам доверяют</div>
-      <ul class="s-logos">${trust.map((l) => { const h = Math.min(cellH - 40, Math.round(56 * (l.k || 1))); return `<li style="height:${cellH}px"><div class="s-logo" style="${bg(l.f)};height:${h}px;margin-top:-${Math.round(h / 2)}px"></div></li>`; }).join('')}${`<li style="height:${cellH}px"></li>`.repeat((4 - (trust.length % 4)) % 4)}</ul>
+    const nl = trust.length; const cols = nl <= 4 ? nl : nl <= 8 ? 4 : nl <= 10 ? 5 : 6; const rows = Math.ceil(nl / cols); const cellH = rows === 1 ? 300 : 230;
+    out.push({ kind: 'trust', html: (n) => `${S('trust')}
+      <div${D('trust.head')}><div class="s-kicker">Клиенты ателье</div><div class="s-h" style="margin-top:18px">Нам доверяют</div></div>
+      <ul${D('trust.logos', 's-logos', `grid-template-columns:repeat(${cols},1fr)`)}>${trust.map((l) => { const h = Math.round(Math.min(cellH * 0.62, 92 * (l.k || 1))); return `<li style="height:${cellH}px"><div class="s-logo" style="${bg(l.f)};height:${h}px;margin-top:-${Math.round(h / 2)}px"></div></li>`; }).join('')}</ul>
       ${foot(n, label)}
     </div>` });
   }
   if (parts.cta !== false) {
-    out.push({ kind: 'cta', html: (n) => `<div class="slide s-cta ${th}">
-      <div><div class="s-kicker">Если нужной модели нет</div><div class="s-h" style="margin-top:18px">Пришлите фото — сделаем по&nbsp;вашим размерам</div>
+    out.push({ kind: 'cta', html: (n) => `${S('cta')}
+      <div${D('cta.head')}><div class="s-kicker">Если нужной модели нет</div><div class="s-h" style="margin-top:18px">Пришлите фото — сделаем по&nbsp;вашим размерам</div>
       <div class="s-lead">Подойдёт фото из Pinterest или Instagram, эскиз дизайнера или проект интерьера.</div></div>
-      <div class="s-steps">
+      <div${D('cta.steps', 's-steps')}>
         <div><span>1</span><div><b>Фото и размеры</b><p>Пришлите в WhatsApp картинку и размеры места: ${esc(st.phone || CONTACT.phone)}</p></div></div>
         <div><span>2</span><div><b>Ткань и детали</b><p>Подберём ткань в шоуруме, согласуем посадку, каркас и цену.</p></div></div>
         <div><span>3</span><div><b>Изготовление</b><p>${st.lead ? esc(st.lead) + ' в своём ателье, ' : 'В своём ателье, '}затем доставка и сборка.</p></div></div>
@@ -1307,10 +1374,10 @@ function buildSlides() {
     </div>` });
   }
   if (parts.contacts !== false) {
-    out.push({ kind: 'contacts', html: (n) => `<div class="slide s-contacts ${th}">${winter ? snow(1440, 810, 120, 11) : ''}
-      <div><div class="s-mark">${mono}<span>RICCA DESIGNS</span></div><div class="s-h" style="margin-top:56px">Приезжайте в&nbsp;шоурум</div>
+    out.push({ kind: 'contacts', html: (n) => `${S('contacts')}${winter ? snow(1440, 810, 120, 11) : ''}
+      <div${D('contacts.head')}><div class="s-mark">${mono}<span>RICCA DESIGNS</span></div><div class="s-h" style="margin-top:56px">Приезжайте в&nbsp;шоурум</div>
       <div class="s-lead">Образцы тканей можно потрогать и сравнить рядом, а готовые модели — посидеть и полежать.</div></div>
-      <dl class="s-clist">
+      <dl${D('contacts.list', 's-clist')}>
         <div><dt>Адрес</dt><dd>${esc(CONTACT.addr)}</dd></div>
         <div><dt>Часы</dt><dd>${esc(CONTACT.hours)}</dd></div>
         <div><dt>Телефон</dt><dd>${esc(CONTACT.phone)}, WhatsApp</dd></div>
@@ -1323,6 +1390,39 @@ function buildSlides() {
   }
   return out;
 }
+
+/* ── «Двигать текст»: перетаскивание блоков на просмотре; сдвиг сохраняется для всех слайдов этого вида ── */
+let moving = false; let drag = null;
+function setMoving(v) {
+  moving = v; $('#thumbs').classList.toggle('moving', v);
+  for (const b of $$('[data-move]')) { b.setAttribute('aria-pressed', String(v)); b.textContent = v ? 'Готово' : 'Двигать текст'; }
+  if (v) toast('Перетащите текст пальцем или мышью. Сдвиг применится ко всем слайдам этого вида.', { ms: 7000 });
+}
+$('#thumbs').addEventListener('pointerdown', (e) => {
+  if (!moving) return;
+  const el = e.target.closest('[data-drag]'); const sl = el && el.closest('.sl'); if (!el || !sl) return;
+  e.preventDefault();
+  const key = el.dataset.drag; const o = (state.settings.layout || {})[key] || [0, 0];
+  drag = { el, key, x0: e.clientX, y0: e.clientY, dx: o[0], dy: o[1], o, k: sl.clientWidth / 1440, id: e.pointerId };
+  el.classList.add('dragging');
+  try { el.setPointerCapture(e.pointerId); } catch (e2) {}
+});
+$('#thumbs').addEventListener('pointermove', (e) => {
+  if (!drag || e.pointerId !== drag.id) return;
+  e.preventDefault();
+  drag.dx = Math.round(Math.max(-1300, Math.min(1300, drag.o[0] + (e.clientX - drag.x0) / drag.k)));
+  drag.dy = Math.round(Math.max(-760, Math.min(760, drag.o[1] + (e.clientY - drag.y0) / drag.k)));
+  drag.el.style.transform = `translate(${drag.dx}px,${drag.dy}px)`;
+});
+function endDrag(e) {
+  if (!drag || (e && e.pointerId !== drag.id)) return;
+  const d = drag; drag = null; d.el.classList.remove('dragging');
+  if (d.dx === d.o[0] && d.dy === d.o[1]) return;
+  state.settings.layout = { ...(state.settings.layout || {}), [d.key]: [d.dx, d.dy] };
+  touchSettings(); renderSlides();
+}
+$('#thumbs').addEventListener('pointerup', endDrag);
+$('#thumbs').addEventListener('pointercancel', endDrag);
 
 let rsT = 0;
 function renderSlidesSoon() { clearTimeout(rsT); rsT = setTimeout(renderSlides, 250); }
@@ -1343,6 +1443,8 @@ const loadImg = (u) => new Promise((res) => { const im = new Image(); im.onload 
 async function makePDF(onProgress) {
   const slides = buildSlides();
   if (!window.html2canvas || !window.jspdf) throw new Error('lib');
+  const pair = FONT_PAIRS.find((f) => f[0] === state.settings.font) || FONT_PAIRS[0];
+  try { await Promise.all(pair[4].map((f) => document.fonts.load(f, 'АБВабв'))); } catch (e) {}
   await document.fonts.ready;
   const stage = $('#stage');
   const pdf = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: [1440, 810], compress: true });

@@ -28,7 +28,7 @@ global.window = global; require(process.argv[1]);
 const vis = window.RICCA_CATALOG.filter((m) => ['sofas', 'beds', 'poufs'].includes(m.category));
 console.log(JSON.stringify(vis.map((m) => ({ id: m.id, cat: m.category, name: m.short || m.name, type: m.type, subtitle: m.subtitle || '',
   description: m.description || '', options: m.options || [],
-  photos: m.photos.map((p) => ({ src: p.src, w: p.w, h: p.h, alt: p.alt || '' })) }))));
+  photos: m.photos.map((p) => ({ src: p.src, w: p.w, h: p.h, alt: p.alt || '', box: p.studio && Array.isArray(p.box) ? p.box : null })) }))));
 """
     out = subprocess.run(['node', '-e', js, os.path.join(RICCA, 'js', 'catalog-data.js')], capture_output=True, text=True, check=True).stdout
     return json.loads(out)
@@ -44,7 +44,7 @@ def main():
         photos = []
         for p in m['photos']:
             name = os.path.basename(p['src']); used.add(name)
-            photos.append({'f': 'img/' + name, 'w': p['w'], 'h': p['h'], 'alt': p['alt']})
+            photos.append({'f': 'img/' + name, 'w': p['w'], 'h': p['h'], 'alt': p['alt'], **({'box': p['box']} if p.get('box') else {})})
         have = {os.path.basename(p['f']) for p in photos}
         for name in extra.get(m['id'], []):
             path = os.path.join(RICCA, 'img', 'catalog', name)
