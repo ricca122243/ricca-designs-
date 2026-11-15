@@ -240,8 +240,9 @@ body { counter-reset: sec 2; }
 /* ───── воздух и карточки «как у ориентира» (владелец, 11 ноября, по шести снимкам: «у них остаётся место, свободно и минималистично») ─────
    Между разделами — 84 px на телефоне (было 48), между карточками — 32 px. «Популярные модели»: карточка во всю ширину, по одной в ряд;
    изделие на светлом поле, название в левом верхнем углу карточки; через одну — кадр детали во всю карточку. Углы прямые — это наше */
-:root { --sec: clamp(84px, 9vw, 128px); }
-@media (max-width: 767px) { .shead { margin-bottom: 32px; } .atelier__grid { gap: 28px; } }
+:root { --sec: clamp(104px, 11vw, 160px); }   /* 15 ноября, владелец: «добавь воздуха, чтобы было премиально» — было 84–128 px */
+.shead { margin-bottom: clamp(48px, 5vw, 80px); }
+@media (max-width: 767px) { .shead { margin-bottom: 40px; } .atelier__grid { gap: 36px; } .wk.pm { gap: 40px; } }
 .wk.pm { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; margin: 0; padding: 0; overflow: visible; }
 .wk.pm > li { max-width: none; }
 .pm .wk__a { position: relative; display: block; }
@@ -340,3 +341,12 @@ body { counter-reset: sec 2; }
 
 /* «Популярные модели» — четыре кадра одного вида (изделие у бетонной стены): на широком экране в один ряд */
 
+
+/* ---------- «Мягкая мебель на заказ в Алматы» (15 ноября): короткий текст об ателье для людей и поиска — после «Вопросов».
+   Тихий: заголовок меньше разделов, текст вторым цветом, ссылки на категории каталога ---------- */
+.about-seo .wrap { max-width: calc(760px + 2 * var(--pad)); }
+.about-seo { padding-bottom: clamp(24px, 3vw, 48px); }
+.about-seo__t { margin: 0 0 14px; font: 300 clamp(20px, 2.2vw, 26px)/1.25 var(--sans); letter-spacing: -.01em; color: var(--ink); }
+.about-seo__p { margin: 0; max-width: 62ch; font: 400 15px/1.75 var(--sans); color: var(--ink-2); text-wrap: pretty; }
+.about-seo__p a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+@media (hover: hover) { .about-seo__p a:hover { text-decoration-color: var(--ink); } }

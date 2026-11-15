@@ -6,6 +6,25 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ricca')) +
 s = open(ROOT + 'index.html', encoding='utf-8').read()
 
 TEXT = {
+    'Диваны, кровати и&nbsp;кресла&nbsp;— в&nbsp;вашем размере и&nbsp;вашей ткани.': 'Sofas, beds and&nbsp;armchairs&nbsp;— in&nbsp;your size and&nbsp;your fabric.',
+    'Изделия, которые уже живут в&nbsp;домах наших клиентов.': 'Pieces already at&nbsp;home with our clients.',
+    'Собственное ателье в&nbsp;Алматы&nbsp;— от&nbsp;первого эскиза до&nbsp;последнего стежка.': 'Our own atelier in&nbsp;Almaty&nbsp;— from the first sketch to&nbsp;the last stitch.',
+    'Размер и&nbsp;ткань&nbsp;— по&nbsp;вашему выбору.': 'Size and&nbsp;fabric&nbsp;— of&nbsp;your choice.',
+    'Да. Каждую модель выстраиваем под пропорции вашего пространства&nbsp;— пришлите размеры в&nbsp;WhatsApp.': 'Yes. We shape every model to&nbsp;the proportions of&nbsp;your space&nbsp;— send us the measurements on&nbsp;WhatsApp.',
+    'Да. Воплотим модель по&nbsp;фото, эскизу или дизайн-проекту&nbsp;— с&nbsp;вниманием к&nbsp;каждой детали.': 'Yes. We bring a&nbsp;piece to&nbsp;life from a&nbsp;photo, sketch or&nbsp;design project&nbsp;— with care for every detail.',
+    'Стоимость зависит от&nbsp;модели, размера и&nbsp;ткани&nbsp;— рассчитаем в&nbsp;WhatsApp. Изготовление&nbsp;— до&nbsp;30&nbsp;дней.': 'The cost depends on&nbsp;the model, size and&nbsp;fabric&nbsp;— we’ll quote on&nbsp;WhatsApp. Making takes up&nbsp;to&nbsp;30&nbsp;days.',
+    'Доставляем по&nbsp;Казахстану и&nbsp;за&nbsp;его пределы. Гарантия&nbsp;— 5&nbsp;лет: если обнаружится брак, заменим. Срок службы&nbsp;— от&nbsp;15&nbsp;лет.': 'We deliver across Kazakhstan and&nbsp;abroad. 5-year warranty: if&nbsp;a&nbsp;defect appears, we&nbsp;replace it. Service life&nbsp;— 15&nbsp;years and&nbsp;more.',
+    'Где посмотреть ткани и&nbsp;мебель?': 'Where can I&nbsp;see the fabrics and&nbsp;furniture?',
+    'В&nbsp;шоуруме в&nbsp;Алматы, ул.&nbsp;Алишера Навои,&nbsp;208/2: образцы тканей и&nbsp;готовые модели вживую.': 'In&nbsp;our showroom in&nbsp;Almaty, 208/2 Alisher Navoi St.: fabric samples and&nbsp;finished pieces in&nbsp;person.',
+    'Мягкая мебель на&nbsp;заказ в&nbsp;Алматы': 'Custom upholstered furniture in&nbsp;Almaty',
+    'RICCA DESIGNS&nbsp;— ателье мягкой мебели в&nbsp;Алматы. Создаём': 'RICCA DESIGNS is&nbsp;an&nbsp;upholstered furniture atelier in&nbsp;Almaty. We create',
+    'диваны на&nbsp;заказ': 'custom sofas',
+    '&nbsp;— прямые, угловые и&nbsp;модульные,': '&nbsp;— straight, corner and&nbsp;modular,',
+    'кровати с&nbsp;мягким изголовьем': 'beds with upholstered headboards',
+    'кресла': 'armchairs',
+    'пуфы и&nbsp;банкетки': 'poufs and&nbsp;benches',
+    'по&nbsp;вашим размерам, фото или дизайн-проекту. Собственное производство, изготовление до&nbsp;30&nbsp;дней, гарантия 5&nbsp;лет и&nbsp;доставка по&nbsp;Казахстану. Обставляем дома, отели и&nbsp;рестораны.': 'to&nbsp;your measurements, photo or&nbsp;design project. Our own production, made in&nbsp;up&nbsp;to&nbsp;30&nbsp;days, 5-year warranty and&nbsp;delivery across Kazakhstan. We furnish homes, hotels and&nbsp;restaurants.',
+    'По&nbsp;вашим меркам': 'Made to&nbsp;your measurements', 'гарантия&nbsp;— брак заменим': 'warranty&nbsp;— any defect replaced', 'до&nbsp;30': 'up&nbsp;to&nbsp;30', 'дней на&nbsp;изготовление': 'days to&nbsp;make', 'от&nbsp;15&nbsp;лет': '15+&nbsp;years', 'срок службы': 'service life',
     'RICCA HoReCa&nbsp;— отели, рестораны,': 'RICCA HoReCa&nbsp;— hotels, restaurants,',
  # тексты узлов (русская строка → английская); порядок — как на странице. Неиспользуемые ключи убраны на Дне 3 вместе с разделами (новости, квиз, «Любой стиль», таблица тканей, «Влезет ли», колонки подвала)
  'Собрать в&nbsp;3D': 'Build in&nbsp;3D', 'Состав': 'What it’s made of', 'Перейти к&nbsp;содержанию': 'Skip to&nbsp;content', 'Каталог': 'Catalogue',
