@@ -75,6 +75,7 @@
     'Модели из каталога': 'Catalogue models', 'Весь каталог': 'Full catalogue', 'Ещё размеры': 'More dimensions', 'Изменить форму': 'Change the shape',
     'Меняются размер, ткань и цвет ножек.': 'You can change the size, fabric and leg colour.', 'Меняются размер и ткань.': 'You can change the size and fabric.',
     'Цвет на экране может отличаться — образцы и ещё 200 коллекций покажем в шоуруме.': 'On-screen colour may differ — we’ll show you samples and 200+ more collections in the showroom.',
+    'Отправляя заявку, вы соглашаетесь на обработку': 'By sending a request, you agree to the processing of', 'персональных данных': 'personal data',
     'Стоимость рассчитаем в WhatsApp, детали согласуем с мастером.': 'We’ll quote the price on WhatsApp and agree the details with the master.',
     'Далее': 'Next',
     /* телефон: кнопка вида, «назад» в шапке, плашка, ткань и чертёж крупно (app.js → syncVp, initBack, renderFabCur, zoomDrawing) */

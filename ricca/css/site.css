@@ -1234,6 +1234,8 @@ dialog::backdrop { background: rgba(17, 17, 17, .28); }
 .cart__f .pd__lbl { padding-top: 12px; }
 .cart__note, .cart__split { justify-self: start; font: 400 12px/1.5 var(--sans); color: var(--ink-2); }
 .cart__note { margin-bottom: 8px; }
+.cart__pd { margin-top: -4px; }   /* строка согласия на обработку данных (15 ноября) — сразу под строкой о цене */
+.cart__pd a, .sum__fine a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .cart__split { margin-bottom: 6px; }
 .cart__sends { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; width: 100%; }
 .cart__sends .btn--fill.is-sent { background: transparent; color: var(--ink); }

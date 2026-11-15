@@ -39,6 +39,7 @@ TEXT = {
  'Пока пусто. Складывайте мебель и&nbsp;ткани&nbsp;— и&nbsp;отправьте заявку одним сообщением в&nbsp;WhatsApp.': 'Empty for now. Add furniture and&nbsp;fabrics&nbsp;— and&nbsp;send one request via&nbsp;WhatsApp.',
  'Смотреть каталог': 'View the catalogue', 'Для заявки&nbsp;— по&nbsp;желанию': 'For the request&nbsp;— optional', 'Имя': 'Name', 'Город': 'City',
  'Комментарий к&nbsp;заказу': 'Order comment',
+ 'Отправляя заявку, вы соглашаетесь на&nbsp;обработку': 'By sending a request, you agree to the processing of', 'персональных данных': 'personal data',
  'Цены рассчитаем и&nbsp;ответим в&nbsp;WhatsApp.': "We'll quote prices and&nbsp;reply on&nbsp;WhatsApp.",
  'Заявка открыта в&nbsp;WhatsApp. Очистить корзину?': 'Request opened in&nbsp;WhatsApp. Clear the cart?', 'Очистить': 'Clear', 'Оставить': 'Keep',
  'Открыть': 'Open', 'Диваны, кровати, кресла&nbsp;— любой размер и&nbsp;ткань.': 'Sofas, beds, armchairs&nbsp;— any size and&nbsp;fabric.',

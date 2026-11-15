@@ -409,6 +409,7 @@ html[data-font="b"] .step__t { font: 400 26px/1 var(--serif); letter-spacing: 0;
 .sum__two .btn { padding: 0 14px; }
 .sum__room { justify-self: start; margin-top: 4px; }
 .sum__fine { margin-top: 14px; font: 400 13px/1.6 var(--sans); color: var(--ink-2); }
+.sum__fine a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }   /* ссылка на политику обработки данных (15 ноября) */
 .sum__fine + .sum__fine { margin-top: 2px; }
 .sum__reset { margin-top: 18px; min-height: 44px; font: 500 13px/1 var(--sans); color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; transition: color var(--t); }
 @media (hover: hover) { .sum__reset:hover { color: var(--ink); } }

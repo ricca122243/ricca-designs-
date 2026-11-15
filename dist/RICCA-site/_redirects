@@ -9,6 +9,7 @@
 # Адрес остаётся /en/configurator, поэтому её файлы (css/, js/, vendor/ …) запрашиваются как /en/css/… — отдаём их из корня
 /en/configurator.html  /en/configurator  301
 /en/configurator  /configurator.html   200
+/en/privacy.html  /privacy.html       200
 /en/css/*         /css/:splat          200
 /en/js/*          /js/:splat           200
 /en/vendor/*      /vendor/:splat       200
