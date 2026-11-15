@@ -48,7 +48,7 @@
   // по #адресам ?bg остаётся в адресе сам (меняется только хэш)
   if (/[?&]bg=white(?:&|$)/.test(location.search)) root.dataset.bg = 'white';
   // шрифты на выбор заказчика (css/site.css, html[data-font]): ?font=a — только Montserrat (по умолчанию), ?font=b — заголовки антиквой
-  root.dataset.font = (/[?&]font=(a|b|i)(?:&|$)/.exec(location.search) || [0, 'i'])[1];   // 15 ноября: по умолчанию «i» — курсив в заголовках
+  root.dataset.font = (/[?&]font=(a|b|i)(?:&|$)/.exec(location.search) || [0, 'a'])[1];   // 15 ноября: курсив (?font=i) владелец не принял — «прежние шрифты лучше», по умолчанию снова «a»
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -295,14 +295,17 @@
   const DETAILS = [];   // блок «В деталях» убран: кадры деталей стоят в «Популярных моделях» через одну карточку
   /* 12 ноября (вечер), владелец: «только белый фон и диван… схожие фотографии… самые лучшие фото диванов, кровати» — шесть предметных кадров
      на белом фоне в одном виде: диваны спереди, кровати в три четверти; кадры у бетонной стены и крупные планы убраны */
-  const PICKS = [['m-sofa-23', 0], ['m-sofa-01', 0], ['m-bed-04', 0], ['m-sofa-22', 0], ['m-sofa-46', 0], ['m-bed-35', 0]];
+  /* 15 ноября, владелец: «как в первый раз — одно близкое фото, второе дальнее» — изделие целиком и крупный план по очереди.
+     Кадр детали — по имени файла (номера кадров меняются при пересборке models-data.js) */
+  const PICKS = [['m-sofa-23', 0], ['m-sofa-42', 'sofa-42-d1-e-a', 'd'], ['m-sofa-01', 0], ['m-bed-04', 'bed-04-d1-a', 'd'],
+    ['m-sofa-22', 0], ['m-armchair-14', 'armchair-14-z1', 'd'], ['m-sofa-46', 0], ['m-armchair-10', 'armchair-10-d1-a', 'd', 'l']];
   /* «Популярные модели» как у ориентира (владелец, 11 ноября): карточки во всю ширину, по одной в ряд — изделие на светлом поле, название в углу карточки;
      через одну — крупный кадр детали. Запись: [модель, номер кадра, 'd' — деталь во всю карточку, 'l' — светлая подпись на тёмной ткани]. Модель — один раз */
   (() => {
     const sec = $('#picks'), row = sec && $('[data-picks-row]', sec);
     if (!row) return;
     const seen = new Set();
-    const list = PICKS.map(([id, n, d, l]) => { const w = MODELS.find((x) => x.id === id); if (!w || !w.photos[n] || seen.has(id)) return null; seen.add(id); const st = d ? -1 : w.photos.findIndex((q) => q.studio && !q.scene); return [w, st >= 0 ? st : n, d, l]; }).filter(Boolean);
+    const list = PICKS.map(([id, n0, d, l]) => { const w = MODELS.find((x) => x.id === id); const n = w && typeof n0 === 'string' ? w.photos.findIndex((q) => q.src.includes(n0)) : n0; if (!w || !w.photos[n] || seen.has(id)) return null; seen.add(id); const st = d ? -1 : w.photos.findIndex((q) => q.studio && !q.scene); return [w, st >= 0 ? st : n, d, l]; }).filter(Boolean);
     if (list.length < 3) { sec.remove(); return; }
     row.classList.remove('strip'); row.classList.add('pm');
     row.innerHTML = list.map(([w, n, d, l]) => {
