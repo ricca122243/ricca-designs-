@@ -219,14 +219,14 @@
   /* карточка работы: фото 4 : 5 (cover), под ним название (16–18 px) и ткань одной строкой — ссылка #work-<id> (открывает окно работы).
      data-cat на <li> — фильтр экрана «Наши работы»; wide — карточка на две колонки (главная, компьютер: горизонтальный кадр в рамке
      ≈ 1,65 : 1, css .wk__wide; sizes — вдвое шире) */
-  const workCard = (w, n, sizes, eager, withSub = true, wide = false, phone = '43vw') => {
+  const workCard = (w, n, sizes, eager, withSub = true, wide = false, phone = '43vw', altN = -1) => {
     const p = w.photos[n] || w.photos[0];
     if (!w.model) return `<li data-cat="${esc(w.cat)}"${wide ? ' class="wk__wide"' : ''}><a class="wk__a" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
       + `<span class="wk__img">${workPic(p, wide ? zSizes(sizes, 2) : sizes, eager)}</span>`
       + `<span class="wk__t">${typo(w.title)}</span>${withSub && w.sub ? `<span class="wk__s">${nwHyph(typo(w.sub))}</span>` : ''}</a></li>`;
     /* модель: фото на «подиуме», при наведении — второй ракурс; подпись — вид мебели капителью (на телефоне скрыт), название, строка;
        телефон — две колонки .wk ≈ 43vw (sizes для srcset, workPic умножает на --z); крупная карточка во всю ширину — phone = PHONE_BIG */
-    const alt = w.photos.find((q, i) => i !== n && q.studio);
+    const alt = w.photos[altN] || w.photos.find((q, i) => i !== n && q.studio);
     const [kind, name] = splitTitle(w.title);
     return `<li data-cat="${esc(w.cat)}"><a class="wk__a wk__a--model" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
       + `<span class="wk__img">${workPic(p, sizes, eager, zoomOf(p), phone === PHONE_BIG ? bigSizes(zoomOf(p)) : phone)}${alt ? `<img class="wk__alt" src="${esc(alt.src800)}" width="${p800(alt).w}" height="${p800(alt).h}" alt="" loading="lazy" decoding="async"${zoomAttr(alt)}>` : ''}</span>`
@@ -297,22 +297,25 @@
      на белом фоне в одном виде: диваны спереди, кровати в три четверти; кадры у бетонной стены и крупные планы убраны */
   /* 15 ноября, владелец: «одно близкое фото, второе дальнее», затем — «разнообразие есть, но связи нет»: пары одной модели —
      изделие целиком и сразу его крупный план (на компьютере пара в одном ряду). Кадр детали — по имени файла */
-  const PICKS = [['m-sofa-23', 0], ['m-sofa-23', 'sofa-23-d1-a', 'd'], ['m-sofa-22', 0], ['m-sofa-22', 'sofa-22-d1-a', 'd'],
-    ['m-sofa-46', 0], ['m-sofa-46', 'sofa-46-d2-a', 'd', 'l'], ['m-bed-04', 0], ['m-bed-04', 'bed-04-d1-a', 'd']];
-  /* «Популярные модели» как у ориентира (владелец, 11 ноября): карточки во всю ширину, по одной в ряд — изделие на светлом поле, название в углу карточки;
-     через одну — крупный кадр детали. Запись: [модель, номер кадра, 'd' — деталь во всю карточку, 'l' — светлая подпись на тёмной ткани]. Модель — один раз */
+  /* 15 ноября, ночь (владелец, образец Mononova): одна карточка на модель, без «Крупно»; кадр сам сменяется на крупный план —
+     на компьютере при наведении, на телефоне сам, пока карточка на экране (карусель из двух кадров). Запись: [модель, кадр крупного плана, 'l' — светлая подпись на тёмной ткани] */
+  const PICKS = [['m-sofa-23', 'sofa-23-d1-a'], ['m-sofa-22', 'sofa-22-d1-a'], ['m-sofa-46', 'sofa-46-d2-a'], ['m-bed-04', 'bed-04-d1-a']];
   (() => {
     const sec = $('#picks'), row = sec && $('[data-picks-row]', sec);
     if (!row) return;
-    const seen = new Set();
-    const list = PICKS.map(([id, n0, d, l]) => { const w = MODELS.find((x) => x.id === id); const n = w && typeof n0 === 'string' ? w.photos.findIndex((q) => q.src.includes(n0)) : n0; const k = id + (d ? ':d' : ''); if (!w || !w.photos[n] || seen.has(k)) return null; seen.add(k); const st = d ? -1 : w.photos.findIndex((q) => q.studio && !q.scene); return [w, st >= 0 ? st : n, d, l]; }).filter(Boolean);
+    const list = PICKS.map(([id, dn, l]) => { const w = MODELS.find((x) => x.id === id); if (!w) return null; const st = w.photos.findIndex((q) => q.studio && !q.scene); return [w, Math.max(st, 0), w.photos.findIndex((q) => q.src.includes(dn)), l]; }).filter(Boolean);
     if (list.length < 3) { sec.remove(); return; }
     row.classList.remove('strip'); row.classList.add('pm');
-    row.innerHTML = list.map(([w, n, d, l]) => {
-      if (!d) return workCard(w, n, WK_SIZES, false, false, false, PHONE_BIG);
-      const q = w.photos[n], t = p800(q);
-      return `<li class="pm__d"><a class="wk__a pm__da${l ? ' is-light' : ''}" href="#work-${esc(w.id)}" data-work="${esc(w.id)}" data-work-n="${n}" aria-haspopup="dialog"><img src="${esc(q.src800)}" srcset="${esc(q.src800)} ${t.w}w, ${esc(q.src)} ${q.w}w" sizes="(min-width: 1200px) 30vw, (min-width: 768px) 46vw, 92vw" width="${t.w}" height="${t.h}" alt="" loading="lazy" decoding="async"><span class="wk__cap"><span class="wk__t">${typo(w.title)}</span><span class="wk__k">${tr('Крупно')}</span></span></a></li>`;
-    }).join('');
+    row.innerHTML = list.map(([w, n, a, l]) => workCard(w, n, WK_SIZES, false, false, false, PHONE_BIG, a).replace('<li ', `<li${l ? ' data-l' : ''} `)).join('');
+    if (!matchMedia('(hover: hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+      const timers = new Map();
+      const io = new IntersectionObserver((es) => es.forEach((e) => {
+        const li = e.target;
+        if (e.isIntersecting && !timers.has(li)) timers.set(li, setInterval(() => li.classList.toggle('is-alt'), 2600));
+        else if (!e.isIntersecting && timers.has(li)) { clearInterval(timers.get(li)); timers.delete(li); li.classList.remove('is-alt'); }
+      }), { threshold: 0.6 });
+      Array.from(row.children).forEach((li) => io.observe(li));
+    }
     Array.from(row.children).forEach((li) => li.classList.add('rv'));
     sec.hidden = false;
   })();

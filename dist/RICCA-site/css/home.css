@@ -351,15 +351,10 @@ body { counter-reset: sec 2; }
 .about-seo__p a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
 @media (hover: hover) { .about-seo__p a:hover { text-decoration-color: var(--ink); } }
 
-/* 15 ноября (владелец: «бирка как ограждение, склей название с фото», образец — Mononova): подпись у всех карточек
-   «Популярных моделей» одинаковая — под фото, без плашки. У кадра-детали имя не повторяется: «Крупно» серым,
-   а на телефоне деталь прижата к своей модели (8 px), между парами — 48 px */
-.pm .wk__cap, .pm__da .wk__cap { position: static; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; width: auto; max-width: none; margin: 12px 0 0; padding: 0; border-radius: 0; background: none; }
-.pm .wk__a > :first-child { display: block; }
-.pm__da { aspect-ratio: auto; overflow: visible; background: none; }
-.pm__da img { display: block; aspect-ratio: 4 / 5; background: var(--product-bg); }
-.pm__da .wk__t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.pm__da .wk__k { display: inline; margin: 0; font: 400 13px/1.3 var(--sans); color: var(--ink-2); }
-@media (min-width: 768px) { .pm__da img { aspect-ratio: 4 / 3; } }
-@media (max-width: 767px) { .wk.pm { gap: 48px; } .wk.pm > .pm__d { margin-top: -40px; } }
-.pm .wk__cap { justify-content: flex-start; gap: .35em; }
+/* 15 ноября, ночь (владелец, образец Mononova): одна карточка на модель, подпись в углу кадра без плашки; второй кадр — крупный план,
+   плавно сменяется (компьютер — наведение, телефон — сам, пока карточка на экране) */
+.pm .wk__img .wk__alt, .pm .wk__img picture img { transition: opacity .7s var(--ease); }
+.pm .is-alt .wk__img .wk__alt { opacity: 1; }
+.pm .is-alt .wk__img:has(.wk__alt) picture img { opacity: 0; }
+.pm .wk__cap { z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .pm .wk__img .wk__alt, .pm .wk__img picture img { transition: none; } }
