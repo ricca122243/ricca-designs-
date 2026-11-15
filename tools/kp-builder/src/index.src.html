@@ -2,7 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;1,400;1,500&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=Prata&family=Raleway:wght@300;400;500;600&family=Unbounded:wght@300;400&family=Manrope:wght@300;400;500;600&family=Tenor+Sans&family=Jost:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap">
 <style>
 /* Раскладка: слева — настройка КП (общее, список моделей или «Своё КП»), справа — живой просмотр слайдов 16:9;
    на телефоне — нижняя панель «Настройка / Просмотр» и «Скачать PDF». Окна поверх: новая модель и выбор из каталога. */
@@ -261,11 +261,6 @@ select.in { appearance: auto; }
 .slide em.ac { font: inherit; letter-spacing: inherit; }
 .slide.fp-site em.ac { font-family: 'Cormorant', Georgia, serif; font-style: italic; font-weight: 400; font-size: 1.12em; letter-spacing: -.005em; }
 .slide.fp-site .s-sub { font-family: 'Cormorant', Georgia, serif; font-style: italic; font-size: calc(30px * var(--fh)); }
-.slide.fp-modern { --f-head: 'Montserrat', Arial, sans-serif; --w-head: 300; --i-sub: normal; --kh: .82; }
-.slide.fp-journal { --f-head: 'Playfair Display', Georgia, serif; --w-head: 400; --f-name: 'Playfair Display', Georgia, serif; --w-name: 400; --f-text: 'Inter', Arial, sans-serif; --kh: .86; --kn: .92; }
-.slide.fp-elegant { --f-head: 'Prata', Georgia, serif; --w-head: 400; --f-name: 'Prata', Georgia, serif; --w-name: 400; --f-text: 'Raleway', Arial, sans-serif; --i-sub: normal; --kh: .82; --kn: .9; }
-.slide.fp-graphic { --f-head: 'Unbounded', Arial, sans-serif; --w-head: 300; --f-name: 'Unbounded', Arial, sans-serif; --w-name: 300; --f-text: 'Manrope', Arial, sans-serif; --i-sub: normal; --kh: .62; --kn: .7; }
-.slide.fp-airy { --f-head: 'Tenor Sans', Arial, sans-serif; --w-head: 400; --f-name: 'Tenor Sans', Arial, sans-serif; --w-name: 400; --f-text: 'Jost', Arial, sans-serif; --i-sub: normal; --kh: .8; --kn: .86; }
 .slide * { box-sizing: border-box; }
 .s-foot { position: absolute; left: 72px; right: 72px; bottom: 34px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--skick); }
 .s-foot b { color: #0B0C0E; font-weight: 600; letter-spacing: .22em; }
@@ -312,7 +307,6 @@ select.in { appearance: auto; }
 .s-name { margin-top: 14px; font-family: var(--f-name); font-weight: var(--w-name); font-size: calc(84px * var(--kn) * var(--fh)); line-height: 1.02; letter-spacing: .01em; }
 .s-name.long { font-size: calc(60px * var(--kn) * var(--fh)); }
 .s-sub { margin-top: 14px; font-family: var(--f-head); font-style: var(--i-sub); font-size: calc(30px * var(--kh) * var(--fh)); line-height: 1.22; color: var(--sink2); }
-.slide.fp-modern .s-sub, .slide.fp-graphic .s-sub, .slide.fp-airy .s-sub, .slide.fp-elegant .s-sub { font-family: var(--f-text); font-size: calc(21px * var(--ft)); font-weight: 400; }
 .s-desc { margin-top: 20px; font-size: calc(18px * var(--ft)); line-height: 1.55; color: var(--sink2); font-weight: 300; }
 .s-desc.long { font-size: calc(16px * var(--ft)); }
 .s-specs { margin-top: 22px; display: grid; border-top: 1px solid var(--sline); }
@@ -431,13 +425,9 @@ select.in { appearance: auto; }
             <p class="sub-h">Оформление: цвета как на сайте в это время года</p>
             <div class="themes" id="themes"></div>
           </div>
-          <div>
-            <p class="sub-h">Шрифты</p>
-            <div class="fonts" id="fonts"></div>
-          </div>
           <div class="ranges">
-            <label class="f"><span>Заголовки: <b id="fh-v">100%</b></span><input type="range" id="fh" min="80" max="130" step="5" value="100"></label>
-            <label class="f"><span>Текст: <b id="ft-v">100%</b></span><input type="range" id="ft" min="85" max="125" step="5" value="100"></label>
+            <label class="f"><span>Размер заголовков: <b id="fh-v">100%</b></span><input type="range" id="fh" min="80" max="130" step="5" value="100"></label>
+            <label class="f"><span>Размер текста: <b id="ft-v">100%</b></span><input type="range" id="ft" min="85" max="125" step="5" value="100"></label>
           </div>
           <div>
             <p class="sub-h">Расположение текста: в просмотре нажмите «Двигать текст» и перетащите блоки. Сдвиг применится ко всем слайдам этого вида.</p>
@@ -518,14 +508,9 @@ const TERMS = {
   project: [['Размеры', 'Под ваш проект: согласуем по каждой позиции'], ['Наполнение', 'Подбираем под желаемую посадку: мягче или плотнее'], ['Обивка', 'Ткани и кожа из палитры шоурума'], ['Доставка', 'По Казахстану и за рубеж'], ['Гарантия', '5 лет']],
 };
 /* Пары шрифтов (все с кириллицей, Google Fonts): [ключ, название, заголовки, текст, что подгрузить перед PDF]. */
+/* Шрифт один — как на сайте: Montserrat Light и слово-акцент курсивом Cormorant (владелец, 15 ноября: «другие шрифты не надо»). */
 const FONT_PAIRS = [
   ['site', 'Как на сайте', "'Montserrat', Arial, sans-serif", "'Montserrat', Arial, sans-serif", ['300 20px Montserrat', '400 20px Montserrat', '500 20px Montserrat', '600 20px Montserrat', 'italic 400 20px Cormorant']],
-  ['classic', 'Классика RICCA', "'Cormorant', Georgia, serif", "'Montserrat', Arial, sans-serif", ['400 20px Cormorant', 'italic 400 20px Cormorant', '300 20px Montserrat', '400 20px Montserrat', '500 20px Montserrat', '600 20px Montserrat']],
-  ['modern', 'Строгая', "'Montserrat', Arial, sans-serif", "'Montserrat', Arial, sans-serif", ['300 20px Montserrat', '400 20px Montserrat', '500 20px Montserrat', '600 20px Montserrat']],
-  ['journal', 'Журнал', "'Playfair Display', Georgia, serif", "'Inter', Arial, sans-serif", ['400 20px "Playfair Display"', 'italic 400 20px "Playfair Display"', '300 20px Inter', '400 20px Inter', '500 20px Inter', '600 20px Inter']],
-  ['elegant', 'Элегант', "'Prata', Georgia, serif", "'Raleway', Arial, sans-serif", ['400 20px Prata', '300 20px Raleway', '400 20px Raleway', '500 20px Raleway', '600 20px Raleway']],
-  ['graphic', 'Графика', "'Unbounded', Arial, sans-serif", "'Manrope', Arial, sans-serif", ['300 20px Unbounded', '300 20px Manrope', '400 20px Manrope', '500 20px Manrope', '600 20px Manrope']],
-  ['airy', 'Воздух', "'Tenor Sans', Arial, sans-serif", "'Jost', Arial, sans-serif", ['400 20px "Tenor Sans"', '300 20px Jost', '400 20px Jost', '500 20px Jost', '600 20px Jost']],
 ];
 const PARTS = [['cover', 'Обложка'], ['atelier', 'Ателье'], ['total', 'Итого (в «Своём КП»)'], ['terms', 'Условия'], ['trust', 'Нам доверяют'], ['cta', 'Пришлите фото'], ['contacts', 'Контакты']];
 const THEMES = [['auto', 'По дате', ''], ['winter', 'Зима', '#EDF3FA'], ['spring', 'Весна', '#EFF7F3'], ['summer', 'Лето', '#FFFFFF'], ['autumn', 'Осень', '#F1F3F6']];
@@ -821,8 +806,6 @@ function fillGeneral(fromRemote) {
   renderSum();
   const cur = state.settings.theme || 'auto';
   $('#themes').innerHTML = THEMES.map(([k, t]) => `<button type="button" class="th" data-theme="${k}" aria-pressed="${cur === k}"><i style="background:${k === 'auto' ? THEME_DOT[seasonByDate()] : THEME_DOT[k]}"></i>${t}${k === 'auto' ? ` (${THEME_NAME[seasonByDate()]})` : ''}</button>`).join('');
-  const fpCur = state.settings.font || 'site';
-  $('#fonts').innerHTML = FONT_PAIRS.map(([k, t, h, x]) => `<button type="button" class="fpb" data-font="${k}" aria-pressed="${fpCur === k}"><b style="font-family:${h};font-weight:${k === 'site' || k === 'modern' || k === 'graphic' ? 300 : 400}">${k === 'site' ? 'Наш <em style="font-family:Cormorant,Georgia,serif;font-style:italic;font-size:1.12em">шоурум</em>' : 'Наш шоурум'}</b><span style="font-family:${x}">${t}</span></button>`).join('');
   const fhv = Math.round((+state.settings.fh || 1) * 100), ftv = Math.round((+state.settings.ft || 1) * 100);
   $('#fh').value = fhv; $('#fh-v').textContent = fhv + '%'; $('#ft').value = ftv; $('#ft-v').textContent = ftv + '%';
   $('#g-parts').innerHTML = PARTS.map(([k, t]) => `<label class="tg"><input type="checkbox" id="part-${k}" data-part="${k}" ${state.settings.parts[k] !== false ? 'checked' : ''}>${t}</label>`).join('');
@@ -835,7 +818,6 @@ function fillGeneral(fromRemote) {
 $('#general').addEventListener('toggle', () => { if ($('#general').open) $$('#terms textarea').forEach(autoSize); });
 for (const [k, sel] of Object.entries(G)) $(sel).addEventListener('input', (e) => { state.settings[k] = e.target.value; touchSettings(); renderSum(); renderSlidesSoon(); });
 $('#g-parts').addEventListener('change', (e) => { const k = e.target.dataset.part; if (!k) return; state.settings.parts = { ...state.settings.parts, [k]: e.target.checked }; touchSettings(); renderSlides(); });
-$('#fonts').addEventListener('click', (e) => { const b = e.target.closest('[data-font]'); if (!b) return; state.settings.font = b.dataset.font; state.settings.fontChosen = true; touchSettings(); fillGeneral(); renderSlides(); });
 for (const id of ['fh', 'ft']) $('#' + id).addEventListener('input', (e) => { state.settings[id] = +e.target.value / 100; $('#' + id + '-v').textContent = e.target.value + '%'; touchSettings(); renderSlidesSoon(); });
 document.addEventListener('click', (e) => { if (e.target.closest('[data-move]')) { setMoving(!moving); if (moving && window.matchMedia('(max-width: 999px)').matches && $('#app').dataset.view !== 'look') $('#v-look').click(); } });
 $('#lay-reset').addEventListener('click', () => {
@@ -1285,7 +1267,7 @@ function zoomStyle(p, W, H, fillW = 0.8, fillH = 0.74) {
 }
 function buildSlides() {
   const st = state.settings; const parts = st.parts || {}; const th = 'th-' + theme(); const isProject = state.cat === 'project';
-  const fp = FONT_PAIRS.some((f) => f[0] === st.font) ? st.font : 'site';
+  const fp = 'site';
   const fh = +st.fh || 1; const ft = +st.ft || 1; const lay = st.layout || {};
   const S = (kind) => `<div class="slide s-${kind} ${th} fp-${fp}" style="--fh:${fh};--ft:${ft}">`;
   const D = (key, cls, xs) => { const o = lay[key]; const sty = [xs, o ? `transform:translate(${o[0]}px,${o[1]}px)` : ''].filter(Boolean).join(';'); return ` class="${cls || ''}" data-drag="${key}"${sty ? ` style="${sty}"` : ''}`; };
@@ -1490,7 +1472,7 @@ const loadImg = (u) => new Promise((res) => { const im = new Image(); im.onload 
 async function makePDF(onProgress) {
   const slides = buildSlides();
   if (!window.html2canvas || !window.jspdf) throw new Error('lib');
-  const pair = FONT_PAIRS.find((f) => f[0] === state.settings.font) || FONT_PAIRS[0];
+  const pair = FONT_PAIRS[0];
   try { await Promise.all(pair[4].map((f) => document.fonts.load(f, 'АБВабв'))); } catch (e) {}
   await document.fonts.ready;
   const stage = $('#stage');
