@@ -6,6 +6,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ricca')) +
 s = open(ROOT + 'index.html', encoding='utf-8').read()
 
 TEXT = {
+    'Всё о модели': 'Model page',
     'До&nbsp;30&nbsp;дней': 'Up&nbsp;to&nbsp;30&nbsp;days',
     'Срок изготовления. Личный менеджер ведёт проект от&nbsp;эскиза до&nbsp;монтажа.': 'Production time. A&nbsp;personal manager guides the project from sketch to&nbsp;installation.',
     'Диваны, кровати и&nbsp;кресла&nbsp;— в&nbsp;вашем размере и&nbsp;вашей ткани.': 'Sofas, beds and&nbsp;armchairs&nbsp;— in&nbsp;your size and&nbsp;your fabric.',

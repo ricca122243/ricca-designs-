@@ -1275,7 +1275,7 @@
     const dlg = $('#lightbox');
     const stage = $('[data-lb-stage]', dlg), frame = $('[data-lb-frame]', dlg), img = $('[data-lb-img]', dlg);
     const title = $('[data-lb-title]', dlg), piece = $('[data-lb-piece]', dlg), count = $('[data-lb-count]', dlg);
-    const wa = $('[data-lb-wa]', dlg), waT = $('[data-lb-wa-t]', dlg), cartB = $('[data-lb-cart]', dlg), t3s = $$('[data-lb-3d]', dlg), draws = $$('[data-lb-draw]', dlg), igs = $$('[data-lb-ig]', dlg);
+    const wa = $('[data-lb-wa]', dlg), waT = $('[data-lb-wa-t]', dlg), cartB = $('[data-lb-cart]', dlg), t3s = $$('[data-lb-3d]', dlg), draws = $$('[data-lb-draw]', dlg), pgs = $$('[data-lb-page]', dlg), igs = $$('[data-lb-ig]', dlg);
     const recBox = $('[data-lb-rec]', dlg), recRow = $('[data-lb-rec-row]', dlg);
     const arrows = $$('[data-lb-step]', dlg), thumbsBox = $('[data-lb-thumbs]', dlg), inner = $('.lb__in', dlg);
     // телефон: счётчик на фото, штрихи под ним, следующее фото «выглядывает» при первом показе, строки под названием (css ≤ 599 px)
@@ -1383,6 +1383,7 @@
       // &from — конструктор покажет «‹ Кровать Bukel» и вернёт в это окно
       const cfgHref = `${CFG_PAGE}#cfg=v1~${/~|^t\./.test(w.cfg || '') ? w.cfg : 't.' + encodeURIComponent(w.cfg || KINDS[w.cat].cfg || 'sofa')}${w.fab ? `&f=${encodeURIComponent(w.fab)}` : ''}&from=work-${encodeURIComponent(w.id)}`;   // w.fab — ткань цвета с фото (tools/media-v3/model-fabric.py)
       t3s.forEach((a) => { a.href = cfgHref; a.setAttribute('aria-label', tr`3D-модель: ${w.title}`); });
+      pgs.forEach((a) => { const sh = w.model && (w.short || splitTitle(w.title)[1] || ''); a.hidden = !sh; if (sh) a.href = `/models/${String(sh).toLowerCase().replace(/[^a-z0-9]+/g, '-')}`; });   // страница модели (tools/model-pages.mjs)
       draws.forEach((a) => { a.href = `${cfgHref}&draw=1`; a.setAttribute('aria-label', tr`Чертёж: ${w.title}`); });
       // no3d (каталог): 3D этой модели снято с сайта (владелец, 14 ноября) — кнопок «3D-модель» и «Чертёж» нет
       const tools = $('.lb__tools', dlg); if (tools) tools.hidden = !!w.no3d;
