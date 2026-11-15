@@ -151,7 +151,7 @@
   const CAT_DESCS = { 'Пуфы, банкетки, под размер комнаты': 'Poufs and benches, sized to your room',
     'Прямые, угловые, модульные, раскладные': 'Straight, corner, modular, sofa beds', 'С подъёмным механизмом и без': 'With or without a lift-up mechanism',
     'Для отдыха: округлые, на цоколе': 'Lounge: rounded, on a plinth', 'Реальные изделия ателье': 'Real pieces by the atelier', 'Велюр, букле, шенилл': 'Velour, bouclé, chenille',
-    'Ортопедические, на своём сайте': 'Orthopaedic, on their own website',
+    'Ортопедические — на сайте ELUNA': 'Orthopaedic, on their own website',
   };
   const FAB_TYPES = { 'Эксклюзивные': 'Exclusive', 'Велюр': 'Velour', 'Букле': 'Bouclé', 'Шенилл': 'Chenille', 'Замша': 'Suede', 'Экокожа': 'Faux leather', 'САМБИЯ': 'SAMBIA' };
   const FAB_KINDS = {

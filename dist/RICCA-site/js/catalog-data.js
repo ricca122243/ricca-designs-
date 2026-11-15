@@ -202,7 +202,7 @@ window.RICCA_CATALOG_CATEGORIES = {
     desc: 'Велюр, букле, шенилл' },   /* число коллекций сайт считает по js/fabrics-data.js */
   mattresses: { label: 'Матрасы ELUNA', cover: 'img/catalog/cover-mattresses', href: 'https://ricca-designs.netlify.app',
     coverAlt: 'Постер ELUNA «Мы убирали всё лишнее — пока не осталась тишина»: матрас на звёздном небе',
-    desc: 'Ортопедические, на своём сайте' }
+    desc: 'Ортопедические — на сайте ELUNA' }
 };
 window.RICCA_CATALOG_ORDER = ['sofas', 'beds', 'armchairs', 'works', 'fabrics', 'mattresses'];   /* столов и стульев нет — только мягкая мебель (владелец, 13 октября) */
 
