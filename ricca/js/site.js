@@ -311,7 +311,7 @@
     row.innerHTML = list.map(([w, n, d, l]) => {
       if (!d) return workCard(w, n, WK_SIZES, false, false, false, PHONE_BIG);
       const q = w.photos[n], t = p800(q);
-      return `<li class="pm__d"><a class="wk__a pm__da${l ? ' is-light' : ''}" href="#work-${esc(w.id)}" data-work="${esc(w.id)}" data-work-n="${n}" aria-haspopup="dialog"><img src="${esc(q.src800)}" srcset="${esc(q.src800)} ${t.w}w, ${esc(q.src)} ${q.w}w" sizes="(min-width: 1200px) 30vw, (min-width: 768px) 46vw, 92vw" width="${t.w}" height="${t.h}" alt="" loading="lazy" decoding="async"><span class="wk__cap"><span class="wk__t">${typo(w.title)}</span></span></a></li>`;
+      return `<li class="pm__d"><a class="wk__a pm__da${l ? ' is-light' : ''}" href="#work-${esc(w.id)}" data-work="${esc(w.id)}" data-work-n="${n}" aria-haspopup="dialog"><img src="${esc(q.src800)}" srcset="${esc(q.src800)} ${t.w}w, ${esc(q.src)} ${q.w}w" sizes="(min-width: 1200px) 30vw, (min-width: 768px) 46vw, 92vw" width="${t.w}" height="${t.h}" alt="" loading="lazy" decoding="async"><span class="wk__cap"><span class="wk__t">${typo(w.title)}</span><span class="wk__k">${tr('Крупно')}</span></span></a></li>`;
     }).join('');
     Array.from(row.children).forEach((li) => li.classList.add('rv'));
     sec.hidden = false;
