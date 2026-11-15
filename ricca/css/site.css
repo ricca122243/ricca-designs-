@@ -159,8 +159,8 @@ textarea.fld { min-height: 64px; resize: vertical; }
 /* ---------- Курсив в заголовках (владелец, 15 ноября: «шрифт как у boca.su — курсив в паре с нынешним»): одно-два слова
    заголовка — Cormorant Italic (уже загружен, без лишних файлов) рядом с Montserrat Light; курсив крупнее на 12 %, чтобы
    строчные сравнялись по высоте. ?font=a — без курсива, ?font=b — заголовки целиком антиквой ---------- */
-:is(.title, .intro__title) em { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.12em; letter-spacing: -.005em; line-height: 0; }
-html[data-font="a"] :is(.title, .intro__title) em { font: inherit; letter-spacing: inherit; }
+:is(.title, .intro__title) em { font: inherit; letter-spacing: inherit; }   /* 15 ноября: курсив снят («прежние шрифты лучше») — только по ?font=i */
+html[data-font="i"] :is(.title, .intro__title) em { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.12em; letter-spacing: -.005em; line-height: 0; }
 /* ---------- Время года (владелец, 15 ноября: «снег — светло-синий»): js/season.js ставит html[data-season] по дате в Алматы.
    Меняются только фон страницы, волосяные линии, подложка схем и второстепенный текст — холодные оттенки, без тёплых.
    Подиум под фото изделий (--product-bg) не трогаем: цвет ткани на фото остаётся честным. Лето — базовая палитра. ---------- */

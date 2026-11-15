@@ -32,12 +32,23 @@
      Раньше выбор EN запоминался, и при следующем заходе главная сама уводила на английскую версию (жалоба владельца:
      «заходишь на сайт — сначала английский»). Память выбора убрана, прежняя запись стирается. */
   try { localStorage.removeItem(KEY); } catch (e) { /* приватный режим */ }
+  /* 15 ноября (владелец: «всегда на русском», у него на iPhone открывалась английская версия — браузер вернул старую вкладку /en):
+     английская страница на телефоне или компьютере с русским (казахским) языком сама переходит на русскую, если в этом визите
+     английский не выбрали кнопкой EN. ?lang=en — открыть английскую нарочно (для проверки и ссылок иностранным клиентам) */
+  const EN_OK = 'ricca:en';
+  if (page === 'en') {
+    let chosen = false;
+    try { if (/[?&]lang=en\b/.test(location.search)) sessionStorage.setItem(EN_OK, '1'); chosen = sessionStorage.getItem(EN_OK) === '1'; } catch (e) { chosen = true; }
+    const ruUser = [].concat(navigator.languages || [], navigator.language || []).slice(0, 1).some((l) => /^(ru|kk|be|uk)\b/i.test(String(l)));
+    if (!chosen && ruUser) { location.replace(target('ru', false)); return; }
+  }
 
   document.addEventListener('click', (e) => {
     const a = e.target.closest && e.target.closest('[data-lng], a.hdr__lang, a.menu__lang');
     if (!a) return;
     const l = a.dataset.lng || (a.getAttribute('hreflang') === 'en' ? 'en' : 'ru');
     e.preventDefault();
+    try { if (l === 'en') sessionStorage.setItem(EN_OK, '1'); else sessionStorage.removeItem(EN_OK); } catch (_) { /* */ }
     if (l !== page) location.href = target(l);
   });
 
