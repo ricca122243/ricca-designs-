@@ -176,5 +176,255 @@
    "pre": false,
    "src": "https://i.pinimg.com/originals/57/c4/f0/57c4f0e6a421d6d29d95050a007b777b.jpg"
   }
+ ],
+ "sofa-01": [
+  {
+   "file": "sofa-01-65.jpg",
+   "w": 1024,
+   "h": 1024,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/49/81/31/4981315259929374ac0255aac8685b29.png"
+  }
+ ],
+ "sofa-03": [
+  {
+   "file": "sofa-03-134.jpg",
+   "w": 2000,
+   "h": 1505,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/46/39/79/463979851ed957156a53de46a7ec0382.jpg"
+  },
+  {
+   "file": "sofa-03-35.jpg",
+   "w": 1500,
+   "h": 2000,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/38/9c/26/389c2644845069d3da82a84b26148a64.jpg"
+  }
+ ],
+ "sofa-19": [
+  {
+   "file": "sofa-19-24.jpg",
+   "w": 800,
+   "h": 800,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/f5/22/64/f5226446485caa44f09c86b017984778.jpg"
+  }
+ ],
+ "sofa-20": [
+  {
+   "file": "sofa-20-32.jpg",
+   "w": 2048,
+   "h": 2048,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/be/a1/20/bea12042c0876f5c54c2491bf347a513.jpg"
+  },
+  {
+   "file": "sofa-20-33.jpg",
+   "w": 1024,
+   "h": 1024,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/e5/4e/cf/e54ecfb43185e272e5a5600ef01cfaea.jpg"
+  }
+ ],
+ "sofa-24": [
+  {
+   "file": "sofa-24-50.jpg",
+   "w": 1752,
+   "h": 1168,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/03/23/a4/0323a458d215886c0a518fea6c29d186.jpg"
+  },
+  {
+   "file": "sofa-24-34.jpg",
+   "w": 1440,
+   "h": 1440,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/cb/a3/7f/cba37f1a2f3fdae6357301cb24a1055a.jpg"
+  }
+ ],
+ "sofa-29": [
+  {
+   "file": "sofa-29-9.jpg",
+   "w": 2048,
+   "h": 2048,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/3f/a3/1e/3fa31e8232d20fa2addde2b69bb00727.png"
+  }
+ ],
+ "sofa-32": [
+  {
+   "file": "sofa-32-23.jpg",
+   "w": 1080,
+   "h": 1080,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/ee/b8/53/eeb853d4f2a7d547e46c0c7433d08cdd.jpg"
+  },
+  {
+   "file": "sofa-32-30.jpg",
+   "w": 1125,
+   "h": 1102,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/02/bf/2e/02bf2e2931e9fb662fc56cc38e639329.jpg"
+  }
+ ],
+ "sofa-33": [
+  {
+   "file": "sofa-33-31.jpg",
+   "w": 1800,
+   "h": 2400,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/4e/94/ef/4e94ef404b704760cbfbd7a33533b111.jpg"
+  }
+ ],
+ "sofa-35": [
+  {
+   "file": "sofa-35-26.jpg",
+   "w": 1683,
+   "h": 1232,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/c6/cd/54/c6cd54a16a5986792f1af8e7bc26d757.jpg"
+  },
+  {
+   "file": "sofa-35-51.jpg",
+   "w": 1294,
+   "h": 1530,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/e1/ef/ad/e1efad9d7dee175bd1ab0ac869a7f03e.jpg"
+  },
+  {
+   "file": "sofa-35-46.jpg",
+   "w": 1200,
+   "h": 900,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/06/3e/12/063e12bf48c54d3a33bf099e118ec4fb.jpg"
+  }
+ ],
+ "sofa-38": [
+  {
+   "file": "sofa-38-150.jpg",
+   "w": 1680,
+   "h": 1344,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/15/56/23/155623da5c07087928d4da4bb111f234.jpg"
+  }
+ ],
+ "sofa-40": [
+  {
+   "file": "sofa-40-41.jpg",
+   "w": 800,
+   "h": 800,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/23/8e/a8/238ea8e5dc654ce630c283e9faca10b2.jpg"
+  }
+ ],
+ "pouf-02": [
+  {
+   "file": "pouf-02-20.jpg",
+   "w": 1280,
+   "h": 1920,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/3d/25/75/3d25751c7749a48f40d5756e9c86075c.webp"
+  }
+ ],
+ "pouf-03": [
+  {
+   "file": "pouf-03-101.jpg",
+   "w": 1200,
+   "h": 1200,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/c6/ca/68/c6ca6810a4371a154578742d8ae23002.jpg"
+  }
+ ],
+ "bench-01": [
+  {
+   "file": "bench-01-98.jpg",
+   "w": 1755,
+   "h": 1372,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/f4/df/8c/f4df8ccf834915759729dee6d4039505.png"
+  },
+  {
+   "file": "bench-01-14.jpg",
+   "w": 768,
+   "h": 768,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/53/e8/57/53e857dd8fd2f613b8c16fbdbd264c7b.jpg"
+  }
+ ],
+ "bench-02": [
+  {
+   "file": "bench-02-29.jpg",
+   "w": 1122,
+   "h": 1402,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/df/f9/7d/dff97d71c9a0b29376193954a30f8c5f.png"
+  }
+ ],
+ "sofa-42": [
+  {
+   "file": "sofa-42-45.jpg",
+   "w": 1908,
+   "h": 1630,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/ef/a6/49/efa64939ec652b611bf13f9151521887.jpg"
+  },
+  {
+   "file": "sofa-42-83.jpg",
+   "w": 1365,
+   "h": 2048,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/b2/bd/ff/b2bdff775ca0ad0e1ba125f5c85d81cc.jpg"
+  }
+ ],
+ "sofa-43": [
+  {
+   "file": "sofa-43-114.jpg",
+   "w": 1000,
+   "h": 1000,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/46/ac/c9/46acc911be3523746bf55ea673f7a705.png"
+  }
+ ],
+ "sofa-46": [
+  {
+   "file": "sofa-46-95.jpg",
+   "w": 1284,
+   "h": 1742,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/58/28/9d/58289dc1f42b61832a808e4eb66c9f84.jpg"
+  }
+ ],
+ "sofa-48": [
+  {
+   "file": "sofa-48-40.jpg",
+   "w": 1440,
+   "h": 1800,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/6c/7b/31/6c7b312f4d0219c85b741eb6ef410452.jpg"
+  },
+  {
+   "file": "sofa-48-6.jpg",
+   "w": 1078,
+   "h": 777,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/70/99/9c/70999ced21a3f292b9864ebdf25aea8e.jpg"
+  }
+ ],
+ "sofa-51": [
+  {
+   "file": "sofa-51-60.jpg",
+   "w": 1080,
+   "h": 1080,
+   "pre": true,
+   "src": "https://i.pinimg.com/originals/62/24/20/6224208ce9b418bcc6b9962535253d9f.jpg"
+  },
+  {
+   "file": "sofa-51-61.jpg",
+   "w": 1680,
+   "h": 2400,
+   "pre": false,
+   "src": "https://i.pinimg.com/originals/c2/ae/e7/c2aee70be2dedc9d6cfbb2731f5f3f69.jpg"
+  }
  ]
 }
