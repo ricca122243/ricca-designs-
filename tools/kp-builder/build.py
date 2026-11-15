@@ -75,7 +75,7 @@ def main():
                     print('интерьер не скачался:', x['file'], e); continue
             shutil.copyfile(cached, os.path.join(SITE, 'int', x['file']))
             w, h = Image.open(cached).size
-            interiors.setdefault(mid, []).append({'f': 'int/' + x['file'], 'w': w, 'h': h, 'alt': '', 'pre': x['pre']})
+            interiors.setdefault(mid, []).append({'f': 'int/' + x['file'], 'w': w, 'h': h, 'alt': '', 'pre': x['pre'], 'pal': x.get('pal', 'neutral')})
 
     # логотипы «Нам доверяют» — как на сайте (порядок и масштаб --k)
     page = open(os.path.join(RICCA, 'index.html'), encoding='utf-8').read()
@@ -86,11 +86,23 @@ def main():
         shutil.copyfile(os.path.join(RICCA, 'img', 'clients', 'c', file), os.path.join(SITE, 'logos', file))
         logos.append({'f': 'logos/' + file, 'name': alt, 'k': float(k or 1)})
 
+    # ателье: кадры с сайта (визуализации в едином стиле, утверждены владельцем — см. ricca/index.html, окно «Ателье подробно»)
+    os.makedirs(os.path.join(SITE, 'atelier'), exist_ok=True)
+    atelier = []
+    for name in ['atelier-01', 'atelier-02-cnc', 'atelier-03-cut', 'atelier-04-sew', 'atelier-05-uph']:
+        path = os.path.join(RICCA, 'img', 'process', name + '.webp')
+        if not os.path.exists(path):
+            continue
+        im = Image.open(path).convert('RGB'); im.thumbnail((2000, 2000))
+        im.save(os.path.join(SITE, 'atelier', name + '.jpg'), quality=86, optimize=True)
+        atelier.append({'f': 'atelier/' + name + '.jpg', 'w': im.width, 'h': im.height})
+
     mono = re.search(r'<symbol id="rd-mono"[^>]*><path fill="currentColor" d="([^"]+)"', page).group(1)
     src = open(os.path.join(HERE, 'src', 'index.src.html'), encoding='utf-8').read()
     body = (src.replace('/*CATALOG*/', json.dumps(models, ensure_ascii=False))
                .replace('/*INTERIORS*/', json.dumps(interiors, ensure_ascii=False))
                .replace('/*LOGOS*/', json.dumps(logos, ensure_ascii=False))
+               .replace('/*ATELIER*/', json.dumps(atelier, ensure_ascii=False))
                .replace('/*MONO*/', mono))
     head = ('<!doctype html><html lang="ru" translate="no"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
@@ -129,7 +141,7 @@ def main():
   [headers.values]
     Cache-Control = "public, max-age=604800"
 ''')
-    print('готово:', SITE, '| моделей', len(models), '| фото', len(used), '| интерьеров', sum(len(v) for v in interiors.values()), '| логотипов', len(logos))
+    print('готово:', SITE, '| моделей', len(models), '| фото', len(used), '| интерьеров', sum(len(v) for v in interiors.values()), '| логотипов', len(logos), '| ателье', len(atelier))
 
 
 if __name__ == '__main__':

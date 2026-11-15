@@ -5,14 +5,16 @@
    "w": 1224,
    "h": 1632,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/4c/43/93/4c4393c4db473f620de90092a233ea93.jpg"
+   "src": "https://i.pinimg.com/originals/4c/43/93/4c4393c4db473f620de90092a233ea93.jpg",
+   "pal": "cold"
   },
   {
    "file": "bed-02-53.jpg",
    "w": 1080,
    "h": 1350,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/f7/65/87/f765877c5b515c3b29a283f2db2779f9.jpg"
+   "src": "https://i.pinimg.com/originals/f7/65/87/f765877c5b515c3b29a283f2db2779f9.jpg",
+   "pal": "warm"
   }
  ],
  "bed-03": [
@@ -21,21 +23,24 @@
    "w": 2092,
    "h": 1568,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/18/c3/79/18c3794464f54d4f27c2cc9e9f53b6f1.jpg"
+   "src": "https://i.pinimg.com/originals/18/c3/79/18c3794464f54d4f27c2cc9e9f53b6f1.jpg",
+   "pal": "cold"
   },
   {
    "file": "bed-03-30.jpg",
    "w": 1086,
    "h": 761,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/0d/99/c3/0d99c35e6ca4d3b80e4c22dd8052fa83.png"
+   "src": "https://i.pinimg.com/originals/0d/99/c3/0d99c35e6ca4d3b80e4c22dd8052fa83.png",
+   "pal": "cold"
   },
   {
    "file": "bed-03-158.jpg",
    "w": 1019,
    "h": 720,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/97/6f/37/976f3794bf037fb7c0ad6c433644bc26.jpg"
+   "src": "https://i.pinimg.com/originals/97/6f/37/976f3794bf037fb7c0ad6c433644bc26.jpg",
+   "pal": "cold"
   }
  ],
  "bed-04": [
@@ -44,14 +49,16 @@
    "w": 1000,
    "h": 1000,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/00/2e/8f/002e8fa094bf400566dd9c44cb6d20f0.jpg"
+   "src": "https://i.pinimg.com/originals/00/2e/8f/002e8fa094bf400566dd9c44cb6d20f0.jpg",
+   "pal": "neutral"
   },
   {
    "file": "bed-04-89.jpg",
    "w": 800,
    "h": 800,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/c7/84/5d/c7845dec2979ec28c5c8fcea55ef0690.png"
+   "src": "https://i.pinimg.com/originals/c7/84/5d/c7845dec2979ec28c5c8fcea55ef0690.png",
+   "pal": "neutral"
   }
  ],
  "bed-09": [
@@ -60,7 +67,8 @@
    "w": 1000,
    "h": 1000,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/68/6e/1b/686e1b1a7ac49b1965bbaa115f67aa4d.jpg"
+   "src": "https://i.pinimg.com/originals/68/6e/1b/686e1b1a7ac49b1965bbaa115f67aa4d.jpg",
+   "pal": "warm"
   }
  ],
  "bed-10": [
@@ -69,7 +77,8 @@
    "w": 500,
    "h": 500,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/22/9f/31/229f3182d538b7f56c06dcfe0a83728f.jpg"
+   "src": "https://i.pinimg.com/originals/22/9f/31/229f3182d538b7f56c06dcfe0a83728f.jpg",
+   "pal": "neutral"
   }
  ],
  "bed-17": [
@@ -78,7 +87,8 @@
    "w": 800,
    "h": 975,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/30/28/9e/30289edeb5cf0f60f003a69c45c2b80c.jpg"
+   "src": "https://i.pinimg.com/originals/30/28/9e/30289edeb5cf0f60f003a69c45c2b80c.jpg",
+   "pal": "neutral"
   }
  ],
  "bed-25": [
@@ -87,14 +97,16 @@
    "w": 1920,
    "h": 1080,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/0d/52/72/0d5272731c56c1ea35ae484183d2f9b7.jpg"
+   "src": "https://i.pinimg.com/originals/0d/52/72/0d5272731c56c1ea35ae484183d2f9b7.jpg",
+   "pal": "cold"
   },
   {
    "file": "bed-25-24.jpg",
    "w": 2000,
    "h": 2000,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/1d/a4/04/1da404518a7235d1ec4d0391674cc85e.jpg"
+   "src": "https://i.pinimg.com/originals/1d/a4/04/1da404518a7235d1ec4d0391674cc85e.jpg",
+   "pal": "cold"
   }
  ],
  "bed-27": [
@@ -103,7 +115,8 @@
    "w": 1920,
    "h": 2400,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/8a/9b/6b/8a9b6b0b427f5c7d14518e9098109634.jpg"
+   "src": "https://i.pinimg.com/originals/8a/9b/6b/8a9b6b0b427f5c7d14518e9098109634.jpg",
+   "pal": "neutral"
   }
  ],
  "bed-28": [
@@ -112,7 +125,8 @@
    "w": 1600,
    "h": 2400,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/34/ae/90/34ae9022167bd773daa4fdd52eaf8ce3.jpg"
+   "src": "https://i.pinimg.com/originals/34/ae/90/34ae9022167bd773daa4fdd52eaf8ce3.jpg",
+   "pal": "cold"
   }
  ],
  "bed-31": [
@@ -121,69 +135,36 @@
    "w": 1000,
    "h": 562,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/2a/73/34/2a7334846fe4cb57105a4fcbfee96cad.png"
+   "src": "https://i.pinimg.com/originals/2a/73/34/2a7334846fe4cb57105a4fcbfee96cad.png",
+   "pal": "warm"
   }
  ],
  "bed-32": [
-  {
-   "file": "bed-32-44.jpg",
-   "w": 576,
-   "h": 768,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/9b/ab/b2/9babb2755b75d8543a8b78c051fd75a9.jpg"
-  },
   {
    "file": "bed-32-61.jpg",
    "w": 507,
    "h": 760,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/ee/ec/31/eeec314d70393531f268b174bc8d20a2.png"
+   "src": "https://i.pinimg.com/originals/ee/ec/31/eeec314d70393531f268b174bc8d20a2.png",
+   "pal": "neutral"
   },
   {
    "file": "bed-32-49.jpg",
    "w": 768,
    "h": 768,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/19/75/66/19756646775ca863a0f98700079093a6.jpg"
-  },
-  {
-   "file": "bed-32-45.jpg",
-   "w": 576,
-   "h": 768,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/f2/23/fa/f223faed74acbaaa132496a134811470.jpg"
+   "src": "https://i.pinimg.com/originals/19/75/66/19756646775ca863a0f98700079093a6.jpg",
+   "pal": "warm"
   }
  ],
  "bed-33": [
-  {
-   "file": "bed-33-100.jpg",
-   "w": 1800,
-   "h": 2400,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/d9/54/d4/d954d4c66152b20485138df87adafc53.jpg"
-  },
   {
    "file": "bed-33-122.jpg",
    "w": 828,
    "h": 1015,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/48/32/24/483224e7080a0c76a9342d7bc2c050d5.jpg"
-  },
-  {
-   "file": "bed-33-110.jpg",
-   "w": 1215,
-   "h": 2160,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/57/c4/f0/57c4f0e6a421d6d29d95050a007b777b.jpg"
-  }
- ],
- "sofa-01": [
-  {
-   "file": "sofa-01-65.jpg",
-   "w": 1024,
-   "h": 1024,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/49/81/31/4981315259929374ac0255aac8685b29.png"
+   "src": "https://i.pinimg.com/originals/48/32/24/483224e7080a0c76a9342d7bc2c050d5.jpg",
+   "pal": "neutral"
   }
  ],
  "sofa-03": [
@@ -192,39 +173,16 @@
    "w": 2000,
    "h": 1505,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/46/39/79/463979851ed957156a53de46a7ec0382.jpg"
+   "src": "https://i.pinimg.com/originals/46/39/79/463979851ed957156a53de46a7ec0382.jpg",
+   "pal": "neutral"
   },
   {
    "file": "sofa-03-35.jpg",
    "w": 1500,
    "h": 2000,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/38/9c/26/389c2644845069d3da82a84b26148a64.jpg"
-  }
- ],
- "sofa-19": [
-  {
-   "file": "sofa-19-24.jpg",
-   "w": 800,
-   "h": 800,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/f5/22/64/f5226446485caa44f09c86b017984778.jpg"
-  }
- ],
- "sofa-20": [
-  {
-   "file": "sofa-20-32.jpg",
-   "w": 2048,
-   "h": 2048,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/be/a1/20/bea12042c0876f5c54c2491bf347a513.jpg"
-  },
-  {
-   "file": "sofa-20-33.jpg",
-   "w": 1024,
-   "h": 1024,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/e5/4e/cf/e54ecfb43185e272e5a5600ef01cfaea.jpg"
+   "src": "https://i.pinimg.com/originals/38/9c/26/389c2644845069d3da82a84b26148a64.jpg",
+   "pal": "neutral"
   }
  ],
  "sofa-24": [
@@ -233,23 +191,16 @@
    "w": 1752,
    "h": 1168,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/03/23/a4/0323a458d215886c0a518fea6c29d186.jpg"
+   "src": "https://i.pinimg.com/originals/03/23/a4/0323a458d215886c0a518fea6c29d186.jpg",
+   "pal": "neutral"
   },
   {
    "file": "sofa-24-34.jpg",
    "w": 1440,
    "h": 1440,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/cb/a3/7f/cba37f1a2f3fdae6357301cb24a1055a.jpg"
-  }
- ],
- "sofa-29": [
-  {
-   "file": "sofa-29-9.jpg",
-   "w": 2048,
-   "h": 2048,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/3f/a3/1e/3fa31e8232d20fa2addde2b69bb00727.png"
+   "src": "https://i.pinimg.com/originals/cb/a3/7f/cba37f1a2f3fdae6357301cb24a1055a.jpg",
+   "pal": "neutral"
   }
  ],
  "sofa-32": [
@@ -258,14 +209,16 @@
    "w": 1080,
    "h": 1080,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/ee/b8/53/eeb853d4f2a7d547e46c0c7433d08cdd.jpg"
+   "src": "https://i.pinimg.com/originals/ee/b8/53/eeb853d4f2a7d547e46c0c7433d08cdd.jpg",
+   "pal": "cold"
   },
   {
    "file": "sofa-32-30.jpg",
    "w": 1125,
    "h": 1102,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/02/bf/2e/02bf2e2931e9fb662fc56cc38e639329.jpg"
+   "src": "https://i.pinimg.com/originals/02/bf/2e/02bf2e2931e9fb662fc56cc38e639329.jpg",
+   "pal": "neutral"
   }
  ],
  "sofa-33": [
@@ -274,7 +227,8 @@
    "w": 1800,
    "h": 2400,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/4e/94/ef/4e94ef404b704760cbfbd7a33533b111.jpg"
+   "src": "https://i.pinimg.com/originals/4e/94/ef/4e94ef404b704760cbfbd7a33533b111.jpg",
+   "pal": "neutral"
   }
  ],
  "sofa-35": [
@@ -283,21 +237,24 @@
    "w": 1683,
    "h": 1232,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/c6/cd/54/c6cd54a16a5986792f1af8e7bc26d757.jpg"
+   "src": "https://i.pinimg.com/originals/c6/cd/54/c6cd54a16a5986792f1af8e7bc26d757.jpg",
+   "pal": "neutral"
   },
   {
    "file": "sofa-35-51.jpg",
    "w": 1294,
    "h": 1530,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/e1/ef/ad/e1efad9d7dee175bd1ab0ac869a7f03e.jpg"
+   "src": "https://i.pinimg.com/originals/e1/ef/ad/e1efad9d7dee175bd1ab0ac869a7f03e.jpg",
+   "pal": "cold"
   },
   {
    "file": "sofa-35-46.jpg",
    "w": 1200,
    "h": 900,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/06/3e/12/063e12bf48c54d3a33bf099e118ec4fb.jpg"
+   "src": "https://i.pinimg.com/originals/06/3e/12/063e12bf48c54d3a33bf099e118ec4fb.jpg",
+   "pal": "neutral"
   }
  ],
  "sofa-38": [
@@ -306,7 +263,8 @@
    "w": 1680,
    "h": 1344,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/15/56/23/155623da5c07087928d4da4bb111f234.jpg"
+   "src": "https://i.pinimg.com/originals/15/56/23/155623da5c07087928d4da4bb111f234.jpg",
+   "pal": "cold"
   }
  ],
  "sofa-40": [
@@ -315,25 +273,8 @@
    "w": 800,
    "h": 800,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/23/8e/a8/238ea8e5dc654ce630c283e9faca10b2.jpg"
-  }
- ],
- "pouf-02": [
-  {
-   "file": "pouf-02-20.jpg",
-   "w": 1280,
-   "h": 1920,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/3d/25/75/3d25751c7749a48f40d5756e9c86075c.webp"
-  }
- ],
- "pouf-03": [
-  {
-   "file": "pouf-03-101.jpg",
-   "w": 1200,
-   "h": 1200,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/c6/ca/68/c6ca6810a4371a154578742d8ae23002.jpg"
+   "src": "https://i.pinimg.com/originals/23/8e/a8/238ea8e5dc654ce630c283e9faca10b2.jpg",
+   "pal": "neutral"
   }
  ],
  "bench-01": [
@@ -342,23 +283,16 @@
    "w": 1755,
    "h": 1372,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/f4/df/8c/f4df8ccf834915759729dee6d4039505.png"
+   "src": "https://i.pinimg.com/originals/f4/df/8c/f4df8ccf834915759729dee6d4039505.png",
+   "pal": "cold"
   },
   {
    "file": "bench-01-14.jpg",
    "w": 768,
    "h": 768,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/53/e8/57/53e857dd8fd2f613b8c16fbdbd264c7b.jpg"
-  }
- ],
- "bench-02": [
-  {
-   "file": "bench-02-29.jpg",
-   "w": 1122,
-   "h": 1402,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/df/f9/7d/dff97d71c9a0b29376193954a30f8c5f.png"
+   "src": "https://i.pinimg.com/originals/53/e8/57/53e857dd8fd2f613b8c16fbdbd264c7b.jpg",
+   "pal": "neutral"
   }
  ],
  "sofa-42": [
@@ -367,14 +301,16 @@
    "w": 1908,
    "h": 1630,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/ef/a6/49/efa64939ec652b611bf13f9151521887.jpg"
+   "src": "https://i.pinimg.com/originals/ef/a6/49/efa64939ec652b611bf13f9151521887.jpg",
+   "pal": "neutral"
   },
   {
    "file": "sofa-42-83.jpg",
    "w": 1365,
    "h": 2048,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/b2/bd/ff/b2bdff775ca0ad0e1ba125f5c85d81cc.jpg"
+   "src": "https://i.pinimg.com/originals/b2/bd/ff/b2bdff775ca0ad0e1ba125f5c85d81cc.jpg",
+   "pal": "neutral"
   }
  ],
  "sofa-43": [
@@ -383,7 +319,8 @@
    "w": 1000,
    "h": 1000,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/46/ac/c9/46acc911be3523746bf55ea673f7a705.png"
+   "src": "https://i.pinimg.com/originals/46/ac/c9/46acc911be3523746bf55ea673f7a705.png",
+   "pal": "cold"
   }
  ],
  "sofa-46": [
@@ -392,7 +329,8 @@
    "w": 1284,
    "h": 1742,
    "pre": false,
-   "src": "https://i.pinimg.com/originals/58/28/9d/58289dc1f42b61832a808e4eb66c9f84.jpg"
+   "src": "https://i.pinimg.com/originals/58/28/9d/58289dc1f42b61832a808e4eb66c9f84.jpg",
+   "pal": "neutral"
   }
  ],
  "sofa-48": [
@@ -401,14 +339,8 @@
    "w": 1440,
    "h": 1800,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/6c/7b/31/6c7b312f4d0219c85b741eb6ef410452.jpg"
-  },
-  {
-   "file": "sofa-48-6.jpg",
-   "w": 1078,
-   "h": 777,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/70/99/9c/70999ced21a3f292b9864ebdf25aea8e.jpg"
+   "src": "https://i.pinimg.com/originals/6c/7b/31/6c7b312f4d0219c85b741eb6ef410452.jpg",
+   "pal": "warm"
   }
  ],
  "sofa-51": [
@@ -417,14 +349,8 @@
    "w": 1080,
    "h": 1080,
    "pre": true,
-   "src": "https://i.pinimg.com/originals/62/24/20/6224208ce9b418bcc6b9962535253d9f.jpg"
-  },
-  {
-   "file": "sofa-51-61.jpg",
-   "w": 1680,
-   "h": 2400,
-   "pre": false,
-   "src": "https://i.pinimg.com/originals/c2/ae/e7/c2aee70be2dedc9d6cfbb2731f5f3f69.jpg"
+   "src": "https://i.pinimg.com/originals/62/24/20/6224208ce9b418bcc6b9962535253d9f.jpg",
+   "pal": "cold"
   }
  ]
 }

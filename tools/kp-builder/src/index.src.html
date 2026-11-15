@@ -275,24 +275,35 @@ select.in { appearance: auto; }
 .s-h { font-family: var(--f-head); font-weight: var(--w-head); font-size: calc(76px * var(--kh) * var(--fh)); line-height: 1.02; letter-spacing: -.005em; }
 .s-lead { margin-top: 24px; font-size: calc(19px * var(--ft)); line-height: 1.55; font-weight: 300; color: var(--sink2); }
 
-/* обложка */
-.s-cover { display: grid; grid-template-columns: 560px 880px; }
-.s-cover__l { position: relative; background: var(--sdark); color: #F2F4F7; padding: 72px 64px 64px 72px; display: flex; flex-direction: column; }
+/* обложка: «монография ателье» — светлая колонка с текстом, большое фото справа, тонкая линия; как первый экран сайта */
+.s-cover { display: grid; grid-template-columns: 540px 900px; background: var(--sp); }
+.s-cover__l { position: relative; padding: 64px 56px 72px 72px; display: flex; flex-direction: column; color: #0B0C0E; }
 .s-cover__l > * { position: relative; }
-.s-cover__l > .s-snow, .s-contacts > .s-snow { position: absolute; left: 0; top: 0; }
+.s-cover__r > .s-snow, .s-contacts > .s-snow { position: absolute; left: 0; top: 0; }
 .s-mark { display: flex; align-items: center; gap: 18px; }
 .s-mark svg { width: 70px; height: 35px; }
 .s-mark span { font-size: 15px; font-weight: 600; letter-spacing: .32em; }
 .s-cover__txt { margin-top: auto; }
-.s-cover__kicker { font-size: calc(15px * var(--ft)); letter-spacing: .24em; text-transform: uppercase; color: #A9B1BC; }
-.s-cover__title { margin-top: 18px; font-family: var(--f-head); font-weight: var(--w-head); font-size: calc(112px * var(--kh) * var(--fh)); line-height: .98; letter-spacing: -.01em; }
-.s-cover__title.long { font-size: calc(76px * var(--kh) * var(--fh)); line-height: 1.04; }
-.s-cover__sub { margin-top: 26px; font-size: calc(20px * var(--ft)); font-weight: 300; line-height: 1.5; color: #C9CED6; max-width: 410px; }
-.s-cover__meta { margin-top: 48px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.18); display: grid; gap: 6px; font-size: calc(16px * var(--ft)); color: #C9CED6; }
-.s-cover__meta b { color: #F2F4F7; font-weight: 500; }
-.s-cover__r { position: relative; }
-.s-cover__r .s-pic { position: absolute; inset: 0; }
-.s-cover__tag { position: absolute; left: 40px; bottom: 34px; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: #6E747D; }
+.s-cover__kicker { font-size: calc(15px * var(--ft)); letter-spacing: .24em; text-transform: uppercase; color: var(--skick); }
+.s-cover__title { margin-top: 18px; font-family: var(--f-head); font-weight: var(--w-head); font-size: calc(104px * var(--kh) * var(--fh)); line-height: 1; letter-spacing: -.015em; }
+.s-cover__title.long { font-size: calc(72px * var(--kh) * var(--fh)); line-height: 1.05; }
+.s-cover__sub { margin-top: 24px; font-size: calc(20px * var(--ft)); font-weight: 300; line-height: 1.5; color: var(--sink2); max-width: 400px; }
+.s-cover__meta { margin-top: 44px; padding-top: 20px; border-top: 1px solid #0B0C0E; display: grid; gap: 6px; font-size: calc(16px * var(--ft)); color: var(--sink2); }
+.s-cover__meta b { color: #0B0C0E; font-weight: 500; }
+.s-cover__r { position: relative; background: #F4F5F7; overflow: hidden; }
+.s-cover__r .s-pic { position: absolute; inset: 0; background-color: #F4F5F7; }
+
+/* ателье: большое фото слева, текст и три кадра работы справа */
+.s-atelier { display: grid; grid-template-columns: 760px 680px; }
+.s-atelier__ph { position: relative; background-size: cover; }
+.s-atelier__r { position: relative; padding: 64px 72px 96px 64px; }
+.s-atelier__strip { position: absolute; left: 64px; right: 72px; bottom: 96px; height: 150px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.s-atelier__strip .s-pic { background-size: cover; }
+.s-atelier .s-foot { left: 824px; }
+.s-facts { margin: 30px 0 0; border-top: 1px solid #0B0C0E; }
+.s-facts div { display: grid; grid-template-columns: 170px 1fr; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--sline); font-size: calc(17px * var(--ft)); line-height: 1.4; }
+.s-facts dt { color: var(--sink2); }
+.s-facts dd { margin: 0; font-weight: 500; }
 
 /* модель */
 .s-model { display: grid; grid-template-columns: 500px 940px; }
@@ -344,8 +355,11 @@ select.in { appearance: auto; }
 .s-ttab .s-tsum { border-bottom: 0; font-weight: 600; font-size: calc(24px * var(--ft)); padding-top: 20px; }
 .s-ttab i { font-style: normal; color: var(--skick); }
 
-/* условия */
-.s-terms { padding: 72px 72px 96px; display: grid; grid-template-columns: 420px 1fr; gap: 72px; align-items: start; }
+/* условия: текст и таблица, справа высокое фото работы мастера */
+.s-terms { padding: 72px 440px 96px 72px; display: grid; grid-template-columns: 340px 1fr; gap: 56px; align-items: start; }
+.s-terms__ph { position: absolute; right: 0; top: 0; bottom: 0; width: 368px; background-size: cover; }
+.s-terms .s-foot { right: 440px; }
+.s-terms .s-table div { grid-template-columns: 210px 1fr; }
 .s-table { border-top: 1px solid #0B0C0E; margin: 0; }
 .s-table div { display: grid; grid-template-columns: 280px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--sline); font-size: calc(18px * var(--ft)); line-height: 1.4; }
 .s-table dt { color: var(--sink2); }
@@ -374,7 +388,7 @@ select.in { appearance: auto; }
 .s-clist div { display: grid; grid-template-columns: 170px 1fr; gap: 20px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,.14); font-size: calc(19px * var(--ft)); line-height: 1.4; }
 .s-clist dt { font-size: calc(13px * var(--ft)); letter-spacing: .18em; text-transform: uppercase; color: #9AA3AF; padding-top: 4px; }
 .s-clist dd { margin: 0; }
-.s-contacts .s-foot { color: #8A929D; }
+.s-contacts > .s-foot { position: absolute; color: #8A929D; }
 .s-contacts .s-foot b { color: #F2F4F7; }
 
 /* режим «Двигать текст» в просмотре: рамка вокруг блоков, перетаскивание пальцем или мышью */
@@ -473,6 +487,7 @@ select.in { appearance: auto; }
 <script>window.KP_MODELS = /*CATALOG*/;</script>
 <script>window.KP_INTERIORS = /*INTERIORS*/;</script>
 <script>window.KP_LOGOS = /*LOGOS*/;</script>
+<script>window.KP_ATELIER = /*ATELIER*/;</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
@@ -512,7 +527,7 @@ const FONT_PAIRS = [
   ['graphic', 'Графика', "'Unbounded', Arial, sans-serif", "'Manrope', Arial, sans-serif", ['300 20px Unbounded', '300 20px Manrope', '400 20px Manrope', '500 20px Manrope', '600 20px Manrope']],
   ['airy', 'Воздух', "'Tenor Sans', Arial, sans-serif", "'Jost', Arial, sans-serif", ['400 20px "Tenor Sans"', '300 20px Jost', '400 20px Jost', '500 20px Jost', '600 20px Jost']],
 ];
-const PARTS = [['cover', 'Обложка'], ['total', 'Итого (в «Своём КП»)'], ['terms', 'Условия'], ['trust', 'Нам доверяют'], ['cta', 'Пришлите фото'], ['contacts', 'Контакты']];
+const PARTS = [['cover', 'Обложка'], ['atelier', 'Ателье'], ['total', 'Итого (в «Своём КП»)'], ['terms', 'Условия'], ['trust', 'Нам доверяют'], ['cta', 'Пришлите фото'], ['contacts', 'Контакты']];
 const THEMES = [['auto', 'По дате', ''], ['winter', 'Зима', '#EDF3FA'], ['spring', 'Весна', '#EFF7F3'], ['summer', 'Лето', '#FFFFFF'], ['autumn', 'Осень', '#F1F3F6']];
 const THEME_DOT = { winter: 'linear-gradient(135deg,#EDF3FA 50%,#1C3452 50%)', spring: 'linear-gradient(135deg,#EFF7F3 50%,#1D3A30 50%)', summer: 'linear-gradient(135deg,#FFFFFF 50%,#111214 50%)', autumn: 'linear-gradient(135deg,#F1F3F6 50%,#262C35 50%)' };
 const CONTACT = { addr: 'Алматы, ул. Алишера Навои, 208/2 (ЖК «Шахристан»)', hours: 'Пн–Вс, 10:00–20:00', phone: '+7 707 955 08 08', ig: 'instagram.com/ricca.designs', site: 'ricca.design' };
@@ -552,7 +567,7 @@ const idb = (() => {
 const LOGO_DEFAULT = (window.KP_LOGOS || []).map((l) => ({ key: l.f, f: l.f, name: l.name, k: l.k || 1, on: true }));
 const state = {
   cat: 'beds',
-  settings: { client: '', date: '', manager: '', phone: '', lead: '25–45 рабочих дней', sub: '', theme: 'auto', font: 'site', fh: 1, ft: 1, layout: {}, parts: { cover: true, total: true, terms: true, trust: true, cta: true, contacts: true }, terms: {} },
+  settings: { client: '', date: '', manager: '', phone: '', lead: '25–45 рабочих дней', sub: '', theme: 'auto', font: 'site', fh: 1, ft: 1, layout: {}, parts: { cover: true, atelier: true, total: true, terms: true, trust: true, cta: true, contacts: true }, terms: {} },
   models: {},   // id → { on, price, from, note, pick, uploads: [{ id, kind }] }
   custom: {},   // id → { cat, name, subtitle, description, options, photos: [{ id, kind }], deleted }
   project: { title: '', items: [] }, // items: [{ id, price, from, qty, note }]
@@ -577,7 +592,7 @@ const mstate = (id) => state.models[id] || (state.models[id] = defaultModel(byId
 const termsOf = (t) => state.settings.terms[t] || TERMS[t].map(([k, v]) => ({ k, v }));
 const tab = () => TABS.find((c) => c.id === state.cat);
 const catModels = () => MODELS.filter((m) => m.cat === state.cat);
-const subDefault = () => 'Мягкая мебель на заказ в Алматы: любой размер, любая ткань, своё ателье';
+const subDefault = () => 'Любой размер и ткань. Своё ателье в Алматы, гарантия 5 лет.';
 const theme = () => (state.settings.theme && state.settings.theme !== 'auto' ? state.settings.theme : seasonByDate());
 
 /* ── сохранение ──
@@ -591,7 +606,7 @@ function lsLoad() {
   try {
     const j = JSON.parse(localStorage.getItem(LS) || 'null');
     if (j) {
-      Object.assign(state.settings, j.settings || {}); state.settings.parts = { ...{ cover: true, total: true, terms: true, trust: true, cta: true, contacts: true }, ...(j.settings && j.settings.parts) };
+      Object.assign(state.settings, j.settings || {}); state.settings.parts = { ...{ cover: true, atelier: true, total: true, terms: true, trust: true, cta: true, contacts: true }, ...(j.settings && j.settings.parts) };
       if (!state.settings.fontChosen && state.settings.font === 'classic') state.settings.font = 'site'; // до 15 ноября по умолчанию была «Классика»
       Object.assign(state.models, j.models || {}); Object.assign(state.custom, j.custom || {});
       if (j.project) state.project = { title: '', items: [], ...j.project };
@@ -1232,7 +1247,9 @@ function togglePick(id) {
 
 /* ── слайды ── */
 const MONO_D = ($('#rd-mono path') || { getAttribute: () => '' }).getAttribute('d');
-const mono = `<svg viewBox="0 0 521.1 256.9" width="70" height="35" aria-hidden="true"><path fill="#F2F4F7" d="${MONO_D}"/></svg>`;
+const monoOf = (c) => `<svg viewBox="0 0 521.1 256.9" width="70" height="35" aria-hidden="true"><path fill="${c}" d="${MONO_D}"/></svg>`;
+const mono = monoOf('#F2F4F7');
+const ATELIER = window.KP_ATELIER || [];
 function snow(w, h, n, seed) {
   let x = seed; const rnd = () => { x = (x * 9301 + 49297) % 233280; return x / 233280; };
   let c = ''; for (let i = 0; i < n; i++) { const r = 1.2 + rnd() * 3.2; c += `<circle cx="${(rnd() * w).toFixed(1)}" cy="${(rnd() * h).toFixed(1)}" r="${r.toFixed(1)}" fill="#FFFFFF" fill-opacity="${(0.12 + rnd() * 0.45).toFixed(2)}"/>`; }
@@ -1280,19 +1297,42 @@ function buildSlides() {
   const mgr = st.manager || st.phone ? `${st.manager ? esc(st.manager) : ''}${st.manager && st.phone ? ', ' : ''}${st.phone ? esc(st.phone) : ''}` : '';
   const winter = theme() === 'winter';
   if (parts.cover !== false) {
-    const coverPic = entries.length ? picksOf(entries[0].m).big : null;
+    // фото обложки: первый интерьер (лучше горизонтальный), иначе крупно изделие первой модели
+    let coverPic = null, coverInt = false;
+    // холодный и горизонтальный кадр — первым (палитра бренда холодная)
+    const rank = (p) => { const z = sizeOf(p); return ({ cold: 0, neutral: 1, warm: 3 }[p.pal] ?? 1) + (z && z[0] / z[1] >= 1.15 ? 0 : 2); };
+    const ints = entries.flatMap((e) => picksOf(e.m).interiors).filter(Boolean).map((p, i) => [rank(p), i, p]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map((x) => x[2]);
+    if (ints[0]) { coverPic = ints[0]; coverInt = true; }
+    else if (entries.length) coverPic = picksOf(entries[0].m).big;
     const title = isProject ? (state.project.title || 'Подборка мебели') : tab().title;
+    const titleHTML = isProject ? esc(title) : `${esc(title)} <em class="ac">на заказ</em>`;
+    const cnt = `${entries.length} ${plural(entries.length, isProject ? ['позиция', 'позиции', 'позиций'] : ['модель', 'модели', 'моделей'])}`;
     out.push({ kind: 'cover', html: () => `${S('cover')}
-      <div class="s-cover__l">${winter ? snow(560, 810, 70, 7) : ''}
-        <div${D('cover.mark', 's-mark')}>${mono}<span>RICCA DESIGNS</span></div>
+      <div class="s-cover__l">
+        <div${D('cover.mark', 's-mark')}>${monoOf('#0B0C0E')}<span>RICCA DESIGNS</span></div>
         <div${D('cover.text', 's-cover__txt')}>
           <div class="s-cover__kicker">Коммерческое предложение</div>
-          <div class="s-cover__title${title.length > 14 ? ' long' : ''}"><em class="ac">${esc(title)}</em></div>
+          <div class="s-cover__title${title.length > 12 ? ' long' : ''}">${titleHTML}</div>
           <div class="s-cover__sub">${esc(st.sub || subDefault())}</div>
-          <div class="s-cover__meta">${st.client ? `<span>Для: <b>${esc(st.client)}</b></span>` : ''}<span>${esc(st.date || today())}</span>${mgr ? `<span>Менеджер: <b>${mgr}</b></span>` : ''}</div>
+          <div class="s-cover__meta">${st.client ? `<span>Для: <b>${esc(st.client)}</b></span>` : ''}<span>${esc(st.date || today())} · ${cnt}</span>${mgr ? `<span>Менеджер: <b>${mgr}</b></span>` : ''}</div>
         </div>
       </div>
-      <div class="s-cover__r">${coverPic ? `<div class="s-pic" style="${coverPic.kind === 'interior' ? bg(coverPic.f) + ';background-size:cover' : zoomStyle(coverPic, 880, 810, 0.78, 0.6)}"></div>` : ''}<div class="s-cover__tag">${entries.length} ${plural(entries.length, isProject ? ['позиция', 'позиции', 'позиций'] : ['модель', 'модели', 'моделей'])}</div></div>
+      <div class="s-cover__r">${coverPic ? `<div class="s-pic" style="${coverInt ? bg(coverPic.f) + ';background-size:cover' : zoomStyle(coverPic, 900, 810, 0.8, 0.62)}"></div>` : ''}${winter ? snow(900, 810, 90, 7) : ''}</div>
+    </div>` });
+  }
+  if (parts.atelier !== false && ATELIER.length >= 4) {
+    out.push({ kind: 'atelier', html: (n) => `${S('atelier')}
+      <div class="s-atelier__ph s-pic" style="${bg(ATELIER[0].f)};background-size:cover"></div>
+      <div class="s-atelier__r">
+        <div${D('atelier.text')}>
+          <div class="s-kicker">Ателье RICCA DESIGNS</div>
+          <div class="s-h" style="margin-top:18px">Делаем <em class="ac">сами</em></div>
+          <div class="s-lead">Мебель делаем в своём ателье в Алматы — от чертежа до сборки. Станок задаёт точность, форму и посадку дают руки мастера.</div>
+          <dl class="s-facts"><div><dt>Размер и ткань</dt><dd>Любые, под вашу комнату</dd></div>${st.lead ? `<div><dt>Срок</dt><dd>${esc(st.lead)}</dd></div>` : ''}<div><dt>Гарантия</dt><dd>5 лет</dd></div></dl>
+        </div>
+        <div${D('atelier.strip', 's-atelier__strip')}>${ATELIER.slice(1, 4).map((a3) => `<div class="s-pic" style="${bg(a3.f)}"></div>`).join('')}</div>
+      </div>
+      ${foot(n, label)}
     </div>` });
   }
   for (const e of entries) {
@@ -1351,7 +1391,8 @@ function buildSlides() {
   if (parts.terms !== false) {
     const rows = termsOf(state.cat).filter((r) => (r.k || '').trim() || (r.v || '').trim());
     const all = [...rows, ...(st.lead ? [{ k: 'Срок изготовления', v: st.lead }] : [])];
-    out.push({ kind: 'terms', html: (n) => `${S('terms')}
+    const termsPic = ATELIER[4] || ATELIER[0];
+    out.push({ kind: 'terms', html: (n) => `${S('terms')}${termsPic ? `<div class="s-pic s-terms__ph" style="${bg(termsPic.f)};background-size:cover"></div>` : ''}
       <div${D('terms.head')}><div class="s-kicker">Для всех моделей</div><div class="s-h" style="margin-top:18px"><em class="ac">Условия</em></div>
       <div class="s-lead">Каждое изделие делаем под заказ в своём ателье в Алматы. Размер, ткань и посадку согласуем до начала работы.</div></div>
       <dl${D('terms.table', 's-table')}>${all.map((r) => `<div><dt>${esc(r.k)}</dt><dd>${esc(r.v)}</dd></div>`).join('')}</dl>
