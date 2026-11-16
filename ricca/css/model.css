@@ -28,8 +28,9 @@ p { margin: 0; }
 .mp-ph { margin: 0; aspect-ratio: 4 / 5; overflow: hidden; background: var(--mist); }
 .mp-ph img { width: 100%; height: 100%; object-fit: cover; }
 .mp-ph.is-studio { background: var(--studio); }
-.mp-ph.is-studio img { object-fit: contain; padding: 6%; }
-.mp-gal__n { position: absolute; top: calc(125vw - 44px); right: var(--g); margin: 0; padding: 6px 10px; background: var(--paper); font: 500 11px/1 var(--sans); letter-spacing: .1em; }
+.mp-ph.is-studio img { object-fit: contain; transform: scale(var(--zp, 1)); }   /* изделие крупно, по центру кадра */
+.mp-gal .mp-ph, .mp-3d .mp-ph.is-studio { aspect-ratio: 1; }   /* на телефоне кадры первого экрана квадратные — изделие крупнее */
+.mp-gal__n { position: absolute; top: calc(100vw - 44px); right: var(--g); margin: 0; padding: 6px 10px; background: var(--paper); font: 500 11px/1 var(--sans); letter-spacing: .1em; }
 .mp-info { padding: 36px var(--g) 8px; }
 .mp-k { margin-bottom: 12px; font: 500 11px/1.3 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); }
 .mp-t { margin: 0 0 18px; font: 300 clamp(44px, 12vw, 72px)/1 var(--sans); letter-spacing: -.03em; }
@@ -106,7 +107,8 @@ p { margin: 0; }
   :root { --g: 48px; }
   .mp-hero { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; }
   .mp-gal { display: grid; gap: 4px; overflow: visible; }
-  .mp-gal .mp-ph { aspect-ratio: 4 / 3; }
+  .mp-gal .mp-ph, .mp-gal .mp-ph.is-studio, .mp-3d .mp-ph.is-studio { aspect-ratio: 4 / 3; }
+  .mp-ph.is-studio img { transform: scale(var(--zd, 1)); }
   .mp-gal__n { display: none; }
   .mp-info { position: sticky; top: 64px; padding: 56px var(--g) 40px clamp(40px, 5vw, 88px); }
   .mp-acts { grid-template-columns: 1fr 1fr; }

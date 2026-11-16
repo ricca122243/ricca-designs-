@@ -54,7 +54,12 @@ function page(m) {
   const ld = [{ '@context': 'https://schema.org', '@type': 'Product', name: title, description: m.description, brand: { '@type': 'Brand', name: 'RICCA DESIGNS' }, image: m.photos.slice(0, 6).map((p) => `${SITE}/${p.src}`), category: catName, url: u },
     { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [[1, 'Главная', `${SITE}/`], [2, catName, `${SITE}/#catalog/${m.category}`], [3, title, u]].map(([position, name, item]) => ({ '@type': 'ListItem', position, name, item })) }];
   const img = (p, sizes, lazy = true) => `<img src="/${esc(p.src)}"${p.src600 ? ` srcset="/${esc(p.src600)} 600w, /${esc(p.src)} ${p.w || 1400}w" sizes="${sizes}"` : ''} width="${p.w || 1200}" height="${p.h || 900}" alt="${esc(p.alt || title)}"${lazy ? ' loading="lazy"' : ' fetchpriority="high"'} decoding="async">`;
-  const fig = (p, cls = '') => `<figure class="mp-ph${p.studio && !p.scene && !DET.test(p.src) ? ' is-studio' : ''}${cls}">${img(p, '(min-width: 960px) 60vw, 100vw')}</figure>`;
+  /* студийный кадр: изделие крупно (владелец: «почему она далеко») — масштаб по доле изделия в кадре (box из catalog-data):
+     --zp — квадратная рамка телефона, --zd — 4:3 компьютера; изделие ≈ 86 % ширины рамки */
+  const zoom = (p) => { if (!Array.isArray(p.box) || !p.w || !p.h) return ''; const [bw, bh] = p.box, ar = p.w / p.h;
+    const zp = Math.min(0.86 / bw, 0.8 / (bh / ar)), zd = Math.min(0.86 / bw, 0.82 / (bh * (4 / 3) / ar));
+    return ` style="--zp:${Math.max(1, zp).toFixed(3)};--zd:${Math.max(1, zd).toFixed(3)}"`; };
+  const fig = (p, cls = '') => `<figure class="mp-ph${p.studio && !p.scene && !DET.test(p.src) ? ' is-studio' : ''}${cls}"${p.studio && !p.scene && !DET.test(p.src) ? zoom(p) : ''}>${img(p, '(min-width: 960px) 60vw, 100vw')}</figure>`;
   const acc = (t, body, open = false) => `<details class="mp-acc"${open ? ' open' : ''}><summary>${t}<span class="mp-acc__i" aria-hidden="true"></span></summary><div class="mp-acc__b">${body}</div></details>`;
   const sec = (id, h, text, inner = '') => `<section class="mp-sec" id="${id}" aria-labelledby="${id}-t"><div class="mp-sec__in"><h2 class="mp-sec__t" id="${id}-t">${h}</h2>${text ? `<div class="mp-sec__p">${text}</div>` : ''}</div>${inner}</section>`;
   const waModel = WA(`Здравствуйте! Пришлите, пожалуйста, 3D-модель «${title}» для дизайн-проекта.`);
@@ -84,7 +89,7 @@ function page(m) {
 </header>
 <main>
 <div class="mp-hero">
-  <div class="mp-gal" aria-label="Фото модели" data-gal>${heroL.map((p, i) => `<figure class="mp-ph${p.studio && !p.scene ? ' is-studio' : ''}">${img(p, '(min-width: 960px) 60vw, 100vw', i > 0)}</figure>`).join('')}</div>
+  <div class="mp-gal" aria-label="Фото модели" data-gal>${heroL.map((p, i) => `<figure class="mp-ph${p.studio && !p.scene ? ' is-studio' : ''}"${p.studio && !p.scene ? zoom(p) : ''}>${img(p, '(min-width: 960px) 60vw, 100vw', i > 0)}</figure>`).join('')}</div>
   ${heroL.length > 1 ? `<p class="mp-gal__n" aria-hidden="true"><span data-gal-i>1</span> / ${heroL.length}</p>` : ''}
   <div class="mp-info">
     <p class="mp-k">${esc(kind)}${m.subtitle && m.subtitle !== kind ? ` · ${esc(m.subtitle)}` : ''}</p>
