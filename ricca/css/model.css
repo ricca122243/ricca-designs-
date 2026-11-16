@@ -67,9 +67,11 @@ p { margin: 0; }
 .mp-3d .mp-ph { aspect-ratio: 4 / 3; }
 .mp-3d__b { position: absolute; left: 16px; bottom: 16px; padding: 12px 16px; background: var(--paper); font: 500 11px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; }
 .mp-stack { display: grid; gap: 16px; padding-inline: var(--g); }
-.mp-fab { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 8px; margin: 36px 0 0; padding: 0 var(--g); list-style: none; }
-.mp-fab img { width: 100%; aspect-ratio: 1; object-fit: cover; }
-.mp-fab span { display: block; margin-top: 8px; font-size: 11px; line-height: 1.35; color: var(--ink-2); }
+.mp-fab { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 8px; margin: 36px 0 0; padding: 0 var(--g); list-style: none; }
+.mp-fab a { display: block; text-decoration: none; }
+.mp-fab img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--mist); }
+.mp-fab span { display: block; margin-top: 10px; font-size: 13px; line-height: 1.3; }
+.mp-fab small { display: block; margin-top: 2px; font-size: 11px; color: var(--ink-2); }
 .mp-atl { display: grid; gap: 40px; margin: 36px 0 0; padding: 0 var(--g); list-style: none; }
 .mp-atl .mp-ph { aspect-ratio: 4 / 3; }
 .mp-atl__n { margin-top: 16px; font: 500 11px/1 var(--sans); letter-spacing: .16em; color: var(--ink-2); }

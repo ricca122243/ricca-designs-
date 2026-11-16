@@ -26,17 +26,21 @@ function seat(m) {
   if (!m.cfg || !['sofas', 'armchairs'].includes(m.category)) return '';
   try { const s = decodeCfg(cfgOf(m)); const p = normalize(s.type, s.params); return p.seatH ? `Высота сиденья — ${cm(p.seatH)}&nbsp;см, глубина посадки — ${cm(p.seatD)}&nbsp;см.` : ''; } catch { return ''; }
 }
-const FAB = window.RICCA_FABRICS.flatMap((g) => g.items.slice(0, 2)).slice(0, 8);
+await import(ROOT + 'ricca/js/fabrics-data.js');
+/* палитра на странице — только свои коллекции RICCA (букле, велюр, экокожа): крупные квадраты, ссылка на цвет в разделе «Ткани» */
+const FAB = window.RICCA_FABRIC_LIBRARY.types.flatMap((t) => t.collections).filter((c) => /^ricca/.test(c.id))
+  .flatMap((c) => c.colours.map((k, i) => ({ ...k, id: c.id, n: i + 1, kind: c.kind.split(':')[0] }))
+    .filter((k, i) => (c.id === 'ricca' ? [0, 3, 6, 9, 12, 15].includes(i) : i < 3))).slice(0, 12);
 const ATL = [['01', 'Каркас', 'Фанера и&nbsp;массив дерева. Детали вырезает станок с&nbsp;ЧПУ SCM&nbsp;— точно по&nbsp;чертежу.', 'img/process/atelier-02-cnc-1000.webp'],
   ['02', 'Пошив', 'Кроим по&nbsp;лекалам модели, шьём на&nbsp;промышленных машинах Dürkopp Adler.', 'img/process/atelier-04-sew-1000.webp'],
   ['03', 'Обивка', 'Обтяжка вручную: ткань без складок, швы по&nbsp;линии. Собираем, проверяем, упаковываем.', 'img/process/atelier-05-uph-1000.webp']];
-const DET = /-(d\d|z\d|c\d)/;
+const DET = /-(d\d|z\d|c\d)/, ZOOM = /-z\d/;   // z — увеличенные вырезки: на крупном кадре размыты (владелец: «ужас, дешевит»), на странице не ставим
 
 function page(m) {
   const [catName, kind] = CATS[m.category] || ['Каталог', m.type];
   const title = m.name, nm = esc(m.short), sz = size(m), u = `${SITE}/models/${slug(m)}`;
   const hero = m.photos.filter((p) => !DET.test(p.src)).slice(0, 4);
-  const det = m.photos.filter((p) => DET.test(p.src)).slice(0, 4);
+  const det = m.photos.filter((p) => DET.test(p.src) && !ZOOM.test(p.src)).slice(0, 3);
   const heroL = hero.length ? hero : m.photos.slice(0, 1);
   const drw = m.cfg && fs.existsSync(`${ROOT}ricca/img/drawings/${slug(m)}.webp`) ? `/img/drawings/${slug(m)}.webp` : '';
   const same = ALL.filter((x) => x.category === m.category && x.id !== m.id && x.photos?.length && x.short);
@@ -104,12 +108,12 @@ ${m.cfg ? sec('three', '3D-модель', `<p>Покрутите ${esc(kind.toLo
   `<a class="mp-3d" href="${cfgHref(m)}">${fig(heroL[1] || heroL[0])}<span class="mp-3d__b">Открыть в 3D</span></a>`) : ''}
 
 ${sec('design', 'Дизайн', `<p>${nb(m.description)}</p><p>Форму и&nbsp;пропорции выстраиваем под ваше пространство, ткань подбираем вместе&nbsp;— в&nbsp;шоуруме или по&nbsp;фото.</p>`,
-  `<div class="mp-stack">${(det.length ? det : m.photos.slice(1, 4)).map((p) => fig(p)).join('')}</div>`)}
+  `<div class="mp-stack">${(det.length ? det : m.photos.filter((p) => !ZOOM.test(p.src)).slice(1, 4)).map((p) => fig(p)).join('')}</div>`)}
 
 ${sec('comfort', 'Комфорт', `<p>${nb(m.filling)}${seat(m) ? ` ${seat(m)}` : ''}</p><p>Мягкость можно проверить в&nbsp;шоуруме: посидеть, сравнить и&nbsp;выбрать свою.</p>`)}
 
 ${sec('fabric', 'Ткань', `<p>${nb(m.materials)}</p><p class="mp-link"><a href="/#catalog/fabrics">Вся палитра тканей</a></p>`,
-  `<ul class="mp-fab" role="list">${FAB.map((f) => `<li><img src="/${esc(f.src)}" width="300" height="300" alt="${esc(f.alt)}" loading="lazy" decoding="async"><span>${esc(f.name)}</span></li>`).join('')}</ul>`)}
+  `<ul class="mp-fab" role="list">${FAB.map((f) => `<li><a href="/#fabric-${f.id}-${f.n}"><img src="/${esc(f.src450 || f.src900)}" width="600" height="600" alt="Ткань: ${esc(f.kind)}, ${esc(f.name.toLowerCase())}" loading="lazy" decoding="async"><span>${esc(f.name)}<small>${esc(f.kind)}</small></span></a></li>`).join('')}</ul>`)}
 
 ${sec('atelier', 'Сделано в&nbsp;Алматы', `<p>Каждую модель шьём в&nbsp;своём ателье&nbsp;— от&nbsp;первого эскиза до&nbsp;последнего стежка.</p><p class="mp-link"><a href="/#atelier">Подробнее об&nbsp;ателье</a></p>`,
   `<ol class="mp-atl" role="list">${ATL.map(([n, h, t, s]) => `<li><figure class="mp-ph"><img src="/${s}" width="1000" height="1250" alt="" loading="lazy" decoding="async"></figure><p class="mp-atl__n">${n}</p><h3>${h}</h3><p>${t}</p></li>`).join('')}</ol>`)}
