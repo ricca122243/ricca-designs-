@@ -34,6 +34,7 @@ const FAB = window.RICCA_FABRIC_LIBRARY.types.flatMap((t) => t.collections).filt
 const ATL = [['01', 'Каркас', 'Фанера и&nbsp;массив дерева. Детали вырезает станок с&nbsp;ЧПУ SCM&nbsp;— точно по&nbsp;чертежу.', 'img/process/atelier-02-cnc-1000.webp'],
   ['02', 'Пошив', 'Кроим по&nbsp;лекалам модели, шьём на&nbsp;промышленных машинах Dürkopp Adler.', 'img/process/atelier-04-sew-1000.webp'],
   ['03', 'Обивка', 'Обтяжка вручную: ткань без складок, швы по&nbsp;линии. Собираем, проверяем, упаковываем.', 'img/process/atelier-05-uph-1000.webp']];
+const TIGHT = fs.existsSync(ROOT + 'ricca/img/catalog/t/tight.json') ? JSON.parse(fs.readFileSync(ROOT + 'ricca/img/catalog/t/tight.json', 'utf8')) : {};
 const VIEWS = fs.existsSync(ROOT + 'ricca/img/drawings/views.json') ? JSON.parse(fs.readFileSync(ROOT + 'ricca/img/drawings/views.json', 'utf8')) : {};
 const DET = /-(d\d|z\d|c\d)/, ZOOM = /-z\d/, REAL = /-d\d/;   // z — увеличенные вырезки: на крупном кадре размыты (владелец: «ужас, дешевит»), на странице не ставим
 
@@ -53,12 +54,8 @@ function page(m) {
   const desc = `${title} на заказ в Алматы — ${m.description} Размер и ткань под ваш интерьер, изготовление до 30 дней, гарантия 5 лет.`;
   const ld = [{ '@context': 'https://schema.org', '@type': 'Product', name: title, description: m.description, brand: { '@type': 'Brand', name: 'RICCA DESIGNS' }, image: m.photos.slice(0, 6).map((p) => `${SITE}/${p.src}`), category: catName, url: u },
     { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [[1, 'Главная', `${SITE}/`], [2, catName, `${SITE}/#catalog/${m.category}`], [3, title, u]].map(([position, name, item]) => ({ '@type': 'ListItem', position, name, item })) }];
-  const img = (p, sizes, lazy = true) => `<img src="/${esc(p.src)}"${p.src600 ? ` srcset="/${esc(p.src600)} 600w, /${esc(p.src)} ${p.w || 1400}w" sizes="${sizes}"` : ''} width="${p.w || 1200}" height="${p.h || 900}" alt="${esc(p.alt || title)}"${lazy ? ' loading="lazy"' : ' fetchpriority="high"'} decoding="async">`;
-  /* студийный кадр: изделие крупно (владелец: «почему она далеко») — масштаб по доле изделия в кадре (box из catalog-data):
-     --zp — квадратная рамка телефона, --zd — 4:3 компьютера; изделие ≈ 86 % ширины рамки */
-  const zoom = (p) => { if (!Array.isArray(p.box) || !p.w || !p.h) return ''; const [bw, bh] = p.box, ar = p.w / p.h;
-    const zp = Math.min(0.86 / bw, 0.8 / (bh / ar)), zd = Math.min(0.86 / bw, 0.82 / (bh * (4 / 3) / ar));
-    return ` style="--zp:${Math.max(1, zp).toFixed(3)};--zd:${Math.max(1, zd).toFixed(3)}"`; };
+  const img = (p0, sizes, lazy = true) => { const t = TIGHT[p0.src]; const p = t ? { ...p0, src: t[0], src600: t[0].replace('.webp', '-900.webp'), w: t[1], h: t[2], w6: 900 } : p0; return `<img src="/${esc(p.src)}"${p.src600 ? ` srcset="/${esc(p.src600)} ${p.w6 || 600}w, /${esc(p.src)} ${p.w || 1400}w" sizes="${sizes}"` : ''} width="${p.w || 1200}" height="${p.h || 900}" alt="${esc(p.alt || title)}"${lazy ? ' loading="lazy"' : ' fetchpriority="high"'} decoding="async">` };
+  const zoom = () => '';   // увеличение в браузере мылит на iPhone — изделие крупно даёт заранее вырезанный кадр (tight-crops.py)
   const fig = (p, cls = '') => `<figure class="mp-ph${p.studio && !p.scene && !DET.test(p.src) ? ' is-studio' : ''}${cls}"${p.studio && !p.scene && !DET.test(p.src) ? zoom(p) : ''}>${img(p, '(min-width: 960px) 60vw, 100vw')}</figure>`;
   const acc = (t, body, open = false) => `<details class="mp-acc"${open ? ' open' : ''}><summary>${t}<span class="mp-acc__i" aria-hidden="true"></span></summary><div class="mp-acc__b">${body}</div></details>`;
   const sec = (id, h, text, inner = '') => `<section class="mp-sec" id="${id}" aria-labelledby="${id}-t"><div class="mp-sec__in"><h2 class="mp-sec__t" id="${id}-t">${h}</h2>${text ? `<div class="mp-sec__p">${text}</div>` : ''}</div>${inner}</section>`;
@@ -157,6 +154,7 @@ for (const dir of ['ricca/models', 'dist/RICCA-site/models']) {
   for (const m of list) fs.writeFileSync(`${ROOT}${dir}/${slug(m)}.html`, page(m));
 }
 for (const f of ['css/model.css', 'js/model.js']) fs.copyFileSync(ROOT + 'ricca/' + f, ROOT + 'dist/RICCA-site/' + f);
+fs.cpSync(ROOT + 'ricca/img/catalog/t', ROOT + 'dist/RICCA-site/img/catalog/t', { recursive: true });
 fs.cpSync(ROOT + 'ricca/img/drawings', ROOT + 'dist/RICCA-site/img/drawings', { recursive: true });
 // карта сайта: главная, en и страницы моделей
 const sm = ROOT + 'dist/RICCA-site/sitemap.xml'; let s = fs.readFileSync(sm, 'utf8').replace(/\s*<url><loc>https:\/\/ricca\.design\/models\/[^]*?<\/url>/g, '');
