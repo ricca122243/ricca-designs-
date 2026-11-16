@@ -40,7 +40,10 @@ const DET = /-(d\d|z\d|c\d)/, ZOOM = /-z\d/, REAL = /-d\d/;   // z — увел�
 function page(m) {
   const [catName, kind] = CATS[m.category] || ['Каталог', m.type];
   const title = m.name, nm = esc(m.short), sz = size(m), u = `${SITE}/models/${slug(m)}`;
-  const hero = m.photos.filter((p) => !DET.test(p.src)).slice(0, 4);
+  /* каждый кадр — на странице один раз (владелец, 16 ноября: «два раза повторяются — дешевит»): виды → первый экран, четвёртый вид → 3D, крупные планы → «Дизайн» */
+  const views = m.photos.filter((p) => !DET.test(p.src));
+  const hero = views.length >= 4 ? views.slice(0, 3) : views;
+  const p3d = views.length >= 4 ? views[3] : null;
   const det = m.photos.filter((p) => REAL.test(p.src)).slice(0, 3);   // только настоящие крупные планы съёмки (-d); своих вырезок не ставим (владелец, 16 ноября)
   const heroL = hero.length ? hero : m.photos.slice(0, 1);
   const drw = m.cfg && VIEWS[slug(m)];   // три вида чертежа на прозрачном фоне (img/drawings/<имя>-front|side|top.webp, размеры — views.json)
@@ -106,10 +109,10 @@ ${drw ? sec('draw', 'Чертёж', `<p>Три проекции и&nbsp;точн
 
 ${m.cfg ? sec('three', '3D-модель', `<p>Рассмотрите модель со&nbsp;всех сторон, примерьте ткань и&nbsp;размер&nbsp;— в&nbsp;3D-конструкторе. Для архитекторов и&nbsp;дизайнеров подготовим 3D-модель для&nbsp;проекта.</p>
   <p class="mp-dl"><a href="${waModel}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M4 15v4h16v-4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Получить 3D-модель ${nm}</a></p>`,
-  `<a class="mp-3d" href="${cfgHref(m)}">${fig(heroL[1] || heroL[0])}<span class="mp-3d__b">Открыть в 3D</span></a>`) : ''}
+  `<a class="mp-3d" href="${cfgHref(m)}">${p3d ? `${fig(p3d)}<span class="mp-3d__b">Открыть в 3D</span>` : '<span class="mp-btn mp-btn--line">Открыть в 3D</span>'}</a>`) : ''}
 
 ${sec('design', 'Дизайн', `<p>${nb(m.description)}</p><p>Форму и&nbsp;пропорции выстраиваем под ваше пространство, ткань подбираем вместе&nbsp;— в&nbsp;шоуруме или по&nbsp;фото.</p>`,
-  `<div class="mp-stack">${(det.length ? det : heroL.slice(1, 3)).map((p) => fig(p)).join('')}</div>`)}
+  det.length ? `<div class="mp-stack">${det.map((p) => fig(p)).join('')}</div>` : '')}
 
 ${sec('comfort', 'Комфорт', `<p>Мягкость посадки подбираем индивидуально&nbsp;— от&nbsp;обволакивающей до&nbsp;упругой.${seat(m) ? ` ${seat(m)}` : ''}</p><p>Оценить посадку можно в&nbsp;шоуруме&nbsp;— вживую и&nbsp;не&nbsp;торопясь.</p>`)}
 
