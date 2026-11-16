@@ -34,13 +34,13 @@ const FAB = window.RICCA_FABRIC_LIBRARY.types.flatMap((t) => t.collections).filt
 const ATL = [['01', 'Каркас', 'Фанера и&nbsp;массив дерева. Детали вырезает станок с&nbsp;ЧПУ SCM&nbsp;— точно по&nbsp;чертежу.', 'img/process/atelier-02-cnc-1000.webp'],
   ['02', 'Пошив', 'Кроим по&nbsp;лекалам модели, шьём на&nbsp;промышленных машинах Dürkopp Adler.', 'img/process/atelier-04-sew-1000.webp'],
   ['03', 'Обивка', 'Обтяжка вручную: ткань без складок, швы по&nbsp;линии. Собираем, проверяем, упаковываем.', 'img/process/atelier-05-uph-1000.webp']];
-const DET = /-(d\d|z\d|c\d)/, ZOOM = /-z\d/;   // z — увеличенные вырезки: на крупном кадре размыты (владелец: «ужас, дешевит»), на странице не ставим
+const DET = /-(d\d|z\d|c\d)/, ZOOM = /-z\d/, REAL = /-d\d/;   // z — увеличенные вырезки: на крупном кадре размыты (владелец: «ужас, дешевит»), на странице не ставим
 
 function page(m) {
   const [catName, kind] = CATS[m.category] || ['Каталог', m.type];
   const title = m.name, nm = esc(m.short), sz = size(m), u = `${SITE}/models/${slug(m)}`;
   const hero = m.photos.filter((p) => !DET.test(p.src)).slice(0, 4);
-  const det = m.photos.filter((p) => DET.test(p.src) && !ZOOM.test(p.src)).slice(0, 3);
+  const det = m.photos.filter((p) => REAL.test(p.src)).slice(0, 3);   // только настоящие крупные планы съёмки (-d); своих вырезок не ставим (владелец, 16 ноября)
   const heroL = hero.length ? hero : m.photos.slice(0, 1);
   const drw = m.cfg && fs.existsSync(`${ROOT}ricca/img/drawings/${slug(m)}.webp`) ? `/img/drawings/${slug(m)}.webp` : '';
   const same = ALL.filter((x) => x.category === m.category && x.id !== m.id && x.photos?.length && x.short);
@@ -100,19 +100,19 @@ function page(m) {
   </div>
 </div>
 
-${drw ? sec('draw', 'Чертёж', `<p>Три вида и&nbsp;все габариты в&nbsp;сантиметрах. Размер меняем под вашу комнату&nbsp;— чертёж пересчитается в&nbsp;конструкторе.</p><p class="mp-link"><a href="${cfgHref(m)}&draw=1">Открыть чертёж в&nbsp;конструкторе</a></p>`,
+${drw ? sec('draw', 'Чертёж', `<p>Три проекции и&nbsp;точные габариты в&nbsp;сантиметрах. Пропорции выстраиваем под ваше пространство&nbsp;— чертёж пересчитается в&nbsp;конструкторе.</p><p class="mp-link"><a href="${cfgHref(m)}&draw=1">Открыть чертёж в&nbsp;конструкторе</a></p>`,
   `<a class="mp-draw" href="${drw}" target="_blank" rel="noopener" aria-label="Чертёж ${esc(title)} крупно"><img src="${drw}" width="2000" height="1414" alt="Чертёж: ${esc(title)} — вид спереди, слева и сверху с размерами" loading="lazy" decoding="async"></a>`) : ''}
 
-${m.cfg ? sec('three', '3D-модель', `<p>Покрутите ${esc(kind.toLowerCase())} со&nbsp;всех сторон, смените ткань и&nbsp;размер&nbsp;— в&nbsp;конструкторе. Дизайнерам пришлём файл 3D-модели для&nbsp;проекта.</p>
+${m.cfg ? sec('three', '3D-модель', `<p>Рассмотрите модель со&nbsp;всех сторон, примерьте ткань и&nbsp;размер&nbsp;— в&nbsp;3D-конструкторе. Для архитекторов и&nbsp;дизайнеров подготовим 3D-модель для&nbsp;проекта.</p>
   <p class="mp-dl"><a href="${waModel}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M4 15v4h16v-4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Получить 3D-модель ${nm}</a></p>`,
   `<a class="mp-3d" href="${cfgHref(m)}">${fig(heroL[1] || heroL[0])}<span class="mp-3d__b">Открыть в 3D</span></a>`) : ''}
 
 ${sec('design', 'Дизайн', `<p>${nb(m.description)}</p><p>Форму и&nbsp;пропорции выстраиваем под ваше пространство, ткань подбираем вместе&nbsp;— в&nbsp;шоуруме или по&nbsp;фото.</p>`,
-  `<div class="mp-stack">${(det.length ? det : m.photos.filter((p) => !ZOOM.test(p.src)).slice(1, 4)).map((p) => fig(p)).join('')}</div>`)}
+  `<div class="mp-stack">${(det.length ? det : heroL.slice(1, 3)).map((p) => fig(p)).join('')}</div>`)}
 
-${sec('comfort', 'Комфорт', `<p>${nb(m.filling)}${seat(m) ? ` ${seat(m)}` : ''}</p><p>Мягкость можно проверить в&nbsp;шоуруме: посидеть, сравнить и&nbsp;выбрать свою.</p>`)}
+${sec('comfort', 'Комфорт', `<p>Мягкость посадки подбираем индивидуально&nbsp;— от&nbsp;обволакивающей до&nbsp;упругой.${seat(m) ? ` ${seat(m)}` : ''}</p><p>Оценить посадку можно в&nbsp;шоуруме&nbsp;— вживую и&nbsp;не&nbsp;торопясь.</p>`)}
 
-${sec('fabric', 'Ткань', `<p>${nb(m.materials)}</p><p class="mp-link"><a href="/#catalog/fabrics">Вся палитра тканей</a></p>`,
+${sec('fabric', 'Ткань', `<p>Велюр, букле, шенилл и&nbsp;экокожа. В&nbsp;шоуруме образцы можно потрогать и&nbsp;сравнить при дневном свете.</p><p class="mp-link"><a href="/#catalog/fabrics">Вся палитра тканей</a></p>`,
   `<ul class="mp-fab" role="list">${FAB.map((f) => `<li><a href="/#fabric-${f.id}-${f.n}"><img src="/${esc(f.src450 || f.src900)}" width="600" height="600" alt="Ткань: ${esc(f.kind)}, ${esc(f.name.toLowerCase())}" loading="lazy" decoding="async"><span>${esc(f.name)}<small>${esc(f.kind)}</small></span></a></li>`).join('')}</ul>`)}
 
 ${sec('atelier', 'Сделано в&nbsp;Алматы', `<p>Каждую модель шьём в&nbsp;своём ателье&nbsp;— от&nbsp;первого эскиза до&nbsp;последнего стежка.</p><p class="mp-link"><a href="/#atelier">Подробнее об&nbsp;ателье</a></p>`,
@@ -136,7 +136,7 @@ ${rec.length ? `<section class="mp-sec mp-rec" aria-labelledby="rec-t"><div clas
   <ul class="mp-rec__l" role="list">${rec.map((x) => { const p = x.photos.find((q) => q.studio && !q.scene) || x.photos[0]; return `<li><a href="/models/${slug(x)}"><span class="mp-rec__ph"><img src="/${esc(p.src600 || p.src)}" width="600" height="450" alt="" loading="lazy" decoding="async"></span><span class="mp-rec__n">${esc(x.name)}</span></a></li>`; }).join('')}</ul>
 </section>` : ''}
 </main>
-<footer class="mp-foot"><p><a href="/">RICCA DESIGNS</a> · Ателье мягкой мебели</p><p>Алматы, ул.&nbsp;Алишера Навои,&nbsp;208/2 · <a href="tel:+77079550808">+7&nbsp;(707)&nbsp;955-08-08</a></p></footer>
+<footer class="mp-foot"><p><a href="/">RICCA DESIGNS</a> · Ателье мягкой мебели</p><p>Алматы, ул.&nbsp;Алишера Навои,&nbsp;208/2 · <a href="tel:+77079550808">+7&nbsp;(707)&nbsp;955-08-08</a></p><p class="mp-copy">© 2026 RICCA DESIGNS. Фотографии, тексты, 3D-модели и&nbsp;чертежи принадлежат RICCA DESIGNS. Копирование и&nbsp;использование без письменного разрешения строго запрещены.</p></footer>
 </body>
 </html>
 `;
