@@ -34,6 +34,7 @@ const FAB = window.RICCA_FABRIC_LIBRARY.types.flatMap((t) => t.collections).filt
 const ATL = [['01', 'Каркас', 'Фанера и&nbsp;массив дерева. Детали вырезает станок с&nbsp;ЧПУ SCM&nbsp;— точно по&nbsp;чертежу.', 'img/process/atelier-02-cnc-1000.webp'],
   ['02', 'Пошив', 'Кроим по&nbsp;лекалам модели, шьём на&nbsp;промышленных машинах Dürkopp Adler.', 'img/process/atelier-04-sew-1000.webp'],
   ['03', 'Обивка', 'Обтяжка вручную: ткань без складок, швы по&nbsp;линии. Собираем, проверяем, упаковываем.', 'img/process/atelier-05-uph-1000.webp']];
+const VIEWS = fs.existsSync(ROOT + 'ricca/img/drawings/views.json') ? JSON.parse(fs.readFileSync(ROOT + 'ricca/img/drawings/views.json', 'utf8')) : {};
 const DET = /-(d\d|z\d|c\d)/, ZOOM = /-z\d/, REAL = /-d\d/;   // z — увеличенные вырезки: на крупном кадре размыты (владелец: «ужас, дешевит»), на странице не ставим
 
 function page(m) {
@@ -42,7 +43,7 @@ function page(m) {
   const hero = m.photos.filter((p) => !DET.test(p.src)).slice(0, 4);
   const det = m.photos.filter((p) => REAL.test(p.src)).slice(0, 3);   // только настоящие крупные планы съёмки (-d); своих вырезок не ставим (владелец, 16 ноября)
   const heroL = hero.length ? hero : m.photos.slice(0, 1);
-  const drw = m.cfg && fs.existsSync(`${ROOT}ricca/img/drawings/${slug(m)}.webp`) ? `/img/drawings/${slug(m)}.webp` : '';
+  const drw = m.cfg && VIEWS[slug(m)];   // три вида чертежа на прозрачном фоне (img/drawings/<имя>-front|side|top.webp, размеры — views.json)
   const same = ALL.filter((x) => x.category === m.category && x.id !== m.id && x.photos?.length && x.short);
   const i0 = same.findIndex((x) => ALL.indexOf(x) > ALL.indexOf(m));
   const rec = [...same.slice(Math.max(i0, 0)), ...same.slice(0, Math.max(i0, 0))].slice(0, 4);
@@ -101,7 +102,7 @@ function page(m) {
 </div>
 
 ${drw ? sec('draw', 'Чертёж', `<p>Три проекции и&nbsp;точные габариты в&nbsp;сантиметрах. Пропорции выстраиваем под ваше пространство&nbsp;— чертёж пересчитается в&nbsp;конструкторе.</p><p class="mp-link"><a href="${cfgHref(m)}&draw=1">Открыть чертёж в&nbsp;конструкторе</a></p>`,
-  `<a class="mp-draw" href="${drw}" target="_blank" rel="noopener" aria-label="Чертёж ${esc(title)} крупно"><img src="${drw}" width="2000" height="1414" alt="Чертёж: ${esc(title)} — вид спереди, слева и сверху с размерами" loading="lazy" decoding="async"></a>`) : ''}
+  `<div class="mp-draw">${[['front', 'Вид спереди'], ['side', 'Вид сбоку'], ['top', 'Вид сверху']].filter(([k]) => drw[k]).map(([k, t]) => `<figure class="mp-draw__v mp-draw__v--${k}"><img src="/img/drawings/${slug(m)}-${k}.webp" width="${drw[k][0]}" height="${drw[k][1]}" alt="Чертёж: ${esc(title)}, ${t.toLowerCase()} с размерами в сантиметрах" loading="lazy" decoding="async"></figure>`).join('')}</div>`) : ''}
 
 ${m.cfg ? sec('three', '3D-модель', `<p>Рассмотрите модель со&nbsp;всех сторон, примерьте ткань и&nbsp;размер&nbsp;— в&nbsp;3D-конструкторе. Для архитекторов и&nbsp;дизайнеров подготовим 3D-модель для&nbsp;проекта.</p>
   <p class="mp-dl"><a href="${waModel}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M4 15v4h16v-4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Получить 3D-модель ${nm}</a></p>`,
