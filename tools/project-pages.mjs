@@ -1,6 +1,7 @@
 // Проекты (объекты) ателье: раздел «Проекты» на главной (лента кадров, рецепт DESIGN.md 4.14) и страница каждого проекта
 // /projects/<slug> — устроена как страница модели (css/model.css). Владелец, 17 ноября: «в сайт как в каталоге: сначала карусель,
 // потом, когда „Подробнее“ нажимаешь, уходит в страницу». Данные — tools/projects-data.json.
+// Порядок: сначала python3 tools/gen-en.py (пересобирает ricca/en.html из index.html), затем этот скрипт (ставит английский блок).
 // Запуск: node tools/project-pages.mjs  → ricca/projects/*.html, блоки в index.html / en.html / horeca.html (между метками
 // projects:start … projects:end), копии в dist/RICCA-site и адреса в sitemap.xml. После — python3 tools/gen-en.py.
 import fs from 'fs';
@@ -40,7 +41,7 @@ function homeBlock(lang) {
     const H = en ? p.home.en : p.home, strip = p.home.strip.map((id) => photo(p, id));
     return `  <div class="prj__item rv">
     <ul class="prj__strip" role="list" tabindex="0" aria-label="${esc(H.title)}: ${T.photos} — ${T.swipe}" data-strip>
-${strip.map((q, i) => `      <li style="--ar:${q.w}/${q.h};--fx:${q.fx}%;--fy:${q.fy}%"><a href="${href(p)}" tabindex="-1">${img(q, '(min-width: 900px) 46vw, 78vw', { alt: en ? `${H.title}: photo ${i + 1} of ${strip.length}` : q.alt })}</a></li>`).join('\n')}
+${strip.map((q, i) => `      <li style="--ar:${q.w}/${q.h};--fx:${q.fx}%;--fy:${q.fy}%"><a href="${href(p)}" tabindex="-1">${img(q, '(min-width: 900px) 46vw, 78vw', { alt: en ? (q.altEn || `${H.title}: photo ${i + 1} of ${strip.length}`) : q.alt })}</a></li>`).join('\n')}
     </ul>
     <div class="wrap prj__meta">
       <span class="prj__n" aria-hidden="true" data-strip-n>01 / ${two(strip.length)}</span>
@@ -191,6 +192,7 @@ for (const p of DATA.projects) {
 patch('ricca/index.html', homeBlock('ru'), beforeTrust);
 patch('dist/RICCA-site/index.html', homeBlock('ru'), beforeTrust);
 patch('dist/RICCA-site/en.html', homeBlock('en'), beforeTrust);
+patch('ricca/en.html', homeBlock('en'), beforeTrust);   // после python3 tools/gen-en.py: английский блок — из данных проекта
 patch('ricca/horeca.html', horecaBlock(), beforeClients);
 fs.copyFileSync(ROOT + 'ricca/horeca.html', ROOT + 'dist/RICCA-site/horeca.html');
 for (const f of ['css/model.css', 'css/home.css', 'css/site.css', 'js/site.js', 'js/model.js']) fs.copyFileSync(ROOT + 'ricca/' + f, ROOT + 'dist/RICCA-site/' + f);

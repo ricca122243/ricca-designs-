@@ -401,3 +401,9 @@ body { counter-reset: sec 2; }
 .biz .btn--line::after, .hero .btn--line::after { background: var(--on-noir); }
 .biz .btn--line.is-tap, .biz .btn--line:active, .hero .btn--line.is-tap, .hero .btn--line:active { background: transparent; color: var(--ink); }
 @media (hover: hover) { .biz .btn--line:hover, .hero .btn--line:hover { background: transparent; color: var(--ink); } }
+/* «Нам доверяют»: логотип — ссылка на официальный Instagram клиента (17 ноября; ставим только перепроверенные аккаунты) */
+.trust__grid a { display: grid; place-items: center; width: 100%; height: 100%; -webkit-tap-highlight-color: transparent; transition: opacity 200ms var(--ease); }
+.trust__grid a:active { opacity: .55; }
+.trust__grid a:focus-visible { outline: 2px solid var(--ink); outline-offset: -6px; }
+.trust__grid a img { transition: transform 500ms var(--ease); }
+@media (hover: hover) { .trust__grid a:hover img { transform: scale(1.03); } }

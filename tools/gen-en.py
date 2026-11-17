@@ -6,6 +6,10 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ricca')) +
 s = open(ROOT + 'index.html', encoding='utf-8').read()
 
 TEXT = {
+    'Проекты': 'Projects',
+    'Мягкая мебель ателье&nbsp;— там, где работают и&nbsp;принимают гостей.': 'Upholstered furniture from our atelier, in&nbsp;places where people work and&nbsp;receive guests.',
+    'Офис': 'Office',
+    'Диван со&nbsp;стёжкой, кожаные кресла и&nbsp;полукресла': 'A&nbsp;buttoned sofa, leather armchairs and&nbsp;chairs',
     'Подробнее': 'Learn more',
     'Всё о модели': 'Model page',
     'До&nbsp;30&nbsp;дней': 'Up&nbsp;to&nbsp;30&nbsp;days',
@@ -210,6 +214,30 @@ TEXT = {
     'Выбрать': 'Choose',
 }
 ATTR = {
+    'bcc.kz — Instagram (откроется в новой вкладке)': 'bcc.kz — Instagram (opens in a new tab)',
+    'The Ritz-Carlton — Instagram (откроется в новой вкладке)': 'The Ritz-Carlton — Instagram (opens in a new tab)',
+    'FENDI — Instagram (откроется в новой вкладке)': 'FENDI — Instagram (opens in a new tab)',
+    'Jimmy Choo — Instagram (откроется в новой вкладке)': 'Jimmy Choo — Instagram (opens in a new tab)',
+    'abr — Instagram (откроется в новой вкладке)': 'abr — Instagram (opens in a new tab)',
+    'Esentai Mall — Instagram (откроется в новой вкладке)': 'Esentai Mall — Instagram (opens in a new tab)',
+    'Восемь озёр — Instagram (откроется в новой вкладке)': 'Vosem Ozer (Eight Lakes) resort — Instagram (opens in a new tab)',
+    'MEGA Alma-Ata — Instagram (откроется в новой вкладке)': 'MEGA Alma-Ata — Instagram (opens in a new tab)',
+    'Макао — Instagram (откроется в новой вкладке)': 'Macao — Instagram (opens in a new tab)',
+    'Ателье мягкой мебели RICCA DESIGNS в Алматы: диваны, кровати и кресла на заказ по вашим размерам, фото или эскизу. Своё производство, изготовление до 30 дней, гарантия 5 лет.': 'RICCA DESIGNS — an upholstered furniture atelier in Almaty, Kazakhstan: sofas, beds and armchairs made to order from your photo, sketch or project. Any size and fabric, our own production, showroom at 208/2 Navoi St. 5-year warranty, delivery across Kazakhstan and worldwide.',
+    'Диваны, кровати и кресла на заказ — в вашем размере и вашей ткани. Своё ателье, шоурум на Навои, 208/2. Гарантия 5 лет.': 'Sofas, beds and armchairs made to order — any size and fabric. Our own atelier, showroom at 208/2 Navoi St. 5-year warranty.',
+    'Офис: фото проекта — листайте вбок': 'Office: project photos — swipe sideways',
+    'Назад': 'Back',
+    'Вперёд': 'Forward',
+    'Лаунж-зона офиса: диван со стёжкой, кожаное кресло-шезлонг на раме из полированного металла и низкое кресло': 'Office lounge: a button-tufted sofa, a leather chaise on a polished metal frame and a low armchair',
+    'Овальный стол в лаунже и круглые полукресла в чёрной коже на металлическом каркасе': 'An oval table in the lounge with round chairs in black leather on a metal frame',
+    'Низкое кресло в чёрной коже крупным планом, рядом коричневый диван': 'A low armchair in black leather, close up, next to a brown sofa',
+    'Коричневый диван со стёжкой на пуговицах, журнальные столы и чёрное кожаное кресло': 'A brown button-tufted sofa, coffee tables and a black leather armchair',
+    'Переговорная: деревянный стол и коричневые кожаные кресла на колёсах': 'Meeting room: a wooden table and brown leather chairs on castors',
+    'Ряд коричневых кожаных кресел вдоль стола переговорной': 'A row of brown leather chairs along the meeting-room table',
+    'Кабинет: светлый стол, кресло руководителя с высокой спинкой и кресло посетителя в коричневой коже': 'Private office: a light desk, a high-backed executive chair and a visitor chair in brown leather',
+    'Кресло посетителя в тёмной коже у стола на фоне светлых панелей': 'A visitor chair in dark leather at a desk against light wall panels',
+    'Кресло руководителя с высокой спинкой в коричневой коже за светлым столом': 'A high-backed executive chair in brown leather behind a light desk',
+    'Кабинет: кресло руководителя в коричневой коже за светлым столом, на переднем плане кресло посетителя': 'Private office: an executive chair in brown leather behind a light desk, a visitor chair in the foreground',
  'Восемь озёр': 'Vosem Ozer (Eight Lakes) resort', 'Макао': 'Macao', 'Клиенты ателье': 'Clients of the atelier', 'Мастер ателье за работой в цехе': 'An atelier craftsman at work in the workshop', 'Каркасы кресел из гнутой фанеры в цехе': 'Bent plywood armchair frames in the workshop', 'Заготовки из гнутой фанеры на стеллаже ателье': 'Bent plywood blanks on an atelier shelf',
     'Модульный диван Денвер в рогожке цвета мокко — работа ателье': 'Denver modular sofa in mocha hopsack — the atelier\'s work',
  # атрибуты (aria-label, alt, title, placeholder, content)
