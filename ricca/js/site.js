@@ -495,6 +495,40 @@
     io.observe(map);
   })();
 
+  /* 17 ноября (владелец: «2D-анимации»): рисунки категорий рисуются линией, когда блок входит в экран, — по очереди, один раз.
+     Длину линии считаем в пикселях экрана с запасом (у рисунков vector-effect: non-scaling-stroke); пунктир проявляется в конце.
+     Без IO и при reduced motion ничего не прячем — рисунки стоят как есть. После показа стили снимаются ---------- */
+  (() => {
+    const box = $('.cats');
+    if (!box || !hasIO || reduceMotion) return;
+    const parts = [];
+    $$('.cats__i', box).forEach((svg, n) => {
+      const k = Math.max(1, svg.getBoundingClientRect().width / 120);
+      [...svg.children].forEach((el, j) => {
+        const delay = 120 + n * 80 + j * 110;
+        // скрытое состояние ставим без перехода; переход назначаем только в момент показа — иначе линия «стирается» и не рисуется
+        if (el.hasAttribute('stroke-dasharray') || !el.getTotalLength) {
+          el.style.opacity = '0'; parts.push([el, 'opacity 400ms var(--ease) ' + (delay + 300) + 'ms']);
+        } else {
+          const len = Math.ceil(el.getTotalLength() * k * 1.06) + 2;
+          el.style.strokeDasharray = len + ' ' + len; el.style.strokeDashoffset = len;
+          parts.push([el, 'stroke-dashoffset 700ms var(--ease-io) ' + delay + 'ms']);
+        }
+      });
+    });
+    const io = new IntersectionObserver((es) => {
+      if (!es.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      // под занавесом входа (html.intro, уходит на 0,85–1,5 с) рисование не видно — ждём, пока он начнёт подниматься
+      setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(() => parts.forEach(([el, tr]) => {
+        el.addEventListener('transitionend', () => { el.style.strokeDasharray = el.style.strokeDashoffset = el.style.opacity = el.style.transition = ''; }, { once: true });
+        el.style.transition = tr;
+        if (tr.startsWith('opacity')) el.style.opacity = '1'; else el.style.strokeDashoffset = '0';
+      }))), root.classList.contains('intro') ? 950 : 0);
+    }, { threshold: 0.2 });
+    io.observe(box);
+  })();
+
   /* ---------- Окна: показ/скрытие с анимацией, блокировка прокрутки, возврат фокуса ---------- */
   const updateFabSoon = () => requestAnimationFrame(() => updateFab());
   function lock() { root.classList.toggle('is-locked', !!$('dialog[open]')); updateFabSoon(); }   // под открытым окном кнопка WhatsApp прячется
