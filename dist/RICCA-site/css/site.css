@@ -1782,3 +1782,7 @@ img { -webkit-user-drag: none; user-select: none; }
 @media (prefers-reduced-motion: reduce) {
   .btn--line::after, .btn--noir::after, .btn .ico, .wa-fab .ico, .icon-btn .ico { transition: none; }
 }
+
+/* Номера разделов «№ 02…» сняты (17 ноября; владелец: «нумерация зачем?»): украшение без смысла, после сокращения страницы счёт шёл с пропусками.
+   Вернуть — удалить это правило */
+.sec h2.title[id$="-title"]::before, html[lang="en"] .sec h2.title[id$="-title"]::before { content: none; counter-increment: none; }
