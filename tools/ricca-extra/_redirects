@@ -17,3 +17,4 @@
 /en/fonts/*       /fonts/:splat        200
 /en/models3d/*    /models3d/:splat     200
 /en/video/*       /video/:splat        200
+/en/horeca.html   /horeca.html        200
