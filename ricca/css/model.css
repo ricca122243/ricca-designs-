@@ -134,3 +134,39 @@ p { margin: 0; }
   .mp-rec__l a:hover img, .mp-3d:hover img { transform: scale(1.03); }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+
+/* ───── Страница проекта (tools/project-pages.mjs; владелец, 17 ноября: «как в каталоге — нажал „Подробнее“ и ушёл в страницу»).
+   Обложка во всю ширину, заголовок и вводка под ней; «Что мы сделали» — строки с волосяными линиями; зоны — текст слева, кадры
+   справа целиком, в своих пропорциях: горизонтальный во всю ширину, два вертикальных парой. У каждого фото подпись ───── */
+.pj-hero__ph { margin: 0; aspect-ratio: 4 / 5; overflow: hidden; background: var(--mist); }
+.pj-hero__ph img { width: 100%; height: 100%; object-fit: cover; object-position: var(--fx, 50%) var(--fy, 50%); }
+.pj-hero__in { padding: 36px var(--g) 0; }
+.pj-made { margin: 36px 0 0; padding: 0 var(--g); list-style: none; }
+.pj-made li { display: grid; gap: 4px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+.pj-made li:first-child { border-top: 1px solid var(--line); }
+.pj-made b { font: 400 18px/1.3 var(--sans); }
+.pj-made span { color: var(--ink-2); }
+.pj-stack { display: grid; gap: 32px 0; padding-inline: var(--g); }
+.pj-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
+.pj-ph { margin: 0; }
+.pj-ph img { width: 100%; height: auto; background: var(--mist); }
+.pj-ph figcaption { margin-top: 10px; font-size: 13px; line-height: 1.4; color: var(--ink-2); }
+.pj-cards { display: grid; gap: 40px; margin: 36px 0 0; padding: 0 var(--g); list-style: none; }
+.pj-cards a { display: block; text-decoration: none; }
+.pj-cards__ph { aspect-ratio: 4 / 3; }
+.pj-cards__ph img { object-position: var(--fx, 50%) var(--fy, 50%); }
+.pj-cards__n { display: block; margin-top: 16px; font: 300 28px/1.1 var(--sans); letter-spacing: -.02em; }
+.pj-cards__l { display: block; margin-top: 6px; color: var(--ink-2); }
+@media (min-width: 960px) {
+  .pj-hero__ph { aspect-ratio: 16 / 9; max-height: calc(100svh - 64px - 120px); width: 100%; }
+  .pj-hero__in { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: 48px; align-items: end; padding: 56px var(--g) 0; }
+  .pj-hero__a .mp-t { margin-bottom: 0; }
+  .pj-hero__b .mp-acts { grid-template-columns: 1fr 1fr; }
+  .pj-made, .pj-stack, .pj-cards { margin-top: 0; padding: 0 var(--g) 0 0; }
+  .pj-stack { gap: 48px 0; }
+  .pj-pair { gap: 16px; }
+  .pj-ph.is-solo { width: 62%; }
+}
+@media (hover: hover) { .pj-cards img { transition: transform .7s var(--ease); } .pj-cards a:hover img { transform: scale(1.03); } }
+/* «Написать нам» на компьютере: заголовок и строка стоят вплотную сверху, а не растягиваются по высоте формы */
+@media (min-width: 960px) { .mp-write .mp-sec__in { grid-template-rows: auto 1fr; } .pj-hero__b .mp-d { font-size: 17px; line-height: 1.6; } .pj-hero__b .mp-acts { margin-top: 24px; } }

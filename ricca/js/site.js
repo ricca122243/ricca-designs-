@@ -1868,6 +1868,35 @@
   hdr.addEventListener('focusin', () => hdr.classList.remove('is-hidden'));
   onScroll();
 
+  /* ---------- Лента «Проекты» ([data-strip], DESIGN.md 4.14): счётчик «03 / 07», линия и стрелки. Листает сам браузер (scroll-snap);
+     без JS лента тоже листается, счётчик стоит на «01». Автопрокрутки нет ---------- */
+  $$('[data-strip]').forEach((strip) => {
+    const meta = strip.nextElementSibling, kids = Array.from(strip.children), n = kids.length;
+    if (!meta || n < 2) return;
+    const num = $('[data-strip-n]', meta), fill = $('[data-strip-fill]', meta), prev = $('[data-strip-prev]', meta), next = $('[data-strip-next]', meta);
+    const two = (v) => String(v).padStart(2, '0');
+    // текущий кадр — тот, чей левый край ближе всего к левому полю ленты (на компьютере кадры разной ширины)
+    const edge = () => strip.getBoundingClientRect().left + (parseFloat(getComputedStyle(strip).paddingLeft) || 0);
+    const current = () => { const left = edge(); let i = 0, best = Infinity; kids.forEach((li, k) => { const d = Math.abs(li.getBoundingClientRect().left - left); if (d < best) { best = d; i = k; } }); return i; };
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = strip.scrollWidth - strip.clientWidth, x = strip.scrollLeft;
+      const i = max > 0 && x >= max - 2 ? n - 1 : current();
+      if (num) num.textContent = `${two(i + 1)} / ${two(n)}`;
+      if (fill) fill.style.transform = `scaleX(${(i + 1) / n})`;
+      if (prev) prev.disabled = x <= 2;
+      if (next) next.disabled = max <= 0 || x >= max - 2;
+    };
+    const queue = () => { if (!raf) raf = requestAnimationFrame(update); };
+    const go = (dir) => { const t = kids[Math.max(0, Math.min(n - 1, current() + dir))]; strip.scrollBy({ left: t.getBoundingClientRect().left - edge(), behavior: reduceMotion ? 'auto' : 'smooth' }); };
+    strip.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue, { passive: true });
+    if (prev) prev.addEventListener('click', () => go(-1));
+    if (next) next.addEventListener('click', () => go(1));
+    update();
+  });
+
   /* ---------- Старт: окно по адресу (#catalog/sofas, #item-…, #work-<id>) ---------- */
   R.apply(true);
 })();

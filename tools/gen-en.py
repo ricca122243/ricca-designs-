@@ -140,7 +140,7 @@ TEXT = {
     'Гарантия&nbsp;— 5&nbsp;лет': 'Warranty&nbsp;— 5&nbsp;years',
     'Каждое изделие начинается с&nbsp;чертежа под вашу комнату. Размеры, посадку и&nbsp;ткань согласуем до&nbsp;начала работы и&nbsp;показываем модель в&nbsp;3D&nbsp;— в&nbsp;работу оно идёт только после вашего «да».': 'Every piece starts with a&nbsp;drawing for your room. We agree the&nbsp;dimensions, the&nbsp;seat and&nbsp;the fabric before work begins and&nbsp;show the&nbsp;model in&nbsp;3D&nbsp;— it&nbsp;goes into production only after your “yes”.',
     'В&nbsp;ателье работает итальянское и&nbsp;немецкое оборудование: станок с&nbsp;ЧПУ SCM для дерева и&nbsp;швейные машины Dürkopp&nbsp;Adler.': 'The&nbsp;atelier runs Italian and&nbsp;German equipment: an&nbsp;SCM CNC machine for wood and&nbsp;Dürkopp&nbsp;Adler sewing machines.',
-    'Станок задаёт точность. Форму, посадку и&nbsp;характер изделию дают руки мастера': 'The&nbsp;machine sets the&nbsp;precision. Shape, seat and&nbsp;character come from the&nbsp;craftsman’s hands',
+    'Станок задаёт точность. Форму, посадку и&nbsp;характер изделию дают руки мастера.': 'The&nbsp;machine sets the&nbsp;precision. Shape, seat and&nbsp;character come from the&nbsp;craftsman’s hands.',
     '01&nbsp;· Каркас': '01&nbsp;· Frame',
     'Основа, которая держит форму': 'The&nbsp;base that holds the&nbsp;shape',
     'В&nbsp;основе каркаса&nbsp;— фанера и&nbsp;массив дерева. Детали вырезает станок с&nbsp;ЧПУ SCM: радиусы и&nbsp;пазы получаются точно по&nbsp;чертежу, детали сходятся без подгонки.': 'The&nbsp;frame is&nbsp;built from plywood and&nbsp;solid wood. The&nbsp;parts are cut on&nbsp;an&nbsp;SCM CNC machine: curves and&nbsp;joints come out exactly to&nbsp;the drawing and&nbsp;fit without adjustment.',
