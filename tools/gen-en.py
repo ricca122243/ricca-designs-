@@ -48,7 +48,7 @@ TEXT = {
  'С подъёмным механизмом и&nbsp;без': 'With or&nbsp;without a lift-up mechanism',
  'Для отдыха, пуфы и&nbsp;банкетки': 'Lounge chairs, poufs and&nbsp;benches', 'Ткани': 'Fabrics', 'Велюр, букле, шенилл': 'Velour, bouclé, chenille',
  'Ортопедические&nbsp;— на&nbsp;сайте ELUNA': 'Orthopaedic, on&nbsp;their own website', 'Наши работы': 'Our works', 'Все работы': 'All works',
- 'Отправить фото в&nbsp;WhatsApp': 'Send a photo via&nbsp;WhatsApp', 'Как заказать': 'How to order',
+ 'Отправить фото в&nbsp;WhatsApp': 'Send a photo via&nbsp;WhatsApp', 'Как заказать': 'How to order', 'Как заказать?': 'How to order?',
  'Обсудить в&nbsp;WhatsApp': 'Discuss on&nbsp;WhatsApp', 'Работаем по&nbsp;всему миру': 'We work worldwide',
  '(откроется в&nbsp;WhatsApp)': '(opens in&nbsp;WhatsApp)', 'Алматы': 'Almaty',
  'Делаем мебель сами&nbsp;— в&nbsp;своём ателье в&nbsp;Алматы.': 'We make the furniture ourselves&nbsp;— in&nbsp;our own atelier in&nbsp;Almaty.',

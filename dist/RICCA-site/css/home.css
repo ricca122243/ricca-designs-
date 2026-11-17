@@ -407,3 +407,13 @@ body { counter-reset: sec 2; }
 .trust__grid a:focus-visible { outline: 2px solid var(--ink); outline-offset: -6px; }
 .trust__grid a img { transition: transform 500ms var(--ease); }
 @media (hover: hover) { .trust__grid a:hover img { transform: scale(1.03); } }
+
+/* ─── КОРОЧЕ (17 ноября; владелец: «сайт становится длинным, скрыть под „Подробнее“»): «Как заказать» и текст
+   «Мягкая мебель на заказ в Алматы» — строки в «Вопросах», открываются по нажатию. Отдельных разделов больше нет ─── */
+.qa > div.qa__a { padding-right: 0; }
+.qa .how__steps { grid-template-columns: minmax(0, 1fr); width: auto; margin: 0; padding: 0; list-style: none; }
+.qa .how__steps li { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: baseline; gap: 0; padding: 10px 0; border: 0; font: 400 15px/1.45 var(--sans); text-wrap: pretty; }
+.qa .how__steps li:last-child { border-bottom: 0; }
+.qa .how__cta { margin: 16px 0 4px; }
+.qa__h { margin: 0; font: inherit; letter-spacing: inherit; color: inherit; }
+details.qa .about-seo__p { max-width: 62ch; line-height: 1.7; }
