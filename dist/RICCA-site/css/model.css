@@ -170,3 +170,60 @@ p { margin: 0; }
 @media (hover: hover) { .pj-cards img { transition: transform .7s var(--ease); } .pj-cards a:hover img { transform: scale(1.03); } }
 /* «Написать нам» на компьютере: заголовок и строка стоят вплотную сверху, а не растягиваются по высоте формы */
 @media (min-width: 960px) { .mp-write .mp-sec__in { grid-template-rows: auto 1fr; } .pj-hero__b .mp-d { font-size: 17px; line-height: 1.6; } .pj-hero__b .mp-acts { margin-top: 24px; } }
+
+/* ==========================================================================
+   17 ноября (владелец): «оживить все кнопки — 2D-анимация, минимализм»; «лёгкое округление дай краям»;
+   «„Обсудить проект“ — лишнее: сделать маленьким или убрать в одну вкладку, чтобы было видно только когда нужно».
+   1. Кнопки страниц моделей, проекта и HoReCa — в системе RICCA (DESIGN.md 4.8): подпись слева, перед ней знак-квадрат 7 px;
+      у контурной кнопки знак вырастает и заливает её (наведение; на телефоне — касание, класс .is-tap из js/model.js),
+      у чёрной — вытягивается в черту. При появлении знак «рисуется» один раз.
+   2. Скругление: кнопки и поля — --r-ctl 6 px; фото с полями вокруг — --r-photo 10/12 px. Кадры во всю ширину экрана — прямые.
+   3. Форма «Написать нам» / «Обсудить объект» — одна строка-раскрывашка в конце страницы (.mp-ask).
+   ========================================================================== */
+:root { --r-ctl: 6px; --r-photo: 10px; --mark: 7px; --ease-io: cubic-bezier(.65, 0, .35, 1); --ink-hover: #2A2B2E; }
+@media (min-width: 960px) { :root { --r-photo: 12px; } }
+
+.mp-btn { position: relative; justify-content: flex-start; gap: 12px; min-height: 52px; padding: 0 20px; border-radius: var(--r-ctl); overflow: hidden; isolation: isolate;
+  letter-spacing: .12em; line-height: 1.2; text-align: left; -webkit-tap-highlight-color: transparent;
+  transition: background-color 200ms var(--ease), color 200ms var(--ease) 60ms, transform 120ms var(--ease); }
+.mp-btn::before { content: ''; flex: none; width: var(--mark); height: var(--mark); background: currentColor; transform-origin: left center; transition: transform 300ms var(--ease); }
+.mp-btn--line::after { content: ''; position: absolute; z-index: -1; left: 20px; top: 50%; width: var(--mark); height: var(--mark); margin-top: calc(var(--mark) / -2); background: var(--ink); transform: scale(0); transition: transform 420ms var(--ease-io); pointer-events: none; }
+.mp-btn:active { opacity: 1; }
+.mp-btn.is-tap::before { transform: scaleX(2.2); }
+.mp-btn:not(.mp-btn--line).is-tap, .mp-btn:not(.mp-btn--line):active { background: var(--ink-hover); }
+.mp-btn--line.is-tap, .mp-btn--line:active { color: var(--paper); }
+.mp-btn--line.is-tap::after, .mp-btn--line:active::after { transform: scale(240); }
+.mp-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+/* ссылка-действие: знак RICCA — квадрат (был кружок), вытягивается в черту */
+.mp-link a::before { width: var(--mark); height: var(--mark); border-radius: 0; transform-origin: left center; transition: transform 300ms var(--ease); }
+.mp-link a.is-tap::before { transform: scaleX(2.2); }
+.mp-dl svg { transition: transform 300ms var(--ease); }
+.mp-dl a.is-tap svg { transform: translateY(2px); }
+.mp-acc summary { -webkit-tap-highlight-color: transparent; }
+.mp-acc summary.is-tap .mp-acc__i { transform: scale(1.25); }
+.mp-acc__i { transition: transform 200ms var(--ease); }
+@media (hover: hover) {
+  .mp-btn:hover { opacity: 1; }
+  .mp-btn:hover::before, .mp-link a:hover::before { transform: scaleX(2.2); }
+  .mp-btn:not(.mp-btn--line):hover { background: var(--ink-hover); }
+  .mp-btn--line:hover { color: var(--paper); }
+  .mp-btn--line:hover::after { transform: scale(240); }
+  .mp-dl a:hover svg { transform: translateY(2px); }
+}
+@keyframes mp-mark-in { from { transform: scaleX(0); } }
+@media (prefers-reduced-motion: no-preference) {
+  .mp-btn:active { transform: scale(.98); }
+  .mp-btn::before, .mp-link a::before { animation: mp-mark-in 520ms var(--ease) 200ms backwards; }
+}
+
+/* скругление: поля, плашки и фото, у которых есть поля вокруг */
+.mp-form input, .mp-form textarea, .mp-3d__b, .mp-gal__n { border-radius: var(--r-ctl); }
+.mp-3d .mp-ph, .mp-stack .mp-ph, .mp-atl .mp-ph, .mp-rec__ph, .mp-fab img, .pj-ph img, .pj-cards__ph { border-radius: var(--r-photo); }
+.mp-stack .mp-ph { overflow: hidden; }
+
+/* «Написать нам» — одна строка в конце страницы; форма открывается по нажатию */
+.mp-ask { margin-top: clamp(72px, 9vw, 120px); padding: 0 var(--g); }
+.mp-ask .mp-acc { border-top: 1px solid var(--line); }
+.mp-ask .mp-acc__b { max-width: 560px; padding-bottom: 32px; }
+.mp-ask .mp-form { margin-top: 20px; }
+.mp-ask + .mp-rec, .mp-ask + .mp-sec { padding-top: clamp(72px, 9vw, 120px); }

@@ -1612,7 +1612,7 @@ img { -webkit-user-drag: none; user-select: none; }
 .btn--line:active { background: var(--paper-2); }
 .btn--noir:active { background: rgba(255, 255, 255, .1); }
 .btn:disabled { opacity: .32; pointer-events: none; }
-@media (hover: hover) { .btn:hover::before, .more:hover::before, .caps-link:hover::before { transform: scaleX(2.6); } }   /* квадрат вытягивается в черту */
+@media (hover: hover) { .btn:hover::before, .more:hover::before, .caps-link:hover::before { transform: scaleX(2.2); } }   /* квадрат вытягивается в черту */
 @media (prefers-reduced-motion: no-preference) { .btn:active, .wa-fab:active { transform: scale(.98); } }
 /* значок без подписи — по центру квадрата */
 .menu__call, .pd__actions [data-pd-wa] { justify-content: center; padding: 0; }
@@ -1730,3 +1730,55 @@ img { -webkit-user-drag: none; user-select: none; }
 @media (max-width: 359px) { .btn { gap: 10px; padding-inline: 14px; letter-spacing: .08em; } }   /* 320: длинные подписи («Отправить фото в WhatsApp») — в одну строку */
 .no-js .icon-btn--menu { display: none !important; }   /* без JS окно меню не открыть — разделы есть в подвале */
 .sl__foot .sl__clear { justify-self: start; }   /* «■ Очистить» — от левого края, как все действия системы (а не по центру под кнопкой) */
+
+/* ==========================================================================
+   ЖИВЫЕ КНОПКИ И СКРУГЛЕНИЕ (17 ноября). Владелец: «оживить все кнопки — 2D-анимация, минимализм, всё должно существовать»;
+   «лёгкое округление дай краям». DESIGN.md 4.8 (дополнение) и 2.4.
+   1. Скругление: кнопки, поля и квадрат WhatsApp — --r-ctl 6 px (фото — прежние --r-photo 10/12 px, окна — прямые).
+      Знак RICCA (квадрат 7 px) остаётся квадратом.
+   2. Знак заливает кнопку: у контурной кнопки квадрат вырастает из своего места и закрашивает её (transform: scale, 420 мс) —
+      при наведении мышью; на телефоне — при касании (класс .is-tap на 450 мс ставит js/site.js: короткое касание успевает
+      показать движение). У чёрной кнопки и ссылок-действий знак вытягивается в черту и при касании.
+      Значок назначения (WhatsApp, Instagram, корзина, звонок) сдвигается на 2 px.
+   3. Появление: когда блок с кнопкой вошёл в экран (.rv) или открылось окно, знак «рисуется» слева направо — один раз.
+   Только transform и opacity, без повтора; при «меньше движения» всё стоит. Подвал не трогаем.
+   ========================================================================== */
+:root { --r-ctl: 6px; }
+.btn, .wa-fab { border-radius: var(--r-ctl); }
+.icon-btn { border-radius: var(--r-ctl); }
+.foot .btn { border-radius: var(--radius); }
+
+.btn { overflow: hidden; isolation: isolate; }
+.btn .ico, .wa-fab .ico, .icon-btn .ico { transition: transform 300ms var(--ease); }
+/* заливка из знака: квадрат 7 px на месте знака, растёт до размера кнопки */
+.btn--line::after, .btn--noir::after { content: ''; position: absolute; z-index: -1; left: var(--b-pad); top: 50%; width: var(--mark); height: var(--mark); margin-top: calc(var(--mark) / -2);
+  background: var(--ink); transform: scale(0); transition: transform 420ms var(--ease-io); pointer-events: none; }
+.btn--noir::after { background: var(--on-noir); }
+.foot .btn::after, .menu__call::after, .pd__actions [data-pd-wa]::after { content: none; }
+.btn--line.is-tap, .btn--line:active { background: transparent; color: var(--paper); }
+.btn--noir.is-tap, .btn--noir:active { background: transparent; color: #111; }
+.btn--line.is-tap::after, .btn--noir.is-tap::after, .btn--line:active::after, .btn--noir:active::after { transform: scale(240); }
+.btn.is-tap::before, .more.is-tap::before, .caps-link.is-tap::before { transform: scaleX(2.2); }
+.btn.is-tap .ico, .wa-fab.is-tap .ico { transform: translateX(2px); }
+.icon-btn.is-tap .ico { transform: scale(.88); }
+[data-strip-prev].is-tap .ico { transform: translateX(-3px); }
+[data-strip-next].is-tap .ico { transform: translateX(3px); }
+@media (hover: hover) {
+  .btn--line:hover { background: transparent; color: var(--paper); }
+  .btn--noir:hover { background: transparent; color: #111; }
+  .btn--line:hover::after, .btn--noir:hover::after { transform: scale(240); }
+  .btn:hover .ico, .wa-fab:hover .ico { transform: translateX(2px); }
+  [data-strip-prev]:hover:not(:disabled) .ico { transform: translateX(-3px); }
+  [data-strip-next]:hover:not(:disabled) .ico { transform: translateX(3px); }
+}
+/* знак рисуется при появлении блока и при открытии окна — один раз */
+@keyframes mark-in { from { transform: scaleX(0); } }
+@keyframes ico-in { from { opacity: 0; transform: translateX(-6px); } }
+@media (prefers-reduced-motion: no-preference) {
+  .btn::before, .more::before, .caps-link::before { animation: mark-in 520ms var(--ease) 160ms backwards; }
+  .btn > .ico:first-child { animation: ico-in 520ms var(--ease) 160ms backwards; }
+  .js .is-pre .btn::before, .js .is-pre.btn::before, .js .is-pre .more::before, .js .is-pre .caps-link::before, .js .is-pre .btn > .ico:first-child, .js .is-pre.btn > .ico:first-child { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn--line::after, .btn--noir::after, .btn .ico, .wa-fab .ico, .icon-btn .ico { transition: none; }
+}

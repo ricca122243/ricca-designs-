@@ -1868,6 +1868,17 @@
   hdr.addEventListener('focusin', () => hdr.classList.remove('is-hidden'));
   onScroll();
 
+  /* ---------- Живые кнопки (DESIGN.md 4.8, 17 ноября): касание ставит .is-tap на 450 мс — короткое нажатие на телефоне успевает
+     показать движение (знак заливает контурную кнопку, у остальных вытягивается в черту). Один слушатель на документ ---------- */
+  const TAP = '.btn, .more, .caps-link, .icon-btn, .wa-fab';
+  document.addEventListener('pointerdown', (e) => {
+    const b = e.target.closest && e.target.closest(TAP);
+    if (!b || b.disabled) return;
+    b.classList.add('is-tap');
+    clearTimeout(b._tap);
+    b._tap = setTimeout(() => b.classList.remove('is-tap'), 450);
+  }, { passive: true });
+
   /* ---------- Лента «Проекты» ([data-strip], DESIGN.md 4.14): счётчик «03 / 07», линия и стрелки. Листает сам браузер (scroll-snap);
      без JS лента тоже листается, счётчик стоит на «01». Автопрокрутки нет ---------- */
   $$('[data-strip]').forEach((strip) => {

@@ -124,18 +124,20 @@ ${sec('fabric', 'Ткань', `<p>Велюр, букле, шенилл и&nbsp;�
 ${sec('atelier', 'Сделано в&nbsp;Алматы', `<p>Каждую модель шьём в&nbsp;своём ателье&nbsp;— от&nbsp;первого эскиза до&nbsp;последнего стежка.</p><p class="mp-link"><a href="/#atelier">Подробнее об&nbsp;ателье</a></p>`,
   `<ol class="mp-atl" role="list">${ATL.map(([n, h, t, s]) => `<li><figure class="mp-ph"><img src="/${s}" width="1000" height="1250" alt="" loading="lazy" decoding="async"></figure><p class="mp-atl__n">${n}</p><h3>${h}</h3><p>${t}</p></li>`).join('')}</ol>`)}
 
-<section class="mp-sec mp-write" id="write" aria-labelledby="write-t">
-  <div class="mp-sec__in">
-    <h2 class="mp-sec__t" id="write-t">Написать нам</h2>
-    <div class="mp-sec__p"><p>Ответим в&nbsp;WhatsApp: рассчитаем стоимость ${esc(m.name.replace(/^\S+/, (w) => ({ Диван: 'дивана', Кровать: 'кровати', Кресло: 'кресла', Пуф: 'пуфа', Банкетка: 'банкетки', Стул: 'стула', Стол: 'стола' })[w] || w.toLowerCase()))} и&nbsp;сроки.</p></div>
-    <form class="mp-form" data-wa-form data-model="${esc(title)}" action="${WA(`Здравствуйте! Интересует ${title}.`)}" method="get" target="_blank">
+<section class="mp-ask" id="write" aria-label="Написать нам">
+  <details class="mp-acc">
+    <summary>Написать нам<span class="mp-acc__i" aria-hidden="true"></span></summary>
+    <div class="mp-acc__b">
+      <p>Ответим в&nbsp;WhatsApp: рассчитаем стоимость ${esc(m.name.replace(/^\S+/, (w) => ({ Диван: 'дивана', Кровать: 'кровати', Кресло: 'кресла', Пуф: 'пуфа', Банкетка: 'банкетки', Стул: 'стула', Стол: 'стола' })[w] || w.toLowerCase()))} и&nbsp;сроки.</p>
+      <form class="mp-form" data-wa-form data-model="${esc(title)}" action="${WA(`Здравствуйте! Интересует ${title}.`)}" method="get" target="_blank">
       <label><span>Имя</span><input name="name" autocomplete="name" required></label>
       <label><span>Город</span><input name="city" autocomplete="address-level2"></label>
       <label><span>Размер или пожелания</span><textarea name="note" rows="3"></textarea></label>
       <button class="mp-btn" type="submit">Отправить в WhatsApp</button>
       <p class="mp-fine">Отправляя заявку, вы даёте согласие на&nbsp;обработку <a href="/privacy.html">персональных данных</a>.</p>
     </form>
-  </div>
+    </div>
+  </details>
 </section>
 
 ${rec.length ? `<section class="mp-sec mp-rec" aria-labelledby="rec-t"><div class="mp-sec__in"><h2 class="mp-sec__t" id="rec-t">Ещё ${catName.toLowerCase()}</h2></div>

@@ -232,7 +232,7 @@ body { counter-reset: sec 2; }
 .more { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; font: 500 12.5px/1.2 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); -webkit-tap-highlight-color: transparent; }
 .more::before { content: ''; flex: none; width: var(--mark, 7px); height: var(--mark, 7px); background: currentColor; transform-origin: left center; transition: transform 300ms var(--ease); }
 .more:active { opacity: .6; }
-@media (hover: hover) { .more:hover::before { transform: scaleX(2.6); } }   /* знак вытягивается в черту — как у кнопок (site.css, система кнопок) */
+@media (hover: hover) { .more:hover::before { transform: scaleX(2.2); } }   /* знак вытягивается в черту — как у кнопок (site.css, система кнопок) */
 .works__foot { margin-top: 20px; }
 @media (max-width: 599.98px) { .works__foot { margin-top: 16px; } .how__steps li { font-size: 16px; } }
 .intro__title { font-size: clamp(28px, 7.6vw, 56px); }
@@ -396,3 +396,8 @@ body { counter-reset: sec 2; }
   .prj__n, .prj__track, .prj__prev, .prj__next { grid-row: 1; }
 }
 @media (prefers-reduced-motion: reduce) { .prj__fill { transition: none; } }
+.prj__strip a { border-radius: var(--r-photo); }
+/* живые кнопки на тёмном (чёрная полоса «Для бизнеса», первый экран с кадром): знак заливает кнопку светлым, подпись темнеет */
+.biz .btn--line::after, .hero .btn--line::after { background: var(--on-noir); }
+.biz .btn--line.is-tap, .biz .btn--line:active, .hero .btn--line.is-tap, .hero .btn--line:active { background: transparent; color: var(--ink); }
+@media (hover: hover) { .biz .btn--line:hover, .hero .btn--line:hover { background: transparent; color: var(--ink); } }
