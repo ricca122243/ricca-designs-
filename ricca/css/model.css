@@ -227,3 +227,15 @@ p { margin: 0; }
 .mp-ask .mp-acc__b { max-width: 560px; padding-bottom: 32px; }
 .mp-ask .mp-form { margin-top: 20px; }
 .mp-ask + .mp-rec, .mp-ask + .mp-sec { padding-top: clamp(72px, 9vw, 120px); }
+
+/* HoReCa: первый экран — фото объекта листаются (владелец, 17 ноября: «первое фото — плохое, я думал, ты фотографии туда поставишь»).
+   Телефон — кадры 4:5 с обрезкой вокруг центра интереса; компьютер — первый кадр широкий, остальные парами */
+.mp-gal--tall .mp-ph { aspect-ratio: 4 / 5; }
+.mp-gal--tall .mp-ph img { object-position: var(--fx, 50%) var(--fy, 50%); }
+.mp-gal--tall + .mp-gal__n { top: calc(125vw - 44px); }
+.hr-prj { margin-top: 16px; }
+@media (min-width: 960px) {
+  .mp-gal--tall { grid-template-columns: 1fr 1fr; }
+  .mp-gal--tall .mp-ph { aspect-ratio: 4 / 5; }
+  .mp-gal--tall .mp-ph:first-child { grid-column: 1 / -1; aspect-ratio: 4 / 3; }
+}

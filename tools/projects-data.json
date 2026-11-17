@@ -177,7 +177,14 @@
           "fy": 70,
           "altEn": "Private office: an executive chair in brown leather behind a light desk, a visitor chair in the foreground"
         }
-      }
+      },
+      "horecaHero": [
+        "01",
+        "05",
+        "03",
+        "08",
+        "02"
+      ]
     }
   ]
 }

@@ -66,16 +66,19 @@ ${items}
 <!-- projects:end -->`;
 }
 
-/* ───── «Наши объекты» на странице HoReCa ───── */
+/* ───── страница HoReCa: первый экран — фото объекта листаются (владелец, 17 ноября: «я думал, ты фотографии туда поставишь»),
+   под текстом — ссылка на страницу проекта. Каждый кадр на странице один раз ───── */
+function horecaGal() {
+  const p = DATA.projects[0], ph = p.horecaHero.map((id) => photo(p, id));
+  return `<!-- horeca-gal:start — собирает tools/project-pages.mjs; руками не править -->
+  <div class="mp-gal mp-gal--tall" aria-label="Фото проекта: ${esc(p.home.title)}" data-gal>${ph.map((q, i) => `<figure class="mp-ph" style="--fx:${q.fx}%;--fy:${q.fy}%">${img(q, '(min-width: 960px) 58vw, 100vw', { lazy: i > 0 })}</figure>`).join('')}</div>
+  <p class="mp-gal__n" aria-hidden="true"><span data-gal-i>1</span> / ${ph.length}</p>
+  <!-- horeca-gal:end -->`;
+}
 function horecaBlock() {
-  return `<!-- projects:start — блок собирает tools/project-pages.mjs; руками не править -->
-<section class="mp-sec" id="objects" aria-labelledby="objects-t">
-  <div class="mp-sec__in"><h2 class="mp-sec__t" id="objects-t">Наши объекты</h2></div>
-  <ul class="pj-cards" role="list">
-${DATA.projects.map((p) => { const q = photo(p, p.cover); return `    <li><a href="${href(p)}"><figure class="mp-ph pj-cards__ph" style="--fx:${q.fx}%;--fy:${q.fy}%">${img(q, '(min-width: 960px) 56vw, 100vw')}</figure><span class="pj-cards__n">${nb(p.home.title)}</span><span class="pj-cards__l">${nb(p.home.line)}</span></a></li>`; }).join('\n')}
-  </ul>
-</section>
-<!-- projects:end -->`;
+  return `<!-- projects:start — собирает tools/project-pages.mjs; руками не править -->
+    <p class="mp-link hr-prj">${DATA.projects.map((p) => `<a href="${href(p)}">Проект: ${nb(p.home.title.toLowerCase())}</a>`).join('')}</p>
+    <!-- projects:end -->`;
 }
 
 /* ───── страница проекта ───── */
@@ -194,6 +197,8 @@ patch('dist/RICCA-site/index.html', homeBlock('ru'), beforeTrust);
 patch('dist/RICCA-site/en.html', homeBlock('en'), beforeTrust);
 patch('ricca/en.html', homeBlock('en'), beforeTrust);   // после python3 tools/gen-en.py: английский блок — из данных проекта
 patch('ricca/horeca.html', horecaBlock(), beforeClients);
+{ const f = ROOT + 'ricca/horeca.html', t = fs.readFileSync(f, 'utf8'), a = t.indexOf('<!-- horeca-gal:start'), b = t.indexOf('<!-- horeca-gal:end -->');
+  if (a >= 0 && b > a) fs.writeFileSync(f, t.slice(0, a) + horecaGal() + t.slice(b + '<!-- horeca-gal:end -->'.length)); }
 fs.copyFileSync(ROOT + 'ricca/horeca.html', ROOT + 'dist/RICCA-site/horeca.html');
 for (const f of ['css/model.css', 'css/home.css', 'css/site.css', 'js/site.js', 'js/model.js']) fs.copyFileSync(ROOT + 'ricca/' + f, ROOT + 'dist/RICCA-site/' + f);
 const sm = ROOT + 'dist/RICCA-site/sitemap.xml'; let s = fs.readFileSync(sm, 'utf8').replace(/\s*<url><loc>https:\/\/ricca\.design\/projects\/[^]*?<\/url>/g, '');
