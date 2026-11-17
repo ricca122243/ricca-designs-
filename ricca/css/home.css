@@ -417,3 +417,11 @@ body { counter-reset: sec 2; }
 .qa .how__cta { margin: 16px 0 4px; }
 .qa__h { margin: 0; font: inherit; letter-spacing: inherit; color: inherit; }
 details.qa .about-seo__p { max-width: 62ch; line-height: 1.7; }
+
+/* «Вопросы» без фото (17 ноября; владелец: «фото убери, нельзя такие ставить» — домашний снимок с ковром выбивался из единого стиля):
+   на компьютере заголовок слева, список справа; на телефоне фото и раньше не показывалось */
+@media (min-width: 900px) {
+  .faq__text { grid-column: 1 / -1; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: start; }
+  .faq__text > .title { grid-column: 1 / span 5; }
+  .faq__list { grid-column: 7 / -1; }
+}
