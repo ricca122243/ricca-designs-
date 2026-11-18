@@ -1,0 +1,58 @@
+---
+title: Overview
+description: Understand OAuth sign-in behavior in Coolify and choose a provider-specific setup guide.
+---
+
+# OAuth overview
+
+OAuth lets people sign in to a self-hosted Coolify instance through a supported external provider instead of entering their Coolify password.
+
+<Callout type="info" title="OAuth configuration is for self-hosted Coolify">
+Coolify Cloud manages its own sign-in providers. On a self-hosted instance, a root team administrator or owner can configure providers under **Settings > Authentication**.
+</Callout>
+
+## How OAuth sign-in works
+
+Coolify links an account to the provider identity returned at sign-in. On the first OAuth login after upgrading, an existing account is linked only if the provider verifies its email address. An exception applies to passwordless accounts created by OAuth before this release.
+
+Each account links to one OAuth provider. If you previously used several providers with the same email address, use the provider you want to keep on your first sign-in after upgrading. Subsequent sign-ins use the linked identity rather than email matching alone.
+
+New accounts follow the registration settings. Linked identities appear on **Profile**, and provider-managed email addresses cannot be changed in Coolify. A denied sign-in displays the reason on the login page.
+
+When Coolify 2FA is enabled, OAuth sign-in also requires the Coolify authenticator or recovery code. Users without a password can enable 2FA from their profile. See [Two-factor authentication](/core/security/authentication/2fa).
+
+## Choose an OAuth provider
+
+Each guide creates the external provider application, registers the exact Coolify callback URL, adds the provider credentials to Coolify, and verifies sign-in.
+
+| Provider | What you create | Guide |
+| :--- | :--- | :--- |
+| GitHub | OAuth App with `user:email` access | [Configure GitHub OAuth](/core/security/authentication/oauth/github) |
+| GitLab | OAuth application with `read_user` access | [Configure GitLab OAuth](/core/security/authentication/oauth/gitlab) |
+| Google | Web OAuth client with OpenID, profile, and email access | [Configure Google OAuth](/core/security/authentication/oauth/google) |
+| Azure | Microsoft Entra app registration with `User.Read` | [Configure Azure OAuth](/core/security/authentication/oauth/azure) |
+| Bitbucket | OAuth consumer with email access | [Configure Bitbucket OAuth](/core/security/authentication/oauth/bitbucket) |
+| Discord | Discord application using `identify` and `email` | [Configure Discord OAuth](/core/security/authentication/oauth/discord) |
+| Infomaniak | Infomaniak Application credential | [Configure Infomaniak OAuth](/core/security/authentication/oauth/infomaniak) |
+
+For Authentik, Clerk, and Zitadel, use the [SSO guides](/core/security/authentication/sso/overview).
+
+## Control account creation
+
+Use **Settings > Authentication** to disable password registration while an OAuth provider is enabled. The login page then shows **Only OAuth registration is enabled**. The OIDC provider has an **Allow OIDC user creation** setting that can permit account creation when password registration is disabled.
+
+Each provider can **Auto-join new users to Root team** as members instead of creating a personal team. This applies to newly created users. Coolify does not map provider groups or claims to team roles; manage those roles in Coolify.
+
+## Keep linked identities working after a provider change
+
+If you change a self-hosted GitLab, Authentik, Clerk, or Zitadel host, or change the Azure tenant, rekey existing identities from the Coolify server:
+
+```sh
+docker exec coolify php artisan oauth:rekey <provider> --from=<old-URL-or-tenant>
+```
+
+Replace `<provider>` with `gitlab`, `authentik`, `clerk`, `zitadel`, or `azure`. Keep the old URL or tenant value before changing the settings.
+
+## Test safely
+
+Configure and test one provider at a time. Use a non-root account first, and keep a working administrator password until provider sign-in has been verified from a private browser window.

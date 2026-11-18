@@ -1,0 +1,194 @@
+{
+ "id": "lucky",
+ "colours": [
+  {
+   "code": "002",
+   "name": "LUCKY 002",
+   "hex": "#cec8c0",
+   "src1200": "img/fabrics/official/lucky/002-1200.webp",
+   "src600": "img/fabrics/official/lucky/002-600.webp",
+   "thumb": "img/fabrics/official/lucky/002-160.webp"
+  },
+  {
+   "code": "003",
+   "name": "LUCKY 003",
+   "hex": "#988f89",
+   "src1200": "img/fabrics/official/lucky/003-1200.webp",
+   "src600": "img/fabrics/official/lucky/003-600.webp",
+   "thumb": "img/fabrics/official/lucky/003-160.webp"
+  },
+  {
+   "code": "021",
+   "name": "LUCKY 021",
+   "hex": "#a79588",
+   "src1200": "img/fabrics/official/lucky/021-1200.webp",
+   "src600": "img/fabrics/official/lucky/021-600.webp",
+   "thumb": "img/fabrics/official/lucky/021-160.webp"
+  },
+  {
+   "code": "023",
+   "name": "LUCKY 023",
+   "hex": "#a89181",
+   "src1200": "img/fabrics/official/lucky/023-1200.webp",
+   "src600": "img/fabrics/official/lucky/023-600.webp",
+   "thumb": "img/fabrics/official/lucky/023-160.webp"
+  },
+  {
+   "code": "022",
+   "name": "LUCKY 022",
+   "hex": "#8a7667",
+   "src1200": "img/fabrics/official/lucky/022-1200.webp",
+   "src600": "img/fabrics/official/lucky/022-600.webp",
+   "thumb": "img/fabrics/official/lucky/022-160.webp"
+  },
+  {
+   "code": "004",
+   "name": "LUCKY 004",
+   "hex": "#928780",
+   "src1200": "img/fabrics/official/lucky/004-1200.webp",
+   "src600": "img/fabrics/official/lucky/004-600.webp",
+   "thumb": "img/fabrics/official/lucky/004-160.webp"
+  },
+  {
+   "code": "005",
+   "name": "LUCKY 005",
+   "hex": "#453a34",
+   "src1200": "img/fabrics/official/lucky/005-1200.webp",
+   "src600": "img/fabrics/official/lucky/005-600.webp",
+   "thumb": "img/fabrics/official/lucky/005-160.webp"
+  },
+  {
+   "code": "006",
+   "name": "LUCKY 006",
+   "hex": "#363232",
+   "src1200": "img/fabrics/official/lucky/006-1200.webp",
+   "src600": "img/fabrics/official/lucky/006-600.webp",
+   "thumb": "img/fabrics/official/lucky/006-160.webp"
+  },
+  {
+   "code": "007",
+   "name": "LUCKY 007",
+   "hex": "#92958a",
+   "src1200": "img/fabrics/official/lucky/007-1200.webp",
+   "src600": "img/fabrics/official/lucky/007-600.webp",
+   "thumb": "img/fabrics/official/lucky/007-160.webp"
+  },
+  {
+   "code": "009",
+   "name": "LUCKY 009",
+   "hex": "#252b25",
+   "src1200": "img/fabrics/official/lucky/009-1200.webp",
+   "src600": "img/fabrics/official/lucky/009-600.webp",
+   "thumb": "img/fabrics/official/lucky/009-160.webp"
+  },
+  {
+   "code": "008",
+   "name": "LUCKY 008",
+   "hex": "#3b382c",
+   "src1200": "img/fabrics/official/lucky/008-1200.webp",
+   "src600": "img/fabrics/official/lucky/008-600.webp",
+   "thumb": "img/fabrics/official/lucky/008-160.webp"
+  },
+  {
+   "code": "010",
+   "name": "LUCKY 010",
+   "hex": "#8b5830",
+   "src1200": "img/fabrics/official/lucky/010-1200.webp",
+   "src600": "img/fabrics/official/lucky/010-600.webp",
+   "thumb": "img/fabrics/official/lucky/010-160.webp"
+  },
+  {
+   "code": "011",
+   "name": "LUCKY 011",
+   "hex": "#64393b",
+   "src1200": "img/fabrics/official/lucky/011-1200.webp",
+   "src600": "img/fabrics/official/lucky/011-600.webp",
+   "thumb": "img/fabrics/official/lucky/011-160.webp"
+  },
+  {
+   "code": "012",
+   "name": "LUCKY 012",
+   "hex": "#184a56",
+   "src1200": "img/fabrics/official/lucky/012-1200.webp",
+   "src600": "img/fabrics/official/lucky/012-600.webp",
+   "thumb": "img/fabrics/official/lucky/012-160.webp"
+  },
+  {
+   "code": "013",
+   "name": "LUCKY 013",
+   "hex": "#3f4145",
+   "src1200": "img/fabrics/official/lucky/013-1200.webp",
+   "src600": "img/fabrics/official/lucky/013-600.webp",
+   "thumb": "img/fabrics/official/lucky/013-160.webp"
+  },
+  {
+   "code": "014",
+   "name": "LUCKY 014",
+   "hex": "#484a4d",
+   "src1200": "img/fabrics/official/lucky/014-1200.webp",
+   "src600": "img/fabrics/official/lucky/014-600.webp",
+   "thumb": "img/fabrics/official/lucky/014-160.webp"
+  },
+  {
+   "code": "015",
+   "name": "LUCKY 015",
+   "hex": "#394753",
+   "src1200": "img/fabrics/official/lucky/015-1200.webp",
+   "src600": "img/fabrics/official/lucky/015-600.webp",
+   "thumb": "img/fabrics/official/lucky/015-160.webp"
+  },
+  {
+   "code": "020",
+   "name": "LUCKY 020",
+   "hex": "#ae918e",
+   "src1200": "img/fabrics/official/lucky/020-1200.webp",
+   "src600": "img/fabrics/official/lucky/020-600.webp",
+   "thumb": "img/fabrics/official/lucky/020-160.webp"
+  },
+  {
+   "code": "016",
+   "name": "LUCKY 016",
+   "hex": "#7a7e84",
+   "src1200": "img/fabrics/official/lucky/016-1200.webp",
+   "src600": "img/fabrics/official/lucky/016-600.webp",
+   "thumb": "img/fabrics/official/lucky/016-160.webp"
+  },
+  {
+   "code": "017",
+   "name": "LUCKY 017",
+   "hex": "#575c5f",
+   "src1200": "img/fabrics/official/lucky/017-1200.webp",
+   "src600": "img/fabrics/official/lucky/017-600.webp",
+   "thumb": "img/fabrics/official/lucky/017-160.webp"
+  },
+  {
+   "code": "018",
+   "name": "LUCKY 018",
+   "hex": "#303132",
+   "src1200": "img/fabrics/official/lucky/018-1200.webp",
+   "src600": "img/fabrics/official/lucky/018-600.webp",
+   "thumb": "img/fabrics/official/lucky/018-160.webp"
+  },
+  {
+   "code": "019",
+   "name": "LUCKY 019",
+   "hex": "#2a2e30",
+   "src1200": "img/fabrics/official/lucky/019-1200.webp",
+   "src600": "img/fabrics/official/lucky/019-600.webp",
+   "thumb": "img/fabrics/official/lucky/019-160.webp"
+  }
+ ],
+ "heroes": [
+  {
+   "src": "img/fabrics/official/lucky/hero-1-1600.webp",
+   "w": 2000,
+   "h": 1334
+  },
+  {
+   "src": "img/fabrics/official/lucky/hero-2-1600.webp",
+   "w": 2000,
+   "h": 1334
+  }
+ ],
+ "inuse": []
+}

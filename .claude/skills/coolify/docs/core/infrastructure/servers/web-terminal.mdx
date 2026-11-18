@@ -1,0 +1,174 @@
+---
+title: Web Terminal
+description: Open a browser terminal for a server or container and enable or disable terminal access for a server.
+---
+
+# Web terminal
+
+The Coolify Web Terminal lets you open a shell for a connected server or running container from the dashboard.
+
+Only team owners and administrators can use terminal features. Commands run with the permissions of the selected server user or container, so close the terminal when you finish.
+
+## Before you start
+
+Make sure:
+
+- the server is reachable and validated
+- **Terminal Access** is enabled for the server
+- you are a team owner or administrator
+
+---
+
+## Open a terminal
+
+<Steps>
+<Step>
+
+### Select a server or container
+
+1. Select **Terminal** in the Coolify sidebar.
+2. Under **Start a terminal session**, use **Filter targets** to find the target if needed.
+3. Select the server or running container. Coolify starts the session immediately.
+
+Coolify creates a short-lived terminal session token on the server rather than sending SSH command details through the browser. Wait for the command prompt to appear. If the session cannot start, the terminal displays an error; review it and check server reachability and terminal access before retrying.
+
+</Step>
+<Step>
+
+### Confirm the terminal works
+
+Run a read-only command first:
+
+```sh
+pwd
+```
+
+For a server, the output should show the current directory for the SSH user configured in Coolify. For a container, it shows the current directory inside that container.
+
+You can now run the command needed for your task. Close the browser terminal when you finish.
+
+</Step>
+</Steps>
+
+## Open a resource terminal
+
+You can also open **Terminal** from an individual server, application, database, or service when that resource provides a terminal page.
+
+The same server setting controls both the global Terminal page and these resource terminals.
+
+## When a session ends
+
+Coolify checks every minute that you can still use an open terminal session. The session ends when:
+
+- you log out of Coolify
+- you are no longer an owner or administrator of the team, or you are removed from the team
+- **Terminal Access** is disabled for the server
+- the server is disabled or transferred to another Coolify instance
+- the team requires two-factor authentication and you have not set it up
+
+The terminal shows `Terminal session ended:` and the reason. If Coolify cannot answer the check three times in a row, for example during an upgrade, the session also ends.
+
+A session ends after 8 hours, also when it is active.
+
+---
+
+## Use console mode for a container
+
+Some containers run a main process that reads commands from its standard input (stdin), for example a game server console. For these containers, the terminal has two modes:
+
+| Mode | What it does |
+|---|---|
+| **Shell** | Starts a new shell in the container (`docker exec`). Use it to run commands such as `ls` or `cat`. |
+| **Console** | Connects to the main process of the container (`docker attach`). The commands that you send go to that process. |
+
+Console mode is not a framework console such as `php artisan tinker` or `rails console`. To use a framework console, start it in **Shell** mode.
+
+### When console mode is available
+
+Coolify shows the mode selector only when the container keeps stdin open. Coolify gets this value from the container configuration (`OpenStdin`) when you open the terminal. Server terminals always use a shell.
+
+To keep stdin open:
+
+- For a Docker Compose resource, set `stdin_open: true` on the service.
+- For a single-container application, add `-i` or `--interactive` to the [custom Docker options](/applications/builds/custom-docker-options).
+
+When the container keeps stdin open, the terminal starts in **Console** mode. If the image has no shell, the **Shell** option is not available.
+
+### Send commands in console mode
+
+1. Open the terminal for the container.
+2. To change the mode, select the mode selector next to the theme selector, then select **Shell** or **Console**. Coolify connects again in the new mode.
+3. In **Console** mode, type a command in the command box below the output. The output area is read-only.
+4. Push <kbd>Enter</kbd> or select **Send**.
+
+When the session opens, Coolify shows the last 200 log lines of the container, then the live output.
+
+Keyboard shortcuts in the command box:
+
+| Key | Action |
+|---|---|
+| <kbd>Enter</kbd> | Send the command. |
+| <kbd>Up</kbd> / <kbd>Down</kbd> | Show the previous or next command. |
+| <kbd>Esc</kbd> | Cancel a pasted text, or clear the input. |
+| <kbd>Ctrl</kbd>+<kbd>L</kbd> | Clear the visible output. Coolify does not send a command to the process. |
+
+If you paste more than one line, Coolify does not send the lines immediately. Push <kbd>Enter</kbd> to send them or <kbd>Esc</kbd> to cancel. Coolify does not send control characters.
+
+The command history is kept only for the current connection. Coolify does not save it in the browser.
+
+<Callout type="warn">
+Console mode connects to the process that keeps the container running. A command such as `stop` can stop that process and the container.
+</Callout>
+
+When you close the terminal or change the mode, Coolify disconnects from the process and does not stop it. Coolify also does not send signals such as <kbd>Ctrl</kbd>+<kbd>C</kbd> to the process.
+
+Console mode uses the same permissions as the shell: you must be a team owner or administrator, and **Terminal Access** must be enabled for the server.
+
+---
+
+## Change terminal access
+
+Use this setting when nobody should be able to open dashboard terminals for a server or its containers.
+
+<Steps>
+<Step>
+
+### Disable terminal access
+
+<ZoomImage src="/docs/images/core/infrastructure/servers/web-terminal/terminal-access-setting.webp" alt="Terminal Access setting under server Security" />
+
+1. Open **Servers**.
+2. Select the server.
+3. Select **Security > General**.
+4. Find the **Terminal access** section.
+5. Select **Disable terminal**.
+6. Enter the server name and your Coolify account password in the confirmation window.
+7. Complete the confirmation.
+
+The change takes effect immediately. The server and its containers disappear from dashboard terminal selectors, including for owners and administrators. Open terminal sessions end within one minute.
+
+Disabling this setting does not block normal SSH connections made outside Coolify.
+
+</Step>
+<Step>
+
+### Enable terminal access again
+
+1. Return to **Servers > your server > Security > General** and find **Terminal access**.
+2. Select **Enable terminal**.
+3. Enter the server name and your Coolify account password.
+4. Complete the confirmation.
+5. Return to **Terminal** and confirm the server appears in the target list.
+
+</Step>
+</Steps>
+
+---
+
+## If the terminal does not connect
+
+- Confirm the server is reachable from its **General** page.
+- Confirm **Terminal Access** is enabled.
+- Confirm the container is running if you selected a container.
+- If you open a self-hosted Coolify dashboard directly on port `8000`, confirm port `6002` is allowed by the [firewall](/core/infrastructure/servers/firewall).
+- Try the server terminal before the container terminal to confirm the SSH connection works.

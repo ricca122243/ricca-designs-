@@ -1,0 +1,14 @@
+# v3 assets — progress log (subagent: fonts + graded photos + textures + og)
+[1] started: read BRIEF.md, all 8 refs, fonts-eluna.css, fonts/fonts.css; img/v3 created
+[x] fonts-v3.css written + paths verified
+[x] hero-living.webp 1024w + hero-living-512.webp — variant B (warm_desat 0.72), reviewed 1:1
+[x] sofa-01..04 1x+@2x — reviewed, R-B +29 → +5…+8
+[x] tex-* 6 tiles final: periodic noise + wrap-pad blur, lossless (velour q95), seams verified
+[x] rd-monogram-milk.svg created (explicit fill); original is currentColor → black inside <img>
+[x] og-image-v3.jpg 1200×630 OK visually
+[x] MANIFEST.md generated from disk
+[done] all outputs final 20:41
+[2] 2nd run (white-site brief): fonts-v3.css verified (fontTools axes OK, all paths exist); photos re-reviewed on milk, OK; REDOING og (milk/black), ADDING favicon-v3, rewriting MANIFEST
+[3] 3rd run: og-image-v3.jpg redone milk/black 22:04
+[3] MANIFEST.md regenerated for white site 22:04; all outputs final
+[3] MANIFEST.md regenerated for white site 22:05; all outputs final
