@@ -108,3 +108,78 @@ def render(path, fabric, legs, az=0, el=4, dist=9.0, lens=85, target=(0, 0, 0.3)
     bpy.ops.object.camera_add(location=loc); cam = bpy.context.object; cam.name = 'chk_cam'; cam.data.lens = lens
     d = np.array(target) - np.array(loc); cam.rotation_euler = (math.atan2(math.hypot(d[0], d[1]), -d[2]), 0, math.atan2(-d[0], d[1]) * -1 if False else math.atan2(d[0], d[1]) * -1)
     sc.camera = cam; bpy.ops.render.render(write_still=True)
+
+
+# ───────── дополнения 18 ноября: кровати (сетка bedding) и скульптурные кресла ─────────
+import bmesh
+
+
+def round_top_corners(o, r=0.10, seg=10):
+    """скруглить два верхних угла плиты (рёбра вдоль Y при z = max и |x| = max) — изголовье"""
+    bm = bmesh.new(); bm.from_mesh(o.data)
+    zmax = max(v.co.z for v in bm.verts); xmax = max(abs(v.co.x) for v in bm.verts)
+    ed = [e for e in bm.edges if all(abs(v.co.z - zmax) < 1e-4 and abs(abs(v.co.x) - xmax) < 1e-4 for v in e.verts)]
+    bmesh.ops.bevel(bm, geom=ed, offset=r, segments=seg, profile=0.5, affect='EDGES')
+    bm.to_mesh(o.data); bm.free(); return o
+
+
+def soft_edges(o, width=0.015, seg=4, angle=40):
+    m = o.modifiers.new('bv', 'BEVEL'); m.width = width; m.segments = seg; m.limit_method = 'ANGLE'; m.angle_limit = math.radians(angle); _apply(o, m); return o
+
+
+def pillow(name, size, loc, rot=(0, 0, 0), puff=0.75):
+    """подушка: плита → мягкая линза с тонкими краями; size = (ширина, высота, толщина), лежит в плоскости XY, затем rot"""
+    o = box(name, (size[0], size[1], size[2]), (0, 0, 0), bevel=min(size[2] * 0.4, 0.05), seg=6); subsurf(o, 2)
+    me = o.data; n = len(me.vertices); co = np.empty(n * 3); me.vertices.foreach_get('co', co); co = co.reshape(-1, 3)
+    u = np.clip(np.abs(co[:, 0]) / (size[0] / 2), 0, 1); v = np.clip(np.abs(co[:, 1]) / (size[1] / 2), 0, 1)
+    f = (1 - puff) + puff * np.sqrt(np.clip((1 - u ** 4) * (1 - v ** 4), 0, 1)); co[:, 2] *= f
+    me.vertices.foreach_set('co', co.ravel()); me.update()
+    o.rotation_euler = tuple(math.radians(a) for a in rot); o.location = loc
+    bpy.context.view_layer.objects.active = o; bpy.ops.object.select_all(action='DESELECT'); o.select_set(True)
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True); return o
+
+
+def tube(name, pts, r, zscale=1.0):
+    """валик по ломаной: круглое сечение радиуса r, по высоте растянуто в zscale раз"""
+    cu = bpy.data.curves.new(name, 'CURVE'); cu.dimensions = '3D'; sp = cu.splines.new('POLY'); sp.points.add(len(pts) - 1)
+    for i, p in enumerate(pts): sp.points[i].co = (p[0], p[1], p[2], 1)
+    cu.bevel_depth = r; cu.bevel_resolution = 10; cu.use_fill_caps = True
+    o = bpy.data.objects.new(name, cu); bpy.context.collection.objects.link(o)
+    bpy.ops.object.select_all(action='DESELECT'); o.select_set(True); bpy.context.view_layer.objects.active = o
+    bpy.ops.object.convert(target='MESH'); o = bpy.context.object
+    if zscale != 1.0:
+        zc = sum(p[2] for p in pts) / len(pts)
+        for v in o.data.vertices: v.co.z = zc + (v.co.z - zc) * zscale
+    return o
+
+
+def leg(name, top, length=0.2, r_top=0.02, r_bot=0.01, splay=(0, 0)):
+    """коническая ножка; splay = (наклон наружу по x, по y) в градусах, знак берётся от положения"""
+    bpy.ops.mesh.primitive_cone_add(vertices=20, radius1=r_bot, radius2=r_top, depth=length, location=(0, 0, 0))
+    o = bpy.context.object; o.name = name
+    sx = 1 if top[0] >= 0 else -1; sy = 1 if top[1] >= 0 else -1
+    o.rotation_euler = (math.radians(sy * splay[1]), math.radians(-sx * splay[0]), 0)
+    dz = length / 2 * math.cos(math.radians(max(splay)))
+    o.location = (top[0] + sx * math.sin(math.radians(splay[0])) * length / 2, top[1] + sy * math.sin(math.radians(splay[1])) * length / 2, top[2] - dz)
+    return o
+
+
+def export3(path, fabric, legs, bedding=None):
+    bpy.ops.object.select_all(action='DESELECT')
+    for o in (fabric, legs, bedding):
+        if o: o.select_set(True)
+    bpy.ops.export_scene.gltf(filepath=path, export_format='GLB', use_selection=True, export_apply=True, export_normals=True,
+                              export_texcoords=False, export_materials='NONE', export_yup=True)
+
+
+def white(o):
+    if o and not o.data.materials: o.data.materials.append(_mat('bed', (0.9, 0.9, 0.9), 0.8))
+
+
+def pebble(name, a, b, c, loc, n=3.0, seg=72):
+    """сиденье-«галька»: суперэллипсоид с полуосями a, b, c — пухлая кромка вместо острой, как у эллипсоида"""
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=seg, ring_count=seg // 2, radius=1, location=(0, 0, 0))
+    o = bpy.context.object; o.name = name; me = o.data; k = len(me.vertices); co = np.empty(k * 3); me.vertices.foreach_get('co', co); co = co.reshape(-1, 3)
+    r = np.hypot(co[:, 0], co[:, 1]); z = np.abs(co[:, 2]); f = (r ** n + z ** n) ** (1.0 / n); f[f == 0] = 1
+    co /= f[:, None]; co *= np.array([a, b, c]); co += np.array(loc)
+    me.vertices.foreach_set('co', co.ravel()); me.update(); return o

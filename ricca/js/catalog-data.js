@@ -356,7 +356,6 @@ window.RICCA_CATALOG = [
     cfg: "t.sofa~ah.60~as.round~aw.30~lh.2~lg.hidden~n.2~vp.puff~w.230",
     fab: "noble:3",
     glb: "models3d/free/sofa-19.json",
-    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "sofas",
     tags: ["straight", "corner"],
     type: "Диван",
@@ -942,9 +941,10 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-07",
+    glb: "models3d/armchair-07.glb",   // 18 ноября: модель собрана в Blender по фото (tools/media-v3/blender/runvo.py)
+    view: { az: -10, el: 6, fov: 18, zoom: 1.1 },   // ракурс как на главном фото
     cfg: "t.armchair~ah.70~aw.22~bc.fixed~d.85~h.74~lf.black~lh.18~lg.metal~qa.right~ql.splay~sd.58~sh.44~w.97",
     fab: "ricca:4",
-    no3d: true,   // 14 ноября, владелец: 3D Runvo не похоже — файл модели удалён, на сайте только фото (без «3D-модели» и «Чертежа»)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -967,7 +967,6 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.66~as.wide~aw.27~bc.fixed~d.95~h.72~lf.black~lh.4~lg.plinth~qp.dark~sd.58~w.105",
     fab: "noble:8",
     glb: "models3d/free/armchair-08.json",
-    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1591,8 +1590,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "bed-26",
-    glb: "models3d/bed-26.glb",
-    no3d: true,   // 15 ноября: сверка с фото — в 3D низкое скруглённое изголовье и бежевое покрывало, на фото высокое прямое с кантом (вернуть — убрать строку)
+    glb: "models3d/bed-26.glb",   // 18 ноября: пересобрана в Blender по фото (tools/media-v3/blender/linel.py)
     view: { az: -40, el: 9, fov: 34, zoom: 1.15 },
     cfg: "t.bed~hs.plain~ks.round~hh.110~ft.5~rh.32~b.legs~kg.metal~lf.black~lh.16~p.1",
     fab: "molly:17",
@@ -2169,7 +2167,6 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.62~aw.22~d.90~h.70~lf.pink~lh.10~lg.metal~qd.ball~sd.58~w.110",
     fab: "coco:14",
     glb: "models3d/free/armchair-23.json",
-    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
     category: "armchairs",
     tags: [],
     type: "Кресло",
