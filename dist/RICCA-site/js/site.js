@@ -219,6 +219,12 @@
   /* карточка работы: фото 4 : 5 (cover), под ним название (16–18 px) и ткань одной строкой — ссылка #work-<id> (открывает окно работы).
      data-cat на <li> — фильтр экрана «Наши работы»; wide — карточка на две колонки (главная, компьютер: горизонтальный кадр в рамке
      ≈ 1,65 : 1, css .wk__wide; sizes — вдвое шире) */
+  /* 18 ноября (владелец: «хочу как у Mononova: открываешь модель — её страница с фотографиями; сделай всем»): карточка модели ведёт
+     сразу на страницу модели /models/<имя> (tools/model-pages.mjs), а не в окно. Английская версия — по-прежнему окно: страниц на английском нет */
+  const modelUrl = (w) => {
+    const nm = w && w.model && document.documentElement.lang !== 'en' && splitTitle(w.title)[1];
+    return nm ? `/models/${String(nm).toLowerCase().replace(/[^a-z0-9]+/g, '-')}${/^(localhost|127\.)/.test(location.hostname) ? '.html' : ''}` : '';
+  };
   const workCard = (w, n, sizes, eager, withSub = true, wide = false, phone = '43vw', altN = -1) => {
     const p = w.photos[n] || w.photos[0];
     if (!w.model) return `<li data-cat="${esc(w.cat)}"${wide ? ' class="wk__wide"' : ''}><a class="wk__a" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
@@ -228,7 +234,8 @@
        телефон — две колонки .wk ≈ 43vw (sizes для srcset, workPic умножает на --z); крупная карточка во всю ширину — phone = PHONE_BIG */
     const alt = w.photos[altN] || w.photos.find((q, i) => i !== n && q.studio);
     const [kind, name] = splitTitle(w.title);
-    return `<li data-cat="${esc(w.cat)}"><a class="wk__a wk__a--model" href="#work-${esc(w.id)}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''} aria-haspopup="dialog">`
+    const page = modelUrl(w);
+    return `<li data-cat="${esc(w.cat)}"><a class="wk__a wk__a--model" href="${page ? esc(page) : `#work-${esc(w.id)}`}" data-work="${esc(w.id)}"${n ? ` data-work-n="${n}"` : ''}${page ? ' data-page' : ' aria-haspopup="dialog"'}>`
       + `<span class="wk__img">${workPic(p, sizes, eager, zoomOf(p), phone === PHONE_BIG ? bigSizes(zoomOf(p)) : phone)}${alt ? `<img class="wk__alt" src="${esc(alt.src800)}" width="${p800(alt).w}" height="${p800(alt).h}" alt="" loading="lazy" decoding="async"${zoomAttr(alt)}>` : ''}</span>`
       + `<span class="wk__cap">${kind ? `<span class="wk__k">${typo(kind)}</span>` : ''}<span class="wk__t">${typo(name)}</span>${withSub && w.sub ? `<span class="wk__s">${nwHyph(typo(w.sub))}</span>` : ''}</span></a></li>`;
   };
@@ -1810,6 +1817,7 @@
     const it = e.target.closest('[data-item]');
     if (it && ITEM.has(it.dataset.item)) { e.preventDefault(); R.go(`#item-${it.dataset.item}`, it); return; }
     const wk = e.target.closest('[data-work]');
+    if (wk && wk.hasAttribute('data-page')) return;   // карточка модели — обычный переход на страницу модели
     if (wk && WORK.has(wk.dataset.work)) { e.preventDefault(); R.workN = +wk.dataset.workN || 0; R.go(`#work-${wk.dataset.work}`, wk); return; }
     // «Подобрать ткань в шоуруме» (экран «Ткани»): окна закрыть, к разделу «Шоурум»
     const ts = e.target.closest('[data-to-showroom]');

@@ -19,7 +19,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://ricca.design/"/>
   </url>
   <url><loc>https://ricca.design/horeca</loc><lastmod>2026-11-17</lastmod><priority>0.8</priority></url>
-  <url><loc>https://ricca.design/projects/office</loc><lastmod>2026-11-17</lastmod><priority>0.8</priority></url>
   <url><loc>https://ricca.design/models/svira</loc><lastmod>2026-11-18</lastmod><priority>0.7</priority></url>
   <url><loc>https://ricca.design/models/talna</loc><lastmod>2026-11-18</lastmod><priority>0.7</priority></url>
   <url><loc>https://ricca.design/models/desva</loc><lastmod>2026-11-18</lastmod><priority>0.7</priority></url>
@@ -126,4 +125,5 @@
   <url><loc>https://ricca.design/models/bolva</loc><lastmod>2026-11-18</lastmod><priority>0.7</priority></url>
   <url><loc>https://ricca.design/models/kanva</loc><lastmod>2026-11-18</lastmod><priority>0.7</priority></url>
   <url><loc>https://ricca.design/models/stegva</loc><lastmod>2026-11-18</lastmod><priority>0.7</priority></url>
+  <url><loc>https://ricca.design/projects/office</loc><lastmod>2026-11-17</lastmod><priority>0.8</priority></url>
 </urlset>
