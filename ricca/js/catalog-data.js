@@ -427,8 +427,7 @@ window.RICCA_CATALOG = [
     id: "sofa-22",
     cfg: "t.sofa~ah.70~as.round~aw.30~bc.fixed~h.70~n.2~vs.soft~w.250",
     fab: "coco:14",
-    glb: "models3d/free/sofa-22.json",
-    no3d: true,   // 14 ноября: проверка со всех сторон — 3D не дотягивает до фото, снято с сайта (вернуть — убрать строку)
+    glb: "models3d/sofa-22.glb",   // 18 ноября: модель собрана в Blender по фото (tools/media-v3/blender/venra.py)
     category: "sofas",
     tags: ["straight"],
     type: "Диван",
