@@ -4,3 +4,8 @@
 [build]
   publish = "dist/RICCA-site"
   command = "echo 'сборка не нужна — папка готова'"
+
+# Заявки с сайта (23 ноября): POST /api/lead → Telegram. Код — netlify/functions/lead.mjs.
+# Токен бота и чат задаются в Netlify → Site configuration → Environment variables: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (в репозитории их нет)
+[functions]
+  directory = "netlify/functions"

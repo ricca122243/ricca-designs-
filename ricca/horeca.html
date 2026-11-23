@@ -15,6 +15,7 @@
 <link rel="icon" href="/img/v3/favicon-v3.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/css/fonts-v3.css">
 <link rel="stylesheet" href="/css/model.css">
+<link rel="stylesheet" href="/css/lead.css">
 <style>
   .hr-hero { position: relative; }
   .hr-hero .mp-ph { aspect-ratio: 4 / 5; }
@@ -124,23 +125,15 @@
   </ul>
 </section>
 
-<section class="mp-ask" id="write" aria-label="Обсудить объект">
-  <details class="mp-acc">
-    <summary>Обсудить объект<span class="mp-acc__i" aria-hidden="true"></span></summary>
-    <div class="mp-acc__b">
-      <p>Расскажите о&nbsp;проекте&nbsp;— ответим в&nbsp;WhatsApp и&nbsp;предложим решения и&nbsp;сроки.</p>
-      <form class="mp-form" data-wa-form data-model="проект для объекта (RICCA HoReCa)" action="https://wa.me/77079550808" method="get" target="_blank">
-      <label><span>Имя</span><input name="name" autocomplete="name" required></label>
-      <label><span>Компания и&nbsp;город</span><input name="city" autocomplete="organization"></label>
-      <label><span>Объект: тип, количество мест, сроки</span><textarea name="note" rows="3"></textarea></label>
-      <button class="mp-btn" type="submit">Отправить в WhatsApp</button>
-      <p class="mp-fine">Отправляя заявку, вы даёте согласие на&nbsp;обработку <a href="/privacy.html">персональных данных</a>.</p>
-    </form>
-    </div>
-  </details>
+<section class="mp-ask mp-ask--lead" id="write" aria-labelledby="ask-t" data-page-name="мебель для HoReCa">
+  <h2 class="mp-ask__t" id="ask-t">Обсудить объект</h2>
+  <p class="mp-ask__p">Расскажите о&nbsp;проекте&nbsp;— ответим в&nbsp;WhatsApp и&nbsp;предложим решения и&nbsp;сроки.</p>
+  <div data-lead data-lead-interest="other"></div>
+  <noscript><p class="mp-ask__p">Напишите нам в&nbsp;<a href="https://wa.me/77079550808">WhatsApp</a>.</p></noscript>
 </section>
 </main>
 <footer class="mp-foot"><p><a href="/">RICCA DESIGNS</a> · RICCA HoReCa</p><p>Алматы, ул.&nbsp;Алишера Навои,&nbsp;208/2 · <a href="tel:+77079550808">+7&nbsp;(707)&nbsp;955-08-08</a></p><p class="mp-copy">© 2026 RICCA DESIGNS. Фотографии, тексты, 3D-модели и&nbsp;чертежи принадлежат RICCA DESIGNS. Копирование и&nbsp;использование без письменного разрешения строго запрещены.</p></footer>
 <script src="/js/model.js" defer></script>
+<script src="/js/lead.js" defer></script>
 </body>
 </html>

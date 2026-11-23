@@ -76,8 +76,10 @@ function page(m) {
 <link rel="icon" href="/img/v3/favicon-v3.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/css/fonts-v3.css">
 <link rel="stylesheet" href="/css/model.css">
+<link rel="stylesheet" href="/css/lead.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <script src="/js/model.js" defer></script>
+<script src="/js/lead.js" defer></script>
 </head>
 <body>
 <header class="mp-top">
@@ -124,20 +126,11 @@ ${sec('fabric', 'Ткань', `<p>Велюр, букле, шенилл и&nbsp;�
 ${sec('atelier', 'Сделано в&nbsp;Алматы', `<p>Каждую модель шьём в&nbsp;своём ателье&nbsp;— от&nbsp;первого эскиза до&nbsp;последнего стежка.</p><p class="mp-link"><a href="/#atelier">Подробнее об&nbsp;ателье</a></p>`,
   `<ol class="mp-atl" role="list">${ATL.map(([n, h, t, s]) => `<li><figure class="mp-ph"><img src="/${s}" width="1000" height="1250" alt="" loading="lazy" decoding="async"></figure><p class="mp-atl__n">${n}</p><h3>${h}</h3><p>${t}</p></li>`).join('')}</ol>`)}
 
-<section class="mp-ask" id="write" aria-label="Написать нам">
-  <details class="mp-acc">
-    <summary>Написать нам<span class="mp-acc__i" aria-hidden="true"></span></summary>
-    <div class="mp-acc__b">
-      <p>Ответим в&nbsp;WhatsApp: рассчитаем стоимость ${esc(m.name.replace(/^\S+/, (w) => ({ Диван: 'дивана', Кровать: 'кровати', Кресло: 'кресла', Пуф: 'пуфа', Банкетка: 'банкетки', Стул: 'стула', Стол: 'стола' })[w] || w.toLowerCase()))} и&nbsp;сроки.</p>
-      <form class="mp-form" data-wa-form data-model="${esc(title)}" action="${WA(`Здравствуйте! Интересует ${title}.`)}" method="get" target="_blank">
-      <label><span>Имя</span><input name="name" autocomplete="name" required></label>
-      <label><span>Город</span><input name="city" autocomplete="address-level2"></label>
-      <label><span>Размер или пожелания</span><textarea name="note" rows="3"></textarea></label>
-      <button class="mp-btn" type="submit">Отправить в WhatsApp</button>
-      <p class="mp-fine">Отправляя заявку, вы даёте согласие на&nbsp;обработку <a href="/privacy.html">персональных данных</a>.</p>
-    </form>
-    </div>
-  </details>
+<section class="mp-ask mp-ask--lead" id="write" aria-labelledby="ask-t" data-page-name="${esc(title)}">
+  <h2 class="mp-ask__t" id="ask-t">Оставить заявку</h2>
+  <p class="mp-ask__p">Перезвоним и&nbsp;рассчитаем стоимость ${esc(m.name.replace(/^\S+/, (w) => ({ Диван: 'дивана', Кровать: 'кровати', Кресло: 'кресла', Пуф: 'пуфа', Банкетка: 'банкетки', Стул: 'стула', Стол: 'стола' })[w] || w.toLowerCase()))} и&nbsp;сроки.</p>
+  <div data-lead data-lead-interest="${m.category === 'sofas' ? 'sofa' : m.category === 'beds' ? 'bed' : 'other'}"></div>
+  <noscript><p class="mp-ask__p">Напишите нам в&nbsp;<a href="${WA(`Здравствуйте! Интересует ${title}.`)}">WhatsApp</a>.</p></noscript>
 </section>
 
 ${rec.length ? `<section class="mp-sec mp-rec" aria-labelledby="rec-t"><div class="mp-sec__in"><h2 class="mp-sec__t" id="rec-t">Ещё ${catName.toLowerCase()}</h2></div>
@@ -155,7 +148,7 @@ for (const dir of ['ricca/models', 'dist/RICCA-site/models']) {
   fs.mkdirSync(ROOT + dir, { recursive: true });
   for (const m of list) fs.writeFileSync(`${ROOT}${dir}/${slug(m)}.html`, page(m));
 }
-for (const f of ['css/model.css', 'js/model.js']) fs.copyFileSync(ROOT + 'ricca/' + f, ROOT + 'dist/RICCA-site/' + f);
+for (const f of ['css/model.css', 'js/model.js', 'css/lead.css', 'js/lead.js']) fs.copyFileSync(ROOT + 'ricca/' + f, ROOT + 'dist/RICCA-site/' + f);
 fs.cpSync(ROOT + 'ricca/img/catalog/t', ROOT + 'dist/RICCA-site/img/catalog/t', { recursive: true });
 fs.cpSync(ROOT + 'ricca/img/drawings', ROOT + 'dist/RICCA-site/img/drawings', { recursive: true });
 // карта сайта: главная, en и страницы моделей

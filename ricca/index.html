@@ -44,6 +44,7 @@
 <link rel="stylesheet" href="css/site.css">
 <link rel="stylesheet" href="css/hero.css">
 <link rel="stylesheet" href="css/home.css">
+<link rel="stylesheet" href="css/lead.css">
 <script src="js/season.js"></script>
 <script>
 /* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,6 с). Не играем: повторный визит в этой сессии,
@@ -441,6 +442,17 @@
   </div>
 </section>
 
+<!-- ═════════ ЗАЯВКА (23 ноября): имя, телефон, что интересует — за 10 секунд. Форму строит js/lead.js (css/lead.css):
+     Telegram через /api/lead (netlify/functions/lead.mjs) и копия в Netlify Forms. data-page-name — название страницы для заявки и WhatsApp ═════════ -->
+<section class="sec lead-sec" id="lead" aria-labelledby="lead-title" data-page-name="мягкая мебель на заказ">
+  <div class="wrap">
+    <h2 class="title rv" id="lead-title">Оставить заявку</h2>
+    <p class="txt lead-sec__sub">Перезвоним, уточним размер и&nbsp;ткань и&nbsp;рассчитаем стоимость.</p>
+    <div data-lead></div>
+    <noscript><p class="txt">Напишите нам в&nbsp;<a href="https://wa.me/77079550808">WhatsApp</a>.</p></noscript>
+  </div>
+</section>
+
 </main>
 
 <!-- ═════════ ШОУРУМ и ПОДВАЛ — прежние (владелец, 9 ноября: «в самом низу всё было хорошо, не трогать») ═════════ -->
@@ -831,8 +843,14 @@
 <script src="js/fabrics-data.js" defer></script>
 <script src="js/cart.js" defer></script>
 <script src="js/site.js" defer></script>
+<script src="js/lead.js" defer></script>
 <script src="js/content-data.js" defer></script>
 <script src="js/composition-data.js" defer></script>
 <script src="js/blocks.js" defer></script>
+<!-- Netlify Forms: по этой скрытой форме Netlify узнаёт поля формы «lead» при выкладке (заявки туда дублирует js/lead.js) -->
+<form name="lead" method="post" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input name="bot-field"><input name="name"><input name="phone"><input name="interest"><textarea name="comment"></textarea>
+  <input name="page"><input name="title"><textarea name="config"></textarea><input name="utm"><input name="lang">
+</form>
 </body>
 </html>

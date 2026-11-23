@@ -6,6 +6,10 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ricca')) +
 s = open(ROOT + 'index.html', encoding='utf-8').read()
 
 TEXT = {
+    # форма заявки на главной (23 ноября)
+    'Оставить заявку': 'Leave a request',
+    'Перезвоним, уточним размер и&nbsp;ткань и&nbsp;рассчитаем стоимость.': 'We’ll call you back, confirm the size and fabric, and prepare a&nbsp;quote.',
+    'Напишите нам в&nbsp;': 'Message us on&nbsp;',
     'Проекты': 'Projects',
     'Мягкая мебель ателье&nbsp;— там, где работают и&nbsp;принимают гостей.': 'Upholstered furniture from our atelier, in&nbsp;places where people work and&nbsp;receive guests.',
     'Офис': 'Office',

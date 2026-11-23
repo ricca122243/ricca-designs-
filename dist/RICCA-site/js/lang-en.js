@@ -12,6 +12,16 @@
     'Подробнее': 'Details',
     '3D-модель: {}': '3D model: {0}', 'Чертёж: {}': 'Drawing: {0}',   // окно модели: «3D-модель» и «Чертёж» (12 ноября)
     'Написать': 'Message', 'Написать в WhatsApp': 'Message on WhatsApp',   // плавающая кнопка WhatsApp (site.js)
+    // форма заявки и кнопка WhatsApp (js/lead.js, 23 ноября)
+    'Здравствуйте! Интересует мягкая мебель на заказ.': "Hello! I'm interested in custom upholstered furniture.",
+    'Здравствуйте! Интересует': "Hello! I'm interested in", 'мягкая мебель на заказ': 'custom upholstered furniture', 'мебель из конструктора': 'furniture from the configurator',
+    'Не заполняйте это поле': 'Leave this field empty', 'Имя': 'Name', 'Телефон': 'Phone', 'Что интересует': 'What are you interested in?',
+    'Другое': 'Other', 'Добавить комментарий': 'Add a comment',   // «Диван», «Кровать», «Комментарий» — уже есть ниже
+    'Отправить заявку': 'Send request', 'Отправляем…': 'Sending…',
+    'Отправляя заявку, вы даёте согласие на обработку': 'By sending the request, you consent to the processing of your', 'персональных данных': 'personal data',
+    'Спасибо! Перезвоним в течение 15 минут в рабочее время.': "Thank you! We'll call you back within 15 minutes during working hours.",
+    'Укажите имя': 'Enter your name', 'Введите номер полностью': 'Enter the full number', 'Выберите вариант': 'Choose an option',
+    'Не удалось отправить.': "Couldn't send the request.", 'Напишите нам в WhatsApp': 'Message us on WhatsApp', ' — данные уже в сообщении.': ' — your details are already in the message.',
     // готовые тексты WhatsApp (CONFIG.msg)
     'Здравствуйте! Хочу узнать о мебели RICCA на заказ.': "Hello! I'd like to know more about RICCA custom furniture.",
     'Здравствуйте! У меня вопрос по мебели RICCA.': 'Hello! I have a question about RICCA furniture.',

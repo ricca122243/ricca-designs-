@@ -1862,7 +1862,8 @@
   /* плавающая кнопка WhatsApp (css: .wa-fab): чёрный квадрат 52 px справа внизу. Телефон — в одно касание, как только категории первого экрана ушли выше неё;
      компьютер — после 400 px прокрутки. Не видна под открытым окном и там, где в кадре свой WhatsApp. На странице конструктора этого скрипта нет */
   const fab = document.createElement('a'), introEl = $('#catalog .intro') || hero;   // не $('.intro'): этот класс ставится и на <html> на время занавеса входа
-  fab.className = 'wa-fab'; fab.href = waUrl(CONFIG.msg.general); fab.target = '_blank'; fab.rel = 'noopener';
+  fab.className = 'wa-fab'; fab.href = waUrl(tr('Здравствуйте! Интересует мягкая мебель на заказ.'));   /* 23 ноября: «Интересует [страница]» — как на остальных страницах (js/lead.js) */
+   fab.target = '_blank'; fab.rel = 'noopener';
   fab.setAttribute('aria-label', T ? (T['Написать в WhatsApp'] || 'Message on WhatsApp') : 'Написать в WhatsApp');
   fab.innerHTML = `<svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg><span class="wa-fab__t">${esc(T ? (T['Написать'] || 'Message') : 'Написать')}</span>`;
   fab.tabIndex = -1; fab.setAttribute('aria-hidden', 'true');

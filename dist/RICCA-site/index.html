@@ -39,11 +39,12 @@
 <!-- первый кадр первого экрана (постер ролика, см. #top) = LCP: грузится первым; телефон и компьютер — свой файл, как в <picture> -->
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-latin-var-normal.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/montserrat/montserrat-cyrillic-var-normal.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts-v3.css?v=63c5f8367a">
-<link rel="stylesheet" href="css/site.css?v=63c5f8367a">
-<link rel="stylesheet" href="css/hero.css?v=63c5f8367a">
-<link rel="stylesheet" href="css/home.css?v=63c5f8367a">
-<script src="js/season.js?v=63c5f8367a"></script>
+<link rel="stylesheet" href="css/fonts-v3.css?v=a345e8069a">
+<link rel="stylesheet" href="css/site.css?v=a345e8069a">
+<link rel="stylesheet" href="css/hero.css?v=a345e8069a">
+<link rel="stylesheet" href="css/home.css?v=a345e8069a">
+<link rel="stylesheet" href="css/lead.css?v=a345e8069a">
+<script src="js/season.js?v=a345e8069a"></script>
 <script>
 /* До первой отрисовки: no-js → js; решение о входе-«занавесе» (≤ 1,6 с). Не играем: повторный визит в этой сессии,
    prefers-reduced-motion, вход по ссылке с #якорем (Instagram → #catalog/sofas), недоступный sessionStorage.
@@ -167,7 +168,7 @@
       <a class="btn btn--line" href="configurator.html">Собрать в&nbsp;3D</a>
     </div>
   </div></div>
-  <script src="js/hero.js?v=63c5f8367a" defer></script>
+  <script src="js/hero.js?v=a345e8069a" defer></script>
 </section>
 
 <!-- ═════════ 2. КАТАЛОГ: пять плиток категорий. Нажали плитку — экран категории (#catalog/sofas): сетка реальных работ и три действия
@@ -439,6 +440,15 @@
         <details class="qa" id="about"><summary class="qa__q"><h2 class="qa__h" id="about-title">Мягкая мебель на&nbsp;заказ в&nbsp;Алматы</h2><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><p class="qa__a about-seo__p">RICCA DESIGNS&nbsp;— ателье мягкой мебели в&nbsp;Алматы. Создаём <a href="#catalog/sofas">диваны на&nbsp;заказ</a>&nbsp;— прямые, угловые и&nbsp;модульные, <a href="#catalog/beds">кровати с&nbsp;мягким изголовьем</a>, <a href="#catalog/armchairs">кресла</a>, <a href="#catalog/poufs">пуфы и&nbsp;банкетки</a> по&nbsp;вашим размерам, фото или дизайн-проекту. Собственное производство, изготовление до&nbsp;30&nbsp;дней, гарантия 5&nbsp;лет и&nbsp;доставка по&nbsp;Казахстану. Обставляем дома, отели и&nbsp;рестораны.</p></details>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="sec lead-sec" id="lead" aria-labelledby="lead-title" data-page-name="мягкая мебель на заказ">
+  <div class="wrap">
+    <h2 class="title rv" id="lead-title">Оставить заявку</h2>
+    <p class="txt lead-sec__sub">Перезвоним, уточним размер и&nbsp;ткань и&nbsp;рассчитаем стоимость.</p>
+    <div data-lead></div>
+    <noscript><p class="txt">Напишите нам в&nbsp;<a href="https://wa.me/77079550808">WhatsApp</a>.</p></noscript>
   </div>
 </section>
 
@@ -825,15 +835,20 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__open" id="toast-open">Открыть</button></div>
 
-<script src="js/lang.js?v=63c5f8367a" defer></script>
-<script src="js/catalog-data.js?v=63c5f8367a" defer></script>
-<script src="js/works-data.js?v=63c5f8367a" defer></script>
-<script src="js/models-data.js?v=63c5f8367a" defer></script>
-<script src="js/fabrics-data.js?v=63c5f8367a" defer></script>
-<script src="js/cart.js?v=63c5f8367a" defer></script>
-<script src="js/site.js?v=63c5f8367a" defer></script>
-<script src="js/content-data.js?v=63c5f8367a" defer></script>
-<script src="js/composition-data.js?v=63c5f8367a" defer></script>
-<script src="js/blocks.js?v=63c5f8367a" defer></script>
+<script src="js/lang.js?v=a345e8069a" defer></script>
+<script src="js/catalog-data.js?v=a345e8069a" defer></script>
+<script src="js/works-data.js?v=a345e8069a" defer></script>
+<script src="js/models-data.js?v=a345e8069a" defer></script>
+<script src="js/fabrics-data.js?v=a345e8069a" defer></script>
+<script src="js/cart.js?v=a345e8069a" defer></script>
+<script src="js/site.js?v=a345e8069a" defer></script>
+<script src="js/lead.js?v=a345e8069a" defer></script>
+<script src="js/content-data.js?v=a345e8069a" defer></script>
+<script src="js/composition-data.js?v=a345e8069a" defer></script>
+<script src="js/blocks.js?v=a345e8069a" defer></script>
+<form name="lead" method="post" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input name="bot-field"><input name="name"><input name="phone"><input name="interest"><textarea name="comment"></textarea>
+  <input name="page"><input name="title"><textarea name="config"></textarea><input name="utm"><input name="lang">
+</form>
 </body>
 </html>

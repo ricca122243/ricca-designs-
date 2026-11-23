@@ -34,6 +34,7 @@
     'Цвет на экране может немного отличаться — образцы покажем в шоуруме.': 'On-screen colour may differ slightly — we’ll show you samples in the showroom.',
     'Больше 200 коллекций и 5000 цветов — в шоуруме.': 'More than 200 collections and 5,000 colours — in the showroom.',
     'Итог': 'Summary', 'Пожелание': 'Note', 'Количество': 'Quantity',
+    'Или оставьте телефон': 'Or leave your phone number', 'Перезвоним и рассчитаем этот вариант.': 'We’ll call you back with a quote for this piece.',   // форма заявки (js/lead.js)
     'Например: мягче посадка, подушки на молнии': 'For example: softer seat, zip-off cushions',
     'Меньше': 'Less', 'Больше': 'More',
     'Отправить в WhatsApp на расчёт': 'Send to WhatsApp for a quote', 'Чертёж': 'Drawing', 'Посмотреть у себя дома': 'See it in your home',

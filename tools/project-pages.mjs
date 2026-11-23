@@ -118,8 +118,10 @@ ${rows(z.photos).map((r) => (r.length === 2 ? `    <div class="pj-pair">${r.map(
 <link rel="icon" href="/img/v3/favicon-v3.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/css/fonts-v3.css">
 <link rel="stylesheet" href="/css/model.css">
+<link rel="stylesheet" href="/css/lead.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <script src="/js/model.js" defer></script>
+<script src="/js/lead.js" defer></script>
 </head>
 <body>
 <header class="mp-top">
@@ -152,20 +154,11 @@ ${P.made.map((m) => `    <li><b>${nb(m.name)}</b><span>${nb(m.line)}</span></li>
 
 ${zonesHtml}
 
-<section class="mp-ask" id="write" aria-label="${esc(P.closingTitle)}">
-  <details class="mp-acc">
-    <summary>${nb(P.closingTitle)}<span class="mp-acc__i" aria-hidden="true"></span></summary>
-    <div class="mp-acc__b">
-      <p>${nb(P.closingLine)}</p>
-      <form class="mp-form" data-wa-form data-model="мебель для объекта (${esc(P.h1)})" action="https://wa.me/77079550808" method="get" target="_blank">
-      <label><span>Имя</span><input name="name" autocomplete="name" required></label>
-      <label><span>Компания и&nbsp;город</span><input name="city" autocomplete="organization"></label>
-      <label><span>Объект: тип, количество мест, сроки</span><textarea name="note" rows="3"></textarea></label>
-      <button class="mp-btn" type="submit">${nb(P.cta)}</button>
-      <p class="mp-fine">Отправляя заявку, вы даёте согласие на&nbsp;обработку <a href="/privacy.html">персональных данных</a>.</p>
-    </form>
-    </div>
-  </details>
+<section class="mp-ask mp-ask--lead" id="write" aria-labelledby="ask-t" data-page-name="${esc(P.h1)}">
+  <h2 class="mp-ask__t" id="ask-t">Оставить заявку</h2>
+  <p class="mp-ask__p">${nb(P.closingLine)}</p>
+  <div data-lead data-lead-interest="other"></div>
+  <noscript><p class="mp-ask__p">Напишите нам в&nbsp;<a href="https://wa.me/77079550808">WhatsApp</a>.</p></noscript>
 </section>
 </main>
 <footer class="mp-foot"><p><a href="/">RICCA DESIGNS</a> · Ателье мягкой мебели</p><p>Алматы, ул.&nbsp;Алишера Навои,&nbsp;208/2 · <a href="tel:+77079550808">+7&nbsp;(707)&nbsp;955-08-08</a></p><p class="mp-copy">© 2026 RICCA DESIGNS. Фотографии, тексты, 3D-модели и&nbsp;чертежи принадлежат RICCA DESIGNS. Копирование и&nbsp;использование без письменного разрешения строго запрещены.</p></footer>
@@ -200,7 +193,7 @@ patch('ricca/horeca.html', horecaBlock(), beforeClients);
 { const f = ROOT + 'ricca/horeca.html', t = fs.readFileSync(f, 'utf8'), a = t.indexOf('<!-- horeca-gal:start'), b = t.indexOf('<!-- horeca-gal:end -->');
   if (a >= 0 && b > a) fs.writeFileSync(f, t.slice(0, a) + horecaGal() + t.slice(b + '<!-- horeca-gal:end -->'.length)); }
 fs.copyFileSync(ROOT + 'ricca/horeca.html', ROOT + 'dist/RICCA-site/horeca.html');
-for (const f of ['css/model.css', 'css/home.css', 'css/site.css', 'js/site.js', 'js/model.js']) fs.copyFileSync(ROOT + 'ricca/' + f, ROOT + 'dist/RICCA-site/' + f);
+for (const f of ['css/model.css', 'css/home.css', 'css/site.css', 'js/site.js', 'js/model.js', 'css/lead.css', 'js/lead.js', 'js/lang-en.js', 'js/cfg-en.js']) fs.copyFileSync(ROOT + 'ricca/' + f, ROOT + 'dist/RICCA-site/' + f);
 const sm = ROOT + 'dist/RICCA-site/sitemap.xml'; let s = fs.readFileSync(sm, 'utf8').replace(/\s*<url><loc>https:\/\/ricca\.design\/projects\/[^]*?<\/url>/g, '');
 s = s.replace('</urlset>', DATA.projects.map((p) => `  <url><loc>${SITE}/projects/${p.slug}</loc><lastmod>${process.env.DAY || '2026-11-17'}</lastmod><priority>0.8</priority></url>`).join('\n') + '\n</urlset>');
 fs.writeFileSync(sm, s);
