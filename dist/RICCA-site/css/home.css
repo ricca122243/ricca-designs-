@@ -425,3 +425,15 @@ details.qa .about-seo__p { max-width: 62ch; line-height: 1.7; }
   .faq__text > .title { grid-column: 1 / span 5; }
   .faq__list { grid-column: 7 / -1; }
 }
+
+/* ---------- Новый год (24 ноября, владелец: «новогодний вайб»; js/snow.js, с 1 декабря по 14 января, показ ?ny=1) ----------
+   Поздравление над заголовком — подписью того же вида, что подписи категорий. Снежинки линией лежат под текстом и рисунками
+   (холст первым в блоке, содержимое — выше), к низу блока сходят на нет. Появляются за 1,2 с (--t-slow) */
+html[data-ny] .intro { position: relative; }
+html[data-ny] .intro > :not(.intro__snow) { position: relative; z-index: 1; }
+.intro__ny { margin: 0 0 clamp(14px, 1.8vw, 22px); font: 500 12px/1.5 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+.intro__snow { position: absolute; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; pointer-events: none; opacity: 0; transition: opacity 1200ms var(--ease);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 70%, transparent 100%); mask-image: linear-gradient(to bottom, #000 0, #000 70%, transparent 100%); }
+.intro__snow.is-on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .intro__snow { display: none; } }
+

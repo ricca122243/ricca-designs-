@@ -112,3 +112,12 @@ html[lang="en"] .hero__title { font-size: min(var(--h1), 8.4vw); }   /* «Uphols
   .hero__cta .btn--fill { display: none; }
   .hero__cta .btn--line { flex: 0 0 auto; min-width: 180px; }
 }
+
+/* ---------- Новый год (24 ноября, владелец: «новогодний вайб»; js/snow.js, с 1 декабря по 14 января, показ ?ny=1) ----------
+   Снег над фото, под текстом (z-index 3 — после .hero__shade). К низу кадра сходит на нет: у заголовка и кнопок снега нет.
+   Появляется плавно за 1,2 с (--t-slow); при «меньше движения» холста нет вовсе (скрипт его не создаёт) */
+.hero__snow { position: absolute; inset: 0; z-index: 3; display: block; width: 100%; height: 100%; pointer-events: none; opacity: 0; transition: opacity 1200ms var(--ease);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 52%, transparent 88%); mask-image: linear-gradient(to bottom, #000 0, #000 52%, transparent 88%); }
+.hero__snow.is-on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .hero__snow { display: none; } }
+
