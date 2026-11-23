@@ -126,16 +126,16 @@ ${sec('fabric', 'Ткань', `<p>Велюр, букле, шенилл и&nbsp;�
 ${sec('atelier', 'Сделано в&nbsp;Алматы', `<p>Каждую модель шьём в&nbsp;своём ателье&nbsp;— от&nbsp;первого эскиза до&nbsp;последнего стежка.</p><p class="mp-link"><a href="/#atelier">Подробнее об&nbsp;ателье</a></p>`,
   `<ol class="mp-atl" role="list">${ATL.map(([n, h, t, s]) => `<li><figure class="mp-ph"><img src="/${s}" width="1000" height="1250" alt="" loading="lazy" decoding="async"></figure><p class="mp-atl__n">${n}</p><h3>${h}</h3><p>${t}</p></li>`).join('')}</ol>`)}
 
+
+${rec.length ? `<section class="mp-sec mp-rec" aria-labelledby="rec-t"><div class="mp-sec__in"><h2 class="mp-sec__t" id="rec-t">Ещё ${catName.toLowerCase()}</h2></div>
+  <ul class="mp-rec__l" role="list">${rec.map((x) => { const p = x.photos.find((q) => q.studio && !q.scene) || x.photos[0]; return `<li><a href="/models/${slug(x)}"><span class="mp-rec__ph"><img src="/${esc(p.src600 || p.src)}" width="600" height="450" alt="" loading="lazy" decoding="async"></span><span class="mp-rec__n">${esc(x.name)}</span></a></li>`; }).join('')}</ul>
+</section>` : ''}
 <section class="mp-ask mp-ask--lead" id="write" aria-labelledby="ask-t" data-page-name="${esc(title)}">
   <h2 class="mp-ask__t" id="ask-t">Оставить заявку</h2>
   <p class="mp-ask__p">Перезвоним и&nbsp;рассчитаем стоимость ${esc(m.name.replace(/^\S+/, (w) => ({ Диван: 'дивана', Кровать: 'кровати', Кресло: 'кресла', Пуф: 'пуфа', Банкетка: 'банкетки', Стул: 'стула', Стол: 'стола' })[w] || w.toLowerCase()))} и&nbsp;сроки.</p>
   <div data-lead data-lead-interest="${m.category === 'sofas' ? 'sofa' : m.category === 'beds' ? 'bed' : 'other'}"></div>
   <noscript><p class="mp-ask__p">Напишите нам в&nbsp;<a href="${WA(`Здравствуйте! Интересует ${title}.`)}">WhatsApp</a>.</p></noscript>
 </section>
-
-${rec.length ? `<section class="mp-sec mp-rec" aria-labelledby="rec-t"><div class="mp-sec__in"><h2 class="mp-sec__t" id="rec-t">Ещё ${catName.toLowerCase()}</h2></div>
-  <ul class="mp-rec__l" role="list">${rec.map((x) => { const p = x.photos.find((q) => q.studio && !q.scene) || x.photos[0]; return `<li><a href="/models/${slug(x)}"><span class="mp-rec__ph"><img src="/${esc(p.src600 || p.src)}" width="600" height="450" alt="" loading="lazy" decoding="async"></span><span class="mp-rec__n">${esc(x.name)}</span></a></li>`; }).join('')}</ul>
-</section>` : ''}
 </main>
 <footer class="mp-foot"><p><a href="/">RICCA DESIGNS</a> · Ателье мягкой мебели</p><p>Алматы, ул.&nbsp;Алишера Навои,&nbsp;208/2 · <a href="tel:+77079550808">+7&nbsp;(707)&nbsp;955-08-08</a></p><p class="mp-copy">© 2026 RICCA DESIGNS. Фотографии, тексты, 3D-модели и&nbsp;чертежи принадлежат RICCA DESIGNS. Копирование и&nbsp;использование без письменного разрешения строго запрещены.</p></footer>
 </body>
