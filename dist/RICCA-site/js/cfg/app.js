@@ -529,6 +529,7 @@ function useExact(m) {
     const v = g.userData.view;
     if (stage && stage.setDir3) stage.setDir3(v ? v.az : null, v ? v.el : null, v ? v.fov : 0, v ? v.zoom : 1);
     if (stage && stage.setLight) stage.setLight(g.userData.light || null);   // свет как на фото модели (light в файле)
+    if (stage && stage.setFabricTone && state.fabric) stage.setFabricTone(state.fabric.hex);
     if (stage && stage.frame) requestAnimationFrame(() => stage.frame({ animate: !reduced, reset: !!v }));
   }).catch((e) => { console.warn('exact', e); if (exactLoading === my) { exactLoading = null; rebuild(); toast('Точная модель не загрузилась — показываем похожую', 3500); } });
 }
@@ -1002,6 +1003,7 @@ function rebuild(q = quality()) {
 }
 /* цвет ткани — без перестройки: заменить материал у всех тканевых деталей */
 function applyFabric() {
+  if (stage && stage.setFabricTone && state.fabric) stage.setFabricTone(state.fabric.hex);   // светлая ткань — экспозиция ниже (stage.js)
   if (!stage || !piece || !mats) return;
   try {
     const nf = M.fabricMaterial({ hex: state.fabric.hex, kind: state.fabric.kind, src450: state.fabric.src450, src900: state.fabric.src900, src900: state.fabric.src900, collectionId: state.fabric.collectionId, finish: state.fabric.finish, quality: quality() });
@@ -1058,6 +1060,7 @@ async function initStage() {
   try {
     const eng = await loadEngine();
     stage = await Promise.resolve(eng.createStage(host, { quality: 'auto' }));
+    if (stage.setFabricTone && state.fabric) stage.setFabricTone(state.fabric.hex);
   } catch (e) {
     stage = null;
     const msg = $('#vp-ph-msg'); msg.hidden = false;

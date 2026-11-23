@@ -941,8 +941,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-07",
-    glb: "models3d/armchair-07.glb",   // 18 ноября: модель собрана в Blender по фото (tools/media-v3/blender/runvo.py)
-    view: { az: -10, el: 6, fov: 18, zoom: 1.1 },   // ракурс как на главном фото
+    glb: "models3d/free/armchair-07.json",   // 24 ноября (владелец: «Runvo — спинка полукруглая, всё в среднем размере»): ручная модель вместо Blender — сиденье-галька во всю ширину, валик спинки вдоль тыла переходит в правый подлокотник; ракурс и свет — в файле
     cfg: "t.armchair~ah.70~aw.22~bc.fixed~d.85~h.74~lf.black~lh.18~lg.metal~qa.right~ql.splay~sd.58~sh.44~w.97",
     fab: "ricca:4",
     category: "armchairs",

@@ -182,11 +182,9 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   /* 15 ноября (владелец: «3D реалистичнее»): на телефоне AO вернулось, но «поздним» кадром — через 0,45 с полной тишины
      (late): пока модель крутят и между касаниями кадр лёгкий, когда палец убран — мягкие тени в стыках подушек и складках.
      Компилируем заранее, в простое после загрузки (prewarm), — первый «тихий» кадр не ждёт сборки шейдеров */
-  /* 24 ноября (владелец: «3D у всех лагает, когда двигаешь»): на телефоне AO снова выключено. Предварительной сборки шейдеров
-     так и не было — первый «тихий» кадр собирал GTAO на ходу, а каждый следующий (буфер half-float + 10 выборок AO и 10 шумоподавления
-     на 2,5x) занимал видеокарту ровно тогда, когда палец снова касался модели: рывок в начале каждого движения после паузы.
-     Объём на телефоне дают контактная тень под изделием и затенение стыков (freeAutoOcc в furniture3d.js). Компьютер — без изменений */
-  const aoMode = ao === false || phone ? 'off' : 'idle';
+  /* 24 ноября: AO на телефоне выключали ради плавности — владелец в тот же день: «кресла высвечиваются, дешевит». Вернули «поздним»
+     кадром: плавность при вращении теперь даёт лёгкий кадр 1,5x (ниже), а мягкие тени в складках нужны в покое */
+  const aoMode = ao === false ? 'off' : phone ? 'late' : 'idle';
   const AO_S = phone ? 10 : 24, AO_LATE_MS = 450;
   let aoReady = false, aoT = 0;
   let composer = null, gtao = null, renderPass = null;
@@ -283,9 +281,24 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   let dirOv = null, fovOv = 0, lightOv = null, zoomOv = 1;
   /* свет модели: az — с какой стороны ключевой свет (градусы от фронта, плюс — справа), contrast 0…1 — насколько глубже тени
      (меньше рассеянного света, сильнее ключевой), high — выше или ниже источник (1 — обычный) */
+  /* 24 ноября (владелец: «многие кресла высвечиваются сильно — дешевит»): светлая ткань (молочное букле, белый, светло-голубой)
+     при общей экспозиции уходила в белое — пропадали фактура и объём. Экспозиция подстраивается под яркость образца: до L 0,45
+     (линейная) — как было, светлее — ниже, до −18 % у белого. Тёмные и средние ткани не меняются */
+  let fabTrim = 1, fabHex = '';
+  const expo = () => LIGHT.exposure * (lightOv ? lightOv.exposure : 1) * fabTrim;
+  function setFabricTone(hex) {
+    if (!hex || hex === fabHex) return;
+    fabHex = hex;
+    const c = new THREE.Color(hex);   // ColorManagement: hex sRGB → линейные компоненты
+    const L = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+    fabTrim = L > 0.45 ? Math.max(0.82, 1 - (L - 0.45) * 0.5) : 1;
+    renderer.toneMappingExposure = expo();
+    bgComposite = preToneMapped(BG, renderer.toneMappingExposure);
+    requestRender();
+  }
   function setLight(o) {
     lightOv = o && (o.az != null || o.contrast > 0 || o.exposure > 0 || o.top > 0) ? { az: o.az == null ? null : +o.az, contrast: Math.min(1, Math.max(0, +o.contrast || 0)), high: o.high > 0 ? +o.high : 1, top: o.top > 0 ? Math.min(4, +o.top) : 1, exposure: o.exposure >= 0.5 && o.exposure <= 1.5 ? +o.exposure : 1 } : null;
-    renderer.toneMappingExposure = LIGHT.exposure * (lightOv ? lightOv.exposure : 1);
+    renderer.toneMappingExposure = expo();
     bgComposite = preToneMapped(BG, renderer.toneMappingExposure);   // фон кадра с AO — под новую экспозицию (иначе у моделей со своей экспозицией фон окна темнее страницы)
     const c = lightOv ? lightOv.contrast : 0, mix = (a, b) => a + (b - a) * c;
     /* top — «свет сверху» (как софтбокс над изделием на студийном фото): верхние грани сиденья и подлокотников светлее фронтов */
@@ -748,7 +761,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     /* рамка только нужных сеток (например, кровать без одеяла и подушек — одеяло свисает шире рамы) */
     boxOf(keep) { const b = new THREE.Box3(); if (object) { object.updateMatrixWorld(true); object.traverse((o) => { if (o.isMesh && keep(o)) b.expandByObject(o); }); } return b; },
     supportsPhotoreal: false,
-    setObject, setView, frame, setDir3, setLight, setDims, setStudio, snapshot, resize,
+    setObject, setView, frame, setDir3, setLight, setFabricTone, setDims, setStudio, snapshot, resize,
     /* снаружи (комната двигает мебель): сцена могла измениться — тени пересчитать; markShadows=false — только перерисовать */
     requestRender: (markShadows = true) => { if (markShadows) shadowDirty = true; requestRender(); },
     cancelAnim() { anim = null; },
