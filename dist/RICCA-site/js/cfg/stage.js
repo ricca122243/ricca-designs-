@@ -423,12 +423,18 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     pendingObj = null;
     setObjectNow(group, opts);
   }
+  const _bb = new THREE.Box3();
   function setObjectNow(group, { reframe = true } = {}) {
     moveWarm = false;   // новая модель или ткань — шейдеры кадра в движении соберём заново в покое
     if (object) root.remove(object);
     object = group;
     if (group) root.add(group);
-    box.setFromObject(root);
+    /* рамка модели: деталь, повёрнутая в плане (дуга спинки Runvo), — по вершинам, иначе кадр строился по завышенной рамке
+       и модель стояла мелко и со сдвигом. Остальные детали — по рамке, как раньше */
+    box.makeEmpty(); root.updateMatrixWorld(true);
+    root.traverse((o) => { if (!o.isMesh || !o.geometry) return; if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+      if (Math.abs(o.rotation.y) > 0.01) _bb.setFromObject(o, true); else _bb.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld);
+      box.union(_bb); });
     if (box.isEmpty()) box.set(new THREE.Vector3(-0.5, 0, -0.5), new THREE.Vector3(0.5, 1, 0.5));
     box.getSize(size); box.getCenter(center);
     fitLight();

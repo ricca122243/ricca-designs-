@@ -429,7 +429,9 @@ async function loadFreeGroup(m) {
   /* габарит — по изделию без декора (подушки-декор и плед в размер не входят) */
   const box = new THREE.Box3(), bb = new THREE.Box3();
   g.updateMatrixWorld(true);
-  g.traverse((o) => { if (o.isMesh && !o.userData.decor && o.userData.matKey !== 'decor' && o.userData.matKey !== 'throw') { o.geometry.computeBoundingBox(); bb.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld); box.union(bb); } });
+  /* деталь, повёрнутая в плане (rot по y, например дуга спинки Runvo), — габарит по вершинам: рамка повёрнутой детали шире самой детали
+     (Runvo показывал 112 × 107 вместо 97 × 85). Остальные — как раньше, по рамке */
+  g.traverse((o) => { if (o.isMesh && !o.userData.decor && o.userData.matKey !== 'decor' && o.userData.matKey !== 'throw') { o.geometry.computeBoundingBox(); if (Math.abs(o.rotation.y) > 0.01) bb.setFromObject(o, true); else bb.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld); box.union(bb); } });
   if (box.isEmpty()) box.setFromObject(g);
   const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
   const d = P.dims(rc.type, rp) || { w: size.x, d: size.z, h: size.y };

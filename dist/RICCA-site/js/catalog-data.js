@@ -943,7 +943,7 @@ window.RICCA_CATALOG = [
     id: "armchair-07",
     glb: "models3d/free/armchair-07.json",   // 24 ноября (владелец: «Runvo — спинка полукруглая, всё в среднем размере»): ручная модель вместо Blender — сиденье-галька во всю ширину, валик спинки вдоль тыла переходит в правый подлокотник; ракурс и свет — в файле
     cfg: "t.armchair~ah.70~aw.22~bc.fixed~d.85~h.74~lf.black~lh.18~lg.metal~qa.right~ql.splay~sd.58~sh.44~w.97",
-    fab: "ricca:4",
+    fab: "coco:15",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -1034,7 +1034,7 @@ window.RICCA_CATALOG = [
     glb: "models3d/armchair-11.glb",
     view: { az: 30, el: 6, fov: 20, zoom: 1.05 },
     cfg: "t.armchair~f.pebble~w.80~d.85~h.95~sh.42~sd.58~as.none~lg.wood~lf.blackwood~lh.14~ql.barrel",
-    fab: "coco:4",
+    fab: "noble:4",
     category: "armchairs",
     tags: [],
     type: "Кресло",
@@ -2076,7 +2076,7 @@ window.RICCA_CATALOG = [
   {
     id: "armchair-19",
     cfg: "t.armchair~ah.68~aw.25~d.90~f.round~h.68~lh.2~lg.hidden~qb.none~sd.52~sh.40~w.102",
-    fab: "timeless:24",
+    fab: "timeless:26",
     glb: "models3d/free/armchair-19.json",
     category: "armchairs",
     tags: [],
