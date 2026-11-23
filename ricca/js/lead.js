@@ -4,6 +4,8 @@
    Отправка: 1) POST /api/lead → Netlify Function → Telegram (netlify/functions/lead.mjs);
              2) та же заявка в Netlify Forms (форма «lead», резерв). Удалась хотя бы одна — показываем «Спасибо».
    Спам: поле-ловушка bot-field (скрыто, человек не заполняет), капчи нет.
+   Метки первого визита (UTM, страница входа, откуда пришли) — sessionStorage «ricca:first», уходят в заявку.
+   Аналитика: после успешной отправки — событие ricca:lead (его слушает js/analytics.js).
    Перевод: строки через window.RICCA_T (js/lang-en.js), как в site.js. Русская страница словарь не подключает.
    Кнопка WhatsApp справа внизу: на главной её ставит js/site.js, на остальных страницах — этот файл (.lead-fab). */
 (() => {
@@ -26,16 +28,23 @@
   const lower = (s) => (/^[А-ЯЁ][а-яё]/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s);   // «Диван Venra» → «…Интересует диван Venra.»
   const waHello = () => `${tr('Здравствуйте! Интересует')} ${lower(pageName())}.`;
 
-  /* ---------- UTM-метки: запоминаем на время визита, чтобы они дошли со страницы входа до страницы с формой ---------- */
+  /* ---------- метки ПЕРВОГО визита: UTM, рекламная метка клика, страница входа и сайт, с которого пришли.
+     Записываем один раз на первой странице визита (sessionStorage, вкладка) и больше не меняем: человек пришёл
+     по рекламе на модель, походил по сайту, оставил заявку на главной — в заявке будет реклама, с которой он пришёл ---------- */
   const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
-  const utm = (() => {
-    const q = new URLSearchParams(location.search), now = {};
-    UTM_KEYS.forEach((k) => { const v = q.get(k); if (v) now[k] = v.slice(0, 120); });
+  const first = (() => {
+    const q = new URLSearchParams(location.search), now = { utm: {}, click: '', landing: location.pathname.slice(0, 200), ref: '' };
+    UTM_KEYS.forEach((k) => { const v = q.get(k); if (v) now.utm[k] = v.slice(0, 120); });
+    now.click = ['gclid', 'fbclid', 'yclid'].find((k) => q.get(k)) || '';
+    try { const r = document.referrer && new URL(document.referrer).host; if (r && r !== location.host) now.ref = r.slice(0, 100); } catch (e) { /* адрес не разобрался — без него */ }
     try {
-      if (Object.keys(now).length) { sessionStorage.setItem('ricca:utm', JSON.stringify(now)); return now; }
-      return JSON.parse(sessionStorage.getItem('ricca:utm') || '{}') || {};
-    } catch (e) { return now; }   // приватный режим — только метки этой страницы
+      const saved = JSON.parse(sessionStorage.getItem('ricca:first') || 'null');
+      if (saved && typeof saved === 'object' && saved.utm && typeof saved.utm === 'object') return saved;
+      sessionStorage.setItem('ricca:first', JSON.stringify(now));
+    } catch (e) { /* приватный режим или память закрыта — метки только этой страницы */ }
+    return now;
   })();
+  const utm = first.utm;
 
   /* ---------- телефон: маска +7 (___) ___-__-__ ---------- */
   const digitsOf = (v) => {
@@ -123,11 +132,11 @@
       if (!check()) return;
       const data = {
         name: f.name.value.trim(), phone: fmtPhone(digitsOf(f.phone.value)), interest: f.interest.value, comment: f.comment.value.trim(),
-        page: location.href, title: pageName(), config: host.hasAttribute('data-lead-cfg') ? CFG_TEXT() : '', utm, lang: EN ? 'en' : 'ru', 'bot-field': f['bot-field'].value,
+        page: location.href, title: pageName(), config: host.hasAttribute('data-lead-cfg') ? CFG_TEXT() : '', utm, click: first.click || '', landing: first.landing || '', ref: first.ref || '', lang: EN ? 'en' : 'ru', 'bot-field': f['bot-field'].value,
       };
       busy = true; btn.disabled = true; btn.textContent = tr('Отправляем…');
       const labels = { sofa: 'Диван', bed: 'Кровать', other: 'Другое' };
-      const flat = new URLSearchParams({ 'form-name': 'lead', 'bot-field': data['bot-field'], name: data.name, phone: data.phone, interest: labels[data.interest], comment: data.comment, page: data.page, title: data.title, config: data.config, utm: UTM_KEYS.filter((k) => utm[k]).map((k) => `${k.slice(4)}=${utm[k]}`).join(', '), lang: data.lang });
+      const flat = new URLSearchParams({ 'form-name': 'lead', 'bot-field': data['bot-field'], name: data.name, phone: data.phone, interest: labels[data.interest], comment: data.comment, page: data.page, title: data.title, config: data.config, utm: UTM_KEYS.filter((k) => utm[k]).map((k) => `${k.slice(4)}=${utm[k]}`).concat(data.click ? [`click=${data.click}`] : [], data.landing ? [`landing=${data.landing}`] : [], data.ref ? [`ref=${data.ref}`] : []).join(', '), lang: data.lang });
       const sent = await Promise.allSettled([
         fetch('/api/lead', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) }).then((r) => { if (!r.ok) throw new Error('lead'); }),
         fetch('/', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: flat.toString() }).then((r) => { if (!r.ok) throw new Error('forms'); }),
@@ -135,6 +144,8 @@
       busy = false; btn.disabled = false; btn.textContent = tr('Отправить заявку');
       if (sent.some((s) => s.status === 'fulfilled')) {
         form.hidden = true; ok.hidden = false; ok.focus({ preventScroll: true });
+        /* аналитика (js/analytics.js): событие Lead — страница и тип товара, без имени и телефона. Заявку из поля-ловушки не считаем */
+        if (!data['bot-field']) document.dispatchEvent(new CustomEvent('ricca:lead', { detail: { interest: data.interest, place: host.hasAttribute('data-lead-cfg') ? 'configurator' : (host.closest('[id]') || {}).id || 'page' } }));
         const r = ok.getBoundingClientRect(); if (r.top < 70 || r.bottom > innerHeight) ok.scrollIntoView({ block: 'center' });
         return;
       }

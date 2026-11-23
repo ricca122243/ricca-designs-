@@ -53,6 +53,11 @@ export default async (req) => {
   const utm = [];
   if (data.utm && typeof data.utm === 'object') for (const k of UTM_KEYS) { const v = clean(data.utm[k], 120); if (v) utm.push(`${k.slice(4)}=${v}`); }
 
+  /* первый визит: рекламная метка клика (gclid — Google Ads, fbclid — Meta, yclid — Яндекс), страница входа, сайт-источник */
+  const click = ['gclid', 'fbclid', 'yclid'].includes(data.click) ? data.click : '';
+  const landingRaw = clean(data.landing, 200), landing = /^\/[^\s]*$/.test(landingRaw) ? landingRaw : '';
+  const refRaw = clean(data.ref, 100).toLowerCase(), ref = /^[a-z0-9.-]+(:\d+)?$/.test(refRaw) ? refRaw : '';
+
   const token = env('TELEGRAM_BOT_TOKEN'), chat = env('TELEGRAM_CHAT_ID');
   if (!token || !chat) return json(503, { ok: false, error: 'not_configured' });
 
@@ -65,6 +70,9 @@ export default async (req) => {
     (title || page) && `Страница: ${[title, page].filter(Boolean).join(' — ')}`,
     config && `Конфигурация:\n${config}`,
     `UTM: ${utm.length ? utm.join(', ') : 'нет'}`,
+    click && `Рекламный клик: ${click}`,
+    landing && `Страница входа: ${landing}`,
+    ref && `Пришёл с сайта: ${ref}`,
     `Язык: ${lang}`,
   ].filter(Boolean);
 

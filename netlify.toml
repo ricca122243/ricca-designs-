@@ -3,7 +3,8 @@
 # сайта выкладывается само, скачивать и перетаскивать папку не нужно.
 [build]
   publish = "dist/RICCA-site"
-  command = "echo 'сборка не нужна — папка готова'"
+  # сайт уже собран; команда только подставляет номера счётчиков из переменных окружения GA4_ID и META_PIXEL_ID (tools/analytics-env.mjs)
+  command = "node tools/analytics-env.mjs"
 
 # Заявки с сайта (23 ноября): POST /api/lead → Telegram. Код — netlify/functions/lead.mjs.
 # Токен бота и чат задаются в Netlify → Site configuration → Environment variables: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (в репозитории их нет)

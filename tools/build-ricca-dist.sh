@@ -207,8 +207,12 @@ PY
 python3 - "$OUT" <<'PY'
 import base64, hashlib, re, sys, pathlib
 out = pathlib.Path(sys.argv[1])
-common = ("default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; "
-          "font-src 'self'; connect-src 'self' blob: data:; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; "
+# 23 ноября: аналитика (js/analytics.js) — разрешены адреса Google Analytics 4 и Meta Pixel: их скрипты, пиксели-картинки и отправка событий
+GA_FB_SCRIPT = "https://*.googletagmanager.com https://connect.facebook.net"
+GA_FB_IMG = "https://*.google-analytics.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com https://www.facebook.com"
+GA_FB_CONNECT = "https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com https://www.facebook.com https://connect.facebook.net"
+common = ("default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: " + GA_FB_IMG + "; media-src 'self' blob:; "
+          "font-src 'self'; connect-src 'self' blob: data: " + GA_FB_CONNECT + "; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; "
           "base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; upgrade-insecure-requests")
 for name in ('index.html', 'en.html', 'configurator.html'):
     f = out / name
@@ -216,11 +220,11 @@ for name in ('index.html', 'en.html', 'configurator.html'):
         continue
     html = f.read_text(encoding='utf-8')
     if name == 'configurator.html':
-        script = "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:"
+        script = "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: " + GA_FB_SCRIPT
     else:
         inline = re.findall(r'<script>(.*?)</script>', html, flags=re.S)
         hashes = sorted({"'sha256-%s'" % base64.b64encode(hashlib.sha256(b.encode('utf-8')).digest()).decode() for b in inline})
-        script = "script-src 'self' " + ' '.join(hashes)
+        script = "script-src 'self' " + ' '.join(hashes) + ' ' + GA_FB_SCRIPT
     meta = '<meta http-equiv="Content-Security-Policy" content="%s; %s">' % (script, common)
     html, n = re.subn(r'(<meta charset="utf-8">\n)', lambda m: m.group(1) + meta + '\n', html, count=1)
     assert n == 1, name

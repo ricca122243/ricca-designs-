@@ -79,9 +79,10 @@ function page(m) {
 <link rel="stylesheet" href="/css/lead.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <script src="/js/model.js" defer></script>
+<script src="/js/analytics.js" defer></script>
 <script src="/js/lead.js" defer></script>
 </head>
-<body>
+<body data-view-id="${esc(m.id)}" data-view-cat="${esc(m.category)}">
 <header class="mp-top">
   <a class="mp-top__logo" href="/" aria-label="RICCA DESIGNS — на главную"><b>RD</b><span>RICCA<small>DESIGNS · ALMATY</small></span></a>
   <a class="mp-top__back" href="/#catalog/${m.category}">‹ ${catName}</a>
@@ -148,7 +149,7 @@ for (const dir of ['ricca/models', 'dist/RICCA-site/models']) {
   fs.mkdirSync(ROOT + dir, { recursive: true });
   for (const m of list) fs.writeFileSync(`${ROOT}${dir}/${slug(m)}.html`, page(m));
 }
-for (const f of ['css/model.css', 'js/model.js', 'css/lead.css', 'js/lead.js']) fs.copyFileSync(ROOT + 'ricca/' + f, ROOT + 'dist/RICCA-site/' + f);
+for (const f of ['css/model.css', 'js/model.js', 'css/lead.css', 'js/lead.js', 'js/analytics.js']) fs.copyFileSync(ROOT + 'ricca/' + f, ROOT + 'dist/RICCA-site/' + f);
 fs.cpSync(ROOT + 'ricca/img/catalog/t', ROOT + 'dist/RICCA-site/img/catalog/t', { recursive: true });
 fs.cpSync(ROOT + 'ricca/img/drawings', ROOT + 'dist/RICCA-site/img/drawings', { recursive: true });
 // карта сайта: главная, en и страницы моделей

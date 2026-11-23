@@ -1299,6 +1299,7 @@
         if (!it) return;
         const same = cur === it && dlg.open;
         if (!same) fill(it);
+        if (!same) document.dispatchEvent(new CustomEvent('ricca:view', { detail: { id: it.id, name: it.name, category: it.category } }));   // аналитика (js/analytics.js): просмотр модели
         showDlg(dlg, R.opener);
         if (!same) { dlg.scrollTop = 0; show(0); requestAnimationFrame(layout); }
       },
@@ -1554,6 +1555,7 @@
         if (!w) return;
         const same = cur === w && dlg.open;
         if (!same) fill(w);
+        if (!same && w.model) document.dispatchEvent(new CustomEvent('ricca:view', { detail: { id: String(w.id).replace(/^m-/, ''), name: w.title, category: w.cat } }));   // аналитика: просмотр модели каталога в окне (на /en страниц моделей нет)
         showDlg(dlg, R.opener);
         if (!same) { inner.scrollTop = 0; dlg.classList.remove('is-scrolled'); stageH(); show(n); requestAnimationFrame(layout); if (!n) peek(); }
       },

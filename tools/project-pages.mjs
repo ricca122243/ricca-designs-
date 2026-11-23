@@ -121,6 +121,7 @@ ${rows(z.photos).map((r) => (r.length === 2 ? `    <div class="pj-pair">${r.map(
 <link rel="stylesheet" href="/css/lead.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <script src="/js/model.js" defer></script>
+<script src="/js/analytics.js" defer></script>
 <script src="/js/lead.js" defer></script>
 </head>
 <body>
@@ -193,7 +194,7 @@ patch('ricca/horeca.html', horecaBlock(), beforeClients);
 { const f = ROOT + 'ricca/horeca.html', t = fs.readFileSync(f, 'utf8'), a = t.indexOf('<!-- horeca-gal:start'), b = t.indexOf('<!-- horeca-gal:end -->');
   if (a >= 0 && b > a) fs.writeFileSync(f, t.slice(0, a) + horecaGal() + t.slice(b + '<!-- horeca-gal:end -->'.length)); }
 fs.copyFileSync(ROOT + 'ricca/horeca.html', ROOT + 'dist/RICCA-site/horeca.html');
-for (const f of ['css/model.css', 'css/home.css', 'css/site.css', 'js/site.js', 'js/model.js', 'css/lead.css', 'js/lead.js', 'js/lang-en.js', 'js/cfg-en.js']) fs.copyFileSync(ROOT + 'ricca/' + f, ROOT + 'dist/RICCA-site/' + f);
+for (const f of ['css/model.css', 'css/home.css', 'css/site.css', 'js/site.js', 'js/model.js', 'css/lead.css', 'js/lead.js', 'js/analytics.js', 'js/lang-en.js', 'js/cfg-en.js']) fs.copyFileSync(ROOT + 'ricca/' + f, ROOT + 'dist/RICCA-site/' + f);
 const sm = ROOT + 'dist/RICCA-site/sitemap.xml'; let s = fs.readFileSync(sm, 'utf8').replace(/\s*<url><loc>https:\/\/ricca\.design\/projects\/[^]*?<\/url>/g, '');
 s = s.replace('</urlset>', DATA.projects.map((p) => `  <url><loc>${SITE}/projects/${p.slug}</loc><lastmod>${process.env.DAY || '2026-11-17'}</lastmod><priority>0.8</priority></url>`).join('\n') + '\n</urlset>');
 fs.writeFileSync(sm, s);
