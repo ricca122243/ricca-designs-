@@ -68,6 +68,19 @@ function studioEnvironment() {
 const reduced = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isPhone = () => typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 900;
 
+/* 24 ноября: лёгкий кадр в движении (телефон) рисуется в линейный буфер — полупрозрачные тени там смешиваются в линейном
+   пространстве и выходят светлее, чем в прямом кадре (смешение после sRGB). Для такого буфера у материалов теней своя версия
+   шейдера: a' = 1 − (1 − a)^k, k подобран по снимкам (тень в движении и в покое одной плотности). Прямой кадр не меняется.
+   0 — выключено (компьютер: там линейный буфер только у кадра с AO, его вид принят как есть) */
+let LIN_SHADOW_K = 0;
+function linShadow(mat) {
+  mat.onBeforeCompile = (sh) => {
+    if (!LIN_SHADOW_K || sh.outputColorSpace === THREE.SRGBColorSpace) return;
+    sh.fragmentShader = sh.fragmentShader.replace('#include <tonemapping_fragment>', `gl_FragColor.a = 1.0 - pow(max(1.0 - gl_FragColor.a, 0.0), ${LIN_SHADOW_K.toFixed(2)});\n#include <tonemapping_fragment>`);
+  };
+  mat.customProgramCacheKey = () => 'linShadow' + LIN_SHADOW_K;
+  return mat;
+}
 export function createStage(container, { quality = 'auto', ao, antialias = true } = {}) {
   const phone = quality === 'auto' ? isPhone() : quality === 'mid' || quality === 'low';
   const Qv = quality === 'auto' ? (phone ? 'mid' : 'high') : quality;
@@ -144,7 +157,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
 
   /* студия: пол того же цвета, что фон (тень — ShadowMaterial), контактная тень */
   const studio = new THREE.Group(); studio.name = 'studio';
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ color: 0x2f3338, opacity: 0.15, depthWrite: false }));
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64).rotateX(-Math.PI / 2), linShadow(new THREE.ShadowMaterial({ color: 0x2f3338, opacity: 0.15, depthWrite: false })));
   floor.receiveShadow = true; floor.renderOrder = 1; studio.add(floor);
   scene.add(studio);
   const contact = makeContactShadow(renderer);
@@ -169,7 +182,11 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   /* 15 ноября (владелец: «3D реалистичнее»): на телефоне AO вернулось, но «поздним» кадром — через 0,45 с полной тишины
      (late): пока модель крутят и между касаниями кадр лёгкий, когда палец убран — мягкие тени в стыках подушек и складках.
      Компилируем заранее, в простое после загрузки (prewarm), — первый «тихий» кадр не ждёт сборки шейдеров */
-  const aoMode = ao === false ? 'off' : phone ? 'late' : 'idle';
+  /* 24 ноября (владелец: «3D у всех лагает, когда двигаешь»): на телефоне AO снова выключено. Предварительной сборки шейдеров
+     так и не было — первый «тихий» кадр собирал GTAO на ходу, а каждый следующий (буфер half-float + 10 выборок AO и 10 шумоподавления
+     на 2,5x) занимал видеокарту ровно тогда, когда палец снова касался модели: рывок в начале каждого движения после паузы.
+     Объём на телефоне дают контактная тень под изделием и затенение стыков (freeAutoOcc в furniture3d.js). Компьютер — без изменений */
+  const aoMode = ao === false || phone ? 'off' : 'idle';
   const AO_S = phone ? 10 : 24, AO_LATE_MS = 450;
   let aoReady = false, aoT = 0;
   let composer = null, gtao = null, renderPass = null;
@@ -190,6 +207,33 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     composer.addPass(gtao);
     composer.addPass(new OutputPass());
     return composer;
+  }
+  /* 24 ноября (владелец: «3D у всех лагает, когда двигаешь»): на телефоне, пока модель крутят, сцена рисуется в заранее созданный
+     буфер 1,5x и растягивается на экран (OutputPass: тот же тон-маппинг и sRGB, что у прямого кадра). Пикселей на треть от 2,5x —
+     ткань (physical + sheen + рельеф) считается втрое быстрее. Буфер холста не меняется (рывка, как от setPixelRatio, нет);
+     в покое — прежний чёткий кадр 2,5x */
+  const MOVE_SHADOW_K = 2.2, DPR_MOVE_LOW = 1.5, lowMove = phone && dprFull > DPR_MOVE_LOW + 0.2;
+  let moveComposer = null, moveRP = null, moveWarm = false;
+  if (lowMove) LIN_SHADOW_K = MOVE_SHADOW_K;
+  function ensureMoveComposer() {
+    if (moveComposer || !lowMove) return moveComposer;
+    try {
+      const sz = renderer.getSize(new THREE.Vector2());
+      const rt = new THREE.WebGLRenderTarget(Math.round(sz.x * DPR_MOVE_LOW), Math.round(sz.y * DPR_MOVE_LOW), { type: THREE.HalfFloatType, samples: 4 });
+      moveComposer = new EffectComposer(renderer, rt);
+      moveComposer.setPixelRatio(DPR_MOVE_LOW); moveComposer.setSize(sz.x, sz.y);
+      moveRP = new RenderPass(scene, camera);
+      moveComposer.addPass(moveRP); moveComposer.addPass(new OutputPass());
+    } catch (e) { moveComposer = null; }
+    return moveComposer;
+  }
+  /* шейдеры для кадра в буфер (без тон-маппинга внутри) собираем заранее, в покое, — первое касание не ждёт сборки */
+  function warmMove() {
+    if (!lowMove || moveWarm || !renderer.compileAsync || !object || !ensureMoveComposer()) return;
+    moveWarm = true;
+    const prev = renderer.getRenderTarget();
+    try { renderer.setRenderTarget(moveComposer.renderTarget1); renderer.compileAsync(scene, camera).catch(() => {}); } catch (e) { /* соберутся при первом кадре */ }
+    renderer.setRenderTarget(prev);
   }
   function setPassCamera(cam) {
     if (!composer) return;
@@ -227,6 +271,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     persp.aspect = W / H; persp.updateProjectionMatrix();
     fitOrtho();
     if (composer) { composer.setSize(W, H); composer.setPixelRatio(dprFull); }
+    if (moveComposer) moveComposer.setSize(W, H);
     requestRender();
   }
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
@@ -328,7 +373,13 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       if (studioOn) scene.background = bgComposite;
       composer.render();
       if (studioOn) scene.background = bgDirect;
+    } else if (!still && lowMove && ensureMoveComposer()) {
+      moveRP.camera = camera;
+      if (studioOn) scene.background = bgComposite;
+      moveComposer.render();
+      if (studioOn) scene.background = bgDirect;
     } else renderer.render(scene, camera);
+    if (still && lowMove && !moveWarm) warmMove();
     if (!still) { clearTimeout(idleT); idleT = setTimeout(() => { interacting = false; requestRender(); }, 160); }
     if (dimList) drawDims();
     emit('render');
@@ -360,6 +411,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     setObjectNow(group, opts);
   }
   function setObjectNow(group, { reframe = true } = {}) {
+    moveWarm = false;   // новая модель или ткань — шейдеры кадра в движении соберём заново в покое
     if (object) root.remove(object);
     object = group;
     if (group) root.add(group);
@@ -686,7 +738,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     return new Promise((res) => out.toBlob((b) => res(points || extra ? { blob: b, points, camera: cam.position.toArray(), ...(extra || {}) } : b), 'image/png'));
   }
 
-  const offMat = onMaterialUpdate(() => requestRender());
+  const offMat = onMaterialUpdate(() => { moveWarm = false; requestRender(); });
 
   const stage = {
     renderer, scene, controls, canvas, root, studio, overlay,
@@ -726,6 +778,7 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
       if (ro) ro.disconnect(); else window.removeEventListener('resize', resize);
       controls.dispose(); contact.dispose(); envRT.dispose();
       if (composer) composer.dispose();
+      if (moveComposer) moveComposer.dispose();
       renderer.dispose(); canvas.remove(); overlay.remove();
     },
   };
@@ -739,7 +792,7 @@ function makeContactShadow(renderer) {
   const RES = 512, HEIGHT = 0.3, DARK = 1.8, OPACITY = 0.7;
   const rt = new THREE.WebGLRenderTarget(RES, RES); rt.texture.generateMipmaps = false;
   const rtB = new THREE.WebGLRenderTarget(RES, RES); rtB.texture.generateMipmaps = false;
-  const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ map: rt.texture, transparent: true, opacity: OPACITY, depthWrite: false, toneMapped: false }));
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(Math.PI / 2), linShadow(new THREE.MeshBasicMaterial({ map: rt.texture, transparent: true, opacity: OPACITY, depthWrite: false, toneMapped: false })));
   plane.renderOrder = 2; plane.position.y = 0.001; plane.scale.y = -1; plane.name = 'contact-shadow';
   plane.material.color.set(0x24272c);
   const cam = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0, HEIGHT);
