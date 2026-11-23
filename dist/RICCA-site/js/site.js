@@ -1427,8 +1427,10 @@
       t3s.forEach((a) => { a.href = cfgHref; a.setAttribute('aria-label', tr`3D-модель: ${w.title}`); });
       pgs.forEach((a) => { const sh = w.model && (w.short || splitTitle(w.title)[1] || ''); a.hidden = !sh; if (sh) a.href = `/models/${String(sh).toLowerCase().replace(/[^a-z0-9]+/g, '-')}`; });   // страница модели (tools/model-pages.mjs)
       draws.forEach((a) => { a.href = `${cfgHref}&draw=1`; a.setAttribute('aria-label', tr`Чертёж: ${w.title}`); });
-      // no3d (каталог): 3D этой модели снято с сайта (владелец, 14 ноября) — кнопок «3D-модель» и «Чертёж» нет
-      const tools = $('.lb__tools', dlg); if (tools) tools.hidden = !!w.no3d;
+      // no3d (каталог): 3D этой модели снято с сайта (владелец, 14 ноября; Galso и Runvo — 24 ноября) — кнопок «3D-модель» и «Чертёж» нет,
+      // а «Всё о модели» остаётся; группа прячется целиком, только если в ней не осталось ни одной кнопки
+      t3s.forEach((a) => { a.hidden = !!w.no3d; }); draws.forEach((a) => { a.hidden = !!w.no3d; });
+      const tools = $('.lb__tools', dlg); if (tools) tools.hidden = ![...tools.querySelectorAll('a')].some((a) => !a.hidden);
       igs.forEach((a) => { a.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; a.hidden = !!w.model; });   // у моделей каталога поста нет
       // строки под названием (телефон): у модели — «Размер — любой», «Ткань — выбрать», «3D»; у работы — «3D» и Instagram
       [['size', !w.model], ['fabric', !w.model], ['ig', !!w.model]].forEach(([k, off]) => { const li = rowOf(k); if (li) li.hidden = off; });

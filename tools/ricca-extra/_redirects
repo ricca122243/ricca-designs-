@@ -1,4 +1,14 @@
-# 24 ноября: Runvo снова в 3D — модель models3d/armchair-07.glb пересобрана (запрет адреса от 14 ноября снят)
+# 24 ноября: у Runvo и Galso 3D снято (владелец: «убери») — файлы удалены; выкладка на демо старые файлы не убирает, поэтому адреса закрыты явно
+/models3d/armchair-07.glb  /404  404!
+/models3d/armchair-20.glb  /404  404!
+/models3d/free/armchair-07.json  /404  404!
+/models3d/free/armchair-20.json  /404  404!
+/img/drawings/galso-front.webp  /404  404!
+/img/drawings/galso-side.webp  /404  404!
+/img/drawings/galso-top.webp  /404  404!
+/img/drawings/runvo-front.webp  /404  404!
+/img/drawings/runvo-side.webp  /404  404!
+/img/drawings/runvo-top.webp  /404  404!
 # Английская версия сайта: ricca.design/en → файл en.html (адрес в строке браузера остаётся /en,
 # поэтому относительные пути img/… css/… работают как у главной). /en/ со слэшем — на /en
 /en/              /en                  301
