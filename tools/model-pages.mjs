@@ -43,11 +43,12 @@ function page(m) {
   const title = m.name, nm = esc(m.short), sz = size(m), u = `${SITE}/models/${slug(m)}`;
   /* каждый кадр — на странице один раз (владелец, 16 ноября: «два раза повторяются — дешевит»): виды → первый экран, четвёртый вид → 3D, крупные планы → «Дизайн» */
   const views = m.photos.filter((p) => !DET.test(p.src));
-  const hero = views.length >= 4 ? views.slice(0, 3) : views;
-  const p3d = views.length >= 4 ? views[3] : null;
+  const has3d = !!m.cfg && !m.no3d;   // no3d (каталог): 3D модели снято с сайта — ни кнопки, ни раздела «3D-модель», ни чертежа
+  const hero = has3d && views.length >= 4 ? views.slice(0, 3) : views;
+  const p3d = has3d && views.length >= 4 ? views[3] : null;
   const det = m.photos.filter((p) => REAL.test(p.src)).slice(0, 3);   // только настоящие крупные планы съёмки (-d); своих вырезок не ставим (владелец, 16 ноября)
   const heroL = hero.length ? hero : m.photos.slice(0, 1);
-  const drw = m.cfg && VIEWS[slug(m)];   // три вида чертежа на прозрачном фоне (img/drawings/<имя>-front|side|top.webp, размеры — views.json)
+  const drw = has3d && VIEWS[slug(m)];   // три вида чертежа на прозрачном фоне (img/drawings/<имя>-front|side|top.webp, размеры — views.json)
   const same = ALL.filter((x) => x.category === m.category && x.id !== m.id && x.photos?.length && x.short);
   const i0 = same.findIndex((x) => ALL.indexOf(x) > ALL.indexOf(m));
   const rec = [...same.slice(Math.max(i0, 0)), ...same.slice(0, Math.max(i0, 0))].slice(0, 4);
@@ -98,7 +99,7 @@ function page(m) {
     ${sz ? `<p class="mp-size"><span>${sz.replace(' см', '')}</span> см · ширина × глубина × высота</p>` : ''}
     <div class="mp-acts">
       <a class="mp-btn" href="${WA(`Здравствуйте! Интересует ${title}. Подскажите стоимость и сроки.`)}" target="_blank" rel="noopener">Узнать цену</a>
-      ${m.cfg ? `<a class="mp-btn mp-btn--line" href="${cfgHref(m)}">Собрать в 3D</a>` : `<a class="mp-btn mp-btn--line" href="#write">Написать нам</a>`}
+      ${has3d ? `<a class="mp-btn mp-btn--line" href="${cfgHref(m)}">Собрать в 3D</a>` : `<a class="mp-btn mp-btn--line" href="#write">Написать нам</a>`}
     </div>
     <div class="mp-accs">
       ${acc('Размеры', `${sz ? `<p>На фото: ${sz} (ширина × глубина × высота).</p>` : ''}<p>${nb(m.sizes)}</p>${seat(m) ? `<p>${seat(m)}</p>` : ''}`, true)}
@@ -112,7 +113,7 @@ function page(m) {
 ${drw ? sec('draw', 'Чертёж', `<p>Три проекции и&nbsp;точные габариты в&nbsp;сантиметрах. Пропорции выстраиваем под ваше пространство&nbsp;— чертёж пересчитается в&nbsp;конструкторе.</p><p class="mp-link"><a href="${cfgHref(m)}&draw=1">Открыть чертёж в&nbsp;конструкторе</a></p>`,
   `<div class="mp-draw">${[['front', 'Вид спереди'], ['side', 'Вид сбоку'], ['top', 'Вид сверху']].filter(([k]) => drw[k]).map(([k, t]) => `<figure class="mp-draw__v mp-draw__v--${k}"><img src="/img/drawings/${slug(m)}-${k}.webp" width="${drw[k][0]}" height="${drw[k][1]}" alt="Чертёж: ${esc(title)}, ${t.toLowerCase()} с размерами в сантиметрах" loading="lazy" decoding="async"></figure>`).join('')}</div>`) : ''}
 
-${m.cfg ? sec('three', '3D-модель', `<p>Рассмотрите модель со&nbsp;всех сторон, примерьте ткань и&nbsp;размер&nbsp;— в&nbsp;3D-конструкторе. Для архитекторов и&nbsp;дизайнеров подготовим 3D-модель для&nbsp;проекта.</p>
+${has3d ? sec('three', '3D-модель', `<p>Рассмотрите модель со&nbsp;всех сторон, примерьте ткань и&nbsp;размер&nbsp;— в&nbsp;3D-конструкторе. Для архитекторов и&nbsp;дизайнеров подготовим 3D-модель для&nbsp;проекта.</p>
   <p class="mp-dl"><a href="${waModel}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M4 15v4h16v-4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Получить 3D-модель ${nm}</a></p>`,
   `<a class="mp-3d" href="${cfgHref(m)}">${p3d ? `${fig(p3d)}<span class="mp-3d__b">Открыть в 3D</span>` : '<span class="mp-btn mp-btn--line">Открыть в 3D</span>'}</a>`) : ''}
 

@@ -941,8 +941,7 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-07",
-    glb: "models3d/armchair-07.glb",   // 24 ноября, третий заход (разметка владельца: спинка с подлокотником — один мягкий объём): вылеплено в Blender полем расстояний — tools/media-v3/blender/wrap_chairs.py runvo
-    view: { az: 30, el: 10, fov: 18, zoom: 1.1 },
+    no3d: true,   // 24 ноября, владелец: «убери нахрен, ужас» — 3D снято, на сайте только фото (вернуть — убрать строку и вернуть glb)
     cfg: "t.armchair~ah.70~aw.22~bc.fixed~d.85~h.74~lf.black~lh.18~lg.metal~qa.right~ql.splay~sd.58~sh.44~w.97",
     fab: "coco:15",
     category: "armchairs",
@@ -2100,8 +2099,7 @@ window.RICCA_CATALOG = [
     id: "armchair-20",
     cfg: "t.armchair~ah.62~aw.22~d.88~f.round~h.72~lh.2~lg.hidden~qb.none~qe.block~sd.60~w.95",
     fab: "ricca:5",
-    glb: "models3d/armchair-20.glb",   // 24 ноября, третий заход: спинка плавно переходит в подлокотник и огибает сиденье, силуэт книзу сужается — tools/media-v3/blender/wrap_chairs.py galso
-    view: { az: 18, el: 7, fov: 18, zoom: 1.1 },
+    no3d: true,   // 24 ноября, владелец: «убери нахрен, ужас» — 3D снято, на сайте только фото (вернуть — убрать строку и вернуть glb)
     category: "armchairs",
     tags: [],
     type: "Кресло",
