@@ -1,0 +1,110 @@
+{
+ "chair": "runvo",
+ "iou_body_mean": 0.9348,
+ "iou_body_min": 0.9195,
+ "contour_mean_cm": 1.91,
+ "contour_p95_cm_max": 12.73,
+ "photos": {
+  "p-armchair-07-b1": {
+   "view": "low",
+   "iou_body": 0.9195,
+   "iou_all": 0.9122,
+   "contour_mean_cm": 2.61,
+   "contour_p95_cm": 12.73,
+   "cam": {
+    "az": -28.146,
+    "el": 4.924,
+    "roll": 2.02,
+    "dist": 6.513,
+    "scale": 754.405,
+    "u0": 611.067,
+    "v0": 847.248
+   }
+  },
+  "p-armchair-07-o": {
+   "view": "low",
+   "iou_body": 0.9275,
+   "iou_all": 0.9188,
+   "contour_mean_cm": 2.07,
+   "contour_p95_cm": 11.85,
+   "cam": {
+    "az": -25.338,
+    "el": 5.299,
+    "roll": 1.681,
+    "dist": 6.118,
+    "scale": 709.888,
+    "u0": 625.904,
+    "v0": 835.882
+   }
+  },
+  "p-armchair-07-o3": {
+   "view": "high",
+   "iou_body": 0.9384,
+   "iou_all": 0.9327,
+   "contour_mean_cm": 1.78,
+   "contour_p95_cm": 5.79,
+   "cam": {
+    "az": -30.648,
+    "el": 31.55,
+    "roll": 2.274,
+    "dist": 7.181,
+    "scale": 880.354,
+    "u0": 584.185,
+    "v0": 668.194
+   }
+  },
+  "p-armchair-07-b2": {
+   "view": "high",
+   "iou_body": 0.9241,
+   "iou_all": 0.9215,
+   "contour_mean_cm": 1.94,
+   "contour_p95_cm": 5.49,
+   "cam": {
+    "az": -32.152,
+    "el": 36.586,
+    "roll": 1.686,
+    "dist": 5.968,
+    "scale": 749.982,
+    "u0": 643.208,
+    "v0": 715.968
+   }
+  },
+  "p-armchair-07-o4": {
+   "view": "top",
+   "iou_body": 0.9356,
+   "iou_all": 0.9311,
+   "contour_mean_cm": 1.83,
+   "contour_p95_cm": 7.47,
+   "cam": {
+    "az": -29.095,
+    "el": 31.389,
+    "roll": 2.673,
+    "dist": 5.561,
+    "scale": 753.193,
+    "u0": 626.48,
+    "v0": 706.512
+   }
+  },
+  "p-armchair-07-o2": {
+   "view": "front",
+   "iou_body": 0.9636,
+   "iou_all": 0.9562,
+   "contour_mean_cm": 1.21,
+   "contour_p95_cm": 8.12,
+   "cam": {
+    "az": -2.347,
+    "el": 0.242,
+    "roll": 0.306,
+    "dist": 40.0,
+    "scale": 935.037,
+    "u0": 610.121,
+    "v0": 793.474
+   }
+  }
+ },
+ "size_cm": [
+  96.6,
+  99.2,
+  74.0
+ ]
+}

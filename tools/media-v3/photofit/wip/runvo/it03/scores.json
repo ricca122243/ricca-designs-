@@ -1,0 +1,110 @@
+{
+ "chair": "runvo",
+ "iou_body_mean": 0.9234,
+ "iou_body_min": 0.8753,
+ "contour_mean_cm": 2.07,
+ "contour_p95_cm_max": 12.17,
+ "photos": {
+  "p-armchair-07-b1": {
+   "view": "low",
+   "iou_body": 0.8753,
+   "iou_all": 0.8692,
+   "contour_mean_cm": 2.95,
+   "contour_p95_cm": 9.13,
+   "cam": {
+    "az": -35.679,
+    "el": 12.545,
+    "roll": 1.984,
+    "dist": 1.858,
+    "scale": 741.167,
+    "u0": 594.796,
+    "v0": 839.711
+   }
+  },
+  "p-armchair-07-o": {
+   "view": "low",
+   "iou_body": 0.9158,
+   "iou_all": 0.9063,
+   "contour_mean_cm": 2.34,
+   "contour_p95_cm": 12.17,
+   "cam": {
+    "az": -31.995,
+    "el": 5.72,
+    "roll": 1.903,
+    "dist": 5.881,
+    "scale": 706.481,
+    "u0": 610.31,
+    "v0": 836.644
+   }
+  },
+  "p-armchair-07-o3": {
+   "view": "high",
+   "iou_body": 0.9358,
+   "iou_all": 0.9325,
+   "contour_mean_cm": 1.82,
+   "contour_p95_cm": 7.69,
+   "cam": {
+    "az": -34.89,
+    "el": 37.541,
+    "roll": 1.487,
+    "dist": 40.0,
+    "scale": 872.895,
+    "u0": 571.551,
+    "v0": 678.157
+   }
+  },
+  "p-armchair-07-b2": {
+   "view": "high",
+   "iou_body": 0.926,
+   "iou_all": 0.9246,
+   "contour_mean_cm": 1.99,
+   "contour_p95_cm": 8.23,
+   "cam": {
+    "az": -38.528,
+    "el": 51.565,
+    "roll": 1.875,
+    "dist": 10.964,
+    "scale": 735.368,
+    "u0": 638.253,
+    "v0": 711.117
+   }
+  },
+  "p-armchair-07-o4": {
+   "view": "top",
+   "iou_body": 0.9252,
+   "iou_all": 0.9222,
+   "contour_mean_cm": 2.17,
+   "contour_p95_cm": 9.41,
+   "cam": {
+    "az": -35.112,
+    "el": 38.602,
+    "roll": -0.684,
+    "dist": 40.0,
+    "scale": 739.165,
+    "u0": 613.081,
+    "v0": 709.454
+   }
+  },
+  "p-armchair-07-o2": {
+   "view": "front",
+   "iou_body": 0.9626,
+   "iou_all": 0.9628,
+   "contour_mean_cm": 1.16,
+   "contour_p95_cm": 7.54,
+   "cam": {
+    "az": 0.498,
+    "el": 0.0,
+    "roll": 0.197,
+    "dist": 29.317,
+    "scale": 947.199,
+    "u0": 605.671,
+    "v0": 795.011
+   }
+  }
+ },
+ "size_cm": [
+  95.4,
+  101.0,
+  74.0
+ ]
+}

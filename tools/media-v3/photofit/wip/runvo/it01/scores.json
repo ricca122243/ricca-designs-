@@ -1,0 +1,110 @@
+{
+ "chair": "runvo",
+ "iou_body_mean": 0.8947,
+ "iou_body_min": 0.8676,
+ "contour_mean_cm": 2.56,
+ "contour_p95_cm_max": 11.22,
+ "photos": {
+  "p-armchair-07-b1": {
+   "view": "low",
+   "iou_body": 0.8676,
+   "iou_all": 0.8488,
+   "contour_mean_cm": 3.06,
+   "contour_p95_cm": 11.22,
+   "cam": {
+    "az": 0.0,
+    "el": 7.572,
+    "roll": 2.906,
+    "dist": 5.093,
+    "scale": 837.726,
+    "u0": 659.67,
+    "v0": 884.995
+   }
+  },
+  "p-armchair-07-o": {
+   "view": "low",
+   "iou_body": 0.8952,
+   "iou_all": 0.8744,
+   "contour_mean_cm": 2.44,
+   "contour_p95_cm": 10.36,
+   "cam": {
+    "az": 0.0,
+    "el": 9.844,
+    "roll": 1.071,
+    "dist": 2.385,
+    "scale": 764.848,
+    "u0": 669.137,
+    "v0": 851.218
+   }
+  },
+  "p-armchair-07-o3": {
+   "view": "high",
+   "iou_body": 0.8887,
+   "iou_all": 0.8875,
+   "contour_mean_cm": 2.74,
+   "contour_p95_cm": 6.38,
+   "cam": {
+    "az": 68.626,
+    "el": 75.0,
+    "roll": 1.891,
+    "dist": 14.166,
+    "scale": 882.586,
+    "u0": 650.528,
+    "v0": 611.652
+   }
+  },
+  "p-armchair-07-b2": {
+   "view": "high",
+   "iou_body": 0.8856,
+   "iou_all": 0.8852,
+   "contour_mean_cm": 2.75,
+   "contour_p95_cm": 7.66,
+   "cam": {
+    "az": 65.49,
+    "el": 75.0,
+    "roll": 2.353,
+    "dist": 15.269,
+    "scale": 761.333,
+    "u0": 704.397,
+    "v0": 667.812
+   }
+  },
+  "p-armchair-07-o4": {
+   "view": "top",
+   "iou_body": 0.8852,
+   "iou_all": 0.8849,
+   "contour_mean_cm": 2.83,
+   "contour_p95_cm": 5.95,
+   "cam": {
+    "az": 72.372,
+    "el": 75.0,
+    "roll": 2.284,
+    "dist": 14.35,
+    "scale": 757.917,
+    "u0": 686.288,
+    "v0": 652.711
+   }
+  },
+  "p-armchair-07-o2": {
+   "view": "front",
+   "iou_body": 0.9458,
+   "iou_all": 0.9316,
+   "contour_mean_cm": 1.53,
+   "contour_p95_cm": 8.37,
+   "cam": {
+    "az": 8.0,
+    "el": 7.434,
+    "roll": 0.279,
+    "dist": 9.363,
+    "scale": 962.65,
+    "u0": 634.121,
+    "v0": 832.882
+   }
+  }
+ },
+ "size_cm": [
+  94.7,
+  88.9,
+  74.0
+ ]
+}

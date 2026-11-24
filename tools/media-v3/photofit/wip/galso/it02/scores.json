@@ -1,0 +1,46 @@
+{
+ "chair": "galso",
+ "iou_body_mean": 0.9726,
+ "iou_body_min": 0.9634,
+ "contour_mean_cm": 0.59,
+ "contour_p95_cm_max": 2.46,
+ "photos": {
+  "p-armchair-20": {
+   "view": "main",
+   "iou_body": 0.9634,
+   "iou_all": 0.9596,
+   "contour_mean_cm": 0.78,
+   "contour_p95_cm": 2.46,
+   "cam": {
+    "az": -50.0,
+    "el": 3.382,
+    "roll": 1.781,
+    "dist": 9.753,
+    "scale": 813.646,
+    "u0": 619.547,
+    "v0": 803.688
+   }
+  },
+  "p-armchair-20-d1": {
+   "view": "front",
+   "iou_body": 0.9817,
+   "iou_all": 0.9755,
+   "contour_mean_cm": 0.4,
+   "contour_p95_cm": 1.11,
+   "cam": {
+    "az": -0.443,
+    "el": 5.979,
+    "roll": -0.021,
+    "dist": 16.514,
+    "scale": 718.601,
+    "u0": 634.298,
+    "v0": 850.056
+   }
+  }
+ },
+ "size_cm": [
+  97.4,
+  87.5,
+  71.8
+ ]
+}
