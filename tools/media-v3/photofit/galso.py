@@ -141,6 +141,9 @@ class Model:
         # складка сиденье–спинка
         m = (np.abs(fs - fw) < 0.7 * h) & (io < -0.012) & (np.abs(fs) < 2 * h)
         Q = V[m]; a = np.arctan2(Q[:, 1] - p['y_tip'] + 0.05, Q[:, 0]); out['fold'] = bin_line(Q, a, 90)
+        # верх сиденья внутри ниши (облако точек): на фото «складка» — это видимый верхний край сиденья на фоне спинки
+        m = (np.abs(fs) < 0.6 * h) & (fw > 0.003) & (V[:, 2] > p['seat_top'] - 0.02)
+        Q = V[m]; out['seatcloud'] = Q[::max(1, len(Q) // 9000)]
         # внутренняя кромка обода у торца ушка
         m = (np.abs(fr - fc) < 0.7 * h) & (fs > 0.012) & (V[:, 1] < self.yw0 + 0.06) & (np.abs(fw) < 2 * h) & (np.abs(fr) < 2 * h)
         for nm, sgn in (('tipR', 1), ('tipL', -1)):
