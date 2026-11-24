@@ -70,6 +70,30 @@ class Grid:
         for k, z in enumerate(self.zs): out[..., k] = base + (z - p[2]) * n[2]
         return out
 
+    def sample(self, vol, pts):
+        """значение поля в точках (трилинейно)"""
+        idx = [(pts[:, 0] - self.box[0]) / self.h, (pts[:, 1] - self.box[2]) / self.h, (pts[:, 2] - self.box[4]) / self.h]
+        return ndimage.map_coordinates(vol, idx, order=1, mode='nearest')
+
+    def project(self, vol, pts, iters=14, lock_z=False, lift=0.0):
+        """посадить точки на поверхность поля (ноль): шаги вдоль градиента; lock_z — двигать только по горизонтали
+        (линия остаётся на своей высоте); lift — приподнять над поверхностью (кант наполовину утоплен)"""
+        P = np.array(pts, float); e = self.h
+        def grad(Q):
+            G = np.stack([self.sample(vol, Q + np.array(o)) - self.sample(vol, Q - np.array(o)) for o in ((e, 0, 0), (0, e, 0), (0, 0, e))], 1) / (2 * e)
+            if lock_z: G[:, 2] = 0
+            return G
+        for _ in range(iters):
+            d = self.sample(vol, P); G = grad(P); n2 = (G * G).sum(1) + 1e-9
+            P = P - (d / n2)[:, None] * G * 0.9
+        if lift:
+            G = grad(P); P = P + lift * G / (np.linalg.norm(G, axis=1)[:, None] + 1e-9)
+        return P
+
+    def plan_contours(self, d2, level):
+        """линии уровня планового поля → список ломаных (x, y)"""
+        return [np.stack([self.box[0] + c[:, 0] * self.h, self.box[2] + c[:, 1] * self.h], 1) for c in measure.find_contours(d2, level)]
+
     def mesh(self, vol, smooth=3):
         """поверхность поля (ноль) → (V, F); сглаживание — несколько шагов усреднения по соседям"""
         v = np.pad(vol, 1, constant_values=1.0)
@@ -147,6 +171,15 @@ def band(path, T):
     return [tuple(v) for v in np.vstack([p + nr * T[:, None] / 2, (p - nr * T[:, None] / 2)[::-1]])]
 
 
+def resample(line, step=0.005, smooth=0):
+    """ломаная с ровным шагом; smooth — сколько раз усреднить по соседям (концы на месте)"""
+    P = np.asarray(line, float)
+    for _ in range(smooth): P = np.vstack([P[:1], (P[:-2] + 2 * P[1:-1] + P[2:]) / 4, P[-1:]])
+    s = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))]); n = max(2, int(s[-1] / step) + 1)
+    u = np.linspace(0, s[-1], n)
+    return np.stack([np.interp(u, s, P[:, c]) for c in range(P.shape[1])], 1)
+
+
 # ── сетки без поля ──
 def tube(line, r=0.004, seg=8, closed=False):
     """кант: трубка радиуса r вдоль 3D-линии"""
@@ -202,12 +235,16 @@ def export_glb(path, parts, tris=90000):
         o = bpy.data.objects.new(name, me); bpy.context.collection.objects.link(o)
         for p in me.polygons: p.use_smooth = True
         return o
-    sup = ('leg', 'frame', 'plinth')
-    fab = merge([m for n, m in parts.items() if not n.lower().startswith(sup)])
+    sup = ('leg', 'frame', 'plinth'); thin = ('piping', 'seam')        # кант и швы упрощать нельзя — тонкие трубки рассыплются
+    body = merge([m for n, m in parts.items() if not n.lower().startswith(sup + thin)])
+    fine = [m for n, m in parts.items() if n.lower().startswith(thin)]
     legs = [m for n, m in parts.items() if n.lower().startswith(sup)]
-    fo = obj('fabric', *fab); L.decimate(fo, tris)
+    fo = obj('fabric', *body); L.decimate(fo, tris - sum(len(f) for v, f in fine))
+    if fine:
+        po = obj('piping', *merge(fine)); fo = L.join([fo, po], 'fabric')
     lo = obj('legs', *merge(legs)) if legs else None
     if lo:
+        L.decimate(lo, 8000)
         for p in lo.data.polygons: p.use_smooth = False
     L.export3(path, fo, lo)
     return L.tris(fo)
