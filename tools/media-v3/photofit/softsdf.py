@@ -27,6 +27,9 @@ class Grid:
         d = self._sd(np.array(im).T > 127)
         if open_r: d = self._sd(d <= -open_r) - open_r
         if close_r: d = self._sd(d <= close_r) + close_r
+        # расстояние по растру ступенчатое (±1 мм): без сглаживания ступеньки тянутся по всей высоте стенки
+        # и на ткани видны вертикальными полосами
+        d = ndimage.gaussian_filter(d, 1.6)
         return d[::2, ::2][:len(self.xs), :len(self.ys)]
 
     def reround(self, d, open_r=0.0, close_r=0.0):
@@ -35,6 +38,7 @@ class Grid:
         big = zoom(d, 2, order=1)
         if open_r: big = self._sd(big <= -open_r) - open_r
         if close_r: big = self._sd(big <= close_r) + close_r
+        if open_r or close_r: big = ndimage.gaussian_filter(big, 1.6)
         return big[::2, ::2][:d.shape[0], :d.shape[1]]
 
     def _sd(self, mk):
