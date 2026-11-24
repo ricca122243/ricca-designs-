@@ -163,10 +163,12 @@
     'Для отдыха: округлые, на цоколе': 'Lounge: rounded, on a plinth', 'Реальные изделия ателье': 'Real pieces by the atelier', 'Велюр, букле, шенилл': 'Velour, bouclé, chenille',
     'Ортопедические — на сайте ELUNA': 'Orthopaedic, on their own website',
   };
-  const FAB_TYPES = { 'Эксклюзивные': 'Exclusive', 'Велюр': 'Velour', 'Букле': 'Bouclé', 'Шенилл': 'Chenille', 'Замша': 'Suede', 'Экокожа': 'Faux leather', 'САМБИЯ': 'SAMBIA' };
+  const FAB_TYPES = { 'Эксклюзивные': 'Exclusive', 'Велюр': 'Velour', 'Букле': 'Bouclé', 'Шенилл': 'Chenille', 'Рогожка': 'Hopsack', 'Жаккард': 'Jacquard', 'Мех': 'Faux fur', 'Замша': 'Suede', 'Экокожа': 'Faux leather',
+    'САМБИЯ': 'SAMBIA', 'ФАНТАСТИКА': 'FANTASTIKA', 'МАРМЕЛАД': 'MARMELAD' };   // типы и кириллические названия коллекций
   const FAB_KINDS = {
     'букле': 'bouclé', 'велюр': 'velour', 'велюр в рубчик': 'ribbed velour', 'искусственная замша': 'faux suede', 'микровелюр': 'microvelour',
     'микровелюр с муаром': 'microvelour with moiré', 'шенилл': 'chenille',
+    'рогожка': 'hopsack', 'мех': 'faux fur', 'искусственный мех': 'faux fur', 'микрошенилл': 'microchenille', 'трикотажный велюр': 'knitted velour', 'жаккард': 'jacquard',
     'экокожа': 'faux leather', 'зернистая': 'grained', 'гладкая': 'smooth', 'винтаж': 'vintage',
   };
   const COLOURS = { 'Серый меланж': 'Grey mélange', 'Графит': 'Graphite', 'Тёмно-зелёный': 'Dark green', 'Молочный': 'Milk white', 'Серо-бежевый': 'Greige',

@@ -9,16 +9,17 @@
 let FALLBACK = null;
 
 /* тип ткани → вид материала для 3D (materials.js → KINDS) */
-const KIND_BY_TYPE = { velur: 'velour', velvet: 'corduroy', vel_vet: 'corduroy', velvet_: 'corduroy', bukle: 'boucle', shenill: 'chenille', rogozhka: 'matting', zamsha: 'suede', ekokozha: 'leather' };
+const KIND_BY_TYPE = { velur: 'velour', velvet: 'corduroy', vel_vet: 'corduroy', velvet_: 'corduroy', bukle: 'boucle', shenill: 'chenille', rogozhka: 'matting', zhakkard: 'chenille', meh: 'boucle', zamsha: 'suede', ekokozha: 'leather' };
 const KINDS = ['velour', 'corduroy', 'boucle', 'chenille', 'matting', 'suede', 'leather'];
-/* порядок вкладок: Велюр · Вельвет · Букле · Шенилл · Рогожка · Замша · Экокожа (только те, что есть) */
-const ORDER = ['velur', 'velvet', 'bukle', 'shenill', 'rogozhka', 'zamsha', 'ekokozha'];
+/* порядок вкладок: Велюр · Вельвет · Букле · Шенилл · Рогожка · Жаккард · Мех · Замша · Экокожа (только те, что есть) */
+const ORDER = ['velur', 'velvet', 'bukle', 'shenill', 'rogozhka', 'zhakkard', 'meh', 'zamsha', 'ekokozha'];
 
 const stemOf = (src) => String(src || '').split('/').pop().replace(/\.(webp|jpe?g|png|avif)$/i, '').replace(/-(450|900|600)$/, '');
 export const slugOf = (c) => (c && c.slug) || stemOf(c && (c.src450 || c.src900)).replace(/^\d+-/, '') || String((c && c.name) || '').toLowerCase();
 
 /* строка вида с карточки коллекции → вид материала */
-const KIND_BY_WORD = [[/рубчик|вельвет|кордюр/i, 'corduroy'], [/букле/i, 'boucle'], [/шенил/i, 'chenille'], [/рогожк/i, 'matting'],
+/* мех (барашек) в 3D показываем фактурой букле — ближайшая из имеющихся; жаккард — шениллом */
+const KIND_BY_WORD = [[/рубчик|вельвет|кордюр/i, 'corduroy'], [/букле|мех/i, 'boucle'], [/шенил|жаккард/i, 'chenille'], [/рогожк/i, 'matting'],
   [/замш|нубук/i, 'suede'], [/кож/i, 'leather'], [/велюр|бархат/i, 'velour']];
 export function kindOf(typeId, collection) {
   const k = collection && collection.kind;
