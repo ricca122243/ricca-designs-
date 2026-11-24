@@ -2100,7 +2100,7 @@ window.RICCA_CATALOG = [
     cfg: "t.armchair~ah.62~aw.22~d.88~f.round~h.72~lh.2~lg.hidden~qb.none~qe.block~sd.60~w.95",
     fab: "ricca:5",
     glb: "models3d/armchair-20.glb",   // 24 ноября: симметричная «кадка» с двумя ушками (владелец: «последнее, что собрал, — норм»); форма сверяется с фото наложением — tools/media-v3/photofit/galso.py
-    view: { az: 32, el: 6, fov: 18, zoom: 1.1 },
+    view: { az: 44, el: 5, fov: 18, zoom: 1.1 },
     category: "armchairs",
     tags: [],
     type: "Кресло",

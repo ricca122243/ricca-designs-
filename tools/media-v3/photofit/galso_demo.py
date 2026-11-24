@@ -25,6 +25,8 @@ P = dict(
     wall_rt=0.058,         # скругление обода — верх спинки круглый валик
     wall_bulge=0.016,      # пухлость внутренней стороны спинки
     tuck=0.022,            # мягкая складка там, где спинка уходит в сиденье
+    top_drop=0.04, drop_y1=0.30, drop_y0=-0.10,   # «холмик» (владелец: «спинка как холмик идёт»): верх выше у середины спинки, к ушкам ниже на top_drop
+    ear_r=0.075,           # передний верхний угол ушка — круглое плечо
     wing_cut=0.23,         # на сколько передний торец боковины позади фасада сиденья
     wing_r=0.055,          # скругление торца боковины в плане
     taper=0.075, taper_zm=0.36, rb=0.05,   # сужение корпуса книзу, высота самого широкого места, скругление у пола
@@ -43,7 +45,11 @@ def build(fast=False):
     # стенка: кольцо толщиной wall_t по тылу и бокам, спереди обрезано
     yf = -p['D'] / 2; ring = np.maximum(outer, -(outer + p['wall_t']))
     wall2 = g.reround(np.maximum(ring, (yf + p['wing_cut']) - g.Y), open_r=p['wing_r'])
-    wall = g.extrude(wall2, p['seat_top'] - 0.12, p['H'], p['wall_rt'], 0.03, bulge=p['wall_bulge'], lean=lean)   # ниже сиденья стенку закрывает корпус
+    tt = np.clip((p['drop_y1'] - g.Y) / (p['drop_y1'] - p['drop_y0']), 0, 1)
+    top = p['H'] - p['top_drop'] * tt * tt * (3 - 2 * tt)                        # гребень спинки горкой
+    dy = np.clip(g.Y - (yf + p['wing_cut']), 0, p['ear_r'])
+    top = top - (p['ear_r'] - np.sqrt(np.clip(p['ear_r'] ** 2 - (p['ear_r'] - dy) ** 2, 0, None)))   # плечо у торца ушка
+    wall = g.extrude(wall2, p['seat_top'] - 0.12, top, p['wall_rt'], 0.03, bulge=p['wall_bulge'], lean=lean)   # ниже сиденья стенку закрывает корпус
     env = g.extrude(outer, z0, p['H'] + 0.1, 0.001, p['rb'], lean=lean)                        # наружная оболочка корпуса
     wall = np.maximum(wall, env)                                                                # наружу не шире корпуса
     parts = {'body': g.mesh(np.maximum(S.smin(seat, wall, p['tuck']), env))}                   # мягкая складка внутри, снаружи — ровная стенка без пояска     # одна оболочка: чехол стенки и сиденья сходятся без щели
