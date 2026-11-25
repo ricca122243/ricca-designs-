@@ -1,32 +1,37 @@
+# 25 ноября (защита): инструкция о хостинге больше не публикуется — в ней названы репозиторий и ветка
+/КАК-ЗАЛИТЬ-НА-ХОСТИНГ.txt  /404  404!
+/%D0%9A%D0%90%D0%9A-%D0%97%D0%90%D0%9B%D0%98%D0%A2%D0%AC-%D0%9D%D0%90-%D0%A5%D0%9E%D0%A1%D0%A2%D0%98%D0%9D%D0%93.txt  /404  404!
 # 25 ноября: новые модели переименованы (владелец: «эстетичные названия»); старые адреса ведут на новые
-/models/dugva  /models/riola  301
-/models/dugva.html  /models/riola  301
-/models/lunsa  /models/lunata  301
-/models/lunsa.html  /models/lunata  301
-/models/zolma  /models/vemira  301
-/models/zolma.html  /models/vemira  301
-/models/zorna  /models/mareva  301
-/models/zorna.html  /models/mareva  301
-/models/dremva  /models/ivera  301
-/models/dremva.html  /models/ivera  301
-/models/lasna  /models/nerina  301
-/models/lasna.html  /models/nerina  301
-/models/volsa  /models/veluna  301
-/models/volsa.html  /models/veluna  301
-/models/gostva  /models/ilira  301
-/models/gostva.html  /models/ilira  301
-/models/pledva  /models/sonela  301
-/models/pledva.html  /models/sonela  301
-/models/domva  /models/ruana  301
-/models/domva.html  /models/ruana  301
-/models/lumra  /models/avela  301
-/models/lumra.html  /models/avela  301
-/models/gladva  /models/onora  301
-/models/gladva.html  /models/onora  301
-/models/lirna  /models/milora  301
-/models/lirna.html  /models/milora  301
-/models/tilso  /models/talero  301
-/models/tilso.html  /models/talero  301
+# Знак «!» обязателен: хостинг при выкладке не удаляет прежние файлы (старые страницы остаются лежать), а без «!» правило
+# не срабатывает, пока файл по этому адресу существует.
+/models/dugva  /models/riola  301!
+/models/dugva.html  /models/riola  301!
+/models/lunsa  /models/lunata  301!
+/models/lunsa.html  /models/lunata  301!
+/models/zolma  /models/vemira  301!
+/models/zolma.html  /models/vemira  301!
+/models/zorna  /models/mareva  301!
+/models/zorna.html  /models/mareva  301!
+/models/dremva  /models/ivera  301!
+/models/dremva.html  /models/ivera  301!
+/models/lasna  /models/nerina  301!
+/models/lasna.html  /models/nerina  301!
+/models/volsa  /models/veluna  301!
+/models/volsa.html  /models/veluna  301!
+/models/gostva  /models/ilira  301!
+/models/gostva.html  /models/ilira  301!
+/models/pledva  /models/sonela  301!
+/models/pledva.html  /models/sonela  301!
+/models/domva  /models/ruana  301!
+/models/domva.html  /models/ruana  301!
+/models/lumra  /models/avela  301!
+/models/lumra.html  /models/avela  301!
+/models/gladva  /models/onora  301!
+/models/gladva.html  /models/onora  301!
+/models/lirna  /models/milora  301!
+/models/lirna.html  /models/milora  301!
+/models/tilso  /models/talero  301!
+/models/tilso.html  /models/talero  301!
 # 24 ноября: у Runvo 3D снято, у Galso старые файлы удалены (новая модель — models3d/armchair-20.glb); выкладка на демо старые файлы не убирает, поэтому адреса закрыты явно
 /models3d/armchair-07.glb  /404  404!
 /models3d/free/armchair-07.json  /404  404!
