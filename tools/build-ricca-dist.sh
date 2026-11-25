@@ -14,7 +14,8 @@ OUT=$DIST/RICCA-site
 rm -rf "$OUT" "$DIST/RICCA-site.zip" && mkdir -p "$OUT"
 
 cp "$SRC/index.html" "$SRC/en.html" "$OUT/"   # en.html — английская версия (/en, см. _redirects)
-cp tools/hosting/*.txt "$OUT/"   # инструкция для заказчика: как залить на хостинг
+# Инструкцию «как залить на хостинг» (tools/hosting/*.txt) в папку сайта БОЛЬШЕ НЕ КЛАДЁМ (25 ноября, проверка защиты): всё, что лежит
+# в этой папке, открыто по адресу сайта, а в инструкции названы репозиторий и ветка. Инструкция остаётся в tools/hosting/.
 # Стили — только подключённые из index.html (в css/ лежат и старые файлы, например fonts-eluna.css прежней главы ELUNA)
 css_links=$(grep -ohE 'href="css/[A-Za-z0-9_.-]+\.css"' "$SRC/index.html" | sed -e 's/^href="//' -e 's/"$//' | sort -u)
 [ -n "$css_links" ] || { echo "в index.html нет ссылок на css/"; exit 1; }
