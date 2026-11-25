@@ -126,6 +126,23 @@ def main():
         pack('1 Каталог', [j('1. Каталог')])
         for t in sorted(os.listdir(j('2. Ткани'))): pack(f'2 Ткани ({t})', [j('2. Ткани', t)])
         pack('3-4 Работы и проекты', [j('3. Наши работы'), j('4. Проекты')])
+        # копия сайта — частями до 90 МБ (одним файлом ~450 МБ через чат не передать); все части распаковываются в одну папку
+        if '--no-site' not in sys.argv:
+            files = sorted((os.path.join(r, f) for r, _, fs in os.walk(site) for f in fs), key=lambda q: os.path.relpath(q, site))
+            parts, cur, size = [], [], 0
+            for q in files:
+                sz = os.path.getsize(q)
+                if cur and size + sz > 90e6: parts.append(cur); cur, size = [], 0
+                cur.append(q); size += sz
+            if cur: parts.append(cur)
+            note = ('Копия сайта RICCA DESIGNS разрезана на части. Распакуйте ВСЕ части в одну и ту же папку —\n'
+                    'получится папка RICCA-site: это готовый сайт целиком, его можно залить на любой хостинг.\n')
+            for i, part in enumerate(parts, 1):
+                zp = os.path.join(os.path.dirname(out), f'{os.path.basename(out)} — 5 Сайт целиком, часть {i} из {len(parts)}.zip')
+                with zipfile.ZipFile(zp, 'w', zipfile.ZIP_STORED) as z:
+                    z.writestr('КАК РАСПАКОВАТЬ.txt', note)
+                    for q in part: z.write(q, os.path.join('RICCA-site', os.path.relpath(q, site)))
+                print(os.path.basename(zp), round(os.path.getsize(zp) / 1e6), 'МБ')
 
 if __name__ == '__main__':
     main()
