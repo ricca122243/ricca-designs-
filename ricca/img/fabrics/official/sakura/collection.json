@@ -1,0 +1,104 @@
+{
+ "id": "sakura",
+ "title": "SAKURA",
+ "kind": "жаккард",
+ "type": "zhakkard",
+ "no3d": true,
+ "facts": [
+  "50 000 циклов",
+  "800 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Сакура / Sakura 01",
+   "hex": "#d0cec4",
+   "plain3d": false,
+   "fold": 0.018,
+   "src1200": "img/fabrics/official/sakura/01-1200.webp",
+   "src600": "img/fabrics/official/sakura/01-600.webp",
+   "thumb": "img/fabrics/official/sakura/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Сакура / Sakura 02",
+   "hex": "#bcb9b0",
+   "plain3d": false,
+   "fold": 0.064,
+   "src1200": "img/fabrics/official/sakura/02-1200.webp",
+   "src600": "img/fabrics/official/sakura/02-600.webp",
+   "thumb": "img/fabrics/official/sakura/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Сакура / Sakura 03",
+   "hex": "#c2b9ae",
+   "plain3d": false,
+   "fold": 0.058,
+   "src1200": "img/fabrics/official/sakura/03-1200.webp",
+   "src600": "img/fabrics/official/sakura/03-600.webp",
+   "thumb": "img/fabrics/official/sakura/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Сакура / Sakura 04",
+   "hex": "#bcbcb7",
+   "plain3d": false,
+   "fold": 0.029,
+   "src1200": "img/fabrics/official/sakura/04-1200.webp",
+   "src600": "img/fabrics/official/sakura/04-600.webp",
+   "thumb": "img/fabrics/official/sakura/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Сакура / Sakura 05",
+   "hex": "#b2b5b4",
+   "plain3d": false,
+   "fold": 0.08,
+   "src1200": "img/fabrics/official/sakura/05-1200.webp",
+   "src600": "img/fabrics/official/sakura/05-600.webp",
+   "thumb": "img/fabrics/official/sakura/05-160.webp"
+  },
+  {
+   "code": "plain-01",
+   "label": "plain 01",
+   "name": "Сакура основа / Sakura plain 01",
+   "hex": "#c6c2b9",
+   "plain3d": false,
+   "fold": 0.016,
+   "src1200": "img/fabrics/official/sakura/plain-01-1200.webp",
+   "src600": "img/fabrics/official/sakura/plain-01-600.webp",
+   "thumb": "img/fabrics/official/sakura/plain-01-160.webp"
+  },
+  {
+   "code": "plain-04",
+   "label": "plain 04",
+   "name": "Сакура основа / Sakura plain 04",
+   "hex": "#b2b2b0",
+   "plain3d": false,
+   "fold": 0.018,
+   "src1200": "img/fabrics/official/sakura/plain-04-1200.webp",
+   "src600": "img/fabrics/official/sakura/plain-04-600.webp",
+   "thumb": "img/fabrics/official/sakura/plain-04-160.webp"
+  },
+  {
+   "code": "plain-05",
+   "label": "plain 05",
+   "name": "Сакура основа / Sakura plain 05",
+   "hex": "#c5c7c3",
+   "plain3d": false,
+   "fold": 0.015,
+   "src1200": "img/fabrics/official/sakura/plain-05-1200.webp",
+   "src600": "img/fabrics/official/sakura/plain-05-600.webp",
+   "thumb": "img/fabrics/official/sakura/plain-05-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

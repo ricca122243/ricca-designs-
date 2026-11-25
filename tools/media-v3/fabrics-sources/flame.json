@@ -1,0 +1,106 @@
+{
+  "id": "flame",
+  "title": "FLAME",
+  "supplier": "No Frames",
+  "kind": "шенилл",
+  "source_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/fleym-flame/",
+  "specs": {
+    "composition": "66% Полиэстер, 25% Акрил, 9% Хлопок",
+    "martindale": 60000,
+    "weight": "705 г/м.п.",
+    "width": "140 см",
+    "country": "Турция",
+    "care": "не отбеливать; не гладить; стирка разрешена; не сушить в барабане; химчистка",
+    "other": [
+      "Антибактериальность: да",
+      "Устойчивость к износу (трению): 5",
+      "Устойчивость к свету: 5",
+      "Устойчивость к химчистке: 5"
+    ]
+  },
+  "colours": [
+    {
+      "code": "01",
+      "name": "Flame 01",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/fleym-flame/flame-01/",
+      "image_url": "https://no-frames.ru/images/detailed/24/1_5cdb-fa.jpg",
+      "file": "img/01.jpg",
+      "w": 1200,
+      "h": 800
+    },
+    {
+      "code": "02",
+      "name": "Flame 02",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/fleym-flame/flame-02/",
+      "image_url": "https://no-frames.ru/images/detailed/24/02_29lk-11.jpg",
+      "file": "img/02.jpg",
+      "w": 1200,
+      "h": 800
+    },
+    {
+      "code": "03",
+      "name": "Flame 03",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/fleym-flame/flame-03/",
+      "image_url": "https://no-frames.ru/images/detailed/24/03_03z3-ve.jpg",
+      "file": "img/03.jpg",
+      "w": 1200,
+      "h": 800
+    },
+    {
+      "code": "04",
+      "name": "Flame 04",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/fleym-flame/flame-04/",
+      "image_url": "https://no-frames.ru/images/detailed/24/04_b2ye-ka.jpg",
+      "file": "img/04.jpg",
+      "w": 1200,
+      "h": 800
+    },
+    {
+      "code": "06",
+      "name": "Flame 06",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/fleym-flame/flame-06/",
+      "image_url": "https://no-frames.ru/images/detailed/24/6_zopl-zy.jpg",
+      "file": "img/06.jpg",
+      "w": 1200,
+      "h": 800
+    },
+    {
+      "code": "07",
+      "name": "Flame 07",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/fleym-flame/flame-07/",
+      "image_url": "https://no-frames.ru/images/detailed/24/07_vicr-l2.jpg",
+      "file": "img/07.jpg",
+      "w": 1200,
+      "h": 800
+    },
+    {
+      "code": "08",
+      "name": "Flame 08",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/fleym-flame/flame-08/",
+      "image_url": "https://no-frames.ru/images/detailed/24/08_f5y0-3e.jpg",
+      "file": "img/08.jpg",
+      "w": 1200,
+      "h": 800
+    },
+    {
+      "code": "09",
+      "name": "Flame 09",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/fleym-flame/flame-09/",
+      "image_url": "https://no-frames.ru/images/detailed/24/09_inr2-wp.jpg",
+      "file": "img/09.jpg",
+      "w": 1200,
+      "h": 800
+    },
+    {
+      "code": "05",
+      "name": "Flame 05",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/fleym-flame/flame-05/",
+      "image_url": "https://no-frames.ru/images/detailed/24/05_6132-wx.jpg",
+      "file": "img/05.jpg",
+      "w": 1200,
+      "h": 800,
+      "listed": false
+    }
+  ],
+  "notes": "В листинге раздела 8 цветов. Цвет 05: в листинг раздела не выведен (на странице товара «Нет в наличии»), но страница открывается по прямому адресу; добавлен в конец списка с пометкой \"listed\": false — решить, показывать ли его. У всех цветов на сайте одно фото — ткань в складке; плоских образцов нет, взяты складки. Вес на сайте назван «Общий вес (гр./м.п)». Уход на сайте — только пиктограммы во вкладке «Уход»; строка care — их расшифровка. РАСХОЖДЕНИЕ с биркой на вешалке: состав на сайте «66% Полиэстер, 25% Акрил, 9% Хлопок», на бирке «67% PES, 24% ACR, 9% COT». Названий у цветов нет, только номера; товар на сайте называется «Ткань мебельная \"ФЛЕЙМ\" (Flame) 01» (name = латинское/основное название + номер). ПРОВЕРКА: в приложенном к карточке файле технических характеристик (flame.docx) состав тоже 66% pes, 25% acr, 9% cot, 705 г/м.п., 60 000; 67/24/9 — только на бирке вешалки."
+}

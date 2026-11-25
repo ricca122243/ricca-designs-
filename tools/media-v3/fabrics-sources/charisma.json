@@ -1,0 +1,69 @@
+{
+  "id": "charisma",
+  "title": "CHARISMA",
+  "supplier": "No Frames",
+  "kind": "искусственный мех",
+  "source_url": "https://no-frames.ru/katalog/mebelnye-tkani/iskusstvennyy-meh/harizma-charisma/",
+  "specs": {
+    "composition": "100% Полиэстер",
+    "martindale": 85000,
+    "weight": "910 г/м.п.",
+    "width": "140 см",
+    "country": "Китай",
+    "care": "гладить при низкой температуре; не отбеливать; ручная стирка при 30 °C; не сушить в барабане; химчистка (P)",
+    "other": [
+      "Антибактериальность: да",
+      "Устойчивость к износу (трению): 4",
+      "Устойчивость к свету: 5",
+      "Устойчивость к химчистке: 5"
+    ]
+  },
+  "colours": [
+    {
+      "code": "01",
+      "name": "Charisma 01",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/iskusstvennyy-meh/harizma-charisma/charisma-col-01/",
+      "image_url": "https://no-frames.ru/images/detailed/24/Charisma_01_%D1%81%D0%BA%D0%BB%D0%B0%D0%B4%D0%BA%D0%B0.jpg",
+      "file": "img/01.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "02",
+      "name": "Charisma 02",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/iskusstvennyy-meh/harizma-charisma/charisma-col-02/",
+      "image_url": "https://no-frames.ru/images/detailed/24/Charisma_02_%D1%81%D0%BA%D0%BB%D0%B0%D0%B4%D0%BA%D0%B0.jpg",
+      "file": "img/02.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "03",
+      "name": "Charisma 03",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/iskusstvennyy-meh/harizma-charisma/charisma-col-03/",
+      "image_url": "https://no-frames.ru/images/detailed/25/Charisma_03_%D0%BA%D0%B2%D0%B0%D0%B4%D1%80%D0%B0%D1%82.jpg",
+      "file": "img/03.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "04",
+      "name": "Charisma 04",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/iskusstvennyy-meh/harizma-charisma/charisma-col-04/",
+      "image_url": "https://no-frames.ru/images/detailed/25/Charisma_04_%D0%BA%D0%B2%D0%B0%D0%B4%D1%80%D0%B0%D1%82.jpg",
+      "file": "img/04.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "05",
+      "name": "Charisma 05",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/iskusstvennyy-meh/harizma-charisma/charisma-col-05/",
+      "image_url": "https://no-frames.ru/images/detailed/24/Charisma_05_%D0%BA%D0%B2%D0%B0%D0%B4%D1%80%D0%B0%D1%82.jpg",
+      "file": "img/05.jpg",
+      "w": 1100,
+      "h": 733
+    }
+  ],
+  "notes": "В листинге раздела 5 цветов. У цветов 01, 02 на сайте только фото в складке (плоского образца нет) — взята складка; у остальных плоский образец. Вес на сайте назван «Общий вес (гр./м.п)». Уход на сайте — только пиктограммы во вкладке «Уход»; строка care — их расшифровка. Названий у цветов нет, только номера; товар на сайте называется «Ткань мебельная \"ХАРИЗМА\" (Charisma) 01» (name = латинское/основное название + номер)."
+}

@@ -1,0 +1,59 @@
+{
+  "id": "cano",
+  "title": "CANO",
+  "supplier": "Art Vision Home",
+  "kind": "букле",
+  "source_url": "https://artvision-home.ru/catalog/cano/",
+  "specs": {
+    "composition": "75% Полиэстер, 25% Акрил",
+    "martindale": 65000,
+    "weight": "952 г/м.п.",
+    "width": "140 см",
+    "country": "Китай",
+    "care": "Стирка: Разрешена до 30 гр.; Глажка: Утюжить при температуре не выше 110 градусов; Сушка: Запрещена; Химчистка: Разрешена",
+    "other": [
+      "Тест на пиллинг: 5",
+      "Тест на устойчивость окраски: 5",
+      "Тип ткани на сайте: Букле"
+    ]
+  },
+  "colours": [
+    {
+      "code": "21",
+      "name": "Кано / Cano 21",
+      "page_url": "https://artvision-home.ru/catalog/cano/cano-21",
+      "image_url": "https://artvision-home.ru/assets/images/resources/5074/3aec88e323d811efbf2a0025902b8c2b-940edd99808d11efa7dc0025902b8c2b.jpg",
+      "file": "img/21.jpg",
+      "w": 5472,
+      "h": 3648
+    },
+    {
+      "code": "22",
+      "name": "Кано / Cano 22",
+      "page_url": "https://artvision-home.ru/catalog/cano/cano-22",
+      "image_url": "https://artvision-home.ru/assets/images/resources/5075/4b23e8c023d811efbf2a0025902b8c2b-aa40d247808d11efa7dc0025902b8c2b.jpg",
+      "file": "img/22.jpg",
+      "w": 5472,
+      "h": 3648
+    },
+    {
+      "code": "23",
+      "name": "Кано / Cano 23",
+      "page_url": "https://artvision-home.ru/catalog/cano/cano-23",
+      "image_url": "https://artvision-home.ru/assets/images/resources/5076/5576203123d811efbf2a0025902b8c2b-b4c2a53d808d11efa7dc0025902b8c2b.jpg",
+      "file": "img/23.jpg",
+      "w": 5472,
+      "h": 3648
+    },
+    {
+      "code": "24",
+      "name": "Кано / Cano 24",
+      "page_url": "https://artvision-home.ru/catalog/cano/cano-24",
+      "image_url": "https://artvision-home.ru/assets/images/resources/5077/5fa7045d23d811efbf2a0025902b8c2b-c8496efc808d11efa7dc0025902b8c2b.jpg",
+      "file": "img/24.jpg",
+      "w": 5472,
+      "h": 3648
+    }
+  ],
+  "notes": "На сайте 4 цвета (21–24), у каждого одно фото — складки «розочкой», плоского образца нет; взята складка (5472×3648). Цвет с вешалки — 23. Бирка: 75% Pes, 25% PC, 65 000 — совпадает с сайтом (75% Полиэстер, 25% Акрил; 65000). Вес и ширина в карточках сайта даны числами без единиц («Вес ткани: 952», «Ширина ткани: 140»); единицы проставлены так: ширина — см, вес — г/м.п. (на официальной странице-презентации Paddington https://artvision-home.ru/presentations/4341-kollekcziya-paddington написано «ВЕС - 770гр./м.п.» при «770» в карточке; на бирках вешалок вес тоже в гр./м.п.). В тексте ухода на сайте опечатка «темппературе» — в care записано «температуре»."
+}

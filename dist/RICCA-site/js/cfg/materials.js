@@ -438,7 +438,23 @@ const LEATHER_FINISH = {
   'зернистая': { rough: 0.5, nScale: 0.9, clearcoat: 0.12, clearcoatRough: 0.45 },
   'винтаж': { rough: 0.6, nScale: 0.6, clearcoat: 0.04, clearcoatRough: 0.55, albAmp: 0.08 },
 };
+/* ткани, у которых от поставщика есть только фото «в складку» (js/fabrics-data.js: у цвета "plain3d": true): в 3D — ровный цвет
+   образца с фактурой вида ткани, фото на изделие не натягиваем. Плитка из закрученной складки давала на изделии «ёлочку» и
+   разводы (25 ноября: Rafael, Paradise, Cano, Cayman, Mone и др.). На экране «Ткани» и в образцах фото остаётся как есть */
+let plain3dSet = null;
+function isPlain3d(src) {
+  if (!src) return false;
+  if (!plain3dSet) {
+    plain3dSet = new Set();
+    try {
+      const lib = typeof window !== 'undefined' ? window.RICCA_FABRIC_LIBRARY : null;
+      for (const t of (lib && lib.types) || []) for (const c of t.collections || []) for (const x of c.colours || []) if (x && x.plain3d) for (const k of [x.src450, x.src900]) if (k) plain3dSet.add(String(k));
+    } catch (e) { /* библиотеки нет — все ткани с фото, как раньше */ }
+  }
+  return plain3dSet.has(String(src));
+}
 export function fabricMaterial({ hex = '#E9E4DA', kind = 'velour', src450 = null, src900 = null, quality, collectionId = '', finish = '' } = {}) {
+  if (isPlain3d(src450) || isPlain3d(src900)) { src450 = null; src900 = null; }
   if (!KINDS.includes(kind)) kind = 'velour';
   const q = quality || defaultQuality;
   /* 15 ноября (владелец: «3D реалистичнее, текстурнее», смотрит с iPhone): телефон (mid) получает ту же ткань, что компьютер, —

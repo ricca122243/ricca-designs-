@@ -1,0 +1,249 @@
+{
+  "id": "noblesse",
+  "title": "NOBLESSE",
+  "supplier": "Domiart",
+  "kind": "шенилл",
+  "source_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+  "specs": {
+    "composition": "100% полиэстер",
+    "martindale": 100000,
+    "weight": "520 г/м²",
+    "width": "140 см",
+    "country": null,
+    "care": "Не гладить, не тереть абразивом, не отбеливать; чистить аккуратно тряпочкой, смоченной в мыльном растворе, лёгкие загрязнения удалять антибактериальной салфеткой (или тряпочкой из микрофибры с антисептиком); избегать химических моющих средств с сильными кислотами и щелочами; допускается профессиональная сухая и мокрая чистка, кроме машинной стирки; не стирать и не замачивать; барабанная сушка запрещена; беречь от прямых солнечных лучей, держать не ближе метра от отопительных приборов, избегать острых объектов",
+    "other": [
+      "Тест Мартиндейла в спецификации: «> 100 000 циклов»",
+      "Пиллингуемость: 4 (ISO 12945-2:2000)",
+      "Стойкость цвета к мокрому трению: 4 (ISO 105 X12-2016)",
+      "Плотно соткан и закреплён по технологии коатинга",
+      "Декларация соответствия ЕАЭС N RU Д-CN.РА01.В.93142/25",
+      "Стойкость цвета к свету: 4 (ISO 105 B02-2014)",
+      "Стойкость цвета к сухому трению: 5 (ГОСТ 9733.27-83)",
+      "Содержание формальдегида: не обнаружено (ГОСТ ISO 14184-1-2014)"
+    ]
+  },
+  "spec_source": "https://k-domiart.ru/assets/files/noblesse_210h297_40_domiart.pdf",
+  "colours": [
+    {
+      "code": "18",
+      "name": "18 Milk/Молочный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_0250.jpg",
+      "file": "img/18.jpg",
+      "w": 2600,
+      "h": 1733,
+      "pantone": "11-4300 TCX Marshmallow"
+    },
+    {
+      "code": "01",
+      "name": "01 Cream/Кремовый",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_9156-noblesse-01.jpg",
+      "file": "img/01.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "12-5202 TCX Turtledove"
+    },
+    {
+      "code": "02",
+      "name": "02 Beige/Бежевый",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_0526-noblesse-2.jpg",
+      "file": "img/02.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "15-1304 TCX Humus"
+    },
+    {
+      "code": "03",
+      "name": "03 Cocoa/Какао",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_0790-noblesse_03.jpg",
+      "file": "img/03.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "15-1213 TCX Candied Ginger"
+    },
+    {
+      "code": "04",
+      "name": "04 Espresso/Эспрессо",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_1056-noblesse-4.jpg",
+      "file": "img/04.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "18-1015 TCX Shitake"
+    },
+    {
+      "code": "05",
+      "name": "05 Bear/Медведь",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_1290-noblesse-05.jpg",
+      "file": "img/05.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "18-1048 TCX Monk's Robe"
+    },
+    {
+      "code": "06",
+      "name": "06 Terracotta/Терракот",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_1552-noblesse-06.jpg",
+      "file": "img/06.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "18-1142 TCX Leather Brown"
+    },
+    {
+      "code": "07",
+      "name": "07 Rose/Розовый",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_7552-noblesse-07.jpg",
+      "file": "img/07.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "14-1307 TCX Rose Dust"
+    },
+    {
+      "code": "12",
+      "name": "12 Mineral/Минеральный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_4181-noblesse-12.jpg",
+      "file": "img/12.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "15-4305 TCX Quarry"
+    },
+    {
+      "code": "13",
+      "name": "13 Night/Ночь",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_3792-noblesse-13.jpg",
+      "file": "img/13.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "19-4125 TPG Majolica Blue"
+    },
+    {
+      "code": "15",
+      "name": "15 Lazur/Лазурный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_3502-noblesse-15.jpg",
+      "file": "img/15.jpg",
+      "w": 2600,
+      "h": 1733,
+      "pantone": "18-5115 TCX North Sea"
+    },
+    {
+      "code": "16",
+      "name": "16 Forest/Лесной",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_3216-noblesse-16.jpg",
+      "file": "img/16.jpg",
+      "w": 2600,
+      "h": 1733,
+      "pantone": "19-0323 TCX Chive"
+    },
+    {
+      "code": "17",
+      "name": "17 Herbal/Травяной",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_1843-noblesse-17.jpg",
+      "file": "img/17.jpg",
+      "w": 2600,
+      "h": 1733,
+      "pantone": "18-0538 TCX Woodbine"
+    },
+    {
+      "code": "14",
+      "name": "14 Mustard/Горчичный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_8716-noblesse-14.jpg",
+      "file": "img/14.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "16-0639 TCX Golden Olive"
+    },
+    {
+      "code": "08",
+      "name": "08 Silver/Серебряный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_9860-noblesse-08.jpg",
+      "file": "img/08.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "14-4203 TPX Vapor Blue"
+    },
+    {
+      "code": "09",
+      "name": "09 Elephante/Слон",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_9548-noblesse-09.jpg",
+      "file": "img/09.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "16-5101 TPG Wet Weather"
+    },
+    {
+      "code": "10",
+      "name": "10 Smoke/Дымный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_8288-noblesse-10.jpg",
+      "file": "img/10.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "18-4016 TPG December Sky"
+    },
+    {
+      "code": "11",
+      "name": "11 Graphite/Графитовый",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/img_7867-noblesse-11.jpg",
+      "file": "img/11.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "18-0503 TPG Gargoyle"
+    },
+    {
+      "code": "20",
+      "name": "20 Sand/Песок",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/new/noblesse-20-1.jpg",
+      "file": "img/20.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null
+    },
+    {
+      "code": "21",
+      "name": "21 Biscuit/Бисквит",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/new/noblesse-21-1.jpg",
+      "file": "img/21.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null
+    },
+    {
+      "code": "22",
+      "name": "22 Platinum/Платина",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/new/noblesse-22-1.jpg",
+      "file": "img/22.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null
+    },
+    {
+      "code": "23",
+      "name": "23 Steel/Сталь",
+      "page_url": "https://k-domiart.ru/catalog/shenill/noblesse1.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/noblesse/new/noblesse-23-1.jpg",
+      "file": "img/23.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null
+    }
+  ],
+  "notes": "Цвета на странице — плитки с кодами; у каждого цвета своя галерея (подгружается запросом сайта ajax/podgruzka-galerei-dlya-vybrannogo-cveta.html): кадр со складками (он же миниатюра плитки) и плоский образец. Взят плоский образец, оригинал с сайта, без пересохранения. Порядок цветов — как плитки на странице (не по возрастанию кодов). Характеристик в тексте страницы нет — они в PDF «Техническая спецификация», ссылка на который стоит на странице коллекции (файл лежит рядом с meta.json). Страна производства прямо не указана (в номере декларации ЕАЭС стоит код CN) — оставлено null. Поле pantone у цветов — как на сайте. Адрес страницы — noblesse1.html. 22 цвета: 01–18 и 20–23, кода 19 у поставщика нет; у цветов 20–23 Pantone не указан. Цвет 10 Smoke: сайт по ошибке показывает в его галерее фото цвета 09; настоящий плоский кадр цвета 10 (img_8288-noblesse-10.jpg) лежит на сайте рядом и найден по шаблону имён остальных цветов — на странице он не подключён, цвет на листе проверен (темнее 09). Тест Мартиндейла в спецификации — «> 100 000 циклов», в martindale записано 100000. Фото цветов 18, 15, 16, 17 — 2600×1733, остальные 2000×1333. Бирка на вешалке (шенилл, 520 г/м², > 100 000 циклов) совпадает с сайтом."
+}

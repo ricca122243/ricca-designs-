@@ -1,0 +1,37 @@
+{
+ "id": "cayman",
+ "title": "CAYMAN",
+ "kind": "искусственный мех",
+ "type": "meh",
+ "facts": [
+  "35 000 циклов",
+  "833 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Кайман / Cayman 01",
+   "hex": "#cec3b8",
+   "plain3d": true,
+   "fold": 0.084,
+   "src1200": "img/fabrics/official/cayman/01-1200.webp",
+   "src600": "img/fabrics/official/cayman/01-600.webp",
+   "thumb": "img/fabrics/official/cayman/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Кайман / Cayman 02",
+   "hex": "#cccbca",
+   "plain3d": true,
+   "fold": 0.076,
+   "src1200": "img/fabrics/official/cayman/02-1200.webp",
+   "src600": "img/fabrics/official/cayman/02-600.webp",
+   "thumb": "img/fabrics/official/cayman/02-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

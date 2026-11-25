@@ -1,0 +1,170 @@
+{
+  "id": "river",
+  "title": "RIVER",
+  "supplier": "Domiart",
+  "kind": "велюр",
+  "source_url": "https://k-domiart.ru/catalog/velyur/river.html",
+  "specs": {
+    "composition": "100% полиэстер",
+    "martindale": 145000,
+    "weight": "420 г/м²",
+    "width": "≥ 140 см",
+    "country": null,
+    "care": "Не гладить, не тереть абразивом, не отбеливать; чистить аккуратно тряпочкой, смоченной в мыльном растворе, лёгкие загрязнения удалять антибактериальной салфеткой (или тряпочкой из микрофибры с антисептиком); избегать химических моющих средств с сильными кислотами и щелочами; допускается профессиональная сухая и мокрая чистка, кроме машинной стирки; не стирать и не замачивать; барабанная сушка запрещена; беречь от прямых солнечных лучей, держать не ближе метра от отопительных приборов, избегать острых объектов",
+    "other": [
+      "Пиллингуемость: 4-5 (ISO 12945-2:2000)",
+      "Стойкость цвета к мокрому трению: 4 (ISO 105 X12-2016)",
+      "Прочность на разрыв: основа 51 (стандарт ≥ 40 N, ISO 13937-2:2000)",
+      "Устойчивость цвета к потоотделению: 5 (ГОСТ 9733.6-83)",
+      "Трикотажное двухслойное полотно",
+      "Декларация соответствия ЕАЭС N RU Д-CN.РА05.В.71701/22",
+      "Стойкость цвета к свету: 4 (ISO 105 B02-2014)",
+      "Стойкость цвета к сухому трению: 5 (ГОСТ 9733.27-83)",
+      "Содержание формальдегида: не обнаружено (ГОСТ ISO 14184-1-2014)"
+    ]
+  },
+  "spec_source": "https://k-domiart.ru/assets/files/river_domiart.pdf",
+  "colours": [
+    {
+      "code": "01",
+      "name": "01 Cream/Крем",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-01-img_9554.jpg",
+      "file": "img/01.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "13-0000 TPG - Moonbeam"
+    },
+    {
+      "code": "02",
+      "name": "02 Tofu/Тофу",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-02-img_9763.jpg",
+      "file": "img/02.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "13-0401 TPG - Oatmeal"
+    },
+    {
+      "code": "03",
+      "name": "03 Taupe/Тауп",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-03-img_9938.jpg",
+      "file": "img/03.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "15-1305 TPG - Feather Gray"
+    },
+    {
+      "code": "08",
+      "name": "08 Cocoa/Какао",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-08-img_0150.jpg",
+      "file": "img/08.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-0809 TPG - Chocolate Chip"
+    },
+    {
+      "code": "09",
+      "name": "09 Carrot/Морковный",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-09-img_2477.jpg",
+      "file": "img/09.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "17-1046 TPG - Golden Oak"
+    },
+    {
+      "code": "10",
+      "name": "10 Corn/Кукурузный",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-10-img_2674.jpg",
+      "file": "img/10.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "16-1054 TPG - Sunflower"
+    },
+    {
+      "code": "07",
+      "name": "07 Rose/Роза",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-7-img_2294.jpg",
+      "file": "img/07.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "16-1522 TPG - Rose Down"
+    },
+    {
+      "code": "11",
+      "name": "11 Olive/Оливковый",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-11-img_3126.jpg",
+      "file": "img/11.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "16-0737 TPG - Burnished Gold"
+    },
+    {
+      "code": "12",
+      "name": "12 Herbal/Травяной",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-12-img_3326.jpg",
+      "file": "img/12.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "18-0220 TPG - Mayfly"
+    },
+    {
+      "code": "13",
+      "name": "13 Sapphire/Сапфир",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-13-img_3540.jpg",
+      "file": "img/13.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-4125 TPG - Majolica Blue"
+    },
+    {
+      "code": "04",
+      "name": "04 Silver/Серебро",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-04-img_3788.jpg",
+      "file": "img/04.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "15-4101 TPG - High-rise"
+    },
+    {
+      "code": "05",
+      "name": "05 Anthracite/Антрацит",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-05-img_3999.jpg",
+      "file": "img/05.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "15-4306 TPG - Belgian Block"
+    },
+    {
+      "code": "06",
+      "name": "06 Steel/Сталь",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-06-img_4180.jpg",
+      "file": "img/06.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "18-5203 TPG - Pewter"
+    },
+    {
+      "code": "14",
+      "name": "14 Shadow/Дымчатый",
+      "page_url": "https://k-domiart.ru/catalog/velyur/river.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/river/river-14-img_4368.jpg",
+      "file": "img/14.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-3911 TPG - Black Beauty"
+    }
+  ],
+  "notes": "Цвета на странице — плитки с кодами; у каждого цвета своя галерея (подгружается запросом сайта ajax/podgruzka-galerei-dlya-vybrannogo-cveta.html): кадр со складками (он же миниатюра плитки) и плоский образец. Взят плоский образец, оригинал с сайта, без пересохранения. Порядок цветов — как плитки на странице (не по возрастанию кодов). Характеристик в тексте страницы нет — они в PDF «Техническая спецификация», ссылка на который стоит на странице коллекции (файл лежит рядом с meta.json). Страна производства прямо не указана (в номере декларации ЕАЭС стоит код CN) — оставлено null. Поле pantone у цветов — как на сайте. PDF — картинка без текстового слоя, значения прочитаны с листа. Бирка на вешалке (велюр, 420 г/м², 145 000 циклов) совпадает с сайтом."
+}

@@ -1,0 +1,79 @@
+{
+  "id": "salon",
+  "title": "SALON",
+  "supplier": "No Frames",
+  "kind": "шенилл",
+  "source_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/salon-salon/",
+  "specs": {
+    "composition": "100% Полиэстер",
+    "martindale": 60000,
+    "weight": "940 г/м.п.",
+    "width": "140 см",
+    "country": "Турция",
+    "care": "не отбеливать; не гладить; химчистка; ручная стирка при 30 °C; не сушить в барабане",
+    "other": [
+      "Антибактериальность: да",
+      "Устойчивость к износу (трению): 4",
+      "Устойчивость к свету: 4",
+      "Устойчивость к химчистке: 4",
+      "Раппорт (ширина, длина), см: 30,5х13"
+    ]
+  },
+  "colours": [
+    {
+      "code": "06",
+      "name": "Salon 06",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/salon-salon/salon-col-06/",
+      "image_url": "https://no-frames.ru/images/detailed/25/salon_col.06-6_1000.jpg",
+      "file": "img/06.jpg",
+      "w": 1000,
+      "h": 666
+    },
+    {
+      "code": "01",
+      "name": "Salon 01",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/salon-salon/salon-col-01/",
+      "image_url": "https://no-frames.ru/images/detailed/25/salon-col1-1.jpg",
+      "file": "img/01.jpg",
+      "w": 980,
+      "h": 653
+    },
+    {
+      "code": "02",
+      "name": "Salon 02",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/salon-salon/salon-col-02/",
+      "image_url": "https://no-frames.ru/images/detailed/25/salon-col2-2.jpg",
+      "file": "img/02.jpg",
+      "w": 980,
+      "h": 653
+    },
+    {
+      "code": "03",
+      "name": "Salon 03",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/salon-salon/salon-col-03/",
+      "image_url": "https://no-frames.ru/images/detailed/25/salon-col3-3.jpg",
+      "file": "img/03.jpg",
+      "w": 980,
+      "h": 653
+    },
+    {
+      "code": "04",
+      "name": "Salon 04",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/salon-salon/salon-col-04/",
+      "image_url": "https://no-frames.ru/images/detailed/25/salon-col4-4.jpg",
+      "file": "img/04.jpg",
+      "w": 980,
+      "h": 653
+    },
+    {
+      "code": "05",
+      "name": "Salon 05",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/mebelnaya-tkan-shenill/salon-salon/salon-col-05/",
+      "image_url": "https://no-frames.ru/images/detailed/25/salon-col5-5.jpg",
+      "file": "img/05.jpg",
+      "w": 980,
+      "h": 653
+    }
+  ],
+  "notes": "В листинге раздела 6 цветов. Порядок цветов — как в листинге раздела на сайте (сортировка по умолчанию «Новинки выше», т. е. по дате добавления товара), а не по номерам. У товара два фото: первое — драпировка, второе — плоский образец; взято второе (драпировки — в extra/). Вес на сайте назван «Общий вес (гр./м.п)». Уход на сайте — только пиктограммы во вкладке «Уход»; строка care — их расшифровка. Названий у цветов нет, только номера; товар на сайте называется «Ткань мебельная \"САЛОН\" (Salon) 06» (name = латинское/основное название + номер)."
+}

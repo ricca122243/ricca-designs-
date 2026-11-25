@@ -1,0 +1,114 @@
+{
+ "id": "les",
+ "title": "LES",
+ "kind": "шенилл",
+ "type": "shenill",
+ "facts": [
+  "70 000 циклов",
+  "630 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Les 01",
+   "hex": "#f4f3f0",
+   "plain3d": false,
+   "fold": 0.017,
+   "src1200": "img/fabrics/official/les/01-1200.webp",
+   "src600": "img/fabrics/official/les/01-600.webp",
+   "thumb": "img/fabrics/official/les/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Les 02",
+   "hex": "#efe7de",
+   "plain3d": false,
+   "fold": 0.013,
+   "src1200": "img/fabrics/official/les/02-1200.webp",
+   "src600": "img/fabrics/official/les/02-600.webp",
+   "thumb": "img/fabrics/official/les/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Les 03",
+   "hex": "#d3c2b3",
+   "plain3d": false,
+   "fold": 0.02,
+   "src1200": "img/fabrics/official/les/03-1200.webp",
+   "src600": "img/fabrics/official/les/03-600.webp",
+   "thumb": "img/fabrics/official/les/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Les 04",
+   "hex": "#93785e",
+   "plain3d": false,
+   "fold": 0.039,
+   "src1200": "img/fabrics/official/les/04-1200.webp",
+   "src600": "img/fabrics/official/les/04-600.webp",
+   "thumb": "img/fabrics/official/les/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Les 05",
+   "hex": "#623628",
+   "plain3d": false,
+   "fold": 0.052,
+   "src1200": "img/fabrics/official/les/05-1200.webp",
+   "src600": "img/fabrics/official/les/05-600.webp",
+   "thumb": "img/fabrics/official/les/05-160.webp"
+  },
+  {
+   "code": "06",
+   "label": "06",
+   "name": "Les 06",
+   "hex": "#40593a",
+   "plain3d": false,
+   "fold": 0.066,
+   "src1200": "img/fabrics/official/les/06-1200.webp",
+   "src600": "img/fabrics/official/les/06-600.webp",
+   "thumb": "img/fabrics/official/les/06-160.webp"
+  },
+  {
+   "code": "07",
+   "label": "07",
+   "name": "Les 07",
+   "hex": "#2a2e1f",
+   "plain3d": false,
+   "fold": 0.084,
+   "src1200": "img/fabrics/official/les/07-1200.webp",
+   "src600": "img/fabrics/official/les/07-600.webp",
+   "thumb": "img/fabrics/official/les/07-160.webp"
+  },
+  {
+   "code": "08",
+   "label": "08",
+   "name": "Les 08",
+   "hex": "#3b3a3d",
+   "plain3d": false,
+   "fold": 0.082,
+   "src1200": "img/fabrics/official/les/08-1200.webp",
+   "src600": "img/fabrics/official/les/08-600.webp",
+   "thumb": "img/fabrics/official/les/08-160.webp"
+  },
+  {
+   "code": "09",
+   "label": "09",
+   "name": "Les 09",
+   "hex": "#a7a9ac",
+   "plain3d": false,
+   "fold": 0.013,
+   "src1200": "img/fabrics/official/les/09-1200.webp",
+   "src600": "img/fabrics/official/les/09-600.webp",
+   "thumb": "img/fabrics/official/les/09-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

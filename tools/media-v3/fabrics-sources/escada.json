@@ -1,0 +1,220 @@
+{
+  "id": "escada",
+  "title": "ESCADA",
+  "supplier": "Domiart",
+  "kind": "шенилл",
+  "source_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+  "specs": {
+    "composition": "100% полиэстер",
+    "martindale": 105000,
+    "weight": "490 г/м²",
+    "width": "140 см",
+    "country": null,
+    "care": "Не гладить, не тереть абразивом, не отбеливать; чистить аккуратно тряпочкой, смоченной в мыльном растворе, лёгкие загрязнения удалять антибактериальной салфеткой (или тряпочкой из микрофибры с антисептиком); избегать химических моющих средств с сильными кислотами и щелочами; допускается профессиональная сухая и мокрая чистка, кроме машинной стирки; не стирать и не замачивать; барабанная сушка запрещена; беречь от прямых солнечных лучей, держать не ближе метра от отопительных приборов, избегать острых объектов",
+    "other": [
+      "Пиллингуемость: 4 (ISO 12945-2:2000)",
+      "Стойкость цвета к мокрому трению: 4 (ISO 105 X12-2016)",
+      "Прочность на разрыв: основа 159.7, уток 168.5 (стандарт ≥ 40 N, ISO 13937-2:2000)",
+      "Устойчивость цвета к потоотделению: 5/5 (ГОСТ 9733.6-83)",
+      "Шенилл полотняного плетения из скрученных (Twisted) шенильных нитей; подложка не нужна",
+      "Декларация соответствия ЕАЭС N RU Д-CN.РА01.В.93142/25",
+      "Стойкость цвета к свету: 4 (ISO 105 B02-2014)",
+      "Стойкость цвета к сухому трению: 5 (ГОСТ 9733.27-83)",
+      "Содержание формальдегида: не обнаружено (ГОСТ ISO 14184-1-2014)"
+    ]
+  },
+  "spec_source": "https://k-domiart.ru/assets/files/escada_domiart_210h297_40.pdf",
+  "colours": [
+    {
+      "code": "121",
+      "name": "121 Cotton/Хлопок",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-121-img_9639.jpg",
+      "file": "img/121.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "11-0602 Tpg Snow White"
+    },
+    {
+      "code": "111",
+      "name": "111 Linen",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-111-img_2647.jpg",
+      "file": "img/111.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "12-5202 Tcx Turtledove"
+    },
+    {
+      "code": "131",
+      "name": "131 Powder/Пудра",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escads-131-img_0063.jpg",
+      "file": "img/131.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "15-1304 Tcx Humus"
+    },
+    {
+      "code": "141",
+      "name": "141 Brown/Коричневый",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-141-img_0544.jpg",
+      "file": "img/141.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "19-1116 Tcx Carafe"
+    },
+    {
+      "code": "171",
+      "name": "171 Zephyr/Зефир",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-171-img_8887.jpg",
+      "file": "img/171.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "14-1307 Tpx Rose Dust"
+    },
+    {
+      "code": "191",
+      "name": "191 Marsala/Марсала",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-191-img_0719.jpg",
+      "file": "img/191.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "19-1930 Tcx Pomegranate"
+    },
+    {
+      "code": "181",
+      "name": "181 Bordo/Бордо",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-181-img_8368.jpg",
+      "file": "img/181.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "18-1325 TCX Spiced Apple"
+    },
+    {
+      "code": "151",
+      "name": "151 Brick/Кирпичный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-151-img_0915.jpg",
+      "file": "img/151.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "18-1246 Tcx Umber"
+    },
+    {
+      "code": "161",
+      "name": "161 Carrot/Морковный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-161-img_9049.jpg",
+      "file": "img/161.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "16-1143 Tcx Honey Yellow"
+    },
+    {
+      "code": "101",
+      "name": "101 Mustard/Горчичный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-101-img_9847.jpg",
+      "file": "img/101.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "16-0840 TPG Antique Moss"
+    },
+    {
+      "code": "91",
+      "name": "91 Grass/Трава",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-91-img_1360.jpg",
+      "file": "img/91.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "18-0538 Tcx Woodbine"
+    },
+    {
+      "code": "81",
+      "name": "81 Herbal/Травяной",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-81-img_1603.jpg",
+      "file": "img/81.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "19-0323 TCX Chive"
+    },
+    {
+      "code": "71",
+      "name": "71 Ocean/Океан",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-71-img_8072.jpg",
+      "file": "img/71.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "18-4522 Tcx Colonial Blue"
+    },
+    {
+      "code": "61",
+      "name": "61 Sapphire/Сапфир",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-61-img_7836.jpg",
+      "file": "img/61.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "19-4326 Tcx Reflecting"
+    },
+    {
+      "code": "51",
+      "name": "51 Storm/Шторм",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-51-img_9247.jpg",
+      "file": "img/51.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "16-4010 TCX Dusty Blue"
+    },
+    {
+      "code": "11",
+      "name": "11 Smoke/Дымный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-11-img_1130.jpg",
+      "file": "img/11.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "16-3916 Tpg Sleet"
+    },
+    {
+      "code": "21",
+      "name": "21 Mouse/Мышиный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-21-img_0276.jpg",
+      "file": "img/21.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "17-3914 TCX Sharkskin"
+    },
+    {
+      "code": "31",
+      "name": "31 Umber/Умбер",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-31-img_9420.jpg",
+      "file": "img/31.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "18-0513 Tcx Bungee Cord"
+    },
+    {
+      "code": "41",
+      "name": "41 Charcoal/Угольный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/escada.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/escada/escada-41-img_8633.jpg",
+      "file": "img/41.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": "19-3907 TCX Forged Iron"
+    }
+  ],
+  "notes": "Цвета на странице — плитки с кодами; у каждого цвета своя галерея (подгружается запросом сайта ajax/podgruzka-galerei-dlya-vybrannogo-cveta.html): кадр со складками (он же миниатюра плитки) и плоский образец. Взят плоский образец, оригинал с сайта, без пересохранения. Порядок цветов — как плитки на странице (не по возрастанию кодов). Характеристик в тексте страницы нет — они в PDF «Техническая спецификация», ссылка на который стоит на странице коллекции (файл лежит рядом с meta.json). Страна производства прямо не указана (в номере декларации ЕАЭС стоит код CN) — оставлено null. Поле pantone у цветов — как на сайте. Коды у поставщика — 11, 21 … 191 (не 01…19). У цвета 111 на сайте только английское название («111 Linen»). Бирка на вешалке (шенилл, 490 г/м², 105 000 циклов) совпадает с сайтом."
+}

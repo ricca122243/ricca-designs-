@@ -1,0 +1,130 @@
+{
+  "id": "rialto",
+  "title": "RIALTO",
+  "supplier": "Domiart",
+  "kind": "микрошенилл",
+  "source_url": "https://k-domiart.ru/catalog/shenill/rialto.html",
+  "specs": {
+    "composition": "60% PES chenille (ворс — полиэстровый шенилл), 40% PES (основа — полиэстер)",
+    "martindale": 60000,
+    "weight": "485 г/м²",
+    "width": "≥ 140 см",
+    "country": null,
+    "care": "Не гладить, не тереть абразивом, не отбеливать; чистить аккуратно тряпочкой, смоченной в мыльном растворе, лёгкие загрязнения удалять антибактериальной салфеткой (или тряпочкой из микрофибры с антисептиком); избегать химических моющих средств с сильными кислотами и щелочами; допускается профессиональная сухая и мокрая чистка, кроме машинной стирки; не стирать и не замачивать; барабанная сушка запрещена; беречь от прямых солнечных лучей, держать не ближе метра от отопительных приборов, избегать острых объектов",
+    "other": [
+      "Пиллингуемость: 4 (ISO 12945-2:2000)",
+      "Стойкость цвета к мокрому трению: 4-5 (ISO 105 X12-2016)",
+      "Прочность на разрыв: основа 72 N, уток 82 N (стандарт ≥ 40 N, ISO 13937-2:2000)",
+      "Устойчивость цвета к потоотделению: 5/5 (ГОСТ 9733.6-83)",
+      "Трикотажная подложка",
+      "Декларация соответствия ЕАЭС N RU Д-CN.РА10.В.37880/24",
+      "Стойкость цвета к свету: 4 (ISO 105 B02-2014)",
+      "Стойкость цвета к сухому трению: 5 (ГОСТ 9733.27-83)",
+      "Содержание формальдегида: не обнаружено (ГОСТ ISO 14184-1-2014)"
+    ]
+  },
+  "spec_source": "https://k-domiart.ru/assets/files/rialto_domiart_.pdf",
+  "colours": [
+    {
+      "code": "2",
+      "name": "2 White Quartz/Белый Кварц",
+      "page_url": "https://k-domiart.ru/catalog/shenill/rialto.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/rialto/full_rialto_2_img_0348_new.jpg",
+      "file": "img/2.jpg",
+      "w": 753,
+      "h": 554,
+      "pantone": "13-0000 Tpg Moonbeam"
+    },
+    {
+      "code": "3",
+      "name": "3 Pearl/Жемчуг",
+      "page_url": "https://k-domiart.ru/catalog/shenill/rialto.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/rialto/full_rialto_3_img_0396_new.jpg",
+      "file": "img/3.jpg",
+      "w": 753,
+      "h": 554,
+      "pantone": "14-1106 Tpg Peyote"
+    },
+    {
+      "code": "4",
+      "name": "4 Smoky Quartz/Дымчатый Кварц",
+      "page_url": "https://k-domiart.ru/catalog/shenill/rialto.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/rialto/full_rialto_4_img_0384_new.jpg",
+      "file": "img/4.jpg",
+      "w": 753,
+      "h": 554,
+      "pantone": "16-1105 TCX Plaza Taupe"
+    },
+    {
+      "code": "9",
+      "name": "9 Aquamarine/Аквамарин",
+      "page_url": "https://k-domiart.ru/catalog/shenill/rialto.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/rialto/full_rialto_9_img_0366_new.jpg",
+      "file": "img/9.jpg",
+      "w": 753,
+      "h": 554,
+      "pantone": "16-5106 Tcx Blue Surf"
+    },
+    {
+      "code": "14",
+      "name": "14 White Gold/Белое Золото",
+      "page_url": "https://k-domiart.ru/catalog/shenill/rialto.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/rialto/full_rialto_14_img_0333_new.jpg",
+      "file": "img/14.jpg",
+      "w": 753,
+      "h": 554,
+      "pantone": "14-4103 Tpx Gray Violet"
+    },
+    {
+      "code": "16",
+      "name": "16 Silver/Серебристый",
+      "page_url": "https://k-domiart.ru/catalog/shenill/rialto.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/rialto/full_rialto_16_img_0411_new.jpg",
+      "file": "img/16.jpg",
+      "w": 753,
+      "h": 554,
+      "pantone": "16-4703 Tcx Ghost Gray"
+    },
+    {
+      "code": "17",
+      "name": "17 Graphit/Графит",
+      "page_url": "https://k-domiart.ru/catalog/shenill/rialto.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/rialto/full_rialto_17_img_0300_new.jpg",
+      "file": "img/17.jpg",
+      "w": 753,
+      "h": 554,
+      "pantone": "18-0306 Tcx Gunmetal"
+    },
+    {
+      "code": "12",
+      "name": "12 Blue Apatite/Голубой Апатит",
+      "page_url": "https://k-domiart.ru/catalog/shenill/rialto.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/rialto/full_rialto_12_img_0261_new.jpg",
+      "file": "img/12.jpg",
+      "w": 753,
+      "h": 554,
+      "pantone": "19-4229 Tpx Orion Blue"
+    },
+    {
+      "code": "13",
+      "name": "13 Sapphire/Сапфир",
+      "page_url": "https://k-domiart.ru/catalog/shenill/rialto.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/rialto/full_rialto_13_img_0277_new.jpg",
+      "file": "img/13.jpg",
+      "w": 753,
+      "h": 554,
+      "pantone": "19-4121 Tcx Blue Wing Teal"
+    },
+    {
+      "code": "10",
+      "name": "10 Chrysolite/Хризолит",
+      "page_url": "https://k-domiart.ru/catalog/shenill/rialto.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/rialto/full_rialto_10_img_0319_new.jpg",
+      "file": "img/10.jpg",
+      "w": 753,
+      "h": 554,
+      "pantone": "18-0420 Tcx Four Leaf Clover"
+    }
+  ],
+  "notes": "Цвета на странице — плитки с кодами; у каждого цвета своя галерея (подгружается запросом сайта ajax/podgruzka-galerei-dlya-vybrannogo-cveta.html): кадр со складками (он же миниатюра плитки) и плоский образец. Взят плоский образец, оригинал с сайта, без пересохранения. Порядок цветов — как плитки на странице (не по возрастанию кодов). Характеристик в тексте страницы нет — они в PDF «Техническая спецификация», ссылка на который стоит на странице коллекции (файл лежит рядом с meta.json). Страна производства прямо не указана (в номере декларации ЕАЭС стоит код CN) — оставлено null. Поле pantone у цветов — как на сайте. PDF — картинка без текстового слоя, значения прочитаны с листа. На сайте коллекция лежит в разделе «Шенилл», а в спецификации и на бирке названа «микрошенилл» — в kind записано «микрошенилл». Фото цветов на сайте только маленькие, 753×554 — больше сайт не отдаёт (в PDF-презентации образцы ещё мельче, 446×228). В описании спецификации написано «< 60 000 циклов истирания», в таблице — «60 000 циклов»; в martindale записано 60000. Pantone на странице и в PDF-презентации у нескольких цветов разный — в поле pantone значение со страницы. Вторая ссылка со страницы — PDF-презентация (rialto_presentation_domiart-3.pdf, лежит рядом): там ширина «140 см», в спецификации «≥ 140 см». Бирка на вешалке (микрошенилл, полиэстер 40% / полиэстровый шенилл 60%, 485 г/м², 60 000 циклов) совпадает с сайтом."
+}

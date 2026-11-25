@@ -1,0 +1,136 @@
+{
+ "id": "paradise",
+ "title": "PARADISE",
+ "kind": "рогожка",
+ "type": "rogozhka",
+ "facts": [
+  "60 000 циклов",
+  "714 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Парадайз / Paradise 01",
+   "hex": "#a2a9a3",
+   "plain3d": true,
+   "fold": 0.054,
+   "src1200": "img/fabrics/official/paradise/01-1200.webp",
+   "src600": "img/fabrics/official/paradise/01-600.webp",
+   "thumb": "img/fabrics/official/paradise/01-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Парадайз / Paradise 03",
+   "hex": "#918f80",
+   "plain3d": true,
+   "fold": 0.057,
+   "src1200": "img/fabrics/official/paradise/03-1200.webp",
+   "src600": "img/fabrics/official/paradise/03-600.webp",
+   "thumb": "img/fabrics/official/paradise/03-160.webp"
+  },
+  {
+   "code": "10",
+   "label": "10",
+   "name": "Парадайз / Paradise 10",
+   "hex": "#848270",
+   "plain3d": true,
+   "fold": 0.04,
+   "src1200": "img/fabrics/official/paradise/10-1200.webp",
+   "src600": "img/fabrics/official/paradise/10-600.webp",
+   "thumb": "img/fabrics/official/paradise/10-160.webp"
+  },
+  {
+   "code": "12",
+   "label": "12",
+   "name": "Парадайз / Paradise 12",
+   "hex": "#413f37",
+   "plain3d": true,
+   "fold": 0.115,
+   "src1200": "img/fabrics/official/paradise/12-1200.webp",
+   "src600": "img/fabrics/official/paradise/12-600.webp",
+   "thumb": "img/fabrics/official/paradise/12-160.webp"
+  },
+  {
+   "code": "13",
+   "label": "13",
+   "name": "Парадайз / Paradise 13",
+   "hex": "#777f7a",
+   "plain3d": true,
+   "fold": 0.057,
+   "src1200": "img/fabrics/official/paradise/13-1200.webp",
+   "src600": "img/fabrics/official/paradise/13-600.webp",
+   "thumb": "img/fabrics/official/paradise/13-160.webp"
+  },
+  {
+   "code": "15",
+   "label": "15",
+   "name": "Парадайз / Paradise 15",
+   "hex": "#555d5a",
+   "plain3d": true,
+   "fold": 0.079,
+   "src1200": "img/fabrics/official/paradise/15-1200.webp",
+   "src600": "img/fabrics/official/paradise/15-600.webp",
+   "thumb": "img/fabrics/official/paradise/15-160.webp"
+  },
+  {
+   "code": "27",
+   "label": "27",
+   "name": "Парадайз / Paradise 27",
+   "hex": "#814f2d",
+   "plain3d": true,
+   "fold": 0.103,
+   "src1200": "img/fabrics/official/paradise/27-1200.webp",
+   "src600": "img/fabrics/official/paradise/27-600.webp",
+   "thumb": "img/fabrics/official/paradise/27-160.webp"
+  },
+  {
+   "code": "32",
+   "label": "32",
+   "name": "Парадайз / Paradise 32",
+   "hex": "#393c35",
+   "plain3d": true,
+   "fold": 0.114,
+   "src1200": "img/fabrics/official/paradise/32-1200.webp",
+   "src600": "img/fabrics/official/paradise/32-600.webp",
+   "thumb": "img/fabrics/official/paradise/32-160.webp"
+  },
+  {
+   "code": "33",
+   "label": "33",
+   "name": "Парадайз / Paradise 33",
+   "hex": "#1e292f",
+   "plain3d": true,
+   "fold": 0.155,
+   "src1200": "img/fabrics/official/paradise/33-1200.webp",
+   "src600": "img/fabrics/official/paradise/33-600.webp",
+   "thumb": "img/fabrics/official/paradise/33-160.webp"
+  },
+  {
+   "code": "35",
+   "label": "35",
+   "name": "Парадайз / Paradise 35",
+   "hex": "#242f26",
+   "plain3d": true,
+   "fold": 0.13,
+   "src1200": "img/fabrics/official/paradise/35-1200.webp",
+   "src600": "img/fabrics/official/paradise/35-600.webp",
+   "thumb": "img/fabrics/official/paradise/35-160.webp"
+  },
+  {
+   "code": "38",
+   "label": "38",
+   "name": "Парадайз / Paradise 38",
+   "hex": "#181c1f",
+   "plain3d": true,
+   "fold": 0.123,
+   "src1200": "img/fabrics/official/paradise/38-1200.webp",
+   "src600": "img/fabrics/official/paradise/38-600.webp",
+   "thumb": "img/fabrics/official/paradise/38-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

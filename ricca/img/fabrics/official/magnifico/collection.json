@@ -1,0 +1,59 @@
+{
+ "id": "magnifico",
+ "title": "MAGNIFICO",
+ "kind": "букле",
+ "type": "bukle",
+ "facts": [
+  "20 000 циклов",
+  "720 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Magnifico 01",
+   "hex": "#c7c4c0",
+   "plain3d": false,
+   "fold": 0.017,
+   "src1200": "img/fabrics/official/magnifico/01-1200.webp",
+   "src600": "img/fabrics/official/magnifico/01-600.webp",
+   "thumb": "img/fabrics/official/magnifico/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Magnifico 02",
+   "hex": "#bab7bb",
+   "plain3d": false,
+   "fold": 0.019,
+   "src1200": "img/fabrics/official/magnifico/02-1200.webp",
+   "src600": "img/fabrics/official/magnifico/02-600.webp",
+   "thumb": "img/fabrics/official/magnifico/02-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Magnifico 04",
+   "hex": "#8d837c",
+   "plain3d": false,
+   "fold": 0.032,
+   "src1200": "img/fabrics/official/magnifico/04-1200.webp",
+   "src600": "img/fabrics/official/magnifico/04-600.webp",
+   "thumb": "img/fabrics/official/magnifico/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Magnifico 05",
+   "hex": "#c2b464",
+   "plain3d": false,
+   "fold": 0.018,
+   "src1200": "img/fabrics/official/magnifico/05-1200.webp",
+   "src600": "img/fabrics/official/magnifico/05-600.webp",
+   "thumb": "img/fabrics/official/magnifico/05-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

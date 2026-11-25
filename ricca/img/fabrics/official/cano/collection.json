@@ -1,0 +1,59 @@
+{
+ "id": "cano",
+ "title": "CANO",
+ "kind": "букле",
+ "type": "bukle",
+ "facts": [
+  "65 000 циклов",
+  "952 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "21",
+   "label": "21",
+   "name": "Кано / Cano 21",
+   "hex": "#9e755e",
+   "plain3d": true,
+   "fold": 0.173,
+   "src1200": "img/fabrics/official/cano/21-1200.webp",
+   "src600": "img/fabrics/official/cano/21-600.webp",
+   "thumb": "img/fabrics/official/cano/21-160.webp"
+  },
+  {
+   "code": "22",
+   "label": "22",
+   "name": "Кано / Cano 22",
+   "hex": "#989f9f",
+   "plain3d": true,
+   "fold": 0.131,
+   "src1200": "img/fabrics/official/cano/22-1200.webp",
+   "src600": "img/fabrics/official/cano/22-600.webp",
+   "thumb": "img/fabrics/official/cano/22-160.webp"
+  },
+  {
+   "code": "23",
+   "label": "23",
+   "name": "Кано / Cano 23",
+   "hex": "#ab947b",
+   "plain3d": true,
+   "fold": 0.211,
+   "src1200": "img/fabrics/official/cano/23-1200.webp",
+   "src600": "img/fabrics/official/cano/23-600.webp",
+   "thumb": "img/fabrics/official/cano/23-160.webp"
+  },
+  {
+   "code": "24",
+   "label": "24",
+   "name": "Кано / Cano 24",
+   "hex": "#988558",
+   "plain3d": true,
+   "fold": 0.139,
+   "src1200": "img/fabrics/official/cano/24-1200.webp",
+   "src600": "img/fabrics/official/cano/24-600.webp",
+   "thumb": "img/fabrics/official/cano/24-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

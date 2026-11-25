@@ -168,7 +168,7 @@
   const FAB_KINDS = {
     'букле': 'bouclé', 'велюр': 'velour', 'велюр в рубчик': 'ribbed velour', 'искусственная замша': 'faux suede', 'микровелюр': 'microvelour',
     'микровелюр с муаром': 'microvelour with moiré', 'шенилл': 'chenille',
-    'рогожка': 'hopsack', 'мех': 'faux fur', 'искусственный мех': 'faux fur', 'микрошенилл': 'microchenille', 'трикотажный велюр': 'knitted velour', 'жаккард': 'jacquard',
+    'рогожка': 'hopsack', 'мех': 'faux fur', 'искусственный мех': 'faux fur', 'микрошенилл': 'microchenille', 'трикотажный велюр': 'knitted velour', 'жаккард': 'jacquard', 'микровелюр стёганый': 'quilted microvelour', '«гусиная лапка»': 'houndstooth',
     'экокожа': 'faux leather', 'зернистая': 'grained', 'гладкая': 'smooth', 'винтаж': 'vintage',
   };
   const COLOURS = { 'Серый меланж': 'Grey mélange', 'Графит': 'Graphite', 'Тёмно-зелёный': 'Dark green', 'Молочный': 'Milk white', 'Серо-бежевый': 'Greige',

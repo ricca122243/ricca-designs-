@@ -1,0 +1,210 @@
+{
+  "id": "bernar",
+  "title": "BERNAR",
+  "supplier": "Domiart",
+  "kind": "велюр",
+  "source_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+  "specs": {
+    "composition": "100% полиэстер",
+    "martindale": 105000,
+    "weight": "480 г/м²",
+    "width": "≥ 140 см",
+    "country": null,
+    "care": "Не гладить, не тереть абразивом, не отбеливать; чистить аккуратно тряпочкой, смоченной в мыльном растворе, лёгкие загрязнения удалять антибактериальной салфеткой (или тряпочкой из микрофибры с антисептиком); избегать химических моющих средств с сильными кислотами и щелочами; допускается профессиональная сухая и мокрая чистка, кроме машинной стирки; не стирать и не замачивать; барабанная сушка запрещена; беречь от прямых солнечных лучей, держать не ближе метра от отопительных приборов, избегать острых объектов",
+    "other": [
+      "Пиллингуемость: 4 (ISO 12945-2:2000)",
+      "Стойкость цвета к мокрому трению: 4 (ISO 105 X12-2016)",
+      "Прочность на разрыв: основа 120, уток 100 (стандарт ≥ 40 N, ISO 13937-2:2000)",
+      "Устойчивость цвета к потоотделению: 5/5 (ГОСТ 9733.6-83)",
+      "Трикотажное двухслойное полотно, печать и тиснение (эмбоссинг)",
+      "Декларация соответствия ЕАЭС N RU Д-CN.РА07.В.20032/22",
+      "Стойкость цвета к свету: 4 (ISO 105 B02-2014)",
+      "Стойкость цвета к сухому трению: 5 (ГОСТ 9733.27-83)",
+      "Содержание формальдегида: не обнаружено (ГОСТ ISO 14184-1-2014)"
+    ]
+  },
+  "spec_source": "https://k-domiart.ru/assets/files/bernar_domiart.pdf",
+  "colours": [
+    {
+      "code": "1",
+      "name": "1 Ivory/Слоновая кость",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_01_dsc_4644.jpg",
+      "file": "img/1.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "11-0602 TPG - Snow White"
+    },
+    {
+      "code": "2",
+      "name": "2 Vanilla/Ваниль",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_02_dsc_4988.jpg",
+      "file": "img/2.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "12-0601 TPG - Eggnog"
+    },
+    {
+      "code": "6",
+      "name": "6 Pudra/Пудровый",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_06_dsc_5176.jpg",
+      "file": "img/6.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "14-1803 TPG - Sepia Rose"
+    },
+    {
+      "code": "7",
+      "name": "7 Lavender/Лаванда",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_07_dsc_5389.jpg",
+      "file": "img/7.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "17-2601 TPG - Zinc"
+    },
+    {
+      "code": "13",
+      "name": "13 Blueberry/Голубика",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_13_dsc_4790.jpg",
+      "file": "img/13.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "18-3918 TPG - China Blue"
+    },
+    {
+      "code": "15",
+      "name": "15 Tofu/Тофу",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_15_dsc_6153.jpg",
+      "file": "img/15.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "13-4104 TPG - Antarctica"
+    },
+    {
+      "code": "3",
+      "name": "3 Pastel/Пастельный",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_03_dsc_6341.jpg",
+      "file": "img/3.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "15-3800 TPG - Porpoise"
+    },
+    {
+      "code": "4",
+      "name": "4 Silver/Серебро",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_04_dsc_5801.jpg",
+      "file": "img/4.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "16-3800 TPG - Satellite"
+    },
+    {
+      "code": "5",
+      "name": "5 Chocolate/Шоколад",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_05_dsc_5570.jpg",
+      "file": "img/5.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-0810 TPG - Major Brown"
+    },
+    {
+      "code": "11",
+      "name": "11 Moss/Мох",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_11_dsc_5967.jpg",
+      "file": "img/11.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-5220 TPG - Botanical Garden"
+    },
+    {
+      "code": "9",
+      "name": "9 Curry/Карри",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_09_dsc_7032.jpg",
+      "file": "img/9.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "16-0954 TPG - Arrowwood"
+    },
+    {
+      "code": "8",
+      "name": "8 Marsala/Марсала",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_08_dsc_6499.jpg",
+      "file": "img/8.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-1725 TPG - Tawny Port"
+    },
+    {
+      "code": "10",
+      "name": "10 Jungle/Джунгли",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_10_dsc_7189.jpg",
+      "file": "img/10.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-0230 TPG - Garden Green"
+    },
+    {
+      "code": "14",
+      "name": "14 Ocean/Океан",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_14_dsc_6852.jpg",
+      "file": "img/14.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-4914 TPG - Deep Teal"
+    },
+    {
+      "code": "12",
+      "name": "12 Azure/Азур",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_12_dsc_6689.jpg",
+      "file": "img/12.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "18-4612 TPG - North Atlantic"
+    },
+    {
+      "code": "16",
+      "name": "16 Arctica/Арктика",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_16_dsc_7701.jpg",
+      "file": "img/16.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "14-4203 TPG - Vapor Blue"
+    },
+    {
+      "code": "17",
+      "name": "17 Dove/Голубь",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_17_dsc_7368.jpg",
+      "file": "img/17.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "17-4402 TPG - Neutral Gray"
+    },
+    {
+      "code": "18",
+      "name": "18 Anthracite/Антрацид",
+      "page_url": "https://k-domiart.ru/catalog/velyur/bernar.html",
+      "image_url": "https://k-domiart.ru/assets/images/velyur/bernar/bernar_18_dsc_7518.jpg",
+      "file": "img/18.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-4205 TPG - Phantom"
+    }
+  ],
+  "notes": "Цвета на странице — плитки с кодами; у каждого цвета своя галерея (подгружается запросом сайта ajax/podgruzka-galerei-dlya-vybrannogo-cveta.html): кадр со складками (он же миниатюра плитки) и плоский образец. Взят плоский образец, оригинал с сайта, без пересохранения. Порядок цветов — как плитки на странице (не по возрастанию кодов). Характеристик в тексте страницы нет — они в PDF «Техническая спецификация», ссылка на который стоит на странице коллекции (файл лежит рядом с meta.json). Страна производства прямо не указана (в номере декларации ЕАЭС стоит код CN) — оставлено null. Поле pantone у цветов — как на сайте. PDF — картинка без текстового слоя, значения прочитаны с листа. Коды без ведущего нуля (1…18). Название «18 Anthracite/Антрацид» записано как на сайте (написание поставщика). Бирка на вешалке (велюр, 480 г/м², 105 000 циклов) совпадает с сайтом."
+}

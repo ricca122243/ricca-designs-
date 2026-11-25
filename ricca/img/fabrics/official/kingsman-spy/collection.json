@@ -1,0 +1,81 @@
+{
+ "id": "kingsman-spy",
+ "title": "KINGSMAN SPY",
+ "kind": "микровелюр",
+ "type": "velur",
+ "facts": [
+  "90 000 циклов",
+  "890 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Kingsman Spy 01",
+   "hex": "#dbcfca",
+   "plain3d": false,
+   "fold": 0.02,
+   "src1200": "img/fabrics/official/kingsman-spy/01-1200.webp",
+   "src600": "img/fabrics/official/kingsman-spy/01-600.webp",
+   "thumb": "img/fabrics/official/kingsman-spy/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Kingsman Spy 02",
+   "hex": "#ccb59e",
+   "plain3d": false,
+   "fold": 0.027,
+   "src1200": "img/fabrics/official/kingsman-spy/02-1200.webp",
+   "src600": "img/fabrics/official/kingsman-spy/02-600.webp",
+   "thumb": "img/fabrics/official/kingsman-spy/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Kingsman Spy 03",
+   "hex": "#846e3b",
+   "plain3d": false,
+   "fold": 0.037,
+   "src1200": "img/fabrics/official/kingsman-spy/03-1200.webp",
+   "src600": "img/fabrics/official/kingsman-spy/03-600.webp",
+   "thumb": "img/fabrics/official/kingsman-spy/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Kingsman Spy 04",
+   "hex": "#9c9da3",
+   "plain3d": false,
+   "fold": 0.024,
+   "src1200": "img/fabrics/official/kingsman-spy/04-1200.webp",
+   "src600": "img/fabrics/official/kingsman-spy/04-600.webp",
+   "thumb": "img/fabrics/official/kingsman-spy/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Kingsman Spy 05",
+   "hex": "#615e60",
+   "plain3d": false,
+   "fold": 0.043,
+   "src1200": "img/fabrics/official/kingsman-spy/05-1200.webp",
+   "src600": "img/fabrics/official/kingsman-spy/05-600.webp",
+   "thumb": "img/fabrics/official/kingsman-spy/05-160.webp"
+  },
+  {
+   "code": "06",
+   "label": "06",
+   "name": "Kingsman Spy 06",
+   "hex": "#3a6dad",
+   "plain3d": true,
+   "fold": 0.117,
+   "src1200": "img/fabrics/official/kingsman-spy/06-1200.webp",
+   "src600": "img/fabrics/official/kingsman-spy/06-600.webp",
+   "thumb": "img/fabrics/official/kingsman-spy/06-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

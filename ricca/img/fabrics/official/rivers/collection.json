@@ -1,0 +1,82 @@
+{
+ "id": "rivers",
+ "title": "RIVERS",
+ "kind": "шенилл",
+ "type": "shenill",
+ "no3d": true,
+ "facts": [
+  "80 000 циклов",
+  "890 г/м.п.",
+  "ширина 134 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Реки / Rivers 01",
+   "hex": "#bbb6b4",
+   "plain3d": false,
+   "fold": 0.078,
+   "src1200": "img/fabrics/official/rivers/01-1200.webp",
+   "src600": "img/fabrics/official/rivers/01-600.webp",
+   "thumb": "img/fabrics/official/rivers/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Реки / Rivers 02",
+   "hex": "#3d3f3e",
+   "plain3d": false,
+   "fold": 0.086,
+   "src1200": "img/fabrics/official/rivers/02-1200.webp",
+   "src600": "img/fabrics/official/rivers/02-600.webp",
+   "thumb": "img/fabrics/official/rivers/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Реки / Rivers 03",
+   "hex": "#515355",
+   "plain3d": false,
+   "fold": 0.053,
+   "src1200": "img/fabrics/official/rivers/03-1200.webp",
+   "src600": "img/fabrics/official/rivers/03-600.webp",
+   "thumb": "img/fabrics/official/rivers/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Реки / Rivers 04",
+   "hex": "#5a3f20",
+   "plain3d": false,
+   "fold": 0.086,
+   "src1200": "img/fabrics/official/rivers/04-1200.webp",
+   "src600": "img/fabrics/official/rivers/04-600.webp",
+   "thumb": "img/fabrics/official/rivers/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Реки / Rivers 05",
+   "hex": "#383a2e",
+   "plain3d": false,
+   "fold": 0.092,
+   "src1200": "img/fabrics/official/rivers/05-1200.webp",
+   "src600": "img/fabrics/official/rivers/05-600.webp",
+   "thumb": "img/fabrics/official/rivers/05-160.webp"
+  },
+  {
+   "code": "06",
+   "label": "06",
+   "name": "Реки / Rivers 06",
+   "hex": "#7b766e",
+   "plain3d": false,
+   "fold": 0.064,
+   "src1200": "img/fabrics/official/rivers/06-1200.webp",
+   "src600": "img/fabrics/official/rivers/06-600.webp",
+   "thumb": "img/fabrics/official/rivers/06-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

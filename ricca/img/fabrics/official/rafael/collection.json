@@ -1,0 +1,125 @@
+{
+ "id": "rafael",
+ "title": "RAFAEL",
+ "kind": "рогожка",
+ "type": "rogozhka",
+ "facts": [
+  "45 000 циклов",
+  "1330 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Рафаэль / Rafael 01",
+   "hex": "#dcd7d1",
+   "plain3d": true,
+   "fold": 0.069,
+   "src1200": "img/fabrics/official/rafael/01-1200.webp",
+   "src600": "img/fabrics/official/rafael/01-600.webp",
+   "thumb": "img/fabrics/official/rafael/01-160.webp"
+  },
+  {
+   "code": "07",
+   "label": "07",
+   "name": "Рафаэль / Rafael 07",
+   "hex": "#747071",
+   "plain3d": true,
+   "fold": 0.191,
+   "src1200": "img/fabrics/official/rafael/07-1200.webp",
+   "src600": "img/fabrics/official/rafael/07-600.webp",
+   "thumb": "img/fabrics/official/rafael/07-160.webp"
+  },
+  {
+   "code": "10",
+   "label": "10",
+   "name": "Рафаэль / Rafael 10",
+   "hex": "#a8a8aa",
+   "plain3d": true,
+   "fold": 0.176,
+   "src1200": "img/fabrics/official/rafael/10-1200.webp",
+   "src600": "img/fabrics/official/rafael/10-600.webp",
+   "thumb": "img/fabrics/official/rafael/10-160.webp"
+  },
+  {
+   "code": "11",
+   "label": "11",
+   "name": "Рафаэль / Rafael 11",
+   "hex": "#9a989b",
+   "plain3d": true,
+   "fold": 0.13,
+   "src1200": "img/fabrics/official/rafael/11-1200.webp",
+   "src600": "img/fabrics/official/rafael/11-600.webp",
+   "thumb": "img/fabrics/official/rafael/11-160.webp"
+  },
+  {
+   "code": "12",
+   "label": "12",
+   "name": "Рафаэль / Rafael 12",
+   "hex": "#a68b7b",
+   "plain3d": true,
+   "fold": 0.146,
+   "src1200": "img/fabrics/official/rafael/12-1200.webp",
+   "src600": "img/fabrics/official/rafael/12-600.webp",
+   "thumb": "img/fabrics/official/rafael/12-160.webp"
+  },
+  {
+   "code": "13",
+   "label": "13",
+   "name": "Рафаэль / Rafael 13",
+   "hex": "#ccbaa7",
+   "plain3d": true,
+   "fold": 0.122,
+   "src1200": "img/fabrics/official/rafael/13-1200.webp",
+   "src600": "img/fabrics/official/rafael/13-600.webp",
+   "thumb": "img/fabrics/official/rafael/13-160.webp"
+  },
+  {
+   "code": "14",
+   "label": "14",
+   "name": "Рафаэль / Rafael 14",
+   "hex": "#7a7b59",
+   "plain3d": true,
+   "fold": 0.184,
+   "src1200": "img/fabrics/official/rafael/14-1200.webp",
+   "src600": "img/fabrics/official/rafael/14-600.webp",
+   "thumb": "img/fabrics/official/rafael/14-160.webp"
+  },
+  {
+   "code": "15",
+   "label": "15",
+   "name": "Рафаэль / Rafael 15",
+   "hex": "#585f4f",
+   "plain3d": true,
+   "fold": 0.195,
+   "src1200": "img/fabrics/official/rafael/15-1200.webp",
+   "src600": "img/fabrics/official/rafael/15-600.webp",
+   "thumb": "img/fabrics/official/rafael/15-160.webp"
+  },
+  {
+   "code": "16",
+   "label": "16",
+   "name": "Рафаэль / Rafael 16",
+   "hex": "#4f5160",
+   "plain3d": true,
+   "fold": 0.183,
+   "src1200": "img/fabrics/official/rafael/16-1200.webp",
+   "src600": "img/fabrics/official/rafael/16-600.webp",
+   "thumb": "img/fabrics/official/rafael/16-160.webp"
+  },
+  {
+   "code": "17",
+   "label": "17",
+   "name": "Рафаэль / Rafael 17",
+   "hex": "#84381e",
+   "plain3d": true,
+   "fold": 0.161,
+   "src1200": "img/fabrics/official/rafael/17-1200.webp",
+   "src600": "img/fabrics/official/rafael/17-600.webp",
+   "thumb": "img/fabrics/official/rafael/17-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

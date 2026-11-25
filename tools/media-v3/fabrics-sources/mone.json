@@ -1,0 +1,94 @@
+{
+  "id": "mone",
+  "title": "MONE",
+  "supplier": "Chistetika",
+  "kind": "шенилл",
+  "source_url": "https://chistetika.ru/catalog/mone-110.html",
+  "specs": {
+    "composition": "акрил 48%, переработанный PET-пластик 27%, переработанный текстиль 19%, полиэстер 4%, вискоза 2%",
+    "martindale": 18000,
+    "weight": "345 г/м²",
+    "width": "140 ± 3 см",
+    "country": "Турция",
+    "care": "деликатная стирка при 30 °C без отжима; не отжимать; не отбеливать",
+    "other": [
+      "Линейка Chaleur à la Maison (экологичные ткани с переработанным сырьём)",
+      "Технологии: Мягкость в прикосновениях; Экологичность и гипоаллергенность",
+      "Область применения: подушки, стул, чехлы для мебели",
+      "Русское название: Моне"
+    ]
+  },
+  "colours": [
+    {
+      "code": "110",
+      "name": "Mone 110",
+      "page_url": "https://chistetika.ru/catalog/mone-110.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/262/1390x900/49479/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/110.jpg",
+      "w": 1348,
+      "h": 900,
+      "colour": "бежевый"
+    },
+    {
+      "code": "910",
+      "name": "Mone 910",
+      "page_url": "https://chistetika.ru/catalog/mone-910.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/262/1390x900/49480/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/910.jpg",
+      "w": 1348,
+      "h": 900,
+      "colour": "серый"
+    },
+    {
+      "code": "960",
+      "name": "Mone 960",
+      "page_url": "https://chistetika.ru/catalog/mone-960.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/262/1390x900/49481/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/960.jpg",
+      "w": 1348,
+      "h": 900,
+      "colour": "зеленый, серый"
+    },
+    {
+      "code": "934",
+      "name": "Mone 934",
+      "page_url": "https://chistetika.ru/catalog/mone-934.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/262/1390x900/49482/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/934.jpg",
+      "w": 1348,
+      "h": 900,
+      "colour": "зеленый, серый"
+    },
+    {
+      "code": "542",
+      "name": "Mone 542",
+      "page_url": "https://chistetika.ru/catalog/mone-542.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/262/1390x900/49483/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/542.jpg",
+      "w": 1348,
+      "h": 900,
+      "colour": "желтый, оранжевый"
+    },
+    {
+      "code": "715",
+      "name": "Mone 715",
+      "page_url": "https://chistetika.ru/catalog/mone-715.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/262/1390x900/49484/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/715.jpg",
+      "w": 1348,
+      "h": 900,
+      "colour": "синий"
+    },
+    {
+      "code": "290",
+      "name": "Mone 290",
+      "page_url": "https://chistetika.ru/catalog/mone-290.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/262/1390x900/49485/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/290.jpg",
+      "w": 1348,
+      "h": 900,
+      "colour": "бежевый, коричневый"
+    }
+  ],
+  "notes": "7 цветов; порядок — как в каталоге раздела Chaleur à la Maison (https://chistetika.ru/catalog/?chaleur=1; раздел https://chistetika.ru/chaleur-a-la-maison/). Отдельной страницы коллекции нет: source_url — страница первого цвета со списком всех артикулов. Число цветов сверено с цветовой картой поставщика (/netcat_files/multifile/786/162/MONE_colourcard-art.jpg) — те же 7. ВНИМАНИЕ: плоских образцов у поставщика нет — у каждого цвета на сайте одно фото, ткань мягкой волной со складкой (без надписей и логотипа); взято оно. Размер 1348x900 — самый большой, который отдаёт сайт (просмотр «глаз», 1390x900). На бирке вешалки характеристик не видно (только «Mone, Chenille, Chaleur à la Maison») — сверять не с чем. Истирание всего 18 000 циклов — на сайте область применения: подушки, стул, чехлы для мебели. Названия цветов у поставщика — только коды; слово цвета из поля «Цвет» на страницах: 110 — бежевый, 910 — серый, 960 — зеленый, серый, 934 — зеленый, серый, 542 — желтый, оранжевый, 715 — синий, 290 — бежевый, коричневый."
+}

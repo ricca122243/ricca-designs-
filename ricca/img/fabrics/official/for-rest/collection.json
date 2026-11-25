@@ -1,0 +1,158 @@
+{
+ "id": "for-rest",
+ "title": "FOR REST",
+ "kind": "шенилл",
+ "type": "shenill",
+ "facts": [
+  "60 000 циклов",
+  "660 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "For Rest 01",
+   "hex": "#ebe4da",
+   "plain3d": false,
+   "fold": 0.014,
+   "src1200": "img/fabrics/official/for-rest/01-1200.webp",
+   "src600": "img/fabrics/official/for-rest/01-600.webp",
+   "thumb": "img/fabrics/official/for-rest/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "For Rest 02",
+   "hex": "#e1d5c9",
+   "plain3d": false,
+   "fold": 0.022,
+   "src1200": "img/fabrics/official/for-rest/02-1200.webp",
+   "src600": "img/fabrics/official/for-rest/02-600.webp",
+   "thumb": "img/fabrics/official/for-rest/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "For Rest 03",
+   "hex": "#c1beb9",
+   "plain3d": false,
+   "fold": 0.017,
+   "src1200": "img/fabrics/official/for-rest/03-1200.webp",
+   "src600": "img/fabrics/official/for-rest/03-600.webp",
+   "thumb": "img/fabrics/official/for-rest/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "For Rest 04",
+   "hex": "#bbada4",
+   "plain3d": false,
+   "fold": 0.023,
+   "src1200": "img/fabrics/official/for-rest/04-1200.webp",
+   "src600": "img/fabrics/official/for-rest/04-600.webp",
+   "thumb": "img/fabrics/official/for-rest/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "For Rest 05",
+   "hex": "#8c3e2e",
+   "plain3d": false,
+   "fold": 0.047,
+   "src1200": "img/fabrics/official/for-rest/05-1200.webp",
+   "src600": "img/fabrics/official/for-rest/05-600.webp",
+   "thumb": "img/fabrics/official/for-rest/05-160.webp"
+  },
+  {
+   "code": "06",
+   "label": "06",
+   "name": "For Rest 06",
+   "hex": "#b7998c",
+   "plain3d": false,
+   "fold": 0.028,
+   "src1200": "img/fabrics/official/for-rest/06-1200.webp",
+   "src600": "img/fabrics/official/for-rest/06-600.webp",
+   "thumb": "img/fabrics/official/for-rest/06-160.webp"
+  },
+  {
+   "code": "07",
+   "label": "07",
+   "name": "For Rest 07",
+   "hex": "#96927c",
+   "plain3d": false,
+   "fold": 0.057,
+   "src1200": "img/fabrics/official/for-rest/07-1200.webp",
+   "src600": "img/fabrics/official/for-rest/07-600.webp",
+   "thumb": "img/fabrics/official/for-rest/07-160.webp"
+  },
+  {
+   "code": "08",
+   "label": "08",
+   "name": "For Rest 08",
+   "hex": "#40493f",
+   "plain3d": false,
+   "fold": 0.066,
+   "src1200": "img/fabrics/official/for-rest/08-1200.webp",
+   "src600": "img/fabrics/official/for-rest/08-600.webp",
+   "thumb": "img/fabrics/official/for-rest/08-160.webp"
+  },
+  {
+   "code": "09",
+   "label": "09",
+   "name": "For Rest 09",
+   "hex": "#d4c072",
+   "plain3d": false,
+   "fold": 0.025,
+   "src1200": "img/fabrics/official/for-rest/09-1200.webp",
+   "src600": "img/fabrics/official/for-rest/09-600.webp",
+   "thumb": "img/fabrics/official/for-rest/09-160.webp"
+  },
+  {
+   "code": "10",
+   "label": "10",
+   "name": "For Rest 10",
+   "hex": "#745234",
+   "plain3d": false,
+   "fold": 0.039,
+   "src1200": "img/fabrics/official/for-rest/10-1200.webp",
+   "src600": "img/fabrics/official/for-rest/10-600.webp",
+   "thumb": "img/fabrics/official/for-rest/10-160.webp"
+  },
+  {
+   "code": "11",
+   "label": "11",
+   "name": "For Rest 11",
+   "hex": "#afabae",
+   "plain3d": false,
+   "fold": 0.02,
+   "src1200": "img/fabrics/official/for-rest/11-1200.webp",
+   "src600": "img/fabrics/official/for-rest/11-600.webp",
+   "thumb": "img/fabrics/official/for-rest/11-160.webp"
+  },
+  {
+   "code": "12",
+   "label": "12",
+   "name": "For Rest 12",
+   "hex": "#64616b",
+   "plain3d": false,
+   "fold": 0.05,
+   "src1200": "img/fabrics/official/for-rest/12-1200.webp",
+   "src600": "img/fabrics/official/for-rest/12-600.webp",
+   "thumb": "img/fabrics/official/for-rest/12-160.webp"
+  },
+  {
+   "code": "13",
+   "label": "13",
+   "name": "For Rest 13",
+   "hex": "#404751",
+   "plain3d": false,
+   "fold": 0.044,
+   "src1200": "img/fabrics/official/for-rest/13-1200.webp",
+   "src600": "img/fabrics/official/for-rest/13-600.webp",
+   "thumb": "img/fabrics/official/for-rest/13-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

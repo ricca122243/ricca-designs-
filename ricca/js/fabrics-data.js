@@ -10,7 +10,8 @@
  * (первый = 1): на нём держатся ссылки #fabric-<id>-<N>, строки корзины и конструктор (configurator.html#f=<id>:<N>).
  *
  * Как устроено:
- *   types        — типы ткани (Велюр, Букле, Шенилл, Замша, Экокожа), в том порядке, в каком они идут на сайте.
+ *   types        — типы ткани (Эксклюзивные, Велюр, Букле, Шенилл, Рогожка, Жаккард, Мех, Замша, Экокожа), в том порядке, в каком они идут на сайте.
+ *                  Новые коллекции добавляет tools/media-v3/fabrics-add.py (список и порядок — tools/media-v3/fabrics-new.json).
  *   collections  — коллекции внутри типа. У каждой:
  *     id       — короткое латинское имя (без пробелов), title — название коллекции,
  *     kind     — одна строка о материале («микровелюр», «букле»…),
@@ -49,7 +50,42 @@
  */
 window.RICCA_FABRIC_LIBRARY = {
   "types": [
-    {"id": "exclusive", "title": "Эксклюзивные", "collections": [{"id": "exclusive", "title": "RICCA EXCLUSIVE", "kind": "букле", "facts": [], "texture": "img/fabrics/exclusive/01-1200.webp", "colours": [{"name": "Графит с молочным", "src900": "img/fabrics/exclusive/01-1200.webp", "src450": "img/fabrics/exclusive/01-600.webp", "src240": "img/fabrics/exclusive/01-160.webp", "hex": "#696662"}, {"name": "Кремовый", "src900": "img/fabrics/exclusive/02-1200.webp", "src450": "img/fabrics/exclusive/02-600.webp", "src240": "img/fabrics/exclusive/02-160.webp", "hex": "#9d8f81"}, {"name": "Терракотовый", "src900": "img/fabrics/exclusive/03-1200.webp", "src450": "img/fabrics/exclusive/03-600.webp", "src240": "img/fabrics/exclusive/03-160.webp", "hex": "#cf502e"}]}]},
+    {
+      "id": "exclusive",
+      "title": "Эксклюзивные",
+      "collections": [
+        {
+          "id": "exclusive",
+          "title": "RICCA EXCLUSIVE",
+          "kind": "букле",
+          "facts": [],
+          "texture": "img/fabrics/exclusive/01-1200.webp",
+          "colours": [
+            {
+              "name": "Графит с молочным",
+              "src900": "img/fabrics/exclusive/01-1200.webp",
+              "src450": "img/fabrics/exclusive/01-600.webp",
+              "src240": "img/fabrics/exclusive/01-160.webp",
+              "hex": "#696662"
+            },
+            {
+              "name": "Кремовый",
+              "src900": "img/fabrics/exclusive/02-1200.webp",
+              "src450": "img/fabrics/exclusive/02-600.webp",
+              "src240": "img/fabrics/exclusive/02-160.webp",
+              "hex": "#9d8f81"
+            },
+            {
+              "name": "Терракотовый",
+              "src900": "img/fabrics/exclusive/03-1200.webp",
+              "src450": "img/fabrics/exclusive/03-600.webp",
+              "src240": "img/fabrics/exclusive/03-160.webp",
+              "hex": "#cf502e"
+            }
+          ]
+        }
+      ]
+    },
     {
       "id": "velur",
       "title": "Велюр",
@@ -75,7 +111,13 @@ window.RICCA_FABRIC_LIBRARY = {
               "src240": "img/fabrics/ricca-velour/02-160.webp",
               "hex": "#597781"
             },
-            {"name": "Чёрный", "src900": "img/fabrics/ricca-velour/03-1200.webp", "src450": "img/fabrics/ricca-velour/03-600.webp", "src240": "img/fabrics/ricca-velour/03-160.webp", "hex": "#212322"}
+            {
+              "name": "Чёрный",
+              "src900": "img/fabrics/ricca-velour/03-1200.webp",
+              "src450": "img/fabrics/ricca-velour/03-600.webp",
+              "src240": "img/fabrics/ricca-velour/03-160.webp",
+              "hex": "#212322"
+            }
           ]
         },
         {
@@ -679,6 +721,637 @@ window.RICCA_FABRIC_LIBRARY = {
               "hex": "#1a1d20"
             }
           ]
+        },
+        {
+          "id": "borneo",
+          "title": "BORNEO",
+          "kind": "микровелюр",
+          "facts": [
+            "100 000 циклов",
+            "500 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/borneo/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/borneo/01-1200.webp",
+              "src450": "img/fabrics/official/borneo/01-600.webp",
+              "src240": "img/fabrics/official/borneo/01-160.webp",
+              "hex": "#bfbabb",
+              "plain3d": true
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/borneo/02-1200.webp",
+              "src450": "img/fabrics/official/borneo/02-600.webp",
+              "src240": "img/fabrics/official/borneo/02-160.webp",
+              "hex": "#e4dfdb",
+              "plain3d": true
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/borneo/03-1200.webp",
+              "src450": "img/fabrics/official/borneo/03-600.webp",
+              "src240": "img/fabrics/official/borneo/03-160.webp",
+              "hex": "#d7cfcb",
+              "plain3d": true
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/borneo/04-1200.webp",
+              "src450": "img/fabrics/official/borneo/04-600.webp",
+              "src240": "img/fabrics/official/borneo/04-160.webp",
+              "hex": "#ad914b",
+              "plain3d": true
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/borneo/05-1200.webp",
+              "src450": "img/fabrics/official/borneo/05-600.webp",
+              "src240": "img/fabrics/official/borneo/05-160.webp",
+              "hex": "#7a5f41",
+              "plain3d": true
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/borneo/06-1200.webp",
+              "src450": "img/fabrics/official/borneo/06-600.webp",
+              "src240": "img/fabrics/official/borneo/06-160.webp",
+              "hex": "#505a38",
+              "plain3d": true
+            },
+            {
+              "name": "№ 08",
+              "src900": "img/fabrics/official/borneo/08-1200.webp",
+              "src450": "img/fabrics/official/borneo/08-600.webp",
+              "src240": "img/fabrics/official/borneo/08-160.webp",
+              "hex": "#40475b",
+              "plain3d": true
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/borneo/09-1200.webp",
+              "src450": "img/fabrics/official/borneo/09-600.webp",
+              "src240": "img/fabrics/official/borneo/09-160.webp",
+              "hex": "#6c7081",
+              "plain3d": true
+            },
+            {
+              "name": "№ 10",
+              "src900": "img/fabrics/official/borneo/10-1200.webp",
+              "src450": "img/fabrics/official/borneo/10-600.webp",
+              "src240": "img/fabrics/official/borneo/10-160.webp",
+              "hex": "#819ba0",
+              "plain3d": true
+            },
+            {
+              "name": "№ 12",
+              "src900": "img/fabrics/official/borneo/12-1200.webp",
+              "src450": "img/fabrics/official/borneo/12-600.webp",
+              "src240": "img/fabrics/official/borneo/12-160.webp",
+              "hex": "#beaaa6",
+              "plain3d": true
+            },
+            {
+              "name": "№ 14",
+              "src900": "img/fabrics/official/borneo/14-1200.webp",
+              "src450": "img/fabrics/official/borneo/14-600.webp",
+              "src240": "img/fabrics/official/borneo/14-160.webp",
+              "hex": "#807878",
+              "plain3d": true
+            },
+            {
+              "name": "№ 15",
+              "src900": "img/fabrics/official/borneo/15-1200.webp",
+              "src450": "img/fabrics/official/borneo/15-600.webp",
+              "src240": "img/fabrics/official/borneo/15-160.webp",
+              "hex": "#8e8991",
+              "plain3d": true
+            },
+            {
+              "name": "№ 16",
+              "src900": "img/fabrics/official/borneo/16-1200.webp",
+              "src450": "img/fabrics/official/borneo/16-600.webp",
+              "src240": "img/fabrics/official/borneo/16-160.webp",
+              "hex": "#b7b9c1",
+              "plain3d": true
+            },
+            {
+              "name": "№ 17",
+              "src900": "img/fabrics/official/borneo/17-1200.webp",
+              "src450": "img/fabrics/official/borneo/17-600.webp",
+              "src240": "img/fabrics/official/borneo/17-160.webp",
+              "hex": "#7b8190",
+              "plain3d": true
+            },
+            {
+              "name": "№ 18",
+              "src900": "img/fabrics/official/borneo/18-1200.webp",
+              "src450": "img/fabrics/official/borneo/18-600.webp",
+              "src240": "img/fabrics/official/borneo/18-160.webp",
+              "hex": "#383a39",
+              "plain3d": true
+            }
+          ]
+        },
+        {
+          "id": "kingsman-spy",
+          "title": "KINGSMAN SPY",
+          "kind": "микровелюр",
+          "facts": [
+            "90 000 циклов",
+            "890 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/kingsman-spy/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/kingsman-spy/01-1200.webp",
+              "src450": "img/fabrics/official/kingsman-spy/01-600.webp",
+              "src240": "img/fabrics/official/kingsman-spy/01-160.webp",
+              "hex": "#dbcfca"
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/kingsman-spy/02-1200.webp",
+              "src450": "img/fabrics/official/kingsman-spy/02-600.webp",
+              "src240": "img/fabrics/official/kingsman-spy/02-160.webp",
+              "hex": "#ccb59e"
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/kingsman-spy/03-1200.webp",
+              "src450": "img/fabrics/official/kingsman-spy/03-600.webp",
+              "src240": "img/fabrics/official/kingsman-spy/03-160.webp",
+              "hex": "#846e3b"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/kingsman-spy/04-1200.webp",
+              "src450": "img/fabrics/official/kingsman-spy/04-600.webp",
+              "src240": "img/fabrics/official/kingsman-spy/04-160.webp",
+              "hex": "#9c9da3"
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/kingsman-spy/05-1200.webp",
+              "src450": "img/fabrics/official/kingsman-spy/05-600.webp",
+              "src240": "img/fabrics/official/kingsman-spy/05-160.webp",
+              "hex": "#615e60"
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/kingsman-spy/06-1200.webp",
+              "src450": "img/fabrics/official/kingsman-spy/06-600.webp",
+              "src240": "img/fabrics/official/kingsman-spy/06-160.webp",
+              "hex": "#3a6dad",
+              "plain3d": true
+            }
+          ]
+        },
+        {
+          "id": "paddington",
+          "title": "PADDINGTON",
+          "kind": "микровелюр",
+          "facts": [
+            "110 000 циклов",
+            "770 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/paddington/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/paddington/01-1200.webp",
+              "src450": "img/fabrics/official/paddington/01-600.webp",
+              "src240": "img/fabrics/official/paddington/01-160.webp",
+              "hex": "#d9d9d1",
+              "plain3d": true
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/paddington/02-1200.webp",
+              "src450": "img/fabrics/official/paddington/02-600.webp",
+              "src240": "img/fabrics/official/paddington/02-160.webp",
+              "hex": "#c1bdbe",
+              "plain3d": true
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/paddington/03-1200.webp",
+              "src450": "img/fabrics/official/paddington/03-600.webp",
+              "src240": "img/fabrics/official/paddington/03-160.webp",
+              "hex": "#b1a6a1",
+              "plain3d": true
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/paddington/04-1200.webp",
+              "src450": "img/fabrics/official/paddington/04-600.webp",
+              "src240": "img/fabrics/official/paddington/04-160.webp",
+              "hex": "#b3ada0",
+              "plain3d": true
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/paddington/05-1200.webp",
+              "src450": "img/fabrics/official/paddington/05-600.webp",
+              "src240": "img/fabrics/official/paddington/05-160.webp",
+              "hex": "#878383",
+              "plain3d": true
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/paddington/06-1200.webp",
+              "src450": "img/fabrics/official/paddington/06-600.webp",
+              "src240": "img/fabrics/official/paddington/06-160.webp",
+              "hex": "#615651",
+              "plain3d": true
+            },
+            {
+              "name": "№ 07",
+              "src900": "img/fabrics/official/paddington/07-1200.webp",
+              "src450": "img/fabrics/official/paddington/07-600.webp",
+              "src240": "img/fabrics/official/paddington/07-160.webp",
+              "hex": "#6c6060",
+              "plain3d": true
+            },
+            {
+              "name": "№ 08",
+              "src900": "img/fabrics/official/paddington/08-1200.webp",
+              "src450": "img/fabrics/official/paddington/08-600.webp",
+              "src240": "img/fabrics/official/paddington/08-160.webp",
+              "hex": "#6e6160",
+              "plain3d": true
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/paddington/09-1200.webp",
+              "src450": "img/fabrics/official/paddington/09-600.webp",
+              "src240": "img/fabrics/official/paddington/09-160.webp",
+              "hex": "#8b857a",
+              "plain3d": true
+            },
+            {
+              "name": "№ 10",
+              "src900": "img/fabrics/official/paddington/10-1200.webp",
+              "src450": "img/fabrics/official/paddington/10-600.webp",
+              "src240": "img/fabrics/official/paddington/10-160.webp",
+              "hex": "#331212",
+              "plain3d": true
+            },
+            {
+              "name": "№ 11",
+              "src900": "img/fabrics/official/paddington/11-1200.webp",
+              "src450": "img/fabrics/official/paddington/11-600.webp",
+              "src240": "img/fabrics/official/paddington/11-160.webp",
+              "hex": "#ca9b9e",
+              "plain3d": true
+            },
+            {
+              "name": "№ 12",
+              "src900": "img/fabrics/official/paddington/12-1200.webp",
+              "src450": "img/fabrics/official/paddington/12-600.webp",
+              "src240": "img/fabrics/official/paddington/12-160.webp",
+              "hex": "#9f8fbc",
+              "plain3d": true
+            },
+            {
+              "name": "№ 13",
+              "src900": "img/fabrics/official/paddington/13-1200.webp",
+              "src450": "img/fabrics/official/paddington/13-600.webp",
+              "src240": "img/fabrics/official/paddington/13-160.webp",
+              "hex": "#79899f",
+              "plain3d": true
+            },
+            {
+              "name": "№ 14",
+              "src900": "img/fabrics/official/paddington/14-1200.webp",
+              "src450": "img/fabrics/official/paddington/14-600.webp",
+              "src240": "img/fabrics/official/paddington/14-160.webp",
+              "hex": "#a2845b",
+              "plain3d": true
+            },
+            {
+              "name": "№ 15",
+              "src900": "img/fabrics/official/paddington/15-1200.webp",
+              "src450": "img/fabrics/official/paddington/15-600.webp",
+              "src240": "img/fabrics/official/paddington/15-160.webp",
+              "hex": "#917e6c",
+              "plain3d": true
+            },
+            {
+              "name": "№ 16",
+              "src900": "img/fabrics/official/paddington/16-1200.webp",
+              "src450": "img/fabrics/official/paddington/16-600.webp",
+              "src240": "img/fabrics/official/paddington/16-160.webp",
+              "hex": "#a37335",
+              "plain3d": true
+            },
+            {
+              "name": "№ 17",
+              "src900": "img/fabrics/official/paddington/17-1200.webp",
+              "src450": "img/fabrics/official/paddington/17-600.webp",
+              "src240": "img/fabrics/official/paddington/17-160.webp",
+              "hex": "#668075",
+              "plain3d": true
+            },
+            {
+              "name": "№ 18",
+              "src900": "img/fabrics/official/paddington/18-1200.webp",
+              "src450": "img/fabrics/official/paddington/18-600.webp",
+              "src240": "img/fabrics/official/paddington/18-160.webp",
+              "hex": "#223829",
+              "plain3d": true
+            },
+            {
+              "name": "№ 19",
+              "src900": "img/fabrics/official/paddington/19-1200.webp",
+              "src450": "img/fabrics/official/paddington/19-600.webp",
+              "src240": "img/fabrics/official/paddington/19-160.webp",
+              "hex": "#4f5742",
+              "plain3d": true
+            },
+            {
+              "name": "№ 20",
+              "src900": "img/fabrics/official/paddington/20-1200.webp",
+              "src450": "img/fabrics/official/paddington/20-600.webp",
+              "src240": "img/fabrics/official/paddington/20-160.webp",
+              "hex": "#22393c",
+              "plain3d": true
+            },
+            {
+              "name": "№ 21",
+              "src900": "img/fabrics/official/paddington/21-1200.webp",
+              "src450": "img/fabrics/official/paddington/21-600.webp",
+              "src240": "img/fabrics/official/paddington/21-160.webp",
+              "hex": "#696f7a",
+              "plain3d": true
+            },
+            {
+              "name": "№ 22",
+              "src900": "img/fabrics/official/paddington/22-1200.webp",
+              "src450": "img/fabrics/official/paddington/22-600.webp",
+              "src240": "img/fabrics/official/paddington/22-160.webp",
+              "hex": "#252a33",
+              "plain3d": true
+            },
+            {
+              "name": "№ 23",
+              "src900": "img/fabrics/official/paddington/23-1200.webp",
+              "src450": "img/fabrics/official/paddington/23-600.webp",
+              "src240": "img/fabrics/official/paddington/23-160.webp",
+              "hex": "#7e8886",
+              "plain3d": true
+            },
+            {
+              "name": "№ 24",
+              "src900": "img/fabrics/official/paddington/24-1200.webp",
+              "src450": "img/fabrics/official/paddington/24-600.webp",
+              "src240": "img/fabrics/official/paddington/24-160.webp",
+              "hex": "#a5a6a3",
+              "plain3d": true
+            },
+            {
+              "name": "№ 25",
+              "src900": "img/fabrics/official/paddington/25-1200.webp",
+              "src450": "img/fabrics/official/paddington/25-600.webp",
+              "src240": "img/fabrics/official/paddington/25-160.webp",
+              "hex": "#d1d3cc",
+              "plain3d": true
+            },
+            {
+              "name": "№ 26",
+              "src900": "img/fabrics/official/paddington/26-1200.webp",
+              "src450": "img/fabrics/official/paddington/26-600.webp",
+              "src240": "img/fabrics/official/paddington/26-160.webp",
+              "hex": "#ccc9bd",
+              "plain3d": true
+            },
+            {
+              "name": "№ 27",
+              "src900": "img/fabrics/official/paddington/27-1200.webp",
+              "src450": "img/fabrics/official/paddington/27-600.webp",
+              "src240": "img/fabrics/official/paddington/27-160.webp",
+              "hex": "#c6bca8",
+              "plain3d": true
+            },
+            {
+              "name": "№ 28",
+              "src900": "img/fabrics/official/paddington/28-1200.webp",
+              "src450": "img/fabrics/official/paddington/28-600.webp",
+              "src240": "img/fabrics/official/paddington/28-160.webp",
+              "hex": "#b1a290",
+              "plain3d": true
+            },
+            {
+              "name": "№ 29",
+              "src900": "img/fabrics/official/paddington/29-1200.webp",
+              "src450": "img/fabrics/official/paddington/29-600.webp",
+              "src240": "img/fabrics/official/paddington/29-160.webp",
+              "hex": "#c8b596",
+              "plain3d": true
+            },
+            {
+              "name": "№ 30",
+              "src900": "img/fabrics/official/paddington/30-1200.webp",
+              "src450": "img/fabrics/official/paddington/30-600.webp",
+              "src240": "img/fabrics/official/paddington/30-160.webp",
+              "hex": "#c78c35",
+              "plain3d": true
+            },
+            {
+              "name": "№ 31",
+              "src900": "img/fabrics/official/paddington/31-1200.webp",
+              "src450": "img/fabrics/official/paddington/31-600.webp",
+              "src240": "img/fabrics/official/paddington/31-160.webp",
+              "hex": "#6b2b02",
+              "plain3d": true
+            },
+            {
+              "name": "№ 32",
+              "src900": "img/fabrics/official/paddington/32-1200.webp",
+              "src450": "img/fabrics/official/paddington/32-600.webp",
+              "src240": "img/fabrics/official/paddington/32-160.webp",
+              "hex": "#642605",
+              "plain3d": true
+            },
+            {
+              "name": "№ 33",
+              "src900": "img/fabrics/official/paddington/33-1200.webp",
+              "src450": "img/fabrics/official/paddington/33-600.webp",
+              "src240": "img/fabrics/official/paddington/33-160.webp",
+              "hex": "#6f744b",
+              "plain3d": true
+            },
+            {
+              "name": "№ 34",
+              "src900": "img/fabrics/official/paddington/34-1200.webp",
+              "src450": "img/fabrics/official/paddington/34-600.webp",
+              "src240": "img/fabrics/official/paddington/34-160.webp",
+              "hex": "#905f52",
+              "plain3d": true
+            },
+            {
+              "name": "№ 35",
+              "src900": "img/fabrics/official/paddington/35-1200.webp",
+              "src450": "img/fabrics/official/paddington/35-600.webp",
+              "src240": "img/fabrics/official/paddington/35-160.webp",
+              "hex": "#384028",
+              "plain3d": true
+            },
+            {
+              "name": "№ 36",
+              "src900": "img/fabrics/official/paddington/36-1200.webp",
+              "src450": "img/fabrics/official/paddington/36-600.webp",
+              "src240": "img/fabrics/official/paddington/36-160.webp",
+              "hex": "#181a12",
+              "plain3d": true
+            },
+            {
+              "name": "№ 37",
+              "src900": "img/fabrics/official/paddington/37-1200.webp",
+              "src450": "img/fabrics/official/paddington/37-600.webp",
+              "src240": "img/fabrics/official/paddington/37-160.webp",
+              "hex": "#2c1b24",
+              "plain3d": true
+            },
+            {
+              "name": "№ 38",
+              "src900": "img/fabrics/official/paddington/38-1200.webp",
+              "src450": "img/fabrics/official/paddington/38-600.webp",
+              "src240": "img/fabrics/official/paddington/38-160.webp",
+              "hex": "#273041",
+              "plain3d": true
+            },
+            {
+              "name": "№ 39",
+              "src900": "img/fabrics/official/paddington/39-1200.webp",
+              "src450": "img/fabrics/official/paddington/39-600.webp",
+              "src240": "img/fabrics/official/paddington/39-160.webp",
+              "hex": "#463222",
+              "plain3d": true
+            },
+            {
+              "name": "№ 40",
+              "src900": "img/fabrics/official/paddington/40-1200.webp",
+              "src450": "img/fabrics/official/paddington/40-600.webp",
+              "src240": "img/fabrics/official/paddington/40-160.webp",
+              "hex": "#042a49",
+              "plain3d": true
+            },
+            {
+              "name": "№ 41",
+              "src900": "img/fabrics/official/paddington/41-1200.webp",
+              "src450": "img/fabrics/official/paddington/41-600.webp",
+              "src240": "img/fabrics/official/paddington/41-160.webp",
+              "hex": "#13171e",
+              "plain3d": true
+            },
+            {
+              "name": "№ 42",
+              "src900": "img/fabrics/official/paddington/42-1200.webp",
+              "src450": "img/fabrics/official/paddington/42-600.webp",
+              "src240": "img/fabrics/official/paddington/42-160.webp",
+              "hex": "#6d6969",
+              "plain3d": true
+            }
+          ]
+        },
+        {
+          "id": "paddington-bast",
+          "title": "PADDINGTON BAST",
+          "kind": "микровелюр стёганый",
+          "facts": [
+            "110 000 циклов",
+            "1010 г/м.п.",
+            "ширина 136 см"
+          ],
+          "texture": "img/fabrics/official/paddington-bast/02-1200.webp",
+          "colours": [
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/paddington-bast/02-1200.webp",
+              "src450": "img/fabrics/official/paddington-bast/02-600.webp",
+              "src240": "img/fabrics/official/paddington-bast/02-160.webp",
+              "hex": "#dcd9df",
+              "plain3d": true
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/paddington-bast/05-1200.webp",
+              "src450": "img/fabrics/official/paddington-bast/05-600.webp",
+              "src240": "img/fabrics/official/paddington-bast/05-160.webp",
+              "hex": "#beb6b6",
+              "plain3d": true
+            },
+            {
+              "name": "№ 08",
+              "src900": "img/fabrics/official/paddington-bast/08-1200.webp",
+              "src450": "img/fabrics/official/paddington-bast/08-600.webp",
+              "src240": "img/fabrics/official/paddington-bast/08-160.webp",
+              "hex": "#897a7c",
+              "plain3d": true
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/paddington-bast/09-1200.webp",
+              "src450": "img/fabrics/official/paddington-bast/09-600.webp",
+              "src240": "img/fabrics/official/paddington-bast/09-160.webp",
+              "hex": "#9c9797",
+              "plain3d": true
+            },
+            {
+              "name": "№ 17",
+              "src900": "img/fabrics/official/paddington-bast/17-1200.webp",
+              "src450": "img/fabrics/official/paddington-bast/17-600.webp",
+              "src240": "img/fabrics/official/paddington-bast/17-160.webp",
+              "hex": "#4b6268",
+              "plain3d": true
+            },
+            {
+              "name": "№ 18",
+              "src900": "img/fabrics/official/paddington-bast/18-1200.webp",
+              "src450": "img/fabrics/official/paddington-bast/18-600.webp",
+              "src240": "img/fabrics/official/paddington-bast/18-160.webp",
+              "hex": "#375659",
+              "plain3d": true
+            },
+            {
+              "name": "№ 19",
+              "src900": "img/fabrics/official/paddington-bast/19-1200.webp",
+              "src450": "img/fabrics/official/paddington-bast/19-600.webp",
+              "src240": "img/fabrics/official/paddington-bast/19-160.webp",
+              "hex": "#728171",
+              "plain3d": true
+            },
+            {
+              "name": "№ 21",
+              "src900": "img/fabrics/official/paddington-bast/21-1200.webp",
+              "src450": "img/fabrics/official/paddington-bast/21-600.webp",
+              "src240": "img/fabrics/official/paddington-bast/21-160.webp",
+              "hex": "#596269",
+              "plain3d": true
+            },
+            {
+              "name": "№ 22",
+              "src900": "img/fabrics/official/paddington-bast/22-1200.webp",
+              "src450": "img/fabrics/official/paddington-bast/22-600.webp",
+              "src240": "img/fabrics/official/paddington-bast/22-160.webp",
+              "hex": "#495470",
+              "plain3d": true
+            },
+            {
+              "name": "№ 24",
+              "src900": "img/fabrics/official/paddington-bast/24-1200.webp",
+              "src450": "img/fabrics/official/paddington-bast/24-600.webp",
+              "src240": "img/fabrics/official/paddington-bast/24-160.webp",
+              "hex": "#c1c3d0",
+              "plain3d": true
+            }
+          ]
         }
       ]
     },
@@ -714,21 +1387,111 @@ window.RICCA_FABRIC_LIBRARY = {
               "src240": "img/fabrics/ricca/03-160.webp",
               "hex": "#36382b"
             },
-            {"name": "Молочный", "src900": "img/fabrics/ricca/04-1200.webp", "src450": "img/fabrics/ricca/04-600.webp", "src240": "img/fabrics/ricca/04-160.webp", "hex": "#d8d3c8"},
-            {"name": "Серо-бежевый", "src900": "img/fabrics/ricca/05-1200.webp", "src450": "img/fabrics/ricca/05-600.webp", "src240": "img/fabrics/ricca/05-160.webp", "hex": "#8e8a85"},
-            {"name": "Медный меланж", "src900": "img/fabrics/ricca/06-1200.webp", "src450": "img/fabrics/ricca/06-600.webp", "src240": "img/fabrics/ricca/06-160.webp", "hex": "#473529"},
-            {"name": "Чёрно-бежевая полоса", "src900": "img/fabrics/ricca/07-1200.webp", "src450": "img/fabrics/ricca/07-600.webp", "src240": "img/fabrics/ricca/07-160.webp", "hex": "#6b6054"},
-            {"name": "Светло-серый меланж", "src900": "img/fabrics/ricca/08-1200.webp", "src450": "img/fabrics/ricca/08-600.webp", "src240": "img/fabrics/ricca/08-160.webp", "hex": "#a7a39f"},
-            {"name": "Тёмно-синий", "src900": "img/fabrics/ricca/09-1200.webp", "src450": "img/fabrics/ricca/09-600.webp", "src240": "img/fabrics/ricca/09-160.webp", "hex": "#1d222a"},
-            {"name": "Серо-голубой меланж", "src900": "img/fabrics/ricca/10-1200.webp", "src450": "img/fabrics/ricca/10-600.webp", "src240": "img/fabrics/ricca/10-160.webp", "hex": "#7a7c81"},
-            {"name": "Льняной", "src900": "img/fabrics/ricca/11-1200.webp", "src450": "img/fabrics/ricca/11-600.webp", "src240": "img/fabrics/ricca/11-160.webp", "hex": "#aaaeac"},
-            {"name": "Дымчатый с розовой нитью", "src900": "img/fabrics/ricca/12-1200.webp", "src450": "img/fabrics/ricca/12-600.webp", "src240": "img/fabrics/ricca/12-160.webp", "hex": "#7c7c7e"},
-            {"name": "Песочный с белой нитью", "src900": "img/fabrics/ricca/13-1200.webp", "src450": "img/fabrics/ricca/13-600.webp", "src240": "img/fabrics/ricca/13-160.webp", "hex": "#918c82"},
-            {"name": "Серый твид", "src900": "img/fabrics/ricca/14-1200.webp", "src450": "img/fabrics/ricca/14-600.webp", "src240": "img/fabrics/ricca/14-160.webp", "hex": "#797a7e"},
-            {"name": "Белый с чёрными пятнами", "src900": "img/fabrics/ricca/15-1200.webp", "src450": "img/fabrics/ricca/15-600.webp", "src240": "img/fabrics/ricca/15-160.webp", "hex": "#a1a2a1"},
-            {"name": "Чёрно-белый узор", "src900": "img/fabrics/ricca/16-1200.webp", "src450": "img/fabrics/ricca/16-600.webp", "src240": "img/fabrics/ricca/16-160.webp", "hex": "#61625f"},
-            {"name": "Оливковый с розовым", "src900": "img/fabrics/ricca/17-1200.webp", "src450": "img/fabrics/ricca/17-600.webp", "src240": "img/fabrics/ricca/17-160.webp", "hex": "#88816f"},
-            {"name": "Чёрный с белыми пятнами", "src900": "img/fabrics/ricca/18-1200.webp", "src450": "img/fabrics/ricca/18-600.webp", "src240": "img/fabrics/ricca/18-160.webp", "hex": "#555453"}
+            {
+              "name": "Молочный",
+              "src900": "img/fabrics/ricca/04-1200.webp",
+              "src450": "img/fabrics/ricca/04-600.webp",
+              "src240": "img/fabrics/ricca/04-160.webp",
+              "hex": "#d8d3c8"
+            },
+            {
+              "name": "Серо-бежевый",
+              "src900": "img/fabrics/ricca/05-1200.webp",
+              "src450": "img/fabrics/ricca/05-600.webp",
+              "src240": "img/fabrics/ricca/05-160.webp",
+              "hex": "#8e8a85"
+            },
+            {
+              "name": "Медный меланж",
+              "src900": "img/fabrics/ricca/06-1200.webp",
+              "src450": "img/fabrics/ricca/06-600.webp",
+              "src240": "img/fabrics/ricca/06-160.webp",
+              "hex": "#473529"
+            },
+            {
+              "name": "Чёрно-бежевая полоса",
+              "src900": "img/fabrics/ricca/07-1200.webp",
+              "src450": "img/fabrics/ricca/07-600.webp",
+              "src240": "img/fabrics/ricca/07-160.webp",
+              "hex": "#6b6054"
+            },
+            {
+              "name": "Светло-серый меланж",
+              "src900": "img/fabrics/ricca/08-1200.webp",
+              "src450": "img/fabrics/ricca/08-600.webp",
+              "src240": "img/fabrics/ricca/08-160.webp",
+              "hex": "#a7a39f"
+            },
+            {
+              "name": "Тёмно-синий",
+              "src900": "img/fabrics/ricca/09-1200.webp",
+              "src450": "img/fabrics/ricca/09-600.webp",
+              "src240": "img/fabrics/ricca/09-160.webp",
+              "hex": "#1d222a"
+            },
+            {
+              "name": "Серо-голубой меланж",
+              "src900": "img/fabrics/ricca/10-1200.webp",
+              "src450": "img/fabrics/ricca/10-600.webp",
+              "src240": "img/fabrics/ricca/10-160.webp",
+              "hex": "#7a7c81"
+            },
+            {
+              "name": "Льняной",
+              "src900": "img/fabrics/ricca/11-1200.webp",
+              "src450": "img/fabrics/ricca/11-600.webp",
+              "src240": "img/fabrics/ricca/11-160.webp",
+              "hex": "#aaaeac"
+            },
+            {
+              "name": "Дымчатый с розовой нитью",
+              "src900": "img/fabrics/ricca/12-1200.webp",
+              "src450": "img/fabrics/ricca/12-600.webp",
+              "src240": "img/fabrics/ricca/12-160.webp",
+              "hex": "#7c7c7e"
+            },
+            {
+              "name": "Песочный с белой нитью",
+              "src900": "img/fabrics/ricca/13-1200.webp",
+              "src450": "img/fabrics/ricca/13-600.webp",
+              "src240": "img/fabrics/ricca/13-160.webp",
+              "hex": "#918c82"
+            },
+            {
+              "name": "Серый твид",
+              "src900": "img/fabrics/ricca/14-1200.webp",
+              "src450": "img/fabrics/ricca/14-600.webp",
+              "src240": "img/fabrics/ricca/14-160.webp",
+              "hex": "#797a7e"
+            },
+            {
+              "name": "Белый с чёрными пятнами",
+              "src900": "img/fabrics/ricca/15-1200.webp",
+              "src450": "img/fabrics/ricca/15-600.webp",
+              "src240": "img/fabrics/ricca/15-160.webp",
+              "hex": "#a1a2a1"
+            },
+            {
+              "name": "Чёрно-белый узор",
+              "src900": "img/fabrics/ricca/16-1200.webp",
+              "src450": "img/fabrics/ricca/16-600.webp",
+              "src240": "img/fabrics/ricca/16-160.webp",
+              "hex": "#61625f"
+            },
+            {
+              "name": "Оливковый с розовым",
+              "src900": "img/fabrics/ricca/17-1200.webp",
+              "src450": "img/fabrics/ricca/17-600.webp",
+              "src240": "img/fabrics/ricca/17-160.webp",
+              "hex": "#88816f"
+            },
+            {
+              "name": "Чёрный с белыми пятнами",
+              "src900": "img/fabrics/ricca/18-1200.webp",
+              "src450": "img/fabrics/ricca/18-600.webp",
+              "src240": "img/fabrics/ricca/18-160.webp",
+              "hex": "#555453"
+            }
           ]
         },
         {
@@ -1116,6 +1879,193 @@ window.RICCA_FABRIC_LIBRARY = {
               "src450": "img/fabrics/official/pique/014-600.webp",
               "src240": "img/fabrics/official/pique/014-160.webp",
               "hex": "#474b4b"
+            }
+          ]
+        },
+        {
+          "id": "positiv",
+          "title": "POSITIV",
+          "kind": "букле",
+          "facts": [
+            "75 000 циклов",
+            "910 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/positiv/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/positiv/01-1200.webp",
+              "src450": "img/fabrics/official/positiv/01-600.webp",
+              "src240": "img/fabrics/official/positiv/01-160.webp",
+              "hex": "#f0eae5",
+              "plain3d": true
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/positiv/02-1200.webp",
+              "src450": "img/fabrics/official/positiv/02-600.webp",
+              "src240": "img/fabrics/official/positiv/02-160.webp",
+              "hex": "#e9dbd2",
+              "plain3d": true
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/positiv/03-1200.webp",
+              "src450": "img/fabrics/official/positiv/03-600.webp",
+              "src240": "img/fabrics/official/positiv/03-160.webp",
+              "hex": "#d7c0b4",
+              "plain3d": true
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/positiv/04-1200.webp",
+              "src450": "img/fabrics/official/positiv/04-600.webp",
+              "src240": "img/fabrics/official/positiv/04-160.webp",
+              "hex": "#b48f77",
+              "plain3d": true
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/positiv/05-1200.webp",
+              "src450": "img/fabrics/official/positiv/05-600.webp",
+              "src240": "img/fabrics/official/positiv/05-160.webp",
+              "hex": "#e7d8c8",
+              "plain3d": true
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/positiv/06-1200.webp",
+              "src450": "img/fabrics/official/positiv/06-600.webp",
+              "src240": "img/fabrics/official/positiv/06-160.webp",
+              "hex": "#ae6126",
+              "plain3d": true
+            },
+            {
+              "name": "№ 07",
+              "src900": "img/fabrics/official/positiv/07-1200.webp",
+              "src450": "img/fabrics/official/positiv/07-600.webp",
+              "src240": "img/fabrics/official/positiv/07-160.webp",
+              "hex": "#565e53",
+              "plain3d": true
+            },
+            {
+              "name": "№ 08",
+              "src900": "img/fabrics/official/positiv/08-1200.webp",
+              "src450": "img/fabrics/official/positiv/08-600.webp",
+              "src240": "img/fabrics/official/positiv/08-160.webp",
+              "hex": "#a5a691",
+              "plain3d": true
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/positiv/09-1200.webp",
+              "src450": "img/fabrics/official/positiv/09-600.webp",
+              "src240": "img/fabrics/official/positiv/09-160.webp",
+              "hex": "#cecbce",
+              "plain3d": true
+            },
+            {
+              "name": "№ 10",
+              "src900": "img/fabrics/official/positiv/10-1200.webp",
+              "src450": "img/fabrics/official/positiv/10-600.webp",
+              "src240": "img/fabrics/official/positiv/10-160.webp",
+              "hex": "#8d8a8e",
+              "plain3d": true
+            },
+            {
+              "name": "№ 11",
+              "src900": "img/fabrics/official/positiv/11-1200.webp",
+              "src450": "img/fabrics/official/positiv/11-600.webp",
+              "src240": "img/fabrics/official/positiv/11-160.webp",
+              "hex": "#677387",
+              "plain3d": true
+            }
+          ]
+        },
+        {
+          "id": "magnifico",
+          "title": "MAGNIFICO",
+          "kind": "букле",
+          "facts": [
+            "20 000 циклов",
+            "720 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/magnifico/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/magnifico/01-1200.webp",
+              "src450": "img/fabrics/official/magnifico/01-600.webp",
+              "src240": "img/fabrics/official/magnifico/01-160.webp",
+              "hex": "#c7c4c0"
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/magnifico/02-1200.webp",
+              "src450": "img/fabrics/official/magnifico/02-600.webp",
+              "src240": "img/fabrics/official/magnifico/02-160.webp",
+              "hex": "#bab7bb"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/magnifico/04-1200.webp",
+              "src450": "img/fabrics/official/magnifico/04-600.webp",
+              "src240": "img/fabrics/official/magnifico/04-160.webp",
+              "hex": "#8d837c"
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/magnifico/05-1200.webp",
+              "src450": "img/fabrics/official/magnifico/05-600.webp",
+              "src240": "img/fabrics/official/magnifico/05-160.webp",
+              "hex": "#c2b464"
+            }
+          ]
+        },
+        {
+          "id": "cano",
+          "title": "CANO",
+          "kind": "букле",
+          "facts": [
+            "65 000 циклов",
+            "952 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/cano/21-1200.webp",
+          "colours": [
+            {
+              "name": "№ 21",
+              "src900": "img/fabrics/official/cano/21-1200.webp",
+              "src450": "img/fabrics/official/cano/21-600.webp",
+              "src240": "img/fabrics/official/cano/21-160.webp",
+              "hex": "#9e755e",
+              "plain3d": true
+            },
+            {
+              "name": "№ 22",
+              "src900": "img/fabrics/official/cano/22-1200.webp",
+              "src450": "img/fabrics/official/cano/22-600.webp",
+              "src240": "img/fabrics/official/cano/22-160.webp",
+              "hex": "#989f9f",
+              "plain3d": true
+            },
+            {
+              "name": "№ 23",
+              "src900": "img/fabrics/official/cano/23-1200.webp",
+              "src450": "img/fabrics/official/cano/23-600.webp",
+              "src240": "img/fabrics/official/cano/23-160.webp",
+              "hex": "#ab947b",
+              "plain3d": true
+            },
+            {
+              "name": "№ 24",
+              "src900": "img/fabrics/official/cano/24-1200.webp",
+              "src450": "img/fabrics/official/cano/24-600.webp",
+              "src240": "img/fabrics/official/cano/24-160.webp",
+              "hex": "#988558",
+              "plain3d": true
             }
           ]
         }
@@ -1558,6 +2508,1189 @@ window.RICCA_FABRIC_LIBRARY = {
               "src450": "img/fabrics/official/sambia/12-600.webp",
               "src240": "img/fabrics/official/sambia/12-160.webp",
               "hex": "#323c2c"
+            }
+          ]
+        },
+        {
+          "id": "fantastika",
+          "title": "ФАНТАСТИКА",
+          "kind": "шенилл",
+          "facts": [
+            "80 000 циклов",
+            "798 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/fantastika/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/fantastika/01-1200.webp",
+              "src450": "img/fabrics/official/fantastika/01-600.webp",
+              "src240": "img/fabrics/official/fantastika/01-160.webp",
+              "hex": "#f1f0ee"
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/fantastika/02-1200.webp",
+              "src450": "img/fabrics/official/fantastika/02-600.webp",
+              "src240": "img/fabrics/official/fantastika/02-160.webp",
+              "hex": "#f2f0eb"
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/fantastika/03-1200.webp",
+              "src450": "img/fabrics/official/fantastika/03-600.webp",
+              "src240": "img/fabrics/official/fantastika/03-160.webp",
+              "hex": "#dcd1c8"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/fantastika/04-1200.webp",
+              "src450": "img/fabrics/official/fantastika/04-600.webp",
+              "src240": "img/fabrics/official/fantastika/04-160.webp",
+              "hex": "#ab9e99"
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/fantastika/05-1200.webp",
+              "src450": "img/fabrics/official/fantastika/05-600.webp",
+              "src240": "img/fabrics/official/fantastika/05-160.webp",
+              "hex": "#a09997"
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/fantastika/06-1200.webp",
+              "src450": "img/fabrics/official/fantastika/06-600.webp",
+              "src240": "img/fabrics/official/fantastika/06-160.webp",
+              "hex": "#b27e2c"
+            },
+            {
+              "name": "№ 07",
+              "src900": "img/fabrics/official/fantastika/07-1200.webp",
+              "src450": "img/fabrics/official/fantastika/07-600.webp",
+              "src240": "img/fabrics/official/fantastika/07-160.webp",
+              "hex": "#612a23"
+            },
+            {
+              "name": "№ 08",
+              "src900": "img/fabrics/official/fantastika/08-1200.webp",
+              "src450": "img/fabrics/official/fantastika/08-600.webp",
+              "src240": "img/fabrics/official/fantastika/08-160.webp",
+              "hex": "#88645a"
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/fantastika/09-1200.webp",
+              "src450": "img/fabrics/official/fantastika/09-600.webp",
+              "src240": "img/fabrics/official/fantastika/09-160.webp",
+              "hex": "#3d2d1c"
+            },
+            {
+              "name": "№ 10",
+              "src900": "img/fabrics/official/fantastika/10-1200.webp",
+              "src450": "img/fabrics/official/fantastika/10-600.webp",
+              "src240": "img/fabrics/official/fantastika/10-160.webp",
+              "hex": "#242621"
+            },
+            {
+              "name": "№ 11",
+              "src900": "img/fabrics/official/fantastika/11-1200.webp",
+              "src450": "img/fabrics/official/fantastika/11-600.webp",
+              "src240": "img/fabrics/official/fantastika/11-160.webp",
+              "hex": "#102325"
+            },
+            {
+              "name": "№ 12",
+              "src900": "img/fabrics/official/fantastika/12-1200.webp",
+              "src450": "img/fabrics/official/fantastika/12-600.webp",
+              "src240": "img/fabrics/official/fantastika/12-160.webp",
+              "hex": "#151c2a"
+            },
+            {
+              "name": "№ 13",
+              "src900": "img/fabrics/official/fantastika/13-1200.webp",
+              "src450": "img/fabrics/official/fantastika/13-600.webp",
+              "src240": "img/fabrics/official/fantastika/13-160.webp",
+              "hex": "#4e4643"
+            },
+            {
+              "name": "№ 14",
+              "src900": "img/fabrics/official/fantastika/14-1200.webp",
+              "src450": "img/fabrics/official/fantastika/14-600.webp",
+              "src240": "img/fabrics/official/fantastika/14-160.webp",
+              "hex": "#302f33"
+            }
+          ]
+        },
+        {
+          "id": "divo",
+          "title": "DIVO",
+          "kind": "шенилл",
+          "facts": [
+            "80 000 циклов",
+            "812 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/divo/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/divo/01-1200.webp",
+              "src450": "img/fabrics/official/divo/01-600.webp",
+              "src240": "img/fabrics/official/divo/01-160.webp",
+              "hex": "#f1ebe7"
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/divo/02-1200.webp",
+              "src450": "img/fabrics/official/divo/02-600.webp",
+              "src240": "img/fabrics/official/divo/02-160.webp",
+              "hex": "#e6cfbe"
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/divo/03-1200.webp",
+              "src450": "img/fabrics/official/divo/03-600.webp",
+              "src240": "img/fabrics/official/divo/03-160.webp",
+              "hex": "#beada2"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/divo/04-1200.webp",
+              "src450": "img/fabrics/official/divo/04-600.webp",
+              "src240": "img/fabrics/official/divo/04-160.webp",
+              "hex": "#a9978d",
+              "plain3d": true
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/divo/05-1200.webp",
+              "src450": "img/fabrics/official/divo/05-600.webp",
+              "src240": "img/fabrics/official/divo/05-160.webp",
+              "hex": "#b6a8a3"
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/divo/06-1200.webp",
+              "src450": "img/fabrics/official/divo/06-600.webp",
+              "src240": "img/fabrics/official/divo/06-160.webp",
+              "hex": "#cdc4be"
+            },
+            {
+              "name": "№ 07",
+              "src900": "img/fabrics/official/divo/07-1200.webp",
+              "src450": "img/fabrics/official/divo/07-600.webp",
+              "src240": "img/fabrics/official/divo/07-160.webp",
+              "hex": "#a59b99"
+            },
+            {
+              "name": "№ 08",
+              "src900": "img/fabrics/official/divo/08-1200.webp",
+              "src450": "img/fabrics/official/divo/08-600.webp",
+              "src240": "img/fabrics/official/divo/08-160.webp",
+              "hex": "#403a37"
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/divo/09-1200.webp",
+              "src450": "img/fabrics/official/divo/09-600.webp",
+              "src240": "img/fabrics/official/divo/09-160.webp",
+              "hex": "#1d2536"
+            },
+            {
+              "name": "№ 10",
+              "src900": "img/fabrics/official/divo/10-1200.webp",
+              "src450": "img/fabrics/official/divo/10-600.webp",
+              "src240": "img/fabrics/official/divo/10-160.webp",
+              "hex": "#2e3528"
+            },
+            {
+              "name": "№ 11",
+              "src900": "img/fabrics/official/divo/11-1200.webp",
+              "src450": "img/fabrics/official/divo/11-600.webp",
+              "src240": "img/fabrics/official/divo/11-160.webp",
+              "hex": "#3d3624"
+            },
+            {
+              "name": "№ 12",
+              "src900": "img/fabrics/official/divo/12-1200.webp",
+              "src450": "img/fabrics/official/divo/12-600.webp",
+              "src240": "img/fabrics/official/divo/12-160.webp",
+              "hex": "#4a221f"
+            },
+            {
+              "name": "№ 13",
+              "src900": "img/fabrics/official/divo/13-1200.webp",
+              "src450": "img/fabrics/official/divo/13-600.webp",
+              "src240": "img/fabrics/official/divo/13-160.webp",
+              "hex": "#814c3a"
+            },
+            {
+              "name": "№ 14",
+              "src900": "img/fabrics/official/divo/14-1200.webp",
+              "src450": "img/fabrics/official/divo/14-600.webp",
+              "src240": "img/fabrics/official/divo/14-160.webp",
+              "hex": "#8b5b2c"
+            }
+          ]
+        },
+        {
+          "id": "empire",
+          "title": "EMPIRE",
+          "kind": "шенилл",
+          "facts": [
+            "60 000 циклов",
+            "800 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/empire/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/empire/01-1200.webp",
+              "src450": "img/fabrics/official/empire/01-600.webp",
+              "src240": "img/fabrics/official/empire/01-160.webp",
+              "hex": "#f1eeea"
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/empire/02-1200.webp",
+              "src450": "img/fabrics/official/empire/02-600.webp",
+              "src240": "img/fabrics/official/empire/02-160.webp",
+              "hex": "#d2c1b3"
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/empire/03-1200.webp",
+              "src450": "img/fabrics/official/empire/03-600.webp",
+              "src240": "img/fabrics/official/empire/03-160.webp",
+              "hex": "#ae9e97"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/empire/04-1200.webp",
+              "src450": "img/fabrics/official/empire/04-600.webp",
+              "src240": "img/fabrics/official/empire/04-160.webp",
+              "hex": "#c9a98a"
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/empire/05-1200.webp",
+              "src450": "img/fabrics/official/empire/05-600.webp",
+              "src240": "img/fabrics/official/empire/05-160.webp",
+              "hex": "#b9b69f"
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/empire/06-1200.webp",
+              "src450": "img/fabrics/official/empire/06-600.webp",
+              "src240": "img/fabrics/official/empire/06-160.webp",
+              "hex": "#595641"
+            },
+            {
+              "name": "№ 07",
+              "src900": "img/fabrics/official/empire/07-1200.webp",
+              "src450": "img/fabrics/official/empire/07-600.webp",
+              "src240": "img/fabrics/official/empire/07-160.webp",
+              "hex": "#ccc9d1"
+            },
+            {
+              "name": "№ 08",
+              "src900": "img/fabrics/official/empire/08-1200.webp",
+              "src450": "img/fabrics/official/empire/08-600.webp",
+              "src240": "img/fabrics/official/empire/08-160.webp",
+              "hex": "#515561"
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/empire/09-1200.webp",
+              "src450": "img/fabrics/official/empire/09-600.webp",
+              "src240": "img/fabrics/official/empire/09-160.webp",
+              "hex": "#2f3032"
+            },
+            {
+              "name": "№ 10",
+              "src900": "img/fabrics/official/empire/10-1200.webp",
+              "src450": "img/fabrics/official/empire/10-600.webp",
+              "src240": "img/fabrics/official/empire/10-160.webp",
+              "hex": "#efe3d5"
+            },
+            {
+              "name": "№ 11",
+              "src900": "img/fabrics/official/empire/11-1200.webp",
+              "src450": "img/fabrics/official/empire/11-600.webp",
+              "src240": "img/fabrics/official/empire/11-160.webp",
+              "hex": "#baa394"
+            },
+            {
+              "name": "№ 12",
+              "src900": "img/fabrics/official/empire/12-1200.webp",
+              "src450": "img/fabrics/official/empire/12-600.webp",
+              "src240": "img/fabrics/official/empire/12-160.webp",
+              "hex": "#bab3b0"
+            },
+            {
+              "name": "№ 13",
+              "src900": "img/fabrics/official/empire/13-1200.webp",
+              "src450": "img/fabrics/official/empire/13-600.webp",
+              "src240": "img/fabrics/official/empire/13-160.webp",
+              "hex": "#a19ea6"
+            },
+            {
+              "name": "№ 14",
+              "src900": "img/fabrics/official/empire/14-1200.webp",
+              "src450": "img/fabrics/official/empire/14-600.webp",
+              "src240": "img/fabrics/official/empire/14-160.webp",
+              "hex": "#6d6360"
+            },
+            {
+              "name": "№ 15",
+              "src900": "img/fabrics/official/empire/15-1200.webp",
+              "src450": "img/fabrics/official/empire/15-600.webp",
+              "src240": "img/fabrics/official/empire/15-160.webp",
+              "hex": "#253459"
+            },
+            {
+              "name": "№ 16",
+              "src900": "img/fabrics/official/empire/16-1200.webp",
+              "src450": "img/fabrics/official/empire/16-600.webp",
+              "src240": "img/fabrics/official/empire/16-160.webp",
+              "hex": "#b4c4cd",
+              "plain3d": true
+            },
+            {
+              "name": "№ 17",
+              "src900": "img/fabrics/official/empire/17-1200.webp",
+              "src450": "img/fabrics/official/empire/17-600.webp",
+              "src240": "img/fabrics/official/empire/17-160.webp",
+              "hex": "#95816d"
+            },
+            {
+              "name": "№ 19",
+              "src900": "img/fabrics/official/empire/19-1200.webp",
+              "src450": "img/fabrics/official/empire/19-600.webp",
+              "src240": "img/fabrics/official/empire/19-160.webp",
+              "hex": "#52636c"
+            },
+            {
+              "name": "№ 20",
+              "src900": "img/fabrics/official/empire/20-1200.webp",
+              "src450": "img/fabrics/official/empire/20-600.webp",
+              "src240": "img/fabrics/official/empire/20-160.webp",
+              "hex": "#60322a"
+            },
+            {
+              "name": "№ 21",
+              "src900": "img/fabrics/official/empire/21-1200.webp",
+              "src450": "img/fabrics/official/empire/21-600.webp",
+              "src240": "img/fabrics/official/empire/21-160.webp",
+              "hex": "#843425"
+            },
+            {
+              "name": "№ 22",
+              "src900": "img/fabrics/official/empire/22-1200.webp",
+              "src450": "img/fabrics/official/empire/22-600.webp",
+              "src240": "img/fabrics/official/empire/22-160.webp",
+              "hex": "#354844"
+            },
+            {
+              "name": "№ 23",
+              "src900": "img/fabrics/official/empire/23-1200.webp",
+              "src450": "img/fabrics/official/empire/23-600.webp",
+              "src240": "img/fabrics/official/empire/23-160.webp",
+              "hex": "#6f6e42"
+            }
+          ]
+        },
+        {
+          "id": "les",
+          "title": "LES",
+          "kind": "шенилл",
+          "facts": [
+            "70 000 циклов",
+            "630 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/les/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/les/01-1200.webp",
+              "src450": "img/fabrics/official/les/01-600.webp",
+              "src240": "img/fabrics/official/les/01-160.webp",
+              "hex": "#f4f3f0"
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/les/02-1200.webp",
+              "src450": "img/fabrics/official/les/02-600.webp",
+              "src240": "img/fabrics/official/les/02-160.webp",
+              "hex": "#efe7de"
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/les/03-1200.webp",
+              "src450": "img/fabrics/official/les/03-600.webp",
+              "src240": "img/fabrics/official/les/03-160.webp",
+              "hex": "#d3c2b3"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/les/04-1200.webp",
+              "src450": "img/fabrics/official/les/04-600.webp",
+              "src240": "img/fabrics/official/les/04-160.webp",
+              "hex": "#93785e"
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/les/05-1200.webp",
+              "src450": "img/fabrics/official/les/05-600.webp",
+              "src240": "img/fabrics/official/les/05-160.webp",
+              "hex": "#623628"
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/les/06-1200.webp",
+              "src450": "img/fabrics/official/les/06-600.webp",
+              "src240": "img/fabrics/official/les/06-160.webp",
+              "hex": "#40593a"
+            },
+            {
+              "name": "№ 07",
+              "src900": "img/fabrics/official/les/07-1200.webp",
+              "src450": "img/fabrics/official/les/07-600.webp",
+              "src240": "img/fabrics/official/les/07-160.webp",
+              "hex": "#2a2e1f"
+            },
+            {
+              "name": "№ 08",
+              "src900": "img/fabrics/official/les/08-1200.webp",
+              "src450": "img/fabrics/official/les/08-600.webp",
+              "src240": "img/fabrics/official/les/08-160.webp",
+              "hex": "#3b3a3d"
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/les/09-1200.webp",
+              "src450": "img/fabrics/official/les/09-600.webp",
+              "src240": "img/fabrics/official/les/09-160.webp",
+              "hex": "#a7a9ac"
+            }
+          ]
+        },
+        {
+          "id": "for-rest",
+          "title": "FOR REST",
+          "kind": "шенилл",
+          "facts": [
+            "60 000 циклов",
+            "660 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/for-rest/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/for-rest/01-1200.webp",
+              "src450": "img/fabrics/official/for-rest/01-600.webp",
+              "src240": "img/fabrics/official/for-rest/01-160.webp",
+              "hex": "#ebe4da"
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/for-rest/02-1200.webp",
+              "src450": "img/fabrics/official/for-rest/02-600.webp",
+              "src240": "img/fabrics/official/for-rest/02-160.webp",
+              "hex": "#e1d5c9"
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/for-rest/03-1200.webp",
+              "src450": "img/fabrics/official/for-rest/03-600.webp",
+              "src240": "img/fabrics/official/for-rest/03-160.webp",
+              "hex": "#c1beb9"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/for-rest/04-1200.webp",
+              "src450": "img/fabrics/official/for-rest/04-600.webp",
+              "src240": "img/fabrics/official/for-rest/04-160.webp",
+              "hex": "#bbada4"
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/for-rest/05-1200.webp",
+              "src450": "img/fabrics/official/for-rest/05-600.webp",
+              "src240": "img/fabrics/official/for-rest/05-160.webp",
+              "hex": "#8c3e2e"
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/for-rest/06-1200.webp",
+              "src450": "img/fabrics/official/for-rest/06-600.webp",
+              "src240": "img/fabrics/official/for-rest/06-160.webp",
+              "hex": "#b7998c"
+            },
+            {
+              "name": "№ 07",
+              "src900": "img/fabrics/official/for-rest/07-1200.webp",
+              "src450": "img/fabrics/official/for-rest/07-600.webp",
+              "src240": "img/fabrics/official/for-rest/07-160.webp",
+              "hex": "#96927c"
+            },
+            {
+              "name": "№ 08",
+              "src900": "img/fabrics/official/for-rest/08-1200.webp",
+              "src450": "img/fabrics/official/for-rest/08-600.webp",
+              "src240": "img/fabrics/official/for-rest/08-160.webp",
+              "hex": "#40493f"
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/for-rest/09-1200.webp",
+              "src450": "img/fabrics/official/for-rest/09-600.webp",
+              "src240": "img/fabrics/official/for-rest/09-160.webp",
+              "hex": "#d4c072"
+            },
+            {
+              "name": "№ 10",
+              "src900": "img/fabrics/official/for-rest/10-1200.webp",
+              "src450": "img/fabrics/official/for-rest/10-600.webp",
+              "src240": "img/fabrics/official/for-rest/10-160.webp",
+              "hex": "#745234"
+            },
+            {
+              "name": "№ 11",
+              "src900": "img/fabrics/official/for-rest/11-1200.webp",
+              "src450": "img/fabrics/official/for-rest/11-600.webp",
+              "src240": "img/fabrics/official/for-rest/11-160.webp",
+              "hex": "#afabae"
+            },
+            {
+              "name": "№ 12",
+              "src900": "img/fabrics/official/for-rest/12-1200.webp",
+              "src450": "img/fabrics/official/for-rest/12-600.webp",
+              "src240": "img/fabrics/official/for-rest/12-160.webp",
+              "hex": "#64616b"
+            },
+            {
+              "name": "№ 13",
+              "src900": "img/fabrics/official/for-rest/13-1200.webp",
+              "src450": "img/fabrics/official/for-rest/13-600.webp",
+              "src240": "img/fabrics/official/for-rest/13-160.webp",
+              "hex": "#404751"
+            }
+          ]
+        },
+        {
+          "id": "flame",
+          "title": "FLAME",
+          "kind": "шенилл",
+          "facts": [
+            "60 000 циклов",
+            "705 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/flame/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/flame/01-1200.webp",
+              "src450": "img/fabrics/official/flame/01-600.webp",
+              "src240": "img/fabrics/official/flame/01-160.webp",
+              "hex": "#e1e1df",
+              "plain3d": true
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/flame/02-1200.webp",
+              "src450": "img/fabrics/official/flame/02-600.webp",
+              "src240": "img/fabrics/official/flame/02-160.webp",
+              "hex": "#dedee0",
+              "plain3d": true
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/flame/03-1200.webp",
+              "src450": "img/fabrics/official/flame/03-600.webp",
+              "src240": "img/fabrics/official/flame/03-160.webp",
+              "hex": "#bdbab6",
+              "plain3d": true
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/flame/04-1200.webp",
+              "src450": "img/fabrics/official/flame/04-600.webp",
+              "src240": "img/fabrics/official/flame/04-160.webp",
+              "hex": "#bfb9ad",
+              "plain3d": true
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/flame/06-1200.webp",
+              "src450": "img/fabrics/official/flame/06-600.webp",
+              "src240": "img/fabrics/official/flame/06-160.webp",
+              "hex": "#242424",
+              "plain3d": true
+            },
+            {
+              "name": "№ 07",
+              "src900": "img/fabrics/official/flame/07-1200.webp",
+              "src450": "img/fabrics/official/flame/07-600.webp",
+              "src240": "img/fabrics/official/flame/07-160.webp",
+              "hex": "#3b3d3f",
+              "plain3d": true
+            },
+            {
+              "name": "№ 08",
+              "src900": "img/fabrics/official/flame/08-1200.webp",
+              "src450": "img/fabrics/official/flame/08-600.webp",
+              "src240": "img/fabrics/official/flame/08-160.webp",
+              "hex": "#a2a2ac",
+              "plain3d": true
+            },
+            {
+              "name": "№ 09",
+              "src900": "img/fabrics/official/flame/09-1200.webp",
+              "src450": "img/fabrics/official/flame/09-600.webp",
+              "src240": "img/fabrics/official/flame/09-160.webp",
+              "hex": "#a5a7b3",
+              "plain3d": true
+            }
+          ]
+        },
+        {
+          "id": "attika",
+          "title": "ATTIKA",
+          "kind": "шенилл",
+          "facts": [
+            "35 000 циклов",
+            "602 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/attika/01-1200.webp",
+          "no3d": true,
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/attika/01-1200.webp",
+              "src450": "img/fabrics/official/attika/01-600.webp",
+              "src240": "img/fabrics/official/attika/01-160.webp",
+              "hex": "#e1ded8"
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/attika/02-1200.webp",
+              "src450": "img/fabrics/official/attika/02-600.webp",
+              "src240": "img/fabrics/official/attika/02-160.webp",
+              "hex": "#cecbc3"
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/attika/03-1200.webp",
+              "src450": "img/fabrics/official/attika/03-600.webp",
+              "src240": "img/fabrics/official/attika/03-160.webp",
+              "hex": "#c3c5c6"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/attika/04-1200.webp",
+              "src450": "img/fabrics/official/attika/04-600.webp",
+              "src240": "img/fabrics/official/attika/04-160.webp",
+              "hex": "#cfcdc8"
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/attika/05-1200.webp",
+              "src450": "img/fabrics/official/attika/05-600.webp",
+              "src240": "img/fabrics/official/attika/05-160.webp",
+              "hex": "#cbbcb5"
+            }
+          ]
+        },
+        {
+          "id": "rivers",
+          "title": "RIVERS",
+          "kind": "шенилл",
+          "facts": [
+            "80 000 циклов",
+            "890 г/м.п.",
+            "ширина 134 см"
+          ],
+          "texture": "img/fabrics/official/rivers/01-1200.webp",
+          "no3d": true,
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/rivers/01-1200.webp",
+              "src450": "img/fabrics/official/rivers/01-600.webp",
+              "src240": "img/fabrics/official/rivers/01-160.webp",
+              "hex": "#bbb6b4"
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/rivers/02-1200.webp",
+              "src450": "img/fabrics/official/rivers/02-600.webp",
+              "src240": "img/fabrics/official/rivers/02-160.webp",
+              "hex": "#3d3f3e"
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/rivers/03-1200.webp",
+              "src450": "img/fabrics/official/rivers/03-600.webp",
+              "src240": "img/fabrics/official/rivers/03-160.webp",
+              "hex": "#515355"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/rivers/04-1200.webp",
+              "src450": "img/fabrics/official/rivers/04-600.webp",
+              "src240": "img/fabrics/official/rivers/04-160.webp",
+              "hex": "#5a3f20"
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/rivers/05-1200.webp",
+              "src450": "img/fabrics/official/rivers/05-600.webp",
+              "src240": "img/fabrics/official/rivers/05-160.webp",
+              "hex": "#383a2e"
+            },
+            {
+              "name": "№ 06",
+              "src900": "img/fabrics/official/rivers/06-1200.webp",
+              "src450": "img/fabrics/official/rivers/06-600.webp",
+              "src240": "img/fabrics/official/rivers/06-160.webp",
+              "hex": "#7b766e"
+            }
+          ]
+        },
+        {
+          "id": "mone",
+          "title": "MONE",
+          "kind": "шенилл",
+          "facts": [
+            "18 000 циклов",
+            "345 г/м²",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/mone/110-1200.webp",
+          "colours": [
+            {
+              "name": "№ 110",
+              "src900": "img/fabrics/official/mone/110-1200.webp",
+              "src450": "img/fabrics/official/mone/110-600.webp",
+              "src240": "img/fabrics/official/mone/110-160.webp",
+              "hex": "#eeded0",
+              "plain3d": true
+            },
+            {
+              "name": "№ 910",
+              "src900": "img/fabrics/official/mone/910-1200.webp",
+              "src450": "img/fabrics/official/mone/910-600.webp",
+              "src240": "img/fabrics/official/mone/910-160.webp",
+              "hex": "#c7c0ba",
+              "plain3d": true
+            },
+            {
+              "name": "№ 960",
+              "src900": "img/fabrics/official/mone/960-1200.webp",
+              "src450": "img/fabrics/official/mone/960-600.webp",
+              "src240": "img/fabrics/official/mone/960-160.webp",
+              "hex": "#a7a196",
+              "plain3d": true
+            },
+            {
+              "name": "№ 934",
+              "src900": "img/fabrics/official/mone/934-1200.webp",
+              "src450": "img/fabrics/official/mone/934-600.webp",
+              "src240": "img/fabrics/official/mone/934-160.webp",
+              "hex": "#999590",
+              "plain3d": true
+            },
+            {
+              "name": "№ 542",
+              "src900": "img/fabrics/official/mone/542-1200.webp",
+              "src450": "img/fabrics/official/mone/542-600.webp",
+              "src240": "img/fabrics/official/mone/542-160.webp",
+              "hex": "#bd9573",
+              "plain3d": true
+            },
+            {
+              "name": "№ 715",
+              "src900": "img/fabrics/official/mone/715-1200.webp",
+              "src450": "img/fabrics/official/mone/715-600.webp",
+              "src240": "img/fabrics/official/mone/715-160.webp",
+              "hex": "#b7b1bd",
+              "plain3d": true
+            },
+            {
+              "name": "№ 290",
+              "src900": "img/fabrics/official/mone/290-1200.webp",
+              "src450": "img/fabrics/official/mone/290-600.webp",
+              "src240": "img/fabrics/official/mone/290-160.webp",
+              "hex": "#c8b090",
+              "plain3d": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rogozhka",
+      "title": "Рогожка",
+      "collections": [
+        {
+          "id": "rafael",
+          "title": "RAFAEL",
+          "kind": "рогожка",
+          "facts": [
+            "45 000 циклов",
+            "1330 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/rafael/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/rafael/01-1200.webp",
+              "src450": "img/fabrics/official/rafael/01-600.webp",
+              "src240": "img/fabrics/official/rafael/01-160.webp",
+              "hex": "#dcd7d1",
+              "plain3d": true
+            },
+            {
+              "name": "№ 07",
+              "src900": "img/fabrics/official/rafael/07-1200.webp",
+              "src450": "img/fabrics/official/rafael/07-600.webp",
+              "src240": "img/fabrics/official/rafael/07-160.webp",
+              "hex": "#747071",
+              "plain3d": true
+            },
+            {
+              "name": "№ 10",
+              "src900": "img/fabrics/official/rafael/10-1200.webp",
+              "src450": "img/fabrics/official/rafael/10-600.webp",
+              "src240": "img/fabrics/official/rafael/10-160.webp",
+              "hex": "#a8a8aa",
+              "plain3d": true
+            },
+            {
+              "name": "№ 11",
+              "src900": "img/fabrics/official/rafael/11-1200.webp",
+              "src450": "img/fabrics/official/rafael/11-600.webp",
+              "src240": "img/fabrics/official/rafael/11-160.webp",
+              "hex": "#9a989b",
+              "plain3d": true
+            },
+            {
+              "name": "№ 12",
+              "src900": "img/fabrics/official/rafael/12-1200.webp",
+              "src450": "img/fabrics/official/rafael/12-600.webp",
+              "src240": "img/fabrics/official/rafael/12-160.webp",
+              "hex": "#a68b7b",
+              "plain3d": true
+            },
+            {
+              "name": "№ 13",
+              "src900": "img/fabrics/official/rafael/13-1200.webp",
+              "src450": "img/fabrics/official/rafael/13-600.webp",
+              "src240": "img/fabrics/official/rafael/13-160.webp",
+              "hex": "#ccbaa7",
+              "plain3d": true
+            },
+            {
+              "name": "№ 14",
+              "src900": "img/fabrics/official/rafael/14-1200.webp",
+              "src450": "img/fabrics/official/rafael/14-600.webp",
+              "src240": "img/fabrics/official/rafael/14-160.webp",
+              "hex": "#7a7b59",
+              "plain3d": true
+            },
+            {
+              "name": "№ 15",
+              "src900": "img/fabrics/official/rafael/15-1200.webp",
+              "src450": "img/fabrics/official/rafael/15-600.webp",
+              "src240": "img/fabrics/official/rafael/15-160.webp",
+              "hex": "#585f4f",
+              "plain3d": true
+            },
+            {
+              "name": "№ 16",
+              "src900": "img/fabrics/official/rafael/16-1200.webp",
+              "src450": "img/fabrics/official/rafael/16-600.webp",
+              "src240": "img/fabrics/official/rafael/16-160.webp",
+              "hex": "#4f5160",
+              "plain3d": true
+            },
+            {
+              "name": "№ 17",
+              "src900": "img/fabrics/official/rafael/17-1200.webp",
+              "src450": "img/fabrics/official/rafael/17-600.webp",
+              "src240": "img/fabrics/official/rafael/17-160.webp",
+              "hex": "#84381e",
+              "plain3d": true
+            }
+          ]
+        },
+        {
+          "id": "paradise",
+          "title": "PARADISE",
+          "kind": "рогожка",
+          "facts": [
+            "60 000 циклов",
+            "714 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/paradise/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/paradise/01-1200.webp",
+              "src450": "img/fabrics/official/paradise/01-600.webp",
+              "src240": "img/fabrics/official/paradise/01-160.webp",
+              "hex": "#a2a9a3",
+              "plain3d": true
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/paradise/03-1200.webp",
+              "src450": "img/fabrics/official/paradise/03-600.webp",
+              "src240": "img/fabrics/official/paradise/03-160.webp",
+              "hex": "#918f80",
+              "plain3d": true
+            },
+            {
+              "name": "№ 10",
+              "src900": "img/fabrics/official/paradise/10-1200.webp",
+              "src450": "img/fabrics/official/paradise/10-600.webp",
+              "src240": "img/fabrics/official/paradise/10-160.webp",
+              "hex": "#848270",
+              "plain3d": true
+            },
+            {
+              "name": "№ 12",
+              "src900": "img/fabrics/official/paradise/12-1200.webp",
+              "src450": "img/fabrics/official/paradise/12-600.webp",
+              "src240": "img/fabrics/official/paradise/12-160.webp",
+              "hex": "#413f37",
+              "plain3d": true
+            },
+            {
+              "name": "№ 13",
+              "src900": "img/fabrics/official/paradise/13-1200.webp",
+              "src450": "img/fabrics/official/paradise/13-600.webp",
+              "src240": "img/fabrics/official/paradise/13-160.webp",
+              "hex": "#777f7a",
+              "plain3d": true
+            },
+            {
+              "name": "№ 15",
+              "src900": "img/fabrics/official/paradise/15-1200.webp",
+              "src450": "img/fabrics/official/paradise/15-600.webp",
+              "src240": "img/fabrics/official/paradise/15-160.webp",
+              "hex": "#555d5a",
+              "plain3d": true
+            },
+            {
+              "name": "№ 27",
+              "src900": "img/fabrics/official/paradise/27-1200.webp",
+              "src450": "img/fabrics/official/paradise/27-600.webp",
+              "src240": "img/fabrics/official/paradise/27-160.webp",
+              "hex": "#814f2d",
+              "plain3d": true
+            },
+            {
+              "name": "№ 32",
+              "src900": "img/fabrics/official/paradise/32-1200.webp",
+              "src450": "img/fabrics/official/paradise/32-600.webp",
+              "src240": "img/fabrics/official/paradise/32-160.webp",
+              "hex": "#393c35",
+              "plain3d": true
+            },
+            {
+              "name": "№ 33",
+              "src900": "img/fabrics/official/paradise/33-1200.webp",
+              "src450": "img/fabrics/official/paradise/33-600.webp",
+              "src240": "img/fabrics/official/paradise/33-160.webp",
+              "hex": "#1e292f",
+              "plain3d": true
+            },
+            {
+              "name": "№ 35",
+              "src900": "img/fabrics/official/paradise/35-1200.webp",
+              "src450": "img/fabrics/official/paradise/35-600.webp",
+              "src240": "img/fabrics/official/paradise/35-160.webp",
+              "hex": "#242f26",
+              "plain3d": true
+            },
+            {
+              "name": "№ 38",
+              "src900": "img/fabrics/official/paradise/38-1200.webp",
+              "src450": "img/fabrics/official/paradise/38-600.webp",
+              "src240": "img/fabrics/official/paradise/38-160.webp",
+              "hex": "#181c1f",
+              "plain3d": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "zhakkard",
+      "title": "Жаккард",
+      "collections": [
+        {
+          "id": "sakura",
+          "title": "SAKURA",
+          "kind": "жаккард",
+          "facts": [
+            "50 000 циклов",
+            "800 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/sakura/01-1200.webp",
+          "no3d": true,
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/sakura/01-1200.webp",
+              "src450": "img/fabrics/official/sakura/01-600.webp",
+              "src240": "img/fabrics/official/sakura/01-160.webp",
+              "hex": "#d0cec4"
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/sakura/02-1200.webp",
+              "src450": "img/fabrics/official/sakura/02-600.webp",
+              "src240": "img/fabrics/official/sakura/02-160.webp",
+              "hex": "#bcb9b0"
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/sakura/03-1200.webp",
+              "src450": "img/fabrics/official/sakura/03-600.webp",
+              "src240": "img/fabrics/official/sakura/03-160.webp",
+              "hex": "#c2b9ae"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/sakura/04-1200.webp",
+              "src450": "img/fabrics/official/sakura/04-600.webp",
+              "src240": "img/fabrics/official/sakura/04-160.webp",
+              "hex": "#bcbcb7"
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/sakura/05-1200.webp",
+              "src450": "img/fabrics/official/sakura/05-600.webp",
+              "src240": "img/fabrics/official/sakura/05-160.webp",
+              "hex": "#b2b5b4"
+            },
+            {
+              "name": "Plain № 01",
+              "src900": "img/fabrics/official/sakura/plain-01-1200.webp",
+              "src450": "img/fabrics/official/sakura/plain-01-600.webp",
+              "src240": "img/fabrics/official/sakura/plain-01-160.webp",
+              "hex": "#c6c2b9"
+            },
+            {
+              "name": "Plain № 04",
+              "src900": "img/fabrics/official/sakura/plain-04-1200.webp",
+              "src450": "img/fabrics/official/sakura/plain-04-600.webp",
+              "src240": "img/fabrics/official/sakura/plain-04-160.webp",
+              "hex": "#b2b2b0"
+            },
+            {
+              "name": "Plain № 05",
+              "src900": "img/fabrics/official/sakura/plain-05-1200.webp",
+              "src450": "img/fabrics/official/sakura/plain-05-600.webp",
+              "src240": "img/fabrics/official/sakura/plain-05-160.webp",
+              "hex": "#c5c7c3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "meh",
+      "title": "Мех",
+      "collections": [
+        {
+          "id": "charisma",
+          "title": "CHARISMA",
+          "kind": "искусственный мех",
+          "facts": [
+            "85 000 циклов",
+            "910 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/charisma/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/charisma/01-1200.webp",
+              "src450": "img/fabrics/official/charisma/01-600.webp",
+              "src240": "img/fabrics/official/charisma/01-160.webp",
+              "hex": "#eae5df",
+              "plain3d": true
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/charisma/02-1200.webp",
+              "src450": "img/fabrics/official/charisma/02-600.webp",
+              "src240": "img/fabrics/official/charisma/02-160.webp",
+              "hex": "#beb6b0",
+              "plain3d": true
+            },
+            {
+              "name": "№ 03",
+              "src900": "img/fabrics/official/charisma/03-1200.webp",
+              "src450": "img/fabrics/official/charisma/03-600.webp",
+              "src240": "img/fabrics/official/charisma/03-160.webp",
+              "hex": "#837777"
+            },
+            {
+              "name": "№ 04",
+              "src900": "img/fabrics/official/charisma/04-1200.webp",
+              "src450": "img/fabrics/official/charisma/04-600.webp",
+              "src240": "img/fabrics/official/charisma/04-160.webp",
+              "hex": "#79602d"
+            },
+            {
+              "name": "№ 05",
+              "src900": "img/fabrics/official/charisma/05-1200.webp",
+              "src450": "img/fabrics/official/charisma/05-600.webp",
+              "src240": "img/fabrics/official/charisma/05-160.webp",
+              "hex": "#303d35"
+            }
+          ]
+        },
+        {
+          "id": "cayman",
+          "title": "CAYMAN",
+          "kind": "искусственный мех",
+          "facts": [
+            "35 000 циклов",
+            "833 г/м.п.",
+            "ширина 140 см"
+          ],
+          "texture": "img/fabrics/official/cayman/01-1200.webp",
+          "colours": [
+            {
+              "name": "№ 01",
+              "src900": "img/fabrics/official/cayman/01-1200.webp",
+              "src450": "img/fabrics/official/cayman/01-600.webp",
+              "src240": "img/fabrics/official/cayman/01-160.webp",
+              "hex": "#cec3b8",
+              "plain3d": true
+            },
+            {
+              "name": "№ 02",
+              "src900": "img/fabrics/official/cayman/02-1200.webp",
+              "src450": "img/fabrics/official/cayman/02-600.webp",
+              "src240": "img/fabrics/official/cayman/02-160.webp",
+              "hex": "#cccbca",
+              "plain3d": true
             }
           ]
         }

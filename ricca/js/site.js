@@ -862,7 +862,8 @@
             + '<div class="fc__acts">'
             + `<a class="btn btn--fill" data-fc-wa href="${esc(fcWa(c, k, n))}" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>${tr('Хочу эту ткань')}${tr('<span class="sr-only"> (откроется в&nbsp;WhatsApp)</span>')}</a>`
             + (RC ? `<button class="btn btn--line" type="button" data-fc-cart aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="#i-bag"/></svg><span>${tr('В&nbsp;корзину&nbsp;— образец')}</span></button>` : '')
-            + `<a class="caps-link fc__3d" data-fc-3d href="${CFG_PAGE}#f=${esc(encodeURIComponent(c.id))}:${n + 1}">${tr('Примерить на&nbsp;мебели в&nbsp;3D')}<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>`
+            /* крупный рисунок (no3d в js/fabrics-data.js) в 3D не примеряем: плитка из фото ломает раппорт и масштаб узора */
+            + (c.no3d ? '' : `<a class="caps-link fc__3d" data-fc-3d href="${CFG_PAGE}#f=${esc(encodeURIComponent(c.id))}:${n + 1}">${tr('Примерить на&nbsp;мебели в&nbsp;3D')}<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>`)
             + '</div></div></article>';
         }).join('')
         + '</section>').join('')}</div>`
@@ -929,9 +930,11 @@
       const wa = $('[data-fc-wa]', art);
       wa.href = fcWa(c, k, n);
       wa.setAttribute('aria-label', tr`Хочу эту ткань: ${c.title}, ${k.name.toLowerCase()} — написать в WhatsApp`);
-      const t3 = $('[data-fc-3d]', art);
-      t3.href = `${CFG_PAGE}#f=${encodeURIComponent(c.id)}:${n + 1}`;
-      t3.setAttribute('aria-label', tr`Примерить ткань ${c.title}, ${k.name.toLowerCase()} на мебели в 3D`);
+      const t3 = $('[data-fc-3d]', art);   // у тканей с крупным рисунком (no3d) ссылки нет
+      if (t3) {
+        t3.href = `${CFG_PAGE}#f=${encodeURIComponent(c.id)}:${n + 1}`;
+        t3.setAttribute('aria-label', tr`Примерить ткань ${c.title}, ${k.name.toLowerCase()} на мебели в 3D`);
+      }
       fcSyncCart(art);
       if (how.focus) { const b = $(`[data-fc-k="${n}"]`, art); if (b) b.focus(); }
       if (how.say) fcLive.textContent = tr`${c.title}: ${fcName(k)}, ${n + 1} из ${len}`;

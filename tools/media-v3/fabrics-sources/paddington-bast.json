@@ -1,0 +1,123 @@
+{
+  "id": "paddington-bast",
+  "title": "PADDINGTON BAST",
+  "supplier": "Art Vision Home",
+  "kind": "микровелюр стёганый",
+  "source_url": "https://artvision-home.ru/catalog/paddington-bast/",
+  "specs": {
+    "composition": "100% Полиэстер",
+    "martindale": 110000,
+    "weight": "1010 г/м.п.",
+    "width": "136 см",
+    "country": "Китай",
+    "care": "Стирка: Запрещена; Глажка: Запрещена",
+    "other": [
+      "Тест на пиллинг: 5",
+      "Тест на устойчивость окраски: 5",
+      "Тип ткани на сайте: Микровелюр",
+      "Тип ткани и страна указаны только в карточке цвета 09"
+    ]
+  },
+  "colours": [
+    {
+      "code": "02",
+      "name": "Паддингтон Баст / Paddington Bast 02",
+      "page_url": "https://artvision-home.ru/catalog/paddington-bast/paddington-bast-02",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4243/e47d94c40a6c11ec89240025902b8c2b-8464e315a42411f0b0700025902b8c2b.jpg",
+      "file": "img/02.jpg",
+      "w": 5472,
+      "h": 3648
+    },
+    {
+      "code": "03",
+      "name": "Паддингтон Баст / Paddington Bast 03",
+      "page_url": "https://artvision-home.ru/catalog/paddington-bast/paddington-bast-03",
+      "image_url": null,
+      "file": null,
+      "w": null,
+      "h": null
+    },
+    {
+      "code": "05",
+      "name": "Паддингтон Баст / Paddington Bast 05",
+      "page_url": "https://artvision-home.ru/catalog/paddington-bast/paddington-bast-05",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4244/edab02f30a6c11ec89240025902b8c2b-3ba11a2ca42511f0b0700025902b8c2b.jpg",
+      "file": "img/05.jpg",
+      "w": 5472,
+      "h": 3648
+    },
+    {
+      "code": "08",
+      "name": "Паддингтон Баст / Paddington Bast 08",
+      "page_url": "https://artvision-home.ru/catalog/paddington-bast/paddington-bast-08",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4245/f6b97f3e0a6c11ec89240025902b8c2b-4ecb0e41a42511f0b0700025902b8c2b.jpg",
+      "file": "img/08.jpg",
+      "w": 5472,
+      "h": 3648
+    },
+    {
+      "code": "09",
+      "name": "Паддингтон Баст / Paddington Bast 09",
+      "page_url": "https://artvision-home.ru/catalog/paddington-bast/paddington-bast-09",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4246/fec2242a0a6c11ec89240025902b8c2b-5e146483a42511f0b0700025902b8c2b.jpg",
+      "file": "img/09.jpg",
+      "w": 5173,
+      "h": 3449
+    },
+    {
+      "code": "17",
+      "name": "Паддингтон Баст / Paddington Bast 17",
+      "page_url": "https://artvision-home.ru/catalog/paddington-bast/paddington-bast-17",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4247/08ab9f0f0a6d11ec89240025902b8c2b-678b9d5ba42511f0b0700025902b8c2b.jpg",
+      "file": "img/17.jpg",
+      "w": 5472,
+      "h": 3648
+    },
+    {
+      "code": "18",
+      "name": "Паддингтон Баст / Paddington Bast 18",
+      "page_url": "https://artvision-home.ru/catalog/paddington-bast/paddington-bast-18",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4248/11abd3180a6d11ec89240025902b8c2b-7f8dbe5ea42511f0b0700025902b8c2b.jpg",
+      "file": "img/18.jpg",
+      "w": 5472,
+      "h": 3648
+    },
+    {
+      "code": "19",
+      "name": "Паддингтон Баст / Paddington Bast 19",
+      "page_url": "https://artvision-home.ru/catalog/paddington-bast/paddington-bast-19",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4249/1a8d153d0a6d11ec89240025902b8c2b-9adce7e2a42511f0b0700025902b8c2b.jpg",
+      "file": "img/19.jpg",
+      "w": 5472,
+      "h": 3648
+    },
+    {
+      "code": "21",
+      "name": "Паддингтон Баст / Paddington Bast 21",
+      "page_url": "https://artvision-home.ru/catalog/paddington-bast/paddington-bast-21",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4250/2358eb010a6d11ec89240025902b8c2b-acf51db8a42511f0b0700025902b8c2b.jpg",
+      "file": "img/21.jpg",
+      "w": 5472,
+      "h": 3648
+    },
+    {
+      "code": "22",
+      "name": "Паддингтон Баст / Paddington Bast 22",
+      "page_url": "https://artvision-home.ru/catalog/paddington-bast/paddington-bast-22",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4251/2c69c8ac0a6d11ec89240025902b8c2b-cd096929a42511f0b0700025902b8c2b.jpg",
+      "file": "img/22.jpg",
+      "w": 5472,
+      "h": 3648
+    },
+    {
+      "code": "24",
+      "name": "Паддингтон Баст / Paddington Bast 24",
+      "page_url": "https://artvision-home.ru/catalog/paddington-bast/paddington-bast-24",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4252/3548a9710a6d11ec89240025902b8c2b-dfb5344fa42511f0b0700025902b8c2b.jpg",
+      "file": "img/24.jpg",
+      "w": 5472,
+      "h": 3648
+    }
+  ],
+  "notes": "Стёганый «ёлочкой» микровелюр с вешалки PADDINGTON 2 (IMG_2600): рисунок стёжки на официальных фото тот же — это отдельная коллекция сайта «Паддингтон Баст / Paddington Bast» (Paddington со стёжкой Bast), 11 цветов; номера цветов те же, что у гладкого Paddington. Другая стёжка — «кирпичики» — на сайте идёт как «Паддингтон Брик / Paddington Brick», на вешалке её нет, не собиралась. На сайте только фото в складку (стёганое полотно с волной), плоского образца нет. У цвета 03 фото на сайте нет совсем (заглушка noimage) — file: null. Характеристики на сайте: вес 1010, ширина 136, 110 000, пиллинг 5, цветостойкость 5, 100% полиэстер; «Тип ткани: Микровелюр» и «Страна: Китай» заполнены только в карточке цвета 09, в остальных этих строк нет. На бирке вешалки вес 770 г/м.п. — это вес гладкого Paddington, у стёганого на сайте 1010. Вес и ширина в карточках сайта даны числами без единиц («Вес ткани: 1010», «Ширина ткани: 136»); единицы проставлены так: ширина — см, вес — г/м.п. (на официальной странице-презентации Paddington https://artvision-home.ru/presentations/4341-kollekcziya-paddington написано «ВЕС - 770гр./м.п.» при «770» в карточке; на бирках вешалок вес тоже в гр./м.п.)."
+}

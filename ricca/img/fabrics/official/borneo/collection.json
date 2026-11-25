@@ -1,0 +1,180 @@
+{
+ "id": "borneo",
+ "title": "BORNEO",
+ "kind": "микровелюр",
+ "type": "velur",
+ "facts": [
+  "100 000 циклов",
+  "500 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Borneo 01",
+   "hex": "#bfbabb",
+   "plain3d": true,
+   "fold": 0.085,
+   "src1200": "img/fabrics/official/borneo/01-1200.webp",
+   "src600": "img/fabrics/official/borneo/01-600.webp",
+   "thumb": "img/fabrics/official/borneo/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Borneo 02",
+   "hex": "#e4dfdb",
+   "plain3d": true,
+   "fold": 0.046,
+   "src1200": "img/fabrics/official/borneo/02-1200.webp",
+   "src600": "img/fabrics/official/borneo/02-600.webp",
+   "thumb": "img/fabrics/official/borneo/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Borneo 03",
+   "hex": "#d7cfcb",
+   "plain3d": true,
+   "fold": 0.052,
+   "src1200": "img/fabrics/official/borneo/03-1200.webp",
+   "src600": "img/fabrics/official/borneo/03-600.webp",
+   "thumb": "img/fabrics/official/borneo/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Borneo 04",
+   "hex": "#ad914b",
+   "plain3d": true,
+   "fold": 0.081,
+   "src1200": "img/fabrics/official/borneo/04-1200.webp",
+   "src600": "img/fabrics/official/borneo/04-600.webp",
+   "thumb": "img/fabrics/official/borneo/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Borneo 05",
+   "hex": "#7a5f41",
+   "plain3d": true,
+   "fold": 0.077,
+   "src1200": "img/fabrics/official/borneo/05-1200.webp",
+   "src600": "img/fabrics/official/borneo/05-600.webp",
+   "thumb": "img/fabrics/official/borneo/05-160.webp"
+  },
+  {
+   "code": "06",
+   "label": "06",
+   "name": "Borneo 06",
+   "hex": "#505a38",
+   "plain3d": true,
+   "fold": 0.112,
+   "src1200": "img/fabrics/official/borneo/06-1200.webp",
+   "src600": "img/fabrics/official/borneo/06-600.webp",
+   "thumb": "img/fabrics/official/borneo/06-160.webp"
+  },
+  {
+   "code": "08",
+   "label": "08",
+   "name": "Borneo 08",
+   "hex": "#40475b",
+   "plain3d": true,
+   "fold": 0.114,
+   "src1200": "img/fabrics/official/borneo/08-1200.webp",
+   "src600": "img/fabrics/official/borneo/08-600.webp",
+   "thumb": "img/fabrics/official/borneo/08-160.webp"
+  },
+  {
+   "code": "09",
+   "label": "09",
+   "name": "Borneo 09",
+   "hex": "#6c7081",
+   "plain3d": true,
+   "fold": 0.145,
+   "src1200": "img/fabrics/official/borneo/09-1200.webp",
+   "src600": "img/fabrics/official/borneo/09-600.webp",
+   "thumb": "img/fabrics/official/borneo/09-160.webp"
+  },
+  {
+   "code": "10",
+   "label": "10",
+   "name": "Borneo 10",
+   "hex": "#819ba0",
+   "plain3d": true,
+   "fold": 0.09,
+   "src1200": "img/fabrics/official/borneo/10-1200.webp",
+   "src600": "img/fabrics/official/borneo/10-600.webp",
+   "thumb": "img/fabrics/official/borneo/10-160.webp"
+  },
+  {
+   "code": "12",
+   "label": "12",
+   "name": "Borneo 12",
+   "hex": "#beaaa6",
+   "plain3d": true,
+   "fold": 0.058,
+   "src1200": "img/fabrics/official/borneo/12-1200.webp",
+   "src600": "img/fabrics/official/borneo/12-600.webp",
+   "thumb": "img/fabrics/official/borneo/12-160.webp"
+  },
+  {
+   "code": "14",
+   "label": "14",
+   "name": "Borneo 14",
+   "hex": "#807878",
+   "plain3d": true,
+   "fold": 0.08,
+   "src1200": "img/fabrics/official/borneo/14-1200.webp",
+   "src600": "img/fabrics/official/borneo/14-600.webp",
+   "thumb": "img/fabrics/official/borneo/14-160.webp"
+  },
+  {
+   "code": "15",
+   "label": "15",
+   "name": "Borneo 15",
+   "hex": "#8e8991",
+   "plain3d": true,
+   "fold": 0.057,
+   "src1200": "img/fabrics/official/borneo/15-1200.webp",
+   "src600": "img/fabrics/official/borneo/15-600.webp",
+   "thumb": "img/fabrics/official/borneo/15-160.webp"
+  },
+  {
+   "code": "16",
+   "label": "16",
+   "name": "Borneo 16",
+   "hex": "#b7b9c1",
+   "plain3d": true,
+   "fold": 0.052,
+   "src1200": "img/fabrics/official/borneo/16-1200.webp",
+   "src600": "img/fabrics/official/borneo/16-600.webp",
+   "thumb": "img/fabrics/official/borneo/16-160.webp"
+  },
+  {
+   "code": "17",
+   "label": "17",
+   "name": "Borneo 17",
+   "hex": "#7b8190",
+   "plain3d": true,
+   "fold": 0.076,
+   "src1200": "img/fabrics/official/borneo/17-1200.webp",
+   "src600": "img/fabrics/official/borneo/17-600.webp",
+   "thumb": "img/fabrics/official/borneo/17-160.webp"
+  },
+  {
+   "code": "18",
+   "label": "18",
+   "name": "Borneo 18",
+   "hex": "#383a39",
+   "plain3d": true,
+   "fold": 0.093,
+   "src1200": "img/fabrics/official/borneo/18-1200.webp",
+   "src600": "img/fabrics/official/borneo/18-600.webp",
+   "thumb": "img/fabrics/official/borneo/18-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

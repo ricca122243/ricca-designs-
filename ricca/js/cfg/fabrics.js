@@ -49,7 +49,8 @@ export function getLibrary() {
   const types = src.types
     .map((t) => ({
       id: String(t.id), title: String(t.title || t.id),
-      collections: (t.collections || []).map((c) => ({
+      /* no3d — ткани с крупным рисунком: в 3D не показываем (см. js/fabrics-data.js), на сайте в «Тканях» они есть */
+      collections: (t.collections || []).filter((c) => c && !c.no3d).map((c) => ({
         id: String(c.id), title: String(c.title || c.id), kind: kindOf(t.id, c), texture: c.texture || '',
         kindTitle: c.kind && !KINDS.includes(c.kind) ? String(c.kind) : '',                       // «микровелюр» (js/fabrics-data.js)
         facts: Array.isArray(c.facts) ? String(c.facts[0] || '') : String(c.facts || ''),           // одна строка
