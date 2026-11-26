@@ -956,7 +956,8 @@ window.RICCA_CATALOG = [
   },
   {
     id: "armchair-07",
-    no3d: true,   // 24 ноября, владелец: «убери нахрен, ужас» — 3D снято, на сайте только фото (вернуть — убрать строку и вернуть glb)
+    glb: "models3d/armchair-07.glb",   // 26 ноября: новая модель, форма снята с фото наложением (tools/media-v3/photofit/runvo.py); старую 3D владелец снял 24 ноября
+    view: { az: 44, el: 3, fov: 18, zoom: 1.1 },
     cfg: "t.armchair~ah.70~aw.22~bc.fixed~d.85~h.74~lf.black~lh.18~lg.metal~qa.right~ql.splay~sd.58~sh.44~w.97",
     fab: "coco:15",
     category: "armchairs",

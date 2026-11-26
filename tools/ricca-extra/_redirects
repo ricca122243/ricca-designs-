@@ -32,8 +32,7 @@
 /models/lirna.html  /models/milora  301!
 /models/tilso  /models/talero  301!
 /models/tilso.html  /models/talero  301!
-# 24 ноября: у Runvo 3D снято, у Galso старые файлы удалены (новая модель — models3d/armchair-20.glb); выкладка на демо старые файлы не убирает, поэтому адреса закрыты явно
-/models3d/armchair-07.glb  /404  404!
+# 24 ноября: у Runvo старая 3D снята (26 ноября — новая модель armchair-07.glb), у Galso старые файлы удалены (новая модель — models3d/armchair-20.glb); выкладка на демо старые файлы не убирает, поэтому адреса закрыты явно
 /models3d/free/armchair-07.json  /404  404!
 /models3d/free/armchair-20.json  /404  404!
 /img/drawings/galso-front.webp  /404  404!
