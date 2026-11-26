@@ -222,6 +222,7 @@ ATTR = {
     'The Ritz-Carlton — Instagram (откроется в новой вкладке)': 'The Ritz-Carlton — Instagram (opens in a new tab)',
     'FENDI — Instagram (откроется в новой вкладке)': 'FENDI — Instagram (opens in a new tab)',
     'Jimmy Choo — Instagram (откроется в новой вкладке)': 'Jimmy Choo — Instagram (opens in a new tab)',
+    'ASP Club — Instagram (откроется в новой вкладке)': 'ASP Club — Instagram (opens in a new tab)',
     'abr — Instagram (откроется в новой вкладке)': 'abr — Instagram (opens in a new tab)',
     'Esentai Mall — Instagram (откроется в новой вкладке)': 'Esentai Mall — Instagram (opens in a new tab)',
     'Восемь озёр — Instagram (откроется в новой вкладке)': 'Vosem Ozer (Eight Lakes) resort — Instagram (opens in a new tab)',
