@@ -254,7 +254,10 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
   const listeners = {};
   const emit = (e, d) => (listeners[e] || []).forEach((fn) => fn(d));
   let view = '3d';
-  let object = null, box = new THREE.Box3(), size = new THREE.Vector3(1, 1, 1), center = new THREE.Vector3(), lastRadius = 0;
+  /* рамка до первой модели — куб 1 м на полу, а не пустая: по пустой рамке (±Infinity) расстояние до камеры выходило NaN,
+     NaN попадал в ограничения приближения, и они портили первый настоящий кадр — у изделия, собранного по параметрам
+     (вход в конструктор без модели, ссылка «Примерить на мебели в 3D»), сцена оставалась пустой (найдено 26 ноября) */
+  let object = null, box = new THREE.Box3(new THREE.Vector3(-0.5, 0, -0.5), new THREE.Vector3(0.5, 1, 0.5)), size = new THREE.Vector3(1, 1, 1), center = new THREE.Vector3(0, 0.5, 0), lastRadius = 0;
   let anim = null, raf = 0, idleT = 0, interacting = false, disposed = false, studioOn = true;
   let shadowDirty = true;   // тени пересчитываем только когда изменилась сама сцена (не камера и не ткань)
   let W = 1, H = 1;
@@ -467,13 +470,15 @@ export function createStage(container, { quality = 'auto', ao, antialias = true 
     if (view === '3d') {
       const dir = camera === persp && !reset ? persp.position.clone().sub(controls.target).normalize() : dir3q();
       if (!isFinite(dir.x) || dir.lengthSq() < 0.5) dir.copy(dir3q());
-      const fd = framingDist(dir);
+      let fd = framingDist(dir);
+      if (!Number.isFinite(fd) || fd <= 0) fd = Math.max(1, radius() * 3);   // рамка не готова — запасное расстояние, но не NaN
       const aim = aimOf();
       const to = { pos: aim.clone().add(dir.multiplyScalar(fd)), target: aim, fov: fov3() };
       const fromOk = [persp.position.x, persp.position.y, persp.position.z, controls.target.x].every(Number.isFinite);
+      /* ограничения приближения — до controls.update(): он прижимает камеру к ним сразу же */
+      controls.minDistance = fd * 0.6; controls.maxDistance = fd * 2.5;
       if (animate && fromOk && !reduced()) startAnim(persp.position.clone(), controls.target.clone(), persp.fov, to.pos, to.target, fov3(), 500, null);
       else { persp.position.copy(to.pos); controls.target.copy(to.target); persp.fov = fov3(); persp.updateProjectionMatrix(); controls.update(); }
-      controls.minDistance = fd * 0.6; controls.maxDistance = fd * 2.5;
     } else {
       ortho.zoom = 1; fitOrtho();
       const t = liveTarget(view, (ortho.top - ortho.bottom) / 2);
