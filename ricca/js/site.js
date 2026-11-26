@@ -160,7 +160,7 @@
      Скорость (заказчик: «фото долго загружаются»): всё ниже первого экрана — loading="lazy"; телефон (< 768 px) всегда берёт
      файл 800 px — на экране 3x браузер иначе выбрал бы 1600; компьютер — srcset 800 / 1600; width/height — без сдвига вёрстки ---------- */
   /* 26 ноября, владелец прислал 14 фото интерьеров: «Можешь в работы выложить» — работы ricca-NNNN (фото владельца, works-selection.json
-     "src": "owner"); IMG_2511 — пока нет (на пледе и подушках логотипы Hermès, ждёт решения владельца) */
+     "src": "owner"); IMG_2511 не выкладываем (на пледе и подушках логотипы Hermès; владелец: «Не выкладывать») */
   const OWNER_WORKS = ['ricca-2521', 'ricca-2490', 'ricca-2516', 'ricca-2506', 'ricca-2508', 'ricca-2518', 'ricca-2502', 'ricca-2489', 'ricca-2515', 'ricca-2519', 'ricca-2493', 'ricca-2496'];
   const WORKS_SHOWN = [...OWNER_WORKS, 'DGy-8O2Ilbr', 'DKkV-ORIobz'];   // + «Модульный диван ARCO», «Округлое кресло»
   const WORKS = (Array.isArray(window.RICCA_WORKS) ? window.RICCA_WORKS : [])
