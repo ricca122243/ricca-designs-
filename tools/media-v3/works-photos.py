@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
-"""«Наши работы» — готовый каталог из реальных фото ателье (Instagram @ricca.designs).
+"""«Наши работы» — готовый каталог из реальных фото ателье: посты Instagram @ricca.designs и фото, которые прислал владелец.
 
-Читает tools/media-v3/works-selection.json (что показываем, в каком порядке, подписи) и исходники
-ricca/content/instagram/*.jpg (+ MANIFEST.json), пишет:
+Читает tools/media-v3/works-selection.json (что показываем, в каком порядке, подписи) и исходники:
+  ricca/content/instagram/*.jpg (+ MANIFEST.json) — работы-посты (id = shortcode, в окне работы — ссылка на пост);
+  ricca/content/works-owner/<id>-<N>.jpg          — работы с "src": "owner" (фото владельца, 26 ноября; в Instagram их нет —
+                                                    ссылки на пост у них нет). Положить фото туда: tools/media-v3/works-owner-add.py.
+У кадра можно задать "crop": {"<N>": [x0, y0, x1, y1]} (пиксели исходника — убрать значок, надпись, лишний край)
+и "pos": {"<N>": "30% 50%"} — какую часть кадра держать в карточке 4 : 5 (object-position; по умолчанию центр).
+Пишет:
   ricca/img/works/<shortcode>-<N>-1600.webp  — длинная сторона ≤ 1600 (меньше — как есть), q90
   ricca/img/works/<shortcode>-<N>-800.webp   — длинная сторона 800 (меньше — как есть), q86
   ricca/js/works-data.js                      — window.RICCA_WORKS (фото: src, src800, w, h — размер src, w800/h800 — размер src800),
@@ -29,6 +34,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 SEL = os.path.join(ROOT, 'tools', 'media-v3', 'works-selection.json')
 SRC = os.path.join(ROOT, 'ricca', 'content', 'instagram')
 OUT = os.path.join(ROOT, 'ricca', 'img', 'works')
+OWN = os.path.join(ROOT, 'ricca', 'content', 'works-owner')
 DATA = os.path.join(ROOT, 'ricca', 'js', 'works-data.js')
 CATS = ('sofas', 'beds', 'armchairs')
 CFG = ('sofa', 'corner', 'ushape', 'modular', 'bed', 'armchair', 'pouf')
@@ -67,7 +73,10 @@ def fit(w, h, long_side):
 
 def main():
     sel = json.load(open(SEL, encoding='utf-8'))
-    manifest = json.load(open(os.path.join(SRC, 'MANIFEST.json'), encoding='utf-8'))
+    # исходников Instagram в git нет (content/instagram — только у того, кто их скачал): без них работы-посты берутся
+    # из уже готовых файлов img/works как есть — перекодировать их нечем, но и терять нельзя
+    mf = os.path.join(SRC, 'MANIFEST.json')
+    manifest = json.load(open(mf, encoding='utf-8')) if os.path.isfile(mf) else []
     by_file = {m['file']: m for m in manifest}
     os.makedirs(OUT, exist_ok=True)
     works, keep, seen = [], set(), set()
@@ -86,21 +95,34 @@ def main():
         if not nums:
             die(f'{sc}: нет фото')
         photos = []
+        owner = w.get('src') == 'owner'
         for n in nums:
-            hits = glob.glob(os.path.join(SRC, f'*-{glob.escape(sc)}-{n}.jpg'))
-            hits = [h for h in hits if by_file.get(os.path.basename(h), {}).get('shortcode') == sc]
-            if len(hits) != 1:
-                die(f'{sc}-{n}: исходник не найден в content/instagram')
-            src = hits[0]
+            if owner:
+                src = os.path.join(OWN, f'{sc}-{n}.jpg')
+                if not os.path.isfile(src):
+                    die(f'{sc}-{n}: исходник не найден в content/works-owner')
+            else:
+                hits = glob.glob(os.path.join(SRC, f'*-{glob.escape(sc)}-{n}.jpg'))
+                hits = [h for h in hits if by_file.get(os.path.basename(h), {}).get('shortcode') == sc]
+                ready = all(os.path.isfile(os.path.join(OUT, f'{sc}-{n}-{s}.webp')) for s, _ in SIZES)
+                if len(hits) != 1 and not ready:
+                    die(f'{sc}-{n}: исходник не найден в content/instagram')
+                src = hits[0] if len(hits) == 1 else None      # None — нет исходника, готовые файлы остаются как есть
+            box = (w.get('crop') or {}).get(str(n))
+            # у кадров с обрезкой и у фото владельца подписи и рамки живут в выборке — её правка тоже повод перекодировать
+            newer = 0 if src is None else max(os.path.getmtime(src), os.path.getmtime(SEL) if (owner or box) else 0)
             im = None
             ph = {}
             for long_side, q in SIZES:
                 name = f'{sc}-{n}-{long_side}.webp'
                 dst = os.path.join(OUT, name)
                 keep.add(name)
-                if FORCE or not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
+                if src is not None and (FORCE or not os.path.exists(dst) or os.path.getmtime(dst) < newer):
                     if im is None:
-                        im = grade(to_srgb(ImageOps.exif_transpose(Image.open(src))))
+                        im = to_srgb(ImageOps.exif_transpose(Image.open(src)))
+                        if box:
+                            im = im.crop(tuple(int(v) for v in box))
+                        im = grade(im)
                     size = fit(im.width, im.height, long_side)
                     out = resize_sharp(im, size)
                     # без exif / icc / xmp: Pillow пишет в WebP только то, что передано явно
@@ -109,10 +131,11 @@ def main():
                     if chk.info.get('exif') or chk.info.get('icc_profile') or chk.info.get('xmp'):
                         die(f'{name}: в файле остались метаданные')
                     ph[long_side] = chk.size
+            pos = (w.get('pos') or {}).get(str(n))
             photos.append({'src': f'img/works/{sc}-{n}-1600.webp', 'src800': f'img/works/{sc}-{n}-800.webp',
-                           'w': ph[1600][0], 'h': ph[1600][1], 'w800': ph[800][0], 'h800': ph[800][1]})
+                           'w': ph[1600][0], 'h': ph[1600][1], 'w800': ph[800][0], 'h800': ph[800][1], **({'pos': pos} if pos else {})})
         works.append({'id': sc, 'cat': cat, 'title': w['title'], 'sub': w.get('sub', ''), 'cfg': w['cfg'],
-                      'photos': photos, 'ig': f'https://www.instagram.com/p/{sc}/'})
+                      'photos': photos, **({} if owner else {'ig': f'https://www.instagram.com/p/{sc}/'})})
     # лента на главной: [id, номер кадра] → [id, индекс фото в работе]
     strip = []
     by_id = {w['id']: w for w in sel['works']}
@@ -125,7 +148,7 @@ def main():
             os.remove(f)
     counts = {c: sum(1 for w in works if w['cat'] == c) for c in CATS}
     with open(DATA, 'w', encoding='utf-8') as fh:
-        fh.write('/* RICCA DESIGNS — «Наши работы»: реальные фото работ ателье из Instagram @ricca.designs.\n'
+        fh.write('/* RICCA DESIGNS — «Наши работы»: реальные фото работ ателье — посты Instagram @ricca.designs и фото владельца (без ссылки на пост).\n'
                  '   ФАЙЛ СОБИРАЕТСЯ СКРИПТОМ — руками не править: выборка, порядок и подписи — tools/media-v3/works-selection.json,\n'
                  '   затем python3 tools/media-v3/works-photos.py. Фото из content/client-photos — не работы ателье, сюда не идут.\n'
                  f'   Работ: {len(works)} (диваны {counts["sofas"]}, кровати {counts["beds"]}, кресла и пуфы {counts["armchairs"]}). */\n')

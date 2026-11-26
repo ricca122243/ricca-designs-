@@ -159,7 +159,10 @@
      работы с фильтром по категории), окно работы (#work-<id>).
      Скорость (заказчик: «фото долго загружаются»): всё ниже первого экрана — loading="lazy"; телефон (< 768 px) всегда берёт
      файл 800 px — на экране 3x браузер иначе выбрал бы 1600; компьютер — srcset 800 / 1600; width/height — без сдвига вёрстки ---------- */
-  const WORKS_SHOWN = ['DGy-8O2Ilbr', 'DKkV-ORIobz'];   // «Модульный диван ARCO», «Округлое кресло»
+  /* 26 ноября, владелец прислал 14 фото интерьеров: «Можешь в работы выложить» — работы ricca-NNNN (фото владельца, works-selection.json
+     "src": "owner"); IMG_2511 — пока нет (на пледе и подушках логотипы Hermès, ждёт решения владельца) */
+  const OWNER_WORKS = ['ricca-2521', 'ricca-2490', 'ricca-2516', 'ricca-2506', 'ricca-2508', 'ricca-2518', 'ricca-2502', 'ricca-2489', 'ricca-2515', 'ricca-2519', 'ricca-2493', 'ricca-2496'];
+  const WORKS_SHOWN = [...OWNER_WORKS, 'DGy-8O2Ilbr', 'DKkV-ORIobz'];   // + «Модульный диван ARCO», «Округлое кресло»
   const WORKS = (Array.isArray(window.RICCA_WORKS) ? window.RICCA_WORKS : [])
     .filter((w) => w && w.id && w.title && KINDS[w.cat] && Array.isArray(w.photos))
     .map((w) => Object.assign({}, w, { photos: w.photos.filter((p) => p && p.src && p.src800 && p.w && p.h) }))
@@ -171,7 +174,10 @@
   const MODELS = (Array.isArray(window.RICCA_MODELS) ? window.RICCA_MODELS : []).filter((w) => w && w.id && KINDS[w.cat] && Array.isArray(w.photos) && w.photos.length);
   const WORK = new Map([...WORKS, ...MODELS].map((w) => [w.id, w]));
   // главная (#works): 8 лучших кадров реальных изделий — порядок подобран владельцем (светлые, чистые, без людей и надписей — проверено 9 ноября)
-  const BEST_WORKS = ['C_tjlDdgnmn', 'DdAJz7PiC61', 'DGy-8O2Ilbr', 'C9h3Txai1KF', 'DaSUDdwDKly', 'C7E_JvdoXM-', 'C0EZbsnoxni', 'DKkV-ORIobz', 'C1Ur3ZXIE3f'];   // владелец, 9 ноября: NUBO, Modena и «округлое изголовье» убраны
+  /* 26 ноября: сетка главной — новые фото владельца (телефон показывает первые 4: гостиная, спальня, угловой диван, панель с банкеткой).
+     Прежний список (владелец, 9 ноября) — ниже: эти работы на сайте сейчас скрыты (WORKS_SHOWN), в сетку они и так не попадали */
+  const BEST_WORKS = ['ricca-2521', 'ricca-2518', 'ricca-2490', 'ricca-2502', 'ricca-2516', 'ricca-2489', 'ricca-2508', 'ricca-2519', 'DGy-8O2Ilbr', 'DKkV-ORIobz'];
+  // было: BEST_WORKS = ['C_tjlDdgnmn', 'DdAJz7PiC61', 'DGy-8O2Ilbr', 'C9h3Txai1KF', 'DaSUDdwDKly', 'C7E_JvdoXM-', 'C0EZbsnoxni', 'DKkV-ORIobz', 'C1Ur3ZXIE3f'];   // владелец, 9 ноября: NUBO, Modena и «округлое изголовье» убраны
   const BEST = BEST_WORKS.map((id) => WORKS.find((w) => w.id === id)).filter(Boolean);
   const SMALL = window.matchMedia('(max-width: 767px)');   // телефон: только файлы 800 px (так же — ткани, FC_PHONE)
   const p800 = (p) => ({ w: p.w800 || p.w, h: p.h800 || p.h });
@@ -204,7 +210,7 @@
     const s = p800(p), set = `${esc(p.src800)} ${s.w}w, ${esc(p.src)} ${p.w}w`, m = z && studio(p);
     return '<picture>'
       + (p.w > s.w ? `<source media="(min-width: 768px)" srcset="${set}" sizes="${m ? zSizes(sizes, z) : sizes}">` : '')
-      + `<img src="${esc(p.src800)}"${m && phone && p.w > s.w ? ` srcset="${set}" sizes="${zSizes(phone, z * 0.92)}"` : ''} width="${s.w}" height="${s.h}" alt="" loading="${eager ? 'eager' : 'lazy'}" decoding="async"${m ? ` style="--z:${z.toFixed(3)}"` : ''}></picture>`;
+      + `<img src="${esc(p.src800)}"${m && phone && p.w > s.w ? ` srcset="${set}" sizes="${zSizes(phone, z * 0.92)}"` : ''} width="${s.w}" height="${s.h}" alt="" loading="${eager ? 'eager' : 'lazy'}" decoding="async"${m ? ` style="--z:${z.toFixed(3)}"` : p.pos && /^[\d.]+% [\d.]+%$/.test(p.pos) ? ` style="object-position:${p.pos}"` : ''}></picture>`;   // p.pos — какую часть широкого кадра держать в карточке 4 : 5 (works-selection.json)
   };
   /* название модели на карточке: вид мебели мелкой капителью над названием («ДИВАН» / Svira); EN — «Svira sofa» */
   const splitTitle = (t) => {
@@ -1434,9 +1440,9 @@
       // а «Всё о модели» остаётся; группа прячется целиком, только если в ней не осталось ни одной кнопки
       t3s.forEach((a) => { a.hidden = !!w.no3d; }); draws.forEach((a) => { a.hidden = !!w.no3d; });
       const tools = $('.lb__tools', dlg); if (tools) tools.hidden = ![...tools.querySelectorAll('a')].some((a) => !a.hidden);
-      igs.forEach((a) => { a.href = w.ig || `https://www.instagram.com/p/${encodeURIComponent(w.id)}/`; a.hidden = !!w.model; });   // у моделей каталога поста нет
-      // строки под названием (телефон): у модели — «Размер — любой», «Ткань — выбрать», «3D»; у работы — «3D» и Instagram
-      [['size', !w.model], ['fabric', !w.model], ['ig', !!w.model]].forEach(([k, off]) => { const li = rowOf(k); if (li) li.hidden = off; });
+      igs.forEach((a) => { a.href = w.ig || 'https://instagram.com/ricca.designs'; a.hidden = !w.ig; });   // пост есть только у работ из Instagram: у моделей каталога и фото владельца (26 ноября) его нет
+      // строки под названием (телефон): у модели — «Размер — любой», «Ткань — выбрать», «3D»; у работы — «3D» и Instagram (если есть пост)
+      [['size', !w.model], ['fabric', !w.model], ['ig', !w.ig]].forEach(([k, off]) => { const li = rowOf(k); if (li) li.hidden = off; });
       /* «Подробнее» модели каталога (владелец, 9 ноября: «информации нет — пусть будет свёрнуто, захочет — откроет»):
          описание и карточка из RICCA_CATALOG по id; на /en данные не переведены — блок скрыт */
       const moreD = $('[data-lb-more]', dlg);

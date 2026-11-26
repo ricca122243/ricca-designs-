@@ -122,6 +122,11 @@
     'Модульный диван': 'Modular sofa', 'Модульный диван ARCO': 'ARCO modular sofa', 'Модульный диван Bubble': 'Bubble modular sofa', 'Округлое кресло': 'Rounded armchair',
     'П-образный модульный диван': 'U-shaped modular sofa', 'Пара кресел': 'A pair of armchairs', 'Парящая кровать': 'Floating bed', 'Пуф на трёх ножках': 'Three-legged pouf',
     'Угловой диван': 'Corner sofa', 'Угловой диван на ножках': 'Corner sofa on legs', 'Угловой диван с пуфом': 'Corner sofa with a pouf', 'Угловой модульный диван': 'Corner modular sofa',
+    // фото владельца, 26 ноября
+    'Модульный диван со скруглённой спинкой': 'Modular sofa with a rounded back', 'Модульный диван с кушеткой': 'Modular sofa with a daybed', 'Прямой диван': 'Straight sofa',
+    'Диван честерфилд': 'Chesterfield sofa', 'Кровать с мягким изголовьем и кресла': 'Bed with an upholstered headboard and armchairs', 'Стеновая панель и банкетка': 'Wall panel and bench',
+    'Кровать с каретной стяжкой': 'Bed with a button-tufted headboard', 'Кровать и стеновые панели': 'Bed and wall panels', 'Кровать в букле и банкетка': 'Bouclé bed and bench',
+    'Кровать с прямым изголовьем и банкетка': 'Bed with a straight headboard and bench', 'Кресла на поворотной опоре': 'Swivel armchairs',
   };
   // подписи работ: «букле, молочный», «букле и замша, молочный и рыжий» — по словам
   const WORDS = {
@@ -129,6 +134,7 @@
     'графитовый': 'graphite', 'молочный': 'milk white', 'кант': 'piping', 'горчичный': 'mustard', 'зелёный': 'green', 'изумрудный': 'emerald', 'мокко': 'mocha',
     'пудровый': 'powder pink', 'светло-серый': 'light grey', 'серо-бежевый': 'greige', 'светлый серо-бежевый': 'light greige', 'светло-бежевый': 'light beige',
     'слоновая кость': 'ivory', 'терракотовый': 'terracotta', 'рыжий': 'rust', 'округлый': 'rounded', 'раскладной': 'sofa bed', 'угловой': 'corner',
+    'кожа': 'leather', 'чёрный': 'black', 'тёмно-синий': 'navy', 'серо-голубой': 'grey-blue',
   };
   const MODEL_SUBS = {
     'Высокое мягкое изголовье': 'Tall upholstered headboard', 'Двух- и трёхместный, есть с шезлонгом': 'Two- and three-seater, chaise option',

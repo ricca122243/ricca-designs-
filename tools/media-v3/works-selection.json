@@ -1,6 +1,7 @@
 {
  "_readme": [
   "Готовый каталог «Наши работы» — только реальные фото ателье из Instagram @ricca.designs (ricca/content/instagram/, в git не входит).",
+  "Работы с \"src\": \"owner\" — фото, которые прислал владелец (26 ноября): исходники ricca/content/works-owner/<id>-<N>.jpg (tools/media-v3/works-owner-add.py), ссылки на пост Instagram у них нет. \"crop\": {\"N\": [x0,y0,x1,y1]} — обрезка кадра; \"pos\": {\"N\": \"x% y%\"} — что держать в карточке 4 : 5.",
   "Одна работа = один пост Instagram (id = shortcode). Порядок работ в списке = порядок на сайте внутри категории.",
   "cat: sofas | beds | armchairs (кресла, пуфы, банкетки). title — название модели, ТОЛЬКО если оно есть в подписи поста; иначе описательно.",
   "sub — коротко ткань и цвет. cfg — тип для «Собрать похожий в 3D»: sofa | corner | ushape | modular | bed | armchair | pouf.",
@@ -10,6 +11,166 @@
   "После правки: python3 tools/media-v3/works-photos.py (пересоберёт ricca/img/works/ и ricca/js/works-data.js)."
  ],
  "works": [
+  {
+   "id": "ricca-2521",
+   "src": "owner",
+   "cat": "sofas",
+   "title": "Модульный диван со скруглённой спинкой",
+   "sub": "рогожка, светло-серый",
+   "cfg": "modular",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "ricca-2490",
+   "src": "owner",
+   "cat": "sofas",
+   "title": "Угловой модульный диван",
+   "sub": "букле, серо-бежевый",
+   "cfg": "corner",
+   "photos": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "ricca-2516",
+   "src": "owner",
+   "cat": "sofas",
+   "title": "Модульный диван с кушеткой",
+   "sub": "рогожка, светло-серый",
+   "cfg": "modular",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "ricca-2506",
+   "src": "owner",
+   "cat": "sofas",
+   "title": "Прямой диван",
+   "sub": "рогожка, светло-бежевый",
+   "cfg": "sofa",
+   "photos": [
+    1
+   ],
+   "pos": {
+    "1": "16% 50%"
+   }
+  },
+  {
+   "id": "ricca-2508",
+   "src": "owner",
+   "cat": "sofas",
+   "title": "Диван честерфилд",
+   "sub": "кожа, чёрный",
+   "cfg": "sofa",
+   "photos": [
+    1
+   ],
+   "crop": {
+    "1": [
+     180,
+     0,
+     959,
+     1020
+    ]
+   }
+  },
+  {
+   "id": "ricca-2518",
+   "src": "owner",
+   "cat": "beds",
+   "title": "Кровать с мягким изголовьем и кресла",
+   "sub": "букле, молочный",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "ricca-2502",
+   "src": "owner",
+   "cat": "beds",
+   "title": "Стеновая панель и банкетка",
+   "sub": "велюр, серо-голубой",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "ricca-2489",
+   "src": "owner",
+   "cat": "beds",
+   "title": "Кровать с каретной стяжкой",
+   "sub": "велюр, тёмно-синий",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "ricca-2515",
+   "src": "owner",
+   "cat": "beds",
+   "title": "Кровать и стеновые панели",
+   "sub": "велюр, серо-бежевый",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "ricca-2519",
+   "src": "owner",
+   "cat": "beds",
+   "title": "Кровать в букле и банкетка",
+   "sub": "букле, серо-бежевый",
+   "cfg": "bed",
+   "photos": [
+    1
+   ],
+   "crop": {
+    "1": [
+     0,
+     0,
+     969,
+     1180
+    ]
+   }
+  },
+  {
+   "id": "ricca-2493",
+   "src": "owner",
+   "cat": "beds",
+   "title": "Кровать с прямым изголовьем и банкетка",
+   "sub": "рогожка, светло-бежевый",
+   "cfg": "bed",
+   "photos": [
+    1
+   ]
+  },
+  {
+   "id": "ricca-2496",
+   "src": "owner",
+   "cat": "armchairs",
+   "title": "Кресла на поворотной опоре",
+   "sub": "рогожка, светло-серый",
+   "cfg": "armchair",
+   "photos": [
+    1
+   ],
+   "crop": {
+    "1": [
+     95,
+     0,
+     960,
+     1280
+    ]
+   }
+  },
   {
    "id": "C_tjlDdgnmn",
    "cat": "sofas",
