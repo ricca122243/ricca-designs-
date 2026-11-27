@@ -161,6 +161,7 @@ mkdir -p "$OUT/img/pwa" && cp "$SRC"/img/pwa/*.png "$OUT/img/pwa/"
 mkdir -p "$OUT/.well-known" && cp tools/ricca-extra/security.txt "$OUT/.well-known/security.txt"   # куда писать о найденной уязвимости
 # Файл подтверждения Google Search Console — не удалять, иначе подтверждение слетит
 cp tools/ricca-extra/google731f803f39486a1a.html "$OUT/"
+cp tools/ricca-extra/abf14a30da3842fd64d4ec66459c25a7.txt "$OUT/"   # ключ IndexNow (27 ноября): по нему Яндекс и Bing принимают списки новых страниц — tools/indexnow.py
 
 # Проверка: все локальные ссылки существуют
 missing=0
