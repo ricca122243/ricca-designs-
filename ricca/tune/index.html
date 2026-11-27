@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#F4F3F0">
+<canvas id="o"></canvas>
+<script type="module">
+import { pencilFromPasses } from '../js/cfg/drawing.js';
+const ld = (u) => new Promise((r) => { const i = new Image(); i.onload = () => r(i); i.src = u + '?' + Math.random(); });
+const [raw, nor, dep] = await Promise.all([ld('raw.png'), ld('normal.png'), ld('depth.png')]);
+const cv = (im) => { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; c.getContext('2d').drawImage(im, 0, 0); return c; };
+const t0 = performance.now();
+const pen = pencilFromPasses(raw, cv(nor), cv(dep), { lineW: 1 });
+window.ms = performance.now() - t0;
+const o = document.getElementById('o'); o.width = pen.canvas.width; o.height = pen.canvas.height;
+const g = o.getContext('2d'); g.fillStyle = '#F4F3F0'; g.fillRect(0, 0, o.width, o.height); g.drawImage(pen.canvas, 0, 0);
+window.done = true;
+</script>

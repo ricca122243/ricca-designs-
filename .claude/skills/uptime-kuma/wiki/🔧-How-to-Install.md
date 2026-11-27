@@ -1,0 +1,266 @@
+### 🐳 Docker
+
+```bash
+docker run -d --restart=unless-stopped -p 3001:3001 -v uptime-kuma:/app/data --name uptime-kuma louislam/uptime-kuma:2
+```
+
+Uptime Kuma is now running on http://localhost:3001
+
+> [!WARNING]
+> Filesystem support for POSIX file locks is required to avoid SQLite database corruption. Be aware of possible [file locking problems](https://www.sqlite.org/howtocorrupt.html#_file_locking_problems) such as those [commonly encountered with NFS](https://www.sqlite.org/faq.html#q5). **Please map the `/app/data`-folder to a local directory or volume.**
+
+Browse to http://localhost:3001 after started.
+
+#### Changing Port or Volume
+
+```bash
+docker run -d --restart=unless-stopped -p <YOUR_PORT>:3001 -v <YOUR_DIR OR VOLUME>:/app/data --name uptime-kuma louislam/uptime-kuma:2
+```
+
+#### Docker Tags Description
+
+Please go to <https://github.com/louislam/uptime-kuma/wiki/Migration-From-v1-To-v2#docker-tags>
+
+### 🐳 Docker Compose
+
+Example docker-compose template: <https://github.com/louislam/uptime-kuma/blob/master/compose.yaml>
+
+```bash
+docker compose up -d
+```
+
+### 💪🏻 Non-Docker
+
+Requirements:
+
+- Platform
+  - ✅ Major Linux distros such as Debian, Ubuntu, CentOS, Fedora and ArchLinux etc.
+  - ✅ Windows 10 (x64), Windows Server 2012 R2 (x64) or higher
+  - ❌ Replit / Heroku
+- [Node.js](https://nodejs.org/en/download/) >= 20.4
+- [Git](https://git-scm.com/downloads)
+- [pm2](https://pm2.keymetrics.io/) - For running Uptime Kuma in the background
+
+```bash
+git clone https://github.com/louislam/uptime-kuma.git
+cd uptime-kuma
+npm run setup
+
+# Option 1. Try it
+node server/server.js
+
+# (Recommended) Option 2. Run in the background using PM2
+# Install PM2 if you don't have it:
+npm install pm2 -g && pm2 install pm2-logrotate
+
+# Start Server
+pm2 start server/server.js --name uptime-kuma
+```
+
+Uptime Kuma is now running on http://localhost:3001
+
+More useful PM2 Commands
+
+```bash
+# If you want to see the current console output
+pm2 monit
+
+# If you want to add it to startup
+pm2 save && pm2 startup
+```
+
+## (Optional) One more step for Reverse Proxy
+
+This is optional for someone who want to use a reverse proxy.
+
+Unlikely other web apps, Uptime Kuma is based on WebSocket. You need two more headers **"Upgrade"** and **"Connection"** in order to reverse proxy WebSocket.
+
+Please read wiki for more info: https://github.com/louislam/uptime-kuma/wiki/Reverse-Proxy
+
+## Videos
+
+- [Learn Uptime Kuma in 5 Minutes](https://www.youtube.com/watch?v=muZiPdH2JZ8) by DEVOPS UNLOCKED Install with the docker run command
+- [Meet Uptime Kuma, a Fancy Open Source Uptime Monitor](https://www.youtube.com/watch?v=r_A5NKkAqZM) by Techno Tim Install with docker-compose
+- [Monitor Status with Uptime Kuma - Let's install Uptime Kuma with Docker](https://www.youtube.com/watch?v=rRKvDMGeeBA) by Geeked Install with Portainer
+
+## Unofficial
+
+> [!WARNING]
+> The following installation methods are provided by the community. They are not tested officially and may be broken in the future release. Use at your own risk.
+
+### Deployment Tools
+
+#### Kubernetes Helm Chart with HelmForge (Unofficial)
+
+- Chart source: https://github.com/helmforgedev/charts/tree/main/charts/uptime-kuma
+- Artifact Hub: https://artifacthub.io/packages/helm/helmforge/uptime-kuma
+
+Install with the Helm repository:
+
+```bash
+helm repo add helmforge https://repo.helmforge.dev
+helm install uptime-kuma helmforge/uptime-kuma
+```
+
+Or via OCI
+
+```bash
+helm install uptime-kuma oci://ghcr.io/helmforgedev/helm/uptime-kuma
+```
+
+Features:
+
+- supports both SQLite and MariaDB backends
+- includes built-in S3-compatible backup workflows
+
+#### AWS Terraform Module (Unofficial)
+
+Deployment template of uptime-kuma on AWS using Terraform: https://github.com/paliwalvimal/uptime-kuma-aws
+
+#### Home Assistant Add-on
+
+https://github.com/hassio-addons/addon-uptime-kuma
+
+[![Open this add-on in your Home Assistant instance.](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=a0d7b954_uptime-kuma&repository_url=https%3A%2F%2Fgithub.com%2Fhassio-addons%2Frepository)
+
+Also check out the corresponding custom integration: https://github.com/meichthys/uptime_kuma (WIP).
+
+#### Install on Synology NAS
+
+Unofficial tutorial by Marius Bogdan Lixandru:
+
+https://mariushosting.com/how-to-install-uptime-kuma-on-your-synology-nas/
+
+#### Replicator Kuma
+
+Replicator Kuma extends the uptime-kuma project by adding support for replicating monitors, status pages, incidents and other entities between uptime-kuma instances.
+
+https://github.com/Sid-Sun/replicator-kuma
+
+### Native Debian Package
+
+Native package / apt repository for Debian 13 systems, runs Uptime Kuma as hardened systemd service:
+
+https://codeberg.org/c8h4/uptime-kuma-deb
+
+### Server Hosting Platforms
+
+One-click deployment on various platforms.
+
+#### PikaPods
+
+Run with one click on [PikaPods.com](https://www.pikapods.com/). Free for about 3 months with welcome credit. PikaPods have produced a [getting started video](https://www.youtube.com/watch?v=gbbcnNKPi8M) if you like consuming information in this form.
+
+[![PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=uptime-kuma)
+
+### Koyeb
+
+Run with one click on [Koyeb](https://app.koyeb.com). Free forever. [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?name=uptimekuma&repository=koyeb%2Fexample-uptime-kuma&branch=main&builder=dockerfile&instance_type=free&instances_min=0&autoscaling_sleep_idle_delay=300&env%5BUPTIME_KUMA_PORT%5D=8000&env%5BLITESTREAM_ACCESS_KEY_ID%5D=REPLACE_ME&env%5BLITESTREAM_SECRET_ACCESS_KEY%5D=REPLACE_ME&env%5BLITESTREAM_BUCKET%5D=REPLACE_ME&env%5BLITESTREAM_PATH%5D=uptime-kuma&env%5BLITESTREAM_URL%5D=REPLACE_ME&env%5BLITESTREAM_REGION%5D=REPLACE_ME)
+
+#### Azure Container Instance (with TLS endpoint)
+
+Unofficial tutorial by Stefan: https://haci.io/posts/uptime-kuma-azure-container-instance/
+
+#### Azure AppService Container
+
+Unofficial tutorial by Leandro: https://www.leandroscardua.com/blog/deploy-uptime-kuma-on-azure/
+
+Or with persistent storage: bicep deployment script by Yannick Zwijsen: https://github.com/yzwijsen/deploy-uptime-kuma-azure
+
+#### FreeBSD
+
+Unofficial FreeBSD install script, including an rc service script by Victor Tschetter: https://github.com/tschettervictor/bsd-apps/tree/main/uptime-kuma
+
+#### Railway
+
+SQLite S3 persistent storage with Litestream.io
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/UfDasl)
+
+Run uptime-kuma with S3 persistent sqlite database: https://github.com/fluential/litestream-uptime-kuma/
+
+#### Alibaba Cloud
+
+[![Deploy on AlibabaCloud ComputeNest](https://service-info-public.oss-cn-hangzhou.aliyuncs.com/computenest-en.svg)](https://computenest.console.aliyun.com/service/instance/create/default?type=user&ServiceName=Higress社区版)
+
+Follow the deployment guide to deploy Uptime Kuma on Alibaba Cloud. Both domestic site and internationl sites are supported.
+
+- [Deployment Guide in English](https://computenest.console.aliyun.com/service/detail/ap-southeast-1/service-6a4ce994c30c49b1ae6b/2?type=user&isRecommend=true)
+- [中文部署文档](https://computenest.console.aliyun.com/service/detail/cn-hangzhou/service-34d66f31479747cd9957/2?type=user&isRecommend=true)
+
+#### Zeabur
+
+Run with one click on [Zeabur](https://zeabur.com/).
+
+[![Deploy on Zeabur](https://github.com/louislam/uptime-kuma-wiki/assets/22755963/c1e546a0-f313-44fd-8550-f3ec4fc64ab0)](https://zeabur.com/docs/marketplace/uptime-kuma)
+
+[https://docs.zeabur.com/marketplace/uptime-kuma](https://zeabur.com/docs/marketplace/uptime-kuma)
+
+#### Sealos
+
+Run with one click on [Sealos](https://sealos.io/).
+
+[![Deploy on Sealos](https://sealos.io/Deploy-on-Sealos.svg)](https://template.sealos.io/deploy?templateName=uptime-kuma)
+
+#### Fly.io
+
+You can host uptime-kuma [with a single command at Fly.io](https://community.fly.io/t/hosting-uptime-kuma-on-fly-io/14352) and run on its included Hobby Plan usage.
+
+#### FlashPanel
+
+You can [host uptime-kuma](https://flashpanel.io/docs/v2/en/tutorial/uptime-kuma.html) with [FlashPanel](https://flashpanel.io) (a server management control panel) for free on one server with up to 10 websites.
+
+#### [server.camp](https://server.camp)
+
+server.camp offers paid, EU-based, GDPR-compliant [hosting of uptime-kuma](https://server.camp/product/uptimekuma) and other open-source software for startups, small- and large business. You can get a 7-day trial at no cost.
+
+#### [Cloudron.io](https://www.cloudron.io/)
+
+[![Install](https://cloudron.io/img/button.svg)](https://www.cloudron.io/store/louislam.uptimekuma.app.html)
+
+One-click installation with: [automated DNS setup](https://docs.cloudron.io/domains/#dns-providers) - [automated backups](https://docs.cloudron.io/backups/#storage-providers) - [pre-vetted updates](https://forum.cloudron.io/topic/5388/uptime-kuma-package-updates) and more
+
+### Zenith Hosting 
+[![Deploy with Zenith](https://cdn.zenith.hosting/buttons/deploy-with-zenith.svg)](https://zenith.hosting/host/uptime-kuma?ref=gh)
+
+One-click deployment for Uptime Kuma. 
+
+#### Pethost
+
+Run with one click on [Pethost](https://pethost.dev/): managed Docker hosting in the EU, with nightly backups.
+
+[![Deploy on Pethost](https://pethost.dev/button.svg)](https://console.pethost.dev/?template=uptime-kuma)
+
+#### Hostim
+
+Run with one click on [Hostim](https://hostim.dev/): managed Docker hosting in the EU, with a managed MySQL database, a persistent volume and HTTPS.
+
+[![Deploy on Hostim](https://hostim.dev/img/deploy-button.svg)](https://console.hostim.dev/dashboard?preview=1&modal=1&template=uptime-kuma)
+
+[Setup guide](https://hostim.dev/docs/templates/uptime-kuma/)
+
+#### Varity
+
+Run with one click on [Varity](https://varity.so/templates/uptime-kuma/): Uptime Kuma on its own HTTPS address with a 2 GB persistent volume for monitor history and settings, kept across restarts and redeploys. The monthly maximum is shown before you deploy, with no traffic fees.
+
+[Deploy Uptime Kuma on Varity](https://developer.store.varity.so/dashboard/deploy/?workload=application&template=uptime-kuma&utm_source=uptime-kuma-wiki&utm_medium=directory&utm_campaign=templates)
+
+#### Simafri
+
+[Self-host Uptime Kuma on a Simafri Managed VPS](https://www.simafri.com/en/guides/self-host-uptime-kuma/): Simafri's team keeps the server up to date, watches it 24/7 and backs it up every night, encrypted and off the machine. The guide runs the official image with Docker Compose behind an HTTPS reverse proxy that passes WebSocket, following this wiki. Uptime Kuma, its settings and its data stay yours.
+
+#### xCloud
+
+Run with one click on [xCloud](https://xcloud.host/): Uptime Kuma runs in Docker on your own server or an xCloud Cloud VPS, with free SSL on your domain and scheduled backups from the dashboard.
+
+[Deploy Uptime Kuma on xCloud](https://xcloud.host/uptime-kuma-hosting/)
+
+### Others
+
+#### uptime-kuma-helper
+
+[@mkgeeky](https://github.com/mkgeeky/) has created [uptime-kuma-helper](https://github.com/mkgeeky/uptime-kuma-helper) a bash script to install and update easy
+
+#### Uptime Kuma On Pi Deploy Android
+
+See [this guide](https://nanonotables.blogspot.com/2025/04/uptime-kuma-on-pi-deploy-tutorial.html) on how to convert a rooted android smartphone into an uptime kuma instance.

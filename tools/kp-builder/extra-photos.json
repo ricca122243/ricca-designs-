@@ -1,0 +1,107 @@
+{
+ "bed-01": [
+  "p-bed-01-o-r.webp",
+  "p-bed-01-d1-r.webp",
+  "p-bed-01-m3-a.webp",
+  "p-bed-01-m1-r.webp",
+  "p-bed-01-m2-r.webp"
+ ],
+ "bed-02": [
+  "p-bed-02-hd.webp",
+  "p-bed-02-detail.webp"
+ ],
+ "bed-03": [
+  "p-bed-03-o-r.webp",
+  "p-bed-03-d2-a.webp",
+  "p-bed-03-2-hd.webp"
+ ],
+ "bed-04": [
+  "p-bed-04-o-r.webp",
+  "p-bed-04-o2-r.webp",
+  "p-bed-04-d2-a.webp",
+  "p-bed-04-s1-r.webp",
+  "p-bed-04-s2-r.webp",
+  "p-bed-04-s3-a.webp",
+  "p-bed-04-s4-a.webp"
+ ],
+ "bed-05": [
+  "p-bed-05-hd.webp",
+  "p-bed-05-detail.webp"
+ ],
+ "bed-09": [
+  "p-bed-09-b0-r.webp",
+  "p-bed-09-o2-r.webp",
+  "p-bed-09-d1-a.webp",
+  "p-bed-09-o-r.webp",
+  "p-bed-09-m1-r.webp",
+  "p-bed-09-m2-a.webp",
+  "p-bed-09-m3-a.webp"
+ ],
+ "bed-10": [
+  "p-bed-10-o-r.webp",
+  "p-bed-10-n1-r.webp",
+  "p-bed-10-d2-a.webp",
+  "p-bed-10-n0-r.webp"
+ ],
+ "bed-14": [
+  "p-bed-14-o-r.webp",
+  "p-bed-14-d1-r.webp",
+  "p-bed-14-d2-a.webp"
+ ],
+ "bed-17": [
+  "p-bed-17-o-r.webp",
+  "p-bed-17-d2-a.webp",
+  "p-bed-17-hd.webp"
+ ],
+ "bed-18": [
+  "p-bed-18-o-r.webp",
+  "p-bed-18-d1-r.webp",
+  "p-bed-18-g3-a.webp",
+  "p-bed-18-g1-r.webp",
+  "p-bed-18-g2-r.webp"
+ ],
+ "bed-25": [
+  "p-bed-25-o-e-r.webp",
+  "p-bed-24-hd.webp"
+ ],
+ "bed-26": [
+  "p-bed-26-o-e-r.webp"
+ ],
+ "bed-27": [
+  "p-bed-27-o-e-r.webp",
+  "p-bed-27-d1-e-c-a.webp"
+ ],
+ "bed-28": [
+  "p-bed-28-o-e-r.webp"
+ ],
+ "bed-29": [
+  "p-bed-29-e.webp",
+  "p-bed-29-d1-e-r.webp"
+ ],
+ "bed-30": [
+  "p-bed-30-e-r.webp"
+ ],
+ "bed-31": [
+  "p-bed-31-r.webp",
+  "p-bed-31-d2-a.webp"
+ ],
+ "bed-32": [
+  "p-bed-32-r.webp",
+  "p-bed-32-d1-r.webp",
+  "p-bed-32-d2-a.webp"
+ ],
+ "bed-33": [
+  "p-bed-33.webp",
+  "p-bed-33-d2.webp"
+ ],
+ "bed-34": [
+  "p-bed-34-r.webp",
+  "p-bed-34-d1-r.webp",
+  "p-bed-34-d2-a.webp"
+ ],
+ "bed-35": [
+  "p-bed-35-r.webp",
+  "p-bed-35-d1-r.webp",
+  "p-bed-35-d2-a.webp"
+ ]
+}

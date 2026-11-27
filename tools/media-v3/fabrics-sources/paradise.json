@@ -1,0 +1,123 @@
+{
+  "id": "paradise",
+  "title": "PARADISE",
+  "supplier": "Art Vision Home",
+  "kind": "рогожка",
+  "source_url": "https://artvision-home.ru/catalog/paradise/",
+  "specs": {
+    "composition": "100% Полиэстер",
+    "martindale": 60000,
+    "weight": "714 г/м.п.",
+    "width": "140 см",
+    "country": "Китай",
+    "care": "Стирка: Разрешена; Глажка: Утюжить при температуре не выше 110 градусов; Сушка: Запрещена; Химчистка: Разрешена",
+    "other": [
+      "Тест на пиллинг: 5",
+      "Тест на устойчивость окраски: 5",
+      "Тип ткани на сайте: Шенилл"
+    ]
+  },
+  "colours": [
+    {
+      "code": "01",
+      "name": "Парадайз / Paradise 01",
+      "page_url": "https://artvision-home.ru/catalog/paradise/paradise-01",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4712/2fe6573b722b11ed8cd00025902b8c2b-d2ea944ad57211edaa130025902b8c2b.jpg",
+      "file": "img/01.jpg",
+      "w": 2000,
+      "h": 1333
+    },
+    {
+      "code": "03",
+      "name": "Парадайз / Paradise 03",
+      "page_url": "https://artvision-home.ru/catalog/paradise/paradise-03",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4713/75cb9f27722b11ed8cd00025902b8c2b-2b49aa76d57311edaa130025902b8c2b.jpg",
+      "file": "img/03.jpg",
+      "w": 2000,
+      "h": 1333
+    },
+    {
+      "code": "10",
+      "name": "Парадайз / Paradise 10",
+      "page_url": "https://artvision-home.ru/catalog/paradise/paradise-10",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4714/8117c714722b11ed8cd00025902b8c2b-064843abd57411edaa130025902b8c2b.jpg",
+      "file": "img/10.jpg",
+      "w": 2000,
+      "h": 1333
+    },
+    {
+      "code": "12",
+      "name": "Парадайз / Paradise 12",
+      "page_url": "https://artvision-home.ru/catalog/paradise/paradise-12",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4717/9f99c9f7722b11ed8cd00025902b8c2b-5627b01dd57411edaa130025902b8c2b.jpg",
+      "file": "img/12.jpg",
+      "w": 2000,
+      "h": 1333
+    },
+    {
+      "code": "13",
+      "name": "Парадайз / Paradise 13",
+      "page_url": "https://artvision-home.ru/catalog/paradise/paradise-13",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4715/8c0e3d77722b11ed8cd00025902b8c2b-03f0e6ded57511edaa130025902b8c2b.jpg",
+      "file": "img/13.jpg",
+      "w": 2000,
+      "h": 1333
+    },
+    {
+      "code": "15",
+      "name": "Парадайз / Paradise 15",
+      "page_url": "https://artvision-home.ru/catalog/paradise/paradise-15",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4716/95f0943a722b11ed8cd00025902b8c2b-148059a6d57511edaa130025902b8c2b.jpg",
+      "file": "img/15.jpg",
+      "w": 2000,
+      "h": 1333
+    },
+    {
+      "code": "27",
+      "name": "Парадайз / Paradise 27",
+      "page_url": "https://artvision-home.ru/catalog/paradise/paradise-27",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4722/d5265ec1722b11ed8cd00025902b8c2b-36d974dad57511edaa130025902b8c2b.jpg",
+      "file": "img/27.jpg",
+      "w": 2000,
+      "h": 1333
+    },
+    {
+      "code": "32",
+      "name": "Парадайз / Paradise 32",
+      "page_url": "https://artvision-home.ru/catalog/paradise/paradise-32",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4718/aadc6c63722b11ed8cd00025902b8c2b-eb69f6c3d57511edaa130025902b8c2b.jpg",
+      "file": "img/32.jpg",
+      "w": 2000,
+      "h": 1333
+    },
+    {
+      "code": "33",
+      "name": "Парадайз / Paradise 33",
+      "page_url": "https://artvision-home.ru/catalog/paradise/paradise-33",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4720/bfc8448b722b11ed8cd00025902b8c2b-047b74a6d57611edaa130025902b8c2b.jpg",
+      "file": "img/33.jpg",
+      "w": 2000,
+      "h": 1333
+    },
+    {
+      "code": "35",
+      "name": "Парадайз / Paradise 35",
+      "page_url": "https://artvision-home.ru/catalog/paradise/paradise-35",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4721/caddacd2722b11ed8cd00025902b8c2b-15bd6ea2d57611edaa130025902b8c2b.jpg",
+      "file": "img/35.jpg",
+      "w": 2000,
+      "h": 1333
+    },
+    {
+      "code": "38",
+      "name": "Парадайз / Paradise 38",
+      "page_url": "https://artvision-home.ru/catalog/paradise/paradise-38",
+      "image_url": "https://artvision-home.ru/assets/images/resources/4719/b6393df2722b11ed8cd00025902b8c2b-257dc9b3d57611edaa130025902b8c2b.jpg",
+      "file": "img/38.jpg",
+      "w": 2000,
+      "h": 1333
+    }
+  ],
+  "notes": "Расхождение внутри самого сайта: в таблице характеристик карточек стоит «Тип ткани: Шенилл», а в описании коллекции (карточка «Образец Paradise») — «Особенная рогожка в природной стилистике»; на бирке вешалки тоже «Тип ткани: рогожка». В kind записано «рогожка» (бирка + описание сайта), значение поля сайта «Шенилл» сохранено в specs.other. Вес: бирка 712 г/м.п., сайт 714. Остальное совпадает (100% полиэстер, 60 000, пиллинг 5). На сайте 11 цветов (01, 03, 10, 12, 13, 15, 27, 32, 33, 35, 38); двенадцатая карточка раздела — «Образец Paradise» (сама вешалка-образец, не цвет) — в список не включена, из неё взято только описание. У каждого цвета одно фото — складки «розочкой» 2000×1333, плоского образца нет; взята складка. Вес и ширина в карточках сайта даны числами без единиц («Вес ткани: 714», «Ширина ткани: 140»); единицы проставлены так: ширина — см, вес — г/м.п. (на официальной странице-презентации Paddington https://artvision-home.ru/presentations/4341-kollekcziya-paddington написано «ВЕС - 770гр./м.п.» при «770» в карточке; на бирках вешалок вес тоже в гр./м.п.). В тексте ухода на сайте опечатка «темппературе» — в care записано «температуре». Значки ухода на бирке (IMG_2593): стирка 30°, глажка «одна точка», сушка в барабане и отбеливание запрещены, Ⓟ; на сайте «Стирка: Разрешена» без температуры.",
+  "description": "Особенная рогожка в природной стилистике. Эффект натуральности придает контрастная жаккардовая нить. У данной колеции высокая износостойкость благодоря плотному многослойному переплетению. Материал не требующет дублирующего слоя."
+}

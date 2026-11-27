@@ -1,0 +1,169 @@
+{
+  "id": "cos",
+  "title": "COS",
+  "supplier": "No Frames",
+  "kind": "рогожка",
+  "source_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/",
+  "specs": {
+    "composition": "85% Полиэстер, 8% Акрил, 7% Хлопок",
+    "martindale": 90000,
+    "weight": "750 г/м.п.",
+    "width": "140 см",
+    "country": "Китай",
+    "care": "не отбеливать; не гладить; ручная стирка при 30 °C; не сушить в барабане; химчистка (P)",
+    "other": [
+      "Антибактериальность: да",
+      "Устойчивость к износу (трению): 5",
+      "Устойчивость к свету: 5",
+      "Устойчивость к химчистке: 5"
+    ]
+  },
+  "colours": [
+    {
+      "code": "01",
+      "name": "Cos 01",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-01/",
+      "image_url": "https://no-frames.ru/images/detailed/25/COS_col_1_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83_16i1-lj.jpg",
+      "file": "img/01.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "02",
+      "name": "Cos 02",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-02/",
+      "image_url": "https://no-frames.ru/images/detailed/25/COS_col_2_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/02.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "03",
+      "name": "Cos 03",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-03/",
+      "image_url": "https://no-frames.ru/images/detailed/25/COS_col_3_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/03.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "04",
+      "name": "Cos 04",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-04/",
+      "image_url": "https://no-frames.ru/images/detailed/24/COS_col_4_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/04.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "05",
+      "name": "Cos 05",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-05/",
+      "image_url": "https://no-frames.ru/images/detailed/24/COS_col_5_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/05.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "06",
+      "name": "Cos 06",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-06/",
+      "image_url": "https://no-frames.ru/images/detailed/24/COS_col_6_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/06.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "08",
+      "name": "Cos 08",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-8/",
+      "image_url": "https://no-frames.ru/images/detailed/24/COS_col_8_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/08.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "09",
+      "name": "Cos 09",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-9/",
+      "image_url": "https://no-frames.ru/images/detailed/24/COS_col_9_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/09.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "10",
+      "name": "Cos 10",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-10/",
+      "image_url": "https://no-frames.ru/images/detailed/24/COS_col_10_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/10.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "11",
+      "name": "Cos 11",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-11/",
+      "image_url": "https://no-frames.ru/images/detailed/24/COS_col_11_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/11.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "12",
+      "name": "Cos 12",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-12/",
+      "image_url": "https://no-frames.ru/images/detailed/24/COS_col_12_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/12.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "13",
+      "name": "Cos 13",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-13/",
+      "image_url": "https://no-frames.ru/images/detailed/24/COS_col_13_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/13.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "14",
+      "name": "Cos 14",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-14/",
+      "image_url": "https://no-frames.ru/images/detailed/24/COS_col_14_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/14.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "15",
+      "name": "Cos 15",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-15/",
+      "image_url": "https://no-frames.ru/images/detailed/25/COS_col_15_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83_cdij-kc.jpg",
+      "file": "img/15.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "16",
+      "name": "Cos 16",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-16/",
+      "image_url": "https://no-frames.ru/images/detailed/25/COS_col_16_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83_lq49-on.jpg",
+      "file": "img/16.jpg",
+      "w": 1100,
+      "h": 733
+    },
+    {
+      "code": "07",
+      "name": "Cos 07",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/rogozhka/kos-cos/cos-col-07/",
+      "image_url": "https://no-frames.ru/images/detailed/24/COS_col_7_%D0%B2%D0%B8%D0%B4_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83.jpg",
+      "file": "img/07.jpg",
+      "w": 1100,
+      "h": 733,
+      "listed": false
+    }
+  ],
+  "notes": "В листинге раздела 15 цветов. Цвет 07: в листинг раздела не выведен (на странице товара «Нет в наличии»), но страница открывается по прямому адресу; добавлен в конец списка с пометкой \"listed\": false — решить, показывать ли его. Вес на сайте назван «Общий вес (гр./м.п)». Уход на сайте — только пиктограммы во вкладке «Уход»; строка care — их расшифровка. Названий у цветов нет, только номера; товар на сайте называется «Ткань мебельная \"КОС\" (Cos) 01» (name = латинское/основное название + номер)."
+}

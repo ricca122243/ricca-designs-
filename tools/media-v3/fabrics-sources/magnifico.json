@@ -1,0 +1,71 @@
+{
+  "id": "magnifico",
+  "title": "MAGNIFICO",
+  "supplier": "No Frames",
+  "kind": "букле",
+  "source_url": "https://no-frames.ru/katalog/mebelnye-tkani/garmoniya-bukle/manifiko-magnifico/",
+  "specs": {
+    "composition": "100% Полиэстер",
+    "martindale": 20000,
+    "weight": "720 г/м.п.",
+    "width": "140 см",
+    "country": "Турция",
+    "care": "гладить при низкой температуре; не отбеливать; химчистка; не стирать; не сушить в барабане",
+    "other": [
+      "Антибактериальность: да",
+      "Устойчивость к износу (трению): 5",
+      "Устойчивость к свету: 5",
+      "Устойчивость к химчистке: 5",
+      "Раппорт (ширина, длина), см: 16,8х17,7"
+    ]
+  },
+  "colours": [
+    {
+      "code": "01",
+      "name": "Magnifico 01",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/garmoniya-bukle/manifiko-magnifico/magnifico-col-01/",
+      "image_url": "https://no-frames.ru/images/detailed/25/magnifico-col1-1.jpg",
+      "file": "img/01.jpg",
+      "w": 980,
+      "h": 653
+    },
+    {
+      "code": "02",
+      "name": "Magnifico 02",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/garmoniya-bukle/manifiko-magnifico/magnifico-col-02/",
+      "image_url": "https://no-frames.ru/images/detailed/25/magnifico-col2-2.jpg",
+      "file": "img/02.jpg",
+      "w": 980,
+      "h": 653
+    },
+    {
+      "code": "04",
+      "name": "Magnifico 04",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/garmoniya-bukle/manifiko-magnifico/magnifico-col-04/",
+      "image_url": "https://no-frames.ru/images/detailed/25/magnifico-col4-4.jpg",
+      "file": "img/04.jpg",
+      "w": 980,
+      "h": 653
+    },
+    {
+      "code": "05",
+      "name": "Magnifico 05",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/garmoniya-bukle/manifiko-magnifico/magnifico-col-05/",
+      "image_url": "https://no-frames.ru/images/detailed/25/magnifico-col5-5.jpg",
+      "file": "img/05.jpg",
+      "w": 980,
+      "h": 653
+    },
+    {
+      "code": "03",
+      "name": "Magnifico 03",
+      "page_url": "https://no-frames.ru/katalog/mebelnye-tkani/garmoniya-bukle/manifiko-magnifico/magnifico-col-03/",
+      "image_url": "https://no-frames.ru/images/detailed/25/magnifico-col3-3.jpg",
+      "file": "img/03.jpg",
+      "w": 980,
+      "h": 653,
+      "listed": false
+    }
+  ],
+  "notes": "В листинге раздела 4 цвета этого дизайна (всего товаров в разделе 7). В разделе сайта «Манифико (Magnifico)» два дизайна: «МАНИФИКО» (Magnifico) и компаньон «МАНИФИКО ПЛЕЙН» (Magnifico plain; состав 88% полиэстер, 12% хлопок, 770 г/м.п.). На вешалке «MAGNIFICO col. 01», 100% PL — взят только Magnifico; Magnifico plain не включён. Цвет 03: в листинг раздела не выведен (на странице товара «Нет в наличии»), но страница открывается по прямому адресу; добавлен в конец списка с пометкой \"listed\": false — решить, показывать ли его. У товара два фото: первое — драпировка, второе — плоский образец; взято второе (драпировки — в extra/). Вес на сайте назван «Общий вес (гр./м.п)». Уход на сайте — только пиктограммы во вкладке «Уход»; строка care — их расшифровка. РАСХОЖДЕНИЕ ВНУТРИ САЙТА: износостойкость в характеристиках карточки товара — 40 000 циклов, а в приложенном к той же карточке официальном файле технических характеристик (magnifico.docx) — 20 000, и на бирке вешалки тоже 20 000. В specs записано 20 000 (два источника из трёх, меньшее значение); если нужно значение из карточки — 40 000. Названий у цветов нет, только номера; товар на сайте называется «Ткань мебельная \"МАНИФИКО\" (Magnifico) 01» (name = латинское/основное название + номер). ПРОВЕРКА: в magnifico.docx также: вес 721 г/м.п. (в карточке 720), раппорт 16,8 см / 17,7 см, уход — «ручная стирка при температуре не выше 30 градусов, сухая чистка допустима, отбеливатель запрещён, сушка в сушильной камере запрещена, гладить при низкой температуре»; на бирке вешалки тоже пиктограмма ручной стирки. В карточке же среди пиктограмм ухода — «не стирать»; в specs.care оставлен более строгий вариант из карточки."
+}

@@ -1,0 +1,71 @@
+{
+ "id": "attika",
+ "title": "ATTIKA",
+ "kind": "шенилл",
+ "type": "shenill",
+ "no3d": true,
+ "facts": [
+  "35 000 циклов",
+  "602 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Аттика / Attika 01",
+   "hex": "#e1ded8",
+   "plain3d": false,
+   "fold": 0.024,
+   "src1200": "img/fabrics/official/attika/01-1200.webp",
+   "src600": "img/fabrics/official/attika/01-600.webp",
+   "thumb": "img/fabrics/official/attika/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Аттика / Attika 02",
+   "hex": "#cecbc3",
+   "plain3d": false,
+   "fold": 0.033,
+   "src1200": "img/fabrics/official/attika/02-1200.webp",
+   "src600": "img/fabrics/official/attika/02-600.webp",
+   "thumb": "img/fabrics/official/attika/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Аттика / Attika 03",
+   "hex": "#c3c5c6",
+   "plain3d": false,
+   "fold": 0.03,
+   "src1200": "img/fabrics/official/attika/03-1200.webp",
+   "src600": "img/fabrics/official/attika/03-600.webp",
+   "thumb": "img/fabrics/official/attika/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Аттика / Attika 04",
+   "hex": "#cfcdc8",
+   "plain3d": false,
+   "fold": 0.037,
+   "src1200": "img/fabrics/official/attika/04-1200.webp",
+   "src600": "img/fabrics/official/attika/04-600.webp",
+   "thumb": "img/fabrics/official/attika/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Аттика / Attika 05",
+   "hex": "#cbbcb5",
+   "plain3d": false,
+   "fold": 0.045,
+   "src1200": "img/fabrics/official/attika/05-1200.webp",
+   "src600": "img/fabrics/official/attika/05-600.webp",
+   "thumb": "img/fabrics/official/attika/05-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

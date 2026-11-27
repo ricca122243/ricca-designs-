@@ -1,0 +1,172 @@
+{
+ "id": "coco",
+ "colours": [
+  {
+   "code": "000",
+   "name": "Coco 000",
+   "hex": "#f5f1ea",
+   "src1200": "img/fabrics/official/coco/000-1200.webp",
+   "src600": "img/fabrics/official/coco/000-600.webp",
+   "thumb": "img/fabrics/official/coco/000-160.webp"
+  },
+  {
+   "code": "110",
+   "name": "Coco 110",
+   "hex": "#efe6d4",
+   "src1200": "img/fabrics/official/coco/110-1200.webp",
+   "src600": "img/fabrics/official/coco/110-600.webp",
+   "thumb": "img/fabrics/official/coco/110-160.webp"
+  },
+  {
+   "code": "238",
+   "name": "Coco 238",
+   "hex": "#6a5959",
+   "src1200": "img/fabrics/official/coco/238-1200.webp",
+   "src600": "img/fabrics/official/coco/238-600.webp",
+   "thumb": "img/fabrics/official/coco/238-160.webp"
+  },
+  {
+   "code": "260",
+   "name": "Coco 260",
+   "hex": "#baa188",
+   "src1200": "img/fabrics/official/coco/260-1200.webp",
+   "src600": "img/fabrics/official/coco/260-600.webp",
+   "thumb": "img/fabrics/official/coco/260-160.webp"
+  },
+  {
+   "code": "380",
+   "name": "Coco 380",
+   "hex": "#773341",
+   "src1200": "img/fabrics/official/coco/380-1200.webp",
+   "src600": "img/fabrics/official/coco/380-600.webp",
+   "thumb": "img/fabrics/official/coco/380-160.webp"
+  },
+  {
+   "code": "422",
+   "name": "Coco 422",
+   "hex": "#d5793f",
+   "src1200": "img/fabrics/official/coco/422-1200.webp",
+   "src600": "img/fabrics/official/coco/422-600.webp",
+   "thumb": "img/fabrics/official/coco/422-160.webp"
+  },
+  {
+   "code": "523",
+   "name": "Coco 523",
+   "hex": "#b37833",
+   "src1200": "img/fabrics/official/coco/523-1200.webp",
+   "src600": "img/fabrics/official/coco/523-600.webp",
+   "thumb": "img/fabrics/official/coco/523-160.webp"
+  },
+  {
+   "code": "540",
+   "name": "Coco 540",
+   "hex": "#dfaa56",
+   "src1200": "img/fabrics/official/coco/540-1200.webp",
+   "src600": "img/fabrics/official/coco/540-600.webp",
+   "thumb": "img/fabrics/official/coco/540-160.webp"
+  },
+  {
+   "code": "610",
+   "name": "Coco 610",
+   "hex": "#d3c17c",
+   "src1200": "img/fabrics/official/coco/610-1200.webp",
+   "src600": "img/fabrics/official/coco/610-600.webp",
+   "thumb": "img/fabrics/official/coco/610-160.webp"
+  },
+  {
+   "code": "694",
+   "name": "Coco 694",
+   "hex": "#96ada2",
+   "src1200": "img/fabrics/official/coco/694-1200.webp",
+   "src600": "img/fabrics/official/coco/694-600.webp",
+   "thumb": "img/fabrics/official/coco/694-160.webp"
+  },
+  {
+   "code": "698",
+   "name": "Coco 698",
+   "hex": "#45544c",
+   "src1200": "img/fabrics/official/coco/698-1200.webp",
+   "src600": "img/fabrics/official/coco/698-600.webp",
+   "thumb": "img/fabrics/official/coco/698-160.webp"
+  },
+  {
+   "code": "761",
+   "name": "Coco 761",
+   "hex": "#416a7a",
+   "src1200": "img/fabrics/official/coco/761-1200.webp",
+   "src600": "img/fabrics/official/coco/761-600.webp",
+   "thumb": "img/fabrics/official/coco/761-160.webp"
+  },
+  {
+   "code": "785",
+   "name": "Coco 785",
+   "hex": "#3e506d",
+   "src1200": "img/fabrics/official/coco/785-1200.webp",
+   "src600": "img/fabrics/official/coco/785-600.webp",
+   "thumb": "img/fabrics/official/coco/785-160.webp"
+  },
+  {
+   "code": "904",
+   "name": "Coco 904",
+   "hex": "#a59e9c",
+   "src1200": "img/fabrics/official/coco/904-1200.webp",
+   "src600": "img/fabrics/official/coco/904-600.webp",
+   "thumb": "img/fabrics/official/coco/904-160.webp"
+  },
+  {
+   "code": "992",
+   "name": "Coco 992",
+   "hex": "#c4bfbb",
+   "src1200": "img/fabrics/official/coco/992-1200.webp",
+   "src600": "img/fabrics/official/coco/992-600.webp",
+   "thumb": "img/fabrics/official/coco/992-160.webp"
+  },
+  {
+   "code": "999",
+   "name": "Coco 999",
+   "hex": "#717275",
+   "src1200": "img/fabrics/official/coco/999-1200.webp",
+   "src600": "img/fabrics/official/coco/999-600.webp",
+   "thumb": "img/fabrics/official/coco/999-160.webp"
+  }
+ ],
+ "heroes": [
+  {
+   "src": "img/fabrics/official/coco/hero-1-1600.webp",
+   "w": 2000,
+   "h": 2000
+  },
+  {
+   "src": "img/fabrics/official/coco/hero-2-1600.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  {
+   "src": "img/fabrics/official/coco/hero-3-1600.webp",
+   "w": 1920,
+   "h": 1080
+  }
+ ],
+ "inuse": [
+  {
+   "src": "img/fabrics/official/coco/inuse-1-1200.webp",
+   "w": 1600,
+   "h": 900
+  },
+  {
+   "src": "img/fabrics/official/coco/inuse-2-1200.webp",
+   "w": 1600,
+   "h": 900
+  },
+  {
+   "src": "img/fabrics/official/coco/inuse-3-1200.webp",
+   "w": 1600,
+   "h": 900
+  },
+  {
+   "src": "img/fabrics/official/coco/inuse-4-1200.webp",
+   "w": 1600,
+   "h": 900
+  }
+ ]
+}

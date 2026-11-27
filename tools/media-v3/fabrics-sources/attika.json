@@ -1,0 +1,69 @@
+{
+  "id": "attika",
+  "title": "ATTIKA",
+  "supplier": "Art Vision Home",
+  "kind": "шенилл",
+  "source_url": "https://artvision-home.ru/catalog/attika/",
+  "specs": {
+    "composition": "Полиэстер 77 %, Хлопок 23 %",
+    "martindale": 35000,
+    "weight": "602 г/м.п.",
+    "width": "140 см",
+    "country": "Турция",
+    "care": "Стирка: Запрещена; Глажка: Утюжить при температуре не выше 110 градусов; Сушка: Запрещена; Химчистка: Сухая чистка",
+    "other": [
+      "Тест на пиллинг: 5",
+      "Тест на устойчивость окраски: 5",
+      "Тип ткани на сайте: Шенилл"
+    ]
+  },
+  "colours": [
+    {
+      "code": "01",
+      "name": "Аттика / Attika 01",
+      "page_url": "https://artvision-home.ru/catalog/attika/attika-01",
+      "image_url": "https://artvision-home.ru/assets/images/resources/5149/ee59a6985c0411f084390025902b8c2b-7fc64da08d8c11f0b0700025902b8c2b.jpg",
+      "file": "img/01.jpg",
+      "w": 3959,
+      "h": 2639
+    },
+    {
+      "code": "02",
+      "name": "Аттика / Attika 02",
+      "page_url": "https://artvision-home.ru/catalog/attika/attika-02",
+      "image_url": "https://artvision-home.ru/assets/images/resources/5150/04bd982c5c0511f084390025902b8c2b-c54077a18d8c11f0b0700025902b8c2b.jpg",
+      "file": "img/02.jpg",
+      "w": 3959,
+      "h": 2639
+    },
+    {
+      "code": "03",
+      "name": "Аттика / Attika 03",
+      "page_url": "https://artvision-home.ru/catalog/attika/attika-03",
+      "image_url": "https://artvision-home.ru/assets/images/resources/5151/142f65d35c0511f084390025902b8c2b-e1611a3d8d8c11f0b0700025902b8c2b.jpg",
+      "file": "img/03.jpg",
+      "w": 3959,
+      "h": 2639
+    },
+    {
+      "code": "04",
+      "name": "Аттика / Attika 04",
+      "page_url": "https://artvision-home.ru/catalog/attika/attika-04",
+      "image_url": "https://artvision-home.ru/assets/images/resources/5152/1efb03715c0511f084390025902b8c2b-01991a558d8d11f0b0700025902b8c2b.jpg",
+      "file": "img/04.jpg",
+      "w": 3959,
+      "h": 2639
+    },
+    {
+      "code": "05",
+      "name": "Аттика / Attika 05",
+      "page_url": "https://artvision-home.ru/catalog/attika/attika-05",
+      "image_url": "https://artvision-home.ru/assets/images/resources/5153/28e47e555c0511f084390025902b8c2b-257635de8d8d11f0b0700025902b8c2b.jpg",
+      "file": "img/05.jpg",
+      "w": 3959,
+      "h": 2639
+    }
+  ],
+  "notes": "Вешалка без названия (IMG_2602, кремовая ткань с рельефными «мазками» и полосами) опознана как «Аттика / Attika»: на официальных фото тот же рельеф из рядов шенилловых «штрихов» с гладкими прямоугольниками; верхний образец — Attika 01, нижний с серо-коричневыми штрихами — Attika 02. По описанию сайта коллекцию показывают вместе с однотонной Monblan — гладкие кремовые образцы на той же вешалке, вероятно, из неё (не собиралась). Бирки на фото нет, сверить характеристики не с чем. Тип ткани на сайте — «Шенилл», в описании — «шенилловая рогожка на хлопковой основе». У каждого цвета два фото: складка и плоский образец; взят плоский (второй в галерее, 3959×2639). Вес и ширина в карточках сайта даны числами без единиц («Вес ткани: 602», «Ширина ткани: 140»); единицы проставлены так: ширина — см, вес — г/м.п. (на официальной странице-презентации Paddington https://artvision-home.ru/presentations/4341-kollekcziya-paddington написано «ВЕС - 770гр./м.п.» при «770» в карточке; на бирках вешалок вес тоже в гр./м.п.). В тексте ухода на сайте опечатка «темппературе» — в care записано «температуре».",
+  "description": "Attika — это шенилловая рогожка на хлопковой основе. Объёмные мультиколоровые шенилловые нити создают геометричный рельеф, а хлопок в составе снижает статику и повышает воздухопроницаемость. Пластичная структура ткани легко ложиться на сложные формы мебели. Коллекция хорошо комбинируется с однотонными шениллами и микровелюрами; мы представляем её вместе с коллекцией Monblan."
+}

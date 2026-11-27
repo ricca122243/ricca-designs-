@@ -1,0 +1,70 @@
+{
+ "id": "charisma",
+ "title": "CHARISMA",
+ "kind": "искусственный мех",
+ "type": "meh",
+ "facts": [
+  "85 000 циклов",
+  "910 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Charisma 01",
+   "hex": "#eae5df",
+   "plain3d": true,
+   "fold": 0.041,
+   "src1200": "img/fabrics/official/charisma/01-1200.webp",
+   "src600": "img/fabrics/official/charisma/01-600.webp",
+   "thumb": "img/fabrics/official/charisma/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Charisma 02",
+   "hex": "#beb6b0",
+   "plain3d": true,
+   "fold": 0.051,
+   "src1200": "img/fabrics/official/charisma/02-1200.webp",
+   "src600": "img/fabrics/official/charisma/02-600.webp",
+   "thumb": "img/fabrics/official/charisma/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Charisma 03",
+   "hex": "#837777",
+   "plain3d": false,
+   "fold": 0.06,
+   "src1200": "img/fabrics/official/charisma/03-1200.webp",
+   "src600": "img/fabrics/official/charisma/03-600.webp",
+   "thumb": "img/fabrics/official/charisma/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Charisma 04",
+   "hex": "#79602d",
+   "plain3d": false,
+   "fold": 0.082,
+   "src1200": "img/fabrics/official/charisma/04-1200.webp",
+   "src600": "img/fabrics/official/charisma/04-600.webp",
+   "thumb": "img/fabrics/official/charisma/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Charisma 05",
+   "hex": "#303d35",
+   "plain3d": false,
+   "fold": 0.066,
+   "src1200": "img/fabrics/official/charisma/05-1200.webp",
+   "src600": "img/fabrics/official/charisma/05-600.webp",
+   "thumb": "img/fabrics/official/charisma/05-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

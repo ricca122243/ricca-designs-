@@ -1,0 +1,135 @@
+{
+  "id": "grande",
+  "title": "GRANDE",
+  "supplier": "SMART (ЦКМФ)",
+  "kind": "рогожка",
+  "source_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/",
+  "specs": {
+    "composition": "100% полиэстер",
+    "martindale": 45000,
+    "weight": "310 г/м²",
+    "width": null,
+    "country": null,
+    "care": null,
+    "other": [
+      "Пропитка Easy clean (легко чистится от загрязнений)",
+      "Стойкость к скатыванию и пиллингуемость: 4-5",
+      "Стойкость к мокрому истиранию: 3-4",
+      "Стойкость к сухому истиранию: 4",
+      "Стойкость окрашивания (искусственное освещение): 4-5",
+      "Воспламеняемость: сигарета (EN1021-1)",
+      "Цветовая карта — 12 цветов"
+    ]
+  },
+  "colours": [
+    {
+      "code": "03",
+      "name": "GRANDE 03",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18088/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/302/iu615p0ey5h78w3xjn22konk0fxj81qj.jpg",
+      "file": "img/03.jpg",
+      "w": 1200,
+      "h": 704
+    },
+    {
+      "code": "06",
+      "name": "GRANDE 06",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18089/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/4f7/3es0gn0xt5mv9oh5ts5i2n8s7fuc6fup.jpg",
+      "file": "img/06.jpg",
+      "w": 1200,
+      "h": 704
+    },
+    {
+      "code": "55",
+      "name": "GRANDE 55",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18091/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/d39/jgnem8tvce6y6b98h2jkeh2aj9nor3f0.jpg",
+      "file": "img/55.jpg",
+      "w": 1200,
+      "h": 704
+    },
+    {
+      "code": "56",
+      "name": "GRANDE 56",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18092/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/0dc/7o0dhgvyoanmuv4f0bg0upo47mpb8gw7.jpg",
+      "file": "img/56.jpg",
+      "w": 1200,
+      "h": 704
+    },
+    {
+      "code": "61",
+      "name": "GRANDE 61",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18093/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/1c7/7elacezedkz42tg81yhd8agesz7v1m17.jpg",
+      "file": "img/61.jpg",
+      "w": 1200,
+      "h": 704
+    },
+    {
+      "code": "65",
+      "name": "GRANDE 65",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18094/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/89a/alya2pvtq77591pop5s4ewd5gzsgd4s6.jpg",
+      "file": "img/65.jpg",
+      "w": 1200,
+      "h": 704
+    },
+    {
+      "code": "75",
+      "name": "GRANDE 75",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18095/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/a10/qaq8wpmjk8n0j3xtb0yqnc0ssfmdxr8z.jpg",
+      "file": "img/75.jpg",
+      "w": 1200,
+      "h": 704
+    },
+    {
+      "code": "90",
+      "name": "GRANDE 90",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18097/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/910/hcolynpjpc61dgjpm3pptjd2z5e7b15a.jpg",
+      "file": "img/90.jpg",
+      "w": 1200,
+      "h": 682
+    },
+    {
+      "code": "39",
+      "name": "GRANDE 39",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18090/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/d37/4gukc292q3ry8rv4g8jfeja814pxqqyp.jpg",
+      "file": "img/39.jpg",
+      "w": 1200,
+      "h": 704
+    },
+    {
+      "code": "77",
+      "name": "GRANDE 77",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18096/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/f51/81rs7ntzv0nql78j6jt1sdjzrp9y1cwu.jpg",
+      "file": "img/77.jpg",
+      "w": 1200,
+      "h": 704
+    },
+    {
+      "code": "81",
+      "name": "GRANDE 81",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18098/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/2bd/j73hgn13i9b7cjfsxpd32jwbq338s2yo.jpg",
+      "file": "img/81.jpg",
+      "w": 1200,
+      "h": 704
+    },
+    {
+      "code": "97",
+      "name": "GRANDE 97",
+      "page_url": "https://smart.ckmf.ru/catalog/mebelnye_tkani_smart/grande/18099/",
+      "image_url": "https://smart.ckmf.ru/upload/iblock/486/58x2dlad1nsc9tpou2paruyf6lnzuqbn.jpg",
+      "file": "img/97.jpg",
+      "w": 1200,
+      "h": 704
+    }
+  ],
+  "notes": "Поставщик опознан по логотипу: на сайте smart.ckmf.ru тот же зелёный круг с S и надпись SMART (на вешалке «SMART Group of companies», остаток закрыт наклейкой); это «Смарт — мебельные ткани», ЦКМФ, г. Королёв. Цвет 55 с вешалки в коллекции есть. 12 цветов; порядок — как на сайте при сортировке «по алфавиту»: сначала действующие по возрастанию номера, в конце снятые. На сайте помечены «Выведен!» (сняты с ассортимента): 03, 39, 77, 81, 97 — их, возможно, не стоит показывать покупателю. Фото: у каждого цвета 4–5 кадров (складка, общий плоский, крупный плоский, крупный под углом); взят общий плоский кадр «Grande-NN» — оригинал 1200x704 (у 90 — 1200x682), крупнее сайт не даёт. Съёмка любительская: плоский образец во весь кадр без надписей, но свет неровный, у тёмных цветов заметно затемнение по краям. У цвета 65 кадр «Grande-65» снят крупнее остальных (плетение выглядит крупнее) — общего плана с таким названием у него нет. Ширины, страны и ухода на сайте нет — null. Плотность на странице цвета записана числом «310», в описании коллекции — «310 г/м²». На вешалке характеристик нет, сверять не с чем. Слово цвета из поля «Цвет» на страницах: 03 — бежевый, 06 — бежевый, 55 — розовый, 56 — оранжевый, 61 — розовый, 65 — розовый, 75 — зеленый, 90 — серый, 39 — зеленый, 77 — синий, 81 — серый, 97 — черный. ПРОВЕРКА: у цвета 65 общий плоский план на сайте есть, но из другой съёмки и под другим именем — «5.65_(2)», 1200x798: https://smart.ckmf.ru/upload/iblock/df7/xl3llj8v4oapnfrpvrpilke56d4mkkdj.jpg ; он тёмный, с затемнением по краям, розовая нить на нём не читается, поэтому оставлен крупный кадр «Grande-65» (плетение на нём выглядит примерно вдвое крупнее, чем у остальных цветов). Порядок по умолчанию на странице коллекции — «по популярности», он меняется со временем; в meta взята сортировка сайта «по алфавиту (возрастание)»."
+}

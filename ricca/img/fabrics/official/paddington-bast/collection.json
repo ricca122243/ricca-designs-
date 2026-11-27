@@ -1,0 +1,125 @@
+{
+ "id": "paddington-bast",
+ "title": "PADDINGTON BAST",
+ "kind": "микровелюр стёганый",
+ "type": "velur",
+ "facts": [
+  "110 000 циклов",
+  "1010 г/м.п.",
+  "ширина 136 см"
+ ],
+ "colours": [
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Паддингтон Баст / Paddington Bast 02",
+   "hex": "#dcd9df",
+   "plain3d": true,
+   "fold": 0.178,
+   "src1200": "img/fabrics/official/paddington-bast/02-1200.webp",
+   "src600": "img/fabrics/official/paddington-bast/02-600.webp",
+   "thumb": "img/fabrics/official/paddington-bast/02-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Паддингтон Баст / Paddington Bast 05",
+   "hex": "#beb6b6",
+   "plain3d": true,
+   "fold": 0.167,
+   "src1200": "img/fabrics/official/paddington-bast/05-1200.webp",
+   "src600": "img/fabrics/official/paddington-bast/05-600.webp",
+   "thumb": "img/fabrics/official/paddington-bast/05-160.webp"
+  },
+  {
+   "code": "08",
+   "label": "08",
+   "name": "Паддингтон Баст / Paddington Bast 08",
+   "hex": "#897a7c",
+   "plain3d": true,
+   "fold": 0.231,
+   "src1200": "img/fabrics/official/paddington-bast/08-1200.webp",
+   "src600": "img/fabrics/official/paddington-bast/08-600.webp",
+   "thumb": "img/fabrics/official/paddington-bast/08-160.webp"
+  },
+  {
+   "code": "09",
+   "label": "09",
+   "name": "Паддингтон Баст / Paddington Bast 09",
+   "hex": "#9c9797",
+   "plain3d": true,
+   "fold": 0.189,
+   "src1200": "img/fabrics/official/paddington-bast/09-1200.webp",
+   "src600": "img/fabrics/official/paddington-bast/09-600.webp",
+   "thumb": "img/fabrics/official/paddington-bast/09-160.webp"
+  },
+  {
+   "code": "17",
+   "label": "17",
+   "name": "Паддингтон Баст / Paddington Bast 17",
+   "hex": "#4b6268",
+   "plain3d": true,
+   "fold": 0.318,
+   "src1200": "img/fabrics/official/paddington-bast/17-1200.webp",
+   "src600": "img/fabrics/official/paddington-bast/17-600.webp",
+   "thumb": "img/fabrics/official/paddington-bast/17-160.webp"
+  },
+  {
+   "code": "18",
+   "label": "18",
+   "name": "Паддингтон Баст / Paddington Bast 18",
+   "hex": "#375659",
+   "plain3d": true,
+   "fold": 0.482,
+   "src1200": "img/fabrics/official/paddington-bast/18-1200.webp",
+   "src600": "img/fabrics/official/paddington-bast/18-600.webp",
+   "thumb": "img/fabrics/official/paddington-bast/18-160.webp"
+  },
+  {
+   "code": "19",
+   "label": "19",
+   "name": "Паддингтон Баст / Paddington Bast 19",
+   "hex": "#728171",
+   "plain3d": true,
+   "fold": 0.195,
+   "src1200": "img/fabrics/official/paddington-bast/19-1200.webp",
+   "src600": "img/fabrics/official/paddington-bast/19-600.webp",
+   "thumb": "img/fabrics/official/paddington-bast/19-160.webp"
+  },
+  {
+   "code": "21",
+   "label": "21",
+   "name": "Паддингтон Баст / Paddington Bast 21",
+   "hex": "#596269",
+   "plain3d": true,
+   "fold": 0.315,
+   "src1200": "img/fabrics/official/paddington-bast/21-1200.webp",
+   "src600": "img/fabrics/official/paddington-bast/21-600.webp",
+   "thumb": "img/fabrics/official/paddington-bast/21-160.webp"
+  },
+  {
+   "code": "22",
+   "label": "22",
+   "name": "Паддингтон Баст / Paddington Bast 22",
+   "hex": "#495470",
+   "plain3d": true,
+   "fold": 0.399,
+   "src1200": "img/fabrics/official/paddington-bast/22-1200.webp",
+   "src600": "img/fabrics/official/paddington-bast/22-600.webp",
+   "thumb": "img/fabrics/official/paddington-bast/22-160.webp"
+  },
+  {
+   "code": "24",
+   "label": "24",
+   "name": "Паддингтон Баст / Paddington Bast 24",
+   "hex": "#c1c3d0",
+   "plain3d": true,
+   "fold": 0.221,
+   "src1200": "img/fabrics/official/paddington-bast/24-1200.webp",
+   "src600": "img/fabrics/official/paddington-bast/24-600.webp",
+   "thumb": "img/fabrics/official/paddington-bast/24-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

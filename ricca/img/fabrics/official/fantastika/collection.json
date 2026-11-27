@@ -1,0 +1,169 @@
+{
+ "id": "fantastika",
+ "title": "ФАНТАСТИКА",
+ "kind": "шенилл",
+ "type": "shenill",
+ "facts": [
+  "80 000 циклов",
+  "798 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "ФАНТАСТИКА 01",
+   "hex": "#f1f0ee",
+   "plain3d": false,
+   "fold": 0.008,
+   "src1200": "img/fabrics/official/fantastika/01-1200.webp",
+   "src600": "img/fabrics/official/fantastika/01-600.webp",
+   "thumb": "img/fabrics/official/fantastika/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "ФАНТАСТИКА 02",
+   "hex": "#f2f0eb",
+   "plain3d": false,
+   "fold": 0.009,
+   "src1200": "img/fabrics/official/fantastika/02-1200.webp",
+   "src600": "img/fabrics/official/fantastika/02-600.webp",
+   "thumb": "img/fabrics/official/fantastika/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "ФАНТАСТИКА 03",
+   "hex": "#dcd1c8",
+   "plain3d": false,
+   "fold": 0.011,
+   "src1200": "img/fabrics/official/fantastika/03-1200.webp",
+   "src600": "img/fabrics/official/fantastika/03-600.webp",
+   "thumb": "img/fabrics/official/fantastika/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "ФАНТАСТИКА 04",
+   "hex": "#ab9e99",
+   "plain3d": false,
+   "fold": 0.028,
+   "src1200": "img/fabrics/official/fantastika/04-1200.webp",
+   "src600": "img/fabrics/official/fantastika/04-600.webp",
+   "thumb": "img/fabrics/official/fantastika/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "ФАНТАСТИКА 05",
+   "hex": "#a09997",
+   "plain3d": false,
+   "fold": 0.036,
+   "src1200": "img/fabrics/official/fantastika/05-1200.webp",
+   "src600": "img/fabrics/official/fantastika/05-600.webp",
+   "thumb": "img/fabrics/official/fantastika/05-160.webp"
+  },
+  {
+   "code": "06",
+   "label": "06",
+   "name": "ФАНТАСТИКА 06",
+   "hex": "#b27e2c",
+   "plain3d": false,
+   "fold": 0.036,
+   "src1200": "img/fabrics/official/fantastika/06-1200.webp",
+   "src600": "img/fabrics/official/fantastika/06-600.webp",
+   "thumb": "img/fabrics/official/fantastika/06-160.webp"
+  },
+  {
+   "code": "07",
+   "label": "07",
+   "name": "ФАНТАСТИКА 07",
+   "hex": "#612a23",
+   "plain3d": false,
+   "fold": 0.075,
+   "src1200": "img/fabrics/official/fantastika/07-1200.webp",
+   "src600": "img/fabrics/official/fantastika/07-600.webp",
+   "thumb": "img/fabrics/official/fantastika/07-160.webp"
+  },
+  {
+   "code": "08",
+   "label": "08",
+   "name": "ФАНТАСТИКА 08",
+   "hex": "#88645a",
+   "plain3d": false,
+   "fold": 0.019,
+   "src1200": "img/fabrics/official/fantastika/08-1200.webp",
+   "src600": "img/fabrics/official/fantastika/08-600.webp",
+   "thumb": "img/fabrics/official/fantastika/08-160.webp"
+  },
+  {
+   "code": "09",
+   "label": "09",
+   "name": "ФАНТАСТИКА 09",
+   "hex": "#3d2d1c",
+   "plain3d": false,
+   "fold": 0.037,
+   "src1200": "img/fabrics/official/fantastika/09-1200.webp",
+   "src600": "img/fabrics/official/fantastika/09-600.webp",
+   "thumb": "img/fabrics/official/fantastika/09-160.webp"
+  },
+  {
+   "code": "10",
+   "label": "10",
+   "name": "ФАНТАСТИКА 10",
+   "hex": "#242621",
+   "plain3d": false,
+   "fold": 0.084,
+   "src1200": "img/fabrics/official/fantastika/10-1200.webp",
+   "src600": "img/fabrics/official/fantastika/10-600.webp",
+   "thumb": "img/fabrics/official/fantastika/10-160.webp"
+  },
+  {
+   "code": "11",
+   "label": "11",
+   "name": "ФАНТАСТИКА 11",
+   "hex": "#102325",
+   "plain3d": false,
+   "fold": 0.109,
+   "src1200": "img/fabrics/official/fantastika/11-1200.webp",
+   "src600": "img/fabrics/official/fantastika/11-600.webp",
+   "thumb": "img/fabrics/official/fantastika/11-160.webp"
+  },
+  {
+   "code": "12",
+   "label": "12",
+   "name": "ФАНТАСТИКА 12",
+   "hex": "#151c2a",
+   "plain3d": false,
+   "fold": 0.039,
+   "src1200": "img/fabrics/official/fantastika/12-1200.webp",
+   "src600": "img/fabrics/official/fantastika/12-600.webp",
+   "thumb": "img/fabrics/official/fantastika/12-160.webp"
+  },
+  {
+   "code": "13",
+   "label": "13",
+   "name": "ФАНТАСТИКА 13",
+   "hex": "#4e4643",
+   "plain3d": false,
+   "fold": 0.036,
+   "src1200": "img/fabrics/official/fantastika/13-1200.webp",
+   "src600": "img/fabrics/official/fantastika/13-600.webp",
+   "thumb": "img/fabrics/official/fantastika/13-160.webp"
+  },
+  {
+   "code": "14",
+   "label": "14",
+   "name": "ФАНТАСТИКА 14",
+   "hex": "#302f33",
+   "plain3d": false,
+   "fold": 0.101,
+   "src1200": "img/fabrics/official/fantastika/14-1200.webp",
+   "src600": "img/fabrics/official/fantastika/14-600.webp",
+   "thumb": "img/fabrics/official/fantastika/14-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

@@ -1,0 +1,79 @@
+/* RICCA DESIGNS — форма заявки и кнопка WhatsApp (23 ноября). Подключается на всех страницах вместе с js/lead.js.
+   Цвета и шрифт — токены страницы (site.css / model.css / configurator.css), рядом запасные значения: файл не зависит от того,
+   какая таблица стилей на странице. Скругление — как у кнопок и полей сайта (6 px). Телефон первым: поля 16 px (iOS не увеличивает экран). */
+.lead { --l-ink: var(--ink, #0A0A0A); --l-ink2: var(--ink-2, #6B6E73); --l-line: var(--line-2, #CFD2D7); --l-paper: var(--paper, #FFFFFF);
+  --l-sans: var(--sans, 'Montserrat', 'Helvetica Neue', Arial, system-ui, sans-serif); --l-r: var(--r-ctl, 6px); --l-ease: var(--ease, cubic-bezier(.22, 1, .36, 1));
+  max-width: 640px; font-family: var(--l-sans); color: var(--l-ink); text-align: left; }
+.lead__form { display: grid; gap: 18px; margin: 0; }
+.lead__form[hidden], .lead__ok[hidden], .lead [hidden] { display: none; }
+.lead__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }   /* поле-ловушка: человек его не видит */
+.lead__row { display: grid; gap: 14px; }
+.lead__f { display: grid; gap: 7px; margin: 0; }
+.lead__f > span, .lead__int legend { font: 500 12px/1.2 var(--l-sans); letter-spacing: .04em; color: var(--l-ink2); }
+.lead input:not([type="radio"]), .lead textarea { width: 100%; min-height: 52px; margin: 0; padding: 14px 16px; border: 1px solid var(--l-line); border-radius: var(--l-r);
+  background: var(--l-paper); color: var(--l-ink); font: 400 16px/1.4 var(--l-sans); letter-spacing: 0; -webkit-appearance: none; appearance: none; transition: border-color 200ms var(--l-ease); }
+.lead textarea { min-height: 96px; resize: vertical; }
+.lead input::placeholder { color: var(--l-ink2); opacity: .7; }
+.lead input:not([type="radio"]):focus, .lead textarea:focus { outline: 0; border-color: var(--l-ink); box-shadow: inset 0 0 0 1px var(--l-ink); }
+.lead [aria-invalid="true"] { border-color: #B3261E; }
+.lead__msg { font: 400 13px/1.3 var(--l-sans); font-style: normal; color: #B3261E; }
+.lead__int { margin: 0; padding: 0; border: 0; min-width: 0; display: grid; gap: 9px; }
+.lead__int legend { padding: 0; margin-bottom: 9px; }
+.lead__chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.lead__chip { position: relative; display: block; margin: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.lead__chip input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.lead__chip span { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 10px; border: 1px solid var(--l-line); border-radius: var(--l-r);
+  font: 500 14px/1.2 var(--l-sans); text-align: center; transition: background-color 200ms var(--l-ease), color 200ms var(--l-ease), border-color 200ms var(--l-ease); }
+.lead__chip input:checked + span { background: var(--l-ink); border-color: var(--l-ink); color: var(--l-paper); }
+.lead__chip input:focus-visible + span { outline: 2px solid var(--l-ink); outline-offset: 2px; }
+.lead__more { margin: -4px 0 0; }
+.lead__more summary { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: 500 13px/1.2 var(--l-sans); color: var(--l-ink2); cursor: pointer; list-style: none; }
+.lead__more summary::-webkit-details-marker { display: none; }
+.lead__more summary::before { content: '+'; font-size: 16px; line-height: 1; }
+.lead__more[open] summary { display: none; }
+.lead__send { display: grid; gap: 12px; }
+.lead__btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 54px; margin: 0; padding: 0 24px; border: 1px solid var(--l-ink); border-radius: var(--l-r);
+  background: var(--l-ink); color: var(--l-paper); font: 500 14px/1.2 var(--l-sans); letter-spacing: .01em; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: opacity 200ms var(--l-ease), transform 200ms var(--l-ease); }
+.lead__btn:active { transform: scale(.98); }
+.lead__btn:disabled { opacity: .55; cursor: default; }
+.lead__btn:focus-visible { outline: 2px solid var(--l-ink); outline-offset: 3px; }
+.lead__btn--line { background: transparent; color: var(--l-ink); }
+.lead-ico { width: 20px; height: 20px; flex: none; }
+.lead__fine { margin: 0; font: 400 12px/1.5 var(--l-sans); color: var(--l-ink2); }
+.lead__fine a, .lead__err a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.lead__err { margin: 0; font: 400 14px/1.45 var(--l-sans); color: #B3261E; }
+.lead__ok { display: grid; gap: 20px; outline: 0; }
+.lead__ok-t { margin: 0; font: 300 clamp(22px, 2.6vw, 28px)/1.3 var(--l-sans); letter-spacing: -.01em; }
+@media (hover: hover) { .lead__btn:hover:not(:disabled) { opacity: .86; } .lead__chip:hover span { border-color: var(--l-ink); } .lead__more summary:hover { color: var(--l-ink); } }
+@media (min-width: 600px) { .lead__row { grid-template-columns: repeat(2, minmax(0, 1fr)); } .lead__send { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 20px; } .lead__btn { width: auto; min-width: 220px; } }
+@media (prefers-reduced-motion: reduce) { .lead *, .lead-fab { transition: none !important; } }
+
+/* тёмный фон (блок на чёрном) — пока не используется, значения на случай переноса формы */
+.lead--noir { --l-ink: var(--on-noir, #F5F6F8); --l-ink2: var(--on-noir-2, #A6A9AF); --l-line: #3A3B3F; --l-paper: var(--noir, #111111); }
+
+/* ---------- блоки с формой ---------- */
+.lead-sec__sub { margin: 12px 0 0; max-width: 46ch; }
+.lead-sec .lead { margin-top: clamp(28px, 3vw, 40px); }
+/* страницы моделей, проекта и HoReCa (css/model.css): заголовок как у разделов страницы */
+.mp-ask--lead .mp-ask__t { margin: 0; font: 300 clamp(28px, 4vw, 44px)/1.15 var(--sans); letter-spacing: -.01em; }
+.mp-ask--lead .mp-ask__p { margin: 12px 0 0; max-width: 46ch; color: var(--ink-2); }
+.mp-ask--lead .lead { margin-top: 28px; }
+/* конструктор, шаг «Итог»: под кнопками, отделено линией */
+.sum__lead { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line, #E6E8EB); }
+.sum__lead-t { margin: 0 0 4px; font: 500 16px/1.3 var(--sans); }
+.sum__lead-p { margin: 0 0 18px; font: 400 14px/1.45 var(--sans); color: var(--ink-2, #6B6E73); }
+.sum__lead .lead__row { grid-template-columns: minmax(0, 1fr); }   /* колонка шага узкая — поля друг под другом */
+.sum__lead .lead__send { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.sum__lead .lead__btn { width: 100%; }
+
+/* ---------- кнопка WhatsApp справа внизу (страницы без js/site.js): чёрный квадрат 52 px, как .wa-fab на главной ---------- */
+.lead-fab { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 54; display: inline-flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px; border: 1px solid var(--ink, #0A0A0A); border-radius: var(--r-ctl, 6px); background: var(--ink, #0A0A0A); color: var(--paper, #FFFFFF);
+  transition: opacity 250ms var(--ease, ease), transform 250ms var(--ease, ease), visibility 0s; -webkit-tap-highlight-color: transparent; }
+.lead-fab .lead-ico { width: 22px; height: 22px; }
+.lead-fab.is-off { opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity 200ms var(--ease, ease), transform 200ms var(--ease, ease), visibility 0s 200ms; }
+.lead-fab:active { transform: scale(.96); }
+.lead-fab:focus-visible { outline: 2px solid var(--ink, #0A0A0A); outline-offset: 3px; }
+@media (max-width: 899px) { .lead-fab--cfg { display: none; } }   /* конструктор на телефоне: внизу закреплена панель с кнопкой «В WhatsApp» — второй кнопки поверх не ставим */
+@media print { .lead-fab { display: none; } }

@@ -1,0 +1,130 @@
+{
+  "id": "limber",
+  "title": "LIMBER",
+  "supplier": "Domiart",
+  "kind": "шенилл",
+  "source_url": "https://k-domiart.ru/catalog/shenill/limber.html",
+  "specs": {
+    "composition": "100% полиэстер",
+    "martindale": 100000,
+    "weight": "600 г/м²",
+    "width": "≥ 140 см",
+    "country": null,
+    "care": "Не гладить, не тереть абразивом, не отбеливать; чистить аккуратно тряпочкой, смоченной в мыльном растворе, лёгкие загрязнения удалять антибактериальной салфеткой (или тряпочкой из микрофибры с антисептиком); избегать химических моющих средств с сильными кислотами и щелочами; допускается профессиональная сухая и мокрая чистка, кроме машинной стирки; не стирать и не замачивать; барабанная сушка запрещена; беречь от прямых солнечных лучей, держать не ближе метра от отопительных приборов, избегать острых объектов",
+    "other": [
+      "Пиллингуемость: 4 (ISO 12945-2:2000)",
+      "Стойкость цвета к мокрому трению: 4-5 (ISO 105 X12-2016)",
+      "Прочность на разрыв: основа 460, уток 230 (стандарт ≥ 40 N, ISO 13937-2:2000)",
+      "Устойчивость цвета к потоотделению: 5 (ГОСТ 9733.6-83)",
+      "Без подложки, закреплена по технологии коатинга",
+      "Декларация соответствия ЕАЭС N RU Д-CN.РА08.В.68646/23",
+      "Стойкость цвета к свету: 4 (ISO 105 B02-2014)",
+      "Стойкость цвета к сухому трению: 5 (ГОСТ 9733.27-83)",
+      "Содержание формальдегида: не обнаружено (ГОСТ ISO 14184-1-2014)"
+    ]
+  },
+  "spec_source": "https://k-domiart.ru/assets/files/limber_domiart.pdf",
+  "colours": [
+    {
+      "code": "1",
+      "name": "1 Coconut/Кокос",
+      "page_url": "https://k-domiart.ru/catalog/shenill/limber.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/limber/limber_01_coconut_dsc_2355.jpg",
+      "file": "img/1.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "11-4202 TPG - Star White"
+    },
+    {
+      "code": "2",
+      "name": "2 Angora/Ангора",
+      "page_url": "https://k-domiart.ru/catalog/shenill/limber.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/limber/limber_02_angora_dsc_2614.jpg",
+      "file": "img/2.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "12-5202 TPG - Turtledove"
+    },
+    {
+      "code": "3",
+      "name": "3 Cappuccino/Капучино",
+      "page_url": "https://k-domiart.ru/catalog/shenill/limber.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/limber/limber_03_cappuccino_dsc_3431.jpg",
+      "file": "img/3.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "16-0205 TPG - Vintage Khaki"
+    },
+    {
+      "code": "4",
+      "name": "4 Cocoa/Какао",
+      "page_url": "https://k-domiart.ru/catalog/shenill/limber.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/limber/limber_04_cocoa_dsc_2044.jpg",
+      "file": "img/4.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-1015 TPG - Bracken"
+    },
+    {
+      "code": "5",
+      "name": "5 Light Grey/Светло-серый",
+      "page_url": "https://k-domiart.ru/catalog/shenill/limber.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/limber/limber_05_light_grey_dsc_3148.jpg",
+      "file": "img/5.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "14-4203 TPG - Vapor Blue"
+    },
+    {
+      "code": "6",
+      "name": "6 Silver/Серебряный",
+      "page_url": "https://k-domiart.ru/catalog/shenill/limber.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/limber/limber_06_silver_dsc_2875.jpg",
+      "file": "img/6.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "16-4402 TPG - Drizzle"
+    },
+    {
+      "code": "7",
+      "name": "7 Grey/Серый",
+      "page_url": "https://k-domiart.ru/catalog/shenill/limber.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/limber/limber_07_grey_dsc_1804.jpg",
+      "file": "img/7.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "18-4006 TPG - Quite Shade"
+    },
+    {
+      "code": "8",
+      "name": "8 Olive/Оливковый",
+      "page_url": "https://k-domiart.ru/catalog/shenill/limber.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/limber/limber_08_olive_dsc_1442.jpg",
+      "file": "img/8.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "16-1126 TPG - Antelope"
+    },
+    {
+      "code": "9",
+      "name": "9 Forest/Лес",
+      "page_url": "https://k-domiart.ru/catalog/shenill/limber.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/limber/limber_09_forest_dsc_1622.jpg",
+      "file": "img/9.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-5918 TPG - Mountain View"
+    },
+    {
+      "code": "10",
+      "name": "10 Pacific/Тихоокеанский",
+      "page_url": "https://k-domiart.ru/catalog/shenill/limber.html",
+      "image_url": "https://k-domiart.ru/assets/images/shenill/limber/limber_10_pacific_dsc_2348.jpg",
+      "file": "img/10.jpg",
+      "w": 1500,
+      "h": 1000,
+      "pantone": "19-4914 TPG - Deep Teal"
+    }
+  ],
+  "notes": "Цвета на странице — плитки с кодами; у каждого цвета своя галерея (подгружается запросом сайта ajax/podgruzka-galerei-dlya-vybrannogo-cveta.html): кадр со складками (он же миниатюра плитки) и плоский образец. Взят плоский образец, оригинал с сайта, без пересохранения. Порядок цветов — как плитки на странице (не по возрастанию кодов). Характеристик в тексте страницы нет — они в PDF «Техническая спецификация», ссылка на который стоит на странице коллекции (файл лежит рядом с meta.json). Страна производства прямо не указана (в номере декларации ЕАЭС стоит код CN) — оставлено null. Поле pantone у цветов — как на сайте. PDF — картинка без текстового слоя, значения прочитаны с листа. Коды на сайте без ведущего нуля (1…10). У цвета 5 в плитке «Светло-серый», в подписи под фото «Светло Серый» — взято из плитки. Бирка на вешалке (шенилл, полиэстер 100%, 600 г/м², 100 000 циклов) совпадает с сайтом."
+}

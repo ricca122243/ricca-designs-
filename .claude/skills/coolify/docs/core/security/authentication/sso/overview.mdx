@@ -1,0 +1,48 @@
+---
+title: Overview
+description: Configure centralized Coolify sign-in with OpenID Connect, Authentik, Clerk, or Zitadel.
+---
+
+# SSO overview
+
+Single sign-on (SSO) lets an organization use its identity provider as the sign-in authority for a self-hosted Coolify instance. Coolify provides named integrations for Authentik, Clerk, and Zitadel under **Settings > Authentication**.
+
+<Callout type="warning" title="SSO requires Coolify v4.3.0">
+The Authentik, Clerk, and Zitadel integrations are available in Coolify v4.3.0 or above
+</Callout>
+
+<Callout type="info" title="SSO configuration is for self-hosted Coolify">
+Coolify Cloud manages its own authentication. A root team administrator or owner can configure SSO providers for a self-hosted instance.
+</Callout>
+
+## Choose an SSO provider
+
+| Provider | What you create | Guide |
+| :--- | :--- | :--- |
+| Authentik | OAuth2/OpenID Connect provider and application | [Configure Authentik SSO](/core/security/authentication/sso/authentik) |
+| Clerk | OAuth application with profile and email scopes | [Configure Clerk SSO](/core/security/authentication/sso/clerk) |
+| Zitadel | Confidential web application using the authorization code flow | [Configure Zitadel SSO](/core/security/authentication/sso/zitadel) |
+
+Use [OpenID Connect](/core/security/authentication/sso/oidc) for other OIDC providers.
+
+## How Coolify handles SSO accounts
+
+Coolify links users to a provider identity. Linking an existing account requires a verified email address, subject to the legacy passwordless-account exception described in [OAuth sign-in](/core/security/authentication/oauth/overview). Each account links to one provider.
+
+Restrict access to the Coolify application at your identity provider, then assign the required Coolify team roles. Provider groups and claims do not automatically assign roles. Providers can auto-join newly created users to the Root team as members.
+
+When Coolify 2FA is enabled, SSO sign-in also requires its challenge. Passwordless SSO users can enable 2FA on their profile.
+
+Configure account creation and password-registration policy under **Settings > Authentication**. Disabling new account creation does not prevent an already linked user from signing in.
+
+Removing provider access prevents the next provider sign-in, but does not remove active Coolify sessions, memberships, or API tokens. Complete those actions in Coolify during offboarding.
+
+## Test before relying on SSO
+
+Use a private browser window and verify that:
+
+- an assigned user reaches the expected Coolify account and team
+- an unassigned provider user cannot authenticate
+- a new email address cannot create an account when registration is disabled
+- provider multi-factor authentication is enforced
+- at least one administrator retains a tested recovery sign-in path

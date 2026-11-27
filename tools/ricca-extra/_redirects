@@ -1,0 +1,61 @@
+# 25 ноября (защита): инструкция о хостинге больше не публикуется — в ней названы репозиторий и ветка
+/КАК-ЗАЛИТЬ-НА-ХОСТИНГ.txt  /404  404!
+/%D0%9A%D0%90%D0%9A-%D0%97%D0%90%D0%9B%D0%98%D0%A2%D0%AC-%D0%9D%D0%90-%D0%A5%D0%9E%D0%A1%D0%A2%D0%98%D0%9D%D0%93.txt  /404  404!
+# 25 ноября: новые модели переименованы (владелец: «эстетичные названия»); старые адреса ведут на новые
+# Знак «!» обязателен: хостинг при выкладке не удаляет прежние файлы (старые страницы остаются лежать), а без «!» правило
+# не срабатывает, пока файл по этому адресу существует.
+/models/dugva  /models/riola  301!
+/models/dugva.html  /models/riola  301!
+/models/lunsa  /models/lunata  301!
+/models/lunsa.html  /models/lunata  301!
+/models/zolma  /models/vemira  301!
+/models/zolma.html  /models/vemira  301!
+/models/zorna  /models/mareva  301!
+/models/zorna.html  /models/mareva  301!
+/models/dremva  /models/ivera  301!
+/models/dremva.html  /models/ivera  301!
+/models/lasna  /models/nerina  301!
+/models/lasna.html  /models/nerina  301!
+/models/volsa  /models/veluna  301!
+/models/volsa.html  /models/veluna  301!
+/models/gostva  /models/ilira  301!
+/models/gostva.html  /models/ilira  301!
+/models/pledva  /models/sonela  301!
+/models/pledva.html  /models/sonela  301!
+/models/domva  /models/ruana  301!
+/models/domva.html  /models/ruana  301!
+/models/lumra  /models/avela  301!
+/models/lumra.html  /models/avela  301!
+/models/gladva  /models/onora  301!
+/models/gladva.html  /models/onora  301!
+/models/lirna  /models/milora  301!
+/models/lirna.html  /models/milora  301!
+/models/tilso  /models/talero  301!
+/models/tilso.html  /models/talero  301!
+# 24 ноября: у Runvo старая 3D снята (26 ноября — новая модель armchair-07.glb), у Galso старые файлы удалены (новая модель — models3d/armchair-20.glb); выкладка на демо старые файлы не убирает, поэтому адреса закрыты явно
+/models3d/free/armchair-07.json  /404  404!
+/models3d/free/armchair-20.json  /404  404!
+/img/drawings/galso-front.webp  /404  404!
+/img/drawings/galso-side.webp  /404  404!
+/img/drawings/galso-top.webp  /404  404!
+/img/drawings/runvo-front.webp  /404  404!
+/img/drawings/runvo-side.webp  /404  404!
+/img/drawings/runvo-top.webp  /404  404!
+# Английская версия сайта: ricca.design/en → файл en.html (адрес в строке браузера остаётся /en,
+# поэтому относительные пути img/… css/… работают как у главной). /en/ со слэшем — на /en
+/en/              /en                  301
+/en/index.html    /en                  301
+/en               /en.html             200
+# Английский конструктор: ricca.design/en/configurator — та же страница configurator.html, язык она берёт из адреса.
+# Адрес остаётся /en/configurator, поэтому её файлы (css/, js/, vendor/ …) запрашиваются как /en/css/… — отдаём их из корня
+/en/configurator.html  /en/configurator  301
+/en/configurator  /configurator.html   200
+/en/privacy.html  /privacy.html       200
+/en/css/*         /css/:splat          200
+/en/js/*          /js/:splat           200
+/en/vendor/*      /vendor/:splat       200
+/en/img/*         /img/:splat          200
+/en/fonts/*       /fonts/:splat        200
+/en/models3d/*    /models3d/:splat     200
+/en/video/*       /video/:splat        200
+/en/horeca.html   /horeca.html        200

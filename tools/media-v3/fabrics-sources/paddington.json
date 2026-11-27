@@ -1,0 +1,401 @@
+{
+ "id": "paddington",
+ "title": "PADDINGTON",
+ "supplier": "Art Vision Home",
+ "kind": "микровелюр",
+ "source_url": "https://artvision-home.ru/catalog/paddington/",
+ "specs": {
+  "composition": "100% Полиэстер",
+  "martindale": 110000,
+  "weight": "770 г/м.п.",
+  "width": "140 см",
+  "country": "Китай",
+  "care": "Стирка: Разрешена ручная до 30 градусов; Глажка: Разрешена до 50 гр.; Химчистка: Разрешена",
+  "other": [
+   "Тест на пиллинг: 5",
+   "Тест на устойчивость окраски: 5",
+   "Тип ткани на сайте: Микровелюр"
+  ]
+ },
+ "colours": [
+  {
+   "code": "01",
+   "name": "Паддингтон / Paddington 01",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-01",
+   "image_url": "https://artvision-home.ru/assets/images/resources/3966/ed5d9294079a11ebb6710025902b8c2b-d807c495a42611f0b0700025902b8c2b.jpg",
+   "file": "img/01.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "02",
+   "name": "Паддингтон / Paddington 02",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-02",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4136/491a5ae3079b11ebb6710025902b8c2b-79ed05e1d13411ec858d0025902b8c2b.jpg",
+   "file": "img/02.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "03",
+   "name": "Паддингтон / Paddington 03",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-03",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4140/8a97568d079b11ebb6710025902b8c2b-6149c269b9ae11ec863f0025902b8c2b.jpg",
+   "file": "img/03.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "04",
+   "name": "Паддингтон / Paddington 04",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-04",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4116/21df116d08a511ebb6710025902b8c2b-e3b9a9edb9ae11ec863f0025902b8c2b.jpg",
+   "file": "img/04.jpg",
+   "w": 4032,
+   "h": 3024
+  },
+  {
+   "code": "05",
+   "name": "Паддингтон / Paddington 05",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-05",
+   "image_url": "https://artvision-home.ru/assets/images/resources/3284/c06db600079b11ebb6710025902b8c2b-081e73ddb9af11ec863f0025902b8c2b.jpg",
+   "file": "img/05.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "06",
+   "name": "Паддингтон / Paddington 06",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-06",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4141/9836967f079b11ebb6710025902b8c2b-13f4ab9ab9af11ec863f0025902b8c2b.jpg",
+   "file": "img/06.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "07",
+   "name": "Паддингтон / Paddington 07",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-07",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4144/b616bbcf079b11ebb6710025902b8c2b-203f86c4b9af11ec863f0025902b8c2b.jpg",
+   "file": "img/07.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "08",
+   "name": "Паддингтон / Paddington 08",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-08",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4143/ad2992c8079b11ebb6710025902b8c2b-2c5603a8b9af11ec863f0025902b8c2b.jpg",
+   "file": "img/08.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "09",
+   "name": "Паддингтон / Paddington 09",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-09",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4142/a387812c079b11ebb6710025902b8c2b-906d9233591411ec98ba0025902b8c2b.jpg",
+   "file": "img/09.jpg",
+   "w": 3823,
+   "h": 2897
+  },
+  {
+   "code": "10",
+   "name": "Паддингтон / Paddington 10",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-10",
+   "image_url": "https://artvision-home.ru/assets/images/resources/3925/dea12b7a079b11ebb6710025902b8c2b-489cbc4ab9af11ec863f0025902b8c2b.jpg",
+   "file": "img/10.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "11",
+   "name": "Паддингтон / Paddington 11",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-11",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4145/cb39539e079b11ebb6710025902b8c2b-55100ed8b9af11ec863f0025902b8c2b.jpg",
+   "file": "img/11.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "12",
+   "name": "Паддингтон / Paddington 12",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-12",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4137/641af6ff079b11ebb6710025902b8c2b-61966c6ab9af11ec863f0025902b8c2b.jpg",
+   "file": "img/12.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "13",
+   "name": "Паддингтон / Paddington 13",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-13",
+   "image_url": "https://artvision-home.ru/assets/images/resources/3518/587b7ee9079b11ebb6710025902b8c2b-7a901c8ab9af11ec863f0025902b8c2b.jpg",
+   "file": "img/13.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "14",
+   "name": "Паддингтон / Paddington 14",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-14",
+   "image_url": "https://artvision-home.ru/assets/images/resources/3940/76d50a67079b11ebb6710025902b8c2b-91e6da79b9af11ec863f0025902b8c2b.jpg",
+   "file": "img/14.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "15",
+   "name": "Паддингтон / Paddington 15",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-15",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4139/80c5a96c079b11ebb6710025902b8c2b-ac6e1067b9af11ec863f0025902b8c2b.jpg",
+   "file": "img/15.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "16",
+   "name": "Паддингтон / Paddington 16",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-16",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4138/6dffaf23079b11ebb6710025902b8c2b-c6cf62e5cdc111eb9d630025902b8c2b.jpg",
+   "file": "img/16.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "17",
+   "name": "Паддингтон / Paddington 17",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-17",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4147/f0980e0b079b11ebb6710025902b8c2b-ce379bd5ba6f11ec863f0025902b8c2b.jpg",
+   "file": "img/17.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "18",
+   "name": "Паддингтон / Paddington 18",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-18",
+   "image_url": "https://artvision-home.ru/assets/images/resources/3918/ff8c30bb079c11ebb6710025902b8c2b-e677a09eba6f11ec863f0025902b8c2b.jpg",
+   "file": "img/18.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "19",
+   "name": "Паддингтон / Paddington 19",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-19",
+   "image_url": "https://artvision-home.ru/assets/images/resources/3894/f7cfb7d7079c11ebb6710025902b8c2b-1d8f59d5ba7011ec863f0025902b8c2b.jpg",
+   "file": "img/19.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "20",
+   "name": "Паддингтон / Paddington 20",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-20",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4148/09fd5a0f079d11ebb6710025902b8c2b-9c340fe9ba7011ec863f0025902b8c2b.jpg",
+   "file": "img/20.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "21",
+   "name": "Паддингтон / Paddington 21",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-21",
+   "image_url": "https://artvision-home.ru/assets/images/resources/3169/d98a5c3807a811ebb6710025902b8c2b-cc3229bfba7211ec863f0025902b8c2b.jpg",
+   "file": "img/21.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "22",
+   "name": "Паддингтон / Paddington 22",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-22",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4149/1b2eaa6a079d11ebb6710025902b8c2b-df54f9b3ba7211ec863f0025902b8c2b.jpg",
+   "file": "img/22.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "23",
+   "name": "Паддингтон / Paddington 23",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-23",
+   "image_url": "https://artvision-home.ru/assets/images/resources/3387/245c1898079d11ebb6710025902b8c2b-06dbf35fba7311ec863f0025902b8c2b.jpg",
+   "file": "img/23.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "24",
+   "name": "Паддингтон / Paddington 24",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-24",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4150/2e113536079d11ebb6710025902b8c2b-18bd698eba7311ec863f0025902b8c2b.jpg",
+   "file": "img/24.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "25",
+   "name": "Паддингтон / Paddington 25",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-25",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4905/45d7f4e5c37111eeb4c50025902b8c2b-c068b2ee199711efbf2a0025902b8c2b.jpg",
+   "file": "img/25.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "26",
+   "name": "Паддингтон / Paddington 26",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-26",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4906/53f3eb29c37111eeb4c50025902b8c2b-f611d83b199711efbf2a0025902b8c2b.jpg",
+   "file": "img/26.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "27",
+   "name": "Паддингтон / Paddington 27",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-27",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4907/606a8fb1c37111eeb4c50025902b8c2b-034398e0199811efbf2a0025902b8c2b.jpg",
+   "file": "img/27.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "28",
+   "name": "Паддингтон / Paddington 28",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-28",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4908/6c412151c37111eeb4c50025902b8c2b-0fc533b0199811efbf2a0025902b8c2b.jpg",
+   "file": "img/28.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "29",
+   "name": "Паддингтон / Paddington 29",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-29",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4909/77e09c92c37111eeb4c50025902b8c2b-1a95940f199811efbf2a0025902b8c2b.jpg",
+   "file": "img/29.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "30",
+   "name": "Паддингтон / Paddington 30",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-30",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4910/82d1faf7c37111eeb4c50025902b8c2b-2a5d1340199811efbf2a0025902b8c2b.jpg",
+   "file": "img/30.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "31",
+   "name": "Паддингтон / Paddington 31",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-31",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4911/8ede9181c37111eeb4c50025902b8c2b-3c98fdb9199811efbf2a0025902b8c2b.jpg",
+   "file": "img/31.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "32",
+   "name": "Паддингтон / Paddington 32",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-32",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4912/9ad49277c37111eeb4c50025902b8c2b-4e5de365199811efbf2a0025902b8c2b.jpg",
+   "file": "img/32.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "33",
+   "name": "Паддингтон / Paddington 33",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-33",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4913/a69c56cfc37111eeb4c50025902b8c2b-730a169d199811efbf2a0025902b8c2b.jpg",
+   "file": "img/33.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "34",
+   "name": "Паддингтон / Paddington 34",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-34",
+   "image_url": "https://artvision-home.ru/assets/images/resources/3031/d5cbd035079b11ebb6710025902b8c2b-fe9c82a9cdc211eb9d630025902b8c2b.jpg",
+   "file": "img/34.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "35",
+   "name": "Паддингтон / Paddington 35",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-35",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4914/b241e454c37111eeb4c50025902b8c2b-83998965199811efbf2a0025902b8c2b.jpg",
+   "file": "img/35.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "36",
+   "name": "Паддингтон / Paddington 36",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-36",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4915/bec37f24c37111eeb4c50025902b8c2b-90f622cf199811efbf2a0025902b8c2b.jpg",
+   "file": "img/36.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "37",
+   "name": "Паддингтон / Paddington 37",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-37",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4146/e84f23f7079b11ebb6710025902b8c2b-254e4890ba7511ec863f0025902b8c2b.jpg",
+   "file": "img/37.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "38",
+   "name": "Паддингтон / Paddington 38",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-38",
+   "image_url": "https://artvision-home.ru/assets/images/resources/3809/12a7dc8e079d11ebb6710025902b8c2b-339b4cf5ba7511ec863f0025902b8c2b.jpg",
+   "file": "img/38.jpg",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "code": "39",
+   "name": "Паддингтон / Paddington 39",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-39",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4916/cb3df5d4c37111eeb4c50025902b8c2b-a64ab784199811efbf2a0025902b8c2b.jpg",
+   "file": "img/39.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "40",
+   "name": "Паддингтон / Paddington 40",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-40",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4917/d7ea6969c37111eeb4c50025902b8c2b-b1ac4bd3199811efbf2a0025902b8c2b.jpg",
+   "file": "img/40.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "41",
+   "name": "Паддингтон / Paddington 41",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-41",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4918/e3e9188bc37111eeb4c50025902b8c2b-c0cd2ab1199811efbf2a0025902b8c2b.jpg",
+   "file": "img/41.jpg",
+   "w": 5472,
+   "h": 3648
+  },
+  {
+   "code": "42",
+   "name": "Паддингтон / Paddington 42",
+   "page_url": "https://artvision-home.ru/catalog/paddington/paddington-42",
+   "image_url": "https://artvision-home.ru/assets/images/resources/4919/f6d06618c37111eeb4c50025902b8c2b-c8c525fc199811efbf2a0025902b8c2b.jpg",
+   "file": "img/42.jpg",
+   "w": 5472,
+   "h": 3648
+  }
+ ],
+ "notes": "Коллекции «Paddington 2» на сайте нет (поиск по сайту и карта сайта дают только «Паддингтон / Paddington», «Паддингтон Баст / Paddington Bast» и «Паддингтон Брик / Paddington Brick»). Гладкий микровелюр с вешалки — это «Паддингтон / Paddington»: характеристики бирки (микровелюр, 100% Pes, 110 000, пиллинг 5, 770 г/м.п.) совпадают с сайтом один в один; «2», судя по всему, номер вешалки (вторая половина палитры — серые, бирюзовые, зелёные, синие). Собраны все 42 цвета коллекции под названиями сайта («Паддингтон / Paddington NN»). Стёганые образцы с той же вешалки — отдельная коллекция сайта, см. raw/paddington-bast. Плоских образцов на сайте нет: у всех цветов только складки/драпировка; взято первое (главное) фото карточки. У 22 цветов в галерее 2–4 варианта одного и того же кадра с разной цветокоррекцией (например, у 12 — сиреневый и синий, у 18 — зелёный и сине-зелёный, у 38 — тёмно-синий и ярко-синий); главный кадр — самый поздний по дате загрузки (апрель 2022), он же стоит в списке каталога; цвет лучше сверить с живым образцом. Размер оригиналов: 1920×1280 у цветов 01–24, 34, 37, 38 (04 — 4032×3024, 09 — 3823×2897), 5472×3648 у остальных. Вес и ширина в карточках сайта даны числами без единиц («Вес ткани: 770», «Ширина ткани: 140»); единицы проставлены так: ширина — см, вес — г/м.п. (на официальной странице-презентации Paddington https://artvision-home.ru/presentations/4341-kollekcziya-paddington написано «ВЕС - 770гр./м.п.» при «770» в карточке; на бирках вешалок вес тоже в гр./м.п.). Значки ухода на бирке (IMG_2592): стирка 30°, глажка «одна точка», сушка в барабане и отбеливание запрещены, Ⓟ; на сайте строк про сушку и отбеливание нет."
+}

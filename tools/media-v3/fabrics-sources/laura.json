@@ -1,0 +1,140 @@
+{
+  "id": "laura",
+  "title": "LAURA",
+  "supplier": "Domiart",
+  "kind": "рогожка",
+  "source_url": "https://k-domiart.ru/catalog/rogozhka/laura.html",
+  "specs": {
+    "composition": "100% полиэстер",
+    "martindale": 90000,
+    "weight": "550 г/м²",
+    "width": "140 см",
+    "country": null,
+    "care": "Не гладить, не тереть абразивом, не отбеливать; чистить аккуратно тряпочкой, смоченной в мыльном растворе, лёгкие загрязнения удалять антибактериальной салфеткой (или тряпочкой из микрофибры с антисептиком); избегать химических моющих средств с сильными кислотами и щелочами; допускается профессиональная сухая и мокрая чистка, кроме машинной стирки; не стирать и не замачивать; барабанная сушка запрещена; беречь от прямых солнечных лучей, держать не ближе метра от отопительных приборов, избегать острых объектов",
+    "other": [
+      "Пиллингуемость: 4 (ISO 12945-2:2000)",
+      "Стойкость цвета к мокрому трению: 4 (ISO 105 X12-2016)",
+      "Прочность на разрыв: основа > 40, уток > 40 (стандарт ≥ 40 N, ISO 13937-2:2000)",
+      "Устойчивость цвета к потоотделению: 5 (ГОСТ 9733.6-83)",
+      "Плетение Dobby из нитей разных цветов, подложка — флис",
+      "Декларация соответствия ЕАЭС N RU Д-CN.РА01.В.93124/25",
+      "Стойкость цвета к свету: 4 (ISO 105 B02-2014)",
+      "Стойкость цвета к сухому трению: 5 (ГОСТ 9733.27-83)",
+      "Содержание формальдегида: не обнаружено (ГОСТ ISO 14184-1-2014)"
+    ]
+  },
+  "spec_source": "https://k-domiart.ru/assets/files/laura_domiart_210h297_40.pdf",
+  "colours": [
+    {
+      "code": "01",
+      "name": "01 Tofu/Тофу",
+      "page_url": "https://k-domiart.ru/catalog/rogozhka/laura.html",
+      "image_url": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-01-img_4364_1.jpg",
+      "file": "img/01.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null,
+      "image_url_macro": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-01-img_4361_1.jpg"
+    },
+    {
+      "code": "09",
+      "name": "09 Nut/Орех",
+      "page_url": "https://k-domiart.ru/catalog/rogozhka/laura.html",
+      "image_url": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-09-img_4323_1.jpg",
+      "file": "img/09.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null,
+      "image_url_macro": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-09-img_4321_1.jpg"
+    },
+    {
+      "code": "07",
+      "name": "07 Jade/Нефритовый",
+      "page_url": "https://k-domiart.ru/catalog/rogozhka/laura.html",
+      "image_url": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-07-img_4335_1.jpg",
+      "file": "img/07.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null,
+      "image_url_macro": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-07-img_4332_1.jpg"
+    },
+    {
+      "code": "08",
+      "name": "08 Mint/Мятный",
+      "page_url": "https://k-domiart.ru/catalog/rogozhka/laura.html",
+      "image_url": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-08-img_4329_1.jpg",
+      "file": "img/08.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null,
+      "image_url_macro": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-08-img_4326_1.jpg"
+    },
+    {
+      "code": "02",
+      "name": "02 Silver/Серебро",
+      "page_url": "https://k-domiart.ru/catalog/rogozhka/laura.html",
+      "image_url": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-02-img_4357_1.jpg",
+      "file": "img/02.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null,
+      "image_url_macro": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-02-img_4353_1.jpg"
+    },
+    {
+      "code": "03",
+      "name": "03 Rain/Дождь",
+      "page_url": "https://k-domiart.ru/catalog/rogozhka/laura.html",
+      "image_url": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-03-img_4352_1.jpg",
+      "file": "img/03.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null,
+      "image_url_macro": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-03-img_4350_1.jpg"
+    },
+    {
+      "code": "04",
+      "name": "04 Granite/Гранит",
+      "page_url": "https://k-domiart.ru/catalog/rogozhka/laura.html",
+      "image_url": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-04-img_4348_1.jpg",
+      "file": "img/04.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null,
+      "image_url_macro": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-04-img_4345_1.jpg"
+    },
+    {
+      "code": "06",
+      "name": "06 Breeze/Бриз",
+      "page_url": "https://k-domiart.ru/catalog/rogozhka/laura.html",
+      "image_url": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-06-img_4339_1.jpg",
+      "file": "img/06.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null,
+      "image_url_macro": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-06-img_4338_1.jpg"
+    },
+    {
+      "code": "10",
+      "name": "10 Terra/Терракотовый",
+      "page_url": "https://k-domiart.ru/catalog/rogozhka/laura.html",
+      "image_url": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-10-img_4320_1.jpg",
+      "file": "img/10.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null,
+      "image_url_macro": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-10-img_4318_1.jpg"
+    },
+    {
+      "code": "05",
+      "name": "05 Night/Ночь",
+      "page_url": "https://k-domiart.ru/catalog/rogozhka/laura.html",
+      "image_url": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-05-img_4344_1.jpg",
+      "file": "img/05.jpg",
+      "w": 2000,
+      "h": 1333,
+      "pantone": null,
+      "image_url_macro": "https://k-domiart.ru/assets/images/rogozhka/laura/laura-05-img_4342_1.jpg"
+    }
+  ],
+  "notes": "Цвета на странице — плитки с кодами; у каждого цвета своя галерея (подгружается запросом сайта ajax/podgruzka-galerei-dlya-vybrannogo-cveta.html): кадр со складками (он же миниатюра плитки) и плоский образец. Взят плоский образец, оригинал с сайта, без пересохранения. Порядок цветов — как плитки на странице (не по возрастанию кодов). Характеристик в тексте страницы нет — они в PDF «Техническая спецификация», ссылка на который стоит на странице коллекции (файл лежит рядом с meta.json). Страна производства прямо не указана (в номере декларации ЕАЭС стоит код CN) — оставлено null. Поле pantone у цветов — как на сайте. У каждого цвета три кадра: складки, крупный план переплетения и плоский общий план. Взят плоский общий план; адрес крупного плана — в поле image_url_macro. Бирка на вешалке видна частично («LAURA, рогожка», внизу читается «90…») — с сайтом (90 000 циклов, 550 г/м², 100% полиэстер) не расходится. Пёстрая «гусиная лапка» на том же фото вешалок — другая ткань другого поставщика (на ней бирка SALON col. 05), к Laura не относится."
+}

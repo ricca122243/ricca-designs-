@@ -1,0 +1,110 @@
+{
+ "chair": "runvo",
+ "iou_body_mean": 0.9429,
+ "iou_body_min": 0.918,
+ "contour_mean_cm": 1.68,
+ "contour_p95_cm_max": 12.15,
+ "photos": {
+  "p-armchair-07-b1": {
+   "view": "low",
+   "iou_body": 0.918,
+   "iou_all": 0.91,
+   "contour_mean_cm": 2.52,
+   "contour_p95_cm": 12.15,
+   "cam": {
+    "az": -34.708,
+    "el": 3.702,
+    "roll": 1.896,
+    "dist": 7.297,
+    "scale": 773.808,
+    "u0": 607.317,
+    "v0": 850.142
+   }
+  },
+  "p-armchair-07-o": {
+   "view": "low",
+   "iou_body": 0.9292,
+   "iou_all": 0.9217,
+   "contour_mean_cm": 1.96,
+   "contour_p95_cm": 11.32,
+   "cam": {
+    "az": -33.914,
+    "el": 3.89,
+    "roll": 1.398,
+    "dist": 7.407,
+    "scale": 727.618,
+    "u0": 620.98,
+    "v0": 838.659
+   }
+  },
+  "p-armchair-07-o3": {
+   "view": "high",
+   "iou_body": 0.9553,
+   "iou_all": 0.9504,
+   "contour_mean_cm": 1.4,
+   "contour_p95_cm": 6.29,
+   "cam": {
+    "az": -33.308,
+    "el": 30.841,
+    "roll": 1.296,
+    "dist": 6.759,
+    "scale": 881.757,
+    "u0": 582.056,
+    "v0": 675.31
+   }
+  },
+  "p-armchair-07-b2": {
+   "view": "high",
+   "iou_body": 0.9447,
+   "iou_all": 0.9421,
+   "contour_mean_cm": 1.39,
+   "contour_p95_cm": 4.94,
+   "cam": {
+    "az": -36.996,
+    "el": 34.126,
+    "roll": 1.472,
+    "dist": 5.499,
+    "scale": 766.117,
+    "u0": 638.471,
+    "v0": 723.12
+   }
+  },
+  "p-armchair-07-o4": {
+   "view": "top",
+   "iou_body": 0.9543,
+   "iou_all": 0.9499,
+   "contour_mean_cm": 1.42,
+   "contour_p95_cm": 7.62,
+   "cam": {
+    "az": -33.031,
+    "el": 30.557,
+    "roll": -0.897,
+    "dist": 22.107,
+    "scale": 754.763,
+    "u0": 623.594,
+    "v0": 721.67
+   }
+  },
+  "p-armchair-07-o2": {
+   "view": "front",
+   "iou_body": 0.9561,
+   "iou_all": 0.9615,
+   "contour_mean_cm": 1.36,
+   "contour_p95_cm": 8.28,
+   "cam": {
+    "az": 1.819,
+    "el": 0.0,
+    "roll": 0.215,
+    "dist": 8.01,
+    "scale": 941.316,
+    "u0": 607.597,
+    "v0": 787.304
+   }
+  }
+ },
+ "size_cm": [
+  97.5,
+  103.4,
+  74.0
+ ]
+}

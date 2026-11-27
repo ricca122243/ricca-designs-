@@ -1,0 +1,169 @@
+{
+ "id": "divo",
+ "title": "DIVO",
+ "kind": "шенилл",
+ "type": "shenill",
+ "facts": [
+  "80 000 циклов",
+  "812 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Divo 01",
+   "hex": "#f1ebe7",
+   "plain3d": false,
+   "fold": 0.01,
+   "src1200": "img/fabrics/official/divo/01-1200.webp",
+   "src600": "img/fabrics/official/divo/01-600.webp",
+   "thumb": "img/fabrics/official/divo/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Divo 02",
+   "hex": "#e6cfbe",
+   "plain3d": false,
+   "fold": 0.03,
+   "src1200": "img/fabrics/official/divo/02-1200.webp",
+   "src600": "img/fabrics/official/divo/02-600.webp",
+   "thumb": "img/fabrics/official/divo/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Divo 03",
+   "hex": "#beada2",
+   "plain3d": false,
+   "fold": 0.068,
+   "src1200": "img/fabrics/official/divo/03-1200.webp",
+   "src600": "img/fabrics/official/divo/03-600.webp",
+   "thumb": "img/fabrics/official/divo/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Divo 04",
+   "hex": "#a9978d",
+   "plain3d": true,
+   "fold": 0.13,
+   "src1200": "img/fabrics/official/divo/04-1200.webp",
+   "src600": "img/fabrics/official/divo/04-600.webp",
+   "thumb": "img/fabrics/official/divo/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Divo 05",
+   "hex": "#b6a8a3",
+   "plain3d": false,
+   "fold": 0.018,
+   "src1200": "img/fabrics/official/divo/05-1200.webp",
+   "src600": "img/fabrics/official/divo/05-600.webp",
+   "thumb": "img/fabrics/official/divo/05-160.webp"
+  },
+  {
+   "code": "06",
+   "label": "06",
+   "name": "Divo 06",
+   "hex": "#cdc4be",
+   "plain3d": false,
+   "fold": 0.021,
+   "src1200": "img/fabrics/official/divo/06-1200.webp",
+   "src600": "img/fabrics/official/divo/06-600.webp",
+   "thumb": "img/fabrics/official/divo/06-160.webp"
+  },
+  {
+   "code": "07",
+   "label": "07",
+   "name": "Divo 07",
+   "hex": "#a59b99",
+   "plain3d": false,
+   "fold": 0.017,
+   "src1200": "img/fabrics/official/divo/07-1200.webp",
+   "src600": "img/fabrics/official/divo/07-600.webp",
+   "thumb": "img/fabrics/official/divo/07-160.webp"
+  },
+  {
+   "code": "08",
+   "label": "08",
+   "name": "Divo 08",
+   "hex": "#403a37",
+   "plain3d": false,
+   "fold": 0.043,
+   "src1200": "img/fabrics/official/divo/08-1200.webp",
+   "src600": "img/fabrics/official/divo/08-600.webp",
+   "thumb": "img/fabrics/official/divo/08-160.webp"
+  },
+  {
+   "code": "09",
+   "label": "09",
+   "name": "Divo 09",
+   "hex": "#1d2536",
+   "plain3d": false,
+   "fold": 0.141,
+   "src1200": "img/fabrics/official/divo/09-1200.webp",
+   "src600": "img/fabrics/official/divo/09-600.webp",
+   "thumb": "img/fabrics/official/divo/09-160.webp"
+  },
+  {
+   "code": "10",
+   "label": "10",
+   "name": "Divo 10",
+   "hex": "#2e3528",
+   "plain3d": false,
+   "fold": 0.07,
+   "src1200": "img/fabrics/official/divo/10-1200.webp",
+   "src600": "img/fabrics/official/divo/10-600.webp",
+   "thumb": "img/fabrics/official/divo/10-160.webp"
+  },
+  {
+   "code": "11",
+   "label": "11",
+   "name": "Divo 11",
+   "hex": "#3d3624",
+   "plain3d": false,
+   "fold": 0.139,
+   "src1200": "img/fabrics/official/divo/11-1200.webp",
+   "src600": "img/fabrics/official/divo/11-600.webp",
+   "thumb": "img/fabrics/official/divo/11-160.webp"
+  },
+  {
+   "code": "12",
+   "label": "12",
+   "name": "Divo 12",
+   "hex": "#4a221f",
+   "plain3d": false,
+   "fold": 0.071,
+   "src1200": "img/fabrics/official/divo/12-1200.webp",
+   "src600": "img/fabrics/official/divo/12-600.webp",
+   "thumb": "img/fabrics/official/divo/12-160.webp"
+  },
+  {
+   "code": "13",
+   "label": "13",
+   "name": "Divo 13",
+   "hex": "#814c3a",
+   "plain3d": false,
+   "fold": 0.049,
+   "src1200": "img/fabrics/official/divo/13-1200.webp",
+   "src600": "img/fabrics/official/divo/13-600.webp",
+   "thumb": "img/fabrics/official/divo/13-160.webp"
+  },
+  {
+   "code": "14",
+   "label": "14",
+   "name": "Divo 14",
+   "hex": "#8b5b2c",
+   "plain3d": false,
+   "fold": 0.068,
+   "src1200": "img/fabrics/official/divo/14-1200.webp",
+   "src600": "img/fabrics/official/divo/14-600.webp",
+   "thumb": "img/fabrics/official/divo/14-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

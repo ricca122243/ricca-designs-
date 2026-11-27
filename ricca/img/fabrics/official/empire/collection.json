@@ -1,0 +1,257 @@
+{
+ "id": "empire",
+ "title": "EMPIRE",
+ "kind": "шенилл",
+ "type": "shenill",
+ "facts": [
+  "60 000 циклов",
+  "800 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Empire 01",
+   "hex": "#f1eeea",
+   "plain3d": false,
+   "fold": 0.009,
+   "src1200": "img/fabrics/official/empire/01-1200.webp",
+   "src600": "img/fabrics/official/empire/01-600.webp",
+   "thumb": "img/fabrics/official/empire/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Empire 02",
+   "hex": "#d2c1b3",
+   "plain3d": false,
+   "fold": 0.01,
+   "src1200": "img/fabrics/official/empire/02-1200.webp",
+   "src600": "img/fabrics/official/empire/02-600.webp",
+   "thumb": "img/fabrics/official/empire/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Empire 03",
+   "hex": "#ae9e97",
+   "plain3d": false,
+   "fold": 0.016,
+   "src1200": "img/fabrics/official/empire/03-1200.webp",
+   "src600": "img/fabrics/official/empire/03-600.webp",
+   "thumb": "img/fabrics/official/empire/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Empire 04",
+   "hex": "#c9a98a",
+   "plain3d": false,
+   "fold": 0.012,
+   "src1200": "img/fabrics/official/empire/04-1200.webp",
+   "src600": "img/fabrics/official/empire/04-600.webp",
+   "thumb": "img/fabrics/official/empire/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Empire 05",
+   "hex": "#b9b69f",
+   "plain3d": false,
+   "fold": 0.013,
+   "src1200": "img/fabrics/official/empire/05-1200.webp",
+   "src600": "img/fabrics/official/empire/05-600.webp",
+   "thumb": "img/fabrics/official/empire/05-160.webp"
+  },
+  {
+   "code": "06",
+   "label": "06",
+   "name": "Empire 06",
+   "hex": "#595641",
+   "plain3d": false,
+   "fold": 0.067,
+   "src1200": "img/fabrics/official/empire/06-1200.webp",
+   "src600": "img/fabrics/official/empire/06-600.webp",
+   "thumb": "img/fabrics/official/empire/06-160.webp"
+  },
+  {
+   "code": "07",
+   "label": "07",
+   "name": "Empire 07",
+   "hex": "#ccc9d1",
+   "plain3d": false,
+   "fold": 0.008,
+   "src1200": "img/fabrics/official/empire/07-1200.webp",
+   "src600": "img/fabrics/official/empire/07-600.webp",
+   "thumb": "img/fabrics/official/empire/07-160.webp"
+  },
+  {
+   "code": "08",
+   "label": "08",
+   "name": "Empire 08",
+   "hex": "#515561",
+   "plain3d": false,
+   "fold": 0.067,
+   "src1200": "img/fabrics/official/empire/08-1200.webp",
+   "src600": "img/fabrics/official/empire/08-600.webp",
+   "thumb": "img/fabrics/official/empire/08-160.webp"
+  },
+  {
+   "code": "09",
+   "label": "09",
+   "name": "Empire 09",
+   "hex": "#2f3032",
+   "plain3d": false,
+   "fold": 0.063,
+   "src1200": "img/fabrics/official/empire/09-1200.webp",
+   "src600": "img/fabrics/official/empire/09-600.webp",
+   "thumb": "img/fabrics/official/empire/09-160.webp"
+  },
+  {
+   "code": "10",
+   "label": "10",
+   "name": "Empire 10",
+   "hex": "#efe3d5",
+   "plain3d": false,
+   "fold": 0.008,
+   "src1200": "img/fabrics/official/empire/10-1200.webp",
+   "src600": "img/fabrics/official/empire/10-600.webp",
+   "thumb": "img/fabrics/official/empire/10-160.webp"
+  },
+  {
+   "code": "11",
+   "label": "11",
+   "name": "Empire 11",
+   "hex": "#baa394",
+   "plain3d": false,
+   "fold": 0.022,
+   "src1200": "img/fabrics/official/empire/11-1200.webp",
+   "src600": "img/fabrics/official/empire/11-600.webp",
+   "thumb": "img/fabrics/official/empire/11-160.webp"
+  },
+  {
+   "code": "12",
+   "label": "12",
+   "name": "Empire 12",
+   "hex": "#bab3b0",
+   "plain3d": false,
+   "fold": 0.018,
+   "src1200": "img/fabrics/official/empire/12-1200.webp",
+   "src600": "img/fabrics/official/empire/12-600.webp",
+   "thumb": "img/fabrics/official/empire/12-160.webp"
+  },
+  {
+   "code": "13",
+   "label": "13",
+   "name": "Empire 13",
+   "hex": "#a19ea6",
+   "plain3d": false,
+   "fold": 0.023,
+   "src1200": "img/fabrics/official/empire/13-1200.webp",
+   "src600": "img/fabrics/official/empire/13-600.webp",
+   "thumb": "img/fabrics/official/empire/13-160.webp"
+  },
+  {
+   "code": "14",
+   "label": "14",
+   "name": "Empire 14",
+   "hex": "#6d6360",
+   "plain3d": false,
+   "fold": 0.043,
+   "src1200": "img/fabrics/official/empire/14-1200.webp",
+   "src600": "img/fabrics/official/empire/14-600.webp",
+   "thumb": "img/fabrics/official/empire/14-160.webp"
+  },
+  {
+   "code": "15",
+   "label": "15",
+   "name": "Empire 15",
+   "hex": "#253459",
+   "plain3d": false,
+   "fold": 0.041,
+   "src1200": "img/fabrics/official/empire/15-1200.webp",
+   "src600": "img/fabrics/official/empire/15-600.webp",
+   "thumb": "img/fabrics/official/empire/15-160.webp"
+  },
+  {
+   "code": "16",
+   "label": "16",
+   "name": "Empire 16",
+   "hex": "#b4c4cd",
+   "plain3d": true,
+   "fold": 0.071,
+   "src1200": "img/fabrics/official/empire/16-1200.webp",
+   "src600": "img/fabrics/official/empire/16-600.webp",
+   "thumb": "img/fabrics/official/empire/16-160.webp"
+  },
+  {
+   "code": "17",
+   "label": "17",
+   "name": "Empire 17",
+   "hex": "#95816d",
+   "plain3d": false,
+   "fold": 0.04,
+   "src1200": "img/fabrics/official/empire/17-1200.webp",
+   "src600": "img/fabrics/official/empire/17-600.webp",
+   "thumb": "img/fabrics/official/empire/17-160.webp"
+  },
+  {
+   "code": "19",
+   "label": "19",
+   "name": "Empire 19",
+   "hex": "#52636c",
+   "plain3d": false,
+   "fold": 0.022,
+   "src1200": "img/fabrics/official/empire/19-1200.webp",
+   "src600": "img/fabrics/official/empire/19-600.webp",
+   "thumb": "img/fabrics/official/empire/19-160.webp"
+  },
+  {
+   "code": "20",
+   "label": "20",
+   "name": "Empire 20",
+   "hex": "#60322a",
+   "plain3d": false,
+   "fold": 0.05,
+   "src1200": "img/fabrics/official/empire/20-1200.webp",
+   "src600": "img/fabrics/official/empire/20-600.webp",
+   "thumb": "img/fabrics/official/empire/20-160.webp"
+  },
+  {
+   "code": "21",
+   "label": "21",
+   "name": "Empire 21",
+   "hex": "#843425",
+   "plain3d": false,
+   "fold": 0.031,
+   "src1200": "img/fabrics/official/empire/21-1200.webp",
+   "src600": "img/fabrics/official/empire/21-600.webp",
+   "thumb": "img/fabrics/official/empire/21-160.webp"
+  },
+  {
+   "code": "22",
+   "label": "22",
+   "name": "Empire 22",
+   "hex": "#354844",
+   "plain3d": false,
+   "fold": 0.028,
+   "src1200": "img/fabrics/official/empire/22-1200.webp",
+   "src600": "img/fabrics/official/empire/22-600.webp",
+   "thumb": "img/fabrics/official/empire/22-160.webp"
+  },
+  {
+   "code": "23",
+   "label": "23",
+   "name": "Empire 23",
+   "hex": "#6f6e42",
+   "plain3d": false,
+   "fold": 0.024,
+   "src1200": "img/fabrics/official/empire/23-1200.webp",
+   "src600": "img/fabrics/official/empire/23-600.webp",
+   "thumb": "img/fabrics/official/empire/23-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

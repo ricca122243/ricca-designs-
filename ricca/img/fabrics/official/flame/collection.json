@@ -1,0 +1,103 @@
+{
+ "id": "flame",
+ "title": "FLAME",
+ "kind": "шенилл",
+ "type": "shenill",
+ "facts": [
+  "60 000 циклов",
+  "705 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Flame 01",
+   "hex": "#e1e1df",
+   "plain3d": true,
+   "fold": 0.061,
+   "src1200": "img/fabrics/official/flame/01-1200.webp",
+   "src600": "img/fabrics/official/flame/01-600.webp",
+   "thumb": "img/fabrics/official/flame/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Flame 02",
+   "hex": "#dedee0",
+   "plain3d": true,
+   "fold": 0.059,
+   "src1200": "img/fabrics/official/flame/02-1200.webp",
+   "src600": "img/fabrics/official/flame/02-600.webp",
+   "thumb": "img/fabrics/official/flame/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Flame 03",
+   "hex": "#bdbab6",
+   "plain3d": true,
+   "fold": 0.072,
+   "src1200": "img/fabrics/official/flame/03-1200.webp",
+   "src600": "img/fabrics/official/flame/03-600.webp",
+   "thumb": "img/fabrics/official/flame/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Flame 04",
+   "hex": "#bfb9ad",
+   "plain3d": true,
+   "fold": 0.062,
+   "src1200": "img/fabrics/official/flame/04-1200.webp",
+   "src600": "img/fabrics/official/flame/04-600.webp",
+   "thumb": "img/fabrics/official/flame/04-160.webp"
+  },
+  {
+   "code": "06",
+   "label": "06",
+   "name": "Flame 06",
+   "hex": "#242424",
+   "plain3d": true,
+   "fold": 0.198,
+   "src1200": "img/fabrics/official/flame/06-1200.webp",
+   "src600": "img/fabrics/official/flame/06-600.webp",
+   "thumb": "img/fabrics/official/flame/06-160.webp"
+  },
+  {
+   "code": "07",
+   "label": "07",
+   "name": "Flame 07",
+   "hex": "#3b3d3f",
+   "plain3d": true,
+   "fold": 0.101,
+   "src1200": "img/fabrics/official/flame/07-1200.webp",
+   "src600": "img/fabrics/official/flame/07-600.webp",
+   "thumb": "img/fabrics/official/flame/07-160.webp"
+  },
+  {
+   "code": "08",
+   "label": "08",
+   "name": "Flame 08",
+   "hex": "#a2a2ac",
+   "plain3d": true,
+   "fold": 0.073,
+   "src1200": "img/fabrics/official/flame/08-1200.webp",
+   "src600": "img/fabrics/official/flame/08-600.webp",
+   "thumb": "img/fabrics/official/flame/08-160.webp"
+  },
+  {
+   "code": "09",
+   "label": "09",
+   "name": "Flame 09",
+   "hex": "#a5a7b3",
+   "plain3d": true,
+   "fold": 0.07,
+   "src1200": "img/fabrics/official/flame/09-1200.webp",
+   "src600": "img/fabrics/official/flame/09-600.webp",
+   "thumb": "img/fabrics/official/flame/09-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

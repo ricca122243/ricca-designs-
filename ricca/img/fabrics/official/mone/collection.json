@@ -1,0 +1,92 @@
+{
+ "id": "mone",
+ "title": "MONE",
+ "kind": "шенилл",
+ "type": "shenill",
+ "facts": [
+  "18 000 циклов",
+  "345 г/м²",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "110",
+   "label": "110",
+   "name": "Mone 110",
+   "hex": "#eeded0",
+   "plain3d": true,
+   "fold": 0.027,
+   "src1200": "img/fabrics/official/mone/110-1200.webp",
+   "src600": "img/fabrics/official/mone/110-600.webp",
+   "thumb": "img/fabrics/official/mone/110-160.webp"
+  },
+  {
+   "code": "910",
+   "label": "910",
+   "name": "Mone 910",
+   "hex": "#c7c0ba",
+   "plain3d": true,
+   "fold": 0.045,
+   "src1200": "img/fabrics/official/mone/910-1200.webp",
+   "src600": "img/fabrics/official/mone/910-600.webp",
+   "thumb": "img/fabrics/official/mone/910-160.webp"
+  },
+  {
+   "code": "960",
+   "label": "960",
+   "name": "Mone 960",
+   "hex": "#a7a196",
+   "plain3d": true,
+   "fold": 0.083,
+   "src1200": "img/fabrics/official/mone/960-1200.webp",
+   "src600": "img/fabrics/official/mone/960-600.webp",
+   "thumb": "img/fabrics/official/mone/960-160.webp"
+  },
+  {
+   "code": "934",
+   "label": "934",
+   "name": "Mone 934",
+   "hex": "#999590",
+   "plain3d": true,
+   "fold": 0.055,
+   "src1200": "img/fabrics/official/mone/934-1200.webp",
+   "src600": "img/fabrics/official/mone/934-600.webp",
+   "thumb": "img/fabrics/official/mone/934-160.webp"
+  },
+  {
+   "code": "542",
+   "label": "542",
+   "name": "Mone 542",
+   "hex": "#bd9573",
+   "plain3d": true,
+   "fold": 0.065,
+   "src1200": "img/fabrics/official/mone/542-1200.webp",
+   "src600": "img/fabrics/official/mone/542-600.webp",
+   "thumb": "img/fabrics/official/mone/542-160.webp"
+  },
+  {
+   "code": "715",
+   "label": "715",
+   "name": "Mone 715",
+   "hex": "#b7b1bd",
+   "plain3d": true,
+   "fold": 0.077,
+   "src1200": "img/fabrics/official/mone/715-1200.webp",
+   "src600": "img/fabrics/official/mone/715-600.webp",
+   "thumb": "img/fabrics/official/mone/715-160.webp"
+  },
+  {
+   "code": "290",
+   "label": "290",
+   "name": "Mone 290",
+   "hex": "#c8b090",
+   "plain3d": true,
+   "fold": 0.063,
+   "src1200": "img/fabrics/official/mone/290-1200.webp",
+   "src600": "img/fabrics/official/mone/290-600.webp",
+   "thumb": "img/fabrics/official/mone/290-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

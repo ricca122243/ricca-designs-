@@ -1,0 +1,136 @@
+{
+ "id": "positiv",
+ "title": "POSITIV",
+ "kind": "букле",
+ "type": "bukle",
+ "facts": [
+  "75 000 циклов",
+  "910 г/м.п.",
+  "ширина 140 см"
+ ],
+ "colours": [
+  {
+   "code": "01",
+   "label": "01",
+   "name": "Positiv 01",
+   "hex": "#f0eae5",
+   "plain3d": true,
+   "fold": 0.034,
+   "src1200": "img/fabrics/official/positiv/01-1200.webp",
+   "src600": "img/fabrics/official/positiv/01-600.webp",
+   "thumb": "img/fabrics/official/positiv/01-160.webp"
+  },
+  {
+   "code": "02",
+   "label": "02",
+   "name": "Positiv 02",
+   "hex": "#e9dbd2",
+   "plain3d": true,
+   "fold": 0.032,
+   "src1200": "img/fabrics/official/positiv/02-1200.webp",
+   "src600": "img/fabrics/official/positiv/02-600.webp",
+   "thumb": "img/fabrics/official/positiv/02-160.webp"
+  },
+  {
+   "code": "03",
+   "label": "03",
+   "name": "Positiv 03",
+   "hex": "#d7c0b4",
+   "plain3d": true,
+   "fold": 0.043,
+   "src1200": "img/fabrics/official/positiv/03-1200.webp",
+   "src600": "img/fabrics/official/positiv/03-600.webp",
+   "thumb": "img/fabrics/official/positiv/03-160.webp"
+  },
+  {
+   "code": "04",
+   "label": "04",
+   "name": "Positiv 04",
+   "hex": "#b48f77",
+   "plain3d": true,
+   "fold": 0.063,
+   "src1200": "img/fabrics/official/positiv/04-1200.webp",
+   "src600": "img/fabrics/official/positiv/04-600.webp",
+   "thumb": "img/fabrics/official/positiv/04-160.webp"
+  },
+  {
+   "code": "05",
+   "label": "05",
+   "name": "Positiv 05",
+   "hex": "#e7d8c8",
+   "plain3d": true,
+   "fold": 0.03,
+   "src1200": "img/fabrics/official/positiv/05-1200.webp",
+   "src600": "img/fabrics/official/positiv/05-600.webp",
+   "thumb": "img/fabrics/official/positiv/05-160.webp"
+  },
+  {
+   "code": "06",
+   "label": "06",
+   "name": "Positiv 06",
+   "hex": "#ae6126",
+   "plain3d": true,
+   "fold": 0.064,
+   "src1200": "img/fabrics/official/positiv/06-1200.webp",
+   "src600": "img/fabrics/official/positiv/06-600.webp",
+   "thumb": "img/fabrics/official/positiv/06-160.webp"
+  },
+  {
+   "code": "07",
+   "label": "07",
+   "name": "Positiv 07",
+   "hex": "#565e53",
+   "plain3d": true,
+   "fold": 0.095,
+   "src1200": "img/fabrics/official/positiv/07-1200.webp",
+   "src600": "img/fabrics/official/positiv/07-600.webp",
+   "thumb": "img/fabrics/official/positiv/07-160.webp"
+  },
+  {
+   "code": "08",
+   "label": "08",
+   "name": "Positiv 08",
+   "hex": "#a5a691",
+   "plain3d": true,
+   "fold": 0.049,
+   "src1200": "img/fabrics/official/positiv/08-1200.webp",
+   "src600": "img/fabrics/official/positiv/08-600.webp",
+   "thumb": "img/fabrics/official/positiv/08-160.webp"
+  },
+  {
+   "code": "09",
+   "label": "09",
+   "name": "Positiv 09",
+   "hex": "#cecbce",
+   "plain3d": true,
+   "fold": 0.038,
+   "src1200": "img/fabrics/official/positiv/09-1200.webp",
+   "src600": "img/fabrics/official/positiv/09-600.webp",
+   "thumb": "img/fabrics/official/positiv/09-160.webp"
+  },
+  {
+   "code": "10",
+   "label": "10",
+   "name": "Positiv 10",
+   "hex": "#8d8a8e",
+   "plain3d": true,
+   "fold": 0.056,
+   "src1200": "img/fabrics/official/positiv/10-1200.webp",
+   "src600": "img/fabrics/official/positiv/10-600.webp",
+   "thumb": "img/fabrics/official/positiv/10-160.webp"
+  },
+  {
+   "code": "11",
+   "label": "11",
+   "name": "Positiv 11",
+   "hex": "#677387",
+   "plain3d": true,
+   "fold": 0.083,
+   "src1200": "img/fabrics/official/positiv/11-1200.webp",
+   "src600": "img/fabrics/official/positiv/11-600.webp",
+   "thumb": "img/fabrics/official/positiv/11-160.webp"
+  }
+ ],
+ "heroes": [],
+ "inuse": []
+}

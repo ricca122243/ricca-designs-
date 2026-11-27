@@ -1,0 +1,39 @@
+---
+title: "Expired GitHub Personal Access Token (PAT)"
+description: "Fix GitHub Container Registry authentication errors by logging out of ghcr.io or renewing expired GitHub Personal Access Tokens for Docker deployments."
+---
+# Expired GitHub Personal Access Token (PAT)
+
+If you encounter the following errors, it means Docker cannot authenticate with the GitHub Container Registry (ghcr.io):
+
+## Error
+
+```bash
+  Error response from daemon: Head "https://ghcr.io/v2/coollabsio/coolify-helper/manifests/1.0.1": unauthorized: authentication required
+```
+
+or
+
+```bash
+  Unable to find image 'ghcr.io/coollabsio/coolify-helper:latest' locally
+  docker: Error response from daemon: Head "https://ghcr.io/v2/coollabsio/coolify-helper/manifests/latest": denied: denied
+```
+
+## Solution
+You have two options:
+
+<Tabs items={['Log out of ghcr.io', 'Renew the PAT']}>
+<Tab value="Log out of ghcr.io">
+
+- Log out of GitHub Container Registry (ghcr.io) by running:
+  ```bash
+    docker logout ghcr.io
+  ```
+
+</Tab>
+<Tab value="Renew the PAT">
+
+- Renew your GitHub Personal Access Token (PAT) if you need to maintain authenticated access for deployments.
+
+</Tab>
+</Tabs>

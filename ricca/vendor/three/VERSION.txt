@@ -1,0 +1,2 @@
+three@0.186.1 (npm). build/three.module.js + three.core.js minified with esbuild@0.25.10 (--minify --format=esm, license header kept).
+addons/ = examples/jsm of the same version, original relative paths; files > 30 KB minified the same way.

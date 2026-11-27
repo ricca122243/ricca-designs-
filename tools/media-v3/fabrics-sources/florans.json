@@ -1,0 +1,188 @@
+{
+  "id": "florans",
+  "title": "FLORANS",
+  "supplier": "Artex",
+  "kind": "шенилл",
+  "source_url": "https://artextkani.ru/product-category/mebelnye-tkani/shenill/florans/",
+  "specs": {
+    "composition": "100% PES",
+    "martindale": 100000,
+    "weight": "980 г/пм",
+    "width": "140 см",
+    "country": "Турция",
+    "care": "регулярная сухая чистка пылесосом; влажная или химическая чистка — с осторожностью, чтобы не повредить структуру ткани",
+    "other": [
+      "Стойкость к истиранию на сайте записана как «> 100 000 циклов»",
+      "Пиллинг: 4-5 баллов",
+      "Без подложки (презентация коллекции)",
+      "Три дизайна-компаньона: Florans (листья), Florans Plain (гладкий), Florans Delta (геометрия)",
+      "Гарантийный срок на мебельные ткани — 18 месяцев (условия на сайте)",
+      "Презентация: https://artextkani.ru/wp-content/uploads/2026/06/florans-prezentacziya.pdf"
+    ]
+  },
+  "colours": [
+    {
+      "code": "01",
+      "name": "ФЛОРАНС 01 (Florans 01)",
+      "page_url": "https://artextkani.ru/product/florans-01-florans-01/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse-1_medium_hr.webp",
+      "file": "img/01.webp",
+      "w": 3000,
+      "h": 1996
+    },
+    {
+      "code": "Plain 01",
+      "name": "ФЛОРАНС Plain 01 (Florans Plain 01)",
+      "page_url": "https://artextkani.ru/product/florans-plain-01-florans-plain-01/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_plain-1_medium_hr.webp",
+      "file": "img/plain-01.webp",
+      "w": 3000,
+      "h": 2019
+    },
+    {
+      "code": "Delta 01",
+      "name": "ФЛОРАНС Delta 01 (Florans Delta 01)",
+      "page_url": "https://artextkani.ru/product/florans-delta-01-florans-delta-01/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_delta-1_medium_hr.webp",
+      "file": "img/delta-01.webp",
+      "w": 3000,
+      "h": 2015
+    },
+    {
+      "code": "02",
+      "name": "ФЛОРАНС 02 (Florans 02)",
+      "page_url": "https://artextkani.ru/product/florans-02-florans-02/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse-2_medium_hr.webp",
+      "file": "img/02.webp",
+      "w": 3000,
+      "h": 1996
+    },
+    {
+      "code": "Plain 02",
+      "name": "ФЛОРАНС Plain 02 (Florans Plain 02)",
+      "page_url": "https://artextkani.ru/product/florans-plain-02-florans-plain-02/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_plain-2_medium_hr.webp",
+      "file": "img/plain-02.webp",
+      "w": 3000,
+      "h": 2019
+    },
+    {
+      "code": "Delta 02",
+      "name": "ФЛОРАНС Delta 02 (Florans Delta 02)",
+      "page_url": "https://artextkani.ru/product/florans-delta-02-florans-delta-02/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_delta-2_medium_hr.webp",
+      "file": "img/delta-02.webp",
+      "w": 3000,
+      "h": 2015
+    },
+    {
+      "code": "03",
+      "name": "ФЛОРАНС 03 (Florans 03)",
+      "page_url": "https://artextkani.ru/product/florans-03-florans-03/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse-3_medium_hr.webp",
+      "file": "img/03.webp",
+      "w": 3000,
+      "h": 1996
+    },
+    {
+      "code": "Plain 03",
+      "name": "ФЛОРАНС Plain 03 (Florans Plain 03)",
+      "page_url": "https://artextkani.ru/product/florans-plain-03-florans-plain-03/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_plain-3_medium_hr.webp",
+      "file": "img/plain-03.webp",
+      "w": 3000,
+      "h": 2019
+    },
+    {
+      "code": "Delta 03",
+      "name": "ФЛОРАНС Delta 03 (Florans Delta 03)",
+      "page_url": "https://artextkani.ru/product/florans-delta-03-florans-delta-03/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_delta-3_medium_hr.webp",
+      "file": "img/delta-03.webp",
+      "w": 3000,
+      "h": 2015
+    },
+    {
+      "code": "04",
+      "name": "ФЛОРАНС 04 (Florans 04)",
+      "page_url": "https://artextkani.ru/product/florans-04-florans-04/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse-4_medium_hr.webp",
+      "file": "img/04.webp",
+      "w": 3000,
+      "h": 1996
+    },
+    {
+      "code": "Plain 04",
+      "name": "ФЛОРАНС Plain 04 (Florans Plain 04)",
+      "page_url": "https://artextkani.ru/product/florans-plain-04-florans-plain-04/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_plain-4_medium_hr.webp",
+      "file": "img/plain-04.webp",
+      "w": 3000,
+      "h": 2019
+    },
+    {
+      "code": "Delta 04",
+      "name": "ФЛОРАНС Delta 04 (Florans Delta 04)",
+      "page_url": "https://artextkani.ru/product/florans-delta-04-florans-delta-04/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_delta-4_medium_hr.webp",
+      "file": "img/delta-04.webp",
+      "w": 3000,
+      "h": 2015
+    },
+    {
+      "code": "06",
+      "name": "ФЛОРАНС 06 (Florans 06)",
+      "page_url": "https://artextkani.ru/product/florans-06-florans-06/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse-6_medium_hr.webp",
+      "file": "img/06.webp",
+      "w": 3000,
+      "h": 1996
+    },
+    {
+      "code": "Plain 06",
+      "name": "ФЛОРАНС Plain 06 (Florans Plain 06)",
+      "page_url": "https://artextkani.ru/product/florans-plain-06-florans-plain-06/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_plain-6_medium_hr.webp",
+      "file": "img/plain-06.webp",
+      "w": 3000,
+      "h": 2019
+    },
+    {
+      "code": "Delta 06",
+      "name": "ФЛОРАНС Delta 06 (Florans Delta 06)",
+      "page_url": "https://artextkani.ru/product/florans-delta-06-florans-delta-06/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_delta-6_medium_hr.webp",
+      "file": "img/delta-06.webp",
+      "w": 3000,
+      "h": 2015
+    },
+    {
+      "code": "08",
+      "name": "ФЛОРАНС 08 (Florans 08)",
+      "page_url": "https://artextkani.ru/product/florans-08-florans-08/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse-8_medium_hr.webp",
+      "file": "img/08.webp",
+      "w": 3000,
+      "h": 1996
+    },
+    {
+      "code": "Plain 08",
+      "name": "ФЛОРАНС Plain 08 (Florans Plain 08)",
+      "page_url": "https://artextkani.ru/product/florans-plain-08-florans-plain-08/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_plain-8_medium_hr.webp",
+      "file": "img/plain-08.webp",
+      "w": 3000,
+      "h": 2019
+    },
+    {
+      "code": "Delta 08",
+      "name": "ФЛОРАНС Delta 08 (Florans Delta 08)",
+      "page_url": "https://artextkani.ru/product/florans-delta-08-florans-delta-08/",
+      "image_url": "https://artextkani.ru/wp-content/uploads/2026/02/floranse_delta-8_medium_hr.webp",
+      "file": "img/delta-08.webp",
+      "w": 3000,
+      "h": 2015
+    }
+  ],
+  "notes": "Официальный сайт Artex — artextkani.ru (Москва/СПб; логотип ARTEX как на вешалке, текст на вешалке дословно совпадает с описанием на странице товара). 18 позиций = 3 дизайна x 6 цветов (01, 02, 03, 04, 06, 08; номеров 05 и 07 у поставщика нет — подтверждено презентацией коллекции). Порядок — как в разделе на сайте (по цветам: Florans, Plain, Delta). Коды: «01» — дизайн с листьями, «Plain 01» — гладкий, «Delta 01» — геометрия. Фото — плоский образец во весь кадр, оригиналы webp 3000x~2000 (файл *_medium_hr), без надписей; второй кадр на сайте (*_volume) — складка, не брали. Ошибки на сайте: на странице Florans Plain 02 плоским кадром привязан чужой файл floranse-3_medium_hr.webp (это Florans 03) — взят файл с правильным именем floranse_plain-2_medium_hr.webp из той же папки сайта (на листе цвет совпадает с остальными «02»); на странице Florans Delta 01 кадр со складкой — от Delta 02 (на плоское фото не влияет). Поле «Цвет» на сайте заполнено непоследовательно (у одного номера цвета в разных дизайнах разные слова), поэтому слов цвета не даю. На бирке вешалки цифр нет (только «плотный шенилл, три дизайна, складская программа») — расхождений с сайтом нет."
+}

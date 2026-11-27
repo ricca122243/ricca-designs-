@@ -1,0 +1,175 @@
+{
+  "id": "woolly",
+  "title": "WOOLLY",
+  "supplier": "Chistetika",
+  "kind": "рогожка",
+  "source_url": "https://chistetika.ru/catalog/woolly-090.html",
+  "specs": {
+    "composition": "100% полиэстер",
+    "martindale": 70000,
+    "weight": "438 г/м²",
+    "width": "141 см",
+    "country": "Китай",
+    "care": "бережная стирка при 30 °C, отжим на минимальных оборотах; не использовать отбеливатель; лёгкая чистка (Easy Clean)",
+    "other": [
+      "Устойчивость к истиранию на сайте записана как «>70 000» циклов",
+      "Технологии: Лёгкая чистка и уход; Износостойкость и долговечность; Pet lovers нет запретных мест в доме; Экологичность и гипоаллергенность",
+      "Область применения: подушки, стеновые панели, стул, чехлы для мебели",
+      "Русское название: Вулли",
+      "Раздел сайта: Лёгкая чистка (Easy Clean)"
+    ]
+  },
+  "colours": [
+    {
+      "code": "090",
+      "name": "Woolly 090",
+      "page_url": "https://chistetika.ru/catalog/woolly-090.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/49449/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/090.jpg",
+      "w": 1349,
+      "h": 900,
+      "colour": "белый, серый"
+    },
+    {
+      "code": "100",
+      "name": "Woolly 100",
+      "page_url": "https://chistetika.ru/catalog/woolly-100.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/49448/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/100.jpg",
+      "w": 1349,
+      "h": 900,
+      "colour": "бежевый"
+    },
+    {
+      "code": "910",
+      "name": "Woolly 910",
+      "page_url": "https://chistetika.ru/catalog/woolly-910.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/49450/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/910.jpg",
+      "w": 1349,
+      "h": 900,
+      "colour": "бежевый, серый"
+    },
+    {
+      "code": "502",
+      "name": "Woolly 502",
+      "page_url": "https://chistetika.ru/catalog/woolly-502.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/49451/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/502.jpg",
+      "w": 1349,
+      "h": 900,
+      "colour": "желтый"
+    },
+    {
+      "code": "230",
+      "name": "Woolly 230",
+      "page_url": "https://chistetika.ru/catalog/woolly-230.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/49452/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/230.jpg",
+      "w": 1349,
+      "h": 900,
+      "colour": "коричневый"
+    },
+    {
+      "code": "684",
+      "name": "Woolly 684",
+      "page_url": "https://chistetika.ru/catalog/woolly-684.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/49453/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/684.jpg",
+      "w": 1349,
+      "h": 900,
+      "colour": "зеленый"
+    },
+    {
+      "code": "751",
+      "name": "Woolly 751",
+      "page_url": "https://chistetika.ru/catalog/woolly-751.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/49454/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/751.jpg",
+      "w": 1349,
+      "h": 900,
+      "colour": "синий"
+    },
+    {
+      "code": "092",
+      "name": "Woolly 092",
+      "page_url": "https://chistetika.ru/catalog/woolly-092.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/49455/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/092.jpg",
+      "w": 1349,
+      "h": 900,
+      "colour": "серый"
+    },
+    {
+      "code": "996",
+      "name": "Woolly 996",
+      "page_url": "https://chistetika.ru/catalog/woolly-996.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/49456/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/996.jpg",
+      "w": 1349,
+      "h": 900,
+      "colour": "черный"
+    },
+    {
+      "code": "521",
+      "name": "Woolly 521",
+      "page_url": "https://chistetika.ru/catalog/woolly-521.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/50331/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/521.jpg",
+      "w": 900,
+      "h": 900,
+      "colour": "желтый"
+    },
+    {
+      "code": "380",
+      "name": "Woolly 380",
+      "page_url": "https://chistetika.ru/catalog/woolly-380.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/50332/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/380.jpg",
+      "w": 900,
+      "h": 900,
+      "colour": "красный"
+    },
+    {
+      "code": "262",
+      "name": "Woolly 262",
+      "page_url": "https://chistetika.ru/catalog/woolly-262.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/50333/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/262.jpg",
+      "w": 900,
+      "h": 900,
+      "colour": "коричневый"
+    },
+    {
+      "code": "568",
+      "name": "Woolly 568",
+      "page_url": "https://chistetika.ru/catalog/woolly-568.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/50334/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/568.jpg",
+      "w": 900,
+      "h": 900,
+      "colour": "коричневый"
+    },
+    {
+      "code": "752",
+      "name": "Woolly 752",
+      "page_url": "https://chistetika.ru/catalog/woolly-752.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/50335/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/752.jpg",
+      "w": 900,
+      "h": 900,
+      "colour": "синий"
+    },
+    {
+      "code": "783",
+      "name": "Woolly 783",
+      "page_url": "https://chistetika.ru/catalog/woolly-783.html",
+      "image_url": "https://chistetika.ru/netcat_files/generated/31/736/1390x900/50336/fa190e148f398a720afe73a42bafc127.jpg?crop=0%3A0%3A0%3A0&hash=beb1e9936287d933190d47b622e804ce&resize_mode=0&wm_m=0",
+      "file": "img/783.jpg",
+      "w": 900,
+      "h": 900,
+      "colour": "синий"
+    }
+  ],
+  "notes": "15 цветов; порядок — как в каталоге поставщика (https://chistetika.ru/catalog/?curPos=36), отдельной страницы коллекции нет: source_url — страница первого цвета, на ней перечислены все артикулы. Число цветов сверено с цветовой картой поставщика (/netcat_files/multifile/786/184/WOOLLY_colourcard-art.jpg) — те же 15. Фото — плоские образцы во весь кадр без надписей; взят самый большой размер, который отдаёт сайт (просмотр «глаз», 1390x900): 9 цветов 1349x900, шесть цветов (521, 380, 262, 568, 752, 783) — квадрат 900x900. Оригиналы крупнее сайт не отдаёт (запрос другого размера — 404). РАСХОЖДЕНИЕ с биркой: на вешалке устойчивость к истиранию 40 000 циклов, на сайте «>70 000»; в martindale записано значение сайта. Состав, ширина 141 см, Китай, 438 г/м² совпадают с биркой. В блоке «Уход» на сайте стоят одновременно «отжим на минимальных оборотах» и «без отжима / нельзя отжимать». Названия цветов у поставщика — только коды; слово цвета из поля «Цвет» на страницах: 090 — белый, серый, 100 — бежевый, 910 — бежевый, серый, 502 — желтый, 230 — коричневый, 684 — зеленый, 751 — синий, 092 — серый, 996 — черный, 521 — желтый, 380 — красный, 262 — коричневый, 568 — коричневый, 752 — синий, 783 — синий. ПРОВЕРКА: плоские фото цветов 230, 684, 751 и 996 заметно темнее, чем кадр со складкой на странице того же цвета и чем цветовая карта поставщика (например, 751 на плоском фото — тёмно-синий, на складке и на карте — светло-голубой; 996 — почти чёрный против серого); оттенок тот же, привязка фото к коду проверена по номеру объекта на странице цвета. У остальных 11 цветов оба кадра совпадают по тону. По вешалке владельца тёмный образец ближе к плоскому фото. Перед показом покупателю эти четыре цвета стоит сверить с живым образцом."
+}
