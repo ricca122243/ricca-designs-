@@ -345,7 +345,7 @@ d['hasOfferCatalog'] = {'@type': 'OfferCatalog', 'name': 'Custom upholstered fur
   {'@type': 'Offer', 'itemOffered': {'@type': 'Product', 'name': 'Custom beds', 'description': 'Upholstered beds with or without a lift-up mechanism, any headboard'}},
   {'@type': 'Offer', 'itemOffered': {'@type': 'Product', 'name': 'Armchairs, poufs and benches', 'description': 'Lounge armchairs, poufs and benches in any fabric'}},
   {'@type': 'Offer', 'itemOffered': {'@type': 'Product', 'name': 'ELUNA mattresses', 'url': 'https://ricca-designs.netlify.app'}}]}
-d['areaServed'] = [{'@type': 'City', 'name': 'Almaty'}, {'@type': 'Country', 'name': 'Kazakhstan'}, 'Worldwide']
+d['areaServed'] = [{'@type': 'City', 'name': 'Almaty'}, {'@type': 'Country', 'name': 'Kazakhstan'}]   # 27 ноября: строка "Worldwide" — не тип Place, разметка её не принимает
 for c in d.get('contactPoint', []): c['availableLanguage'] = ['ru', 'en']
 d['inLanguage'] = 'en'
 page = page[:m.start(2)] + json.dumps(d, ensure_ascii=False, separators=(',', ':')) + page[m.end(2):]
