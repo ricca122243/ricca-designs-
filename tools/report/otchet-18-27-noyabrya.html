@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<base href="http://localhost:8790/">
+<link rel="stylesheet" href="css/fonts-v3.css">
+<style>
+/* Отчёт A4 в том же виде, что «отчёт 15–17 ноября»: Montserrat, холодный белый, тонкие линии */
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #fff; color: #0A0A0A; font-family: Montserrat, 'Helvetica Neue', Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width: 210mm; height: 297mm; padding: 18mm 18mm 14mm; position: relative; page-break-after: always; overflow: hidden; }
+.page:last-child { page-break-after: auto; }
+.foot { position: absolute; left: 18mm; right: 18mm; bottom: 10mm; display: flex; justify-content: space-between; font-size: 8.5pt; letter-spacing: .16em; color: #0A0A0A; }
+.top { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 9mm; border-bottom: 1.5px solid #0A0A0A; }
+.top img { height: 11mm; }
+.top .meta { text-align: right; font-size: 9pt; letter-spacing: .16em; line-height: 1.8; color: #5F6268; text-transform: uppercase; }
+h1 { font-weight: 300; font-size: 30pt; line-height: 1.15; margin: 13mm 0 8mm; letter-spacing: -.005em; }
+.lead { font-size: 12.5pt; line-height: 1.6; margin: 0 0 5mm; max-width: 165mm; }
+.note { font-size: 11pt; line-height: 1.6; color: #6B6E73; margin: 0 0 10mm; max-width: 165mm; }
+.phones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6mm; }
+.phone img { width: 100%; display: block; border: 1px solid #DADDE2; border-radius: 3mm; }
+.phone .c { margin-top: 2.5mm; font-size: 9.5pt; line-height: 1.45; }
+.phone .c span { display: block; color: #6B6E73; border-bottom: 1px solid #BFC3C9; width: max-content; max-width: 100%; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6mm; margin-top: 9mm; padding-top: 7mm; border-top: 1px solid #DADDE2; }
+.stats b { display: block; font-weight: 300; font-size: 24pt; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stats span { display: block; margin-top: 2mm; font-size: 9.5pt; line-height: 1.45; color: #6B6E73; }
+.sec { font-size: 9pt; letter-spacing: .18em; color: #5F6268; text-transform: uppercase; margin: 0 0 3mm; }
+h2 { font-weight: 300; font-size: 21pt; margin: 0 0 6mm; }
+table.done { width: 100%; border-collapse: collapse; font-size: 9.6pt; line-height: 1.5; }
+table.done td { border-top: 1px solid #DADDE2; padding: 2.3mm 0; vertical-align: top; }
+table.done tr:last-child td { border-bottom: 1px solid #DADDE2; }
+table.done td:first-child { width: 40mm; padding-right: 6mm; font-weight: 500; }
+.after { margin-top: 5mm; font-size: 10pt; color: #6B6E73; }
+ul.todo { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid #0A0A0A; }
+ul.todo li { display: grid; grid-template-columns: 9mm 1fr; padding: 2.7mm 0; border-bottom: 1px solid #DADDE2; font-size: 10pt; line-height: 1.55; }
+ul.todo li::before { content: ""; width: 4mm; height: 4mm; border: 1.3px solid #0A0A0A; border-radius: 1mm; margin-top: .9mm; }
+ul.todo li.first { background: #F4F5F7; padding-left: 3mm; padding-right: 3mm; }
+ul.todo b { font-weight: 500; }
+ol.next { list-style: none; margin: 0; padding: 0; border-top: 1px solid #DADDE2; counter-reset: n; }
+ol.next li { counter-increment: n; display: grid; grid-template-columns: 9mm 1fr; padding: 2.7mm 0; border-bottom: 1px solid #DADDE2; font-size: 10pt; line-height: 1.55; }
+ol.next li::before { content: counter(n, decimal-leading-zero); font-size: 8.5pt; color: #6B6E73; padding-top: .5mm; }
+.gap { height: 7mm; }
+</style></head><body>
+
+<!-- 1 -->
+<section class="page">
+  <div class="top"><img src="img/logo/rd-monogram.svg" alt="RD"><div class="meta">Отчёт о работе над сайтом<br>18–27 ноября 2026</div></div>
+  <h1>Что сделано на сайте<br>за десять дней</h1>
+  <p class="lead">В каталоге 14 новых моделей с новыми названиями, в «Тканях» — 21 новая коллекция, в «Наших работах» — 12 работ по вашим фото. На всех страницах появилась форма заявки, у кресел Runvo и Galso — новые 3D-модели по фото.</p>
+  <p class="note">Всё уже на ricca.design: по вашей просьбе проверенные правки выкладываются сразу. Пробный сайт закрыт от поисковиков.</p>
+  <div class="phones">
+    <div class="phone"><img src="shots/works-r.jpg" alt=""><div class="c">«Наши работы»<span>12 новых работ</span></div></div>
+    <div class="phone"><img src="shots/fabrics-r.jpg" alt=""><div class="c">Ткани<span>37 коллекций</span></div></div>
+    <div class="phone"><img src="shots/model-r.jpg" alt=""><div class="c">Новая модель<span>пример — Riola</span></div></div>
+    <div class="phone"><img src="shots/runvo-r.jpg" alt=""><div class="c">Runvo в 3D<span>новая модель по фото</span></div></div>
+  </div>
+  <div class="stats">
+    <div><b>+14</b><span>новых моделей в каталоге</span></div>
+    <div><b>473</b><span>цвета ткани в 37 коллекциях</span></div>
+    <div><b>12</b><span>новых работ по вашим фото</span></div>
+    <div><b>124</b><span>страницы отправлены в Яндекс и Bing</span></div>
+  </div>
+  <div class="foot"><span>RICCA DESIGNS</span><span>1 / 3</span></div>
+</section>
+
+<!-- 2 -->
+<section class="page">
+  <div class="sec">Раздел 1</div>
+  <h2>Что сделано</h2>
+  <table class="done"><tbody>
+    <tr><td>Новые модели</td><td>14 моделей по вашим фото: 13 диванов и кресло, фото подогнаны под каталог. Новые имена: Riola, Lunata, Vemira, Mareva, Ivera, Nerina, Veluna, Ilira, Sonela, Ruana, Avela, Onora, Milora, Talero; старые адреса ведут на новые.</td></tr>
+    <tr><td>Ткани</td><td>21 коллекция с официальных сайтов поставщиков, 226 цветов. Всего 37 коллекций и 473 цвета, новые вкладки «Рогожка», «Жаккард», «Мех». Ткани с крупным рисунком не примеряются в 3D — рисунок бы искажался.</td></tr>
+    <tr><td>Наши работы</td><td>12 работ по вашим фото, плюс ARCO и «Округлое кресло»; на главной 8 новых кадров. Убраны значок Instagram, надпись Rolls-Royce и личное фото; фото с логотипами Hermès не выложено.</td></tr>
+    <tr><td>3D: Runvo и Galso</td><td>Обе модели собраны заново и сверены с фото каталога по контуру. Runvo снова в 3D.</td></tr>
+    <tr><td>3D-конструктор</td><td>18 ноября 3D вернули всем моделям каталога, сверив с фото спереди и сбоку. Поправлены Pelso, Ronso и пуф Ovalo, верные размеры у изогнутых кресел, светлые ткани не засвечены, на телефоне — вращение без рывков. Исправлена пустая сцена конструктора.</td></tr>
+    <tr><td>Страницы моделей</td><td>Карточка в каталоге сразу открывает страницу модели. У моделей без 3D вместо «Собрать в 3D» — «Написать нам». Добавлены 25 недостающих фото.</td></tr>
+    <tr><td>Заявки</td><td>Форма «Оставить заявку» (имя, телефон, что интересует) и кнопка WhatsApp — на всех страницах. Пока Telegram не подключён, заявка уходит в WhatsApp с готовым текстом. Встроены счётчики Google и Meta — заработают, когда добавите их номера.</td></tr>
+    <tr><td>«Нам доверяют»</td><td>11 партнёров: добавлен ASP Club, логотип ведёт в их Instagram.</td></tr>
+    <tr><td>Тексты</td><td>«С 2015 года» — на главной, в «Для бизнеса» и в английской версии. Политика обработки данных обновлена под форму заявки и счётчики.</td></tr>
+    <tr><td>Новый год</td><td>С 1 декабря по 14 января на первом экране — подпись «С наступающим 2027» и падающие снежинки.</td></tr>
+    <tr><td>Поиск</td><td>Технических ошибок нет. Яндексу и Bing отправлены все 124 страницы — приняли. Исправлены данные о компании для поисковиков.</td></tr>
+    <tr><td>Защита</td><td>Только защищённое соединение, встроить сайт в чужую страницу нельзя, паролей в файлах нет. Убран служебный файл с адресом хранилища кода.</td></tr>
+  </tbody></table>
+  <p class="after">Как и договаривались: цен нет, фото только настоящие, подвал главной и блок «Шоурум» не трогали.</p>
+  <div class="foot"><span>RICCA DESIGNS</span><span>2 / 3</span></div>
+</section>
+
+<!-- 3 -->
+<section class="page">
+  <div class="sec">Раздел 2</div>
+  <h2>Что нужно от вас</h2>
+  <ul class="todo">
+    <li class="first"><span><b>Карточки на Google Картах и Яндекс Картах.</b> business.google.com и business.yandex.ru: шоурум на Навои, 208/2, часы, телефон, сайт, 10–15 фото. По запросам «диван на заказ Алматы» поисковики сначала показывают карты. Пришлите ссылки — поставлю на сайт.</span></li>
+    <li><span>Яндекс.Вебмастер: добавить сайт и прислать код мета-тега — вставлю его сам.</span></li>
+    <li><span>Google Search Console: отправить sitemap.xml и запросить индексирование главной.</span></li>
+    <li><span>Telegram-бот для заявок и номера счётчиков Google и Meta — внести в настройки Netlify. Подскажу по шагам.</span></li>
+    <li><span>GitHub: сделать хранилище кода закрытым. Двухэтапный вход в GitHub, Netlify, у регистратора домена и в почте, автопродление домена.</span></li>
+    <li><span>Ткани Attika, Sakura и Rivers опознаны по рисунку — подтвердить, что это они.</span></li>
+    <li><span>Новые работы: проверить ткань и цвет в подписях. Чёрный кожаный диван (подушка с монограммой «RL») — точно ваш? Для фото, снятых дизайнером, — его согласие.</span></li>
+    <li><span>Telegram-канал: первый пост готов — 6 карточек и текст. Если к Новому году ещё успеваете — назвать крайнюю дату заказа, сделаю отдельный пост.</span></li>
+  </ul>
+  <div class="gap"></div>
+  <div class="sec">Раздел 3</div>
+  <h2>Что дальше</h2>
+  <ol class="next">
+    <li>Страницы «Диваны на заказ в Алматы», «Кровати на заказ» и другие категории — чтобы поисковик видел каталог.</li>
+    <li>Ссылки на карточки Google и Яндекс Карт и метка Яндекс.Вебмастера — как только пришлёте.</li>
+    <li>3D для 14 новых моделей — тем же способом, что Runvo и Galso: по фото, со сверкой контура.</li>
+    <li>Страница «Шоурум в Алматы»: как доехать, парковка, фото входа.</li>
+    <li>Посты в Telegram: ткани, 3D-конструктор, мебель для бизнеса, спальни.</li>
+  </ol>
+  <div class="foot"><span>RICCA DESIGNS</span><span>3 / 3</span></div>
+</section>
+</body></html>
